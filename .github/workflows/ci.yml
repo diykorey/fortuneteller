@@ -9,15 +9,38 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      # Until the M0 scaffold (pyproject.toml) exists this repo is docs-only,
+      # so the lint/type/test gate skips cleanly and the job stays green.
+      # Once pyproject.toml lands, the gate enforces automatically.
+      - name: Detect Python project
+        id: detect
+        run: |
+          if [ -f pyproject.toml ]; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "No pyproject.toml yet (pre-M0, docs-only) — skipping lint/type/test."
+          fi
+
       - name: Install uv
+        if: steps.detect.outputs.exists == 'true'
         uses: astral-sh/setup-uv@v5
         with:
           python-version: "3.12"
+
       - name: Install dependencies
+        if: steps.detect.outputs.exists == 'true'
         run: uv sync
+
       - name: Lint
+        if: steps.detect.outputs.exists == 'true'
         run: uv run ruff check
+
       - name: Type check
+        if: steps.detect.outputs.exists == 'true'
         run: uv run mypy src
+
       - name: Test
+        if: steps.detect.outputs.exists == 'true'
         run: uv run pytest
