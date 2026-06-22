@@ -1,0 +1,13 @@
+symbol,name,asset_class,region,primary_venue,notes
+SPY / ES,S&P 500,equity_index,us,NYSE / Cboe / CME,Broad US market benchmark; the default risk-on/off gauge.
+NVDA,Nvidia,single_stock,us,Nasdaq,AI bellwether; can move whole indices (DeepSeek Jan 2025 -17%).
+AAPL,Apple,single_stock,us,Nasdaq,Largest weight; China-supply & tariff sensitive.
+GC / XAU,Gold,commodity,global,COMEX (CME) / LBMA,Safe-haven & real-rate/inflation hedge.
+BRN,Brent crude oil,commodity,global,ICE,Global oil benchmark; geopolitics-sensitive.
+BTC,Bitcoin,crypto,global,Binance / Coinbase / CME,Crypto bellwether; liquidity/regulation/risk sensitive.
+USDC,USDC (stablecoin peg),crypto,global,On-chain / Circle,Peg = systemic-stress gauge (depegged Mar 2023).
+DXY,US Dollar Index,fx,global,ICE,Broad USD; rises on risk-off and hawkish Fed.
+BUND / FGBL,German Bund 10Y,rates_bond,europe,Eurex,Eurozone risk-free benchmark.
+VIX,VIX (equity volatility),volatility,us,Cboe,The fear gauge; spikes on every risk-off event.
+CDS,Sovereign CDS (EM / periphery),credit_cds,em,ICE / Markit,"Default-risk gauge (Russia 2022, Italy, EM)."
+BDI,Baltic Dry Index,freight,global,Baltic Exchange,Dry-bulk freight; China-demand & disruption gauge.

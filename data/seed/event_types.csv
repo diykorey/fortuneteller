@@ -1,0 +1,32 @@
+event_type,tier,polarity
+Global pandemic / health emergency,1,negative
+Banking / financial crisis,1,negative
+Major interstate war,1,both
+Central-bank decision,2,both
+Tariff / trade-war / sanctions,2,both
+Sovereign-debt crisis,1,negative
+CPI / inflation surprise,3,both
+NFP / labor data,3,both
+Other macro data (GDP/PMI/PCE/retail/claims),3,both
+National election,4,both
+Geopolitical escalation / terror,4,negative
+Coup / regime change / capital controls,4,both
+OPEC+ supply decision,5,both
+Natural disaster,5,both
+Extreme weather / climate policy,5,both
+Corporate scandal / fraud / bankruptcy,6,negative
+Earnings release,6,both
+M&A announcement,6,both
+Regulatory / legal event,6,both
+Leadership change / C-suite departure,6,both
+Cyber attack / hack,7,negative
+Social / viral / meme event,7,both
+Strike / labor unrest / civil protest,7,negative
+Freight / shipping disruption,8,both
+Carbon / emissions policy,5,both
+Credit-rating action,6,both
+NFT / collectibles / art event,8,both
+Real-estate / housing data,3,both
+AI / technology breakthrough,7,both
+Fiscal: debt-ceiling / shutdown,4,both
+Stablecoin / DeFi depeg,7,both

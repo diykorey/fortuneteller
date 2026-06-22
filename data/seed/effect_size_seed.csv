@@ -1,0 +1,16 @@
+event_type,instrument,direction,typical_magnitude,reaction_half_life,direction_confidence,hit_rate_est,surprise_dependent,basis
+CPI / inflation surprise,SPY / ES,conditional,0.5-1.5%,minutes_hours,high,~62%,yes,placeholder seed
+CPI / inflation surprise,BUND / FGBL,conditional,3-10 bps,minutes_hours,high,~60%,yes,placeholder seed
+CPI / inflation surprise,GC / XAU,conditional,0.4-1.2%,minutes_hours,medium,~55%,yes,placeholder seed
+Central-bank decision,SPY / ES,conditional,0.5-2%,minutes_hours,high,~58%,yes,placeholder seed
+Central-bank decision,DXY,conditional,0.3-1%,minutes_hours,high,~60%,yes,placeholder seed
+Major interstate war,BRN,up,3-10%,hours_days,high,~70%,no,placeholder seed
+Major interstate war,SPY / ES,down,1-5%,hours_days,medium,~65%,no,placeholder seed
+Major interstate war,GC / XAU,up,1-4%,hours_days,high,~68%,no,placeholder seed
+OPEC+ supply decision,BRN,conditional,2-6%,minutes_hours,high,~64%,yes,placeholder seed
+Geopolitical escalation / terror,VIX,up,5-20%,seconds_minutes,high,~72%,no,placeholder seed
+Cyber attack / hack,USDC,down,0.2-5%,seconds_minutes,medium,~55%,no,placeholder seed
+Stablecoin / DeFi depeg,BTC,down,2-10%,seconds_minutes,medium,~60%,no,placeholder seed
+Earnings release,NVDA,conditional,3-12%,minutes_hours,high,~58%,yes,placeholder seed
+M&A announcement,AAPL,conditional,1-8%,hours_days,medium,~55%,no,placeholder seed
+Banking / financial crisis,CDS,up,20-100 bps,hours_days,high,~70%,no,placeholder seed
