@@ -25,3 +25,7 @@ any coverage gap, and a primary news source).
 
 The full Notion table extends through rank 50 and records, per country, how many of the 132 tracked
 [trading platforms](platforms.md) sit in that market and whether any coverage gap remains.
+
+How each country maps onto the coarse `Region` buckets (and why China/India resolve to `em` while
+Japan stays `asia`) is defined by the precedence rule in
+[Region segmentation — rationale](region-segmentation.md).
