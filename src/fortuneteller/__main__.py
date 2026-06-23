@@ -10,11 +10,15 @@ from __future__ import annotations
 import argparse
 from collections.abc import Callable, Sequence
 
+from . import db
+from .config import settings
+
 Handler = Callable[[argparse.Namespace], int]
 
 
 def _init(_args: argparse.Namespace) -> int:
-    print("init: not implemented yet (wired in M0-05 — db.init_db)")
+    db.init_db()
+    print(f"init: created {settings.db_path}")
     return 0
 
 
