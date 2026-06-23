@@ -26,6 +26,8 @@ quantitative layer, and the calibration dataset are documented here.
 | [Roadmap — Prototype to Complete Solution](roadmap.md) | Milestones M0–M7, critical path, graduation triggers |
 | [Tech Stack & Reasoning](tech-stack.md) | Python-first, DuckDB, no-ORM decisions and their rationale |
 | [M0 Tickets — Scaffold & Seed](m0-tickets.md) | LLM-ready tickets M0-01 … M0-10 with file paths and acceptance criteria |
+| [M0-R Tickets — Replay Harness](m0-r-tickets.md) | LLM-ready tickets M0-R-01 … 05: the deterministic fixture-replay dev loop |
+| [M1 Tickets — Thin Vertical Slice](m1-tickets.md) | LLM-ready tickets M1-01 … 07: CPI → resolved warning, end to end, + the free live path |
 
 ## Reference data
 
