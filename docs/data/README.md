@@ -39,6 +39,12 @@ at most 25 ranked rows per call). So each table below is one of:
 > definition (that is what the matrix holds until calibration overwrites them). Reconcile against
 > the Notion source before relying on any inferred value.
 
+## Design notes
+
+- [Region segmentation — rationale](region-segmentation.md) — what the `Region` enum means
+  (dominant macro-driver regime), the precedence rule that resolves the `asia` / `em` overlap, and
+  when to revisit the buckets post-proof.
+
 ## Full data
 
 The complete tables live in the project's Notion workspace; the subsets here are re-exported from

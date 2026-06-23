@@ -86,8 +86,9 @@ CAR_i  = sum of AR_i,t over the event window
 For FX/commodities/crypto use the relevant benchmark or a mean-return model.
 
 **d. Reaction half-life.** Find peak absolute excursion in the window, then time to retrace 50%.
-Bucket into the half-life categories. No 50% retrace → longest bucket. Distinguishes transient
-spikes from durable repricing.
+Bucket into the [half-life categories](data/effect-size-matrix.md) (`seconds_minutes` …
+`weeks_plus`). No 50% retrace → longest bucket. Distinguishes transient spikes from durable
+repricing.
 
 **e. Regime conditioning.** Add vix_t0 bucket (<15 / 15-25 / >25) and rate_regime as `GROUP BY`
 dimensions or regression interactions. Encodes the good-news-is-bad-news flip and crypto's looser

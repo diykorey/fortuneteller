@@ -33,4 +33,19 @@ measured statistics (`mag_per_sd`, `hit_rate`, `n_obs`) once enough observations
 
 **Direction enum** (M0-03): `up`, `down`, `mixed`, `conditional`. Surprise-dependent cells use
 `conditional` — the sign resolves at prediction time from the standardized surprise and regime.
-**Half-life enum:** `seconds_minutes`, `minutes_hours`, `hours_days`, `days_weeks`, `weeks_plus`.
+**Half-life enum** — the prediction's *horizon*: how long the move persists before fading, defined
+operationally as the **time to retrace 50% of the peak post-event move**. The name is the
+radioactive-decay analogy — the characteristic time for the impact to fall to half. It is measured
+per observation as `half_life_min` (minutes) and bucketed into one of five order-of-magnitude bands:
+
+- `seconds_minutes` — transient snap, reverts almost immediately
+- `minutes_hours` — intraday repricing (the common macro-surprise case in the table above)
+- `hours_days` — settles over a session or two
+- `days_weeks` — a repricing that sticks
+- `weeks_plus` — structural / persistent (also the fallback when the move never retraces 50% within
+  the measurement window)
+
+This is the field that separates a fleeting blip from a durable move — central to a *warning*
+product, since it sets how long a warning stays actionable. Precise measurement methodology:
+[Calibration Dataset → Reaction half-life](../calibration-dataset.md). At M0 these are seed bands;
+calibration overwrites each cell with the median measured `half_life_min`.
