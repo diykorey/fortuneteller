@@ -1,8 +1,7 @@
 """Command-line entry point for FortuneTeller.
 
-Subcommands are wired here; their implementations land in later M0 tickets
-(``init`` -> M0-05 ``db.init_db``; ``seed`` / ``query-demo`` -> M0-07 ``seed``).
-For the M0-01 skeleton the handlers are placeholders.
+Subcommands: ``init`` creates the store (M0-05 ``db.init_db``); ``seed`` / ``query-demo`` load and
+read the seed data (M0-07 ``seed``).
 """
 
 from __future__ import annotations
@@ -10,7 +9,7 @@ from __future__ import annotations
 import argparse
 from collections.abc import Callable, Sequence
 
-from . import db
+from . import db, seed
 from .config import settings
 
 Handler = Callable[[argparse.Namespace], int]
@@ -23,12 +22,25 @@ def _init(_args: argparse.Namespace) -> int:
 
 
 def _seed(_args: argparse.Namespace) -> int:
-    print("seed: not implemented yet (wired in M0-07 — seed.load_all)")
+    con = db.get_connection()
+    db.init_db(con=con)
+    counts = seed.load_all(con=con)
+    for table, count in counts.items():
+        print(f"{table}: {count}")
     return 0
 
 
 def _query_demo(_args: argparse.Namespace) -> int:
-    print("query-demo: not implemented yet (wired in M0-07 — seed.query_demo)")
+    con = db.get_connection()
+    db.init_db(con=con)
+    row = seed.query_demo(con=con)
+    if row is None:
+        print("query-demo: no effect-size rows (run `fortuneteller seed` first)")
+        return 1
+    print(
+        f"{row.event_type} x {row.instrument}: direction={row.direction} "
+        f"magnitude={row.typical_magnitude} confidence={row.direction_confidence}"
+    )
     return 0
 
 

@@ -48,9 +48,16 @@ def init_db(con: duckdb.DuckDBPyConnection | None = None) -> None:
 
 
 def insert_models(
-    table: str, rows: Sequence[BaseModel], con: duckdb.DuckDBPyConnection | None = None
+    table: str,
+    rows: Sequence[BaseModel],
+    con: duckdb.DuckDBPyConnection | None = None,
+    replace: bool = False,
 ) -> int:
-    """Insert Pydantic ``rows`` into ``table`` and return how many were written."""
+    """Insert Pydantic ``rows`` into ``table`` and return how many were written.
+
+    With ``replace=True`` emit ``INSERT OR REPLACE`` so a row whose primary key already exists is
+    overwritten rather than rejected — this is what makes the seed load idempotent.
+    """
     if table not in _TABLES:
         raise ValueError(f"unknown table: {table!r}")
     if not rows:
@@ -59,7 +66,8 @@ def insert_models(
     fields = list(type(rows[0]).model_fields)
     columns = ", ".join(fields)
     placeholders = ", ".join(["?"] * len(fields))
-    sql = f"INSERT INTO {table} ({columns}) VALUES ({placeholders})"
+    verb = "INSERT OR REPLACE" if replace else "INSERT"
+    sql = f"{verb} INTO {table} ({columns}) VALUES ({placeholders})"
     connection.executemany(sql, [[getattr(row, field) for field in fields] for row in rows])
     return len(rows)
 
@@ -80,6 +88,13 @@ def get_effect_size(
         "SELECT * FROM effect_size_seed WHERE event_type = ? AND instrument = ?",
         [event_type, instrument],
     )
+    return _fetch_one(EffectSizeSeed, cur)
+
+
+def first_effect_size(con: duckdb.DuckDBPyConnection | None = None) -> EffectSizeSeed | None:
+    """Return any one effect-size seed row, or ``None`` if the table is empty."""
+    connection = con if con is not None else get_connection()
+    cur = connection.execute("SELECT * FROM effect_size_seed LIMIT 1")
     return _fetch_one(EffectSizeSeed, cur)
 
 
