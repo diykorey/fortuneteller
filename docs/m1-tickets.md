@@ -68,8 +68,16 @@ seed data is committed. Same inputs → identical bytes. Networked code lives **
 
 **Depends on:** M0-R-01 (`FixtureEvent`)
 
-**Context:** The first enrichment — turn a release's `consensus` / `actual` into a standardized
-surprise the predictor can act on.
+**Goal:** A pure surprise module (`compute_surprise` / `standardize` / `surprise_sign`) that turns a
+release's `consensus` / `actual` into a standardized `surprise_sd` and an `above` / `below` /
+`unknown` sign — the one feature every later stage reads.
+
+**Context:** Markets price the consensus *before* a release lands, so the headline number isn't what
+moves instruments — the deviation from expectation is. Every later stage regresses on a
+**standardized** surprise rather than the raw print, because dividing by the rolling stdev makes a CPI
+miss and an NFP miss comparable on one scale. Nothing in M1 can resolve a direction until this
+feature exists, so it is the first enrichment and the head of the chain; keeping it pure (no clock /
+IO / randomness) is what lets the replay harness stay byte-for-byte deterministic.
 
 **Files:** `src/fortuneteller/predict/__init__.py`, `src/fortuneteller/predict/surprise.py`
 
@@ -96,9 +104,17 @@ surprise the predictor can act on.
 
 **Depends on:** M0-05 / M0-07 (seed loader + schema), M0-R-01
 
-**Context:** The resolver needs data M0 never captured — which way each cell moves on a hot
-(above-consensus) surprise — and the CPI slice is missing two of its five cells. Add both as
-committed config (reference tables are config the pipeline reads).
+**Goal:** All five CPI core cells present in `effect_size_seed`, plus a new `surprise_response` table
+giving each cell its `hot_direction` and a `regime_sensitive` flag — the lookup data the resolver
+reads.
+
+**Context:** The M1-03 resolver is pure logic; it can only turn a surprise sign into up / down if it
+can look up which way each instrument moves on a hot (above-consensus) print — a mapping M0 never
+captured — and the CPI slice in `effect_size_seed.csv` is still missing two of its five instruments
+(`DXY`, `VIX`). The repo treats reference tables as config the pipeline reads, so this lands as
+committed CSVs + a loaded table rather than constants baked into the resolver: the slice then widens
+by editing data, not code, and the later Postgres migration stays cheap. Splitting the data (here)
+from the logic (M1-03) keeps each ticket independently testable.
 
 **Files:** `data/seed/effect_size_seed.csv` (append rows), `data/seed/surprise_response.csv` (new),
 `schema.sql` (new `surprise_response` table), `src/fortuneteller/models.py` (new model),
@@ -133,8 +149,17 @@ committed config (reference tables are config the pipeline reads).
 
 **Depends on:** M1-01, M1-02
 
-**Context:** The core M1 deliverable deferred at M0-R — turn `conditional` + surprise sign + regime
-into a concrete up / down.
+**Goal:** A pure, offline `resolve_direction(...)` that maps a `conditional` cell + surprise sign +
+rate regime to a concrete `up` / `down` (or an honest `mixed`), including the documented
+"good news is bad news" regime flip.
+
+**Context:** This is the deliverable M0-R deliberately stopped short of — its engine emits
+`"conditional"` because resolving a real direction needs the surprise handling (M1-01) and response
+mapping (M1-02) that didn't exist yet. It is the headline value of M1: the difference between
+"something will happen" and "`SPY / ES` goes down." It must be a **pure, deterministic, no-LLM**
+function — scheduled-macro CPI direction is fully determined by the surprise sign, the rate regime,
+and per-instrument asset rules, and any nondeterminism would break the harness's byte-for-byte
+guarantee. (LLM classification of free-text events is M4.)
 
 **Files:** `src/fortuneteller/predict/direction.py`
 
@@ -164,8 +189,17 @@ types / instruments beyond the CPI core slice.
 
 **Depends on:** M0-R-02 (the engine exists), M1-03
 
-**Context:** Wire the resolver into the deterministic engine so conditional cells emit a concrete
-direction instead of `"conditional"`.
+**Goal:** The replay engine calls the M1-03 resolver for conditional cells so warnings carry a
+concrete `up` / `down`, with every determinism guarantee preserved and the one affected golden
+regenerated.
+
+**Context:** M1-03 is a standalone function; until it is wired into `replay()` the deterministic
+engine still emits `"conditional"` and the prototype cannot demo a resolved warning. This is the
+integration point — it connects the resolver to the existing engine without disturbing the
+non-conditional and "no edge" paths, and it must preserve instrument ordering, `as_of`,
+`surprise_sign` passthrough, and byte-identical reruns so the fast loop's core guarantee holds. It
+regenerates only the single golden it changes; the new fixtures land in M1-05, keeping this diff
+small and reviewable.
 
 **Files:** `src/fortuneteller/replay/engine.py` (extend), `tests/test_engine_resolution.py` (new),
 `fixtures/cpi-hot-2026-03.golden.json` (regenerate)
@@ -196,8 +230,17 @@ direction instead of `"conditional"`.
 
 **Depends on:** M1-04, M0-R-04 / M0-R-05 (fixture set + golden/intent test harness)
 
-**Context:** Lock the resolved CPI behaviour into the fast loop, and fill in the `expect` directions
-deferred at M0-R now that resolution exists.
+**Goal:** Three CPI fixtures (hot / cool / inline) over the five core instruments with resolved
+`expect` directions and matching goldens, so the resolved behaviour is asserted and regressions can't
+be silently blessed.
+
+**Context:** Resolution logic is only trustworthy once tests fail when it drifts. M0-R deferred the
+`expect` directions because resolution didn't exist yet; now it does, so this ticket fills them in and
+adds cool / inline cases to cover both surprise signs and the no-edge path. The load-bearing property
+is that `expect` is fixture *metadata*, kept separate from the goldens — a wrong-direction regression
+fails the intent test independently and cannot be hidden by regenerating a golden. After this lands
+the offline prototype is **demoable**: `replay` turns conditional CPI cells into concrete, asserted
+directions.
 
 **Files:** `fixtures/cpi-hot-2026-03.json` (add `expect`), `fixtures/cpi-cool-2026-04.json`,
 `fixtures/cpi-inline-2026-05.json`, and matching `fixtures/*.golden.json`
@@ -227,8 +270,16 @@ deferred at M0-R now that resolution exists.
 
 **Depends on:** M1-01 (surprise), M0-R-01 (`Fixture` / `FixtureEvent`)
 
-**Context:** Wire a real CPI release through the *same* prediction core — the optional
-live-validation behind the function.
+**Goal:** A quarantined `live/` package that fetches a real CPI release (FRED `actual` +
+free-calendar `consensus`) and builds a `Fixture` that replays through the *identical* engine —
+without `replay/` ever importing `live/`.
+
+**Context:** Everything through M1-05 runs on recorded fixtures; this ticket proves the same
+prediction core works on a real release, which is what makes M1 a credible prototype rather than a
+closed loop over its own test data. It reuses M1-01's surprise math behind a network boundary so the
+live and offline paths share one source of truth. The hard rule — nothing in `live/` is imported by
+`replay/` — keeps the deterministic harness fully offline and CI free of live-network flakiness; the
+connector stays free-tier (FRED + a free econ calendar) per the MVP's no-paid-data discipline.
 
 **Files:** `src/fortuneteller/live/__init__.py`, `src/fortuneteller/live/sources.py`,
 `src/fortuneteller/live/build.py`, `pyproject.toml` (add `httpx` — the M1 dep per
@@ -260,8 +311,15 @@ non-CPI events.
 
 **Depends on:** M1-06, M1-04, M0-01 (the argparse CLI)
 
-**Context:** The one-shot live command — fetch a real CPI release and emit the same resolved
-`Warning` list as `replay`.
+**Goal:** A `fortuneteller predict --event … --release-date …` subcommand that chains the live builder
+and the prediction core to print the same resolved `Warning`(s) as `replay`, as a human table or JSON.
+
+**Context:** M1-06 builds the live event but leaves it behind a function; this ticket gives it a
+human-runnable surface so the prototype can be demoed end to end on a real date with one command. It
+exists to make the live path *usable and validatable* — mirroring `replay`'s exact output contract so
+the offline and live paths are visibly the same logic — while staying a thin shell (no alerting,
+scheduling, or batch modes; those are later milestones). Legible errors for an unknown event or a
+missing FRED key keep it honest about failure instead of emitting empty output.
 
 **Files:** `src/fortuneteller/__main__.py` (extend), `tests/test_predict_cli.py` (new, mocked
 sources), `justfile` (add a `predict` recipe)
