@@ -1,16 +1,20 @@
 """Command-line entry point for FortuneTeller.
 
 Subcommands: ``init`` creates the store (M0-05 ``db.init_db``); ``seed`` / ``query-demo`` load and
-read the seed data (M0-07 ``seed``).
+read the seed data (M0-07 ``seed``); ``replay`` runs a fixture through the deterministic core and
+prints the resolved warnings (M0-R-03).
 """
 
 from __future__ import annotations
 
 import argparse
+import sys
 from collections.abc import Callable, Sequence
+from pathlib import Path
 
 from . import db, seed
 from .config import settings
+from .replay import engine as replay_engine
 
 Handler = Callable[[argparse.Namespace], int]
 
@@ -44,6 +48,42 @@ def _query_demo(_args: argparse.Namespace) -> int:
     return 0
 
 
+def _replay(args: argparse.Namespace) -> int:
+    con = db.get_connection()
+    db.init_db(con=con)
+    # replay is meaningless without the reference data, so auto-seed a fresh store (idempotent).
+    if db.count_rows("effect_size_seed", con=con) == 0:
+        seed.load_all(con=con)
+
+    try:
+        fixture = replay_engine.load_fixture(Path(args.fixture))
+        replay_engine.validate_keys(fixture, con=con)
+    except (ValueError, OSError) as exc:
+        print(exc, file=sys.stderr)
+        return 1
+
+    warnings = replay_engine.replay(fixture, con=con)
+    if args.json:
+        sys.stdout.write(replay_engine.warnings_to_json(warnings))
+    else:
+        print(replay_engine.warnings_to_table(warnings))
+
+    if fixture.expect:
+        by_symbol = {w.instrument: w.direction for w in warnings}
+        mismatches = [
+            (symbol, expected, by_symbol.get(symbol))
+            for symbol, expected in fixture.expect.items()
+            if by_symbol.get(symbol) != expected
+        ]
+        if mismatches:
+            for symbol, expected, actual in mismatches:
+                print(
+                    f"expect mismatch: {symbol} expected {expected} got {actual}", file=sys.stderr
+                )
+            return 1
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="fortuneteller", description="FortuneTeller CLI")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -56,6 +96,13 @@ def build_parser() -> argparse.ArgumentParser:
 
     p_demo = sub.add_parser("query-demo", help="print a sample effect-size lookup row")
     p_demo.set_defaults(func=_query_demo)
+
+    p_replay = sub.add_parser("replay", help="run a fixture through the deterministic core")
+    p_replay.add_argument("fixture", help="path to a fixtures/<id>.json file")
+    p_replay.add_argument(
+        "--json", action="store_true", help="emit structured JSON instead of a table"
+    )
+    p_replay.set_defaults(func=_replay)
 
     return parser
 

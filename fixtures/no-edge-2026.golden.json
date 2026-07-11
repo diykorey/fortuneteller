@@ -1,0 +1,13 @@
+[
+  {
+    "instrument": "BDI",
+    "direction": "mixed",
+    "magnitude": "no edge vs market-implied",
+    "half_life": null,
+    "confidence": "low",
+    "event_type": "Freight / shipping disruption",
+    "surprise_sign": "unknown",
+    "as_of": "2026-07-01T00:00:00Z",
+    "disclaimer": "Not investment advice."
+  }
+]

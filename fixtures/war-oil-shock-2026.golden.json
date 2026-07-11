@@ -1,0 +1,35 @@
+[
+  {
+    "instrument": "BRN",
+    "direction": "up",
+    "magnitude": "3-10%",
+    "half_life": "hours_days",
+    "confidence": "high",
+    "event_type": "Major interstate war",
+    "surprise_sign": "unknown",
+    "as_of": "2026-04-02T06:00:00Z",
+    "disclaimer": "Not investment advice."
+  },
+  {
+    "instrument": "GC / XAU",
+    "direction": "up",
+    "magnitude": "1-4%",
+    "half_life": "hours_days",
+    "confidence": "high",
+    "event_type": "Major interstate war",
+    "surprise_sign": "unknown",
+    "as_of": "2026-04-02T06:00:00Z",
+    "disclaimer": "Not investment advice."
+  },
+  {
+    "instrument": "SPY / ES",
+    "direction": "down",
+    "magnitude": "1-5%",
+    "half_life": "hours_days",
+    "confidence": "medium",
+    "event_type": "Major interstate war",
+    "surprise_sign": "unknown",
+    "as_of": "2026-04-02T06:00:00Z",
+    "disclaimer": "Not investment advice."
+  }
+]

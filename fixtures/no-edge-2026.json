@@ -1,0 +1,10 @@
+{
+  "id": "no-edge-2026",
+  "event": {
+    "event_type": "Freight / shipping disruption",
+    "t0": "2026-07-01T00:00:00Z",
+    "scheduled": false,
+    "surprise_sd": null
+  },
+  "instruments": ["BDI"]
+}

@@ -1,0 +1,35 @@
+[
+  {
+    "instrument": "SPY / ES",
+    "direction": "conditional",
+    "magnitude": "0.5-1.5%",
+    "half_life": "minutes_hours",
+    "confidence": "high",
+    "event_type": "CPI / inflation surprise",
+    "surprise_sign": "above",
+    "as_of": "2026-03-12T13:30:00Z",
+    "disclaimer": "Not investment advice."
+  },
+  {
+    "instrument": "GC / XAU",
+    "direction": "conditional",
+    "magnitude": "0.4-1.2%",
+    "half_life": "minutes_hours",
+    "confidence": "medium",
+    "event_type": "CPI / inflation surprise",
+    "surprise_sign": "above",
+    "as_of": "2026-03-12T13:30:00Z",
+    "disclaimer": "Not investment advice."
+  },
+  {
+    "instrument": "BUND / FGBL",
+    "direction": "conditional",
+    "magnitude": "3-10 bps",
+    "half_life": "minutes_hours",
+    "confidence": "high",
+    "event_type": "CPI / inflation surprise",
+    "surprise_sign": "above",
+    "as_of": "2026-03-12T13:30:00Z",
+    "disclaimer": "Not investment advice."
+  }
+]

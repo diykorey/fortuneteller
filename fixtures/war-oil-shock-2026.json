@@ -1,0 +1,13 @@
+{
+  "id": "war-oil-shock-2026",
+  "event": {
+    "event_type": "Major interstate war",
+    "t0": "2026-04-02T06:00:00Z",
+    "scheduled": false,
+    "surprise_sd": null,
+    "vix_t0": 31.0,
+    "rate_regime": "on-hold"
+  },
+  "instruments": ["BRN", "GC / XAU", "SPY / ES"],
+  "expect": { "BRN": "up", "GC / XAU": "up", "SPY / ES": "down" }
+}
