@@ -7,6 +7,15 @@ quantitative layer, and the calibration dataset are documented here.
 > the standalone reference databases are summarized as far as the export tooling allows — see
 > [`data/README.md`](data/README.md) for provenance and known gaps.
 
+## Start here
+
+New to the project? Read these two first — they orient everything else.
+
+| Document | What it covers |
+| --- | --- |
+| **[Business Overview](business-overview.md)** | The product idea: the problem, who it's for, the principles that make it defensible, and the scope discipline. **The "why".** |
+| **[Implementation Status](implementation-status.md)** | What's actually built today, how each piece works stage by stage, and what's deliberately deferred. **The "what's real".** |
+
 ## Design & spec documents
 
 | Document | What it covers |
