@@ -19,13 +19,15 @@ from fortuneteller.models import (
     EventType,
     Instrument,
     NewsSource,
+    SurpriseResponse,
 )
 
-# Each seed CSV, its schema.sql table, and the M0-03 model that types its rows.
+# Each seed CSV, its schema.sql table, and the domain model that types its rows.
 SEED_TABLES: list[tuple[str, str, type[BaseModel]]] = [
     ("event_types.csv", "event_types", EventType),
     ("instruments.csv", "instruments", Instrument),
     ("effect_size_seed.csv", "effect_size_seed", EffectSizeSeed),
+    ("surprise_response.csv", "surprise_response", SurpriseResponse),
     ("news_sources.csv", "news_sources", NewsSource),
     ("countries.csv", "countries", Country),
 ]
@@ -87,7 +89,7 @@ def test_seed_dir_has_no_unexpected_csvs() -> None:
     actual = {path.name for path in settings.seed_dir.glob("*.csv")}
     # when compared to the contracted set
     expected = {filename for filename, _table, _model in SEED_TABLES}
-    # then exactly the five contracted files are present
+    # then exactly the contracted files are present
     assert actual == expected
 
 

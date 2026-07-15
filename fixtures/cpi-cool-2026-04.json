@@ -1,21 +1,21 @@
 {
-  "id": "cpi-hot-2026-03",
+  "id": "cpi-cool-2026-04",
   "event": {
     "event_type": "CPI / inflation surprise",
-    "t0": "2026-03-12T13:30:00Z",
+    "t0": "2026-04-10T12:30:00Z",
     "scheduled": true,
     "consensus": 3.1,
-    "actual": 3.4,
-    "surprise_sd": 1.8,
-    "vix_t0": 17.0,
+    "actual": 2.8,
+    "surprise_sd": -1.6,
+    "vix_t0": 15.0,
     "rate_regime": "on-hold"
   },
   "instruments": ["SPY / ES", "BUND / FGBL", "DXY", "GC / XAU", "VIX"],
   "expect": {
-    "SPY / ES": "down",
-    "BUND / FGBL": "down",
-    "DXY": "up",
-    "GC / XAU": "down",
-    "VIX": "up"
+    "SPY / ES": "up",
+    "BUND / FGBL": "up",
+    "DXY": "down",
+    "GC / XAU": "up",
+    "VIX": "down"
   }
 }

@@ -72,13 +72,13 @@ def test_replay_is_byte_deterministic(seeded_con: duckdb.DuckDBPyConnection) -> 
     assert first == second
 
 
-def test_conditional_cell_stays_conditional(seeded_con: duckdb.DuckDBPyConnection) -> None:
+def test_hot_cpi_conditional_cells_resolve(seeded_con: duckdb.DuckDBPyConnection) -> None:
     # given a hot CPI fixture (surprise_sd > 0) over conditional seed cells
     fixture = _load(FIXTURES_DIR / "cpi-hot-2026-03.json")
     # when it is replayed
     warnings = replay(fixture, con=seeded_con)
-    # then each conditional cell stays "conditional" with an "above" surprise_sign (M1 resolves it)
-    assert all(w.direction == "conditional" for w in warnings)
+    # then the M1 resolver turns each conditional cell into a concrete direction (never "conditional")
+    assert all(w.direction != "conditional" for w in warnings)
     assert all(w.surprise_sign == "above" for w in warnings)
 
 

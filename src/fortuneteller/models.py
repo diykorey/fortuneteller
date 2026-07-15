@@ -94,6 +94,20 @@ class EffectSizeSeed(_DomainModel):
     basis: str | None = None
 
 
+class SurpriseResponse(_DomainModel):
+    """How a scheduled-macro cell responds to an above-consensus surprise (M1-02).
+
+    ``hot_direction`` is the resolved direction on a hot (above-consensus) print;
+    ``regime_sensitive`` (``yes``/``no``) marks cells subject to the "good news is bad news" flip.
+    CPI core slice only — illustrative placeholders, not authoritative.
+    """
+
+    event_type: str
+    instrument: str
+    hot_direction: Direction
+    regime_sensitive: str
+
+
 class NewsSource(_DomainModel):
     rank: int
     source: str

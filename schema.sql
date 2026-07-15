@@ -35,6 +35,16 @@ CREATE TABLE IF NOT EXISTS effect_size_seed (
     PRIMARY KEY (event_type, instrument)
 );
 
+-- Surprise-response mapping (M1-02): the resolved direction on an above-consensus surprise, per
+-- (event_type, instrument). CPI core slice only; illustrative placeholders, not authoritative.
+CREATE TABLE IF NOT EXISTS surprise_response (
+    event_type       TEXT,
+    instrument       TEXT,
+    hot_direction    TEXT,
+    regime_sensitive TEXT,
+    PRIMARY KEY (event_type, instrument)
+);
+
 CREATE TABLE IF NOT EXISTS news_sources (
     rank            INTEGER,
     source          TEXT PRIMARY KEY,

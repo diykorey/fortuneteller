@@ -13,34 +13,44 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Literal
 
 import duckdb
 from pydantic import ValidationError
 
 from .. import db
 from ..models import Confidence, Direction
+from ..predict import resolve_direction, surprise_sign
 from .models import Fixture, Warning
 
 DISCLAIMER = "Not investment advice."
 NO_EDGE_MAGNITUDE = "no edge vs market-implied"
 
 
-def _surprise_sign(surprise_sd: float | None) -> Literal["above", "below", "unknown"]:
-    """Standardized-surprise direction: ``above`` if positive, ``below`` if negative, else unknown."""
-    if surprise_sd is None:
-        return "unknown"
-    if surprise_sd > 0:
-        return "above"
-    if surprise_sd < 0:
-        return "below"
-    return "unknown"
+def _resolve_conditional(
+    event_type: str,
+    symbol: str,
+    sign: str,
+    rate_regime: str | None,
+    surprise_sd: float | None,
+    con: duckdb.DuckDBPyConnection | None,
+) -> Direction:
+    """Resolve a ``conditional`` seed cell for this instance (M1-04 wires in the M1-03 resolver).
+
+    A known surprise (above/below) with a mapping resolves to a concrete up/down; an in-line
+    scheduled print (surprise present but no sign) becomes an honest ``mixed``. Only a genuinely
+    absent surprise (``surprise_sd is None``, e.g. an unscheduled conditional event) keeps the
+    M0-R ``"conditional"`` placeholder — there is nothing to resolve against.
+    """
+    resolved = resolve_direction(event_type, symbol, sign, rate_regime, con=con)
+    if resolved is Direction.mixed and sign == "unknown" and surprise_sd is None:
+        return Direction.conditional
+    return resolved
 
 
 def replay(fixture: Fixture, con: duckdb.DuckDBPyConnection | None = None) -> list[Warning]:
     """Run one fixture through the deterministic core, one ``Warning`` per instrument, in order."""
     event = fixture.event
-    surprise_sign = _surprise_sign(event.surprise_sd)
+    sign = surprise_sign(event.surprise_sd)
     warnings: list[Warning] = []
     for symbol in fixture.instruments:
         cell = db.get_effect_size(event.event_type, symbol, con=con)
@@ -54,23 +64,28 @@ def replay(fixture: Fixture, con: duckdb.DuckDBPyConnection | None = None) -> li
                     half_life=None,
                     confidence=Confidence.low,
                     event_type=event.event_type,
-                    surprise_sign=surprise_sign,
+                    surprise_sign=sign,
                     as_of=event.t0,
                     disclaimer=DISCLAIMER,
                 )
             )
             continue
-        # Found: use the seed direction as-is — concrete for non-conditional cells, "conditional"
-        # for conditional cells (turning that into up/down is M1's enrichment).
+        # A conditional cell resolves against this instance's surprise + regime (M1); a
+        # non-conditional cell keeps its concrete seed direction.
+        direction = cell.direction
+        if cell.direction is Direction.conditional:
+            direction = _resolve_conditional(
+                event.event_type, symbol, sign, event.rate_regime, event.surprise_sd, con
+            )
         warnings.append(
             Warning(
                 instrument=symbol,
-                direction=cell.direction,
+                direction=direction,
                 magnitude=cell.typical_magnitude,
                 half_life=cell.reaction_half_life,
                 confidence=cell.direction_confidence,
                 event_type=event.event_type,
-                surprise_sign=surprise_sign,
+                surprise_sign=sign,
                 as_of=event.t0,
                 disclaimer=DISCLAIMER,
             )
