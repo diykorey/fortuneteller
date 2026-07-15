@@ -16,13 +16,21 @@ from pydantic import BaseModel, ValidationError
 
 from . import db
 from .config import settings
-from .models import Country, EffectSizeSeed, EventType, Instrument, NewsSource
+from .models import (
+    Country,
+    EffectSizeSeed,
+    EventType,
+    Instrument,
+    NewsSource,
+    SurpriseResponse,
+)
 
-# (csv filename, model, table) — the five reference tables loaded at seed time.
+# (csv filename, model, table) — the reference tables loaded at seed time.
 SEED_TABLES: list[tuple[str, type[BaseModel], str]] = [
     ("event_types.csv", EventType, "event_types"),
     ("instruments.csv", Instrument, "instruments"),
     ("effect_size_seed.csv", EffectSizeSeed, "effect_size_seed"),
+    ("surprise_response.csv", SurpriseResponse, "surprise_response"),
     ("news_sources.csv", NewsSource, "news_sources"),
     ("countries.csv", Country, "countries"),
 ]

@@ -1,0 +1,6 @@
+event_type,instrument,hot_direction,regime_sensitive
+CPI / inflation surprise,SPY / ES,down,yes
+CPI / inflation surprise,BUND / FGBL,down,no
+CPI / inflation surprise,DXY,up,yes
+CPI / inflation surprise,GC / XAU,down,no
+CPI / inflation surprise,VIX,up,no

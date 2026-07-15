@@ -51,9 +51,10 @@ def _query_demo(_args: argparse.Namespace) -> int:
 def _replay(args: argparse.Namespace) -> int:
     con = db.get_connection()
     db.init_db(con=con)
-    # replay is meaningless without the reference data, so auto-seed a fresh store (idempotent).
-    if db.count_rows("effect_size_seed", con=con) == 0:
-        seed.load_all(con=con)
+    # replay is meaningless without the reference data, and the load is idempotent, so refresh the
+    # store from the committed CSVs on every run — this keeps it in step with the seed even if the
+    # schema or seed grew since the store was last written.
+    seed.load_all(con=con)
 
     try:
         fixture = replay_engine.load_fixture(Path(args.fixture))
