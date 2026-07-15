@@ -13,6 +13,7 @@ EXPECTED_TABLES = {
     "event_types",
     "instruments",
     "effect_size_seed",
+    "surprise_response",
     "news_sources",
     "countries",
     "event_instances",
@@ -34,7 +35,7 @@ def test_init_db_creates_file_and_tables(tmp_path: Path, monkeypatch: pytest.Mon
     monkeypatch.setattr(settings, "db_path", db_path)
     # when init_db runs against the default (now temp) path
     db.init_db()
-    # then the file exists and holds all eight tables
+    # then the file exists and holds every declared table
     assert db_path.exists()
     con = duckdb.connect(str(db_path))
     tables = {row[0] for row in con.execute("SHOW TABLES").fetchall()}

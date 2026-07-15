@@ -17,6 +17,7 @@ ALL_TABLES = [
     "event_types",
     "instruments",
     "effect_size_seed",
+    "surprise_response",
     "news_sources",
     "countries",
     "event_instances",

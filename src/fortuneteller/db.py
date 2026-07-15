@@ -15,7 +15,7 @@ import duckdb
 from pydantic import BaseModel
 
 from .config import settings
-from .models import EffectSizeSeed, EventType, Instrument
+from .models import EffectSizeSeed, EventType, Instrument, SurpriseResponse
 
 # Identifiers can't be parameter-bound, so any table name we interpolate is checked against this
 # fixed set first — values are always passed as ``?`` parameters.
@@ -24,6 +24,7 @@ _TABLES: frozenset[str] = frozenset(
         "event_types",
         "instruments",
         "effect_size_seed",
+        "surprise_response",
         "news_sources",
         "countries",
         "event_instances",
@@ -98,6 +99,18 @@ def get_effect_size(
         [event_type, instrument],
     )
     return _fetch_one(EffectSizeSeed, cur)
+
+
+def get_surprise_response(
+    event_type: str, instrument: str, con: duckdb.DuckDBPyConnection | None = None
+) -> SurpriseResponse | None:
+    """Return the surprise-response row for this (event_type, instrument) pair, or ``None``."""
+    connection = con if con is not None else get_connection()
+    cur = connection.execute(
+        "SELECT * FROM surprise_response WHERE event_type = ? AND instrument = ?",
+        [event_type, instrument],
+    )
+    return _fetch_one(SurpriseResponse, cur)
 
 
 def first_effect_size(con: duckdb.DuckDBPyConnection | None = None) -> EffectSizeSeed | None:

@@ -1,0 +1,21 @@
+{
+  "id": "cpi-inline-2026-05",
+  "event": {
+    "event_type": "CPI / inflation surprise",
+    "t0": "2026-05-13T12:30:00Z",
+    "scheduled": true,
+    "consensus": 3.0,
+    "actual": 3.0,
+    "surprise_sd": 0.0,
+    "vix_t0": 14.0,
+    "rate_regime": "on-hold"
+  },
+  "instruments": ["SPY / ES", "BUND / FGBL", "DXY", "GC / XAU", "VIX"],
+  "expect": {
+    "SPY / ES": "mixed",
+    "BUND / FGBL": "mixed",
+    "DXY": "mixed",
+    "GC / XAU": "mixed",
+    "VIX": "mixed"
+  }
+}
