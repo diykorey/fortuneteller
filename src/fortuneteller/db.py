@@ -15,7 +15,7 @@ import duckdb
 from pydantic import BaseModel
 
 from .config import settings
-from .models import EffectSizeSeed, Instrument
+from .models import EffectSizeSeed, EventType, Instrument
 
 # Identifiers can't be parameter-bound, so any table name we interpolate is checked against this
 # fixed set first — values are always passed as ``?`` parameters.
@@ -77,6 +77,15 @@ def get_instrument(symbol: str, con: duckdb.DuckDBPyConnection | None = None) ->
     connection = con if con is not None else get_connection()
     cur = connection.execute("SELECT * FROM instruments WHERE symbol = ?", [symbol])
     return _fetch_one(Instrument, cur)
+
+
+def get_event_type(
+    event_type: str, con: duckdb.DuckDBPyConnection | None = None
+) -> EventType | None:
+    """Return the ``EventType`` with this canonical key, or ``None`` if absent."""
+    connection = con if con is not None else get_connection()
+    cur = connection.execute("SELECT * FROM event_types WHERE event_type = ?", [event_type])
+    return _fetch_one(EventType, cur)
 
 
 def get_effect_size(

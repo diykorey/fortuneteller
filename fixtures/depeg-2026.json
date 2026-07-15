@@ -1,0 +1,13 @@
+{
+  "id": "depeg-2026",
+  "event": {
+    "event_type": "Stablecoin / DeFi depeg",
+    "t0": "2026-05-11T14:30:00Z",
+    "scheduled": false,
+    "surprise_sd": null,
+    "vix_t0": 22.0,
+    "rate_regime": "on-hold"
+  },
+  "instruments": ["BTC"],
+  "expect": { "BTC": "down" }
+}

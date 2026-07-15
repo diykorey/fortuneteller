@@ -1,0 +1,13 @@
+{
+  "id": "terror-shock-2026",
+  "event": {
+    "event_type": "Geopolitical escalation / terror",
+    "t0": "2026-06-15T09:15:00Z",
+    "scheduled": false,
+    "surprise_sd": null,
+    "vix_t0": 18.0,
+    "rate_regime": "on-hold"
+  },
+  "instruments": ["VIX"],
+  "expect": { "VIX": "up" }
+}

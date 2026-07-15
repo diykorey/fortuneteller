@@ -1,0 +1,13 @@
+[
+  {
+    "instrument": "BTC",
+    "direction": "down",
+    "magnitude": "2-10%",
+    "half_life": "seconds_minutes",
+    "confidence": "medium",
+    "event_type": "Stablecoin / DeFi depeg",
+    "surprise_sign": "unknown",
+    "as_of": "2026-05-11T14:30:00Z",
+    "disclaimer": "Not investment advice."
+  }
+]

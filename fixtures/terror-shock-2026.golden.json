@@ -1,0 +1,13 @@
+[
+  {
+    "instrument": "VIX",
+    "direction": "up",
+    "magnitude": "5-20%",
+    "half_life": "seconds_minutes",
+    "confidence": "high",
+    "event_type": "Geopolitical escalation / terror",
+    "surprise_sign": "unknown",
+    "as_of": "2026-06-15T09:15:00Z",
+    "disclaimer": "Not investment advice."
+  }
+]
