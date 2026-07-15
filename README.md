@@ -41,6 +41,8 @@ north-star [architecture sketch](docs/architecture.md).
 
 Start at [`docs/`](docs/README.md). Highlights:
 
+- **Orientation:** [Business Overview](docs/business-overview.md) (the idea) ·
+  [Implementation Status](docs/implementation-status.md) (what's built + how it works)
 - **Architecture:** [MVP — build-now](docs/mvp-architecture.md) · [north-star sketch](docs/architecture.md)
 - **Specs:** [Detection & Calibration](docs/detection-and-calibration.md) ·
   [Event Polarity & Classifier Prompts](docs/event-polarity-and-classifier-prompts.md) ·
@@ -60,11 +62,14 @@ data/seed/       # committed seed CSVs the embedded store loads
 
 ## Status
 
-Bootstrapping, **measurable-spine first**. The repo holds the design docs + seed data (mirrored from
-Notion) and the **M0-01 project skeleton** (uv / DuckDB / Pydantic). The spine is built against a
-narrow [provable core](docs/mvp-architecture.md) — scheduled-macro events × ~5 instruments,
-calibrated against returns — before the causal-chain layer and broader coverage are added; see the
-[roadmap](docs/roadmap.md) and [M0 tickets](docs/m0-tickets.md).
+Building the **measurable spine first**. Landed so far: the full **M0** data spine (uv / DuckDB /
+Pydantic / seed loader / CLI), the **M0-R** deterministic replay harness, and the **M1** offline
+prediction core (standardized surprise + the conditional-direction resolver, wired into replay for
+the CPI slice). The remaining M1 live path (FRED + a free econ calendar) and calibration (M2+) are
+next. The spine is built against a narrow [provable core](docs/mvp-architecture.md) —
+scheduled-macro events × ~5 instruments, calibrated against returns — before the causal-chain layer
+and broader coverage are added. Full detail: [Implementation Status](docs/implementation-status.md);
+plan: [roadmap](docs/roadmap.md).
 
 > **Data provenance:** narrative specs are reproduced in full. The standalone reference databases
 > are partial (read-only Notion export limits) — each table states its completeness. See
