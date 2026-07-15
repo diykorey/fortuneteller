@@ -17,6 +17,7 @@ quantitative layer, and the calibration dataset are documented here.
 | [Event Polarity & Classifier Prompts](event-polarity-and-classifier-prompts.md) | Polarity of each event type + the three LLM classifier prompts |
 | [News-Source Stack & Coverage](news-source-stack.md) | Ranked source list, coverage by event, coverage by market group, gap analysis |
 | [Event-Study Calibration Dataset](calibration-dataset.md) | Data model, methodology, Postgres DDL, calibration query, pitfalls |
+| [Standardized Surprise](standardized-surprise.md) | What "surprise" means, actual−consensus → surprise_sd, the above/below/unknown sign, and its place as pipeline stage 5 |
 | [News Source Coverage & Gaps](news-source-coverage-and-gaps.md) | Standalone coverage check across the taxonomy and platform list |
 
 ## Planning
