@@ -19,9 +19,9 @@ No detection, no real calibration (still seed priors). This is the demoable prot
 
 **Prerequisites (must land first).**
 - **M0-01…09** — scaffold + data spine (`uv`, models, DuckDB, seed loader, CI). **Done / merged.**
-- **M0-R-01…05** — the [replay harness](m0-r-tickets.md) (`Fixture` / `Warning` models, `replay()`
-  core, `replay` CLI, synthetic fixtures + goldens, golden/intent tests). **Specified but not yet
-  built** — there is no `src/fortuneteller/replay/` or `fixtures/` directory yet. **M0-R must be
+- **M0-R-01…05** — the [replay harness](m0-r-tickets.md) (`Episode` / `Warning` models, `replay()`
+  core, `replay` CLI, synthetic episodes + goldens, golden/intent tests). **Specified but not yet
+  built** — there is no `src/fortuneteller/replay/` or `episodes/` directory yet. **M0-R must be
   implemented before any M1 ticket.** M1 *enriches* this harness; it does not restate it.
 
 **Scope discipline (the provable core).** M1 calibrates exactly one slice:
@@ -45,14 +45,14 @@ resolver must be a **pure, offline, deterministic function** so the replay harne
 byte-for-byte guarantee.
 
 **Determinism rule (the property the loop rests on).** No `now()` / randomness in the prediction
-core; `as_of` comes from the fixture's `t0`; warnings are ordered by the fixture's instrument order;
+core; `as_of` comes from the episode's `t0`; warnings are ordered by the episode's instrument order;
 seed data is committed. Same inputs → identical bytes. Networked code lives **only** in
 `src/fortuneteller/live/` and is **never imported by `src/fortuneteller/replay/`**.
 
 **Definition of done for M1.**
-1. `uv run fortuneteller replay fixtures/cpi-hot-2026-03.json --json` resolves **concrete**
+1. `uv run fortuneteller replay episodes/cpi-hot-2026-03.json --json` resolves **concrete**
    directions for the conditional CPI cells (no longer `"conditional"`); exit 0.
-2. `uv run pytest tests/test_replay.py` passes — every CPI fixture matches its golden and every
+2. `uv run pytest tests/test_replay.py` passes — every CPI episode matches its golden and every
    `expect` direction holds.
 3. `uv run fortuneteller predict --event "CPI / inflation surprise" --release-date <date>` runs the
    same prediction core over a live-fetched release (optional live-validation, not the dev gate).
@@ -66,7 +66,7 @@ seed data is committed. Same inputs → identical bytes. Networked code lives **
 
 ## M1-01 — Surprise computation (stage 5)
 
-**Depends on:** M0-R-01 (`FixtureEvent`)
+**Depends on:** M0-R-01 (`EpisodeEvent`)
 
 **Goal:** A pure surprise module (`compute_surprise` / `standardize` / `surprise_sign`) that turns a
 release's `consensus` / `actual` into a standardized `surprise_sd` and an `above` / `below` /
@@ -198,11 +198,11 @@ engine still emits `"conditional"` and the prototype cannot demo a resolved warn
 integration point — it connects the resolver to the existing engine without disturbing the
 non-conditional and "no edge" paths, and it must preserve instrument ordering, `as_of`,
 `surprise_sign` passthrough, and byte-identical reruns so the fast loop's core guarantee holds. It
-regenerates only the single golden it changes; the new fixtures land in M1-05, keeping this diff
+regenerates only the single golden it changes; the new episodes land in M1-05, keeping this diff
 small and reviewable.
 
 **Files:** `src/fortuneteller/replay/engine.py` (extend), `tests/test_engine_resolution.py` (new),
-`fixtures/cpi-hot-2026-03.golden.json` (regenerate)
+`episodes/cpi-hot-2026-03.golden.json` (regenerate)
 
 **Spec:**
 - For a `conditional` seed cell, when `surprise_sign` is known (`"above"` / `"below"`), call
@@ -210,11 +210,11 @@ small and reviewable.
   concrete `up` / `down` on the `Warning`. When `surprise_sign == "unknown"` or the resolver returns
   `mixed`, keep the M0-R behaviour (`direction` stays `"conditional"` / `mixed`).
 - Non-conditional cells and the "no edge" path are unchanged.
-- Preserve every determinism guarantee: ordering by `fixture.instruments`, `as_of = fixture.t0`,
+- Preserve every determinism guarantee: ordering by `episode.instruments`, `as_of = episode.t0`,
   `surprise_sign` passthrough, no clock / randomness, byte-identical reruns.
 - **Golden sequencing:** this change re-points only the existing `cpi-hot-2026-03` golden (was
   `"conditional"`). Regenerate that one golden here so `tests/test_replay.py` stays green; the two
-  *new* CPI fixtures + their goldens + all `expect` blocks land in M1-05.
+  *new* CPI episodes + their goldens + all `expect` blocks land in M1-05.
 
 **Acceptance criteria:**
 - [ ] a focused test (`tests/test_engine_resolution.py`) asserts `replay()` resolves the
@@ -226,55 +226,55 @@ small and reviewable.
 
 **Out of scope:** live data (M1-06); calibration / confidence (M2 / M3).
 
-## M1-05 — CPI fixtures + goldens + intent `expect`s
+## M1-05 — CPI episodes + goldens + intent `expect`s
 
-**Depends on:** M1-04, M0-R-04 / M0-R-05 (fixture set + golden/intent test harness)
+**Depends on:** M1-04, M0-R-04 / M0-R-05 (episode set + golden/intent test harness)
 
-**Goal:** Three CPI fixtures (hot / cool / inline) over the five core instruments with resolved
+**Goal:** Three CPI episodes (hot / cool / inline) over the five core instruments with resolved
 `expect` directions and matching goldens, so the resolved behaviour is asserted and regressions can't
 be silently blessed.
 
 **Context:** Resolution logic is only trustworthy once tests fail when it drifts. M0-R deferred the
 `expect` directions because resolution didn't exist yet; now it does, so this ticket fills them in and
 adds cool / inline cases to cover both surprise signs and the no-edge path. The load-bearing property
-is that `expect` is fixture *metadata*, kept separate from the goldens — a wrong-direction regression
+is that `expect` is episode *metadata*, kept separate from the goldens — a wrong-direction regression
 fails the intent test independently and cannot be hidden by regenerating a golden. After this lands
 the offline prototype is **demoable**: `replay` turns conditional CPI cells into concrete, asserted
 directions.
 
-**Files:** `fixtures/cpi-hot-2026-03.json` (add `expect`), `fixtures/cpi-cool-2026-04.json`,
-`fixtures/cpi-inline-2026-05.json`, and matching `fixtures/*.golden.json`
+**Files:** `episodes/cpi-hot-2026-03.json` (add `expect`), `episodes/cpi-cool-2026-04.json`,
+`episodes/cpi-inline-2026-05.json`, and matching `episodes/*.golden.json`
 
 **Spec:**
-- Three CPI fixtures over the five core instruments (`SPY / ES`, `BUND / FGBL`, `DXY`, `GC / XAU`,
+- Three CPI episodes over the five core instruments (`SPY / ES`, `BUND / FGBL`, `DXY`, `GC / XAU`,
   `VIX`):
   - `cpi-hot-2026-03` — `surprise_sd > 0`; add resolved `expect`
     (`SPY / ES`→down, `DXY`→up, `GC / XAU`→down, `BUND / FGBL`→down, `VIX`→up).
   - `cpi-cool-2026-04` — `surprise_sd < 0`; `expect` = the inverses.
   - `cpi-inline-2026-05` — `surprise_sd ≈ 0`; `expect` = all `mixed` (no edge).
-- Adding `expect` to `cpi-hot-2026-03.json` does **not** change its golden (`expect` is fixture
+- Adding `expect` to `cpi-hot-2026-03.json` does **not** change its golden (`expect` is episode
   metadata, not `replay()` output — that golden was settled in M1-04). Generate the goldens for the
-  two **new** fixtures with `--update-golden` (M0-R-05), then read the git diff to confirm intent. The
-  existing parametrized `tests/test_replay.py` auto-covers the new fixtures and their `expect`s.
+  two **new** episodes with `--update-golden` (M0-R-05), then read the git diff to confirm intent. The
+  existing parametrized `tests/test_replay.py` auto-covers the new episodes and their `expect`s.
 
 **Acceptance criteria:**
-- [ ] each fixture validates against `Fixture`; every `event_type` / instrument key exists in the
+- [ ] each episode validates against `Episode`; every `event_type` / instrument key exists in the
       seed CSVs.
 - [ ] `uv run pytest tests/test_replay.py` is green — every CPI golden matches and every `expect`
       direction holds; a wrong-direction change still fails the intent test (cannot be silently
       blessed).
 
-**Out of scope:** recorded real events (M2); non-CPI fixtures.
+**Out of scope:** recorded real events (M2); non-CPI episodes.
 
 ## M1-06 — Free live path: FRED + econ-calendar connector
 
-**Depends on:** M1-01 (surprise), M0-R-01 (`Fixture` / `FixtureEvent`)
+**Depends on:** M1-01 (surprise), M0-R-01 (`Episode` / `EpisodeEvent`)
 
 **Goal:** A quarantined `live/` package that fetches a real CPI release (FRED `actual` +
-free-calendar `consensus`) and builds a `Fixture` that replays through the *identical* engine —
+free-calendar `consensus`) and builds an `Episode` that replays through the *identical* engine —
 without `replay/` ever importing `live/`.
 
-**Context:** Everything through M1-05 runs on recorded fixtures; this ticket proves the same
+**Context:** Everything through M1-05 runs on recorded episodes; this ticket proves the same
 prediction core works on a real release, which is what makes M1 a credible prototype rather than a
 closed loop over its own test data. It reuses M1-01's surprise math behind a network boundary so the
 live and offline paths share one source of truth. The hard rule — nothing in `live/` is imported by
@@ -290,16 +290,16 @@ connector stays free-tier (FRED + a free econ calendar) per the MVP's no-paid-da
   (Trading Economics free tier / Investing.com, [mvp-architecture § data acquisition](mvp-architecture.md));
   small typed functions over `httpx`. API keys from `pydantic-settings` (`FT_FRED_API_KEY`), never
   hard-coded.
-- `build.py`: `build_cpi_event(release_date) -> Fixture` — pull the release + the trailing history,
+- `build.py`: `build_cpi_event(release_date) -> Episode` — pull the release + the trailing history,
   compute `surprise` / `surprise_sd` via M1-01, set `scheduled=True`, `rate_regime`, and the five
-  core `instruments`; return a `Fixture` that replays through the **identical** engine.
+  core `instruments`; return an `Episode` that replays through the **identical** engine.
 - **Network isolation:** nothing in `live/` is imported by `replay/`; the deterministic harness stays
   offline. Errors are legible: missing API key, network failure, or unknown event each raise a
   message naming the cause.
 
 **Acceptance criteria:**
 - [ ] with recorded/mocked HTTP, `build_cpi_event` for a known release yields the expected
-      `FixtureEvent` (surprise sign + regime) and a five-instrument `Fixture`.
+      `EpisodeEvent` (surprise sign + regime) and a five-instrument `Episode`.
 - [ ] `tests/test_live.py` runs with **no live network** (mocked transport); a missing API key
       surfaces a legible error.
 - [ ] ruff + mypy strict pass; `replay/` has no import of `live/`.
@@ -344,8 +344,8 @@ sources), `justfile` (add a `predict` recipe)
 ### Execution summary
 
 Implement M1-01 → M1-02 → M1-03 → M1-04 → M1-05 to enrich the deterministic core (surprise →
-conditional resolution → resolved CPI fixtures), then M1-06 → M1-07 for the live path. After M1-05 is
-green the prototype is **demoable offline**: `replay` turns the CPI fixture's conditional cells into
+conditional resolution → resolved CPI episodes), then M1-06 → M1-07 for the live path. After M1-05 is
+green the prototype is **demoable offline**: `replay` turns the CPI episode's conditional cells into
 concrete, asserted directions, deterministically. After M1-07, the same logic runs over a live FRED +
 econ-calendar CPI release as optional validation. M1 is done when `just check` is green and both the
 `replay` and `predict` paths produce the resolved CPI warning. Calibration (M2), confidence (M3), and

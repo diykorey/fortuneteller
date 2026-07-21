@@ -74,7 +74,7 @@ required and runs from the first push.
 - .gitignore: `.venv/`, `__pycache__/`, `*.duckdb`, `.pytest_cache/`, `.mypy_cache/`, `.ruff_cache/`.
 - README.md: quickstart (uv sync, uv run fortuneteller init, seed, query-demo).
 - justfile: recipes `setup`, `test`, `lint`, `fmt`, `typecheck`, `check` (lint+type+test), `init`,
-  `seed`, `replay <fixture>` — the canonical command surface so commands aren't
+  `seed`, `replay <episode>` — the canonical command surface so commands aren't
   re-derived each session.
 
 **Acceptance criteria:**

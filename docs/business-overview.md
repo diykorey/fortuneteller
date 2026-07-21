@@ -79,7 +79,7 @@ broad system emitting uncalibrated confidence is worse than a narrow one that's 
 build order is deliberate:
 
 - **Prove one slice first.** The "provable core" is **scheduled-macro events (CPI / NFP / Fed) × ~5
-  liquid instruments** (SPY/ES, a rates benchmark, DXY, Gold, VIX), calibrated on recorded fixtures
+  liquid instruments** (SPY/ES, a rates benchmark, DXY, Gold, VIX), calibrated on recorded episodes
   and then a **free** data stack (FRED + a free econ calendar + yfinance/Stooq).
 - **Everything else is post-proof.** The full 31-event taxonomy, ~55 instruments, 132 platforms,
   unscheduled detection, and paid/tick data are deferred until the core beats — or honestly fails to

@@ -7,7 +7,7 @@
 
 ## The one decision
 
-**Python-first, single process, DuckDB, fixture-driven.** No broker, no services, no containers, no
+**Python-first, single process, DuckDB, episode-driven.** No broker, no services, no containers, no
 ORM, no web server — until a concrete trigger demands one. This is the fastest thing to build and
 iterate on, and it maps 1:1 onto the north-star so nothing is wasted.
 
@@ -36,7 +36,7 @@ system. The north-star's 10 stages become functions in one process:
 
 | North-star (architecture.md) | MVP reality |
 | --- | --- |
-| Kafka event bus / replay log | a Python list + the `fixtures/` directory |
+| Kafka event bus / replay log | a Python list + the `episodes/` directory |
 | Stage = a streaming service | stage = a pure function in `src/fortuneteller/` |
 | Postgres + Timescale + Redis | one DuckDB file + committed seed CSVs |
 | Flink/Kafka Streams corroboration | (deferred to M4) plain functions over a window |
@@ -44,14 +44,14 @@ system. The north-star's 10 stages become functions in one process:
 | Delivery service (push/email/WS) | `print` / file, then FastAPI only at M6 |
 
 ```
-fixture / event  ->  surprise()  ->  predict()  ->  calibrate()  ->  warn()
+episode / event  ->  surprise()  ->  predict()  ->  calibrate()  ->  warn()
                      (stage 5)       (stage 6)       (stage 7)       (stage 8)
                           \______ pure functions, one process ______/
-                                   data: DuckDB + fixtures (local, committed)
+                                   data: DuckDB + episodes (local, committed)
 ```
 
 The deterministic middle (stages 5–8) is the [replay harness](superpowers/specs/2026-06-22-replay-harness-fast-dev-loop-design.md):
-`replay(fixture) -> list[Warning]`. Detection (stages 1–4) is added as ordinary functions/modules
+`replay(episode) -> list[Warning]`. Detection (stages 1–4) is added as ordinary functions/modules
 at M4 — it does not exist in the MVP.
 
 ## Stack (M0–M3)
@@ -59,7 +59,7 @@ at M4 — it does not exist in the MVP.
 - **Language/runtime:** Python 3.12, one process. `uv` for env/deps/run.
 - **Store:** DuckDB single file + Polars for CSV/Parquet IO. Schema in `schema.sql`. No ORM —
   Pydantic models + a thin SQL helper.
-- **Data:** committed seed CSVs (`data/seed/`) + JSON `fixtures/`. Zero credentials to boot.
+- **Data:** committed seed CSVs (`data/seed/`) + JSON `episodes/`. Zero credentials to boot.
 - **LLM classify (M1+):** one Anthropic API call behind `instructor` → validated Pydantic JSON.
   Use the **single unified** classifier prompt, not the three split prompts, until precision forces
   a split.
@@ -74,7 +74,7 @@ at M4 — it does not exist in the MVP.
 What stalls a project like this is *getting data*, not writing the pipeline. The provable core is
 chosen precisely so its data is cheap and free:
 
-1. **Fixtures first.** A handful of recorded past releases (the replay harness) prove the mechanics
+1. **Episodes first.** A handful of recorded past releases (the replay harness) prove the mechanics
    with **zero live data and zero credentials**.
 2. **Free backfill for the core only.** Consensus/actuals from **FRED** + a free econ calendar
    (Trading Economics free tier / Investing.com); daily and 1-minute bars from **yfinance / Stooq /

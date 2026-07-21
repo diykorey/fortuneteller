@@ -28,7 +28,7 @@ is a list; the store is one DuckDB file + committed seed CSVs.
 ## Scope discipline — the provable core
 
 The MVP calibrates exactly one slice before widening anything: **scheduled-macro events (CPI / NFP /
-Fed) × ~5 liquid instruments** (SPY/ES, a rates benchmark, DXY, Gold, VIX), on recorded fixtures then
+Fed) × ~5 liquid instruments** (SPY/ES, a rates benchmark, DXY, Gold, VIX), on recorded episodes then
 a free data stack (FRED + a free econ calendar + yfinance/Stooq). The full 31-event taxonomy, 55
 instruments, 132 platforms, unscheduled detection, and paid/tick data are **post-proof** — every data
 table says so. Do not implement against the full breadth until the core is proven.
@@ -62,18 +62,20 @@ CI (`.github/workflows/ci.yml`) runs ruff + mypy + pytest on every push, but **s
 - **The data spine:** Pydantic v2 models + a thin SQL helper over DuckDB — **no ORM**. Schema is plain
   SQL in `schema.sql` so the later Postgres migration stays cheap. Reference tables are **config the
   pipeline reads**, committed as seed CSVs in `data/seed/` (and documented in `docs/data/`).
-- **The fast-dev loop (replay harness):** the spine of iteration. A fixture (`fixtures/*.json`)
+- **The fast-dev loop (replay harness):** the spine of iteration. An episode (`episodes/*.json`)
   carries a pre-detected event; `replay()` runs the deterministic core (stages 5–8: surprise →
   effect-size lookup → `Warning`) and golden files assert the output byte-for-byte. It is **offline
-  and deterministic** — `as_of` comes from the fixture `t0`, never `now()`; no randomness. Iterate
-  logic against fixtures instead of waiting for live data. Detection (stages 1–4) is out of scope
+  and deterministic** — `as_of` comes from the episode `t0`, never `now()`; no randomness. Iterate
+  logic against episodes instead of waiting for live data. Detection (stages 1–4) is out of scope
   until M4. Design: `docs/superpowers/specs/2026-06-22-replay-harness-fast-dev-loop-design.md`.
 
 ## Conventions & gotchas
 
 - **Canonical keys are load-bearing.** `event_type` strings and instrument **symbols** must match
   `data/seed/event_types.csv` and `data/seed/instruments.csv` exactly (e.g. `CPI / inflation surprise`,
-  `SPY / ES`). Naming drift silently breaks joins, fixtures, and the `query-demo` lookup.
+  `SPY / ES`). Naming drift silently breaks joins, episodes, and the `query-demo` lookup.
+- **Replay inputs are episodes** (`episodes/*.json`); the word "fixture" is reserved for pytest
+  fixtures.
 - **Enum casing:** the M0-03 models / seed CSVs use lowercase enum values (`positive`, `both`, `up`,
   `conditional`, `equity_index`); `docs/calibration-dataset.md`'s DDL uses capitalized (`Positive`,
   `Up`). Reconcile to one casing when implementing M2.
