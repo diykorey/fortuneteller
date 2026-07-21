@@ -48,9 +48,7 @@ def test_golden_matches(
 
 
 @pytest.mark.parametrize("episode_path", EPISODE_PATHS, ids=EPISODE_IDS)
-def test_intent_directions(
-    episode_path: Path, seeded_con: duckdb.DuckDBPyConnection
-) -> None:
+def test_intent_directions(episode_path: Path, seeded_con: duckdb.DuckDBPyConnection) -> None:
     # given an episode that declares expected directions
     episode = _load(episode_path)
     if not episode.expect:

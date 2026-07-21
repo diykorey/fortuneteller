@@ -131,12 +131,8 @@ def warnings_to_table(warnings: list[Warning]) -> str:
         ]
         for w in warnings
     ]
-    widths = [
-        max([len(headers[i]), *(len(row[i]) for row in rows)]) for i in range(len(headers))
-    ]
+    widths = [max([len(headers[i]), *(len(row[i]) for row in rows)]) for i in range(len(headers))]
     lines = ["  ".join(header.ljust(widths[i]) for i, header in enumerate(headers))]
     lines.append("  ".join("-" * widths[i] for i in range(len(headers))))
-    lines.extend(
-        "  ".join(cell.ljust(widths[i]) for i, cell in enumerate(row)) for row in rows
-    )
+    lines.extend("  ".join(cell.ljust(widths[i]) for i, cell in enumerate(row)) for row in rows)
     return "\n".join(lines)
