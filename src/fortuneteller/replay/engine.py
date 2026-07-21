@@ -1,11 +1,11 @@
 """The ``replay()`` core plus the thin IO helpers the CLI wraps it in (M0-R-02).
 
-``replay`` is a pure function: a fixture in, a list of :class:`Warning` out, over the read-only
+``replay`` is a pure function: an episode in, a list of :class:`Warning` out, over the read-only
 seeded DuckDB. It looks up each ``(event_type, instrument)`` cell in ``effect_size_seed`` — a
 non-conditional cell resolves to its concrete seed direction, a ``conditional`` cell stays
 ``"conditional"`` (M1 resolves it), and a missing cell yields an honest "no edge" warning instead of
-raising. ``surprise_sign`` and ``as_of`` come straight from the fixture, so the same inputs always
-serialize to identical bytes. Everything below the core (``load_fixture`` / ``validate_keys`` /
+raising. ``surprise_sign`` and ``as_of`` come straight from the episode, so the same inputs always
+serialize to identical bytes. Everything below the core (``load_episode`` / ``validate_keys`` /
 the serializers) is the surface the ``replay`` CLI subcommand calls.
 """
 
@@ -20,7 +20,7 @@ from pydantic import ValidationError
 from .. import db
 from ..models import Confidence, Direction
 from ..predict import resolve_direction, surprise_sign
-from .models import Fixture, Warning
+from .models import Episode, Warning
 
 DISCLAIMER = "Not investment advice."
 NO_EDGE_MAGNITUDE = "no edge vs market-implied"
@@ -47,12 +47,12 @@ def _resolve_conditional(
     return resolved
 
 
-def replay(fixture: Fixture, con: duckdb.DuckDBPyConnection | None = None) -> list[Warning]:
-    """Run one fixture through the deterministic core, one ``Warning`` per instrument, in order."""
-    event = fixture.event
+def replay(episode: Episode, con: duckdb.DuckDBPyConnection | None = None) -> list[Warning]:
+    """Run one episode through the deterministic core, one ``Warning`` per instrument, in order."""
+    event = episode.event
     sign = surprise_sign(event.surprise_sd)
     warnings: list[Warning] = []
-    for symbol in fixture.instruments:
+    for symbol in episode.instruments:
         cell = db.get_effect_size(event.event_type, symbol, con=con)
         if cell is None:
             # No seed cell for this pair — emit an honest "no edge" warning, never raise.
@@ -93,21 +93,21 @@ def replay(fixture: Fixture, con: duckdb.DuckDBPyConnection | None = None) -> li
     return warnings
 
 
-def load_fixture(path: Path) -> Fixture:
-    """Parse + validate a fixture file, raising a legible error naming the file on failure."""
+def load_episode(path: Path) -> Episode:
+    """Parse + validate an episode file, raising a legible error naming the file on failure."""
     try:
-        return Fixture.model_validate_json(path.read_text())
+        return Episode.model_validate_json(path.read_text())
     except ValidationError as exc:
-        raise ValueError(f"invalid fixture {path.name}: {exc}") from exc
+        raise ValueError(f"invalid episode {path.name}: {exc}") from exc
 
 
-def validate_keys(fixture: Fixture, con: duckdb.DuckDBPyConnection | None = None) -> None:
-    """Reject fixtures whose event_type / instruments aren't canonical seed keys (vs a missing cell)."""
-    if db.get_event_type(fixture.event.event_type, con=con) is None:
+def validate_keys(episode: Episode, con: duckdb.DuckDBPyConnection | None = None) -> None:
+    """Reject episodes whose event_type / instruments aren't canonical seed keys (vs a missing cell)."""
+    if db.get_event_type(episode.event.event_type, con=con) is None:
         raise ValueError(
-            f"unknown event_type {fixture.event.event_type!r}: not in data/seed/event_types.csv"
+            f"unknown event_type {episode.event.event_type!r}: not in data/seed/event_types.csv"
         )
-    for symbol in fixture.instruments:
+    for symbol in episode.instruments:
         if db.get_instrument(symbol, con=con) is None:
             raise ValueError(f"unknown instrument {symbol!r}: not in data/seed/instruments.csv")
 

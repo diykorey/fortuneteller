@@ -1,8 +1,8 @@
-"""Fixture & Warning models — the typed contract for a replayable scenario and its output (M0-R-01).
+"""Episode & Warning models — the typed contract for a replayable scenario and its output (M0-R-01).
 
 Reuses the M0-03 enums (``Direction`` / ``HalfLife`` / ``Confidence``) rather than redefining them,
 so the harness reads the same canonical vocabulary as the seed data. Every model forbids unknown
-fields, so a malformed fixture fails loudly naming the offending key.
+fields, so a malformed episode fails loudly naming the offending key.
 """
 
 from __future__ import annotations
@@ -19,7 +19,7 @@ class _ReplayModel(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
 
-class FixtureEvent(_ReplayModel):
+class EpisodeEvent(_ReplayModel):
     """An already-detected, classified event plus the regime context the core needs."""
 
     event_type: str
@@ -32,11 +32,11 @@ class FixtureEvent(_ReplayModel):
     rate_regime: str | None = None
 
 
-class Fixture(_ReplayModel):
+class Episode(_ReplayModel):
     """One replayable scenario: an event, the instruments to predict, and optional intent."""
 
     id: str
-    event: FixtureEvent
+    event: EpisodeEvent
     instruments: list[str]
     expect: dict[str, Direction] | None = None
 
@@ -46,7 +46,7 @@ class Warning(_ReplayModel):
 
     ``direction`` is ``"conditional"`` (not a concrete up/down) for conditional cells at M0-R;
     ``surprise_sign`` carries the standardized-surprise direction. ``as_of`` is set from the
-    fixture's ``t0``, never ``now()`` — this is what keeps replay byte-for-byte deterministic.
+    episode's ``t0``, never ``now()`` — this is what keeps replay byte-for-byte deterministic.
     """
 
     instrument: str
