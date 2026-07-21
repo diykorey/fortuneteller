@@ -9,7 +9,7 @@
 | Milestone | Scope | Status |
 | --- | --- | --- |
 | **M0** — Scaffold & data spine | uv/CI, Pydantic models, DuckDB schema, seed loader, CLI | ✅ Built & merged |
-| **M0-R** — Replay harness | Deterministic offline fixture-replay of the prediction core | ✅ Built & merged |
+| **M0-R** — Replay harness | Deterministic offline episode-replay of the prediction core | ✅ Built & merged |
 | **M1 (offline core)** — Thin vertical slice | Surprise computation + conditional-direction resolver wired into replay | ✅ Built (in review) |
 | **M1 (live path)** — FRED + econ calendar | `predict` CLI over a real CPI release | ⛔ Not built (optional validation) |
 | **M2+** — Calibration, confidence, detection, product | Measured effect sizes, calibrated confidence, unscheduled events | ⛔ Not built |
@@ -54,18 +54,18 @@ calibration replaces them with measured numbers.)
 ## Layer 2 — The replay harness (M0-R)
 
 **The fast dev loop and the spine of iteration.** It replays a canned event through the
-deterministic core so prediction logic is built and verified against fixtures instead of waiting for
+deterministic core so prediction logic is built and verified against episodes instead of waiting for
 live data. Full rationale: [Replay-harness design](superpowers/specs/2026-06-22-replay-harness-fast-dev-loop-design.md).
 
 | Piece | Role |
 | --- | --- |
-| `src/fortuneteller/replay/models.py` | `Fixture` / `FixtureEvent` (an already-detected event + regime context) and `Warning` (the structured, assertable output). |
-| `src/fortuneteller/replay/engine.py` | `replay(fixture) -> list[Warning]` — the pure core; plus `load_fixture`, `validate_keys`, and the JSON/table serializers the CLI wraps. |
-| `fixtures/*.json` | Committed scenarios (war, depeg, terror, CPI, no-edge). |
-| `fixtures/*.golden.json` | The exact expected `replay()` output for each fixture, asserted byte-for-byte. |
+| `src/fortuneteller/replay/models.py` | `Episode` / `EpisodeEvent` (an already-detected event + regime context) and `Warning` (the structured, assertable output). |
+| `src/fortuneteller/replay/engine.py` | `replay(episode) -> list[Warning]` — the pure core; plus `load_episode`, `validate_keys`, and the JSON/table serializers the CLI wraps. |
+| `episodes/*.json` | Committed scenarios (war, depeg, terror, CPI, no-edge). |
+| `episodes/*.golden.json` | The exact expected `replay()` output for each episode, asserted byte-for-byte. |
 | `tests/test_replay.py` | Parametrized golden + intent tests; `--update-golden` / `FT_UPDATE_GOLDEN=1` regenerates snapshots. |
 
-**How `replay()` works.** For each instrument in the fixture, it looks up the `effect_size_seed`
+**How `replay()` works.** For each instrument in the episode, it looks up the `effect_size_seed`
 cell for `(event_type, instrument)`:
 
 - **Found, concrete direction** (e.g. war → Brent `up`) → emit that direction.
@@ -74,7 +74,7 @@ cell for `(event_type, instrument)`:
 - **Missing** → emit an honest `"no edge vs market-implied"` warning, never a crash.
 
 The **determinism guarantee** is the property the whole loop rests on: `as_of` comes from the
-fixture's `t0` (never `now()`), warnings are ordered by the fixture's instrument list, seed data is
+episode's `t0` (never `now()`), warnings are ordered by the episode's instrument list, seed data is
 committed, and there is no randomness. **Same inputs → identical bytes**, which is exactly what makes
 golden-file testing possible and gives a fast build → verify → read-diff cycle with no live data or
 credentials.
@@ -129,10 +129,10 @@ byte-identical.
 
 ## End-to-end: a worked example
 
-Running the hot-CPI fixture through the built pipeline:
+Running the hot-CPI episode through the built pipeline:
 
 ```bash
-uv run fortuneteller replay fixtures/cpi-hot-2026-03.json
+uv run fortuneteller replay episodes/cpi-hot-2026-03.json
 ```
 
 ```
@@ -145,19 +145,19 @@ GC / XAU     down       0.4-1.2%   minutes_hours    medium      above
 VIX          up         3-15%      seconds_minutes  medium      above
 ```
 
-What happened, stage by stage: the fixture supplies a CPI release with `actual` above `consensus`
+What happened, stage by stage: the episode supplies a CPI release with `actual` above `consensus`
 (**stage 5** → `surprise_sd = 1.8` → sign `above`); for each instrument the engine looks up the
 `effect_size_seed` cell (**stage 6**); each is `conditional`, so the resolver maps `above` +
 `on-hold` regime to a concrete direction via `surprise_response` (**stage 7**); and each becomes a
-structured `Warning` with `as_of` fixed to the fixture's `t0` (**stage 8**). The cool fixture yields
-the inverses; the in-line fixture yields all `mixed`.
+structured `Warning` with `as_of` fixed to the episode's `t0` (**stage 8**). The cool episode yields
+the inverses; the in-line episode yields all `mixed`.
 
 ## How to run it
 
 ```bash
 uv sync                                              # install deps + dev group
 uv run fortuneteller seed                            # load seed CSVs into DuckDB
-uv run fortuneteller replay fixtures/cpi-hot-2026-03.json [--json]
+uv run fortuneteller replay episodes/cpi-hot-2026-03.json [--json]
 uv run pytest                                        # golden + intent + unit tests
 uv run ruff check && uv run mypy src                 # the same gate CI enforces
 ```
@@ -170,7 +170,7 @@ clean checkout without a manual seed step.
 - **M1 live path (M1-06/07):** fetching a real CPI release from FRED + a free econ calendar and
   running it through the *same* core. This is optional live-validation, not the dev gate — the
   offline slice above is the demoable prototype.
-- **Detection (M4):** stages 1–4 (ingest, classify, entity-link, corroborate). Fixtures stand in for
+- **Detection (M4):** stages 1–4 (ingest, classify, entity-link, corroborate). Episodes stand in for
   a detected event today.
 - **Calibration & confidence (M2/M3):** measured effect sizes, calibrated probabilities, magnitude
   bands, and the backtest gate. Today's magnitudes/confidences are **illustrative seed placeholders**.

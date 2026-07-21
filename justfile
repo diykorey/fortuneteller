@@ -37,6 +37,6 @@ init:
 seed:
     uv run fortuneteller seed
 
-# replay a fixture through the deterministic core (default: the war-shock fixture)
-replay fixture="fixtures/war-oil-shock-2026.json":
-    uv run fortuneteller replay {{fixture}} --json
+# replay an episode through the deterministic core (default: the war-shock episode)
+replay episode="episodes/war-oil-shock-2026.json":
+    uv run fortuneteller replay {{episode}} --json

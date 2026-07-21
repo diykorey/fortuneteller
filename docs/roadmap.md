@@ -5,7 +5,7 @@ line: ship the slice → make it honest → make it broad → make it a product 
 
 > **Provable core first (scope discipline).** M1–M3 calibrate exactly one slice: **scheduled-macro
 > events (CPI / NFP / Fed) × ~5 liquid instruments (SPY/ES, UST 10Y or Bund, DXY, Gold, VIX)**, on
-> recorded fixtures then **free** data (FRED + a free econ calendar + yfinance/Stooq). The full
+> recorded episodes then **free** data (FRED + a free econ calendar + yfinance/Stooq). The full
 > 31×55 matrix, 132 platforms, unscheduled detection, and paid/tick data are **post-proof** — widen
 > only after the core beats (or honestly fails to beat) the benchmark. See
 > [mvp-architecture.md](mvp-architecture.md).
@@ -27,12 +27,12 @@ tests pass.
 
 **Goal:** one event type produces one warning, end to end.
 
-**Build:** replay a **recorded CPI fixture** through the slice — compute surprise and surprise_sd →
+**Build:** replay a **recorded CPI episode** through the slice — compute surprise and surprise_sd →
 look up the seed effect-size for the **~5 core instruments** → emit a warning to console/file. Then
 wire a free live path (FRED + a free econ calendar) behind the same function. No detection, no real
 calibration yet (uses seed priors).
 
-**Done when:** replaying the CPI fixture produces the asserted warning, **deterministically**. A
+**Done when:** replaying the CPI episode produces the asserted warning, **deterministically**. A
 *real* CPI release reproducing it is an optional live-validation, not the dev gate. This is the
 demoable prototype.
 
