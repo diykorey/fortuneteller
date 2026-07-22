@@ -1,5 +1,9 @@
 # M0 Tickets — Scaffold & Seed
 
+> **Status: shipped.** M0-01 … M0-09 are implemented and merged; GitHub issues #2–#10 (label `M0`)
+> are closed. Acceptance criteria below are ticked to match. Current build state:
+> [Implementation Status](implementation-status.md).
+
 > Written to be consumed by an LLM coding agent. Read the Shared Context once, then any ticket can
 > be implemented in isolation. Every ticket states exact file paths, an explicit spec, and binary
 > acceptance criteria.
@@ -79,10 +83,10 @@ required and runs from the first push.
 
 **Acceptance criteria:**
 
-- [ ] `uv sync` resolves and installs.
-- [ ] `uv run fortuneteller --help` lists init, seed, query-demo.
-- [ ] `uv run ruff check` and `uv run mypy src` pass on the skeleton.
-- [ ] `just --list` shows the recipes; `just check` runs lint + typecheck + test.
+- [x] `uv sync` resolves and installs.
+- [x] `uv run fortuneteller --help` lists init, seed, query-demo.
+- [x] `uv run ruff check` and `uv run mypy src` pass on the skeleton.
+- [x] `just --list` shows the recipes; `just check` runs lint + typecheck + test.
 
 **Out of scope:** any feed/modeling deps.
 
@@ -103,8 +107,8 @@ required and runs from the first push.
 
 **Acceptance criteria:**
 
-- [ ] `from fortuneteller.config import settings` works; overridable via `FT_DB_PATH`.
-- [ ] mypy strict passes.
+- [x] `from fortuneteller.config import settings` works; overridable via `FT_DB_PATH`.
+- [x] mypy strict passes.
 
 **Out of scope:** secrets, API keys.
 
@@ -140,8 +144,8 @@ define table shapes.
 
 **Acceptance criteria:**
 
-- [ ] All models import; valid data constructs; invalid enum raises ValidationError.
-- [ ] mypy strict passes.
+- [x] All models import; valid data constructs; invalid enum raises ValidationError.
+- [x] mypy strict passes.
 
 **Out of scope:** persistence logic (M0-05).
 
@@ -168,8 +172,9 @@ CREATE TABLE IF NOT EXISTS effect_size_matrix (event_type TEXT, instrument TEXT,
 
 **Acceptance criteria:**
 
-- [ ] Running the file against a fresh DuckDB connection creates all 8 tables with no error.
-- [ ] Column names/types match the M0-03 models 1:1 for the seed tables.
+- [x] Running the file against a fresh DuckDB connection creates all 9 tables with no error (8 at
+  M0; `surprise_response` added by M1-02).
+- [x] Column names/types match the M0-03 models 1:1 for the seed tables.
 
 **Out of scope:** indexes, views.
 
@@ -193,9 +198,9 @@ CREATE TABLE IF NOT EXISTS effect_size_matrix (event_type TEXT, instrument TEXT,
 
 **Acceptance criteria:**
 
-- [ ] `init_db()` on a temp path creates the file and tables.
-- [ ] After inserting a known Instrument, `get_instrument(symbol)` returns an equal model.
-- [ ] mypy strict passes; no raw f-string SQL with user values (use parameters).
+- [x] `init_db()` on a temp path creates the file and tables.
+- [x] After inserting a known Instrument, `get_instrument(symbol)` returns an equal model.
+- [x] mypy strict passes; no raw f-string SQL with user values (use parameters).
 
 **Out of scope:** migrations, async.
 
@@ -206,7 +211,8 @@ CREATE TABLE IF NOT EXISTS effect_size_matrix (event_type TEXT, instrument TEXT,
 **Context:** Committed seed data so the repo runs offline with no Notion credentials.
 
 **Files:** `data/seed/event_types.csv`, `instruments.csv`, `effect_size_seed.csv`,
-`news_sources.csv`, `countries.csv`
+`news_sources.csv`, `countries.csv` (M1-02 later added `surprise_response.csv`; per-table
+completeness is documented in `data/seed/README.md`).
 
 **Spec:** Each CSV's header columns MUST equal the corresponding table's seed columns (M0-04). Rows
 sourced from the project's Notion tables (Events 31, Instruments 55, Effect-Size ~55, News Sources
@@ -216,8 +222,8 @@ quoted where needed.
 
 **Acceptance criteria:**
 
-- [ ] Each CSV exists, is UTF-8, has the exact header columns of its table.
-- [ ] Each CSV has >=1 data row; enum columns use enum values from M0-03 (e.g., direction
+- [x] Each CSV exists, is UTF-8, has the exact header columns of its table.
+- [x] Each CSV has >=1 data row; enum columns use enum values from M0-03 (e.g., direction
   up/down/mixed/conditional).
 
 **Out of scope:** the loader (M0-07).
@@ -235,16 +241,17 @@ quoted where needed.
 - For each (csv_file, model, table): read with Polars (`pl.read_csv`), coerce to the Pydantic model
   row-by-row (collect ValidationErrors, fail with a message naming file+row), then
   `db.insert_models(table, rows)`.
-- `load_all() -> dict[str, int]` — loads all five seed tables, returns `{table: row_count}`.
+- `load_all() -> dict[str, int]` — loads all six seed tables (`surprise_response.csv` added by
+  M1-02), returns `{table: row_count}`.
   Idempotent: clear each table before load (or INSERT OR REPLACE).
 - `query_demo() -> EffectSizeSeed | None` — return `db.get_effect_size("CPI / inflation surprise",
   "SPY / ES")` (or first row if absent) for the query-demo command.
 
 **Acceptance criteria:**
 
-- [ ] `uv run fortuneteller seed` loads all CSVs; printed counts equal CSV row counts.
-- [ ] A malformed enum value causes a ValidationError naming the file and row.
-- [ ] `uv run fortuneteller query-demo` prints a non-null effect-size row.
+- [x] `uv run fortuneteller seed` loads all CSVs; printed counts equal CSV row counts.
+- [x] A malformed enum value causes a ValidationError naming the file and row.
+- [x] `uv run fortuneteller query-demo` prints a non-null effect-size row.
 
 **Out of scope:** loading fact tables (empty in M0).
 
@@ -260,15 +267,16 @@ quoted where needed.
 
 - conftest.py: a `tmp_db` fixture pointing settings.db_path at a tmp_path file and running
   `init_db()`.
-- Tests: (1) init_db creates all 8 tables (count_rows returns 0 pre-seed); (2) load_all returns
+- Tests: (1) init_db creates all 9 tables (8 at M0; `surprise_response` added by M1-02)
+  (count_rows returns 0 pre-seed); (2) load_all returns
   counts matching CSV row counts; (3) post-seed instruments and effect_size_seed counts > 0;
   (4) get_effect_size(...) returns an EffectSizeSeed; (5) one Pydantic round-trip (model → insert
   → query → equal).
 
 **Acceptance criteria:**
 
-- [ ] `uv run pytest` passes with all tests green.
-- [ ] Tests use the temp DB only (never touch `data/fortuneteller.duckdb`).
+- [x] `uv run pytest` passes with all tests green.
+- [x] Tests use the temp DB only (never touch `data/fortuneteller.duckdb`).
 
 **Out of scope:** coverage gates.
 
@@ -286,7 +294,7 @@ run mypy src, uv run pytest.
 
 **Acceptance criteria:**
 
-- [ ] Workflow runs the three gates and fails if any fails.
+- [x] Workflow runs the three gates and fails if any fails.
 
 **Out of scope:** deploy, release.
 

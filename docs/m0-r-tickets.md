@@ -1,5 +1,9 @@
 # M0-R Tickets — Replay Harness
 
+> **Status: shipped.** M0-R-01 … 05 are implemented and merged; GitHub issues #40–#44 (label
+> `M0-R`) are closed. Acceptance criteria below are ticked to match. Current build state:
+> [Implementation Status](implementation-status.md).
+
 > Written to be consumed by an LLM coding agent, same as [M0 Tickets](m0-tickets.md). Read the
 > Shared Context once, then any ticket can be implemented in isolation. Every ticket states exact
 > file paths, an explicit spec, and binary acceptance criteria.
@@ -57,8 +61,8 @@ from the [M0 set](m0-tickets.md).
 - `model_config = ConfigDict(extra="forbid")`; reuse M0-03 enums (don't redefine).
 
 **Acceptance criteria:**
-- [ ] models import; the example episode JSON parses; an unknown field raises `ValidationError`.
-- [ ] mypy strict passes.
+- [x] models import; the example episode JSON parses; an unknown field raises `ValidationError`.
+- [x] mypy strict passes.
 
 **Out of scope:** the engine, any IO.
 
@@ -80,10 +84,10 @@ from the [M0 set](m0-tickets.md).
 - `as_of = episode.event.t0`; output ordered by `episode.instruments`. No IO beyond the read-only DB; no clock; no randomness.
 
 **Acceptance criteria:**
-- [ ] non-conditional cell → concrete direction; conditional cell → `"conditional"` + correct `surprise_sign`.
-- [ ] a missing cell yields a "no edge" `Warning`, not an exception.
-- [ ] `as_of` equals the episode `t0`; order matches `instruments`; two runs are byte-identical.
-- [ ] mypy strict passes.
+- [x] non-conditional cell → concrete direction; conditional cell → `"conditional"` + correct `surprise_sign`.
+- [x] a missing cell yields a "no edge" `Warning`, not an exception.
+- [x] `as_of` equals the episode `t0`; order matches `instruments`; two runs are byte-identical.
+- [x] mypy strict passes.
 
 **Out of scope:** conditional direction resolution (M1), calibration, confidence calibration.
 
@@ -101,9 +105,9 @@ from the [M0 set](m0-tickets.md).
 - Invalid/malformed episode → `ValidationError` naming the file + field; unknown `event_type` / instrument → an explicit error pointing at `event_types.csv` / `instruments.csv`.
 
 **Acceptance criteria:**
-- [ ] `uv run fortuneteller replay episodes/war-oil-shock-2026.json --json` prints a `Warning` list; exit 0.
-- [ ] an `expect` mismatch exits non-zero, listing instrument / expected / actual.
-- [ ] mypy strict passes.
+- [x] `uv run fortuneteller replay episodes/war-oil-shock-2026.json --json` prints a `Warning` list; exit 0.
+- [x] an `expect` mismatch exits non-zero, listing instrument / expected / actual.
+- [x] mypy strict passes.
 
 **Out of scope:** watch mode, batch replay of a directory.
 
@@ -123,8 +127,8 @@ from the [M0 set](m0-tickets.md).
 - `no-edge-2026` — an `(event_type × instrument)` pair with no seed cell → a "no edge" `Warning`.
 
 **Acceptance criteria:**
-- [ ] each episode validates against `Episode`; every `event_type` / instrument key exists in the seed CSVs.
-- [ ] each episode has a matching `<id>.golden.json` equal to `replay()` output.
+- [x] each episode validates against `Episode`; every `event_type` / instrument key exists in the seed CSVs.
+- [x] each episode has a matching `<id>.golden.json` equal to `replay()` output.
 
 **Out of scope:** recorded real events (Phase 2 / M2).
 
@@ -142,9 +146,9 @@ from the [M0 set](m0-tickets.md).
 - A `--update-golden` pytest option (or `FT_UPDATE_GOLDEN=1`) rewrites the golden files.
 
 **Acceptance criteria:**
-- [ ] `uv run pytest tests/test_replay.py` is green — all goldens match and all `expect` directions hold.
-- [ ] `pytest --update-golden` regenerates goldens; a wrong-*direction* change still fails the intent test (can't be silently blessed).
-- [ ] tests use the seeded temp DB only (never `data/fortuneteller.duckdb`).
+- [x] `uv run pytest tests/test_replay.py` is green — all goldens match and all `expect` directions hold.
+- [x] `pytest --update-golden` regenerates goldens; a wrong-*direction* change still fails the intent test (can't be silently blessed).
+- [x] tests use the seeded temp DB only (never `data/fortuneteller.duckdb`).
 
 **Out of scope:** backtest scoring / calibration metrics (M3).
 

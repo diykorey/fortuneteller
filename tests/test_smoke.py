@@ -28,7 +28,7 @@ ALL_TABLES = [
 
 def test_init_db_creates_all_tables_empty(tmp_db: Path) -> None:
     # given a freshly initialized temp DB (the tmp_db fixture ran init_db)
-    # when each of the eight tables is counted before any seeding
+    # when each of the nine tables is counted before any seeding
     # then every table exists and holds zero rows
     assert {table: db.count_rows(table) for table in ALL_TABLES} == dict.fromkeys(ALL_TABLES, 0)
 
