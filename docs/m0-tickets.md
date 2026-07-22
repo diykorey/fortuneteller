@@ -57,7 +57,7 @@ required and runs from the first push.
 
 ---
 
-## M0-01 — Project skeleton & tooling
+## M0-01 — Project skeleton & tooling — #2
 
 **Depends on:** none
 
@@ -90,7 +90,7 @@ required and runs from the first push.
 
 **Out of scope:** any feed/modeling deps.
 
-## M0-02 — Configuration module
+## M0-02 — Configuration module — #3
 
 **Depends on:** M0-01
 
@@ -112,7 +112,7 @@ required and runs from the first push.
 
 **Out of scope:** secrets, API keys.
 
-## M0-03 — Domain models & enums
+## M0-03 — Domain models & enums — #4
 
 **Depends on:** M0-01
 
@@ -149,7 +149,7 @@ define table shapes.
 
 **Out of scope:** persistence logic (M0-05).
 
-## M0-04 — Database schema (DDL)
+## M0-04 — Database schema (DDL) — #5
 
 **Depends on:** M0-03 (field parity)
 
@@ -178,7 +178,7 @@ CREATE TABLE IF NOT EXISTS effect_size_matrix (event_type TEXT, instrument TEXT,
 
 **Out of scope:** indexes, views.
 
-## M0-05 — Database helper (thin SQL layer, no ORM)
+## M0-05 — Database helper (thin SQL layer, no ORM) — #6
 
 **Depends on:** M0-02, M0-03, M0-04
 
@@ -204,7 +204,7 @@ CREATE TABLE IF NOT EXISTS effect_size_matrix (event_type TEXT, instrument TEXT,
 
 **Out of scope:** migrations, async.
 
-## M0-06 — Seed data files (CSV contracts)
+## M0-06 — Seed data files (CSV contracts) — #7
 
 **Depends on:** M0-04 (column parity)
 
@@ -228,7 +228,7 @@ quoted where needed.
 
 **Out of scope:** the loader (M0-07).
 
-## M0-07 — Seed loader
+## M0-07 — Seed loader — #8
 
 **Depends on:** M0-05, M0-06
 
@@ -255,7 +255,7 @@ quoted where needed.
 
 **Out of scope:** loading fact tables (empty in M0).
 
-## M0-08 — Smoke tests
+## M0-08 — Smoke tests — #9
 
 **Depends on:** M0-05, M0-07
 
@@ -280,7 +280,7 @@ quoted where needed.
 
 **Out of scope:** coverage gates.
 
-## M0-09 — CI workflow (required, day one)
+## M0-09 — CI workflow (required, day one) — #10
 
 **Depends on:** M0-01
 

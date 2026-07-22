@@ -64,7 +64,7 @@ seed data is committed. Same inputs → identical bytes. Networked code lives **
 
 ---
 
-## M1-01 — Surprise computation (stage 5)
+## M1-01 — Surprise computation (stage 5) — #24
 
 **Depends on:** M0-R-01 (`EpisodeEvent`)
 
@@ -100,7 +100,7 @@ IO / randomness) is what lets the replay harness stay byte-for-byte deterministi
 
 **Out of scope:** live data fetch (M1-06); abnormal returns / `observations` (M2).
 
-## M1-02 — Complete the CPI core slice + surprise-response mapping (config)
+## M1-02 — Complete the CPI core slice + surprise-response mapping (config) — #25
 
 **Depends on:** M0-05 / M0-07 (seed loader + schema), M0-R-01
 
@@ -145,7 +145,7 @@ from the logic (M1-03) keeps each ticket independently testable.
 
 **Out of scope:** the full matrix; calibrated magnitudes (M2); enum-casing reconciliation (M2).
 
-## M1-03 — Conditional-direction resolver (the headline feature)
+## M1-03 — Conditional-direction resolver (the headline feature) — #26
 
 **Depends on:** M1-01, M1-02
 
@@ -185,7 +185,7 @@ guarantee. (LLM classification of free-text events is M4.)
 **Out of scope:** LLM classification of free-text events (M4); magnitude calibration (M2); event
 types / instruments beyond the CPI core slice.
 
-## M1-04 — Enrich `replay()` to resolve conditional cells
+## M1-04 — Enrich `replay()` to resolve conditional cells — #27
 
 **Depends on:** M0-R-02 (the engine exists), M1-03
 
@@ -226,7 +226,7 @@ small and reviewable.
 
 **Out of scope:** live data (M1-06); calibration / confidence (M2 / M3).
 
-## M1-05 — CPI episodes + goldens + intent `expect`s
+## M1-05 — CPI episodes + goldens + intent `expect`s — #28
 
 **Depends on:** M1-04, M0-R-04 / M0-R-05 (episode set + golden/intent test harness)
 
@@ -266,7 +266,7 @@ directions.
 
 **Out of scope:** recorded real events (M2); non-CPI episodes.
 
-## M1-06 — Free live path: FRED + econ-calendar connector
+## M1-06 — Free live path: FRED + econ-calendar connector — #29
 
 **Depends on:** M1-01 (surprise), M0-R-01 (`Episode` / `EpisodeEvent`)
 
@@ -307,7 +307,7 @@ connector stays free-tier (FRED + a free econ calendar) per the MVP's no-paid-da
 **Out of scope:** yfinance / Stooq prices + abnormal returns (M2); APScheduler (M2); paid vendors;
 non-CPI events.
 
-## M1-07 — `predict` CLI subcommand (optional live-validation)
+## M1-07 — `predict` CLI subcommand (optional live-validation) — #30
 
 **Depends on:** M1-06, M1-04, M0-01 (the argparse CLI)
 
