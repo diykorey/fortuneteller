@@ -58,7 +58,8 @@ CI (`.github/workflows/ci.yml`) runs ruff + mypy + pytest on every push, but **s
 - **Roadmap & tickets:** `docs/roadmap.md` (M0–M7); `docs/m0-tickets.md` (M0-01…M0-09, the scaffold);
   `docs/m0-r-tickets.md` (M0-R-01…05, the replay harness). Tickets are written to be executed in
   isolation — file paths + binary acceptance criteria. GitHub mirrors these as milestones M0–M7
-  plus M0-R; M0 issues (#2–#10, label `M0`) and M0-R issues (#40–#44, label `M0-R`).
+  plus M0-R; M0 issues (#2–#10, label `M0`, closed) and M0-R issues (#40–#44, label `M0-R`, kept
+  open as a live shipped-work checklist).
 - **The data spine:** Pydantic v2 models + a thin SQL helper over DuckDB — **no ORM**. Schema is plain
   SQL in `schema.sql` so the later Postgres migration stays cheap. Reference tables are **config the
   pipeline reads**, committed as seed CSVs in `data/seed/` (and documented in `docs/data/`).
