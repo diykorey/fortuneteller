@@ -46,7 +46,7 @@ from the [M0 set](m0-tickets.md).
 
 ---
 
-## M0-R-01 — Episode & Warning models — #40
+## M0-R-01 — Episode & Warning models — [#40](https://github.com/diykorey/fortuneteller/issues/40)
 
 **Depends on:** M0-03 (reuses the `Direction` / `HalfLife` / `Confidence` enums)
 
@@ -66,7 +66,7 @@ from the [M0 set](m0-tickets.md).
 
 **Out of scope:** the engine, any IO.
 
-## M0-R-02 — `replay()` core (pure function) — #41
+## M0-R-02 — `replay()` core (pure function) — [#41](https://github.com/diykorey/fortuneteller/issues/41)
 
 **Depends on:** M0-R-01, M0-05 (`get_effect_size`), M0-07 (seeded data present)
 
@@ -91,7 +91,7 @@ from the [M0 set](m0-tickets.md).
 
 **Out of scope:** conditional direction resolution (M1), calibration, confidence calibration.
 
-## M0-R-03 — `replay` CLI subcommand — #42
+## M0-R-03 — `replay` CLI subcommand — [#42](https://github.com/diykorey/fortuneteller/issues/42)
 
 **Depends on:** M0-R-02, M0-01 (the argparse CLI)
 
@@ -111,7 +111,7 @@ from the [M0 set](m0-tickets.md).
 
 **Out of scope:** watch mode, batch replay of a directory.
 
-## M0-R-04 — Synthetic episodes + golden files — #43
+## M0-R-04 — Synthetic episodes + golden files — [#43](https://github.com/diykorey/fortuneteller/issues/43)
 
 **Depends on:** M0-R-01 (schema), M0-R-02 (to generate the goldens)
 
@@ -132,7 +132,7 @@ from the [M0 set](m0-tickets.md).
 
 **Out of scope:** recorded real events (Phase 2 / M2).
 
-## M0-R-05 — Golden + intent tests — #44
+## M0-R-05 — Golden + intent tests — [#44](https://github.com/diykorey/fortuneteller/issues/44)
 
 **Depends on:** M0-R-02, M0-R-04, M0-08 (the seeded temp-DB fixture pattern)
 
