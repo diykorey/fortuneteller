@@ -1,5 +1,10 @@
 # M1 Tickets — Prototype: the thin vertical slice
 
+> **Status: M1-01 … M1-05 shipped.** The offline prediction core is implemented and merged
+> (PR #36, commit `87a30c5`); GitHub issues #24–#28 (label `M1`) are closed. **M1-06 / M1-07 — the
+> live path — are still outstanding**; issues #29–#30 remain open. Current build state:
+> [Implementation Status](implementation-status.md).
+
 > Written to be consumed by an LLM coding agent, same as [M0 Tickets](m0-tickets.md) and
 > [M0-R Tickets](m0-r-tickets.md). Read the Shared Context once, then any ticket can be implemented
 > in isolation. Every ticket states exact file paths, an explicit spec, and binary acceptance
