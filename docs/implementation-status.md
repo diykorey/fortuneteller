@@ -10,7 +10,7 @@
 | --- | --- | --- |
 | **M0** — Scaffold & data spine | uv/CI, Pydantic models, DuckDB schema, seed loader, CLI | ✅ Built & merged |
 | **M0-R** — Replay harness | Deterministic offline episode-replay of the prediction core | ✅ Built & merged |
-| **M1 (offline core)** — Thin vertical slice | Surprise computation + conditional-direction resolver wired into replay | ✅ Built (in review) |
+| **M1 (offline core)** — Thin vertical slice | Surprise computation + conditional-direction resolver wired into replay | ✅ Built & merged |
 | **M1 (live path)** — FRED + econ calendar | `predict` CLI over a real CPI release | ⛔ Not built (optional validation) |
 | **M2+** — Calibration, confidence, detection, product | Measured effect sizes, calibrated confidence, unscheduled events | ⛔ Not built |
 
@@ -178,9 +178,8 @@ clean checkout without a manual seed step.
 
 ## Where the code lives (branches)
 
-- **`main`** — M0 and M0-R are merged here.
-- **M1 offline core** — implemented on a feature branch (`claude/m1-prediction-core-v2`), pending
-  review; it stacks cleanly on `main`.
+- **`main`** — M0, M0-R, and the M1 offline core (M1-01…05) are all merged here; no feature branch
+  is outstanding.
 
 See the ticket sets for the executable breakdown: [M0](m0-tickets.md) · [M0-R](m0-r-tickets.md) ·
 [M1](m1-tickets.md).
