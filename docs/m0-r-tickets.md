@@ -1,8 +1,9 @@
 # M0-R Tickets — Replay Harness
 
 > **Status: shipped.** M0-R-01 … 05 are implemented and merged; GitHub issues #40–#44 (label
-> `M0-R`) are closed. Acceptance criteria below are ticked to match. Current build state:
-> [Implementation Status](implementation-status.md).
+> `M0-R`) are **deliberately kept open** as a live shipped-work checklist — see the issue-close
+> convention in [CLAUDE.md](../CLAUDE.md). Acceptance criteria below are ticked to match. Current
+> build state: [Implementation Status](implementation-status.md).
 
 > Written to be consumed by an LLM coding agent, same as [M0 Tickets](m0-tickets.md). Read the
 > Shared Context once, then any ticket can be implemented in isolation. Every ticket states exact

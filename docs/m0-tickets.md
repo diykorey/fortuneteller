@@ -1,7 +1,8 @@
 # M0 Tickets — Scaffold & Seed
 
 > **Status: shipped.** M0-01 … M0-09 are implemented and merged; GitHub issues #2–#10 (label `M0`)
-> are closed. Acceptance criteria below are ticked to match. Current build state:
+> are closed, by the close-on-ship convention that predates the M0-R pilot (see CLAUDE.md).
+> Acceptance criteria below are ticked to match. Current build state:
 > [Implementation Status](implementation-status.md).
 
 > Written to be consumed by an LLM coding agent. Read the Shared Context once, then any ticket can
