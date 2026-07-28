@@ -32,6 +32,8 @@ Everything built today lives in **stages 5–8**: given an already-known event, 
 look up the effect on each instrument, resolve a concrete direction, and emit a structured warning.
 Detection (1–4) is noisy and non-deterministic, so it is deferred to M4; calibration (9–10) is M2/M3.
 
+Call-by-call diagrams of each flow: [Sequence Diagrams & Use Cases](sequence-diagrams.md).
+
 ## Layer 1 — The data spine (M0)
 
 The typed foundation everything else reads. **No ORM**: Pydantic models in, parameterized SQL over
