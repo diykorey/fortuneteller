@@ -174,6 +174,7 @@ clean checkout without a manual seed step.
   a detected event today.
 - **Calibration & confidence (M2/M3):** measured effect sizes, calibrated probabilities, magnitude
   bands, and the backtest gate. Today's magnitudes/confidences are **illustrative seed placeholders**.
+  M2 is decomposed into executable tickets in [m2-tickets.md](m2-tickets.md).
 - **The causal-chain layer, coverage expansion, productization, and operations (M5–M7).**
 
 ## Where the code lives (branches)
@@ -182,4 +183,4 @@ clean checkout without a manual seed step.
   is outstanding.
 
 See the ticket sets for the executable breakdown: [M0](m0-tickets.md) · [M0-R](m0-r-tickets.md) ·
-[M1](m1-tickets.md).
+[M1](m1-tickets.md) · [M2](m2-tickets.md).
