@@ -66,7 +66,7 @@ tier** ([mvp-architecture → data acquisition](mvp-architecture.md), *"a bindin
 not stall on a 'which vendor?' debate"*). **A ticket may not introduce a paid vendor.** Tick data and
 Polygon / Databento stay deferred until post-proof.
 
-**Free-data consequence you must design around, not around which you may cheat.** yfinance serves
+**A free-data ceiling to design around, not to work around.** yfinance serves
 1-minute bars for roughly the **last 30 days only**, and Stooq has no free intraday history. A
 multi-year backfill therefore **cannot** produce `ret_5m` / `ret_1h` / a minute-resolution
 `half_life_min` for historical releases. Those columns stay **NULL** for old events; `ret_1d` /
