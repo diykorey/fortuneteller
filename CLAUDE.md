@@ -59,10 +59,15 @@ CI (`.github/workflows/ci.yml`) runs ruff + mypy + pytest on every push, but **s
 - **Roadmap & tickets:** `docs/roadmap.md` (M0–M7); `docs/m0-tickets.md` (M0-01…M0-09, the scaffold);
   `docs/m0-r-tickets.md` (M0-R-01…05, the replay harness); `docs/m1-tickets.md` (M1-01…M1-07, the
   prototype slice). Tickets are written to be executed in isolation — file paths + binary acceptance
-  criteria. GitHub mirrors these as milestones M0–M7 plus M0-R; M0 issues (#2–#10, label `M0`,
-  closed), M0-R issues (#40–#44, label `M0-R`, kept open as a live shipped-work checklist), and M1
-  issues (#24–#30, label `M1`) — #24–#28, the offline core, closed as shipped; #29–#30, the live
-  path, still open.
+  criteria. GitHub mirrors these as milestones M0–M7 plus M0-R; M0 issues (#2–#10, label `M0`), M0-R
+  issues (#40–#44, label `M0-R`), and M1 issues (#24–#30, label `M1`) — #24–#28, the offline core,
+  closed as shipped; #29–#30, the live path, still open. **Issue-close convention:** M0 closed on
+  ship (the pre-convention default, left as-is, not retro-reopened); M0-R is a **pilot** of "open =
+  live checklist of shipped-but-tracked work," kept open deliberately. Other sets keep closing on
+  ship until the pilot is judged — closing shipped M1 issues follows the convention, not violates
+  it. **Guard:** never put a GitHub closing keyword (`close/closes/closed`, `fix/fixes/fixed`,
+  `resolve/resolves/resolved`) right before `#40`–`#44` in a commit message or PR body — it silently
+  closes the checklist on merge. Reference them bare (`#40`) or as `issue #40`.
 - **The data spine:** Pydantic v2 models + a thin SQL helper over DuckDB — **no ORM**. Schema is plain
   SQL in `schema.sql` so the later Postgres migration stays cheap. Reference tables are **config the
   pipeline reads**, committed as seed CSVs in `data/seed/` (and documented in `docs/data/`).
