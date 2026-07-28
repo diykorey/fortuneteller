@@ -36,6 +36,8 @@ calibration yet (uses seed priors).
 *real* CPI release reproducing it is an optional live-validation, not the dev gate. This is the
 demoable prototype.
 
+> Implementation tickets for this milestone: [M1 Tickets — Thin Vertical Slice](m1-tickets.md).
+
 ## M2 — Historical dataset + event-study calibration (M)
 
 **Goal:** replace seed guesses with measured numbers for scheduled events.
@@ -48,6 +50,9 @@ magnitudes/hit-rates; close the feedback loop (outcome capture → recalibrate).
 
 **Done when:** the effect-size matrix shows calibrated mag_per_sd, hit_rate, n_obs for
 scheduled-macro cells, and the loop re-runs on a schedule (APScheduler).
+
+> Implementation tickets for this milestone:
+> [M2 Tickets — Historical Dataset & Calibration](m2-tickets.md).
 
 ## M3 — Confidence calibration + backtest gate (M)
 

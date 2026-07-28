@@ -39,6 +39,7 @@ New to the project? Read these two first — they orient everything else.
 | [M0 Tickets — Scaffold & Seed](m0-tickets.md) | LLM-ready tickets M0-01 … M0-09 with file paths and acceptance criteria |
 | [M0-R Tickets — Replay Harness](m0-r-tickets.md) | LLM-ready tickets M0-R-01 … 05: the deterministic episode-replay dev loop |
 | [M1 Tickets — Thin Vertical Slice](m1-tickets.md) | LLM-ready tickets M1-01 … 07: CPI → resolved warning, end to end, + the free live path |
+| [M2 Tickets — Historical Dataset & Calibration](m2-tickets.md) | LLM-ready tickets M2-01 … 08: measured effect sizes from free data |
 
 ## Reference data
 
