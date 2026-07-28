@@ -43,7 +43,7 @@ Start at [`docs/`](docs/README.md). Highlights:
 
 - **Orientation:** [Business Overview](docs/business-overview.md) (the idea) ·
   [Implementation Status](docs/implementation-status.md) (what's built + how it works)
-- **Architecture:** [MVP — build-now](docs/mvp-architecture.md) · [north-star sketch](docs/architecture.md)
+- **Architecture:** [MVP — build-now](docs/mvp-architecture.md) · [north-star sketch](docs/architecture.md) · [Sequence diagrams & use cases](docs/sequence-diagrams.md)
 - **Specs:** [Detection & Calibration](docs/detection-and-calibration.md) ·
   [Event Polarity & Classifier Prompts](docs/event-polarity-and-classifier-prompts.md) ·
   [News-Source Stack](docs/news-source-stack.md) ·

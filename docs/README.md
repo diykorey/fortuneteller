@@ -22,6 +22,7 @@ New to the project? Read these two first — they orient everything else.
 | --- | --- |
 | **[MVP Architecture](mvp-architecture.md)** | **Build-now picture (M0–M3): Python-first, single process, DuckDB, provable-core scope. Start here.** |
 | [System Architecture Sketch](architecture.md) | *North-star / eventual* — the full Java/Kafka production shape. Not the build-now plan |
+| [Sequence Diagrams & Use Cases](sequence-diagrams.md) | Actors/use cases + time-ordered "what happens" per flow — the CLI today, the replay core, the planned live path, the north-star |
 | [Detection & Confidence Calibration](detection-and-calibration.md) | Part A: turning a noisy firehose into trustworthy events. Part B: making "70%" mean 70% |
 | [Event Polarity & Classifier Prompts](event-polarity-and-classifier-prompts.md) | Polarity of each event type + the three LLM classifier prompts |
 | [News-Source Stack & Coverage](news-source-stack.md) | Ranked source list, coverage by event, coverage by market group, gap analysis |
