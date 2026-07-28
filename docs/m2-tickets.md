@@ -417,7 +417,8 @@ materialize the core grid first, then measure into it. The n ≥ 8 gate is not a
 than be silently dropped.
 
 **Files:** `src/fortuneteller/calibrate/calibrate.py`, `src/fortuneteller/__main__.py` (extend),
-`data/seed/surprise_response.csv` (extend), `tests/test_calibrate.py`
+`data/seed/surprise_response.csv` (extend), `src/fortuneteller/models.py` (docstring),
+`tests/test_surprise_response.py` (one assertion — see Spec), `tests/test_calibrate.py` (new)
 
 **Spec:**
 - **Step 1 — materialize the grid.** `INSERT OR REPLACE` the **15** core cells (3 event types × 5
@@ -432,9 +433,17 @@ than be silently dropped.
     `Central-bank decision` × `BUND / FGBL` / `GC / XAU` / `VIX`) are inserted prior-less. This is
     intentional — see *Known seed gap* in the Shared Context.
   - **Extend `data/seed/surprise_response.csv`** with the `NFP / labor data` and
-    `Central-bank decision` cells so those directions exist. Keep the header comment's completeness
-    statement accurate ("scheduled-macro core slice only; illustrative placeholders, not
-    authoritative").
+    `Central-bank decision` cells so those directions exist. Two follow-ons the executor must handle,
+    because the extension breaks an existing contract test:
+    - `tests/test_surprise_response.py::test_loader_is_idempotent` asserts
+      `counts["surprise_response"] == len(CORE_INSTRUMENTS)` — an exact **total** row count of 5.
+      Adding 10 rows makes it 15 and the test fails. Rewrite that assertion to check idempotency the
+      way it means to (the count before a second `load_all` equals the count after), not against a
+      magic number. `test_cpi_core_slice_is_complete` filters on `event_type = CPI` and is unaffected;
+      `test_every_surprise_response_key_is_canonical` passes because the new keys are canonical.
+    - The completeness statement for this table lives in the `SurpriseResponse` docstring
+      (`models.py:102`), **not** in a CSV header comment — no seed CSV carries one. Update the
+      docstring to "scheduled-macro core slice only; illustrative placeholders, not authoritative."
 - **Step 2 — measure.** Port [calibration-dataset § 5](calibration-dataset.md) to DuckDB, **lowercase
   per M2-01** (`WHEN 'up' THEN 1 WHEN 'down' THEN -1`):
   - `mag_per_sd = Σ(abn_ret_1d · surprise_sd) / Σ(surprise_sd²)` — the per-1-SD sensitivity.
@@ -461,8 +470,9 @@ than be silently dropped.
       `effect_size_matrix` with `n_obs = 0` — proving the query is not a no-op against this repo's
       empty-table starting state.
 - [ ] re-running `calibrate` twice yields identical values (only `last_calibrated` advances).
-- [ ] `uv run fortuneteller seed` still loads `surprise_response.csv` idempotently and its contract
-      test (`tests/test_surprise_response.py`) still passes with the new rows.
+- [ ] `uv run fortuneteller seed` still loads `surprise_response.csv` idempotently, and
+      `tests/test_surprise_response.py` is green **after** its total-row-count assertion is rewritten
+      as a before/after idempotency check — the other three cases in that file pass unmodified.
 - [ ] ruff + mypy strict pass.
 
 **Out of scope:** writing anything back into `data/seed/effect_size_seed.csv` (M2-07); probability
