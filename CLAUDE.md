@@ -58,11 +58,14 @@ CI (`.github/workflows/ci.yml`) runs ruff + mypy + pytest on every push, but **s
 
 - **Roadmap & tickets:** `docs/roadmap.md` (M0–M7); `docs/m0-tickets.md` (M0-01…M0-09, the scaffold);
   `docs/m0-r-tickets.md` (M0-R-01…05, the replay harness); `docs/m1-tickets.md` (M1-01…M1-07, the
-  prototype slice). Tickets are written to be executed in isolation — file paths + binary acceptance
-  criteria. GitHub mirrors these as milestones M0–M7 plus M0-R; M0 issues (#2–#10, label `M0`), M0-R
-  issues (#40–#44, label `M0-R`), and M1 issues (#24–#30, label `M1`) — #24–#28, the offline core,
-  closed as shipped; #29–#30, the live path, still open. **Issue-close convention:** M0 closed on
-  ship (the pre-convention default, left as-is, not retro-reopened); M0-R is a **pilot** of "open =
+  prototype slice); `docs/m2-tickets.md` (M2-01…M2-08, the calibration set). Tickets are written to
+  be executed in isolation — file paths + binary acceptance criteria. GitHub mirrors these as
+  milestones M0–M7 plus M0-R; M0 issues (#2–#10, label `M0`, milestone closed), M0-R issues
+  (#40–#44, label `M0-R`), M1 issues (#24–#30, label `M1`) — #24–#28, the offline core, closed as
+  shipped; #29–#30, the live path, still open — and M2 issues (#55–#62, label `M2`), all open and
+  unstarted. Milestones M3–M7 have no ticket doc yet, so they carry no issues by design.
+  **Issue-close convention:** M0 closed on ship (the pre-convention default, left as-is, not
+  retro-reopened); M0-R is a **pilot** of "open =
   live checklist of shipped-but-tracked work," kept open deliberately. Other sets keep closing on
   ship until the pilot is judged — closing shipped M1 issues follows the convention, not violates
   it. **Guard:** never put a GitHub closing keyword (`close/closes/closed`, `fix/fixes/fixed`,

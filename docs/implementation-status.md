@@ -176,7 +176,9 @@ clean checkout without a manual seed step.
   a detected event today.
 - **Calibration & confidence (M2/M3):** measured effect sizes, calibrated probabilities, magnitude
   bands, and the backtest gate. Today's magnitudes/confidences are **illustrative seed placeholders**.
-  M2 is decomposed into executable tickets in [m2-tickets.md](m2-tickets.md).
+  M2 is decomposed into executable tickets in [m2-tickets.md](m2-tickets.md), mirrored as issues
+  [#55](https://github.com/diykorey/fortuneteller/issues/55)–[#62](https://github.com/diykorey/fortuneteller/issues/62)
+  (label `M2`), all open.
 - **The causal-chain layer, coverage expansion, productization, and operations (M5–M7).**
 
 ## Where the code lives (branches)
