@@ -11,7 +11,7 @@
 | **M0** — Scaffold & data spine | uv/CI, Pydantic models, DuckDB schema, seed loader, CLI | ✅ Built & merged |
 | **M0-R** — Replay harness | Deterministic offline episode-replay of the prediction core | ✅ Built & merged |
 | **M1 (offline core)** — Thin vertical slice | Surprise computation + conditional-direction resolver wired into replay | ✅ Built & merged |
-| **M1 (live path)** — FRED + econ calendar | `predict` CLI over a real CPI release | ⛔ Not built (optional validation) |
+| **M1 (live path)** — FRED + econ calendar | `live/` connector (M1-06) + `predict` CLI (M1-07) | ⛔ Not built — M1-06 is an M2 prerequisite; M1-07 deferred |
 | **M2+** — Calibration, confidence, detection, product | Measured effect sizes, calibrated confidence, unscheduled events | ⛔ Not built |
 
 The suite is green: **`ruff` + `mypy --strict` + 85 passing tests** (1 skipped). CI runs the same
@@ -170,13 +170,18 @@ clean checkout without a manual seed step.
 ## What is deliberately not built yet
 
 - **M1 live path (M1-06/07):** fetching a real CPI release from FRED + a free econ calendar and
-  running it through the *same* core. This is optional live-validation, not the dev gate — the
-  offline slice above is the demoable prototype.
+  running it through the *same* core. The offline slice above is the demoable prototype, so this was
+  scoped as optional live-validation — but **M1-06 ([#29](https://github.com/diykorey/fortuneteller/issues/29))
+  is in practice an M2 prerequisite**, because M2-02 extends the very `live/sources.py` connector it
+  creates. **M1-07 ([#30](https://github.com/diykorey/fortuneteller/issues/30))** — the `predict` CLI
+  — has no downstream dependents and is labelled `deferred`.
 - **Detection (M4):** stages 1–4 (ingest, classify, entity-link, corroborate). Episodes stand in for
   a detected event today.
 - **Calibration & confidence (M2/M3):** measured effect sizes, calibrated probabilities, magnitude
   bands, and the backtest gate. Today's magnitudes/confidences are **illustrative seed placeholders**.
-  M2 is decomposed into executable tickets in [m2-tickets.md](m2-tickets.md).
+  M2 is decomposed into executable tickets in [m2-tickets.md](m2-tickets.md), mirrored as issues
+  [#55](https://github.com/diykorey/fortuneteller/issues/55)–[#62](https://github.com/diykorey/fortuneteller/issues/62)
+  (label `M2`), all open.
 - **The causal-chain layer, coverage expansion, productization, and operations (M5–M7).**
 
 ## Where the code lives (branches)

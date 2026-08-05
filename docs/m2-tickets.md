@@ -1,5 +1,10 @@
 # M2 Tickets — Historical dataset + event-study calibration
 
+> **Status: not started.** Nothing in M2 is built. GitHub mirrors this set as issues
+> [#55](https://github.com/diykorey/fortuneteller/issues/55)–[#62](https://github.com/diykorey/fortuneteller/issues/62)
+> (label `M2`, milestone *M2 — Historical dataset + event-study calibration*), all open. Current
+> build state: [Implementation Status](implementation-status.md).
+
 > Written to be consumed by an LLM coding agent, same as [M0 Tickets](m0-tickets.md),
 > [M0-R Tickets](m0-r-tickets.md) and [M1 Tickets](m1-tickets.md). Read the Shared Context once, then
 > any ticket can be implemented in isolation. Every ticket states exact file paths, an explicit spec,
@@ -106,7 +111,7 @@ must be green.
 
 ---
 
-## M2-01 — Reconcile enum casing and constrain the calibration tables
+## M2-01 — Reconcile enum casing and constrain the calibration tables — [#55](https://github.com/diykorey/fortuneteller/issues/55)
 
 **Depends on:** M0-03 (models), M0-07 (`schema.sql`)
 
@@ -171,7 +176,7 @@ the capitalized DDL is a document no code reads.
 **Out of scope:** populating any table (M2-02 / M2-03); the `Direction` / `Polarity` / `HalfLife`
 enums, which are already lowercase and already used by shipped code.
 
-## M2-02 — Historical scheduled-macro backfill → `event_instances`
+## M2-02 — Historical scheduled-macro backfill → `event_instances` — [#56](https://github.com/diykorey/fortuneteller/issues/56)
 
 **Depends on:** M2-01, M1-01 (`predict.surprise`), M0-05 (seed loader)
 
@@ -237,7 +242,7 @@ has not landed), `tests/test_backfill.py` (new, mocked transport),
 scenario priors ([calibration-dataset § 3.b](calibration-dataset.md)); event **detection** (M4);
 event types beyond the three core ones (M5).
 
-## M2-03 — Price history → `observations` returns
+## M2-03 — Price history → `observations` returns — [#57](https://github.com/diykorey/fortuneteller/issues/57)
 
 **Depends on:** M2-02 (rows to attach to), M2-01 (`RetUnit`, the `UNIQUE` constraint)
 
@@ -301,7 +306,7 @@ one place and the statistics in another, so each is testable alone.
 **Out of scope:** abnormal returns, CAR, `realized_dir`, `peak_move` (M2-04); `half_life_min`
 (M2-05); tick data and paid vendors (post-proof); instruments beyond the core five (M5).
 
-## M2-04 — Abnormal returns + CAR
+## M2-04 — Abnormal returns + CAR — [#58](https://github.com/diykorey/fortuneteller/issues/58)
 
 **Depends on:** M2-03
 
@@ -354,7 +359,7 @@ ends at t0−20 to keep the estimate free of the event's own run-up
 confidence intervals on the *cell* magnitude, which M2-06 computes; regime **interactions** beyond
 storing `vix_t0` / `rate_regime` (M3 / M5).
 
-## M2-05 — Reaction half-life
+## M2-05 — Reaction half-life — [#59](https://github.com/diykorey/fortuneteller/issues/59)
 
 **Depends on:** M2-04
 
@@ -397,7 +402,7 @@ parallel scale.
 **Out of scope:** the per-cell **median** half-life (M2-06 aggregates it); horizon *prediction* from
 the bucket (M3); intraday backfill of historical events, which the free stack cannot serve.
 
-## M2-06 — The calibration query → `effect_size_matrix`
+## M2-06 — The calibration query → `effect_size_matrix` — [#60](https://github.com/diykorey/fortuneteller/issues/60)
 
 **Depends on:** M2-04, M2-05
 
@@ -479,7 +484,7 @@ than be silently dropped.
 calibration, conformal bands and the reader-visibility gate (M3); regime-bucketed cells beyond
 storing `vix_t0` / `rate_regime` (M5).
 
-## M2-07 — Promote calibrated cells into the prediction core
+## M2-07 — Promote calibrated cells into the prediction core — [#61](https://github.com/diykorey/fortuneteller/issues/61)
 
 **Depends on:** M2-06
 
@@ -537,7 +542,7 @@ invents a different one.
 **Out of scope:** automatic promotion (it is a reviewed human step, by design); confidence values
 (M3); any `replay/` code change — the engine keeps reading the CSV exactly as it does today.
 
-## M2-08 — Scheduled recalibration + outcome capture
+## M2-08 — Scheduled recalibration + outcome capture — [#62](https://github.com/diykorey/fortuneteller/issues/62)
 
 **Depends on:** M2-06
 

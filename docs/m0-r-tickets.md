@@ -2,7 +2,7 @@
 
 > **Status: shipped.** M0-R-01 … 05 are implemented and merged. The acceptance criteria below are
 > left unticked on purpose — this doc is the immutable spec, not a status board. Done-ness lives
-> in the GitHub issues (#40–#44, label `M0-R`) and in
+> in the GitHub issues (#40–#44, label `M0-R`, all closed) and in
 > [Implementation Status](implementation-status.md).
 
 > Written to be consumed by an LLM coding agent, same as [M0 Tickets](m0-tickets.md). Read the
