@@ -60,17 +60,16 @@ CI (`.github/workflows/ci.yml`) runs ruff + mypy + pytest on every push, but **s
   `docs/m0-r-tickets.md` (M0-R-01…05, the replay harness); `docs/m1-tickets.md` (M1-01…M1-07, the
   prototype slice); `docs/m2-tickets.md` (M2-01…M2-08, the calibration set). Tickets are written to
   be executed in isolation — file paths + binary acceptance criteria. GitHub mirrors these as
-  milestones M0–M7 plus M0-R; M0 issues (#2–#10, label `M0`, milestone closed), M0-R issues
-  (#40–#44, label `M0-R`), M1 issues (#24–#30, label `M1`) — #24–#28, the offline core, closed as
-  shipped; #29–#30, the live path, still open — and M2 issues (#55–#62, label `M2`), all open and
-  unstarted. Milestones M3–M7 have no ticket doc yet, so they carry no issues by design.
-  **Issue-close convention:** M0 closed on ship (the pre-convention default, left as-is, not
-  retro-reopened); M0-R is a **pilot** of "open =
-  live checklist of shipped-but-tracked work," kept open deliberately. Other sets keep closing on
-  ship until the pilot is judged — closing shipped M1 issues follows the convention, not violates
-  it. **Guard:** never put a GitHub closing keyword (`close/closes/closed`, `fix/fixes/fixed`,
-  `resolve/resolves/resolved`) right before `#40`–`#44` in a commit message or PR body — it silently
-  closes the checklist on merge. Reference them bare (`#40`) or as `issue #40`.
+  milestones M0–M7 plus M0-R; M0 issues (#2–#10, label `M0`), M0-R issues (#40–#44, label `M0-R`),
+  M1 issues (#24–#30, label `M1`), M2 issues (#55–#62, label `M2`). **Open = remaining work.** M0,
+  M0-R and the M1 offline core (#24–#28) are closed as shipped and their milestones are closed, so
+  the M2 set plus #29–#30 are the only open issues; #30 carries `deferred` — valid and wanted, but
+  off the critical path. Milestones M3–M7 have no ticket doc yet, so they carry no issues by design.
+  **Issue-close convention (settled):** issues close on ship. M0-R piloted the alternative ("open =
+  live checklist of shipped-but-tracked work"); the pilot was judged in August 2026 and closed,
+  because finished work sitting in the open queue made the issue count useless as a work queue right
+  when M2 needed a real one. Done-ness lives in the issues and in `docs/implementation-status.md` —
+  the ticket docs are the immutable spec, and their acceptance boxes are never ticked.
 - **The data spine:** Pydantic v2 models + a thin SQL helper over DuckDB — **no ORM**. Schema is plain
   SQL in `schema.sql` so the later Postgres migration stays cheap. Reference tables are **config the
   pipeline reads**, committed as seed CSVs in `data/seed/` (and documented in `docs/data/`).
