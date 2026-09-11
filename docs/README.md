@@ -65,6 +65,7 @@ anywhere and drive nothing.
 | Start working on the current step | [Step 1 — Releases](step-1-releases.md) |
 | Write the document for a new step | [Legend](legend.md) — what every step document must say |
 | Look up a term or ticker | [Glossary](glossary.md) |
+| Know which external services and keys are needed | [Accounts](accounts.md) |
 | Know what the reference CSVs contain | [legacy/data/](legacy/data/README.md) — still accurate |
 | Understand what was abandoned, and why | [legacy/](legacy/README.md) |
 
