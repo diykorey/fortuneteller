@@ -1,45 +1,103 @@
 # FortuneTeller documentation
 
-Given an event, say which instruments move, by how much, in which direction — with confidence that
-means something.
+**Start here.** This is the single entry point: what the project is, which document answers which
+question, and how they fit together.
 
-## Start here
+> Given an event, say which instruments move, by how much, in which direction — with confidence that
+> means something, in time to act on it. A warning product, not a trading system.
 
-| Document | What it is |
+## The chain
+
+The documents are one argument, narrowing from *why* to *what exactly*. Each answers the question
+the one before it raises, so read them in this order the first time.
+
+**1. Why does this project exist, and why could it work?** → **[Legend](legend.md)**
+The target, the bet being made, and the principles that follow from it. It states the idea so that
+it can *fail*: three things must be true, and each is tested by a specific part of the plan.
+
+**2. So what do we build, in what order?** → **[Roadmap](roadmap.md)**
+The MVP — four steps that test the first two of those three things — then a feature ladder. Each
+step ends in a runnable command that prints a real number. "No edge" is a permitted answer.
+
+**3. So what exactly are we doing right now?** → **[Step 1 — Releases](step-1-releases.md)**
+One document per step: its goal, the obstacle in the way, the sequence, how you know the result is
+right, and the implementation detail. The shape of these documents is fixed by the Legend.
+
+**4. What does this word mean?** → **[Glossary](glossary.md)**
+Every acronym, ticker, and piece of jargon. Read it alongside any of the above, not before them.
+
+Off to the side: **[legacy/](legacy/README.md)** — everything written before the 2026-09-11 rewrite.
+Reference material, **not instructions**. Where it and the documents above disagree, the above win.
+Its one live exception is [`legacy/data/`](legacy/data/README.md), which still describes the seed
+CSVs the code loads today.
+
+## The map
+
+```mermaid
+flowchart TD
+    L["<b>Legend</b><br/>target · idea · way<br/>+ the step template"]
+    R["<b>Roadmap</b><br/>the MVP, then the ladder"]
+    S["<b>Step docs</b><br/>step-N-name.md"]
+    C["<b>The code</b><br/>src/ · schema.sql · data/seed/"]
+    G["<b>Glossary</b><br/>every term"]
+    Y["<b>legacy/</b><br/>pre-reset corpus"]
+
+    L -->|"sets what counts as progress"| R
+    R -->|"names the next step"| S
+    S -->|"specifies"| C
+    L -.->|"defines their shape"| S
+    G -.->|"read alongside"| R
+    Y -.->|"reference only"| R
+```
+
+Read it top to bottom: each document constrains the one below it. The Legend fixes what counts as
+progress, the Roadmap turns that into an order, a step document turns one entry of that order into
+something implementable, and the code is the result. The Glossary and `legacy/` are consulted from
+anywhere and drive nothing.
+
+## Find what you need
+
+| If you want to… | Read |
 | --- | --- |
-| **[Roadmap](roadmap.md)** | What we are building, in what order, and what "done" means. **Read first.** |
-| **[Glossary](glossary.md)** | Every acronym, ticker, and piece of jargon, explained. Read alongside anything else. |
-
-That is the whole current corpus, deliberately. Both were rewritten on 2026-09-11; everything
-written before then lives in **[legacy/](legacy/README.md)** and is reference material, not
-instructions. The one live exception there is `legacy/data/`, which documents the seed CSVs the code
-actually loads.
+| Understand the point of the project | [Legend](legend.md) — the target and the idea |
+| Know why the plan is ordered this way | [Legend](legend.md) — the way, and the three conditions |
+| See what gets built and when | [Roadmap](roadmap.md) |
+| Start working on the current step | [Step 1 — Releases](step-1-releases.md) |
+| Write the document for a new step | [Legend](legend.md) — what every step document must say |
+| Look up a term or ticker | [Glossary](glossary.md) |
+| Know what the reference CSVs contain | [legacy/data/](legacy/data/README.md) — still accurate |
+| Understand what was abandoned, and why | [legacy/](legacy/README.md) |
 
 ## Where things are
 
 | Path | Holds |
 | --- | --- |
-| `docs/` | The current, authoritative documents — the two above. |
-| `docs/legacy/` | The pre-reset design corpus: architecture sketches, data-table documentation, old milestone plans. |
+| `docs/` | The current documents — the four in the chain above. |
+| `docs/legacy/` | The pre-reset design corpus. Reference, not instructions. |
 | `data/seed/` | The committed reference CSVs the code actually reads. |
 | `schema.sql` | The table definitions, as plain SQL. |
 | `src/fortuneteller/` | The package: config, models, store, seed loader, CLI. |
-
-## How this folder grows
-
-Flat until it needs not to be. A subfolder gets created when a *second* document of the same kind
-exists — not in advance. The natural next splits, when they arrive:
-
-- `concepts/` — one file per idea that needs explaining beyond a glossary line (surprise, abnormal
-  return, calibration).
-- `data/` — how each reference table is sourced, what is complete, what is a placeholder.
-- `decisions/` — short records of choices that would otherwise be re-litigated.
-
-A document is written when something real needs it. A document that describes code that does not
-exist is a liability — the last corpus is in `legacy/` partly because it drifted into that.
+| [`../CLAUDE.md`](../CLAUDE.md) | Working agreements for this repo, including the reset note. |
 
 ## Current state
 
 **M0 — the data spine — is shipped**: typed models, the DuckDB schema, the seed reference tables,
-and a working `init | seed | query-demo` CLI. No prediction code exists yet. MVP step 1 is next; see
-the [roadmap](roadmap.md).
+and a working `init | seed | query-demo` CLI. **No prediction code exists.** `event_instances` and
+`observations` are created but empty.
+
+**Next: [MVP step 1](step-1-releases.md)** — load real CPI releases into `event_instances`. It is
+the first thing in this project that produces a real number.
+
+## How this folder grows
+
+Flat until it needs not to be. A subfolder appears when a *second* document of the same kind exists
+— not in advance. The natural next splits:
+
+- `steps/` — one file per MVP step. Step 1 sits flat; when step 2's document arrives, both move here.
+- `concepts/` — one file per idea needing more than a glossary line (surprise, abnormal return,
+  calibration).
+- `decisions/` — short records of choices that would otherwise be re-litigated.
+
+Two rules, both learned the hard way: **a document is written when something real needs it**, and
+**deleted when it stops being true**. `legacy/` exists because the last corpus drifted into
+describing code that did not exist — which is worse than having no documentation at all.

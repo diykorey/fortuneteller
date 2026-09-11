@@ -56,14 +56,24 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **Fed / FOMC** (Federal Open Market Committee) — the committee that sets the US policy interest
   rate, meeting eight times a year with a decision at 2:00 p.m. New York time.
 - **GDP** (Gross Domestic Product) — total economic output; a quarterly growth release.
+- **Initial release / first print** — the value a statistical agency publishes the first time,
+  before later revisions. The only version the market could have reacted to on the day, so it is the
+  version this project measures against.
 - **MoM / YoY** (month-over-month / year-over-year) — whether a change is measured against last
   month or the same month a year ago. Mixing the two silently corrupts a surprise calculation.
 - **NFP** (Non-Farm Payrolls) — the monthly US jobs report, usually the first Friday, 8:30 a.m. New
   York time. Traditionally the biggest scheduled mover after CPI and the Fed.
 - **PMI** (Purchasing Managers' Index) — a survey-based activity gauge where above 50 means
   expansion, below 50 contraction.
+- **Reference month** — the month a release *measures*, as opposed to the day it is *published*.
+  August CPI has an August reference month and a mid-September release date. Confusing the two is
+  the classic way to measure the wrong days.
 - **Release calendar** — the published schedule of when economic data comes out. Needed to know
   which days to measure.
+- **Revision** — a later correction to an already-published figure. Real, but invisible to the
+  market on release day; see **initial release**.
+- **Seasonal adjustment (SA)** — smoothing out predictable within-year patterns so months are
+  comparable. `CPIAUCSL` is the seasonally adjusted headline series.
 - **Surprise** — `actual − expected`. The thing that actually moves prices: the expected part is
   already in the price before the release.
 - **Surprise_sd / standardized surprise** — the surprise divided by how big surprises usually are
@@ -173,12 +183,19 @@ Terms are grouped by what they are about, alphabetical within each group.
 ## Data sources
 
 - **BLS** (Bureau of Labor Statistics) — the US agency that publishes CPI and Non-Farm Payrolls.
+- **CPIAUCSL** — the **FRED series ID** for seasonally adjusted headline US CPI. The MVP's source
+  for actuals.
 - **Economic calendar** — a commercial listing of upcoming releases with forecasts. The usual source
   of **consensus**, and rarely free for long histories.
 - **FRED** (Federal Reserve Economic Data) — the St. Louis Fed's free database and API of economic
   series, including CPI. Free, keyed, reliable; carries actuals but not market expectations.
 - **GDELT** — a free global database of news events. A detection-stage source, deferred.
+- **Series ID** — a data provider's unique code for one time series (e.g. `CPIAUCSL`). Load-bearing
+  the way instrument symbols are: the wrong ID silently fetches the wrong data.
 - **Stooq** — a free source of historical price data; a fallback when others rate-limit.
+- **Vintage** — a snapshot of what a series looked like on a given past date, before revisions.
+  FRED retains vintages, which is how the **initial release** and its publication date are
+  recoverable.
 - **yfinance** — a Python library pulling free price history from Yahoo Finance. Convenient and
   unofficial: fine for research, not something to depend on in production.
 
