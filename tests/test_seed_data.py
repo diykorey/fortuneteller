@@ -96,3 +96,18 @@ def test_seed_dir_path_is_data_seed() -> None:
     # when its path is inspected
     # then it points at data/seed (the committed reference data)
     assert settings.seed_dir == Path("data/seed")
+
+
+# The five instruments the MVP measures (docs/roadmap.md). These symbols are join keys: step 2
+# looks each one up by exact string, so a rename or a typo silently breaks the measurement.
+MVP_INSTRUMENTS = ["SPY / ES", "UST10Y / ZN", "DXY", "GC / XAU", "VIX"]
+
+
+@pytest.mark.parametrize("symbol", MVP_INSTRUMENTS)
+def test_mvp_instrument_resolves_by_exact_symbol(symbol: str) -> None:
+    # given the committed instruments CSV
+    with (settings.seed_dir / "instruments.csv").open(newline="", encoding="utf-8") as handle:
+        symbols = {row["symbol"] for row in csv.DictReader(handle)}
+    # when an MVP instrument is looked up by its canonical symbol
+    # then it is present exactly as written
+    assert symbol in symbols
