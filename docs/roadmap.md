@@ -1,127 +1,103 @@
-# Roadmap — Prototype to Complete Solution
+# Roadmap
 
-Milestones sequenced so each one ships something working and de-risks the next. The arc in one
-line: ship the slice → make it honest → make it broad → make it a product → operate it.
+> Unfamiliar acronym, ticker, or term? Every one is explained in the [Glossary](glossary.md).
 
-> **Provable core first (scope discipline).** M1–M3 calibrate exactly one slice: **scheduled-macro
-> events (CPI / NFP / Fed) × ~5 liquid instruments (SPY/ES, UST 10Y or Bund, DXY, Gold, VIX)**, on
-> recorded fixtures then **free** data (FRED + a free econ calendar + yfinance/Stooq). The full
-> 31×55 matrix, 132 platforms, unscheduled detection, and paid/tick data are **post-proof** — widen
-> only after the core beats (or honestly fails to beat) the benchmark. See
-> [mvp-architecture.md](mvp-architecture.md).
+## The goal
 
-## M0 — Scaffold & seed (S)
+Given an event, say which instruments move, by how much, in which direction — with confidence that
+means something. A warning product, not HFT: the latency budget is seconds to minutes.
 
-**Goal:** a repo you can clone and run, with the data spine in place.
+## The MVP — "does the edge exist?"
 
-**Build:** lightweight layout (uv, Ruff, pytest); Pydantic models for Event/Observation/Prediction
-from the data dictionary; DuckDB + Parquet store; load the Notion reference tables (events,
-instruments, effect-size seeds, news sources) into local tables.
+The MVP answers one question with real data: **when CPI comes in different from what was expected,
+do liquid instruments move in a measurable, repeatable way?**
 
-**Done when:** `uv run` boots, the seed effect-size matrix and instruments are queryable in DuckDB,
-tests pass.
+It is not a predictor and not a product. It is a table of measured numbers with an honest `n` next
+to each one. **"No edge" is a valid result** — finding that out in four steps is the whole point.
 
-> Implementation tickets for this milestone: [M0 Tickets — Scaffold & Seed](m0-tickets.md).
+**Scope:** one event type (CPI) × five instruments — SPY, UST 10Y, DXY, Gold, VIX. Nothing else,
+until this works.
 
-## M1 — Prototype: the thin vertical slice (S-M)
+**Done when:** for each of those five cells you can read a measured effect size (move per unit of
+surprise), a hit rate, and `n` — and say honestly whether an edge is there.
 
-**Goal:** one event type produces one warning, end to end.
+### The four steps
 
-**Build:** replay a **recorded CPI fixture** through the slice — compute surprise and surprise_sd →
-look up the seed effect-size for the **~5 core instruments** → emit a warning to console/file. Then
-wire a free live path (FRED + a free econ calendar) behind the same function. No detection, no real
-calibration yet (uses seed priors).
+Each step ends with something you can run that prints a real number. No step builds machinery for a
+step that has not happened yet. The sample outputs below are illustrative shapes, not targets.
 
-**Done when:** replaying the CPI fixture produces the asserted warning, **deterministically**. A
-*real* CPI release reproducing it is an optional live-validation, not the dev gate. This is the
-demoable prototype.
+| # | Step | What it prints | Done when |
+| --- | --- | --- | --- |
+| 1 | **Releases** — CPI release dates and actuals from FRED into `event_instances` | `loaded N CPI releases, <first> … <last>` | The table holds real releases |
+| 2 | **Prices** — daily bars for the five instruments; the return around each release into `observations` | `5 instruments × N releases = M observations` | Real returns joined to real events |
+| 3 | **Raw move** — do these instruments move abnormally on CPI days versus ordinary days? | Typical release-day move vs baseline, per instrument | You know whether the event matters at all |
+| 4 | **Surprise** — add expected-vs-actual; relate the move to the surprise | Move per surprise unit, hit rate, `n`, per cell | **MVP complete** |
 
-## M2 — Historical dataset + event-study calibration (M)
+### Why this order
 
-**Goal:** replace seed guesses with measured numbers for scheduled events.
+The previous attempt predicted from placeholder numbers first and measured afterwards. That built
+machinery before touching real data, and produced output that looked like a product while meaning
+nothing. Measuring first means the first thing that exists is a fact, and every feature after it
+stands on real numbers. See the reset note in [CLAUDE.md](../CLAUDE.md).
 
-**Build:** backfill scheduled-macro events (CPI/NFP/Fed/PMI/GDP) into the calibration dataset;
-compute abnormal returns, CAR, half-life; run the calibration SQL to overwrite seed
-magnitudes/hit-rates; close the feedback loop (outcome capture → recalibrate). Data comes from the
-**free stack** (FRED + a free econ calendar + yfinance/Stooq); paid/tick vendors stay deferred — see
-[mvp-architecture.md](mvp-architecture.md).
+### What the MVP deliberately does not have
 
-**Done when:** the effect-size matrix shows calibrated mag_per_sd, hit_rate, n_obs for
-scheduled-macro cells, and the loop re-runs on a schedule (APScheduler).
+No live data path, no scheduler, no delivery, no detection, no confidence calibration, no second
+event type, no web anything. Each is on the ladder below and earns its turn.
 
-## M3 — Confidence calibration + backtest gate (M)
+### The open decision inside step 4
 
-**Goal:** make "70%" actually mean 70%, and don't ship cells that aren't ready.
+Surprise needs an expected value to subtract, and **free historical consensus is the scarcest data
+in this project**. The choice is deliberately deferred to step 4, when steps 1–2 have made it cheap
+to test:
 
-**Build:** directional probability calibration (Platt/isotonic, per regime bucket); conformal
-magnitude bands (MAPIE); benchmark each prediction vs options-implied move + prediction-market
-odds; a backtest harness (Brier, ECE, reliability diagram, coverage, skill score) and the gate that
-blocks reader warnings for uncalibrated/low-n cells.
+- **Market consensus** — what forecasters actually predicted. The authentic definition, and the
+  hardest to obtain free.
+- **Computed baseline** — an expected value modelled from past prints. Always available from FRED
+  alone, but it measures surprise-vs-trend rather than surprise-vs-market.
 
-**Done when:** every warning carries a calibrated probability + magnitude band, and only cells
-passing the gate are reader-visible.
+If consensus proves unobtainable, step 4 falls back to the computed baseline **and says so in its
+output**. The claim shrinks; it does not get quietly overstated.
 
-## M4 — Unscheduled detection + corroboration (L)
+## After the MVP — the feature ladder
 
-**Goal:** go beyond scheduled events to the noisy, high-impact world.
+In order. Each rung is worth building only because the one below it worked.
 
-**Build:** ingest wires/Benzinga/GDELT/on-chain/X (async pollers); MinHash dedup + clustering; LLM
-classification with the polarity prompts; entity-linking to instruments/countries via the
-gazetteer; the log-odds corroboration model + WATCH→CONFIRMED→RETRACTED state machine.
-
-**Done when:** an unscheduled event (a hack, a tariff headline) is detected, deduped, classified,
-entity-linked, corroborated, and routed to prediction — with a detection confidence.
-
-## M5 — Coverage expansion + regime conditioning (M, partly parallel)
-
-**Goal:** fill the matrix and add nuance.
-
-**Build:** widen to more event types and instruments incl. the sector/single-name layer; regime
-buckets (VIX/rate-regime) as calibration dimensions; partial-pooling for sparse cells; keep
-rare/systemic events flagged as scenario priors.
-
-**Done when:** the matrix is broadly populated, regime-conditioned, with low-n cells honestly
-flagged.
-
-## M6 — Productize (L)
-
-**Goal:** turn the engine into something readers receive.
-
-**Build:** the alerting layer (severity = magnitude × confidence, dedup, anti-alert-fatigue
-thresholds, black-swan trigger); delivery channels (email/web/WebSocket) with disclaimers +
-licensing guard; wrap the logic in a FastAPI service; graduate DuckDB → Postgres/TimescaleDB +
-Redis if/when concurrency demands it.
-
-**Done when:** real users get well-formed, rate-limited, compliant warnings through a real channel.
-
-## M7 — Harden, scale & operate (ongoing)
-
-**Goal:** reliable, observable, self-maintaining.
-
-**Build:** observability (latency, classifier accuracy, alert precision/recall, calibration drift);
-auto-recalibration on drift; CI/CD; streaming bus (Kafka/Bytewax) only if throughput demands;
-compliance/audit trail; data-ops for feeds.
-
-**Done when:** it runs unattended, recalibrates itself, and alerts you before it degrades.
-
----
-
-## Critical path & parallelism
-
-- Strictly sequential: M0 → M1 → M2 → M3 (each needs the prior).
-- Parallel: M4 can start alongside M3 once M2 exists. M5 is continuous from M3 onward.
-- Gated: M6 needs M3 (don't productize uncalibrated warnings). M7 is ongoing from M6.
-
-## Graduation triggers (stay lightweight until these fire)
-
-| Move | Trigger | Milestone |
+| # | Feature | Why it waits |
 | --- | --- | --- |
-| DuckDB → Postgres/Timescale | concurrent writers or a live serving API | ~M6 |
-| Scripts → FastAPI service | something external must call it | M6 |
-| Polling → streaming bus (Kafka/Bytewax) | feed volume outgrows async polling | M7 (maybe never) |
+| 1 | **More events** — NFP, Fed decisions | Same code, more rows. Widen only once one event type is measured. |
+| 2 | **Predict the next release** | A prediction is only worth emitting once it comes from measured numbers. |
+| 3 | **Honest confidence** — hit rate → probability, magnitude bands, silence on low-`n` cells | "70%" must mean 70%. Needs enough measured history to calibrate against. |
+| 4 | **Keep score** — log predictions, grade them against outcomes | You cannot grade predictions you are not yet making. |
+| 5 | **Live path** — fetch the release when it lands, instead of by hand | Automating a manual step that must first be worth automating. |
+| 6 | **Delivery** — the warning actually reaches a person | Never deliver uncalibrated warnings; needs rung 3. |
+| 7 | **Unscheduled events** — detection, classification, entity linking, corroboration | The hardest part of the system, and worthless without a working predictor behind it. |
 
-## The one principle to hold
+Beyond the ladder, and deliberately not planned in detail: breadth (more instruments, regime
+conditioning), productization, and operations. They get planned when rung 7 is in sight.
 
-Never widen (M4/M5) or productize (M6) ahead of honesty (M3). A broad system that emits
-uncalibrated confidence is worse than a narrow one that's trustworthy — which is the whole point of
-a warning product.
+## The rules this roadmap is built on
+
+From the [reset note in CLAUDE.md](../CLAUDE.md), because they are what keeps steps small:
+
+1. No new package until a second caller needs it.
+2. No indirection for a single case.
+3. A plan doc must be shorter than the code it specifies.
+
+## Graduation triggers
+
+Build the heavier thing only when its trigger actually fires. None has.
+
+| Move | Trigger |
+| --- | --- |
+| DuckDB → Postgres | Concurrent writers, or a live serving API |
+| Script → web service | Something external must call it |
+| Polling → streaming bus | Feed volume outgrows simple polling |
+
+## Status
+
+**M0 — the data spine — is shipped**: typed models, the DuckDB schema, seed reference tables, and an
+`init | seed | query-demo` CLI. Nothing beyond it is built. MVP step 1 is next.
+
+Historical planning documents, including the superseded M0–M7 milestone scheme, are kept in
+[legacy/](legacy/README.md).

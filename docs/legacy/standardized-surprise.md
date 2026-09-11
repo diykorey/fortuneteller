@@ -3,7 +3,8 @@
 > **`surprise_sd` is the regressor the whole prediction core rests on.** Direction resolution and
 > magnitude both read off it; if you understand one feature in this system, understand this one.
 > The formula is owned by [Calibration Dataset § 3.b](calibration-dataset.md); this page explains the
-> *why*. Source of truth for the sign is the [replay engine](m0-r-tickets.md) (M0-R-02).
+> *why*. **Nothing here is implemented yet** — it is the concept the prediction layer will be built
+> around, not a description of code in the repo.
 
 ## Why "surprise"?
 
@@ -55,11 +56,8 @@ surprise_sign = "above"   if surprise_sd > 0
 ```
 
 `"unknown"` is the honest answer when there isn't enough history to standardize (fewer than ~24
-prior surprises) or when `stdev == 0`. This rule is the **one source of truth**: the
-[replay engine](m0-r-tickets.md) (M0-R-02) derives `surprise_sign` exactly this way, the M1-01
-`surprise_sign()` function matches it deliberately, and it is the type of the `Warning.surprise_sign`
-field (`Literal["above","below","unknown"]`). The engine and the predictor read one definition, not
-two.
+prior surprises) or when `stdev == 0`. Whatever computes the sign, this rule is the **one source of
+truth** — one definition, read by everything downstream, never two.
 
 ## Where it sits
 
@@ -69,24 +67,18 @@ Surprise is **stage 5** of the pipeline — the first enrichment after an event 
 release (consensus, actual) → surprise → effect-size lookup → direction resolution → Warning
 ```
 
-It is implemented by ticket **M1-01** in `src/fortuneteller/predict/surprise.py`, as three pure
-functions:
-
-| Function | Returns |
-| --- | --- |
-| `compute_surprise(consensus, actual)` | `actual - consensus` — the signed raw miss |
-| `standardize(surprise, history)` | `surprise / stdev(history)`, or `None` when history is too short or `stdev == 0` |
-| `surprise_sign(surprise_sd)` | `"above"` / `"below"` / `"unknown"` |
+It is three small computations: the signed miss (`actual − consensus`), its standardization by the
+stdev of recent surprises, and the sign that falls out. None of it exists in the repo yet.
 
 ## Scope & boundaries
 
-- **Deterministic and pure.** No clock, no IO, no randomness — the surprise functions must keep the
-  replay harness byte-for-byte reproducible (see [CLAUDE.md](../CLAUDE.md) determinism rule).
+- **Deterministic and pure.** No clock, no IO, no randomness — surprise is arithmetic over numbers
+  that were handed to it.
 - **Surprise ≠ direction.** Producing a concrete up/down for a `conditional` cell (e.g.
-  `CPI / inflation surprise` × `SPY / ES`) is M1's resolver (M1-02/03), not this feature. Surprise
-  stops at the standardized number and its sign.
-- **Live consensus fetch is M1-06.** Networked code (a free econ calendar / FRED) lives only in
-  `src/fortuneteller/live/` and feeds the same pure functions.
+  `CPI / inflation surprise` × `SPY / ES`) is a separate step. Surprise stops at the standardized
+  number and its sign.
+- **Fetching a live consensus is separate too.** Networked code stays out of these functions and
+  feeds them instead.
 - **Abnormal-returns / `observations` modeling is M2.** Surprise is the *input* feature; regressing
   returns on it is downstream.
 
@@ -94,6 +86,4 @@ functions:
 
 - [Calibration Dataset § 3.b](calibration-dataset.md) — the owning spec for the formula and the
   `event_instances` data model.
-- [M1 Tickets → M1-01](m1-tickets.md) — the buildable spec (files, functions, acceptance criteria).
-- [M0-R Tickets → M0-R-02](m0-r-tickets.md) — the replay engine that established the `surprise_sign`
-  convention.
+- [Roadmap](roadmap.md) — where the prediction layer that consumes this feature sits.

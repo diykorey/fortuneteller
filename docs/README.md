@@ -1,50 +1,45 @@
-# FortuneTeller — Market-Event Prediction System
+# FortuneTeller documentation
 
-Home for the event → market prediction & warning system. All reference data, mappings, the
-quantitative layer, and the calibration dataset are documented here.
+Given an event, say which instruments move, by how much, in which direction — with confidence that
+means something.
 
-> Mirrored from the project's Notion workspace. Narrative/spec pages are reproduced in full;
-> the standalone reference databases are summarized as far as the export tooling allows — see
-> [`data/README.md`](data/README.md) for provenance and known gaps.
+## Start here
 
-## Design & spec documents
-
-| Document | What it covers |
+| Document | What it is |
 | --- | --- |
-| **[MVP Architecture](mvp-architecture.md)** | **Build-now picture (M0–M3): Python-first, single process, DuckDB, provable-core scope. Start here.** |
-| [System Architecture Sketch](architecture.md) | *North-star / eventual* — the full Java/Kafka production shape. Not the build-now plan |
-| [Detection & Confidence Calibration](detection-and-calibration.md) | Part A: turning a noisy firehose into trustworthy events. Part B: making "70%" mean 70% |
-| [Event Polarity & Classifier Prompts](event-polarity-and-classifier-prompts.md) | Polarity of each event type + the three LLM classifier prompts |
-| [News-Source Stack & Coverage](news-source-stack.md) | Ranked source list, coverage by event, coverage by market group, gap analysis |
-| [Event-Study Calibration Dataset](calibration-dataset.md) | Data model, methodology, Postgres DDL, calibration query, pitfalls |
-| [Standardized Surprise](standardized-surprise.md) | What "surprise" means, actual−consensus → surprise_sd, the above/below/unknown sign, and its place as pipeline stage 5 |
-| [News Source Coverage & Gaps](news-source-coverage-and-gaps.md) | Standalone coverage check across the taxonomy and platform list |
+| **[Roadmap](roadmap.md)** | What we are building, in what order, and what "done" means. **Read first.** |
+| **[Glossary](glossary.md)** | Every acronym, ticker, and piece of jargon, explained. Read alongside anything else. |
 
-## Planning
+That is the whole current corpus, deliberately. Both were rewritten on 2026-09-11; everything
+written before then lives in **[legacy/](legacy/README.md)** and is reference material, not
+instructions. The one live exception there is `legacy/data/`, which documents the seed CSVs the code
+actually loads.
 
-| Document | What it covers |
+## Where things are
+
+| Path | Holds |
 | --- | --- |
-| [Roadmap — Prototype to Complete Solution](roadmap.md) | Milestones M0–M7, critical path, graduation triggers |
-| [Tech Stack & Reasoning](tech-stack.md) | Python-first, DuckDB, no-ORM decisions and their rationale |
-| [M0 Tickets — Scaffold & Seed](m0-tickets.md) | LLM-ready tickets M0-01 … M0-10 with file paths and acceptance criteria |
-| [M0-R Tickets — Replay Harness](m0-r-tickets.md) | LLM-ready tickets M0-R-01 … 05: the deterministic fixture-replay dev loop |
-| [M1 Tickets — Thin Vertical Slice](m1-tickets.md) | LLM-ready tickets M1-01 … 07: CPI → resolved warning, end to end, + the free live path |
+| `docs/` | The current, authoritative documents — the two above. |
+| `docs/legacy/` | The pre-reset design corpus: architecture sketches, data-table documentation, old milestone plans. |
+| `data/seed/` | The committed reference CSVs the code actually reads. |
+| `schema.sql` | The table definitions, as plain SQL. |
+| `src/fortuneteller/` | The package: config, models, store, seed loader, CLI. |
 
-## Reference data
+## How this folder grows
 
-| Table | Status |
-| --- | --- |
-| [Market-Moving Events (Ranked)](data/events.md) | Full — 31 events with polarity and tier |
-| [News Sources (Ranked)](data/news-sources.md) | Full — 25-source ranked stack + coverage matrices |
-| [Instruments / Tickers](data/instruments.md) | Representative subset (12 of 55) |
-| [Effect-Size Matrix (event × instrument)](data/effect-size-matrix.md) | Representative seed subset |
-| [Top Countries by GDP — Coverage](data/countries.md) | Representative subset (10 of 50) |
-| [Markets & Trading Platforms](data/platforms.md) | Representative subset (of 132) |
+Flat until it needs not to be. A subfolder gets created when a *second* document of the same kind
+exists — not in advance. The natural next splits, when they arrive:
 
-Seed data for the embedded store lives in [`/data/seed`](../data/seed).
+- `concepts/` — one file per idea that needs explaining beyond a glossary line (surprise, abnormal
+  return, calibration).
+- `data/` — how each reference table is sourced, what is complete, what is a placeholder.
+- `decisions/` — short records of choices that would otherwise be re-litigated.
 
-## The system in one line
+A document is written when something real needs it. A document that describes code that does not
+exist is a liability — the last corpus is in `legacy/` partly because it drifted into that.
 
-Ingest social / political / climate / macro events → predict which instruments move
-(direction + magnitude + horizon) with **calibrated** confidence → warn readers within a
-seconds-to-minutes budget. A warning product, not HFT.
+## Current state
+
+**M0 — the data spine — is shipped**: typed models, the DuckDB schema, the seed reference tables,
+and a working `init | seed | query-demo` CLI. No prediction code exists yet. MVP step 1 is next; see
+the [roadmap](roadmap.md).
