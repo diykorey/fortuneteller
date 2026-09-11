@@ -8,30 +8,52 @@ FortuneTeller — an event-driven market-impact prediction & warning system: ing
 / climate / macro events, predict which instruments move (direction + magnitude + horizon) with
 **calibrated** confidence. A warning product, not HFT (latency budget is seconds-to-minutes).
 
-The repo is **bootstrapping**: it currently holds the design docs (mirrored from a Notion workspace),
-seed reference data, and the M0-01 project skeleton. Most runtime code is specified but not yet built
-— follow the tickets.
+The repo is **bootstrapping**. What exists today is exactly M0 — the data spine — and nothing more:
+the design docs (mirrored from a Notion workspace), the seed reference data, and a working
+`init | seed | query-demo` CLI over DuckDB (M0-01…09; ruff + mypy --strict + pytest green). **No
+prediction code exists**: no surprise computation, no direction resolution, no warnings.
 
-## Two architectures — read this first
+## The 2026-08-05 reset — read before planning any work
 
-There are deliberately two architecture docs, and they disagree on purpose:
+`main` was deliberately reset to `15ed679` on **2026-08-05**, discarding a built M0-R replay harness
+and M1 offline prediction core. **Reason: it was over-engineered for the stage.** The discarded work
+is preserved in the `origin/main_05082026` branch (41 commits) — read it for reference, but do not
+restore it without asking.
 
-- **`docs/mvp-architecture.md` is the canonical "build now" picture** — Python-first, single process,
-  embedded DuckDB, scripts-before-services. **Build from this.**
-- **`docs/architecture.md` is the north-star** — the eventual Java/Kafka/Flink production spine. **Do
-  NOT scaffold from it.** When the two conflict, MVP wins until a documented graduation trigger fires.
+GitHub issues #24–30 and #55–62, and the M1/M2 milestones, describe that pre-reset line of work.
+**The board is stale** — it claims work that is not on this branch — and stays that way until a new
+plan lands.
 
-At the MVP stage the pipeline is a **deterministic chain of pure functions over local data**, not a
-distributed system: the 10 stages in the north-star map to functions in one process; the "event bus"
-is a list; the store is one DuckDB file + committed seed CSVs.
+Three rules follow from the reset. They are checkable, so check them:
+
+1. **No new package until a second caller needs it.** A change may not add an `__init__.py`; until
+   two call sites exist, it is a function in a file that already exists.
+2. **No indirection for a single case.** No mapping CSV, registry, or resolver layer until there are
+   two concrete cases to resolve between.
+3. **A plan doc must be shorter than the code it specifies.** If a step needs 600 lines of ticket,
+   the step is too big — split it.
+
+## The documents
+
+Only two are current, both rewritten on 2026-09-11:
+
+- **`docs/roadmap.md`** — the MVP and the feature ladder after it. **Build from this.**
+- **`docs/glossary.md`** — every acronym and term. Add to it whenever you introduce one.
+
+Everything under **`docs/legacy/`** is the pre-reset corpus: reference material, **not
+instructions**. It documents a plan that was abandoned; where it and the roadmap disagree, the
+roadmap wins. `docs/legacy/README.md` says what in there is still worth reading — including
+`docs/legacy/data/`, which is still accurate about the seed CSVs the code loads.
 
 ## Scope discipline — the provable core
 
-The MVP calibrates exactly one slice before widening anything: **scheduled-macro events (CPI / NFP /
-Fed) × ~5 liquid instruments** (SPY/ES, a rates benchmark, DXY, Gold, VIX), on recorded fixtures then
-a free data stack (FRED + a free econ calendar + yfinance/Stooq). The full 31-event taxonomy, 55
-instruments, 132 platforms, unscheduled detection, and paid/tick data are **post-proof** — every data
-table says so. Do not implement against the full breadth until the core is proven.
+The MVP measures exactly one slice before widening anything: **CPI × 5 liquid instruments** (SPY,
+UST 10Y, DXY, Gold, VIX) over real history, from free sources (FRED + yfinance/Stooq). The full
+31-event taxonomy, 55 instruments, 132 platforms, unscheduled detection, and paid/tick data are
+**post-proof**. Do not implement against the full breadth until the core is measured.
+
+**Measure before predicting.** The MVP produces measured numbers, not warnings — emitting confident
+output derived from placeholder seed values is the specific failure the reset was a response to.
 
 ## Commands
 
@@ -40,7 +62,7 @@ Toolchain is `uv` (Python 3.12). `just` recipes wrap these; if `just` isn't inst
 
 ```bash
 uv sync                              # install deps + dev group (ruff, mypy, pytest)
-uv run fortuneteller --help          # CLI: init | seed | query-demo (handlers stubbed until M0-05/07)
+uv run fortuneteller --help          # CLI: init | seed | query-demo
 uv run ruff check                    # lint (line length 100)
 uv run ruff format                   # format
 uv run mypy src                      # type check (strict)
@@ -50,39 +72,33 @@ uv run pytest -k version             # tests matching a keyword
 just check                           # the full local gate = lint + typecheck + test (mirrors CI)
 ```
 
-CI (`.github/workflows/ci.yml`) runs ruff + mypy + pytest on every push, but **skips cleanly until
-`pyproject.toml` exists** (it's guarded), then enforces automatically.
+CI (`.github/workflows/ci.yml`) runs ruff + mypy + pytest on every push and pull request,
+unconditionally — the old docs-only guard was dropped in M0-09.
 
 ## Where things live
 
-- **Roadmap & tickets:** `docs/roadmap.md` (M0–M7); `docs/m0-tickets.md` (M0-01…M0-09, the scaffold);
-  `docs/m0-r-tickets.md` (M0-R-01…05, the replay harness). Tickets are written to be executed in
-  isolation — file paths + binary acceptance criteria. GitHub mirrors these as milestones M0–M7 and
-  M0 issues (#2–#10, label `M0`).
+- **The plan:** `docs/roadmap.md` — the MVP (four steps) and the feature ladder after it. M0 shipped
+  as tickets M0-01…09 (issues #2–#10, milestone closed); its ticket doc is now
+  `docs/legacy/m0-tickets.md`. There is no ticket set for the MVP steps and none is needed yet.
 - **The data spine:** Pydantic v2 models + a thin SQL helper over DuckDB — **no ORM**. Schema is plain
   SQL in `schema.sql` so the later Postgres migration stays cheap. Reference tables are **config the
-  pipeline reads**, committed as seed CSVs in `data/seed/` (and documented in `docs/data/`).
-- **The fast-dev loop (replay harness):** the spine of iteration. A fixture (`fixtures/*.json`)
-  carries a pre-detected event; `replay()` runs the deterministic core (stages 5–8: surprise →
-  effect-size lookup → `Warning`) and golden files assert the output byte-for-byte. It is **offline
-  and deterministic** — `as_of` comes from the fixture `t0`, never `now()`; no randomness. Iterate
-  logic against fixtures instead of waiting for live data. Detection (stages 1–4) is out of scope
-  until M4. Design: `docs/superpowers/specs/2026-06-22-replay-harness-fast-dev-loop-design.md`.
+  pipeline reads**, committed as seed CSVs in `data/seed/` (documented in `docs/legacy/data/`).
 
 ## Conventions & gotchas
 
 - **Canonical keys are load-bearing.** `event_type` strings and instrument **symbols** must match
   `data/seed/event_types.csv` and `data/seed/instruments.csv` exactly (e.g. `CPI / inflation surprise`,
-  `SPY / ES`). Naming drift silently breaks joins, fixtures, and the `query-demo` lookup.
+  `SPY / ES`). Naming drift silently breaks joins and the `query-demo` lookup.
 - **Enum casing:** the M0-03 models / seed CSVs use lowercase enum values (`positive`, `both`, `up`,
-  `conditional`, `equity_index`); `docs/calibration-dataset.md`'s DDL uses capitalized (`Positive`,
-  `Up`). Reconcile to one casing when implementing M2.
-- **Conditional direction is deferred to M1.** At M0-R, `conditional` cells emit
-  `direction="conditional"` + a `surprise_sign`; turning that into a concrete up/down is M1's job.
+  `conditional`, `equity_index`); the DDL in `docs/legacy/calibration-dataset.md` uses capitalized
+  (`Positive`, `Up`). Reconcile to one casing if that spec's SQL is ever adopted.
+- **`conditional` cells are unresolved by design.** Many `effect_size_seed` rows carry
+  `direction=conditional` — the move depends on the surprise sign and the regime. Turning those into
+  a concrete up/down is future work; nothing in the repo does it today.
 - **Seed data is not ground truth.** Reference data is partial (Notion read-only export limits):
   `event_types`/`news_sources` are full, `instruments`/`countries` are representative subsets, and
   **`effect_size_seed` values are illustrative placeholders, not authoritative**; event tiers are
   inferred. Each table states its completeness; the full tables live in Notion.
-- **Classifier:** start with the single unified prompt in
-  `docs/event-polarity-and-classifier-prompts.md`; the three-way split there is a deferred option.
+- **Classifier:** far future (feature-ladder rung 7). When it arrives, start with the single unified
+  prompt in `docs/legacy/event-polarity-and-classifier-prompts.md`, not the three-way split.
 - Tests use the `# given` / `# when` / `# then` comment structure.

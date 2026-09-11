@@ -34,38 +34,51 @@ Captured outcomes feed a calibration loop that re-estimates the effect-size matr
 keeps learning. On top of that spine, a **causal-chain layer** forecasts the aftershakes (likely
 follow-on events, constrained to the taxonomy) and their results, and explains the
 shake → aftershake → result story — only ever asserting what the spine can score. Build-now detail
-is in [mvp-architecture.md](docs/mvp-architecture.md); the eventual production shape is the
-north-star [architecture sketch](docs/architecture.md).
+is being rebuilt from a measured base; see the [roadmap](docs/roadmap.md).
 
 ## Documentation
 
-Start at [`docs/`](docs/README.md). Highlights:
+Start at [`docs/`](docs/README.md). There are two current documents:
 
-- **Architecture:** [MVP — build-now](docs/mvp-architecture.md) · [north-star sketch](docs/architecture.md)
-- **Specs:** [Detection & Calibration](docs/detection-and-calibration.md) ·
-  [Event Polarity & Classifier Prompts](docs/event-polarity-and-classifier-prompts.md) ·
-  [News-Source Stack](docs/news-source-stack.md) ·
-  [Calibration Dataset](docs/calibration-dataset.md)
-- **Planning:** [Roadmap (M0–M7)](docs/roadmap.md) · [Tech Stack & Reasoning](docs/tech-stack.md) ·
-  [M0 Tickets](docs/m0-tickets.md)
-- **Reference data:** [events, instruments, news sources, effect-size, …](docs/data/README.md)
+- **[Roadmap](docs/roadmap.md)** — what gets built, in what order, and what "done" means.
+- **[Glossary](docs/glossary.md)** — every acronym, ticker, and piece of jargon, explained.
+
+The pre-2026-09-11 design corpus — architecture sketches, reference-table documentation, the old
+milestone plans — is kept for reference in [`docs/legacy/`](docs/legacy/README.md).
 
 ## Repository layout
 
 ```
-docs/            # specs, roadmap, tech stack, tickets (mirrored from Notion)
-docs/data/       # reference tables as markdown (provenance noted)
+docs/            # roadmap + glossary — the current documents
+docs/legacy/     # the pre-2026-09-11 design corpus, kept for reference
 data/seed/       # committed seed CSVs the embedded store loads
+src/fortuneteller/  # the package: config, models, db helper, seed loader, CLI
+tests/           # pytest suite (ruff + mypy --strict + pytest is the gate)
 ```
 
 ## Status
 
-Bootstrapping, **measurable-spine first**. The repo holds the design docs + seed data (mirrored from
-Notion) and the **M0-01 project skeleton** (uv / DuckDB / Pydantic). The spine is built against a
-narrow [provable core](docs/mvp-architecture.md) — scheduled-macro events × ~5 instruments,
-calibrated against returns — before the causal-chain layer and broader coverage are added; see the
-[roadmap](docs/roadmap.md) and [M0 tickets](docs/m0-tickets.md).
+Bootstrapping, **measurable-spine first**. **M0 — the data spine — is complete and nothing beyond it
+is built.** Today the repo gives you typed Pydantic models, a DuckDB schema, the committed seed
+tables, and a CLI that loads and queries them:
 
-> **Data provenance:** narrative specs are reproduced in full. The standalone reference databases
-> are partial (read-only Notion export limits) — each table states its completeness. See
-> [docs/data/README.md](docs/data/README.md).
+```bash
+uv sync
+uv run fortuneteller init        # create the DuckDB file
+uv run fortuneteller seed        # load the seed CSVs
+uv run fortuneteller query-demo  # a sample effect-size lookup
+```
+
+There is **no prediction code yet** — no surprise computation, no direction resolution, no warnings.
+An earlier attempt at that layer was reset on 2026-08-05 for being over-engineered for the stage; it
+is preserved on the `main_05082026` branch.
+
+Next is the MVP: a measured answer to **does the edge exist** — one event type (CPI) × five liquid
+instruments, from real historical data, in four steps. Not a predictor, not a product: a table of
+real numbers with an honest `n` beside each. Everything else waits behind it. See the
+[roadmap](docs/roadmap.md).
+
+> **Data provenance:** the seed reference tables are partial (read-only Notion export limits) and
+> the effect-size values in them are illustrative placeholders, not measurements — replacing them
+> with measured numbers is what the MVP is for. Each table states its own completeness; see
+> [docs/legacy/data/README.md](docs/legacy/data/README.md).

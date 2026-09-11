@@ -2,7 +2,7 @@
 
 The FortuneTeller knowledge base is a set of Notion databases that the pipeline reads as config.
 This directory mirrors them as markdown; the machine-readable seed lives in
-[`/data/seed`](../../data/seed).
+[`/data/seed`](../../../data/seed).
 
 > **Scope note:** these full tables (31 events, 55 instruments, 132 platforms) are **post-proof
 > reference**, *not* the build scope. The MVP calibrates only the **provable core** — scheduled-macro

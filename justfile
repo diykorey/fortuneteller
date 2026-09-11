@@ -36,7 +36,3 @@ init:
 # load the seed CSVs into the store
 seed:
     uv run fortuneteller seed
-
-# replay a fixture through the deterministic core (default: the war-shock fixture)
-replay fixture="fixtures/war-oil-shock-2026.json":
-    uv run fortuneteller replay {{fixture}} --json

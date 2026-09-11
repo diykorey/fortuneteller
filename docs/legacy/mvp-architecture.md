@@ -5,6 +5,13 @@
 > what we scaffold first. When the two seem to disagree, **this document wins** until a
 > [graduation trigger](#graduation-triggers) fires.
 
+> **One superseded mechanism, throughout.** Every mention below of a `fixtures/` directory, a
+> `replay()` entry point, or "the replay harness" describes *one discarded attempt* at stages 5–8,
+> not the current plan — the 2026-08-05 reset threw that shape out as over-engineered, and a leaner
+> replacement has yet to be designed. Everything around it — Python-first, single process, DuckDB,
+> the provable-core scope, the free data stack, the graduation triggers — still holds. See the reset
+> note in [CLAUDE.md](../../CLAUDE.md).
+
 ## The one decision
 
 **Python-first, single process, DuckDB, fixture-driven.** No broker, no services, no containers, no
@@ -50,16 +57,15 @@ fixture / event  ->  surprise()  ->  predict()  ->  calibrate()  ->  warn()
                                    data: DuckDB + fixtures (local, committed)
 ```
 
-The deterministic middle (stages 5–8) is the [replay harness](superpowers/specs/2026-06-22-replay-harness-fast-dev-loop-design.md):
-`replay(fixture) -> list[Warning]`. Detection (stages 1–4) is added as ordinary functions/modules
-at M4 — it does not exist in the MVP.
+The deterministic middle (stages 5–8) is what gets built first; detection (stages 1–4) is added as
+ordinary functions at M4 and does not exist in the MVP.
 
 ## Stack (M0–M3)
 
 - **Language/runtime:** Python 3.12, one process. `uv` for env/deps/run.
 - **Store:** DuckDB single file + Polars for CSV/Parquet IO. Schema in `schema.sql`. No ORM —
   Pydantic models + a thin SQL helper.
-- **Data:** committed seed CSVs (`data/seed/`) + JSON `fixtures/`. Zero credentials to boot.
+- **Data:** committed seed CSVs (`data/seed/`) + recorded event JSON. Zero credentials to boot.
 - **LLM classify (M1+):** one Anthropic API call behind `instructor` → validated Pydantic JSON.
   Use the **single unified** classifier prompt, not the three split prompts, until precision forces
   a split.
