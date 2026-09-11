@@ -1,7 +1,7 @@
 # Seed data
 
 Committed CSVs that the embedded store loads at `fortuneteller seed` time, so the repo
-clones-and-runs offline with no Notion credentials (see [M0-06](../../docs/m0-tickets.md)). Headers
+clones-and-runs offline with no Notion credentials (see [M0-06](../../docs/legacy/m0-tickets.md)). Headers
 match the DuckDB tables in `schema.sql`; enum columns use the M0-03 enum *values* (lowercase, e.g.
 `both`, `conditional`, `equity_index`).
 
@@ -19,7 +19,7 @@ The standalone Notion databases can't be bulk-exported with read-only API access
 view-query endpoints require a paid Notion plan). The narrative pages supplied the full
 `event_types` and `news_sources` data; the rest are correct-schema samples per the M0-06 fallback
 ("commit a non-empty representative subset …"). The full tables live in the project's Notion
-workspace. See [`docs/data/README.md`](../../docs/data/README.md) for the full provenance breakdown.
+workspace. See [`docs/legacy/data/README.md`](../../docs/legacy/data/README.md) for the full provenance breakdown.
 
 ## Cross-references
 

@@ -38,9 +38,13 @@ is being rebuilt from a measured base; see the [roadmap](docs/roadmap.md).
 
 ## Documentation
 
-Start at [`docs/`](docs/README.md). There are two current documents:
+**[`docs/`](docs/README.md) is the single entry point** — it carries the map of how everything
+connects. The documents form one chain, from *why* to *what exactly*:
 
+- **[Legend](docs/legend.md)** — the target, the bet behind it, the way we intend to get there, and
+  the template every step document follows.
 - **[Roadmap](docs/roadmap.md)** — what gets built, in what order, and what "done" means.
+- **[Step 1 — Releases](docs/step-1-releases.md)** — the step being worked on now.
 - **[Glossary](docs/glossary.md)** — every acronym, ticker, and piece of jargon, explained.
 
 The pre-2026-09-11 design corpus — architecture sketches, reference-table documentation, the old
@@ -49,7 +53,7 @@ milestone plans — is kept for reference in [`docs/legacy/`](docs/legacy/README
 ## Repository layout
 
 ```
-docs/            # roadmap + glossary — the current documents
+docs/            # legend + roadmap + step docs + glossary — start at docs/README.md
 docs/legacy/     # the pre-2026-09-11 design corpus, kept for reference
 data/seed/       # committed seed CSVs the embedded store loads
 src/fortuneteller/  # the package: config, models, db helper, seed loader, CLI

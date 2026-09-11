@@ -1,6 +1,8 @@
 # Roadmap
 
-> Unfamiliar acronym, ticker, or term? Every one is explained in the [Glossary](glossary.md).
+> Why this plan has this shape — the target, the idea being tested, and the principles behind the
+> ordering — is in the [Legend](legend.md). Unfamiliar acronym, ticker, or term? Every one is
+> explained in the [Glossary](glossary.md).
 
 ## The goal
 
@@ -28,7 +30,7 @@ step that has not happened yet. The sample outputs below are illustrative shapes
 
 | # | Step | What it prints | Done when |
 | --- | --- | --- | --- |
-| 1 | **Releases** — CPI release dates and actuals from FRED into `event_instances` | `loaded N CPI releases, <first> … <last>` | The table holds real releases |
+| 1 | **[Releases](step-1-releases.md)** — CPI release dates and actuals from FRED into `event_instances` | `loaded N CPI releases, <first> … <last>` | The table holds real releases |
 | 2 | **Prices** — daily bars for the five instruments; the return around each release into `observations` | `5 instruments × N releases = M observations` | Real returns joined to real events |
 | 3 | **Raw move** — do these instruments move abnormally on CPI days versus ordinary days? | Typical release-day move vs baseline, per instrument | You know whether the event matters at all |
 | 4 | **Surprise** — add expected-vs-actual; relate the move to the surprise | Move per surprise unit, hit rate, `n`, per cell | **MVP complete** |
