@@ -8,10 +8,9 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-MVP step 1, sub-step 3 — `study.to_event_instance` maps each parsed release to an `EventInstance`:
-`event_id` is the reference month as `YYYYMM`, `event_ts` the release day at 08:30 New York as naive
-UTC (DuckDB would shift an aware one to the session zone), `quality` is `first_release`. All 649
-live prints map to unique ids at 12:30 or 13:30 UTC. *(PR #68.)*
+MVP step 1, sub-step 4 — `study.store_cpi_releases` writes the mapped releases to
+`event_instances` with `insert_models(replace=True)`. Live run on 2026-09-25 from a Kyiv-time
+session: 649 rows, 649 again on re-run, `event_ts` 1972-08-22 12:30 … 2026-09-11 12:30 UTC. *(PR #69.)*
 
 ## In progress
 
@@ -19,14 +18,15 @@ Nothing.
 
 ## Next
 
-MVP step 1, sub-step 4 — **write the mapped releases with `insert_models(replace=True)`**; re-running
-changes no row count. Round-trip `event_ts` under a non-UTC session time zone. Spec:
+MVP step 1, sub-step 5 — **`uv run fortuneteller load-releases`**: fetch, parse, store, and print
+`loaded N CPI releases, <first> … <last>`, reporting the valueless months. Spec:
 [step-1-releases.md](step-1-releases.md).
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-09-25 | Step 1.4: store the CPI events idempotently | PR #69 |
 | 2026-09-25 | Step 1.3: map each CPI release to an `EventInstance` | PR #68 |
 | 2026-09-25 | Step 1.2: fetch and parse the CPI initial-release history from FRED | PR #67 |
 | 2026-09-11 | Step 1 prep: FRED key in settings, accounts doc, API verified, UST 10Y added | PR #66 |
@@ -39,7 +39,7 @@ changes no row count. Round-trip `event_ts` under a non-UTC session time zone. S
 
 | Step | State |
 | --- | --- |
-| 1 Releases | Sub-step 3 of 5 done |
+| 1 Releases | Sub-step 4 of 5 done |
 | 2 Prices | Not started |
 | 3 Raw move | Not started |
 | 4 Surprise | Not started |

@@ -9,11 +9,18 @@ from email.message import Message
 from pathlib import Path
 from typing import Any, NoReturn
 
+import duckdb
 import pytest
 
-from fortuneteller import study
+from fortuneteller import db, study
 from fortuneteller.config import settings
-from fortuneteller.study import CpiRelease, FredError, parse_cpi_releases, to_event_instance
+from fortuneteller.study import (
+    CpiRelease,
+    FredError,
+    parse_cpi_releases,
+    store_cpi_releases,
+    to_event_instance,
+)
 
 FIXTURE = Path(__file__).parent / "data" / "fred_cpi_initial_release.json"
 
@@ -171,3 +178,36 @@ def test_event_keys_match_the_seed_reference_tables() -> None:
     # then its join keys exist exactly as written
     assert event.event_type in column("event_types.csv", "event_type")
     assert event.country in column("countries.csv", "country")
+
+
+def _store(time_zone: str = "UTC") -> duckdb.DuckDBPyConnection:
+    con = duckdb.connect(":memory:")
+    con.execute(f"SET TimeZone = '{time_zone}'")
+    db.init_db(con=con)
+    releases, _ = parse_cpi_releases(FIXTURE.read_bytes())
+    store_cpi_releases(releases, con=con)
+    return con
+
+
+def test_rerunning_the_store_changes_no_row_count() -> None:
+    # given the fixture releases already stored once
+    con = _store()
+    releases, _ = parse_cpi_releases(FIXTURE.read_bytes())
+
+    # when they are stored again
+    written = store_cpi_releases(releases, con=con)
+
+    # then every row is overwritten in place, not appended
+    assert written == 6
+    assert db.count_rows("event_instances", con=con) == 6
+
+
+def test_event_ts_round_trips_as_utc_under_a_non_utc_session() -> None:
+    # given a store whose session time zone is not UTC, as on a developer machine
+    con = _store("Europe/Kyiv")
+
+    # when the August 2026 print is read back
+    row = con.execute("SELECT event_ts FROM event_instances WHERE event_id = 202608").fetchone()
+
+    # then it is still 08:30 New York in UTC, not shifted to the session zone
+    assert row == (datetime(2026, 9, 11, 12, 30),)

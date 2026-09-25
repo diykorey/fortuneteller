@@ -55,7 +55,7 @@ change that consensus is actually quoted for.
 | 1 | ~~Get a free FRED API key; put it in `.env`~~ **done** | `settings.fred_api_key` resolves it |
 | 2 | ~~Fetch the CPI initial-release history in one request~~ **done** | The response parses into dated records |
 | 3 | ~~Map each record to an `EventInstance`~~ **done** | Release timestamp, actual, and a stable id per row |
-| 4 | Write them with `insert_models(replace=True)` | Re-running changes no row count |
+| 4 | ~~Write them with `insert_models(replace=True)`~~ **done** | Re-running changes no row count |
 | 5 | Print the count and the date range | `loaded N CPI releases, <first> … <last>` |
 
 ## How you know it is right
