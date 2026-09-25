@@ -11,8 +11,10 @@ from typing import Any, NoReturn
 
 import duckdb
 import pytest
+from pydantic import SecretStr
 
 from fortuneteller import db, study
+from fortuneteller.__main__ import main
 from fortuneteller.config import settings
 from fortuneteller.study import (
     CpiRelease,
@@ -211,3 +213,61 @@ def test_event_ts_round_trips_as_utc_under_a_non_utc_session() -> None:
 
     # then it is still 08:30 New York in UTC, not shifted to the session zone
     assert row == (datetime(2026, 9, 11, 12, 30),)
+
+
+def test_load_releases_prints_count_range_and_skipped_months(
+    tmp_db: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    # given a configured key and FRED answering with the saved response
+    monkeypatch.setattr(settings, "fred_api_key", SecretStr("test-key"))
+    monkeypatch.setattr(study, "fetch_cpi_releases", lambda _key: FIXTURE.read_bytes())
+
+    # when the command runs twice
+    first = main(["load-releases"])
+    second = main(["load-releases"])
+
+    # then each run reports the same load, and the table holds one row per print
+    assert (first, second) == (0, 0)
+    report = "loaded 6 CPI releases, 1972-08-22 … 2026-09-11\n"
+    report += "skipped 1 printed without a value: 2025-10\n"
+    assert capsys.readouterr().out == report * 2
+    assert db.count_rows("event_instances", con=db.get_connection()) == 6
+
+
+def test_load_releases_without_a_key_fails_before_fetching(
+    tmp_db: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    # given no key configured
+    monkeypatch.setattr(settings, "fred_api_key", None)
+
+    def fetch(_key: str) -> NoReturn:
+        raise AssertionError("fetched without a key")
+
+    monkeypatch.setattr(study, "fetch_cpi_releases", fetch)
+
+    # when the command runs
+    code = main(["load-releases"])
+
+    # then it exits non-zero and says which setting is missing
+    assert code == 1
+    assert "FT_FRED_API_KEY" in capsys.readouterr().err
+
+
+def test_load_releases_reports_a_fred_failure(
+    tmp_db: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    # given FRED rejecting the request
+    monkeypatch.setattr(settings, "fred_api_key", SecretStr("test-key"))
+
+    def fetch(_key: str) -> NoReturn:
+        raise FredError("FRED returned HTTP 400: Bad Request")
+
+    monkeypatch.setattr(study, "fetch_cpi_releases", fetch)
+
+    # when the command runs
+    code = main(["load-releases"])
+
+    # then it exits non-zero with the reason and writes nothing
+    assert code == 1
+    assert "HTTP 400" in capsys.readouterr().err
+    assert db.count_rows("event_instances", con=db.get_connection()) == 0

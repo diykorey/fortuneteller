@@ -8,9 +8,9 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-MVP step 1, sub-step 4 — `study.store_cpi_releases` writes the mapped releases to
-`event_instances` with `insert_models(replace=True)`. Live run on 2026-09-25 from a Kyiv-time
-session: 649 rows, 649 again on re-run, `event_ts` 1972-08-22 12:30 … 2026-09-11 12:30 UTC. *(PR #69.)*
+MVP step 1, sub-step 5 — `uv run fortuneteller load-releases` fetches, parses and stores the CPI
+release history. **Step 1 is complete.** Live run on 2026-09-25, twice: `loaded 649 CPI releases,
+1972-08-22 … 2026-09-11`, `2025-10` skipped for having no value, 649 rows after both runs.
 
 ## In progress
 
@@ -18,14 +18,14 @@ Nothing.
 
 ## Next
 
-MVP step 1, sub-step 5 — **`uv run fortuneteller load-releases`**: fetch, parse, store, and print
-`loaded N CPI releases, <first> … <last>`, reporting the valueless months. Spec:
-[step-1-releases.md](step-1-releases.md).
+MVP step 2 — **Prices**: daily bars for the five MVP instruments; the return around each release
+into `observations`. Spec: to be written, following the step template in [legend.md](legend.md).
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-09-25 | Step 1.5: `load-releases` CLI — step 1 complete | this branch |
 | 2026-09-25 | Step 1.4: store the CPI events idempotently | PR #69 |
 | 2026-09-25 | Step 1.3: map each CPI release to an `EventInstance` | PR #68 |
 | 2026-09-25 | Step 1.2: fetch and parse the CPI initial-release history from FRED | PR #67 |
@@ -39,7 +39,7 @@ MVP step 1, sub-step 5 — **`uv run fortuneteller load-releases`**: fetch, pars
 
 | Step | State |
 | --- | --- |
-| 1 Releases | Sub-step 4 of 5 done |
+| 1 Releases | Done |
 | 2 Prices | Not started |
 | 3 Raw move | Not started |
 | 4 Surprise | Not started |

@@ -62,15 +62,16 @@ tests/           # pytest suite (ruff + mypy --strict + pytest is the gate)
 
 ## Status
 
-Bootstrapping, **measurable-spine first**. **M0 — the data spine — is complete and nothing beyond it
-is built.** Today the repo gives you typed Pydantic models, a DuckDB schema, the committed seed
-tables, and a CLI that loads and queries them:
+Bootstrapping, **measurable-spine first**. **M0 — the data spine — is complete, and so is step 1 of
+the MVP.** Today the repo gives you typed Pydantic models, a DuckDB schema, the committed seed
+tables, a CLI that loads and queries them, and the real CPI release history from FRED:
 
 ```bash
 uv sync
 uv run fortuneteller init        # create the DuckDB file
 uv run fortuneteller seed        # load the seed CSVs
 uv run fortuneteller query-demo  # a sample effect-size lookup
+uv run fortuneteller load-releases  # CPI release history from FRED (needs FT_FRED_API_KEY)
 ```
 
 There is **no prediction code yet** — no surprise computation, no direction resolution, no warnings.
