@@ -10,7 +10,7 @@ Where the work is and what comes next. Two rules keep it current:
 
 MVP step 1, sub-step 5 — `uv run fortuneteller load-releases` fetches, parses and stores the CPI
 release history. **Step 1 is complete.** Live run on 2026-09-25, twice: `loaded 649 CPI releases,
-1972-08-22 … 2026-09-11`, `2025-10` skipped for having no value, 649 rows after both runs.
+1972-08-22 … 2026-09-11`, `2025-10` skipped for having no value, 649 rows after both runs. *(PR #70.)*
 
 ## In progress
 
@@ -25,7 +25,7 @@ into `observations`. Spec: to be written, following the step template in [legend
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-09-25 | Step 1.5: `load-releases` CLI — step 1 complete | this branch |
+| 2026-09-25 | Step 1.5: `load-releases` CLI — step 1 complete | PR #70 |
 | 2026-09-25 | Step 1.4: store the CPI events idempotently | PR #69 |
 | 2026-09-25 | Step 1.3: map each CPI release to an `EventInstance` | PR #68 |
 | 2026-09-25 | Step 1.2: fetch and parse the CPI initial-release history from FRED | PR #67 |
