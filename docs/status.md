@@ -25,6 +25,7 @@ into `observations`. Spec: to be written, following the step template in [legend
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-09-25 | Schema doc: every table, column and enum value explained | PR #71 |
 | 2026-09-25 | Step 1.5: `load-releases` CLI — step 1 complete | PR #70 |
 | 2026-09-25 | Step 1.4: store the CPI events idempotently | PR #69 |
 | 2026-09-25 | Step 1.3: map each CPI release to an `EventInstance` | PR #68 |
