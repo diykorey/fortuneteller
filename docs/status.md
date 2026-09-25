@@ -8,9 +8,10 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-MVP step 1, sub-step 1 — the FRED API key is declared in settings (`settings.fred_api_key`), the
-accounts are recorded in [accounts.md](accounts.md), and the step 1 data source was verified
-against the live API. UST 10Y / ZN was added to the instrument universe. *(PR #66, open.)*
+MVP step 1, sub-step 2 — `study.fetch_cpi_releases` fetches the CPI initial-release history from
+FRED in one request; `study.parse_cpi_releases` turns it into dated records (reference month,
+release date, value) and reports the months printed without a value. Live run on 2026-09-25: 650
+rows, 649 parsed, `2025-10` skipped, published 1972-08-22 … 2026-09-11.
 
 ## In progress
 
@@ -18,15 +19,16 @@ Nothing.
 
 ## Next
 
-MVP step 1, sub-step 2 — **fetch the CPI initial-release history from FRED in one request** and
-parse it into dated records. Code goes in a new file `src/fortuneteller/study.py`. Spec:
-[step-1-releases.md](step-1-releases.md).
+MVP step 1, sub-step 3 — **map each parsed release to an `EventInstance`**: release timestamp at
+08:30 America/New_York stored UTC, the actual, and an `event_id` from the reference month. Code goes
+in `src/fortuneteller/study.py`. Spec: [step-1-releases.md](step-1-releases.md).
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-09-11 | Step 1 prep: FRED key in settings, accounts doc, API verified, UST 10Y added | PR #66 (open) |
+| 2026-09-25 | Step 1.2: fetch and parse the CPI initial-release history from FRED | `study.py` |
+| 2026-09-11 | Step 1 prep: FRED key in settings, accounts doc, API verified, UST 10Y added | PR #66 |
 | 2026-09-11 | Docs entry point, legend, step 1 spec | PR #65 |
 | 2026-09-11 | Docs rebuilt around the lean MVP; pre-reset corpus archived to `legacy/` | PR #64 |
 | 2026-08-05 | `main` reset to M0; pre-reset work parked in `origin/main_05082026` | — |
@@ -36,7 +38,7 @@ parse it into dated records. Code goes in a new file `src/fortuneteller/study.py
 
 | Step | State |
 | --- | --- |
-| 1 Releases | Sub-step 1 of 5 done |
+| 1 Releases | Sub-step 2 of 5 done |
 | 2 Prices | Not started |
 | 3 Raw move | Not started |
 | 4 Surprise | Not started |
