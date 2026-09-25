@@ -53,7 +53,7 @@ change that consensus is actually quoted for.
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~Get a free FRED API key; put it in `.env`~~ **done** | `settings.fred_api_key` resolves it |
-| 2 | Fetch the CPI initial-release history in one request | The response parses into dated records |
+| 2 | ~~Fetch the CPI initial-release history in one request~~ **done** | The response parses into dated records |
 | 3 | Map each record to an `EventInstance` | Release timestamp, actual, and a stable id per row |
 | 4 | Write them with `insert_models(replace=True)` | Re-running changes no row count |
 | 5 | Print the count and the date range | `loaded N CPI releases, <first> … <last>` |
@@ -65,8 +65,9 @@ Not "it ran without error" — the failure mode is plausible-looking wrong data.
 - **Spot-check a stored date against the BLS release schedule.** Any date landing on the 1st of a
   month means the reference-month trap was not avoided.
 - **Re-run the command.** The row count must not change. If it doubles, the id is not stable.
-- **Read the first and last dates.** Expect `1972-07` to `2026-07` by reference month, published
-  1972-08-22 to 2026-08-12 — roughly 648 rows after the valueless one is dropped.
+- **Read the first and last dates.** Expect the first to be `1972-07` by reference month, published
+  1972-08-22, and the last to be the latest monthly print. The count grows by one a month: on
+  2026-09-25 it was 649 rows after the valueless one was dropped, the last published 2026-09-11.
 
 ## What this step does not do
 
@@ -84,7 +85,8 @@ with `output_type=4` — the initial-release view — over the full real-time ra
 **Verified against the live API on 2026-09-11.** It returns **649 observations**, reference months
 `1972-07` to `2026-07`, with publication dates genuinely distinct from reference months — real-time
 coverage reaches back to 1972, not the 1997 floor that applies to many FRED series. Median lag from
-reference month to publication is 46 days. No fallback to `fred/release/dates` is needed.
+reference month to publication is 46 days. No fallback to `fred/release/dates` is needed. The count
+grows by one a month: on 2026-09-25 it was 650, through `2026-08` published 2026-09-11.
 
 **Column mapping.**
 
