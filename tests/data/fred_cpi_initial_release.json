@@ -8,7 +8,7 @@
   "file_type": "json",
   "order_by": "observation_date",
   "sort_order": "asc",
-  "count": 6,
+  "count": 7,
   "offset": 0,
   "limit": 100000,
   "observations": [
@@ -17,6 +17,12 @@
       "realtime_end": "1973-05-21",
       "date": "1972-07-01",
       "value": "125.31"
+    },
+    {
+      "realtime_start": "1974-01-22",
+      "realtime_end": "1974-05-20",
+      "date": "1973-12-01",
+      "value": "138.43"
     },
     {
       "realtime_start": "1992-12-13",

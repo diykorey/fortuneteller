@@ -54,7 +54,7 @@ change that consensus is actually quoted for.
 | --- | --- | --- |
 | 1 | ~~Get a free FRED API key; put it in `.env`~~ **done** | `settings.fred_api_key` resolves it |
 | 2 | ~~Fetch the CPI initial-release history in one request~~ **done** | The response parses into dated records |
-| 3 | Map each record to an `EventInstance` | Release timestamp, actual, and a stable id per row |
+| 3 | ~~Map each record to an `EventInstance`~~ **done** | Release timestamp, actual, and a stable id per row |
 | 4 | Write them with `insert_models(replace=True)` | Re-running changes no row count |
 | 5 | Print the count and the date range | `loaded N CPI releases, <first> … <last>` |
 
@@ -94,7 +94,7 @@ grows by one a month: on 2026-09-25 it was 650, through `2026-08` published 2026
 | --- | --- |
 | `event_id` | **Reference month** as `YYYYMM` — deterministic, unique, one row per print |
 | `event_type` | `CPI / inflation surprise` — the exact key from `event_types.csv` |
-| `event_ts` | Release date at 08:30 America/New_York, stored UTC |
+| `event_ts` | Release date at 08:30 America/New_York, stored as **naive** UTC |
 | `country` | `United States` — the exact spelling from `countries.csv` |
 | `detail` | The reference month |
 | `scheduled` | `true` |
@@ -126,7 +126,17 @@ this is moot — the `2025-10` row is dropped for having no value — but it is 
 not a coincidence to rely on.
 
 **Timezone is computed, not hardcoded.** CPI drops at 08:30 ET, which is 12:30 or 13:30 UTC
-depending on daylight saving. `zoneinfo` handles it; a fixed offset would be wrong half the year.
+depending on daylight saving. `zoneinfo` handles it; a fixed offset would be wrong half the year,
+and wrong for all of 1974, when the US kept summer time through the winter (the `1973-12` print,
+released 1974-01-22, is 12:30 UTC). 08:30 is assumed for the whole history; it is the modern release
+time and has not been checked against early BLS schedules. It matters little while step 2 uses
+daily bars.
+
+**`event_ts` is naive UTC, because DuckDB would move it.** An aware datetime written to a
+`TIMESTAMP` column is converted to the *session* time zone, not to UTC: 08:30 New York stored from a
+Kyiv session reads back as 15:30. So the mapping converts to UTC and drops the zone before the
+write. CI runs in UTC and would never see this; the sub-step 4 round-trip test should set a non-UTC
+session zone on its connection (`SET TimeZone = ...`) to catch a regression.
 
 **Where the code goes.** A new file `src/fortuneteller/study.py` — the event study that steps 2–4
 also grow into. A new *file*, not a package: no `__init__.py`, per rule 1. `db.insert_models`
