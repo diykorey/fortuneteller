@@ -101,6 +101,10 @@ def to_event_instance(release: CpiRelease) -> EventInstance:
     """
     published = datetime.combine(release.released, CPI_RELEASE_TIME, tzinfo=CPI_RELEASE_ZONE)
     return EventInstance(
+        # YYYYMM is unique only within CPI. event_id is the key of the whole table, so a second
+        # event type keyed this way would collide and replace=True would silently overwrite CPI rows.
+        # Before adding one, replace this with a key generic across event types, e.g. a
+        # deterministic hash of (event_type, detail).
         event_id=release.reference_month.year * 100 + release.reference_month.month,
         event_type=CPI_EVENT_TYPE,
         event_ts=published.astimezone(UTC).replace(tzinfo=None),
