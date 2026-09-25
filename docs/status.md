@@ -11,7 +11,7 @@ Where the work is and what comes next. Two rules keep it current:
 MVP step 1, sub-step 2 — `study.fetch_cpi_releases` fetches the CPI initial-release history from
 FRED in one request; `study.parse_cpi_releases` turns it into dated records (reference month,
 release date, value) and reports the months printed without a value. Live run on 2026-09-25: 650
-rows, 649 parsed, `2025-10` skipped, published 1972-08-22 … 2026-09-11.
+rows, 649 parsed, `2025-10` skipped, published 1972-08-22 … 2026-09-11. *(PR #67.)*
 
 ## In progress
 
@@ -27,7 +27,7 @@ in `src/fortuneteller/study.py`. Spec: [step-1-releases.md](step-1-releases.md).
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-09-25 | Step 1.2: fetch and parse the CPI initial-release history from FRED | `study.py` |
+| 2026-09-25 | Step 1.2: fetch and parse the CPI initial-release history from FRED | PR #67 |
 | 2026-09-11 | Step 1 prep: FRED key in settings, accounts doc, API verified, UST 10Y added | PR #66 |
 | 2026-09-11 | Docs entry point, legend, step 1 spec | PR #65 |
 | 2026-09-11 | Docs rebuilt around the lean MVP; pre-reset corpus archived to `legacy/` | PR #64 |
