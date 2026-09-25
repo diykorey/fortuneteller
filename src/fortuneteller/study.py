@@ -1,7 +1,7 @@
 """Event study over US CPI releases — MVP step 1 onward (see ``docs/step-1-releases.md``).
 
 Today: fetch the CPI initial-release history from FRED in one request, parse it into dated
-records, and map each to an ``EventInstance``. Each record keeps both dates, because the reference
+records, map each to an ``EventInstance``, and store them. Each record keeps both dates, because the reference
 month (what was measured) and the release date (when the market saw it) are about six weeks apart.
 """
 
@@ -11,11 +11,15 @@ import json
 import urllib.error
 import urllib.parse
 import urllib.request
+from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import UTC, date, datetime, time
 from typing import Any
 from zoneinfo import ZoneInfo
 
+import duckdb
+
+from . import db
 from .models import EventInstance
 
 FRED_OBSERVATIONS_URL = "https://api.stlouisfed.org/fred/series/observations"
@@ -121,3 +125,11 @@ def to_event_instance(release: CpiRelease) -> EventInstance:
         rate_regime=None,
         quality=FIRST_RELEASE,
     )
+
+
+def store_cpi_releases(
+    releases: Sequence[CpiRelease], con: duckdb.DuckDBPyConnection | None = None
+) -> int:
+    """Write the releases to ``event_instances``; re-running overwrites by ``event_id``."""
+    events = [to_event_instance(release) for release in releases]
+    return db.insert_models("event_instances", events, con=con, replace=True)
