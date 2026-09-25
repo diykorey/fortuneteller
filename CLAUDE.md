@@ -33,6 +33,12 @@ Three rules follow from the reset. They are checkable, so check them:
 3. **A plan doc must be shorter than the code it specifies.** If a step needs 600 lines of ticket,
    the step is too big — split it.
 
+## Where we are
+
+**`docs/status.md`** holds the last completed task, the one in progress, and the next one. Answer
+"where are we / what's next" from it. When starting a task, move it to *In progress* and add the
+task expected after it as the new *Next*; when finishing one, record it in the same change.
+
 ## The documents
 
 Only two are current, both rewritten on 2026-09-11:

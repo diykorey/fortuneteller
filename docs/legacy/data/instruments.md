@@ -3,12 +3,13 @@
 The instrument universe the predictor maps events onto (~55 in Notion). Each is the column key of
 the effect-size matrix and a node in the entity-linking gazetteer.
 
-> **MVP build scope (~5):** the provable core predicts only **SPY / ES**, a rates benchmark
-> (**BUND / FGBL** or UST 10Y), **DXY**, **Gold (GC / XAU)**, and **VIX** — all present in the
-> subset below. The rest of the universe is **post-proof reference**, not build scope. See
+> **MVP build scope (5):** the provable core measures only **SPY / ES**, **UST10Y / ZN**, **DXY**,
+> **Gold (GC / XAU)**, and **VIX** — all present in the subset below. The rates slot was open
+> between the Bund and the US 10-year; it is settled as **UST10Y / ZN**, since the MVP's event is
+> US CPI and free US history is easier to obtain. The rest of the universe is **post-proof reference**, not build scope. See
 > [mvp-architecture.md](../mvp-architecture.md).
 
-> **Completeness: representative subset — 12 of 55.** These rows are pulled directly from the
+> **Completeness: representative subset — 13 of 55.** These rows are pulled directly from the
 > Notion database (real `Symbol` / `Asset Class` / `Region` / venue / notes), chosen to span every
 > asset class. The full 55 live in the Notion source. The `asset_class`
 > values below use the Notion labels; the `instruments` seed CSV maps them to the M0-03 enum
@@ -26,6 +27,7 @@ the effect-size matrix and a node in the entity-linking gazetteer.
 | USDC | USDC (stablecoin peg) | Crypto | Global | On-chain / Circle | Peg = systemic-stress gauge (depegged Mar 2023). |
 | DXY | US Dollar Index | FX | Global | ICE | Broad USD; rises on risk-off and hawkish Fed. |
 | BUND / FGBL | German Bund 10Y | Rates / Bond | Europe | Eurex | Eurozone risk-free benchmark. |
+| UST10Y / ZN | US Treasury 10Y | Rates / Bond | US | CBOT (CME) / OTC cash | US risk-free benchmark; measured as yield in bps — yield rises when price falls. **Added for the MVP**, not from the Notion export. |
 | VIX | VIX (equity volatility) | Volatility | US | Cboe | The 'fear gauge'; spikes on every risk-off event. |
 | CDS | Sovereign CDS (EM / periphery) | Credit / CDS | EM | ICE / Markit | Default-risk gauge (Russia 2022, Italy, EM). |
 | BDI | Baltic Dry Index | Freight | Global | Baltic Exchange | Dry-bulk freight; China-demand & disruption gauge. |

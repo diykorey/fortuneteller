@@ -115,11 +115,14 @@ Terms are grouped by what they are about, alphabetical within each group.
   are load-bearing here** — they are join keys between seed data, measurements, and predictions, so
   drift silently breaks lookups.
 - **UST 10Y** (US Treasury 10-year) — the 10-year US government bond yield; the world's benchmark
-  interest rate and the most direct read on an inflation release.
+  interest rate and the most direct read on an inflation release. Its canonical symbol in
+  `instruments.csv` is **`UST10Y / ZN`** (the cash note and its CBOT futures code), mirroring
+  `BUND / FGBL`. Measured as a **yield in bps**, so it moves opposite to the bond's price.
 - **VIX** — the Cboe Volatility Index, the market's expected S&P 500 volatility over the next 30
   days, derived from option prices. The "fear gauge": spikes on shocks.
-- **^TNX** — Yahoo Finance's symbol for the US 10-year yield. Check its scaling convention against a
-  known value the first time you load it.
+- **^TNX** — Yahoo Finance's symbol for the US 10-year yield. A *vendor* ticker, deliberately not
+  the canonical symbol: keys must not move when the data source does — see **UST 10Y**. Check its
+  scaling convention against a known value the first time you load it.
 
 ## Measuring the effect
 

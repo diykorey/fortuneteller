@@ -8,6 +8,7 @@ BTC,Bitcoin,crypto,global,Binance / Coinbase / CME,Crypto bellwether; liquidity/
 USDC,USDC (stablecoin peg),crypto,global,On-chain / Circle,Peg = systemic-stress gauge (depegged Mar 2023).
 DXY,US Dollar Index,fx,global,ICE,Broad USD; rises on risk-off and hawkish Fed.
 BUND / FGBL,German Bund 10Y,rates_bond,europe,Eurex,Eurozone risk-free benchmark.
+UST10Y / ZN,US Treasury 10Y,rates_bond,us,CBOT (CME) / OTC cash,US risk-free benchmark; measured as yield in bps — yield rises when price falls.
 VIX,VIX (equity volatility),volatility,us,Cboe,The fear gauge; spikes on every risk-off event.
 CDS,Sovereign CDS (EM / periphery),credit_cds,em,ICE / Markit,"Default-risk gauge (Russia 2022, Italy, EM)."
 BDI,Baltic Dry Index,freight,global,Baltic Exchange,Dry-bulk freight; China-demand & disruption gauge.

@@ -23,6 +23,9 @@ step ends in a runnable command that prints a real number. "No edge" is a permit
 One document per step: its goal, the obstacle in the way, the sequence, how you know the result is
 right, and the implementation detail. The shape of these documents is fixed by the Legend.
 
+**Where are we, and what's next?** → **[Status](status.md)**
+The last completed task and the next one, kept current as work lands.
+
 **4. What does this word mean?** → **[Glossary](glossary.md)**
 Every acronym, ticker, and piece of jargon. Read it alongside any of the above, not before them.
 
@@ -65,6 +68,7 @@ anywhere and drive nothing.
 | Start working on the current step | [Step 1 — Releases](step-1-releases.md) |
 | Write the document for a new step | [Legend](legend.md) — what every step document must say |
 | Look up a term or ticker | [Glossary](glossary.md) |
+| Know which external services and keys are needed | [Accounts](accounts.md) |
 | Know what the reference CSVs contain | [legacy/data/](legacy/data/README.md) — still accurate |
 | Understand what was abandoned, and why | [legacy/](legacy/README.md) |
 
