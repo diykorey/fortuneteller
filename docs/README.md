@@ -26,6 +26,9 @@ right, and the implementation detail. The shape of these documents is fixed by t
 **Where are we, and what's next?** → **[Status](status.md)**
 The last completed task and the next one, kept current as work lands.
 
+**What is in the database?** → **[Schema](schema.md)**
+Every table and column: what it means, who fills it, and whether anything fills it yet.
+
 **4. What does this word mean?** → **[Glossary](glossary.md)**
 Every acronym, ticker, and piece of jargon. Read it alongside any of the above, not before them.
 
@@ -69,6 +72,7 @@ anywhere and drive nothing.
 | Write the document for a new step | [Legend](legend.md) — what every step document must say |
 | Look up a term or ticker | [Glossary](glossary.md) |
 | Know which external services and keys are needed | [Accounts](accounts.md) |
+| Know what a table or column means | [Schema](schema.md) |
 | Know what the reference CSVs contain | [legacy/data/](legacy/data/README.md) — still accurate |
 | Understand what was abandoned, and why | [legacy/](legacy/README.md) |
 
@@ -79,18 +83,19 @@ anywhere and drive nothing.
 | `docs/` | The current documents — the four in the chain above. |
 | `docs/legacy/` | The pre-reset design corpus. Reference, not instructions. |
 | `data/seed/` | The committed reference CSVs the code actually reads. |
-| `schema.sql` | The table definitions, as plain SQL. |
+| `schema.sql` | The table definitions, as plain SQL. Their meaning is in [schema.md](schema.md). |
 | `src/fortuneteller/` | The package: config, models, store, seed loader, CLI. |
 | [`../CLAUDE.md`](../CLAUDE.md) | Working agreements for this repo, including the reset note. |
 
 ## Current state
 
 **M0 — the data spine — is shipped**: typed models, the DuckDB schema, the seed reference tables,
-and a working `init | seed | query-demo` CLI. **No prediction code exists.** `event_instances` and
-`observations` are created but empty.
+and a working `init | seed | query-demo` CLI. **[MVP step 1](step-1-releases.md) is done**:
+`load-releases` fills `event_instances` with every US CPI release since 1972. **No prediction code
+exists**, and `observations` is still empty.
 
-**Next: [MVP step 1](step-1-releases.md)** — load real CPI releases into `event_instances`. It is
-the first thing in this project that produces a real number.
+**Next: MVP step 2** — daily prices for the five instruments and the return around each release.
+[Status](status.md) always has the current task.
 
 ## How this folder grows
 

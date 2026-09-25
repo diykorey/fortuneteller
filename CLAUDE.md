@@ -89,7 +89,9 @@ unconditionally — the old docs-only guard was dropped in M0-09.
   as tickets M0-01…09 (issues #2–#10, milestone closed); its ticket doc is now
   `docs/legacy/m0-tickets.md`. There is no ticket set for the MVP steps and none is needed yet.
 - **The data spine:** Pydantic v2 models + a thin SQL helper over DuckDB — **no ORM**. Schema is plain
-  SQL in `schema.sql` so the later Postgres migration stays cheap. Reference tables are **config the
+  SQL in `schema.sql` so the later Postgres migration stays cheap. **`docs/schema.md` describes every
+  table, column and allowed column value; any change to `schema.sql`, or to what fills a column, updates it in the same
+  change.** Reference tables are **config the
   pipeline reads**, committed as seed CSVs in `data/seed/` (documented in `docs/legacy/data/`).
 
 ## Conventions & gotchas
