@@ -19,9 +19,10 @@ it can *fail*: three things must be true, and each is tested by a specific part 
 The MVP — four steps that test the first two of those three things — then a feature ladder. Each
 step ends in a runnable command that prints a real number. "No edge" is a permitted answer.
 
-**3. So what exactly are we doing right now?** → **[Step 1 — Releases](step-1-releases.md)**
+**3. So what exactly are we doing right now?** → **[Step 2 — Prices](steps/step-2-prices.md)**
 One document per step: its goal, the obstacle in the way, the sequence, how you know the result is
-right, and the implementation detail. The shape of these documents is fixed by the Legend.
+right, and the implementation detail. The shape of these documents is fixed by the Legend. They
+live in [`steps/`](steps/); [Step 1 — Releases](steps/step-1-releases.md) is done.
 
 **Where are we, and what's next?** → **[Status](status.md)**
 The last completed task and the next one, kept current as work lands.
@@ -68,7 +69,7 @@ anywhere and drive nothing.
 | Understand the point of the project | [Legend](legend.md) — the target and the idea |
 | Know why the plan is ordered this way | [Legend](legend.md) — the way, and the three conditions |
 | See what gets built and when | [Roadmap](roadmap.md) |
-| Start working on the current step | [Step 1 — Releases](step-1-releases.md) |
+| Start working on the current step | [Step 2 — Prices](steps/step-2-prices.md) |
 | Write the document for a new step | [Legend](legend.md) — what every step document must say |
 | Look up a term or ticker | [Glossary](glossary.md) |
 | Know which external services and keys are needed | [Accounts](accounts.md) |
@@ -81,6 +82,7 @@ anywhere and drive nothing.
 | Path | Holds |
 | --- | --- |
 | `docs/` | The current documents — the four in the chain above. |
+| `docs/steps/` | One document per MVP step. |
 | `docs/legacy/` | The pre-reset design corpus. Reference, not instructions. |
 | `data/seed/` | The committed reference CSVs the code actually reads. |
 | `schema.sql` | The table definitions, as plain SQL. Their meaning is in [schema.md](schema.md). |
@@ -90,19 +92,19 @@ anywhere and drive nothing.
 ## Current state
 
 **M0 — the data spine — is shipped**: typed models, the DuckDB schema, the seed reference tables,
-and a working `init | seed | query-demo` CLI. **[MVP step 1](step-1-releases.md) is done**:
+and a working `init | seed | query-demo` CLI. **[MVP step 1](steps/step-1-releases.md) is done**:
 `load-releases` fills `event_instances` with every US CPI release since 1972. **No prediction code
 exists**, and `observations` is still empty.
 
-**Next: MVP step 2** — daily prices for the five instruments and the return around each release.
+**Next: [MVP step 2](steps/step-2-prices.md)** — daily prices for the five instruments and the
+return around each release.
 [Status](status.md) always has the current task.
 
 ## How this folder grows
 
 Flat until it needs not to be. A subfolder appears when a *second* document of the same kind exists
-— not in advance. The natural next splits:
+— not in advance. `steps/` appeared that way, with step 2's document. The natural next splits:
 
-- `steps/` — one file per MVP step. Step 1 sits flat; when step 2's document arrives, both move here.
 - `concepts/` — one file per idea needing more than a glossary line (surprise, abnormal return,
   calibration).
 - `decisions/` — short records of choices that would otherwise be re-litigated.

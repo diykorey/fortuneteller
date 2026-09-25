@@ -10,7 +10,7 @@ constraint, not an accident: see [`legend.md`](legend.md).
 
 | Service | Account | Credential | Used for | Cost |
 | --- | --- | --- | --- | --- |
-| [FRED](https://fredaccount.stlouisfed.org/) — Federal Reserve Economic Data | Dedicated dev Gmail account | `FT_FRED_API_KEY` in `.env` | CPI release dates and actuals — [step 1](step-1-releases.md) | Free |
+| [FRED](https://fredaccount.stlouisfed.org/) — Federal Reserve Economic Data | Dedicated dev Gmail account | `FT_FRED_API_KEY` in `.env` | CPI release dates and actuals — [step 1](steps/step-1-releases.md) | Free |
 | [GitHub](https://github.com/diykorey/fortuneteller) | `diykorey` | local git + `gh` auth | Code hosting, CI, issue tracker | Free |
 
 ## Expected later
