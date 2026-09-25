@@ -12,7 +12,7 @@ Once a month the US government publishes CPI, the headline inflation figure, and
 that day. This step collects the whole history of those announcements — about 650, one a month
 since 1972 — from FRED, the Federal Reserve's free statistics site, and saves them into one database
 table, `event_instances`: the project's calendar of events that might move markets. When it runs
-it prints one line, e.g. `loaded 648 CPI releases, 1972-08-22 … 2026-08-12` — 648 announcements
+it prints one line, e.g. `loaded 649 CPI releases, 1972-08-22 … 2026-09-11` — 649 announcements
 saved, first to latest. It is done when that table holds real history instead of made-up examples.
 
 The whole project asks whether markets react to these announcements predictably. Before any
@@ -56,7 +56,7 @@ change that consensus is actually quoted for.
 | 2 | ~~Fetch the CPI initial-release history in one request~~ **done** | The response parses into dated records |
 | 3 | ~~Map each record to an `EventInstance`~~ **done** | Release timestamp, actual, and a stable id per row |
 | 4 | ~~Write them with `insert_models(replace=True)`~~ **done** | Re-running changes no row count |
-| 5 | Print the count and the date range | `loaded N CPI releases, <first> … <last>` |
+| 5 | ~~Print the count and the date range~~ **done** | `loaded N CPI releases, <first> … <last>` |
 
 ## How you know it is right
 

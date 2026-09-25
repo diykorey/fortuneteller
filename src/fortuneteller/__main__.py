@@ -1,15 +1,17 @@
 """Command-line entry point for FortuneTeller.
 
 Subcommands: ``init`` creates the store (M0-05 ``db.init_db``); ``seed`` / ``query-demo`` load and
-read the seed data (M0-07 ``seed``).
+read the seed data (M0-07 ``seed``); ``load-releases`` loads the CPI release history from FRED
+(MVP step 1 ``study``).
 """
 
 from __future__ import annotations
 
 import argparse
+import sys
 from collections.abc import Callable, Sequence
 
-from . import db, seed
+from . import db, seed, study
 from .config import settings
 
 Handler = Callable[[argparse.Namespace], int]
@@ -44,6 +46,30 @@ def _query_demo(_args: argparse.Namespace) -> int:
     return 0
 
 
+def _load_releases(_args: argparse.Namespace) -> int:
+    if settings.fred_api_key is None:
+        print("load-releases: FT_FRED_API_KEY is not set (see docs/accounts.md)", file=sys.stderr)
+        return 1
+    try:
+        payload = study.fetch_cpi_releases(settings.fred_api_key.get_secret_value())
+        releases, valueless = study.parse_cpi_releases(payload)
+    except study.FredError as exc:
+        print(f"load-releases: {exc}", file=sys.stderr)
+        return 1
+    if not releases:
+        print("load-releases: FRED returned no CPI releases", file=sys.stderr)
+        return 1
+    con = db.get_connection()
+    db.init_db(con=con)
+    loaded = study.store_cpi_releases(releases, con=con)
+    released = [release.released for release in releases]
+    print(f"loaded {loaded} CPI releases, {min(released)} … {max(released)}")
+    if valueless:
+        months = ", ".join(month.strftime("%Y-%m") for month in valueless)
+        print(f"skipped {len(valueless)} printed without a value: {months}")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="fortuneteller", description="FortuneTeller CLI")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -56,6 +82,9 @@ def build_parser() -> argparse.ArgumentParser:
 
     p_demo = sub.add_parser("query-demo", help="print a sample effect-size lookup row")
     p_demo.set_defaults(func=_query_demo)
+
+    p_releases = sub.add_parser("load-releases", help="load the CPI release history from FRED")
+    p_releases.set_defaults(func=_load_releases)
 
     return parser
 

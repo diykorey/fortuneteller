@@ -8,10 +8,12 @@ FortuneTeller — an event-driven market-impact prediction & warning system: ing
 / climate / macro events, predict which instruments move (direction + magnitude + horizon) with
 **calibrated** confidence. A warning product, not HFT (latency budget is seconds-to-minutes).
 
-The repo is **bootstrapping**. What exists today is exactly M0 — the data spine — and nothing more:
-the design docs (mirrored from a Notion workspace), the seed reference data, and a working
-`init | seed | query-demo` CLI over DuckDB (M0-01…09; ruff + mypy --strict + pytest green). **No
-prediction code exists**: no surprise computation, no direction resolution, no warnings.
+The repo is **bootstrapping**. What exists today is M0 — the data spine — plus MVP step 1: the
+design docs (mirrored from a Notion workspace), the seed reference data, a working
+`init | seed | query-demo` CLI over DuckDB (M0-01…09; ruff + mypy --strict + pytest green), and
+`load-releases`, which loads the real CPI release history from FRED into `event_instances`
+(`src/fortuneteller/study.py`). **No prediction code exists**: no surprise computation, no direction
+resolution, no warnings.
 
 ## The 2026-08-05 reset — read before planning any work
 
@@ -68,7 +70,7 @@ Toolchain is `uv` (Python 3.12). `just` recipes wrap these; if `just` isn't inst
 
 ```bash
 uv sync                              # install deps + dev group (ruff, mypy, pytest)
-uv run fortuneteller --help          # CLI: init | seed | query-demo
+uv run fortuneteller --help          # CLI: init | seed | query-demo | load-releases
 uv run ruff check                    # lint (line length 100)
 uv run ruff format                   # format
 uv run mypy src                      # type check (strict)
