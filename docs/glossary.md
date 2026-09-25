@@ -213,6 +213,9 @@ Terms are grouped by what they are about, alphabetical within each group.
   column-crunching this project does. The store for the whole MVP.
 - **Golden file** — a committed copy of expected output that a test compares against byte for byte.
 - **mypy** — the static type checker, run in `--strict` mode here.
+- **Naive datetime** — a Python `datetime` with no time zone attached (as opposed to an *aware*
+  one). `event_ts` is stored naive but always means UTC, because DuckDB converts an aware value to
+  the session's time zone on write.
 - **ORM** (Object-Relational Mapper) — a library that hides SQL behind objects. **Deliberately not
   used**: Pydantic models plus plain parameterized SQL keep the data layer obvious.
 - **Pydantic** — the library that validates data against typed models, so malformed rows fail loudly

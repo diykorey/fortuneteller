@@ -1,9 +1,10 @@
-"""Parse and fetch tests for the CPI initial-release history, against a trimmed real FRED response."""
+"""CPI initial-release history: fetch, parse, and map to events, on a trimmed real response."""
 
+import csv
 import io
 import json
 import urllib.error
-from datetime import date
+from datetime import date, datetime
 from email.message import Message
 from pathlib import Path
 from typing import Any, NoReturn
@@ -11,7 +12,8 @@ from typing import Any, NoReturn
 import pytest
 
 from fortuneteller import study
-from fortuneteller.study import CpiRelease, FredError, parse_cpi_releases
+from fortuneteller.config import settings
+from fortuneteller.study import CpiRelease, FredError, parse_cpi_releases, to_event_instance
 
 FIXTURE = Path(__file__).parent / "data" / "fred_cpi_initial_release.json"
 
@@ -45,7 +47,7 @@ def test_valueless_print_is_skipped_and_reported() -> None:
     # then that month is reported, not stored, and every other row survives
     assert valueless == [date(2025, 10, 1)]
     assert date(2025, 10, 1) not in {r.reference_month for r in releases}
-    assert len(releases) == 5
+    assert len(releases) == 6
 
 
 def test_shared_release_date_and_irregular_schedule_are_kept() -> None:
@@ -83,7 +85,7 @@ def test_truncated_response_is_rejected() -> None:
     payload = _payload(truncate)
 
     # when / then parsing refuses it
-    with pytest.raises(FredError, match="reported 6 rows but sent 5"):
+    with pytest.raises(FredError, match="reported 7 rows but sent 6"):
         parse_cpi_releases(payload)
 
 
@@ -107,3 +109,65 @@ def test_http_error_does_not_leak_the_api_key(monkeypatch: pytest.MonkeyPatch) -
     assert key not in str(caught.value)
     assert caught.value.__cause__ is None
     assert caught.value.__suppress_context__
+
+
+def _events_by_month() -> dict[str, datetime]:
+    releases, _ = parse_cpi_releases(FIXTURE.read_bytes())
+    return {e.detail or "": e.event_ts for e in map(to_event_instance, releases)}
+
+
+def test_event_ts_is_release_day_at_0830_new_york_in_naive_utc() -> None:
+    # given prints released in summer time, in winter, and during the 1974 year-round summer time
+    # when they are mapped to events
+    event_ts = _events_by_month()
+
+    # then each lands on its release day at 08:30 New York, expressed as naive UTC
+    assert event_ts["2026-08"] == datetime(2026, 9, 11, 12, 30)
+    assert event_ts["2025-11"] == datetime(2025, 12, 18, 13, 30)
+    assert event_ts["1973-12"] == datetime(1974, 1, 22, 12, 30)
+    assert all(ts.tzinfo is None for ts in event_ts.values())
+
+
+def test_event_is_keyed_by_reference_month_and_dated_by_release() -> None:
+    # given the two prints first published on the same day
+    release = CpiRelease(date(2025, 11, 1), date(2025, 12, 18), 325.031)
+
+    # when the print is mapped
+    event = to_event_instance(release)
+
+    # then the id and detail name the month measured, the timestamp the day it was published
+    assert event.event_id == 202511
+    assert event.detail == "2025-11"
+    assert event.event_ts.date() == date(2025, 12, 18)
+    assert event.actual == 325.031
+    assert event.scheduled
+    assert event.quality == "first_release"
+    assert event.consensus is None
+    assert event.surprise is None
+
+
+def test_event_ids_are_stable_and_unique() -> None:
+    # given every print in the fixture, including two sharing a release date
+    releases, _ = parse_cpi_releases(FIXTURE.read_bytes())
+
+    # when they are mapped twice
+    first = [to_event_instance(r).event_id for r in releases]
+    second = [to_event_instance(r).event_id for r in releases]
+
+    # then the ids repeat exactly and never collide
+    assert first == second
+    assert len(set(first)) == len(first)
+
+
+def test_event_keys_match_the_seed_reference_tables() -> None:
+    # given the committed event-type and country CSVs
+    def column(filename: str, name: str) -> set[str]:
+        with (settings.seed_dir / filename).open(newline="", encoding="utf-8") as handle:
+            return {row[name] for row in csv.DictReader(handle)}
+
+    # when a mapped event is built
+    event = to_event_instance(CpiRelease(date(2026, 8, 1), date(2026, 9, 11), 334.131))
+
+    # then its join keys exist exactly as written
+    assert event.event_type in column("event_types.csv", "event_type")
+    assert event.country in column("countries.csv", "country")

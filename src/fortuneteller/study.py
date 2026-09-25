@@ -1,8 +1,8 @@
 """Event study over US CPI releases — MVP step 1 onward (see ``docs/step-1-releases.md``).
 
-Today: fetch the CPI initial-release history from FRED in one request and parse it into dated
-records. Each record keeps both dates, because the reference month (what was measured) and the
-release date (when the market saw it) are about six weeks apart.
+Today: fetch the CPI initial-release history from FRED in one request, parse it into dated
+records, and map each to an ``EventInstance``. Each record keeps both dates, because the reference
+month (what was measured) and the release date (when the market saw it) are about six weeks apart.
 """
 
 from __future__ import annotations
@@ -12,12 +12,22 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from dataclasses import dataclass
-from datetime import date
+from datetime import UTC, date, datetime, time
 from typing import Any
+from zoneinfo import ZoneInfo
+
+from .models import EventInstance
 
 FRED_OBSERVATIONS_URL = "https://api.stlouisfed.org/fred/series/observations"
 CPI_SERIES_ID = "CPIAUCSL"
 MISSING_VALUE = "."
+
+# Exact keys from data/seed/event_types.csv and countries.csv — joins match on these strings.
+CPI_EVENT_TYPE = "CPI / inflation surprise"
+CPI_COUNTRY = "United States"
+CPI_RELEASE_TIME = time(8, 30)
+CPI_RELEASE_ZONE = ZoneInfo("America/New_York")
+FIRST_RELEASE = "first_release"
 
 
 @dataclass(frozen=True)
@@ -81,3 +91,33 @@ def parse_cpi_releases(payload: bytes) -> tuple[list[CpiRelease], list[date]]:
             continue
         releases.append(CpiRelease(reference_month, released, float(row["value"])))
     return releases, valueless
+
+
+def to_event_instance(release: CpiRelease) -> EventInstance:
+    """Map one release to its ``event_instances`` row, keyed by reference month (``YYYYMM``).
+
+    ``event_ts`` is naive UTC: DuckDB converts an aware datetime written to a ``TIMESTAMP`` column
+    into the session time zone, so the offset is applied here and then dropped.
+    """
+    published = datetime.combine(release.released, CPI_RELEASE_TIME, tzinfo=CPI_RELEASE_ZONE)
+    return EventInstance(
+        # YYYYMM is unique only within CPI. event_id is the key of the whole table, so a second
+        # event type keyed this way would collide and replace=True would silently overwrite CPI rows.
+        # Before adding one, replace this with a key generic across event types, e.g. a
+        # deterministic hash of (event_type, detail).
+        event_id=release.reference_month.year * 100 + release.reference_month.month,
+        event_type=CPI_EVENT_TYPE,
+        event_ts=published.astimezone(UTC).replace(tzinfo=None),
+        country=CPI_COUNTRY,
+        detail=release.reference_month.strftime("%Y-%m"),
+        scheduled=True,
+        consensus=None,
+        actual=release.value,
+        surprise=None,
+        surprise_sd=None,
+        surprise_source=None,
+        priced_in_prior=None,
+        vix_t0=None,
+        rate_regime=None,
+        quality=FIRST_RELEASE,
+    )
