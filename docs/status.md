@@ -10,7 +10,7 @@ Where the work is and what comes next. Two rules keep it current:
 
 MVP step 1, sub-step 4 — `study.store_cpi_releases` writes the mapped releases to
 `event_instances` with `insert_models(replace=True)`. Live run on 2026-09-25 from a Kyiv-time
-session: 649 rows, 649 again on re-run, `event_ts` 1972-08-22 12:30 … 2026-09-11 12:30 UTC.
+session: 649 rows, 649 again on re-run, `event_ts` 1972-08-22 12:30 … 2026-09-11 12:30 UTC. *(PR #69.)*
 
 ## In progress
 
@@ -26,7 +26,7 @@ MVP step 1, sub-step 5 — **`uv run fortuneteller load-releases`**: fetch, pars
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-09-25 | Step 1.4: store the CPI events idempotently | this branch |
+| 2026-09-25 | Step 1.4: store the CPI events idempotently | PR #69 |
 | 2026-09-25 | Step 1.3: map each CPI release to an `EventInstance` | PR #68 |
 | 2026-09-25 | Step 1.2: fetch and parse the CPI initial-release history from FRED | PR #67 |
 | 2026-09-11 | Step 1 prep: FRED key in settings, accounts doc, API verified, UST 10Y added | PR #66 |
