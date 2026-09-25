@@ -23,6 +23,9 @@ step ends in a runnable command that prints a real number. "No edge" is a permit
 One document per step: its goal, the obstacle in the way, the sequence, how you know the result is
 right, and the implementation detail. The shape of these documents is fixed by the Legend.
 
+**Where are we, and what's next?** → **[Status](status.md)**
+The last completed task and the next one, kept current as work lands.
+
 **4. What does this word mean?** → **[Glossary](glossary.md)**
 Every acronym, ticker, and piece of jargon. Read it alongside any of the above, not before them.
 

@@ -5,7 +5,23 @@
 
 ## The goal
 
-`event_instances` holds every US CPI release as a dated fact: **the day the number was actually
+**In plain words:** make a list of every day the US inflation number came out, and what that number
+was.
+
+Once a month the US government publishes CPI, the headline inflation figure, and markets often jump
+that day. This step collects the whole history of those announcements — about 650, one a month
+since 1972 — from FRED, the Federal Reserve's free statistics site, and saves them into one database
+table, `event_instances`: the project's calendar of events that might move markets. When it runs
+it prints one line, e.g. `loaded 648 CPI releases, 1972-08-22 … 2026-08-12` — 648 announcements
+saved, first to latest. It is done when that table holds real history instead of made-up examples.
+
+The whole project asks whether markets react to these announcements predictably. Before any
+reaction can be measured, you need to know exactly *which days* to look at; this step builds that
+list, and the next steps look up what prices did on those days. The one thing to get right is the
+date: each figure is labelled by the month it measures, but published about six weeks later, and
+the market reacts on the publication day.
+
+In full: `event_instances` holds every US CPI release as a dated fact: **the day the number was actually
 published, and the number that was actually printed that day.**
 
 That is the entire deliverable. Nothing derived, nothing predicted, nothing scored.

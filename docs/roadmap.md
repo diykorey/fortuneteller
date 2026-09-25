@@ -98,8 +98,7 @@ Build the heavier thing only when its trigger actually fires. None has.
 
 ## Status
 
-**M0 — the data spine — is shipped**: typed models, the DuckDB schema, seed reference tables, and an
-`init | seed | query-demo` CLI. Nothing beyond it is built. MVP step 1 is next.
+Last completed task and the next one: **[status.md](status.md)**.
 
 Historical planning documents, including the superseded M0–M7 milestone scheme, are kept in
 [legacy/](legacy/README.md).
