@@ -171,3 +171,19 @@ def test_insert_models_replace_overwrites_an_existing_row() -> None:
     )
     # then the row holds the new value and is not duplicated
     assert con.execute("SELECT close FROM daily_bars").fetchall() == [(27.27,)]
+
+
+def test_insert_models_without_replace_rejects_an_existing_key() -> None:
+    # given a stored close
+    con = _seeded_connection()
+    day = date(2022, 9, 13)
+    db.insert_models(
+        "daily_bars", [DailyBar(instrument="VIX", day=day, close=1.0, source="s")], con=con
+    )
+    # when a row with the same key is written without replace
+    # then the database refuses it and the stored value is untouched
+    with pytest.raises(duckdb.ConstraintException):
+        db.insert_models(
+            "daily_bars", [DailyBar(instrument="VIX", day=day, close=27.27, source="s")], con=con
+        )
+    assert con.execute("SELECT close FROM daily_bars").fetchall() == [(1.0,)]

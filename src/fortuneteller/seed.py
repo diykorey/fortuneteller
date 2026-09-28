@@ -2,8 +2,9 @@
 
 Each ``data/seed/*.csv`` is read with Polars, coerced row-by-row into its Pydantic model (so a bad
 value fails loudly, naming the file and row), then written via :func:`db.insert_models`. The load is
-idempotent: ``INSERT OR REPLACE`` overwrites rows by primary key, so re-running ``fortuneteller seed``
-is safe. Out of scope: the fact tables (``event_instances`` / ``observations``), which stay empty in M0.
+idempotent: an upsert (``ON CONFLICT … DO UPDATE``) overwrites rows by primary key, so re-running
+``fortuneteller seed`` is safe. Out of scope: the fact tables (``event_instances`` /
+``observations``), which stay empty in M0.
 """
 
 from __future__ import annotations
