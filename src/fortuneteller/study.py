@@ -6,7 +6,8 @@ reference month (what was measured) and the release date (when the market saw it
 weeks apart.
 
 Step 2 (see ``docs/steps/step-2-prices.md``): fetch each instrument's daily closes from Yahoo and
-parse them into dated closes, the date read in the exchange's own time zone, and store them.
+parse them into dated closes, the date read in the exchange's own time zone, and store them; then
+measure each instrument's move around each CPI release into ``observations``.
 """
 
 from __future__ import annotations
@@ -15,16 +16,17 @@ import json
 import urllib.error
 import urllib.parse
 import urllib.request
+from bisect import bisect_left
 from collections.abc import Sequence
 from dataclasses import dataclass
 from datetime import UTC, date, datetime, time
-from typing import Any
+from typing import Any, NamedTuple
 from zoneinfo import ZoneInfo
 
 import duckdb
 
 from . import db
-from .models import DailyBar, EventInstance
+from .models import DailyBar, EventInstance, Observation
 
 FRED_OBSERVATIONS_URL = "https://api.stlouisfed.org/fred/series/observations"
 CPI_SERIES_ID = "CPIAUCSL"
@@ -41,15 +43,30 @@ YAHOO_CHART_URL = "https://query1.finance.yahoo.com/v8/finance/chart/"
 # Yahoo refuses requests without a browser-like User-Agent.
 YAHOO_HEADERS = {"User-Agent": "Mozilla/5.0"}
 
+
+class PriceSeries(NamedTuple):
+    ticker: str
+    unit: str
+
+
 # The five MVP instruments, keyed by the exact symbol in data/seed/instruments.csv, with the Yahoo
-# ticker each is read from. Order matters: step 2 numbers observations by position in this table.
-MVP_TICKERS = {
-    "SPY / ES": "^GSPC",
-    "UST10Y / ZN": "^TNX",
-    "DXY": "DX-Y.NYB",
-    "GC / XAU": "GC=F",
-    "VIX": "^VIX",
+# ticker each is read from and the unit its move is measured in: pct for prices, bps for the yield.
+# Order matters: observations are numbered by position in this table.
+MVP_PRICE_SERIES = {
+    "SPY / ES": PriceSeries("^GSPC", "pct"),
+    "UST10Y / ZN": PriceSeries("^TNX", "bps"),
+    "DXY": PriceSeries("DX-Y.NYB", "pct"),
+    "GC / XAU": PriceSeries("GC=F", "pct"),
+    "VIX": PriceSeries("^VIX", "pct"),
 }
+
+# A close more than this many calendar days from the release is not "the day before" or "the
+# reaction": four admits Friday -> Tuesday after a Monday holiday and rejects a hole in the data.
+MAX_CLOSE_GAP_DAYS = 4
+BEFORE_HISTORY = "before_history"
+NO_CLOSE_NEARBY = "no_close_nearby"
+YAHOO = "yahoo"
+DAILY_CLOSE = "daily_close"
 
 
 @dataclass(frozen=True)
@@ -63,6 +80,15 @@ class CpiRelease:
 class DailyClose:
     day: date
     close: float
+
+
+@dataclass
+class ReleaseCounts:
+    """For one instrument: how many CPI releases were measured, and how many skipped and why."""
+
+    measured: int = 0
+    skipped_before_history: int = 0
+    skipped_no_close_nearby: int = 0
 
 
 class FredError(RuntimeError):
@@ -228,5 +254,98 @@ def load_daily_bars(con: duckdb.DuckDBPyConnection | None = None) -> dict[str, i
         instrument: store_daily_bars(
             instrument, ticker, parse_daily_bars(fetch_daily_bars(ticker)), con=con
         )
-        for instrument, ticker in MVP_TICKERS.items()
+        for instrument, (ticker, _unit) in MVP_PRICE_SERIES.items()
     }
+
+
+def closes_around(
+    closes: Sequence[DailyClose], released: date
+) -> tuple[DailyClose, DailyClose] | str:
+    """The last close before the release date and the first on or after it, or why there is none.
+
+    ``closes`` must be in date order. Returns ``BEFORE_HISTORY`` when no close precedes the release,
+    and ``NO_CLOSE_NEARBY`` when the reaction close is missing or either close is more than
+    ``MAX_CLOSE_GAP_DAYS`` from the release.
+    """
+    i = bisect_left(closes, released, key=lambda close: close.day)
+    if i == 0:
+        return BEFORE_HISTORY
+    if i == len(closes):
+        return NO_CLOSE_NEARBY
+    before, after = closes[i - 1], closes[i]
+    if (released - before.day).days > MAX_CLOSE_GAP_DAYS:
+        return NO_CLOSE_NEARBY
+    if (after.day - released).days > MAX_CLOSE_GAP_DAYS:
+        return NO_CLOSE_NEARBY
+    return before, after
+
+
+def release_move(before: DailyClose, after: DailyClose, unit: str) -> float:
+    """The move from ``before`` to ``after``: relative for prices, in basis points for yields."""
+    if unit == "bps":
+        return (after.close - before.close) * 100
+    return after.close / before.close - 1
+
+
+def build_observations(
+    con: duckdb.DuckDBPyConnection | None = None,
+) -> tuple[list[Observation], dict[str, ReleaseCounts]]:
+    """Measure every MVP instrument around every stored CPI release, from ``daily_bars``."""
+    events = db.fetch_all(
+        EventInstance,
+        "SELECT * FROM event_instances WHERE event_type = ? ORDER BY event_id",
+        [CPI_EVENT_TYPE],
+        con=con,
+    )
+    observations: list[Observation] = []
+    release_counts: dict[str, ReleaseCounts] = {}
+    for position, (instrument, (_ticker, unit)) in enumerate(MVP_PRICE_SERIES.items()):
+        bars = db.fetch_all(
+            DailyBar,
+            "SELECT * FROM daily_bars WHERE instrument = ? ORDER BY day",
+            [instrument],
+            con,
+        )
+        closes = [DailyClose(bar.day, bar.close) for bar in bars]
+        counts = release_counts[instrument] = ReleaseCounts()
+        for event in events:
+            # event_ts is naive UTC; the release date is the New York calendar date.
+            released = event.event_ts.replace(tzinfo=UTC).astimezone(CPI_RELEASE_ZONE).date()
+            pair = closes_around(closes, released)
+            if pair == BEFORE_HISTORY:
+                counts.skipped_before_history += 1
+                continue
+            if isinstance(pair, str):
+                counts.skipped_no_close_nearby += 1
+                continue
+            before, after = pair
+            counts.measured += 1
+            observations.append(
+                Observation(
+                    # Unique only while event_id is: the same CPI-only caveat as event_id itself.
+                    obs_id=event.event_id * 10 + position,
+                    event_id=event.event_id,
+                    instrument=instrument,
+                    px_t0=before.close,
+                    ret_unit=unit,
+                    ret_5m=None,
+                    ret_1h=None,
+                    ret_1d=release_move(before, after, unit),
+                    ret_1w=None,
+                    abn_ret_1d=None,
+                    car=None,
+                    peak_move=None,
+                    half_life_min=None,
+                    realized_dir=None,
+                    data_source=YAHOO,
+                    quality=DAILY_CLOSE,
+                )
+            )
+    return observations, release_counts
+
+
+def store_observations(con: duckdb.DuckDBPyConnection | None = None) -> dict[str, ReleaseCounts]:
+    """Build the observations and write them; re-running overwrites by ``obs_id``."""
+    observations, release_counts = build_observations(con=con)
+    db.insert_models("observations", observations, con=con, replace=True)
+    return release_counts

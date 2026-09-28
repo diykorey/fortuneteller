@@ -8,11 +8,11 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-MVP step 2, sub-step 3 — `study.load_daily_bars` fetches, parses and stores all five instruments'
-closes in `daily_bars` (`MVP_TICKERS` maps each symbol to its Yahoo ticker). Live run on 2026-09-28:
-58,460 rows, the same after a re-run, in about 3 seconds including the download. `db.insert_models`
-now writes through a temporary Parquet file instead of row by row (4 minutes → a fraction of a
-second) and rejects a key repeated within one call. *(PR #76.)*
+MVP step 2, sub-step 4 — `study.store_observations` measures each of the five instruments around
+each CPI release, from `daily_bars` and `event_instances`, into `observations`. Live run on
+2026-09-28: 649 / 648 / 649 / 312 / 440 = **2,698 observations**, the same after a re-run; every
+check in the spec passes (S&P 500 −4.32% on 2022-09-13; `^TNX` within 0.2 bp median of FRED's
+`DGS10`; median S&P release-day move 0.55%).
 
 ## In progress
 
@@ -20,14 +20,15 @@ Nothing.
 
 ## Next
 
-MVP step 2, sub-step 4 — **build `observations` from `daily_bars` and `event_instances`**: the close
-before each release and the move to the first close after it. Spec:
+MVP step 2, sub-step 5 — **`uv run fortuneteller load-prices`**: fetch and store the closes, build
+the observations, and print the counts per instrument and in total. Spec:
 [step-2-prices.md](steps/step-2-prices.md).
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-09-28 | Step 2.4: build `observations` — 2,698 release-day moves | this branch |
 | 2026-09-28 | Step 2.3: store the five instruments' closes; bulk `insert_models` | PR #76 |
 | 2026-09-28 | Step 2.2: fetch and parse Yahoo daily closes | PR #75 |
 | 2026-09-28 | Step 2.1: `daily_bars` table and its schema doc | PR #74 |
@@ -49,6 +50,6 @@ before each release and the move to the first close after it. Spec:
 | Step | State |
 | --- | --- |
 | 1 Releases | Done |
-| 2 Prices | Sub-step 3 of 5 done |
+| 2 Prices | Sub-step 4 of 5 done |
 | 3 Raw move | Not started |
 | 4 Surprise | Not started |

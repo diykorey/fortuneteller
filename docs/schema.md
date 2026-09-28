@@ -20,8 +20,8 @@ has a Pydantic model of the same shape in `src/fortuneteller/models.py`, written
 | [`news_sources`](#news_sources) | Reference | News or data feed | `seed` | 25 |
 | [`countries`](#countries) | Reference | Country | `seed` | 10 |
 | [`event_instances`](#event_instances) | Fact | Real event that happened | `load-releases` (MVP step 1) | 649 CPI releases |
-| [`daily_bars`](#daily_bars) | Fact | Instrument × trading day closing price | `load-prices` (MVP step 2, not built yet) | about 58,500 |
-| [`observations`](#observations) | Fact | Event × instrument reaction | MVP step 2 (not built) | 0 |
+| [`daily_bars`](#daily_bars) | Fact | Instrument × trading day closing price | `study.load_daily_bars` (MVP step 2; the `load-prices` command comes next) | about 58,500 |
+| [`observations`](#observations) | Fact | Event × instrument reaction | `study.store_observations` (MVP step 2; the `load-prices` command comes next) | 2,698 |
 | [`effect_size_matrix`](#effect_size_matrix) | Derived | Event type × instrument measurement | Nothing planned yet | 0 |
 
 **Reference** tables are configuration: committed CSVs in `data/seed/`, loaded by
@@ -274,7 +274,7 @@ it looks up the close before the announcement and the close after it, and writes
 release days are unusual. Storing the prices means Yahoo is asked once and later steps read locally.
 Nothing is computed here: the rows are the prices exactly as the source reported them.
 
-Filled by `uv run fortuneteller load-prices` (step 2, not built yet). Key: (`instrument`, `day`), so
+Filled by `study.load_daily_bars`, which the `uv run fortuneteller load-prices` command (step 2, sub-step 5) will call. Key: (`instrument`, `day`), so
 a re-run overwrites a day rather than adding a second copy.
 
 Example rows:
@@ -321,28 +321,38 @@ about 2,700 rows.
 
 ## observations
 
-One row per event × instrument: how that instrument moved around that event. Created but empty;
-[MVP step 2](roadmap.md) fills it. The horizon columns come from the pre-reset design, which planned
-intraday data; the MVP has only daily prices, so the intraday ones will stay empty.
+One row per event × instrument: how that instrument moved around that event. Built from
+`daily_bars` and `event_instances` by `study.store_observations`
+([step 2](steps/step-2-prices.md)): for each CPI release and each of the five instruments, the close
+of the last trading day before the release and the move to the close of the first trading day on or
+after it. No row when either close is more than 4 calendar days from the release, or the release
+predates the instrument's history. Re-running overwrites by `obs_id`.
+
+About 2,698 rows (checked 2026-09-28): 649 each for `SPY / ES` and `DXY`, 648 for `UST10Y / ZN`
+(the May 1978 release has no close within 4 days before it), 312 for `GC / XAU` (from 2000), 440 for
+`VIX` (from 1990).
+
+The horizon columns come from the pre-reset design, which planned intraday data; the MVP has only
+daily prices, so the intraday ones stay empty.
 
 | Column | Type | Meaning | Filled today |
 | --- | --- | --- | --- |
-| `obs_id` | BIGINT, **PK** | Stable id of the row. | No; step 2 |
-| `event_id` | BIGINT | The `event_instances.event_id` it reacts to. The one enforced foreign key in the schema. | No; step 2 |
-| `instrument` | TEXT | An `instruments.symbol`. | No; step 2 |
-| `px_t0` | DOUBLE | Price (or yield) just before the event: the starting point the returns are measured from. | No; step 2 |
-| `ret_unit` | TEXT | Unit of the `ret_*` columns: `pct` (relative change, `0.01` = 1%) for prices, `bps` (basis points, `(yield₁ − yield₀) × 100`) for yields. Values in different units must never be averaged together. | No; step 2 |
+| `obs_id` | BIGINT, **PK** | Stable id: `event_id × 10 +` the instrument's position (0–4: `SPY / ES`, `UST10Y / ZN`, `DXY`, `GC / XAU`, `VIX`), e.g. `2022080`. Unique only while `event_id` is — the same CPI-only caveat. | Yes |
+| `event_id` | BIGINT | The `event_instances.event_id` it reacts to. The one enforced foreign key in the schema. | Yes |
+| `instrument` | TEXT | An `instruments.symbol`. | Yes |
+| `px_t0` | DOUBLE | Price (or yield) just before the event: the close of the last trading day before the release date, the starting point the returns are measured from. | Yes |
+| `ret_unit` | TEXT | Unit of the `ret_*` columns: `pct` (relative change, `0.01` = 1%) for prices, `bps` (basis points, `(yield₁ − yield₀) × 100`) for yields. Values in different units must never be averaged together. | Yes |
 | `ret_5m` | DOUBLE | Move over 5 minutes after the event. Needs intraday data. | No; not in the MVP |
 | `ret_1h` | DOUBLE | Move over 1 hour after the event. Needs intraday data. | No; not in the MVP |
-| `ret_1d` | DOUBLE | Move from the last close before the event to the first close after it. | No; step 2 |
+| `ret_1d` | DOUBLE | Move from the last close before the release date to the first close on or after it, in `ret_unit`. On 2022-09-13: `−0.0432` for `SPY / ES`, `6.0` for `UST10Y / ZN`. | Yes |
 | `ret_1w` | DOUBLE | Move over about a week after the event. | No; nothing planned |
 | `abn_ret_1d` | DOUBLE | `ret_1d` minus what the instrument would normally have done that day: the part attributable to the event. | No; nothing planned |
 | `car` | DOUBLE | Cumulative abnormal return: abnormal moves summed over several days around the event. | No; nothing planned |
 | `peak_move` | DOUBLE | Largest move reached after the event. Needs intraday data. | No; not in the MVP |
 | `half_life_min` | DOUBLE | Minutes until half of `peak_move` was given back. Needs intraday data. | No; not in the MVP |
 | `realized_dir` | TEXT | Direction the instrument actually moved. | No; nothing planned |
-| `data_source` | TEXT | Where the prices came from. | No; step 2 |
-| `quality` | TEXT | How trustworthy the row is. | No; step 2 |
+| `data_source` | TEXT | Where the prices came from. | Yes |
+| `quality` | TEXT | How the move was measured. | Yes |
 
 ### Values
 
@@ -355,7 +365,17 @@ intraday data; the MVP has only daily prices, so the intraday ones will stay emp
 
 **`realized_dir`** (not filled yet): intended values `up`, `down`, `flat`, per the legacy design.
 
-**`quality`** (not filled yet): its values are decided when step 2 is specified.
+**`data_source`** — where the prices behind the row came from.
+
+| Value | Meaning |
+| --- | --- |
+| `yahoo` | Daily closes from Yahoo Finance, via `daily_bars` (whose `source` names the exact ticker). |
+
+**`quality`** — how the move was measured.
+
+| Value | Meaning |
+| --- | --- |
+| `daily_close` | From daily closing prices, not intraday data: the move includes everything else that happened that day, not only the release. |
 
 ## effect_size_matrix
 

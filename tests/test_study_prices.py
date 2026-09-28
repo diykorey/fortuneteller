@@ -19,7 +19,7 @@ from fortuneteller import db, study
 from fortuneteller.config import settings
 from fortuneteller.models import DailyBar
 from fortuneteller.study import (
-    MVP_TICKERS,
+    MVP_PRICE_SERIES,
     DailyClose,
     YahooError,
     load_daily_bars,
@@ -244,8 +244,8 @@ def test_tickers_cover_the_mvp_instruments_by_exact_symbol() -> None:
 
     # when the MVP ticker table is compared with it
     # then all five instruments are there, each spelled exactly as the join key
-    assert list(MVP_TICKERS) == ["SPY / ES", "UST10Y / ZN", "DXY", "GC / XAU", "VIX"]
-    assert set(MVP_TICKERS) <= symbols
+    assert list(MVP_PRICE_SERIES) == ["SPY / ES", "UST10Y / ZN", "DXY", "GC / XAU", "VIX"]
+    assert set(MVP_PRICE_SERIES) <= symbols
 
 
 def test_daily_bar_model_matches_the_table() -> None:
