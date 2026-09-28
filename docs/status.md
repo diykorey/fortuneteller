@@ -8,9 +8,10 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-MVP step 2, sub-step 1 — the `daily_bars` table (instrument, day, close, source; key instrument +
-day) is in `schema.sql`, and [schema.md](schema.md) explains it in plain words, with the expected
-size: about 58,500 rows. `init` adds it to an existing database without touching other tables. *(PR #74.)*
+MVP step 2, sub-step 2 — `study.fetch_daily_bars` fetches one ticker's whole daily history from
+Yahoo; `study.parse_daily_bars` turns it into closes by trading date, read in the exchange's time
+zone, with empty and weekend bars dropped. Live run on 2026-09-28, on US Pacific time: 58,459 closes
+across the five tickers, and the known 2022-09-13 closes come out right.
 
 ## In progress
 
@@ -18,13 +19,14 @@ Nothing.
 
 ## Next
 
-MVP step 2, sub-step 2 — **fetch one Yahoo ticker and parse it into dated closes**: dates in the
-exchange's time zone, empty and weekend rows dropped. Spec: [step-2-prices.md](steps/step-2-prices.md).
+MVP step 2, sub-step 3 — **store the closes of all five tickers in `daily_bars`**; re-running
+changes no row count. Spec: [step-2-prices.md](steps/step-2-prices.md).
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-09-28 | Step 2.2: fetch and parse Yahoo daily closes | this branch |
 | 2026-09-28 | Step 2.1: `daily_bars` table and its schema doc | PR #74 |
 | 2026-09-25 | Scenarios doc: ten shock → aftershock episodes, numbers verified | PR #72 |
 | 2026-09-25 | Step 2 spec: prices from Yahoo, `daily_bars`, observations | PR #73 |
@@ -44,6 +46,6 @@ exchange's time zone, empty and weekend rows dropped. Spec: [step-2-prices.md](s
 | Step | State |
 | --- | --- |
 | 1 Releases | Done |
-| 2 Prices | Sub-step 1 of 5 done |
+| 2 Prices | Sub-step 2 of 5 done |
 | 3 Raw move | Not started |
 | 4 Surprise | Not started |
