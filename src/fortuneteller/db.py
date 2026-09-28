@@ -1,17 +1,24 @@
 """Thin SQL helper over DuckDB — the one module that owns the connection and typed access.
 
-No ORM: Pydantic models go in, parameterized SQL runs, typed models come back. Everything
-downstream (the CLI, the M0-07 seed loader, M1 lookups) calls in here rather than touching DuckDB
-directly. Every helper takes an optional ``con`` so tests can inject an in-memory connection; when
-omitted it opens ``settings.db_path`` via :func:`get_connection`. Out of scope: migrations, async.
+No ORM: Pydantic models go in, SQL runs, typed models come back. Reads bind values as ``?``
+parameters; writes send the rows as one temporary Parquet file, because binding them one row at a
+time took about four minutes for the 58,000 daily bars. The SQL keeps to what DuckDB and Postgres
+share (``ON CONFLICT`` upserts, ``information_schema``); the one DuckDB-only call is
+``read_parquet``. Everything downstream (the CLI, the M0-07 seed loader, M1 lookups) calls in here
+rather than touching DuckDB directly. Every helper takes an optional ``con`` so tests can inject an
+in-memory connection; when omitted it opens ``settings.db_path`` via :func:`get_connection`. Out of
+scope: migrations, async.
 """
 
 from __future__ import annotations
 
+import tempfile
 from collections.abc import Sequence
+from pathlib import Path
 from typing import TypeVar
 
 import duckdb
+import polars as pl
 from pydantic import BaseModel
 
 from .config import settings
@@ -56,8 +63,10 @@ def insert_models(
 ) -> int:
     """Insert Pydantic ``rows`` into ``table`` and return how many were written.
 
-    With ``replace=True`` emit ``INSERT OR REPLACE`` so a row whose primary key already exists is
-    overwritten rather than rejected — this is what makes the seed load idempotent.
+    With ``replace=True`` a row whose primary key already exists is overwritten rather than rejected
+    (``ON CONFLICT … DO UPDATE``, which DuckDB and Postgres share) — this is what makes every load
+    idempotent. Rows that repeat a key among themselves are rejected before anything is written: a
+    bulk upsert would silently keep only one of them.
     """
     if table not in _TABLES:
         raise ValueError(f"unknown table: {table!r}")
@@ -66,11 +75,36 @@ def insert_models(
     connection = con if con is not None else get_connection()
     fields = list(type(rows[0]).model_fields)
     columns = ", ".join(fields)
-    placeholders = ", ".join(["?"] * len(fields))
-    verb = "INSERT OR REPLACE" if replace else "INSERT"
-    sql = f"{verb} INTO {table} ({columns}) VALUES ({placeholders})"
-    connection.executemany(sql, [[getattr(row, field) for field in fields] for row in rows])
+    # infer_schema_length=None: a column empty in the first rows and filled later keeps its type.
+    frame = pl.DataFrame([row.model_dump() for row in rows], infer_schema_length=None)
+    key = _primary_key(table, connection)
+    if key and frame.select(key).is_duplicated().any():
+        raise ValueError(f"{table}: the rows to insert repeat a key ({', '.join(key)})")
+    sql = f"INSERT INTO {table} ({columns}) SELECT {columns} FROM read_parquet(?)"
+    if replace:
+        if not key:
+            raise ValueError(f"{table}: replace=True needs a primary key to match rows on")
+        updates = ", ".join(f"{f} = EXCLUDED.{f}" for f in fields if f not in key)
+        action = f"DO UPDATE SET {updates}" if updates else "DO NOTHING"
+        sql += f" ON CONFLICT ({', '.join(key)}) {action}"
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / "rows.parquet"
+        frame.write_parquet(path)
+        connection.execute(sql, [str(path)])
     return len(rows)
+
+
+def _primary_key(table: str, con: duckdb.DuckDBPyConnection) -> list[str]:
+    rows = con.execute(
+        "SELECT kcu.column_name FROM information_schema.table_constraints AS tc "
+        "JOIN information_schema.key_column_usage AS kcu "
+        "ON kcu.constraint_name = tc.constraint_name "
+        "AND kcu.table_schema = tc.table_schema AND kcu.table_name = tc.table_name "
+        "WHERE tc.table_name = ? AND tc.constraint_type = 'PRIMARY KEY' "
+        "ORDER BY kcu.ordinal_position",
+        [table],
+    ).fetchall()
+    return [row[0] for row in rows]
 
 
 def get_instrument(symbol: str, con: duckdb.DuckDBPyConnection | None = None) -> Instrument | None:

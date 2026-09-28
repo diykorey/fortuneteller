@@ -6,7 +6,7 @@ reference month (what was measured) and the release date (when the market saw it
 weeks apart.
 
 Step 2 (see ``docs/steps/step-2-prices.md``): fetch each instrument's daily closes from Yahoo and
-parse them into dated closes, the date read in the exchange's own time zone.
+parse them into dated closes, the date read in the exchange's own time zone, and store them.
 """
 
 from __future__ import annotations
@@ -24,7 +24,7 @@ from zoneinfo import ZoneInfo
 import duckdb
 
 from . import db
-from .models import EventInstance
+from .models import DailyBar, EventInstance
 
 FRED_OBSERVATIONS_URL = "https://api.stlouisfed.org/fred/series/observations"
 CPI_SERIES_ID = "CPIAUCSL"
@@ -40,6 +40,16 @@ FIRST_RELEASE = "first_release"
 YAHOO_CHART_URL = "https://query1.finance.yahoo.com/v8/finance/chart/"
 # Yahoo refuses requests without a browser-like User-Agent.
 YAHOO_HEADERS = {"User-Agent": "Mozilla/5.0"}
+
+# The five MVP instruments, keyed by the exact symbol in data/seed/instruments.csv, with the Yahoo
+# ticker each is read from. Order matters: step 2 numbers observations by position in this table.
+MVP_TICKERS = {
+    "SPY / ES": "^GSPC",
+    "UST10Y / ZN": "^TNX",
+    "DXY": "DX-Y.NYB",
+    "GC / XAU": "GC=F",
+    "VIX": "^VIX",
+}
 
 
 @dataclass(frozen=True)
@@ -196,3 +206,27 @@ def parse_daily_bars(payload: bytes) -> list[DailyClose]:
             continue
         by_day[day] = close
     return [DailyClose(day, by_day[day]) for day in sorted(by_day)]
+
+
+def store_daily_bars(
+    instrument: str,
+    ticker: str,
+    closes: Sequence[DailyClose],
+    con: duckdb.DuckDBPyConnection | None = None,
+) -> int:
+    """Write one instrument's closes to ``daily_bars``; re-running overwrites by (instrument, day)."""
+    source = f"yahoo:{ticker}"
+    bars = [
+        DailyBar(instrument=instrument, day=c.day, close=c.close, source=source) for c in closes
+    ]
+    return db.insert_models("daily_bars", bars, con=con, replace=True)
+
+
+def load_daily_bars(con: duckdb.DuckDBPyConnection | None = None) -> dict[str, int]:
+    """Fetch, parse and store every MVP instrument's daily closes; return the count per instrument."""
+    return {
+        instrument: store_daily_bars(
+            instrument, ticker, parse_daily_bars(fetch_daily_bars(ticker)), con=con
+        )
+        for instrument, ticker in MVP_TICKERS.items()
+    }
