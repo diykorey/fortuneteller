@@ -1,8 +1,12 @@
 """Event study over US CPI releases — MVP step 1 onward (see ``docs/steps/step-1-releases.md``).
 
-Today: fetch the CPI initial-release history from FRED in one request, parse it into dated
-records, map each to an ``EventInstance``, and store them. Each record keeps both dates, because the reference
-month (what was measured) and the release date (when the market saw it) are about six weeks apart.
+Step 1: fetch the CPI initial-release history from FRED in one request, parse it into dated
+records, map each to an ``EventInstance``, and store them. Each record keeps both dates, because the
+reference month (what was measured) and the release date (when the market saw it) are about six
+weeks apart.
+
+Step 2 (see ``docs/steps/step-2-prices.md``): fetch each instrument's daily closes from Yahoo and
+parse them into dated closes, the date read in the exchange's own time zone.
 """
 
 from __future__ import annotations
@@ -33,6 +37,10 @@ CPI_RELEASE_TIME = time(8, 30)
 CPI_RELEASE_ZONE = ZoneInfo("America/New_York")
 FIRST_RELEASE = "first_release"
 
+YAHOO_CHART_URL = "https://query1.finance.yahoo.com/v8/finance/chart/"
+# Yahoo refuses requests without a browser-like User-Agent.
+YAHOO_HEADERS = {"User-Agent": "Mozilla/5.0"}
+
 
 @dataclass(frozen=True)
 class CpiRelease:
@@ -41,7 +49,17 @@ class CpiRelease:
     value: float
 
 
+@dataclass(frozen=True)
+class DailyClose:
+    day: date
+    close: float
+
+
 class FredError(RuntimeError):
+    pass
+
+
+class YahooError(RuntimeError):
     pass
 
 
@@ -133,3 +151,48 @@ def store_cpi_releases(
     """Write the releases to ``event_instances``; re-running overwrites by ``event_id``."""
     events = [to_event_instance(release) for release in releases]
     return db.insert_models("event_instances", events, con=con, replace=True)
+
+
+def fetch_daily_bars(ticker: str, timeout: float = 30.0) -> bytes:
+    """Return the raw Yahoo chart response: the ticker's whole daily history."""
+    params = {"period1": "0", "period2": "9999999999", "interval": "1d"}
+    url = f"{YAHOO_CHART_URL}{urllib.parse.quote(ticker, safe='')}?{urllib.parse.urlencode(params)}"
+    request = urllib.request.Request(url, headers=YAHOO_HEADERS)
+    try:
+        with urllib.request.urlopen(request, timeout=timeout) as response:
+            body: bytes = response.read()
+            return body
+    except urllib.error.HTTPError as exc:
+        raise YahooError(f"Yahoo returned HTTP {exc.code} for {ticker}") from None
+    except urllib.error.URLError as exc:
+        raise YahooError(f"Yahoo request for {ticker} failed: {exc.reason}") from None
+
+
+def parse_daily_bars(payload: bytes) -> list[DailyClose]:
+    """Parse a Yahoo chart response into closes by trading date, oldest first.
+
+    Each bar's timestamp is read as a date in the exchange's own time zone, named in the response:
+    the dollar index and gold are stamped at midnight New York time, which any other zone can put
+    on the previous day. Yahoo's ``gmtoffset`` is today's offset, not the bar's, so it is not used.
+    Bars with no close, and bars dated on a weekend, are dropped.
+    """
+    document: Any = json.loads(payload)
+    chart = document["chart"]
+    if chart.get("error"):
+        raise YahooError(f"Yahoo returned an error: {chart['error']}")
+    result = chart["result"][0]
+    zone = ZoneInfo(result["meta"]["exchangeTimezoneName"])
+    timestamps: list[int] = result.get("timestamp", [])
+    closes: list[float | None] = result["indicators"]["quote"][0]["close"]
+    if len(timestamps) != len(closes):
+        raise YahooError(f"Yahoo sent {len(timestamps)} timestamps but {len(closes)} closes")
+
+    by_day: dict[date, float] = {}
+    for timestamp, close in zip(timestamps, closes, strict=True):
+        if close is None:
+            continue
+        day = datetime.fromtimestamp(timestamp, zone).date()
+        if day.weekday() >= 5:
+            continue
+        by_day[day] = close
+    return [DailyClose(day, by_day[day]) for day in sorted(by_day)]

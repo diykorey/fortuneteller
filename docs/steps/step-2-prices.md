@@ -51,7 +51,7 @@ compare against, and should read them from the database rather than fetch again.
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~Add `daily_bars` to `schema.sql` and `docs/schema.md`~~ **done** | `init` creates it; the schema doc describes it |
-| 2 | Fetch one Yahoo ticker and parse it into dated closes | Dates come from the exchange's time zone; empty and weekend rows are dropped |
+| 2 | ~~Fetch one Yahoo ticker and parse it into dated closes~~ **done** | Dates come from the exchange's time zone; empty and weekend rows are dropped |
 | 3 | Store the closes of all five tickers in `daily_bars` | Re-running changes no row count |
 | 4 | Build `observations` from `daily_bars` and `event_instances` | Before/after rule, units, and skips as specified below |
 | 5 | `uv run fortuneteller load-prices` prints the counts | Per-instrument counts and `5 instruments × N releases = M observations` |
@@ -153,7 +153,9 @@ Both tables are written with `insert_models(replace=True)`, so a re-run overwrit
 | --- | --- |
 | Pre-1990s bars have `open == close` for `^TNX`, `DX-Y.NYB` and early `^VIX` | Use closes only |
 | 3,119 `DX-Y.NYB` bars have a `null` close; smaller numbers in the others | Drop them |
-| 2,907 `DX-Y.NYB` bars fall on weekends | Drop them; a weekend "close" is not a trading price and would give the Sunday 1992-12-13 release a fake `t1` |
+| 2,907 `DX-Y.NYB` bars fall on weekends | All of them have an empty close today, so they are dropped for that reason already. Weekend dates are dropped as well, in case one ever carries a value: it would not be a trading price, and would give the Sunday 1992-12-13 release a fake `t1` |
+| The latest bar can be today's, while the market is still open | Its close is the latest price, not the final one. It is stored like any other; the next run overwrites it by key |
+| `meta.gmtoffset` is today's UTC offset, not the bar's (−4 h on a December 1992 bar) | Never used; the date comes from the time-zone *name*, `meta.exchangeTimezoneName` |
 | `^TNX` has no bar for Tuesday 1978-05-30, the day after Memorial Day | The `1978-04` release (Wednesday 1978-05-31) has `t0` five days back: skipped, and reported. FRED's `DGS10` has the same hole |
 | `GC=F` is a continuous front-month futures series | When one contract expires and the next takes over, the price can jump for reasons unrelated to CPI. Accepted and named here; rare on any given release day |
 | Two CPI prints share the release date 2025-12-18 | They get identical moves. Step 3 must count a trading day once, as step 1 already notes |
