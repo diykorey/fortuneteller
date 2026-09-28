@@ -10,7 +10,7 @@ Where the work is and what comes next. Two rules keep it current:
 
 MVP step 2 spec — [step-2-prices.md](steps/step-2-prices.md): Yahoo daily closes for the five
 instruments into a new `daily_bars` table, and the close-to-close move around each release into
-`observations`. Coverage verified against live data on 2026-09-25: 2698 observations expected.
+`observations`. Coverage verified against live data on 2026-09-25: 2698 observations expected. *(PR #73.)*
 
 ## In progress
 
@@ -25,7 +25,7 @@ MVP step 2, sub-step 1 — **add `daily_bars` to `schema.sql` and `docs/schema.m
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-09-25 | Step 2 spec: prices from Yahoo, `daily_bars`, observations | this branch |
+| 2026-09-25 | Step 2 spec: prices from Yahoo, `daily_bars`, observations | PR #73 |
 | 2026-09-25 | Schema doc: every table, column and enum value explained | PR #71 |
 | 2026-09-25 | Step 1.5: `load-releases` CLI — step 1 complete | PR #70 |
 | 2026-09-25 | Step 1.4: store the CPI events idempotently | PR #69 |
