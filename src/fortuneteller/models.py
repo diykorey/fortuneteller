@@ -5,7 +5,7 @@ str-enums that compare equal to their value, matching the seed CSVs in ``data/se
 is out of scope here (M0-05).
 """
 
-from datetime import datetime
+from datetime import date, datetime
 from enum import StrEnum
 from typing import Annotated
 
@@ -130,6 +130,13 @@ class EventInstance(_DomainModel):
     vix_t0: float | None
     rate_regime: str | None
     quality: str
+
+
+class DailyBar(_DomainModel):
+    instrument: str
+    day: date
+    close: float
+    source: str
 
 
 class Observation(_DomainModel):

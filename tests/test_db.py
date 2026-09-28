@@ -1,5 +1,6 @@
 """Tests for the M0-05 database helper (db.py)."""
 
+from datetime import date
 from pathlib import Path
 
 import duckdb
@@ -7,7 +8,7 @@ import pytest
 
 from fortuneteller import db
 from fortuneteller.config import settings
-from fortuneteller.models import EffectSizeSeed, Instrument
+from fortuneteller.models import DailyBar, EffectSizeSeed, Instrument
 
 EXPECTED_TABLES = {
     "event_types",
@@ -122,3 +123,51 @@ def test_unknown_table_is_rejected() -> None:
         db.count_rows("instruments; DROP TABLE instruments", con=con)
     with pytest.raises(ValueError):
         db.insert_models("not_a_table", [], con=con)
+
+
+def test_insert_models_keeps_a_value_that_first_appears_late() -> None:
+    # given 150 instruments whose optional notes are empty except on the last one
+    con = _seeded_connection()
+    rows = [
+        Instrument(symbol=f"I{i}", name=f"Instrument {i}", asset_class="fx", region="us")
+        for i in range(149)
+    ]
+    rows.append(
+        Instrument(symbol="LAST", name="Last", asset_class="fx", region="us", notes="filled late")
+    )
+    # when they are inserted in one call
+    db.insert_models("instruments", rows, con=con)
+    # then the late value is stored, not lost to a column type guessed from the first rows
+    assert db.get_instrument("LAST", con=con) == rows[-1]
+
+
+def test_insert_models_rejects_a_key_repeated_within_one_call() -> None:
+    # given two closes for the same instrument on the same day
+    con = _seeded_connection()
+    rows = [
+        DailyBar(instrument="VIX", day=date(2022, 9, 13), close=close, source="yahoo:^VIX")
+        for close in (27.27, 99.0)
+    ]
+    # when they are written in one call
+    # then the call fails loudly instead of silently keeping one of them
+    with pytest.raises(ValueError, match="repeat a key"):
+        db.insert_models("daily_bars", rows, con=con, replace=True)
+    assert db.count_rows("daily_bars", con=con) == 0
+
+
+def test_insert_models_replace_overwrites_an_existing_row() -> None:
+    # given a stored close
+    con = _seeded_connection()
+    day = date(2022, 9, 13)
+    db.insert_models(
+        "daily_bars", [DailyBar(instrument="VIX", day=day, close=1.0, source="s")], con=con
+    )
+    # when a new value for the same key is written with replace=True
+    db.insert_models(
+        "daily_bars",
+        [DailyBar(instrument="VIX", day=day, close=27.27, source="s")],
+        con=con,
+        replace=True,
+    )
+    # then the row holds the new value and is not duplicated
+    assert con.execute("SELECT close FROM daily_bars").fetchall() == [(27.27,)]

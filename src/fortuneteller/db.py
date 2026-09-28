@@ -1,6 +1,8 @@
 """Thin SQL helper over DuckDB — the one module that owns the connection and typed access.
 
-No ORM: Pydantic models go in, parameterized SQL runs, typed models come back. Everything
+No ORM: Pydantic models go in, SQL runs, typed models come back. Reads bind values as ``?``
+parameters; writes send the rows as one temporary Parquet file, because binding them one row at a
+time took about four minutes for the 58,000 daily bars. Everything
 downstream (the CLI, the M0-07 seed loader, M1 lookups) calls in here rather than touching DuckDB
 directly. Every helper takes an optional ``con`` so tests can inject an in-memory connection; when
 omitted it opens ``settings.db_path`` via :func:`get_connection`. Out of scope: migrations, async.
@@ -8,10 +10,13 @@ omitted it opens ``settings.db_path`` via :func:`get_connection`. Out of scope: 
 
 from __future__ import annotations
 
+import tempfile
 from collections.abc import Sequence
+from pathlib import Path
 from typing import TypeVar
 
 import duckdb
+import polars as pl
 from pydantic import BaseModel
 
 from .config import settings
@@ -57,20 +62,37 @@ def insert_models(
     """Insert Pydantic ``rows`` into ``table`` and return how many were written.
 
     With ``replace=True`` emit ``INSERT OR REPLACE`` so a row whose primary key already exists is
-    overwritten rather than rejected — this is what makes the seed load idempotent.
+    overwritten rather than rejected — this is what makes the seed load idempotent. Rows that repeat
+    a key among themselves are rejected before anything is written: DuckDB would silently keep one.
     """
     if table not in _TABLES:
         raise ValueError(f"unknown table: {table!r}")
     if not rows:
         return 0
     connection = con if con is not None else get_connection()
-    fields = list(type(rows[0]).model_fields)
-    columns = ", ".join(fields)
-    placeholders = ", ".join(["?"] * len(fields))
+    columns = ", ".join(type(rows[0]).model_fields)
+    # infer_schema_length=None: a column empty in the first rows and filled later keeps its type.
+    frame = pl.DataFrame([row.model_dump() for row in rows], infer_schema_length=None)
+    key = _primary_key(table, connection)
+    if key and frame.select(key).is_duplicated().any():
+        raise ValueError(f"{table}: the rows to insert repeat a key ({', '.join(key)})")
     verb = "INSERT OR REPLACE" if replace else "INSERT"
-    sql = f"{verb} INTO {table} ({columns}) VALUES ({placeholders})"
-    connection.executemany(sql, [[getattr(row, field) for field in fields] for row in rows])
+    with tempfile.TemporaryDirectory() as tmp:
+        path = Path(tmp) / "rows.parquet"
+        frame.write_parquet(path)
+        connection.execute(
+            f"{verb} INTO {table} ({columns}) SELECT {columns} FROM read_parquet(?)", [str(path)]
+        )
     return len(rows)
+
+
+def _primary_key(table: str, con: duckdb.DuckDBPyConnection) -> list[str]:
+    row = con.execute(
+        "SELECT constraint_column_names FROM duckdb_constraints() "
+        "WHERE table_name = ? AND constraint_type = 'PRIMARY KEY'",
+        [table],
+    ).fetchone()
+    return list(row[0]) if row else []
 
 
 def get_instrument(symbol: str, con: duckdb.DuckDBPyConnection | None = None) -> Instrument | None:

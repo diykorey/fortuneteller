@@ -251,6 +251,9 @@ Terms are grouped by what they are about, alphabetical within each group.
   the session's time zone on write.
 - **ORM** (Object-Relational Mapper) — a library that hides SQL behind objects. **Deliberately not
   used**: Pydantic models plus plain parameterized SQL keep the data layer obvious.
+- **Parquet** — a compact file format for tables that keeps each column's type. `db.insert_models`
+  writes rows to a temporary Parquet file and loads it in one statement; row-by-row inserts took
+  about four minutes for the 58,000 daily bars, the file takes a fraction of a second.
 - **Pydantic** — the library that validates data against typed models, so malformed rows fail loudly
   at the edge instead of silently later.
 - **pytest** — the test runner. Tests use `# given` / `# when` / `# then` comments.
