@@ -11,7 +11,7 @@ Where the work is and what comes next. Two rules keep it current:
 MVP step 2, sub-step 2 — `study.fetch_daily_bars` fetches one ticker's whole daily history from
 Yahoo; `study.parse_daily_bars` turns it into closes by trading date, read in the exchange's time
 zone, with empty and weekend bars dropped. Live run on 2026-09-28, on US Pacific time: 58,459 closes
-across the five tickers, and the known 2022-09-13 closes come out right.
+across the five tickers, and the known 2022-09-13 closes come out right. *(PR #75.)*
 
 ## In progress
 
@@ -26,7 +26,7 @@ changes no row count. Spec: [step-2-prices.md](steps/step-2-prices.md).
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-09-28 | Step 2.2: fetch and parse Yahoo daily closes | this branch |
+| 2026-09-28 | Step 2.2: fetch and parse Yahoo daily closes | PR #75 |
 | 2026-09-28 | Step 2.1: `daily_bars` table and its schema doc | PR #74 |
 | 2026-09-25 | Scenarios doc: ten shock → aftershock episodes, numbers verified | PR #72 |
 | 2026-09-25 | Step 2 spec: prices from Yahoo, `daily_bars`, observations | PR #73 |
