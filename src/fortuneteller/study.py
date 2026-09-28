@@ -1,4 +1,4 @@
-"""Event study over US CPI releases — MVP step 1 onward (see ``docs/step-1-releases.md``).
+"""Event study over US CPI releases — MVP step 1 onward (see ``docs/steps/step-1-releases.md``).
 
 Today: fetch the CPI initial-release history from FRED in one request, parse it into dated
 records, map each to an ``EventInstance``, and store them. Each record keeps both dates, because the reference

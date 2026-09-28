@@ -98,6 +98,10 @@ Terms are grouped by what they are about, alphabetical within each group.
   euro). Rises on risk-off and on hawkish Fed expectations.
 - **ES** (E-mini S&P 500 future) — the futures contract on the S&P 500, which trades nearly around
   the clock and therefore reacts to releases outside US stock-market hours.
+- **Front-month / continuous futures** — a futures contract expires, so a long price history is
+  stitched together from the contract nearest expiry (the *front month*), switching to the next one
+  at each expiry (the *roll*). Yahoo's `GC=F` is such a series; its price can jump on a roll day
+  for reasons unrelated to any event.
 - **FX** (Foreign Exchange) — the currency market.
 - **Gold / XAU / GC** — gold; `XAU` is its currency-style code, `GC` its COMEX futures symbol. A
   haven asset, sensitive to real interest rates.
@@ -121,8 +125,12 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **VIX** — the Cboe Volatility Index, the market's expected S&P 500 volatility over the next 30
   days, derived from option prices. The "fear gauge": spikes on shocks.
 - **^TNX** — Yahoo Finance's symbol for the US 10-year yield. A *vendor* ticker, deliberately not
-  the canonical symbol: keys must not move when the data source does — see **UST 10Y**. Check its
-  scaling convention against a known value the first time you load it.
+  the canonical symbol: keys must not move when the data source does — see **UST 10Y**. Quotes the
+  yield in percent (`4.2`); checked on 2026-09-25 against FRED's `DGS10`, which it matches to about
+  1 bp.
+- **Vendor ticker** — a data provider's own code for an instrument, as opposed to the project's
+  canonical symbol. Step 2 maps five: `^GSPC` (S&P 500 index), `^TNX`, `DX-Y.NYB` (dollar index),
+  `GC=F` (gold futures), `^VIX`.
 
 ## Measuring the effect
 
@@ -132,6 +140,8 @@ Terms are grouped by what they are about, alphabetical within each group.
   simple model of one.
 - **CAR** (Cumulative Abnormal Return) — abnormal returns added up across an event window, to
   capture a move that builds over hours rather than landing at once.
+- **Close-to-close return** — the move from one day's closing price to a later day's closing
+  price. The MVP's measure of a release-day reaction, because old price history has closes only.
 - **Daily bar / OHLC** — one row per trading day holding Open, High, Low, Close prices. The MVP's
   data resolution; enough to prove an effect exists.
 - **Effect size** — how much an instrument moves per unit of event, the core number the whole system
@@ -142,6 +152,9 @@ Terms are grouped by what they are about, alphabetical within each group.
   from a normal day.
 - **Event window** — the stretch of time around an event over which the move is measured (the first
   hour, the day, the week).
+- **Exchange time zone** — the time zone of the market where an instrument trades, which decides
+  what calendar date a price belongs to. Yahoo reports it per ticker; reading a bar's timestamp in
+  any other zone can shift it to the wrong day.
 - **Half-life** — how long until a move decays halfway back. Distinguishes a lasting repricing from
   a spike that round-trips in minutes.
 - **Hit rate** — the fraction of past occurrences where the predicted direction was correct. 50% is
@@ -151,6 +164,8 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **Return** — the percentage price change over a period.
 - **Standard deviation (SD)** — the typical size of variation in a series. Used both to standardize
   surprises and to judge whether a move is unusual.
+- **t0 / t1** — the two closes a release-day move is measured between: `t0` is the last trading day
+  before the release date, `t1` the first trading day on or after it.
 - **Tick data** — every individual trade and quote, the highest-resolution (and most expensive)
   market data. Deliberately deferred: daily bars can prove the loop.
 
@@ -195,10 +210,15 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **GDELT** — a free global database of news events. A detection-stage source, deferred.
 - **Series ID** — a data provider's unique code for one time series (e.g. `CPIAUCSL`). Load-bearing
   the way instrument symbols are: the wrong ID silently fetches the wrong data.
-- **Stooq** — a free source of historical price data; a fallback when others rate-limit.
+- **DGS10** — the FRED series ID for the daily 10-year Treasury yield. Used to cross-check Yahoo's
+  `^TNX`.
+- **Stooq** — a free source of historical price data. Since at least 2026-09 it sits behind a
+  JavaScript bot check and cannot be read by a program, so the MVP does not use it.
 - **Vintage** — a snapshot of what a series looked like on a given past date, before revisions.
   FRED retains vintages, which is how the **initial release** and its publication date are
   recoverable.
+- **Yahoo Finance chart API** — the unofficial endpoint (`query1.finance.yahoo.com/v8/finance/chart`)
+  behind Yahoo's charts; returns daily history as JSON with no key. Step 2's price source.
 - **yfinance** — a Python library pulling free price history from Yahoo Finance. Convenient and
   unofficial: fine for research, not something to depend on in production.
 
