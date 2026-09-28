@@ -27,6 +27,9 @@ live in [`steps/`](steps/); [Step 1 — Releases](steps/step-1-releases.md) is d
 **Where are we, and what's next?** → **[Status](status.md)**
 The last completed task and the next one, kept current as work lands.
 
+**What should it eventually warn about?** → **[Scenarios](scenarios.md)**
+Ten real shock → aftershock episodes, with verified moves. Hypotheses to measure, not predictions.
+
 **What is in the database?** → **[Schema](schema.md)**
 Every table and column: what it means, who fills it, and whether anything fills it yet.
 
@@ -73,6 +76,7 @@ anywhere and drive nothing.
 | Write the document for a new step | [Legend](legend.md) — what every step document must say |
 | Look up a term or ticker | [Glossary](glossary.md) |
 | Know which external services and keys are needed | [Accounts](accounts.md) |
+| See what kinds of events the product should handle, and how markets reacted | [Scenarios](scenarios.md) |
 | Know what a table or column means | [Schema](schema.md) |
 | Know what the reference CSVs contain | [legacy/data/](legacy/data/README.md) — still accurate |
 | Understand what was abandoned, and why | [legacy/](legacy/README.md) |

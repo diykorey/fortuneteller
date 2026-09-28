@@ -25,6 +25,7 @@ MVP step 2, sub-step 1 — **add `daily_bars` to `schema.sql` and `docs/schema.m
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-09-25 | Scenarios doc: ten shock → aftershock episodes, numbers verified | PR #72 |
 | 2026-09-25 | Step 2 spec: prices from Yahoo, `daily_bars`, observations | PR #73 |
 | 2026-09-25 | Schema doc: every table, column and enum value explained | PR #71 |
 | 2026-09-25 | Step 1.5: `load-releases` CLI — step 1 complete | PR #70 |

@@ -92,12 +92,19 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **BUND / FGBL** — the German 10-year government bond and its futures contract (Eurex); the
   eurozone's risk-free benchmark. Free price history is awkward, which is why the MVP uses the US
   10-year instead.
+- **Carry trade** — borrowing in a low-interest currency (classically the yen) to buy
+  higher-yielding assets elsewhere. Profitable while calm; unwinds violently when the funding
+  currency's rates rise.
 - **CDS** (Credit Default Swap) — insurance against a borrower defaulting; its price is a direct
   read on perceived default risk.
+- **Contagion** — a shock spreading from where it started to firms or markets exposed to it: one
+  bank's failure raising doubts about similar banks.
 - **DXY** (US Dollar Index) — the dollar measured against a basket of major currencies (mostly the
   euro). Rises on risk-off and on hawkish Fed expectations.
 - **ES** (E-mini S&P 500 future) — the futures contract on the S&P 500, which trades nearly around
   the clock and therefore reacts to releases outside US stock-market hours.
+- **Flight to safety** — money leaving risky assets for havens (Treasuries, gold, the dollar, the
+  yen) during a shock. Usually lowers Treasury yields; see scenario 6 for when it did not.
 - **Front-month / continuous futures** — a futures contract expires, so a long price history is
   stitched together from the contract nearest expiry (the *front month*), switching to the next one
   at each expiry (the *roll*). Yahoo's `GC=F` is such a series; its price can jump on a roll day
@@ -105,8 +112,11 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **FX** (Foreign Exchange) — the currency market.
 - **Gold / XAU / GC** — gold; `XAU` is its currency-style code, `GC` its COMEX futures symbol. A
   haven asset, sensitive to real interest rates.
+- **KRE** — an ETF of US regional-bank shares; the market's read on regional-bank stress. Not in
+  the instrument universe.
 - **Liquidity** — how easily something can be traded without moving its own price. The MVP sticks to
   highly liquid instruments so measured moves reflect the event, not thin trading.
+- **Nikkei 225** — Japan's main stock index. Not in the instrument universe.
 - **Rates** — the government-bond / interest-rate market. Note the inversion: when bond **prices**
   rise, **yields** fall.
 - **Risk-on / risk-off** — the market mood. Risk-on: money into stocks and commodities. Risk-off:
@@ -136,6 +146,9 @@ Terms are grouped by what they are about, alphabetical within each group.
 
 - **Abnormal return** — the part of a move that is *not* explained by the instrument's ordinary
   behaviour: actual return minus expected return. The honest way to say "the event caused this".
+- **Aftershock** — what follows a market shock over the next days to weeks: contagion, a policy
+  response, a reversal, the next failure. Used with *shock* (the first reaction, up to the first
+  close) and *resolution* (what ends it) in [scenarios](scenarios.md).
 - **Baseline** — the ordinary behaviour an abnormal return is measured against: a typical day, or a
   simple model of one.
 - **CAR** (Cumulative Abnormal Return) — abnormal returns added up across an event window, to
