@@ -77,9 +77,9 @@ class CpiRelease:
 
 
 @dataclass(frozen=True)
-class DailyClose:
+class DailyClosingPrice:
     day: date
-    close: float
+    price: float
 
 
 @dataclass
@@ -204,7 +204,7 @@ def fetch_daily_bars(ticker: str, timeout: float = 30.0) -> bytes:
         raise YahooError(f"Yahoo request for {ticker} failed: {exc.reason}") from None
 
 
-def parse_daily_bars(payload: bytes) -> list[DailyClose]:
+def parse_daily_bars(payload: bytes) -> list[DailyClosingPrice]:
     """Parse a Yahoo chart response into closes by trading date, oldest first.
 
     Each bar's timestamp is read as a date in the exchange's own time zone, named in the response:
@@ -231,19 +231,19 @@ def parse_daily_bars(payload: bytes) -> list[DailyClose]:
         if day.weekday() >= 5:
             continue
         by_day[day] = close
-    return [DailyClose(day, by_day[day]) for day in sorted(by_day)]
+    return [DailyClosingPrice(day, by_day[day]) for day in sorted(by_day)]
 
 
 def store_daily_bars(
     instrument: str,
     ticker: str,
-    closes: Sequence[DailyClose],
+    closes: Sequence[DailyClosingPrice],
     con: duckdb.DuckDBPyConnection | None = None,
 ) -> int:
     """Write one instrument's closes to ``daily_bars``; re-running overwrites by (instrument, day)."""
     source = f"yahoo:{ticker}"
     bars = [
-        DailyBar(instrument=instrument, day=c.day, close=c.close, source=source) for c in closes
+        DailyBar(instrument=instrument, day=c.day, close=c.price, source=source) for c in closes
     ]
     return db.insert_models("daily_bars", bars, con=con, replace=True)
 
@@ -258,9 +258,9 @@ def load_daily_bars(con: duckdb.DuckDBPyConnection | None = None) -> dict[str, i
     }
 
 
-def find_closes_before_and_after(
-    closes: Sequence[DailyClose], release_date: date
-) -> tuple[DailyClose, DailyClose] | str:
+def closing_price_before_after(
+    closes: Sequence[DailyClosingPrice], release_date: date
+) -> tuple[DailyClosingPrice, DailyClosingPrice] | str:
     """The last close before the release date and the first on or after it, or why there is none.
 
     ``closes`` must be in date order. Returns ``BEFORE_HISTORY`` when no close precedes the release,
@@ -280,11 +280,11 @@ def find_closes_before_and_after(
     return before, after
 
 
-def release_move(before: DailyClose, after: DailyClose, unit: str) -> float:
+def release_move(before: DailyClosingPrice, after: DailyClosingPrice, unit: str) -> float:
     """The move from ``before`` to ``after``: relative for prices, in basis points for yields."""
     if unit == "bps":
-        return (after.close - before.close) * 100
-    return after.close / before.close - 1
+        return (after.price - before.price) * 100
+    return after.price / before.price - 1
 
 
 def build_observations(
@@ -306,12 +306,12 @@ def build_observations(
             [instrument],
             con,
         )
-        closes = [DailyClose(bar.day, bar.close) for bar in bars]
+        closes = [DailyClosingPrice(bar.day, bar.close) for bar in bars]
         counts = release_counts[instrument] = ReleaseCounts()
         for event in events:
             # event_ts is naive UTC; the release date is the New York calendar date.
             release_date = event.event_ts.replace(tzinfo=UTC).astimezone(CPI_RELEASE_ZONE).date()
-            pair = find_closes_before_and_after(closes, release_date)
+            pair = closing_price_before_after(closes, release_date)
             if pair == BEFORE_HISTORY:
                 counts.skipped_before_history += 1
                 continue
@@ -326,7 +326,7 @@ def build_observations(
                     obs_id=event.event_id * 10 + position,
                     event_id=event.event_id,
                     instrument=instrument,
-                    px_t0=before.close,
+                    px_t0=before.price,
                     ret_unit=unit,
                     ret_5m=None,
                     ret_1h=None,

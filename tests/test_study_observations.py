@@ -13,8 +13,8 @@ from fortuneteller.study import (
     NO_CLOSE_NEARBY,
     CpiRelease,
     ReleaseCounts,
-    DailyClose,
-    find_closes_before_and_after,
+    DailyClosingPrice,
+    closing_price_before_after,
     parse_daily_bars,
     release_move,
     store_cpi_releases,
@@ -27,8 +27,8 @@ GSPC_2022 = Path(__file__).parent / "data" / "yahoo_gspc_2022_09.json"
 HOT_PRINT = CpiRelease(date(2022, 8, 1), date(2022, 9, 13), 296.171)
 
 
-def _closes(*days: tuple[int, int, int]) -> list[DailyClose]:
-    return [DailyClose(date(*day), 100.0 + i) for i, day in enumerate(days)]
+def _closes(*days: tuple[int, int, int]) -> list[DailyClosingPrice]:
+    return [DailyClosingPrice(date(*day), 100.0 + i) for i, day in enumerate(days)]
 
 
 def test_weekday_release_uses_the_previous_trading_day_and_the_same_day() -> None:
@@ -36,7 +36,7 @@ def test_weekday_release_uses_the_previous_trading_day_and_the_same_day() -> Non
     closes = _closes((2022, 9, 12), (2022, 9, 13))
 
     # when the pair around a Tuesday release is found
-    pair = find_closes_before_and_after(closes, date(2022, 9, 13))
+    pair = closing_price_before_after(closes, date(2022, 9, 13))
 
     # then the move runs from Monday's close to Tuesday's
     assert pair == (closes[0], closes[1])
@@ -47,7 +47,7 @@ def test_sunday_release_uses_friday_and_monday() -> None:
     closes = _closes((1992, 12, 11), (1992, 12, 14))
 
     # when the pair around the Sunday 1992-12-13 release is found
-    pair = find_closes_before_and_after(closes, date(1992, 12, 13))
+    pair = closing_price_before_after(closes, date(1992, 12, 13))
 
     # then the first reaction is Monday's close
     assert pair == (closes[0], closes[1])
@@ -58,7 +58,7 @@ def test_four_day_gap_after_a_long_weekend_is_kept() -> None:
     closes = _closes((2024, 5, 24), (2024, 5, 28))
 
     # when the pair around a Tuesday release is found
-    pair = find_closes_before_and_after(closes, date(2024, 5, 28))
+    pair = closing_price_before_after(closes, date(2024, 5, 28))
 
     # then Friday, four days back, still counts as the close before
     assert pair == (closes[0], closes[1])
@@ -69,7 +69,7 @@ def test_five_day_gap_is_skipped() -> None:
     closes = _closes((1978, 5, 26), (1978, 5, 31))
 
     # when the pair around the Wednesday 1978-05-31 release is found
-    pair = find_closes_before_and_after(closes, date(1978, 5, 31))
+    pair = closing_price_before_after(closes, date(1978, 5, 31))
 
     # then five days back is too far to call it the day before
     assert pair == NO_CLOSE_NEARBY
@@ -80,7 +80,7 @@ def test_next_close_too_far_after_the_release_is_skipped() -> None:
     closes = _closes((2022, 9, 12), (2022, 9, 20))
 
     # when / then there is no reaction close within reach
-    assert find_closes_before_and_after(closes, date(2022, 9, 13)) == NO_CLOSE_NEARBY
+    assert closing_price_before_after(closes, date(2022, 9, 13)) == NO_CLOSE_NEARBY
 
 
 def test_release_before_or_on_the_first_close_is_before_history() -> None:
@@ -88,8 +88,8 @@ def test_release_before_or_on_the_first_close_is_before_history() -> None:
     closes = _closes((2000, 8, 30), (2000, 8, 31))
 
     # when / then releases before or on that first day have no close before them
-    assert find_closes_before_and_after(closes, date(1990, 1, 12)) == BEFORE_HISTORY
-    assert find_closes_before_and_after(closes, date(2000, 8, 30)) == BEFORE_HISTORY
+    assert closing_price_before_after(closes, date(1990, 1, 12)) == BEFORE_HISTORY
+    assert closing_price_before_after(closes, date(2000, 8, 30)) == BEFORE_HISTORY
 
 
 def test_release_after_the_last_close_is_skipped_not_an_error() -> None:
@@ -97,13 +97,16 @@ def test_release_after_the_last_close_is_skipped_not_an_error() -> None:
     closes = _closes((2026, 9, 10), (2026, 9, 11))
 
     # when / then a later release has no reaction close yet
-    assert find_closes_before_and_after(closes, date(2026, 10, 14)) == NO_CLOSE_NEARBY
+    assert closing_price_before_after(closes, date(2026, 10, 14)) == NO_CLOSE_NEARBY
 
 
 def test_move_is_relative_for_prices_and_in_basis_points_for_yields() -> None:
     # given the S&P 500 and the 10-year yield on 2022-09-12 and 2022-09-13
-    spx = (DailyClose(date(2022, 9, 12), 4110.41), DailyClose(date(2022, 9, 13), 3932.69))
-    tnx = (DailyClose(date(2022, 9, 12), 3.362), DailyClose(date(2022, 9, 13), 3.422))
+    spx = (
+        DailyClosingPrice(date(2022, 9, 12), 4110.41),
+        DailyClosingPrice(date(2022, 9, 13), 3932.69),
+    )
+    tnx = (DailyClosingPrice(date(2022, 9, 12), 3.362), DailyClosingPrice(date(2022, 9, 13), 3.422))
 
     # when their moves are computed
     # then the price falls 4.32% and the yield rises 6 bps
@@ -119,8 +122,8 @@ def _store(time_zone: str = "UTC") -> duckdb.DuckDBPyConnection:
     return con
 
 
-def _bars(instrument: str, closes: list[DailyClose]) -> list[DailyBar]:
-    return [DailyBar(instrument=instrument, day=c.day, close=c.close, source="s") for c in closes]
+def _bars(instrument: str, closes: list[DailyClosingPrice]) -> list[DailyBar]:
+    return [DailyBar(instrument=instrument, day=c.day, close=c.price, source="s") for c in closes]
 
 
 def test_known_day_is_measured_through_the_store() -> None:
@@ -154,7 +157,7 @@ def test_known_day_is_measured_through_the_store() -> None:
 def test_yield_move_is_stored_in_basis_points() -> None:
     # given the 10-year yield on the day before and the day of the hot print
     con = _store()
-    tnx = [DailyClose(date(2022, 9, 12), 3.362), DailyClose(date(2022, 9, 13), 3.422)]
+    tnx = [DailyClosingPrice(date(2022, 9, 12), 3.362), DailyClosingPrice(date(2022, 9, 13), 3.422)]
     db.insert_models("daily_bars", _bars("UST10Y / ZN", tnx), con=con)
 
     # when the observations are built

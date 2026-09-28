@@ -20,7 +20,7 @@ from fortuneteller.config import settings
 from fortuneteller.models import DailyBar
 from fortuneteller.study import (
     MVP_PRICE_SERIES,
-    DailyClose,
+    DailyClosingPrice,
     YahooError,
     load_daily_bars,
     parse_daily_bars,
@@ -68,7 +68,7 @@ def test_bar_date_is_read_in_the_exchange_time_zone(pacific_time: None) -> None:
         date(1992, 12, 15),
         date(1992, 12, 16),
     ]
-    assert closes[3] == DailyClose(date(1992, 12, 14), 89.70999908447266)
+    assert closes[3] == DailyClosingPrice(date(1992, 12, 14), 89.70999908447266)
 
 
 def test_bar_without_a_close_is_dropped() -> None:
@@ -106,7 +106,7 @@ def test_closes_come_out_oldest_first_with_known_values() -> None:
 
     # then the closes match the published index levels, in date order
     assert [c.day for c in closes] == sorted(c.day for c in closes)
-    by_day = {c.day: c.close for c in closes}
+    by_day = {c.day: c.price for c in closes}
     assert by_day[date(2022, 9, 12)] == pytest.approx(4110.41)
     assert by_day[date(2022, 9, 13)] == pytest.approx(3932.69)
 
