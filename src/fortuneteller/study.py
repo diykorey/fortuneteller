@@ -258,8 +258,8 @@ def load_daily_bars(con: duckdb.DuckDBPyConnection | None = None) -> dict[str, i
     }
 
 
-def closes_around(
-    closes: Sequence[DailyClose], released: date
+def find_closes_before_and_after(
+    closes: Sequence[DailyClose], release_date: date
 ) -> tuple[DailyClose, DailyClose] | str:
     """The last close before the release date and the first on or after it, or why there is none.
 
@@ -267,15 +267,15 @@ def closes_around(
     and ``NO_CLOSE_NEARBY`` when the reaction close is missing or either close is more than
     ``MAX_CLOSE_GAP_DAYS`` from the release.
     """
-    i = bisect_left(closes, released, key=lambda close: close.day)
+    i = bisect_left(closes, release_date, key=lambda close: close.day)
     if i == 0:
         return BEFORE_HISTORY
     if i == len(closes):
         return NO_CLOSE_NEARBY
     before, after = closes[i - 1], closes[i]
-    if (released - before.day).days > MAX_CLOSE_GAP_DAYS:
+    if (release_date - before.day).days > MAX_CLOSE_GAP_DAYS:
         return NO_CLOSE_NEARBY
-    if (after.day - released).days > MAX_CLOSE_GAP_DAYS:
+    if (after.day - release_date).days > MAX_CLOSE_GAP_DAYS:
         return NO_CLOSE_NEARBY
     return before, after
 
@@ -310,8 +310,8 @@ def build_observations(
         counts = release_counts[instrument] = ReleaseCounts()
         for event in events:
             # event_ts is naive UTC; the release date is the New York calendar date.
-            released = event.event_ts.replace(tzinfo=UTC).astimezone(CPI_RELEASE_ZONE).date()
-            pair = closes_around(closes, released)
+            release_date = event.event_ts.replace(tzinfo=UTC).astimezone(CPI_RELEASE_ZONE).date()
+            pair = find_closes_before_and_after(closes, release_date)
             if pair == BEFORE_HISTORY:
                 counts.skipped_before_history += 1
                 continue

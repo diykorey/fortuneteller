@@ -14,7 +14,7 @@ from fortuneteller.study import (
     CpiRelease,
     ReleaseCounts,
     DailyClose,
-    closes_around,
+    find_closes_before_and_after,
     parse_daily_bars,
     release_move,
     store_cpi_releases,
@@ -36,7 +36,7 @@ def test_weekday_release_uses_the_previous_trading_day_and_the_same_day() -> Non
     closes = _closes((2022, 9, 12), (2022, 9, 13))
 
     # when the pair around a Tuesday release is found
-    pair = closes_around(closes, date(2022, 9, 13))
+    pair = find_closes_before_and_after(closes, date(2022, 9, 13))
 
     # then the move runs from Monday's close to Tuesday's
     assert pair == (closes[0], closes[1])
@@ -47,7 +47,7 @@ def test_sunday_release_uses_friday_and_monday() -> None:
     closes = _closes((1992, 12, 11), (1992, 12, 14))
 
     # when the pair around the Sunday 1992-12-13 release is found
-    pair = closes_around(closes, date(1992, 12, 13))
+    pair = find_closes_before_and_after(closes, date(1992, 12, 13))
 
     # then the first reaction is Monday's close
     assert pair == (closes[0], closes[1])
@@ -58,7 +58,7 @@ def test_four_day_gap_after_a_long_weekend_is_kept() -> None:
     closes = _closes((2024, 5, 24), (2024, 5, 28))
 
     # when the pair around a Tuesday release is found
-    pair = closes_around(closes, date(2024, 5, 28))
+    pair = find_closes_before_and_after(closes, date(2024, 5, 28))
 
     # then Friday, four days back, still counts as the close before
     assert pair == (closes[0], closes[1])
@@ -69,7 +69,7 @@ def test_five_day_gap_is_skipped() -> None:
     closes = _closes((1978, 5, 26), (1978, 5, 31))
 
     # when the pair around the Wednesday 1978-05-31 release is found
-    pair = closes_around(closes, date(1978, 5, 31))
+    pair = find_closes_before_and_after(closes, date(1978, 5, 31))
 
     # then five days back is too far to call it the day before
     assert pair == NO_CLOSE_NEARBY
@@ -80,7 +80,7 @@ def test_next_close_too_far_after_the_release_is_skipped() -> None:
     closes = _closes((2022, 9, 12), (2022, 9, 20))
 
     # when / then there is no reaction close within reach
-    assert closes_around(closes, date(2022, 9, 13)) == NO_CLOSE_NEARBY
+    assert find_closes_before_and_after(closes, date(2022, 9, 13)) == NO_CLOSE_NEARBY
 
 
 def test_release_before_or_on_the_first_close_is_before_history() -> None:
@@ -88,8 +88,8 @@ def test_release_before_or_on_the_first_close_is_before_history() -> None:
     closes = _closes((2000, 8, 30), (2000, 8, 31))
 
     # when / then releases before or on that first day have no close before them
-    assert closes_around(closes, date(1990, 1, 12)) == BEFORE_HISTORY
-    assert closes_around(closes, date(2000, 8, 30)) == BEFORE_HISTORY
+    assert find_closes_before_and_after(closes, date(1990, 1, 12)) == BEFORE_HISTORY
+    assert find_closes_before_and_after(closes, date(2000, 8, 30)) == BEFORE_HISTORY
 
 
 def test_release_after_the_last_close_is_skipped_not_an_error() -> None:
@@ -97,7 +97,7 @@ def test_release_after_the_last_close_is_skipped_not_an_error() -> None:
     closes = _closes((2026, 9, 10), (2026, 9, 11))
 
     # when / then a later release has no reaction close yet
-    assert closes_around(closes, date(2026, 10, 14)) == NO_CLOSE_NEARBY
+    assert find_closes_before_and_after(closes, date(2026, 10, 14)) == NO_CLOSE_NEARBY
 
 
 def test_move_is_relative_for_prices_and_in_basis_points_for_yields() -> None:
