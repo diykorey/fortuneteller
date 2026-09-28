@@ -50,7 +50,7 @@ compare against, and should read them from the database rather than fetch again.
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | Add `daily_bars` to `schema.sql` and `docs/schema.md` | `init` creates it; the schema doc describes it |
+| 1 | ~~Add `daily_bars` to `schema.sql` and `docs/schema.md`~~ **done** | `init` creates it; the schema doc describes it |
 | 2 | Fetch one Yahoo ticker and parse it into dated closes | Dates come from the exchange's time zone; empty and weekend rows are dropped |
 | 3 | Store the closes of all five tickers in `daily_bars` | Re-running changes no row count |
 | 4 | Build `observations` from `daily_bars` and `event_instances` | Before/after rule, units, and skips as specified below |

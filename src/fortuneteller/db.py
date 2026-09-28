@@ -29,6 +29,7 @@ _TABLES: frozenset[str] = frozenset(
         "event_instances",
         "observations",
         "effect_size_matrix",
+        "daily_bars",
     }
 )
 

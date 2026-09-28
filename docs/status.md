@@ -8,9 +8,9 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-MVP step 2 spec — [step-2-prices.md](steps/step-2-prices.md): Yahoo daily closes for the five
-instruments into a new `daily_bars` table, and the close-to-close move around each release into
-`observations`. Coverage verified against live data on 2026-09-25: 2698 observations expected. *(PR #73.)*
+MVP step 2, sub-step 1 — the `daily_bars` table (instrument, day, close, source; key instrument +
+day) is in `schema.sql`, and [schema.md](schema.md) explains it in plain words, with the expected
+size: about 58,500 rows. `init` adds it to an existing database without touching other tables.
 
 ## In progress
 
@@ -18,13 +18,14 @@ Nothing.
 
 ## Next
 
-MVP step 2, sub-step 1 — **add `daily_bars` to `schema.sql` and `docs/schema.md`**. Spec:
-[step-2-prices.md](steps/step-2-prices.md).
+MVP step 2, sub-step 2 — **fetch one Yahoo ticker and parse it into dated closes**: dates in the
+exchange's time zone, empty and weekend rows dropped. Spec: [step-2-prices.md](steps/step-2-prices.md).
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-09-28 | Step 2.1: `daily_bars` table and its schema doc | this branch |
 | 2026-09-25 | Scenarios doc: ten shock → aftershock episodes, numbers verified | PR #72 |
 | 2026-09-25 | Step 2 spec: prices from Yahoo, `daily_bars`, observations | PR #73 |
 | 2026-09-25 | Schema doc: every table, column and enum value explained | PR #71 |
@@ -43,6 +44,6 @@ MVP step 2, sub-step 1 — **add `daily_bars` to `schema.sql` and `docs/schema.m
 | Step | State |
 | --- | --- |
 | 1 Releases | Done |
-| 2 Prices | Spec written; sub-step 0 of 5 |
+| 2 Prices | Sub-step 1 of 5 done |
 | 3 Raw move | Not started |
 | 4 Surprise | Not started |

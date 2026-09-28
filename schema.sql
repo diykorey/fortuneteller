@@ -6,6 +6,7 @@
 -- (M0-05) from settings.schema_path. Out of scope here: indexes, views.
 --
 -- Order matters: observations references event_instances, so that table is created first.
+-- daily_bars (MVP step 2) holds raw daily closes; its meaning is in docs/schema.md.
 
 CREATE TABLE IF NOT EXISTS event_types (
     event_type TEXT PRIMARY KEY,
@@ -105,4 +106,12 @@ CREATE TABLE IF NOT EXISTS effect_size_matrix (
     surprise_dep    TEXT,
     last_calibrated TIMESTAMP,
     PRIMARY KEY (event_type, instrument)
+);
+
+CREATE TABLE IF NOT EXISTS daily_bars (
+    instrument TEXT,
+    day        DATE,
+    close      DOUBLE,
+    source     TEXT,
+    PRIMARY KEY (instrument, day)
 );

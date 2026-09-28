@@ -20,6 +20,7 @@ has a Pydantic model of the same shape in `src/fortuneteller/models.py`, written
 | [`news_sources`](#news_sources) | Reference | News or data feed | `seed` | 25 |
 | [`countries`](#countries) | Reference | Country | `seed` | 10 |
 | [`event_instances`](#event_instances) | Fact | Real event that happened | `load-releases` (MVP step 1) | 649 CPI releases |
+| [`daily_bars`](#daily_bars) | Fact | Instrument × trading day closing price | `load-prices` (MVP step 2, not built yet) | about 58,500 |
 | [`observations`](#observations) | Fact | Event × instrument reaction | MVP step 2 (not built) | 0 |
 | [`effect_size_matrix`](#effect_size_matrix) | Derived | Event type × instrument measurement | Nothing planned yet | 0 |
 
@@ -260,6 +261,63 @@ watch (every CPI row); `false` — the event arrived without warning (none yet).
 
 **`rate_regime`** (not filled yet): intended values `hiking`, `cutting`, `on-hold`, per the legacy
 design.
+
+## daily_bars
+
+**In plain words:** each market's closing price for every trading day. One row is one market on
+one day — "the S&P 500 closed at 3,932.69 on 2022-09-13". Market jargon calls one period's price
+data a *bar*; a daily bar is one day of it, and here only the closing price is kept.
+
+It exists for two reasons. [Step 2](steps/step-2-prices.md) reads it to measure each CPI release:
+it looks up the close before the announcement and the close after it, and writes the difference to
+`observations`. Step 3 reads the rest of it — the ordinary days — as the baseline that tells whether
+release days are unusual. Storing the prices means Yahoo is asked once and later steps read locally.
+Nothing is computed here: the rows are the prices exactly as the source reported them.
+
+Filled by `uv run fortuneteller load-prices` (step 2, not built yet). Key: (`instrument`, `day`), so
+a re-run overwrites a day rather than adding a second copy.
+
+Example rows:
+
+| `instrument` | `day` | `close` | `source` |
+| --- | --- | --- | --- |
+| `SPY / ES` | 2022-09-12 | 4110.41 | `yahoo:^GSPC` |
+| `SPY / ES` | 2022-09-13 | 3932.69 | `yahoo:^GSPC` |
+| `UST10Y / ZN` | 2022-09-13 | 3.422 | `yahoo:^TNX` |
+
+**How much data.** Counted from the live source on 2026-09-28, after the empty and weekend rows are
+dropped. It grows by about five rows per trading day, one per instrument.
+
+| Instrument | Rows | From |
+| --- | --- | --- |
+| `SPY / ES` | 14,305 | 1970-01-02 |
+| `UST10Y / ZN` | 14,203 | 1970-01-02 |
+| `DXY` | 14,152 | 1971-01-04 |
+| `GC / XAU` | 6,544 | 2000-08-30 |
+| `VIX` | 9,254 | 1990-01-02 |
+| **Total** | **58,458** | |
+
+A few megabytes in all. `observations` is these same days thinned down to the CPI release days —
+about 2,700 rows.
+
+| Column | Type | Meaning |
+| --- | --- | --- |
+| `instrument` | TEXT, **PK** | An `instruments.symbol`, e.g. `SPY / ES` — the project's key, not the data vendor's ticker. |
+| `day` | DATE, **PK** | The trading date, **as a calendar date in the exchange's own time zone**. A DATE rather than a TIMESTAMP, so no session or machine time zone can move a price onto the neighbouring day. |
+| `close` | DOUBLE | The closing value that day. A price for four instruments; for `UST10Y / ZN` it is the **yield in percent** (`3.422` means 3.422%), because bonds are measured by yield. |
+| `source` | TEXT | Where the value came from, as `<provider>:<vendor ticker>`, so any number can be traced back. |
+
+### Values
+
+**`source`** — today always `yahoo:` followed by the vendor ticker:
+
+| Value | Instrument | What it is |
+| --- | --- | --- |
+| `yahoo:^GSPC` | `SPY / ES` | The S&P 500 index itself, which covers every CPI release since 1972; the SPY fund starts only in 1993 |
+| `yahoo:^TNX` | `UST10Y / ZN` | The 10-year Treasury yield, in percent |
+| `yahoo:DX-Y.NYB` | `DXY` | The US Dollar Index |
+| `yahoo:GC=F` | `GC / XAU` | Gold futures, the contract nearest expiry. When one contract expires and the next takes over, the price can jump for reasons unrelated to any event |
+| `yahoo:^VIX` | `VIX` | The Cboe Volatility Index |
 
 ## observations
 
