@@ -10,7 +10,7 @@ Where the work is and what comes next. Two rules keep it current:
 
 MVP step 2, sub-step 1 — the `daily_bars` table (instrument, day, close, source; key instrument +
 day) is in `schema.sql`, and [schema.md](schema.md) explains it in plain words, with the expected
-size: about 58,500 rows. `init` adds it to an existing database without touching other tables.
+size: about 58,500 rows. `init` adds it to an existing database without touching other tables. *(PR #74.)*
 
 ## In progress
 
@@ -25,7 +25,7 @@ exchange's time zone, empty and weekend rows dropped. Spec: [step-2-prices.md](s
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-09-28 | Step 2.1: `daily_bars` table and its schema doc | this branch |
+| 2026-09-28 | Step 2.1: `daily_bars` table and its schema doc | PR #74 |
 | 2026-09-25 | Scenarios doc: ten shock → aftershock episodes, numbers verified | PR #72 |
 | 2026-09-25 | Step 2 spec: prices from Yahoo, `daily_bars`, observations | PR #73 |
 | 2026-09-25 | Schema doc: every table, column and enum value explained | PR #71 |
