@@ -143,6 +143,22 @@ def count_rows(table: str, con: duckdb.DuckDBPyConnection | None = None) -> int:
     return int(row[0])
 
 
+def fetch_all(
+    cls: type[_M],
+    sql: str,
+    params: Sequence[object] = (),
+    con: duckdb.DuckDBPyConnection | None = None,
+) -> list[_M]:
+    """Run ``sql`` with ``params`` bound as ``?`` and build one ``cls`` per row, by column name."""
+    connection = con if con is not None else get_connection()
+    cur = connection.execute(sql, list(params))
+    description = cur.description
+    if description is None:
+        raise RuntimeError("query produced no column description")
+    columns = [str(column[0]) for column in description]
+    return [cls(**dict(zip(columns, row, strict=True))) for row in cur.fetchall()]
+
+
 def _fetch_one(cls: type[_M], cur: duckdb.DuckDBPyConnection) -> _M | None:
     """Build a single model from a cursor, matching columns to fields by name."""
     row = cur.fetchone()
