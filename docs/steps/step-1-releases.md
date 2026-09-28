@@ -1,7 +1,7 @@
 # MVP step 1 — Releases
 
-> Step 1 of the four in the [Roadmap](roadmap.md); this document follows the step template in the
-> [Legend](legend.md). Unfamiliar acronym or term? See the [Glossary](glossary.md).
+> Step 1 of the four in the [Roadmap](../roadmap.md); this document follows the step template in the
+> [Legend](../legend.md). Unfamiliar acronym or term? See the [Glossary](../glossary.md).
 
 ## The goal
 

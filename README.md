@@ -44,7 +44,7 @@ connects. The documents form one chain, from *why* to *what exactly*:
 - **[Legend](docs/legend.md)** — the target, the bet behind it, the way we intend to get there, and
   the template every step document follows.
 - **[Roadmap](docs/roadmap.md)** — what gets built, in what order, and what "done" means.
-- **[Step 1 — Releases](docs/step-1-releases.md)** — the step being worked on now.
+- **[Step 2 — Prices](docs/steps/step-2-prices.md)** — the step being worked on now; [step 1](docs/steps/step-1-releases.md) is done.
 - **[Glossary](docs/glossary.md)** — every acronym, ticker, and piece of jargon, explained.
 
 The pre-2026-09-11 design corpus — architecture sketches, reference-table documentation, the old

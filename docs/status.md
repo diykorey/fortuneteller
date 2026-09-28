@@ -8,9 +8,9 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-MVP step 1, sub-step 5 — `uv run fortuneteller load-releases` fetches, parses and stores the CPI
-release history. **Step 1 is complete.** Live run on 2026-09-25, twice: `loaded 649 CPI releases,
-1972-08-22 … 2026-09-11`, `2025-10` skipped for having no value, 649 rows after both runs. *(PR #70.)*
+MVP step 2 spec — [step-2-prices.md](steps/step-2-prices.md): Yahoo daily closes for the five
+instruments into a new `daily_bars` table, and the close-to-close move around each release into
+`observations`. Coverage verified against live data on 2026-09-25: 2698 observations expected. *(PR #73.)*
 
 ## In progress
 
@@ -18,14 +18,15 @@ Nothing.
 
 ## Next
 
-MVP step 2 — **Prices**: daily bars for the five MVP instruments; the return around each release
-into `observations`. Spec: to be written, following the step template in [legend.md](legend.md).
+MVP step 2, sub-step 1 — **add `daily_bars` to `schema.sql` and `docs/schema.md`**. Spec:
+[step-2-prices.md](steps/step-2-prices.md).
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
 | 2026-09-25 | Scenarios doc: ten shock → aftershock episodes, numbers verified | PR #72 |
+| 2026-09-25 | Step 2 spec: prices from Yahoo, `daily_bars`, observations | PR #73 |
 | 2026-09-25 | Schema doc: every table, column and enum value explained | PR #71 |
 | 2026-09-25 | Step 1.5: `load-releases` CLI — step 1 complete | PR #70 |
 | 2026-09-25 | Step 1.4: store the CPI events idempotently | PR #69 |
@@ -42,6 +43,6 @@ into `observations`. Spec: to be written, following the step template in [legend
 | Step | State |
 | --- | --- |
 | 1 Releases | Done |
-| 2 Prices | Not started |
+| 2 Prices | Spec written; sub-step 0 of 5 |
 | 3 Raw move | Not started |
 | 4 Surprise | Not started |

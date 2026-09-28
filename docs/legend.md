@@ -78,7 +78,7 @@ The vocabulary, so the words stay load-bearing:
 
 ## What every step document must say
 
-One document per step, named `step-N-<name>.md`, in this order. [Step 1](step-1-releases.md) is the
+One document per step, named `step-N-<name>.md`, in this order. [Step 1](steps/step-1-releases.md) is the
 worked example.
 
 | Section | Must answer | Test of whether it is done |

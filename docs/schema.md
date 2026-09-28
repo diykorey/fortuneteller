@@ -226,7 +226,7 @@ Countries by GDP, with news coverage notes. Source: `data/seed/countries.csv`, a
 
 One row per event that actually happened: the calendar that price moves are measured against.
 Today it holds every US CPI release since 1972, loaded by `uv run fortuneteller load-releases`
-([step 1](step-1-releases.md)). Re-running overwrites rows by `event_id`, so the count does not
+([step 1](steps/step-1-releases.md)). Re-running overwrites rows by `event_id`, so the count does not
 change.
 
 | Column | Type | Meaning | Filled today |
