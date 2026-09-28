@@ -12,7 +12,7 @@ MVP step 2, sub-step 4 — `study.store_observations` measures each of the five 
 each CPI release, from `daily_bars` and `event_instances`, into `observations`. Live run on
 2026-09-28: 649 / 648 / 649 / 312 / 440 = **2,698 observations**, the same after a re-run; every
 check in the spec passes (S&P 500 −4.32% on 2022-09-13; `^TNX` within 0.2 bp median of FRED's
-`DGS10`; median S&P release-day move 0.55%).
+`DGS10`; median S&P release-day move 0.55%). *(PR #77.)*
 
 ## In progress
 
@@ -28,7 +28,7 @@ the observations, and print the counts per instrument and in total. Spec:
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-09-28 | Step 2.4: build `observations` — 2,698 release-day moves | this branch |
+| 2026-09-28 | Step 2.4: build `observations` — 2,698 release-day moves | PR #77 |
 | 2026-09-28 | Step 2.3: store the five instruments' closes; bulk `insert_models` | PR #76 |
 | 2026-09-28 | Step 2.2: fetch and parse Yahoo daily closes | PR #75 |
 | 2026-09-28 | Step 2.1: `daily_bars` table and its schema doc | PR #74 |
