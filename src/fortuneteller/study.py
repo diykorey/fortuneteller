@@ -204,13 +204,15 @@ def fetch_daily_bars(ticker: str, timeout: float = 30.0) -> bytes:
         raise YahooError(f"Yahoo request for {ticker} failed: {exc.reason}") from None
 
 
-def parse_daily_bars(payload: bytes) -> list[DailyClosingPrice]:
+def parse_daily_bars(payload: bytes, today: date | None = None) -> list[DailyClosingPrice]:
     """Parse a Yahoo chart response into closes by trading date, oldest first.
 
     Each bar's timestamp is read as a date in the exchange's own time zone, named in the response:
     the dollar index and gold are stamped at midnight New York time, which any other zone can put
     on the previous day. Yahoo's ``gmtoffset`` is today's offset, not the bar's, so it is not used.
-    Bars with no close, and bars dated on a weekend, are dropped.
+    Bars with no close, bars dated on a weekend, and today's bar (still trading, so its close is not
+    final; ``today`` defaults to the exchange's current date) are dropped. Two bars on one date
+    are rejected: that is what a misread time zone looks like.
     """
     document: Any = json.loads(payload)
     chart = document["chart"]
@@ -218,6 +220,7 @@ def parse_daily_bars(payload: bytes) -> list[DailyClosingPrice]:
         raise YahooError(f"Yahoo returned an error: {chart['error']}")
     result = chart["result"][0]
     zone = ZoneInfo(result["meta"]["exchangeTimezoneName"])
+    today = today if today is not None else datetime.now(zone).date()
     timestamps: list[int] = result.get("timestamp", [])
     closes: list[float | None] = result["indicators"]["quote"][0]["close"]
     if len(timestamps) != len(closes):
@@ -228,8 +231,10 @@ def parse_daily_bars(payload: bytes) -> list[DailyClosingPrice]:
         if close is None:
             continue
         day = datetime.fromtimestamp(timestamp, zone).date()
-        if day.weekday() >= 5:
+        if day.weekday() >= 5 or day >= today:
             continue
+        if day in by_day:
+            raise YahooError(f"Yahoo sent two bars on {day}")
         by_day[day] = close
     return [DailyClosingPrice(day, by_day[day]) for day in sorted(by_day)]
 
@@ -284,7 +289,9 @@ def release_move(before: DailyClosingPrice, after: DailyClosingPrice, unit: str)
     """The move from ``before`` to ``after``: relative for prices, in basis points for yields."""
     if unit == "bps":
         return (after.price - before.price) * 100
-    return after.price / before.price - 1
+    if unit == "pct":
+        return after.price / before.price - 1
+    raise ValueError(f"unknown unit {unit!r}: expected 'pct' or 'bps'")
 
 
 def build_observations(
@@ -306,6 +313,8 @@ def build_observations(
             [instrument],
             con,
         )
+        if not bars:
+            raise ValueError(f"no daily_bars for {instrument}: load its prices first")
         closes = [DailyClosingPrice(bar.day, bar.close) for bar in bars]
         counts = release_counts[instrument] = ReleaseCounts()
         for event in events:
@@ -345,7 +354,14 @@ def build_observations(
 
 
 def store_observations(con: duckdb.DuckDBPyConnection | None = None) -> dict[str, ReleaseCounts]:
-    """Build the observations and write them; re-running overwrites by ``obs_id``."""
-    observations, release_counts = build_observations(con=con)
-    db.insert_models("observations", observations, con=con, replace=True)
+    """Rebuild the CPI observations: the table ends up holding exactly what this run measured."""
+    connection = con if con is not None else db.get_connection()
+    observations, release_counts = build_observations(con=connection)
+    db.replace_rows(
+        "observations",
+        observations,
+        "event_id IN (SELECT event_id FROM event_instances WHERE event_type = ?)",
+        [CPI_EVENT_TYPE],
+        con=connection,
+    )
     return release_counts

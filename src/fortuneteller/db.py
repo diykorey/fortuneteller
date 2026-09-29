@@ -107,6 +107,32 @@ def _primary_key(table: str, con: duckdb.DuckDBPyConnection) -> list[str]:
     return [row[0] for row in rows]
 
 
+def replace_rows(
+    table: str,
+    rows: Sequence[BaseModel],
+    where: str,
+    params: Sequence[object] = (),
+    con: duckdb.DuckDBPyConnection | None = None,
+) -> int:
+    """Delete the rows of ``table`` matching ``where``, then insert ``rows``, in one transaction.
+
+    For derived tables rebuilt on every run: an upsert alone would keep rows the new run no longer
+    produces. ``where`` is SQL from this codebase, never from outside; its values go in ``params``.
+    """
+    if table not in _TABLES:
+        raise ValueError(f"unknown table: {table!r}")
+    connection = con if con is not None else get_connection()
+    connection.begin()
+    try:
+        connection.execute(f"DELETE FROM {table} WHERE {where}", list(params))
+        written = insert_models(table, rows, con=connection)
+    except Exception:
+        connection.rollback()
+        raise
+    connection.commit()
+    return written
+
+
 def get_instrument(symbol: str, con: duckdb.DuckDBPyConnection | None = None) -> Instrument | None:
     """Return the ``Instrument`` with this symbol, or ``None`` if absent."""
     connection = con if con is not None else get_connection()
@@ -152,10 +178,7 @@ def fetch_all(
     """Run ``sql`` with ``params`` bound as ``?`` and build one ``cls`` per row, by column name."""
     connection = con if con is not None else get_connection()
     cur = connection.execute(sql, list(params))
-    description = cur.description
-    if description is None:
-        raise RuntimeError("query produced no column description")
-    columns = [str(column[0]) for column in description]
+    columns = _columns(cur)
     return [cls(**dict(zip(columns, row, strict=True))) for row in cur.fetchall()]
 
 
@@ -164,8 +187,11 @@ def _fetch_one(cls: type[_M], cur: duckdb.DuckDBPyConnection) -> _M | None:
     row = cur.fetchone()
     if row is None:
         return None
+    return cls(**dict(zip(_columns(cur), row, strict=True)))
+
+
+def _columns(cur: duckdb.DuckDBPyConnection) -> list[str]:
     description = cur.description
     if description is None:
         raise RuntimeError("query produced no column description")
-    columns = [str(column[0]) for column in description]
-    return cls(**dict(zip(columns, row, strict=True)))
+    return [str(column[0]) for column in description]

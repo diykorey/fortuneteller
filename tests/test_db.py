@@ -187,3 +187,33 @@ def test_insert_models_without_replace_rejects_an_existing_key() -> None:
             "daily_bars", [DailyBar(instrument="VIX", day=day, close=27.27, source="s")], con=con
         )
     assert con.execute("SELECT close FROM daily_bars").fetchall() == [(1.0,)]
+
+
+def test_replace_rows_leaves_the_table_untouched_when_the_insert_fails() -> None:
+    # given a stored close
+    con = _seeded_connection()
+    day = date(2022, 9, 13)
+    db.insert_models(
+        "daily_bars", [DailyBar(instrument="VIX", day=day, close=27.27, source="s")], con=con
+    )
+    # when a rebuild deletes it and then fails on a repeated key
+    rows = [DailyBar(instrument="VIX", day=day, close=c, source="s") for c in (1.0, 2.0)]
+    with pytest.raises(ValueError, match="repeat a key"):
+        db.replace_rows("daily_bars", rows, "instrument = ?", ["VIX"], con=con)
+    # then the delete is rolled back with it, so the old row is still there
+    assert con.execute("SELECT close FROM daily_bars").fetchall() == [(27.27,)]
+
+
+def test_replace_rows_swaps_the_matching_rows_only() -> None:
+    # given closes for two instruments
+    con = _seeded_connection()
+    day = date(2022, 9, 13)
+    db.insert_models(
+        "daily_bars",
+        [DailyBar(instrument=s, day=day, close=1.0, source="s") for s in ("VIX", "DXY")],
+        con=con,
+    )
+    # when VIX's rows are replaced by an empty rebuild
+    db.replace_rows("daily_bars", [], "instrument = ?", ["VIX"], con=con)
+    # then VIX is gone and DXY is untouched
+    assert con.execute("SELECT instrument FROM daily_bars").fetchall() == [("DXY",)]

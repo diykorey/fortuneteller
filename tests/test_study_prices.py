@@ -111,6 +111,30 @@ def test_closes_come_out_oldest_first_with_known_values() -> None:
     assert by_day[date(2022, 9, 13)] == pytest.approx(3932.69)
 
 
+def test_two_bars_on_one_date_are_rejected() -> None:
+    # given the 2022-09-12 bar re-stamped into 2022-09-13 New York time, next to the real one
+    def collide(chart: dict[str, Any]) -> None:
+        timestamps = chart["result"][0]["timestamp"]
+        timestamps[1] = timestamps[2] - 3600
+
+    payload = _payload(GSPC_2022, collide)
+
+    # when / then parsing refuses it, since two bars on one date means a date was misread
+    with pytest.raises(YahooError, match="two bars on 2022-09-13"):
+        parse_daily_bars(payload)
+
+
+def test_todays_unfinished_bar_is_dropped() -> None:
+    # given the S&P 500 bars up to 2022-09-14, parsed while 2022-09-14 is still trading
+    payload = GSPC_2022.read_bytes()
+
+    # when the bars are parsed with that day as today
+    days = [c.day for c in parse_daily_bars(payload, today=date(2022, 9, 14))]
+
+    # then today's still-moving price is left out; tomorrow's run will store its final close
+    assert days[-1] == date(2022, 9, 13)
+
+
 def test_error_response_is_rejected() -> None:
     # given Yahoo answering with an error instead of a chart
     def not_found(chart: dict[str, Any]) -> None:

@@ -154,7 +154,9 @@ Both tables are written with `insert_models(replace=True)`, so a re-run overwrit
 | Pre-1990s bars have `open == close` for `^TNX`, `DX-Y.NYB` and early `^VIX` | Use closes only |
 | 3,119 `DX-Y.NYB` bars have a `null` close; smaller numbers in the others | Drop them |
 | 2,907 `DX-Y.NYB` bars fall on weekends | All of them have an empty close today, so they are dropped for that reason already. Weekend dates are dropped as well, in case one ever carries a value: it would not be a trading price, and would give the Sunday 1992-12-13 release a fake `t1` |
-| The latest bar can be today's, while the market is still open | Its close is the latest price, not the final one. It is stored like any other; the next run overwrites it by key |
+| The latest bar can be today's, while the market is still open | Its close is the latest price, not the final one, so the parser drops any bar dated today in the exchange's time zone. The next day's run stores its final close. A release measured the same day therefore waits a day for its reaction close |
+| Two bars can land on the same date if a timestamp is misread | The parser raises instead of keeping one |
+| A day's bar can have an empty close even on a weekday (gold on Monday 2026-09-28) | Dropped like any empty bar; the 4-day rule covers a release next to it |
 | `meta.gmtoffset` is today's UTC offset, not the bar's (−4 h on a December 1992 bar) | Never used; the date comes from the time-zone *name*, `meta.exchangeTimezoneName` |
 | `^TNX` has no bar for Tuesday 1978-05-30, the day after Memorial Day | The `1978-04` release (Wednesday 1978-05-31) has `t0` five days back: skipped, and reported. FRED's `DGS10` has the same hole |
 | `GC=F` is a continuous front-month futures series | When one contract expires and the next takes over, the price can jump for reasons unrelated to CPI. Accepted and named here; rare on any given release day |
