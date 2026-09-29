@@ -304,7 +304,7 @@ about 2,700 rows.
 | --- | --- | --- |
 | `instrument` | TEXT, **PK** | An `instruments.symbol`, e.g. `SPY / ES` — the project's key, not the data vendor's ticker. |
 | `day` | DATE, **PK** | The trading date, **as a calendar date in the exchange's own time zone**. A DATE rather than a TIMESTAMP, so no session or machine time zone can move a price onto the neighbouring day. |
-| `close` | DOUBLE | The closing value that day. A price for four instruments; for `UST10Y / ZN` it is the **yield in percent** (`3.422` means 3.422%), because bonds are measured by yield. The latest row can be today's while the market is still open: then it is the latest price, and the next run overwrites it. |
+| `close` | DOUBLE | The closing value that day. A price for four instruments; for `UST10Y / ZN` it is the **yield in percent** (`3.422` means 3.422%), because bonds are measured by yield. Today's bar is never stored: while the market is open its close is not final, so the latest row is the last finished trading day. |
 | `source` | TEXT | Where the value came from, as `<provider>:<vendor ticker>`, so any number can be traced back. |
 
 ### Values
@@ -326,7 +326,10 @@ One row per event × instrument: how that instrument moved around that event. Bu
 ([step 2](steps/step-2-prices.md)): for each CPI release and each of the five instruments, the close
 of the last trading day before the release and the move to the close of the first trading day on or
 after it. No row when either close is more than 4 calendar days from the release, or the release
-predates the instrument's history. Re-running overwrites by `obs_id`.
+predates the instrument's history. Every run rebuilds the CPI rows in one transaction — deletes them and inserts
+what it measured — so the table always matches that run, with no rows left from earlier rules or data.
+A run stops with an error if an instrument has no `daily_bars` at all, rather than counting every
+release as before its history.
 
 About 2,698 rows (checked 2026-09-28): 649 each for `SPY / ES` and `DXY`, 648 for `UST10Y / ZN`
 (the May 1978 release has no close within 4 days before it), 312 for `GC / XAU` (from 2000), 440 for

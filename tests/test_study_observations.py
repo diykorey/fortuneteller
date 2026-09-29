@@ -1,15 +1,16 @@
 """Release-day moves: the close before each CPI release, and the move to the first close after it."""
 
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
 
 import duckdb
 import pytest
 
 from fortuneteller import db
-from fortuneteller.models import DailyBar, EventInstance
+from fortuneteller.models import DailyBar
 from fortuneteller.study import (
     BEFORE_HISTORY,
+    MVP_PRICE_SERIES,
     NO_CLOSE_NEARBY,
     CpiRelease,
     ReleaseCounts,
@@ -114,11 +115,27 @@ def test_move_is_relative_for_prices_and_in_basis_points_for_yields() -> None:
     assert release_move(*tnx, "bps") == pytest.approx(6.0)
 
 
-def _store(time_zone: str = "UTC") -> duckdb.DuckDBPyConnection:
+def test_unknown_unit_is_rejected() -> None:
+    # given two closes and a misspelt unit
+    closes = _closes((2022, 9, 12), (2022, 9, 13))
+
+    # when / then the move is refused rather than quietly computed as a percentage
+    with pytest.raises(ValueError, match="unknown unit 'bp'"):
+        release_move(closes[0], closes[1], "bp")
+
+
+def _store(
+    time_zone: str = "UTC", closes: dict[str, list[DailyClosingPrice]] | None = None
+) -> duckdb.DuckDBPyConnection:
+    # Every MVP instrument gets the S&P 500 closes around the hot print unless overridden.
     con = duckdb.connect(":memory:")
     con.execute(f"SET TimeZone = '{time_zone}'")
     db.init_db(con=con)
     store_cpi_releases([HOT_PRINT], con=con)
+    spx = parse_daily_bars(GSPC_2022.read_bytes())
+    for instrument in MVP_PRICE_SERIES:
+        bars = _bars(instrument, (closes or {}).get(instrument, spx))
+        db.insert_models("daily_bars", bars, con=con)
     return con
 
 
@@ -126,24 +143,24 @@ def _bars(instrument: str, closes: list[DailyClosingPrice]) -> list[DailyBar]:
     return [DailyBar(instrument=instrument, day=c.day, close=c.price, source="s") for c in closes]
 
 
+def _spx_row(con: duckdb.DuckDBPyConnection) -> dict[str, object]:
+    cursor = con.execute("SELECT * FROM observations WHERE instrument = 'SPY / ES'")
+    row = cursor.fetchone()
+    assert row is not None
+    return dict(zip([c[0] for c in cursor.description or []], row, strict=True))
+
+
 def test_known_day_is_measured_through_the_store() -> None:
-    # given the hot print released 2022-09-13, S&P 500 closes around it, and a non-UTC session
+    # given the hot print released 2022-09-13, closes around it, and a non-UTC session
     con = _store("Europe/Kyiv")
-    db.insert_models(
-        "daily_bars", _bars("SPY / ES", parse_daily_bars(GSPC_2022.read_bytes())), con=con
-    )
 
     # when the observations are built
     release_counts = store_observations(con=con)
 
-    # then the S&P 500 row holds the close before and the 4.32% fall, and the others have no history
-    cursor = con.execute("SELECT * FROM observations")
-    row = cursor.fetchone()
-    assert row is not None
-    observation = dict(zip([c[0] for c in cursor.description or []], row, strict=True))
+    # then the S&P 500 row holds the close before and the 4.32% fall
+    observation = _spx_row(con)
     assert observation["obs_id"] == 2022080
     assert observation["event_id"] == 202208
-    assert observation["instrument"] == "SPY / ES"
     assert observation["px_t0"] == pytest.approx(4110.41)
     assert observation["ret_unit"] == "pct"
     assert observation["ret_1d"] == pytest.approx(-0.0432, abs=1e-4)
@@ -151,29 +168,81 @@ def test_known_day_is_measured_through_the_store() -> None:
     assert observation["quality"] == "daily_close"
     assert observation["ret_5m"] is None and observation["abn_ret_1d"] is None
     assert release_counts["SPY / ES"] == ReleaseCounts(measured=1)
-    assert release_counts["VIX"] == ReleaseCounts(skipped_before_history=1)
 
 
 def test_yield_move_is_stored_in_basis_points() -> None:
     # given the 10-year yield on the day before and the day of the hot print
-    con = _store()
     tnx = [DailyClosingPrice(date(2022, 9, 12), 3.362), DailyClosingPrice(date(2022, 9, 13), 3.422)]
-    db.insert_models("daily_bars", _bars("UST10Y / ZN", tnx), con=con)
+    con = _store(closes={"UST10Y / ZN": tnx})
 
     # when the observations are built
     store_observations(con=con)
 
     # then the row is numbered by the instrument's position and measured in bps
-    row = con.execute("SELECT obs_id, ret_unit, ret_1d FROM observations").fetchone()
+    row = con.execute(
+        "SELECT obs_id, ret_unit, ret_1d FROM observations WHERE instrument = 'UST10Y / ZN'"
+    ).fetchone()
     assert row == (2022081, "bps", pytest.approx(6.0))
+
+
+def test_release_before_an_instruments_history_is_counted_not_stored() -> None:
+    # given gold prices that start only after the hot print
+    gold = [
+        DailyClosingPrice(date(2022, 10, 3), 1702.0),
+        DailyClosingPrice(date(2022, 10, 4), 1731.0),
+    ]
+    con = _store(closes={"GC / XAU": gold})
+
+    # when the observations are built
+    release_counts = store_observations(con=con)
+
+    # then gold has no row, and the counts say why
+    assert release_counts["GC / XAU"] == ReleaseCounts(skipped_before_history=1)
+    rows = con.execute("SELECT count(*) FROM observations WHERE instrument = 'GC / XAU'").fetchone()
+    assert rows == (0,)
+
+
+def test_instrument_without_any_prices_fails_loudly() -> None:
+    # given no VIX prices at all, as if its load had failed
+    con = _store(closes={"VIX": []})
+
+    # when / then building refuses, rather than calling every release "before VIX's history"
+    with pytest.raises(ValueError, match="no daily_bars for VIX"):
+        store_observations(con=con)
+
+
+def test_release_date_is_the_new_york_calendar_date() -> None:
+    # given the hot print stamped 22:00 New York time, already 2022-09-14 in UTC
+    con = _store()
+    late = to_event_instance(HOT_PRINT).model_copy(update={"event_ts": datetime(2022, 9, 14, 2, 0)})
+    db.insert_models("event_instances", [late], con=con, replace=True)
+
+    # when the observations are built
+    store_observations(con=con)
+
+    # then the move is measured around New York's 09-13, not UTC's 09-14
+    assert _spx_row(con)["px_t0"] == pytest.approx(4110.41)
+
+
+def test_rebuilding_removes_a_row_that_no_longer_applies() -> None:
+    # given an S&P 500 observation built for the hot print
+    con = _store()
+    store_observations(con=con)
+
+    # when the closes before the release disappear and the observations are rebuilt
+    con.execute("DELETE FROM daily_bars WHERE instrument = 'SPY / ES' AND day < DATE '2022-09-13'")
+    release_counts = store_observations(con=con)
+
+    # then the old row is gone, so the table matches what this run measured
+    assert release_counts["SPY / ES"] == ReleaseCounts(skipped_before_history=1)
+    rows = con.execute("SELECT count(*) FROM observations WHERE instrument = 'SPY / ES'").fetchone()
+    assert rows == (0,)
+    assert db.count_rows("observations", con=con) == 4
 
 
 def test_rerunning_changes_no_count_and_events_can_still_be_reloaded() -> None:
     # given observations already built for the hot print
     con = _store()
-    db.insert_models(
-        "daily_bars", _bars("SPY / ES", parse_daily_bars(GSPC_2022.read_bytes())), con=con
-    )
     store_observations(con=con)
 
     # when the observations are rebuilt and the events they point at are stored again
@@ -181,7 +250,7 @@ def test_rerunning_changes_no_count_and_events_can_still_be_reloaded() -> None:
     store_cpi_releases([HOT_PRINT], con=con)
 
     # then nothing is duplicated and the foreign key does not block the event reload
-    assert db.count_rows("observations", con=con) == 1
+    assert db.count_rows("observations", con=con) == 5
     assert db.count_rows("event_instances", con=con) == 1
 
 
@@ -191,14 +260,11 @@ def test_events_of_other_types_are_not_measured() -> None:
     other = to_event_instance(HOT_PRINT).model_copy(
         update={"event_id": 1, "event_type": "NFP / labor data"}
     )
-    db.insert_models("event_instances", [EventInstance.model_validate(other.model_dump())], con=con)
-    db.insert_models(
-        "daily_bars", _bars("SPY / ES", parse_daily_bars(GSPC_2022.read_bytes())), con=con
-    )
+    db.insert_models("event_instances", [other], con=con)
 
     # when the observations are built
     store_observations(con=con)
 
     # then only the CPI event is measured
-    rows = con.execute("SELECT event_id FROM observations").fetchall()
+    rows = con.execute("SELECT DISTINCT event_id FROM observations").fetchall()
     assert rows == [(202208,)]
