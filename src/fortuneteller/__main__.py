@@ -47,11 +47,12 @@ def _query_demo(_args: argparse.Namespace) -> int:
 
 
 def _load_releases(_args: argparse.Namespace) -> int:
-    if settings.fred_api_key is None:
+    api_key = settings.fred_api_key.get_secret_value() if settings.fred_api_key else ""
+    if not api_key:
         print("load-releases: FT_FRED_API_KEY is not set (see docs/accounts.md)", file=sys.stderr)
         return 1
     try:
-        payload = study.fetch_cpi_releases(settings.fred_api_key.get_secret_value())
+        payload = study.fetch_cpi_releases(api_key)
         releases, valueless = study.parse_cpi_releases(payload)
     except study.FredError as exc:
         print(f"load-releases: {exc}", file=sys.stderr)

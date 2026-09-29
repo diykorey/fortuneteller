@@ -101,6 +101,8 @@ class YahooError(RuntimeError):
 
 def fetch_cpi_releases(api_key: str, timeout: float = 30.0) -> bytes:
     """Return the raw FRED response: every CPI print as first published, with its release date."""
+    if not api_key:
+        raise FredError("the FRED API key is empty")
     params = {
         "series_id": CPI_SERIES_ID,
         "api_key": api_key,

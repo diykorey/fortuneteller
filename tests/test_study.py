@@ -253,6 +253,32 @@ def test_load_releases_without_a_key_fails_before_fetching(
     assert "FT_FRED_API_KEY" in capsys.readouterr().err
 
 
+def test_load_releases_with_an_empty_key_fails_before_fetching(
+    tmp_db: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    # given the key set to an empty value, as a bare FT_FRED_API_KEY= line in .env gives
+    monkeypatch.setattr(settings, "fred_api_key", SecretStr(""))
+
+    def fetch(_key: str) -> NoReturn:
+        raise AssertionError("fetched with an empty key")
+
+    monkeypatch.setattr(study, "fetch_cpi_releases", fetch)
+
+    # when the command runs
+    code = main(["load-releases"])
+
+    # then it exits non-zero and says which setting is missing
+    assert code == 1
+    assert "FT_FRED_API_KEY" in capsys.readouterr().err
+
+
+def test_fetch_refuses_an_empty_key() -> None:
+    # given an empty key, which would also make error redaction replace every empty substring
+    # when / then the fetch refuses before any request is made
+    with pytest.raises(FredError, match="empty"):
+        study.fetch_cpi_releases("")
+
+
 def test_load_releases_reports_a_fred_failure(
     tmp_db: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:

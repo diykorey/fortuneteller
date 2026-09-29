@@ -9,7 +9,7 @@ from datetime import date, datetime
 from enum import StrEnum
 from typing import Annotated
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, NaiveDatetime
 
 
 class Polarity(StrEnum):
@@ -117,7 +117,8 @@ class Country(_DomainModel):
 class EventInstance(_DomainModel):
     event_id: int
     event_type: str
-    event_ts: datetime
+    # Naive UTC: DuckDB converts an aware value written to a TIMESTAMP into the session time zone.
+    event_ts: NaiveDatetime
     country: str | None
     detail: str | None
     scheduled: bool

@@ -1,6 +1,6 @@
 # FortuneTeller task runner — the canonical command surface.
 # Requires `just` (https://just.systems) and `uv`. Recipes assume the M0 scaffold
-# (pyproject.toml + src/fortuneteller) exists; see docs/m0-tickets.md.
+# (pyproject.toml + src/fortuneteller) exists; see docs/legacy/m0-tickets.md.
 
 # list available recipes
 default:
@@ -18,6 +18,10 @@ test:
 lint:
     uv run ruff check
 
+# check formatting without changing files
+fmt-check:
+    uv run ruff format --check
+
 # auto-format
 fmt:
     uv run ruff format
@@ -27,7 +31,7 @@ typecheck:
     uv run mypy src
 
 # the full local gate (mirrors CI): lint + types + tests
-check: lint typecheck test
+check: lint fmt-check typecheck test
 
 # create the DuckDB file with all tables
 init:
@@ -36,3 +40,7 @@ init:
 # load the seed CSVs into the store
 seed:
     uv run fortuneteller seed
+
+# load the CPI release history from FRED (needs FT_FRED_API_KEY)
+load-releases:
+    uv run fortuneteller load-releases

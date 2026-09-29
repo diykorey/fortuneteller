@@ -1,6 +1,6 @@
 """Tests for the M0-03 domain models and enums."""
 
-from datetime import datetime
+from datetime import UTC, datetime
 
 import pytest
 from pydantic import ValidationError
@@ -144,3 +144,27 @@ def test_tier_out_of_range_raises() -> None:
     # then a ValidationError is raised
     with pytest.raises(ValidationError):
         EventType(event_type="x", tier=9, polarity="positive")
+
+
+def test_event_ts_must_be_naive_utc() -> None:
+    # given an event timestamp that carries a time zone
+    aware = datetime(2022, 9, 13, 12, 30, tzinfo=UTC)
+    # when / then the model refuses it: DuckDB would shift an aware value into the session zone
+    with pytest.raises(ValidationError):
+        EventInstance(
+            event_id=202208,
+            event_type="CPI / inflation surprise",
+            event_ts=aware,
+            country="United States",
+            detail="2022-08",
+            scheduled=True,
+            consensus=None,
+            actual=296.171,
+            surprise=None,
+            surprise_sd=None,
+            surprise_source=None,
+            priced_in_prior=None,
+            vix_t0=None,
+            rate_regime=None,
+            quality="first_release",
+        )

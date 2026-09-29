@@ -8,11 +8,16 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Review fixes for step 2's observations: a rebuild now deletes the CPI observations and inserts what
-it measured, in one transaction, so no stale row survives; a missing instrument, an unknown unit,
-and two Yahoo bars on one date all raise; today's unfinished bar is never stored. Live run on
-2026-09-29: 2,698 observations, the table matching each run exactly. Hygiene findings from the same
-review follow in their own change. *(PR #78.)*
+Review hygiene: the CLI smoke test no longer writes to `data/fortuneteller.duckdb`; an empty
+`FT_FRED_API_KEY` is treated as unset; `event_ts` must be a naive datetime (the model enforces it); a
+seed test assertion that could never fail now checks the line number; CI requires the lockfile and
+checks formatting; `justfile`, `CLAUDE.md` and `schema.md` catch up with the code.
+
+**Known and deferred from the same review:** paths and `.env` resolve from the working directory;
+the CLI catches only `FredError`, so network timeouts and malformed responses show a traceback;
+`daily_bars` rows from a replaced ticker are never deleted; `obs_id` depends on instrument order; the
+unused `Prediction` model; release dates before 1997 have not been checked against the BLS archive
+(one, 1992-12-13, falls on a Sunday).
 
 ## In progress
 
@@ -28,6 +33,7 @@ the observations, and print the counts per instrument and in total. Spec:
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-09-29 | Review hygiene: test isolation, empty key, naive `event_ts`, CI lockfile | PR #79 |
 | 2026-09-29 | Review fixes: rebuild observations, loud failures, no provisional bars | PR #78 |
 | 2026-09-28 | Step 2.4: build `observations` — 2,698 release-day moves | PR #77 |
 | 2026-09-28 | Step 2.3: store the five instruments' closes; bulk `insert_models` | PR #76 |
