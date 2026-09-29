@@ -33,7 +33,7 @@ the observations, and print the counts per instrument and in total. Spec:
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-09-29 | Review hygiene: test isolation, empty key, naive `event_ts`, CI lockfile | this branch |
+| 2026-09-29 | Review hygiene: test isolation, empty key, naive `event_ts`, CI lockfile | PR #79 |
 | 2026-09-29 | Review fixes: rebuild observations, loud failures, no provisional bars | PR #78 |
 | 2026-09-28 | Step 2.4: build `observations` — 2,698 release-day moves | PR #77 |
 | 2026-09-28 | Step 2.3: store the five instruments' closes; bulk `insert_models` | PR #76 |
