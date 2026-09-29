@@ -77,5 +77,5 @@ def test_malformed_enum_value_names_file_and_row(tmp_path: Path) -> None:
     # then the error names the file and the offending row (line 2), caused by a ValidationError
     message = str(excinfo.value)
     assert "effect_size_seed.csv" in message
-    assert "2" in message
+    assert "effect_size_seed.csv:2:" in message
     assert isinstance(excinfo.value.__cause__, ValidationError)

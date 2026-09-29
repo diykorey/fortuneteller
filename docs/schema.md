@@ -7,8 +7,8 @@ in the same commit.** Unfamiliar term? See the [Glossary](glossary.md).
 
 The store is one DuckDB file (`data/fortuneteller.duckdb` by default, `FT_DB_PATH` to override).
 `uv run fortuneteller init` creates every table; the DDL is idempotent. There is no ORM: each table
-has a Pydantic model of the same shape in `src/fortuneteller/models.py`, written through
-`db.insert_models`.
+that code writes has a Pydantic model of the same shape in `src/fortuneteller/models.py`, written
+through `db.insert_models` (`effect_size_matrix`, which nothing writes yet, has none).
 
 ## The tables at a glance
 

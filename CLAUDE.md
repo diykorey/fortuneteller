@@ -12,8 +12,9 @@ The repo is **bootstrapping**. What exists today is M0 — the data spine — pl
 design docs (mirrored from a Notion workspace), the seed reference data, a working
 `init | seed | query-demo` CLI over DuckDB (M0-01…09; ruff + mypy --strict + pytest green), and
 `load-releases`, which loads the real CPI release history from FRED into `event_instances`
-(`src/fortuneteller/study.py`). **No prediction code exists**: no surprise computation, no direction
-resolution, no warnings.
+(`src/fortuneteller/study.py`). MVP step 2 is under way in the same file: daily closes from Yahoo into
+`daily_bars` and release-day moves into `observations` (its CLI command is not built yet).
+**No prediction code exists**: no surprise computation, no direction resolution, no warnings.
 
 ## The 2026-08-05 reset — read before planning any work
 
