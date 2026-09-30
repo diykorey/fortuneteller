@@ -2,11 +2,13 @@
 
 from datetime import date, datetime
 from pathlib import Path
+from typing import NoReturn
 
 import duckdb
 import pytest
 
-from fortuneteller import db
+from fortuneteller import db, study
+from fortuneteller.__main__ import describe_release_counts, main
 from fortuneteller.models import DailyBar
 from fortuneteller.study import (
     BEFORE_HISTORY,
@@ -14,6 +16,7 @@ from fortuneteller.study import (
     NO_CLOSE_NEARBY,
     CpiRelease,
     ReleaseCounts,
+    YahooError,
     DailyClosingPrice,
     closing_price_before_after,
     parse_daily_bars,
@@ -268,3 +271,90 @@ def test_events_of_other_types_are_not_measured() -> None:
     # then only the CPI event is measured
     rows = con.execute("SELECT DISTINCT event_id FROM observations").fetchall()
     assert rows == [(202208,)]
+
+
+DXY_1992 = Path(__file__).parent / "data" / "yahoo_dx_y_nyb_1992_12.json"
+
+
+def _yahoo_answers(monkeypatch: pytest.MonkeyPatch, gold: Path = GSPC_2022) -> None:
+    # Every ticker answers with the S&P 500 bars around the hot print; gold can be overridden.
+    def fetch(ticker: str) -> bytes:
+        return (gold if ticker == "GC=F" else GSPC_2022).read_bytes()
+
+    monkeypatch.setattr(study, "fetch_daily_bars", fetch)
+
+
+def test_load_prices_prints_counts_per_instrument_and_in_total(
+    tmp_db: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    # given the hot print loaded, and gold's saved prices ending decades before it
+    store_cpi_releases([HOT_PRINT])
+    _yahoo_answers(monkeypatch, gold=DXY_1992)
+
+    # when the command runs twice
+    first = main(["load-prices"])
+    second = main(["load-prices"])
+
+    # then both runs report the same measurement, and nothing is duplicated
+    assert (first, second) == (0, 0)
+    report = (
+        "SPY / ES     1 observations\n"
+        "UST10Y / ZN  1 observations\n"
+        "DXY          1 observations\n"
+        "GC / XAU     0 observations, 1 skipped (no close within 4 days)\n"
+        "VIX          1 observations\n"
+        "5 instruments × 1 releases = 4 observations\n"
+    )
+    assert capsys.readouterr().out == report * 2
+    assert db.count_rows("observations") == 4
+
+
+def test_load_prices_needs_the_releases_first(
+    tmp_db: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    # given no CPI releases loaded
+    def fetch(_ticker: str) -> NoReturn:
+        raise AssertionError("fetched prices with no releases to measure")
+
+    monkeypatch.setattr(study, "fetch_daily_bars", fetch)
+
+    # when the command runs
+    code = main(["load-prices"])
+
+    # then it stops before fetching and says what to run first
+    assert code == 1
+    assert "run `fortuneteller load-releases` first" in capsys.readouterr().err
+
+
+def test_load_prices_reports_a_yahoo_failure(
+    tmp_db: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    # given the releases loaded and Yahoo rejecting the request
+    store_cpi_releases([HOT_PRINT])
+
+    def fetch(ticker: str) -> NoReturn:
+        raise YahooError(f"Yahoo returned HTTP 404 for {ticker}")
+
+    monkeypatch.setattr(study, "fetch_daily_bars", fetch)
+
+    # when the command runs
+    code = main(["load-prices"])
+
+    # then it exits non-zero with the reason, and measures nothing
+    assert code == 1
+    assert "HTTP 404 for ^GSPC" in capsys.readouterr().err
+    assert db.count_rows("observations") == 0
+
+
+def test_each_skip_reason_is_named() -> None:
+    # given counts with both kinds of skip, as for gold and the 10-year yield on real data
+    counts = ReleaseCounts(measured=312, skipped_before_history=337, skipped_no_close_nearby=2)
+
+    # when the line is written
+    line = describe_release_counts("GC / XAU", counts)
+
+    # then each skip says why
+    assert line == (
+        "GC / XAU     312 observations, 337 skipped (before its history), "
+        "2 skipped (no close within 4 days)"
+    )

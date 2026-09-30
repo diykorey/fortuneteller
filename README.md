@@ -44,7 +44,7 @@ connects. The documents form one chain, from *why* to *what exactly*:
 - **[Legend](docs/legend.md)** — the target, the bet behind it, the way we intend to get there, and
   the template every step document follows.
 - **[Roadmap](docs/roadmap.md)** — what gets built, in what order, and what "done" means.
-- **[Step 2 — Prices](docs/steps/step-2-prices.md)** — the step being worked on now; [step 1](docs/steps/step-1-releases.md) is done.
+- **[Step 1 — Releases](docs/steps/step-1-releases.md)** and **[Step 2 — Prices](docs/steps/step-2-prices.md)** — done; [status](docs/status.md) names the step being worked on now.
 - **[Glossary](docs/glossary.md)** — every acronym, ticker, and piece of jargon, explained.
 
 The pre-2026-09-11 design corpus — architecture sketches, reference-table documentation, the old
@@ -62,9 +62,10 @@ tests/           # pytest suite (ruff + mypy --strict + pytest is the gate)
 
 ## Status
 
-Bootstrapping, **measurable-spine first**. **M0 — the data spine — is complete, and so is step 1 of
-the MVP.** Today the repo gives you typed Pydantic models, a DuckDB schema, the committed seed
-tables, a CLI that loads and queries them, and the real CPI release history from FRED:
+Bootstrapping, **measurable-spine first**. **M0 — the data spine — is complete, and so are steps 1
+and 2 of the MVP.** Today the repo gives you typed Pydantic models, a DuckDB schema, the committed
+seed tables, a CLI that loads and queries them, the real CPI release history from FRED, and each
+instrument's measured move around every release:
 
 ```bash
 uv sync
@@ -72,6 +73,7 @@ uv run fortuneteller init        # create the DuckDB file
 uv run fortuneteller seed        # load the seed CSVs
 uv run fortuneteller query-demo  # a sample effect-size lookup
 uv run fortuneteller load-releases  # CPI release history from FRED (needs FT_FRED_API_KEY)
+uv run fortuneteller load-prices    # daily closes from Yahoo + the move around each release
 ```
 
 There is **no prediction code yet** — no surprise computation, no direction resolution, no warnings.

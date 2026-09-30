@@ -8,16 +8,10 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Review hygiene: the CLI smoke test no longer writes to `data/fortuneteller.duckdb`; an empty
-`FT_FRED_API_KEY` is treated as unset; `event_ts` must be a naive datetime (the model enforces it); a
-seed test assertion that could never fail now checks the line number; CI requires the lockfile and
-checks formatting; `justfile`, `CLAUDE.md` and `schema.md` catch up with the code.
-
-**Known and deferred from the same review:** paths and `.env` resolve from the working directory;
-the CLI catches only `FredError`, so network timeouts and malformed responses show a traceback;
-`daily_bars` rows from a replaced ticker are never deleted; `obs_id` depends on instrument order; the
-unused `Prediction` model; release dates before 1997 have not been checked against the BLS archive
-(one, 1992-12-13, falls on a Sunday).
+MVP step 2, sub-step 5 — `uv run fortuneteller load-prices` fetches and stores the five instruments'
+daily closes, rebuilds the observations, and prints the counts. **Step 2 is complete.** Live run on
+2026-09-29, twice, output identical to the spec's: `5 instruments × 649 releases = 2698
+observations` (649 / 648 / 649 / 312 / 440), about 4 seconds per run.
 
 ## In progress
 
@@ -25,14 +19,14 @@ Nothing.
 
 ## Next
 
-MVP step 2, sub-step 5 — **`uv run fortuneteller load-prices`**: fetch and store the closes, build
-the observations, and print the counts per instrument and in total. Spec:
-[step-2-prices.md](steps/step-2-prices.md).
+MVP step 3 — **Raw move**: write the step 3 spec — do these instruments move abnormally on CPI
+days versus ordinary days? Following the step template in [legend.md](legend.md).
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-09-29 | Step 2.5: `load-prices` CLI — step 2 complete | this branch |
 | 2026-09-29 | Review hygiene: test isolation, empty key, naive `event_ts`, CI lockfile | PR #79 |
 | 2026-09-29 | Review fixes: rebuild observations, loud failures, no provisional bars | PR #78 |
 | 2026-09-28 | Step 2.4: build `observations` — 2,698 release-day moves | PR #77 |
@@ -57,6 +51,6 @@ the observations, and print the counts per instrument and in total. Spec:
 | Step | State |
 | --- | --- |
 | 1 Releases | Done |
-| 2 Prices | Sub-step 4 of 5 done |
+| 2 Prices | Done |
 | 3 Raw move | Not started |
 | 4 Surprise | Not started |
