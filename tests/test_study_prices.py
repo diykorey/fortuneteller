@@ -287,3 +287,59 @@ def test_daily_bar_model_matches_the_table() -> None:
 
     # then the model writes exactly those columns, in that order
     assert list(DailyBar.model_fields) == columns
+
+
+def test_non_json_reply_is_a_yahoo_error() -> None:
+    # given Yahoo answering with a consent or rate-limit page instead of JSON
+    payload = b"<html><body>Too Many Requests</body></html>"
+
+    # when / then parsing reports it as a Yahoo failure, not a JSON traceback
+    with pytest.raises(YahooError, match="unexpected reply"):
+        parse_daily_bars(payload)
+
+
+def test_reply_missing_its_prices_is_a_yahoo_error() -> None:
+    # given a reply for a ticker that carries no price arrays at all
+    def empty(chart: dict[str, Any]) -> None:
+        chart["result"][0]["indicators"] = {"quote": [{}]}
+
+    payload = _payload(GSPC_2022, empty)
+
+    # when / then parsing reports it as a Yahoo failure
+    with pytest.raises(YahooError, match="unexpected reply"):
+        parse_daily_bars(payload)
+
+
+def test_read_timeout_is_a_yahoo_error(monkeypatch: pytest.MonkeyPatch) -> None:
+    # given a connection that stalls until the socket times out
+    def stall(request: urllib.request.Request, timeout: float) -> NoReturn:
+        raise TimeoutError("timed out")
+
+    monkeypatch.setattr(study.urllib.request, "urlopen", stall)
+
+    # when / then the fetch fails with an error naming the ticker
+    with pytest.raises(YahooError, match=r"for \^VIX failed: timed out"):
+        study.fetch_daily_bars("^VIX")
+
+
+def test_a_bad_ticker_stores_nothing_for_any_instrument(monkeypatch: pytest.MonkeyPatch) -> None:
+    # given Yahoo answering normally for every ticker except VIX, which has no bars at all
+    def no_bars(chart: dict[str, Any]) -> None:
+        result = chart["result"][0]
+        result["timestamp"] = []
+        result["indicators"]["quote"][0]["close"] = []
+
+    def fetch(ticker: str) -> bytes:
+        if ticker == "^VIX":
+            return _payload(GSPC_2022, no_bars)
+        return GSPC_2022.read_bytes()
+
+    monkeypatch.setattr(study, "fetch_daily_bars", fetch)
+    con = _store()
+
+    # when the five instruments are loaded
+    with pytest.raises(YahooError, match=r"no usable closes for \^VIX"):
+        load_daily_bars(con=con)
+
+    # then no instrument was stored, so the table is never left half-refreshed
+    assert db.count_rows("daily_bars", con=con) == 0

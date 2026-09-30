@@ -12,6 +12,9 @@ MVP step 2, sub-step 5 — `uv run fortuneteller load-prices` fetches and stores
 daily closes, rebuilds the observations, and prints the counts. **Step 2 is complete.** Live run on
 2026-09-29, twice, output identical to the spec's: `5 instruments × 649 releases = 2698
 observations` (649 / 648 / 649 / 312 / 440), about 4 seconds per run. *(PR #80.)*
+A failed or malformed Yahoo or FRED reply, or a network timeout, now ends either command with a
+one-line error instead of a traceback, and `load-prices` stores nothing unless all five
+instruments were read.
 
 ## In progress
 
@@ -54,3 +57,15 @@ days versus ordinary days? Following the step template in [legend.md](legend.md)
 | 2 Prices | Done |
 | 3 Raw move | Not started |
 | 4 Surprise | Not started |
+
+## Known, not yet fixed
+
+Found by the 2026-09-28 codebase review and deliberately left for later. This section stays until
+each is fixed or dropped; it is not rewritten when a task finishes.
+
+- Paths and `.env` resolve from the working directory, so running from elsewhere misses them.
+- `daily_bars` rows from a replaced ticker are never deleted, so an old and a new series could mix.
+- `obs_id` depends on the order of `MVP_PRICE_SERIES` and leaves room for ten instruments.
+- The `Prediction` model has no table and no caller.
+- CPI release dates before 1997 have not been checked against the BLS archive. One, 1992-12-13,
+  falls on a Sunday; the other 648 fall on weekdays. Check before step 3 relies on them.

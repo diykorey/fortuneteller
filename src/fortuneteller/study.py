@@ -12,6 +12,7 @@ measure each instrument's move around each CPI release into ``observations``.
 
 from __future__ import annotations
 
+import http.client
 import json
 import urllib.error
 import urllib.parse
@@ -40,6 +41,11 @@ CPI_RELEASE_ZONE = ZoneInfo("America/New_York")
 FIRST_RELEASE = "first_release"
 
 YAHOO_CHART_URL = "https://query1.finance.yahoo.com/v8/finance/chart/"
+# A reply that is not the expected JSON shape raises one of these while it is read.
+MALFORMED_REPLY = (ValueError, KeyError, IndexError, TypeError)
+# Network failures urllib does not wrap in URLError, e.g. a read that times out or a dropped reply.
+NETWORK_FAILURE = (OSError, http.client.HTTPException)
+
 # Yahoo refuses requests without a browser-like User-Agent.
 YAHOO_HEADERS = {"User-Agent": "Mozilla/5.0"}
 
@@ -126,6 +132,8 @@ def fetch_cpi_releases(api_key: str, timeout: float = 30.0) -> bytes:
         raise FredError(
             f"FRED request failed: {exc.reason}".replace(api_key, "<redacted>")
         ) from None
+    except NETWORK_FAILURE as exc:
+        raise FredError(f"FRED request failed: {exc}".replace(api_key, "<redacted>")) from None
 
 
 def parse_cpi_releases(payload: bytes) -> tuple[list[CpiRelease], list[date]]:
@@ -134,23 +142,26 @@ def parse_cpi_releases(payload: bytes) -> tuple[list[CpiRelease], list[date]]:
     Raises if a release date is not after its reference month — the sign that the series view,
     not the initial-release view, was fetched.
     """
-    document: Any = json.loads(payload)
-    observations: list[dict[str, str]] = document["observations"]
-    if document["count"] != len(observations):
-        raise FredError(f"FRED reported {document['count']} rows but sent {len(observations)}")
+    try:
+        document: Any = json.loads(payload)
+        observations: list[dict[str, str]] = document["observations"]
+        if document["count"] != len(observations):
+            raise FredError(f"FRED reported {document['count']} rows but sent {len(observations)}")
 
-    releases: list[CpiRelease] = []
-    valueless: list[date] = []
-    for row in observations:
-        reference_month = date.fromisoformat(row["date"])
-        released = date.fromisoformat(row["realtime_start"])
-        if released <= reference_month:
-            raise FredError(f"{reference_month}: released {released}, not after its month")
-        if row["value"] == MISSING_VALUE:
-            valueless.append(reference_month)
-            continue
-        releases.append(CpiRelease(reference_month, released, float(row["value"])))
-    return releases, valueless
+        releases: list[CpiRelease] = []
+        valueless: list[date] = []
+        for row in observations:
+            reference_month = date.fromisoformat(row["date"])
+            released = date.fromisoformat(row["realtime_start"])
+            if released <= reference_month:
+                raise FredError(f"{reference_month}: released {released}, not after its month")
+            if row["value"] == MISSING_VALUE:
+                valueless.append(reference_month)
+                continue
+            releases.append(CpiRelease(reference_month, released, float(row["value"])))
+        return releases, valueless
+    except MALFORMED_REPLY as exc:
+        raise FredError(f"FRED sent an unexpected reply: {exc!r}") from None
 
 
 def to_event_instance(release: CpiRelease) -> EventInstance:
@@ -204,6 +215,8 @@ def fetch_daily_bars(ticker: str, timeout: float = 30.0) -> bytes:
         raise YahooError(f"Yahoo returned HTTP {exc.code} for {ticker}") from None
     except urllib.error.URLError as exc:
         raise YahooError(f"Yahoo request for {ticker} failed: {exc.reason}") from None
+    except NETWORK_FAILURE as exc:
+        raise YahooError(f"Yahoo request for {ticker} failed: {exc}") from None
 
 
 def parse_daily_bars(payload: bytes, today: date | None = None) -> list[DailyClosingPrice]:
@@ -216,29 +229,32 @@ def parse_daily_bars(payload: bytes, today: date | None = None) -> list[DailyClo
     final; ``today`` defaults to the exchange's current date) are dropped. Two bars on one date
     are rejected: that is what a misread time zone looks like.
     """
-    document: Any = json.loads(payload)
-    chart = document["chart"]
-    if chart.get("error"):
-        raise YahooError(f"Yahoo returned an error: {chart['error']}")
-    result = chart["result"][0]
-    zone = ZoneInfo(result["meta"]["exchangeTimezoneName"])
-    today = today if today is not None else datetime.now(zone).date()
-    timestamps: list[int] = result.get("timestamp", [])
-    closes: list[float | None] = result["indicators"]["quote"][0]["close"]
-    if len(timestamps) != len(closes):
-        raise YahooError(f"Yahoo sent {len(timestamps)} timestamps but {len(closes)} closes")
+    try:
+        document: Any = json.loads(payload)
+        chart = document["chart"]
+        if chart.get("error"):
+            raise YahooError(f"Yahoo returned an error: {chart['error']}")
+        result = chart["result"][0]
+        zone = ZoneInfo(result["meta"]["exchangeTimezoneName"])
+        today = today if today is not None else datetime.now(zone).date()
+        timestamps: list[int] = result.get("timestamp", [])
+        closes: list[float | None] = result["indicators"]["quote"][0]["close"]
+        if len(timestamps) != len(closes):
+            raise YahooError(f"Yahoo sent {len(timestamps)} timestamps but {len(closes)} closes")
 
-    by_day: dict[date, float] = {}
-    for timestamp, close in zip(timestamps, closes, strict=True):
-        if close is None:
-            continue
-        day = datetime.fromtimestamp(timestamp, zone).date()
-        if day.weekday() >= 5 or day >= today:
-            continue
-        if day in by_day:
-            raise YahooError(f"Yahoo sent two bars on {day}")
-        by_day[day] = close
-    return [DailyClosingPrice(day, by_day[day]) for day in sorted(by_day)]
+        by_day: dict[date, float] = {}
+        for timestamp, close in zip(timestamps, closes, strict=True):
+            if close is None:
+                continue
+            day = datetime.fromtimestamp(timestamp, zone).date()
+            if day.weekday() >= 5 or day >= today:
+                continue
+            if day in by_day:
+                raise YahooError(f"Yahoo sent two bars on {day}")
+            by_day[day] = close
+        return [DailyClosingPrice(day, by_day[day]) for day in sorted(by_day)]
+    except MALFORMED_REPLY as exc:
+        raise YahooError(f"Yahoo sent an unexpected reply: {exc!r}") from None
 
 
 def store_daily_bars(
@@ -256,12 +272,24 @@ def store_daily_bars(
 
 
 def load_daily_bars(con: duckdb.DuckDBPyConnection | None = None) -> dict[str, int]:
-    """Fetch, parse and store every MVP instrument's daily closes; return the count per instrument."""
+    """Fetch, parse and store every MVP instrument's daily closes; return the count per instrument.
+
+    All five are fetched and parsed before any is stored, so a failure on one leaves ``daily_bars``
+    as it was rather than half-refreshed.
+    """
+    fetched: dict[str, tuple[str, list[DailyClosingPrice]]] = {}
+    for instrument, (ticker, _unit) in MVP_PRICE_SERIES.items():
+        payload = fetch_daily_bars(ticker)
+        try:
+            closes = parse_daily_bars(payload)
+        except YahooError as exc:
+            raise YahooError(f"{ticker}: {exc}") from None
+        if not closes:
+            raise YahooError(f"Yahoo sent no usable closes for {ticker}")
+        fetched[instrument] = (ticker, closes)
     return {
-        instrument: store_daily_bars(
-            instrument, ticker, parse_daily_bars(fetch_daily_bars(ticker)), con=con
-        )
-        for instrument, (ticker, _unit) in MVP_PRICE_SERIES.items()
+        instrument: store_daily_bars(instrument, ticker, closes, con=con)
+        for instrument, (ticker, closes) in fetched.items()
     }
 
 

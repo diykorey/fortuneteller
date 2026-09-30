@@ -297,3 +297,45 @@ def test_load_releases_reports_a_fred_failure(
     assert code == 1
     assert "HTTP 400" in capsys.readouterr().err
     assert db.count_rows("event_instances", con=db.get_connection()) == 0
+
+
+def test_non_json_fred_reply_is_a_fred_error() -> None:
+    # given FRED answering with something that is not JSON
+    # when / then parsing reports it as a FRED failure, not a JSON traceback
+    with pytest.raises(FredError, match="unexpected reply"):
+        parse_cpi_releases(b"<html>Service Unavailable</html>")
+
+
+def test_fred_read_timeout_is_a_fred_error_without_the_key(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # given a connection that stalls, with the key in the failing URL
+    key = "abcdef0123456789abcdef0123456789"
+
+    def stall(url: str, timeout: float) -> NoReturn:
+        raise TimeoutError(f"timed out fetching {url}")
+
+    monkeypatch.setattr(study.urllib.request, "urlopen", stall)
+
+    # when the fetch fails
+    with pytest.raises(FredError) as caught:
+        study.fetch_cpi_releases(key)
+
+    # then the error is a FRED failure that does not carry the key
+    assert "timed out" in str(caught.value)
+    assert key not in str(caught.value)
+
+
+def test_load_releases_reports_a_malformed_reply(
+    tmp_db: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    # given a configured key and FRED answering with something that is not JSON
+    monkeypatch.setattr(settings, "fred_api_key", SecretStr("test-key"))
+    monkeypatch.setattr(study, "fetch_cpi_releases", lambda _key: b"not json")
+
+    # when the command runs
+    code = main(["load-releases"])
+
+    # then it exits non-zero with a message instead of a traceback
+    assert code == 1
+    assert "load-releases:" in capsys.readouterr().err

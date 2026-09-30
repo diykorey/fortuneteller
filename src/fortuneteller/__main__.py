@@ -94,10 +94,10 @@ def _load_prices(_args: argparse.Namespace) -> int:
         return 1
     try:
         study.load_daily_bars(con=con)
-    except study.YahooError as exc:
+        release_counts = study.store_observations(con=con)
+    except (study.YahooError, ValueError) as exc:
         print(f"load-prices: {exc}", file=sys.stderr)
         return 1
-    release_counts = study.store_observations(con=con)
     for instrument, counts in release_counts.items():
         print(describe_release_counts(instrument, counts))
     first = next(iter(release_counts.values()))

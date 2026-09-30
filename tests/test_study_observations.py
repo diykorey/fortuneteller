@@ -358,3 +358,19 @@ def test_each_skip_reason_is_named() -> None:
         "GC / XAU     312 observations, 337 skipped (before its history), "
         "2 skipped (no close within 4 days)"
     )
+
+
+def test_load_prices_reports_a_malformed_reply(
+    tmp_db: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    # given the releases loaded and Yahoo answering with a page that is not JSON
+    store_cpi_releases([HOT_PRINT])
+    monkeypatch.setattr(study, "fetch_daily_bars", lambda _ticker: b"<html>consent</html>")
+
+    # when the command runs
+    code = main(["load-prices"])
+
+    # then it exits non-zero with a message instead of a traceback, and stores nothing
+    assert code == 1
+    assert "load-prices:" in capsys.readouterr().err
+    assert db.count_rows("daily_bars") == 0
