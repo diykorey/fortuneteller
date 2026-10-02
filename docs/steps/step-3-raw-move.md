@@ -41,7 +41,7 @@ tests, and at p < 0.01 one lucky pass becomes likely.
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~`daily_moves` and `cpi_days`: every day's absolute move from `daily_bars`, and which days are CPI days~~ **done** | Tests pass; on live data the CPI-day moves equal `observations.ret_1d` release for release, and the counts are 649 / 648 / 649 / 312 / 440 |
-| 2 | `compare_moves`: medians, ratio, permutation `p`, verdict | The synthetic checks below pass; two runs give the same `p` |
+| 2 | ~~`compare_moves`: medians, ratio, permutation `p`, verdict~~ **done** | The synthetic checks below pass; two runs give the same `p` |
 | 3 | `uv run fortuneteller raw-move` prints the verdict table, the era rows and the rule | Live run prints all five instruments; an empty database gives a one-line error |
 | 4 | Results: paste the live output into [Results](#results) and read the verdicts off it | Results answers "does CPI matter, and for which instruments?"; status and roadmap updated |
 
