@@ -42,6 +42,7 @@ this by splitting the results by era.
 | Choice | Now | More precise | Trigger |
 | --- | --- | --- | --- |
 | Decision rule | One ratio of medians and its permutation `p`; a fixed bar (1.10, 0.01) | A confidence interval on the ratio, so the output says how large the effect could plausibly be, not only whether it passed | An instrument comes out *unclear* |
+| Coarse old yields | `^TNX` closes before 1990 are rounded to whole basis points, so many daily moves tie and the 1970–1989 UST ratio moves in coarse steps | A finer source for those years; FRED's `DGS10` is identical, so none free is known | The 1970–1989 UST era row matters to a conclusion |
 | Loud and quiet years | All years pooled; eras shown as context | A model of each day's expected volatility (e.g. GARCH), so each CPI day is judged against how loud its own market was | Era ratios disagree with the verdict, e.g. *moves* overall but near 1.00 recently |
 
 ## Steps 1–2 — choices already built in

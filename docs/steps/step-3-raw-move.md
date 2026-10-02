@@ -24,21 +24,17 @@ ordinary days, their ratio, how likely chance alone would give that ratio, and t
 
 ## The way to reach it
 
-Three obstacles.
+Three obstacles; how each is handled is in [Decisions](#decisions).
 
 **A result can look like an effect when it isn't one.** Over 600 release days, some difference from
-ordinary days will always show up. So the rule for "moves" is fixed here, before the real numbers
-are run: the difference must be both **large enough to matter** (ratio ≥ 1.10) and **unlikely to be
-chance** (p < 0.01). Changing the rule after seeing the output is not allowed. If it must change,
-the change and its reason go in [Decisions](#decisions).
+ordinary days always shows up. So the rule for "moves" is fixed in this document before the
+verdicts are run: big enough to matter **and** unlikely to be chance. Changing it after seeing the
+output means a new row in Decisions saying what changed and why.
 
-**One wild day can decide an average.** The 1987 crash, or 2008, would move a mean by itself. So
-every comparison uses **medians** of the **absolute** move: the typical size of a day, whatever its
-direction.
+**One wild day can decide an average.** The 1987 crash would move a mean by itself.
 
-**Markets have loud and quiet years.** The effect may differ by era. A verdict for each era would
-mean 18 tests instead of 5, and at p < 0.01 one of those passing by luck becomes likely. So the
-verdict uses the full history, and each era gets a row with its ratio and `n` as context only.
+**Markets have loud and quiet years.** The effect may differ by era, but a verdict per era means 18
+tests, and at p < 0.01 one lucky pass becomes likely.
 
 ## The steps
 
@@ -79,7 +75,7 @@ Each choice made while designing this step, the options turned down, and why.
 | Decision | Chosen | Turned down | Why |
 | --- | --- | --- | --- |
 | What "ordinary day" means | Every trading day that is not a CPI day | Also removing jobs-report and Fed days; a window of 20 days around each release | Uses only stored data. Noisy days left in the baseline make the CPI effect look **smaller**, never larger, so this choice can miss an effect but not invent one. The other two are in [Precision](../precision.md), with when to build them |
-| What counts as "moves" | Ratio ≥ 1.10 **and** p < 0.01; *unclear* if only one holds; *doesn't* if neither | p alone; ratio alone | p alone passes effects too small to warn about; ratio alone can be luck with 312 releases (gold). Both together means real and big enough |
+| What counts as "moves" | Ratio ≥ 1.10 **and** p < 0.01; *unclear* if only one holds; *doesn't* if neither | p alone; ratio alone | p alone passes effects too small to warn about; ratio alone can be luck with 312 releases (gold). Both together means real and big enough. **Disclosure:** the bar was set after a rough look at era ratios (CPI days by release date, no gap rule), before any full-history ratio, `p` or verdict existed. Those rough ratios ranged 1.00–1.43 |
 | How to measure "typical" | Median of absolute moves | Mean; mean of squared moves (volatility) | One crash day can decide a mean; the median ignores it |
 | How to get `p` | Permutation test, 10,000 relabellings, fixed seed | t-test; adding numpy or scipy | No assumption that moves are normally distributed (they are not), and no new dependency. Takes about 4 s per instrument |
 | How eras count | One verdict over all history; era rows show ratio and `n` only | A verdict per era; only 1990 onwards | 18 tests make a lucky pass likely; choosing 1990 after seeing the numbers would be fitting the rule to the data |
@@ -113,15 +109,15 @@ so each draw costs about `n log n`, not a full sort.
 **Eras.** 1970–1989, 1990–2007, 2008–2019, 2020–now, by the date of the move. For each: `n` and
 ratio, or `—` when the instrument has no CPI day in it (VIX and gold before 1990).
 
-**Output.** As below, with real numbers once step 3.4 runs:
+**Output.** One verdict row per instrument, then one era row per instrument, then the rule:
 
 ```
 instrument   CPI days  median CPI  median other  ratio  p       verdict
-UST10Y / ZN       648      4.2 bp        3.2 bp   1.31  0.0001  moves
+UST10Y / ZN       648      x.x bp        x.x bp   x.xx  0.xxxx  …
 ...
 by era: ratio (CPI days)
 instrument   1970-1989    1990-2007    2008-2019    2020-now
-UST10Y / ZN  1.00 (208)   1.39 (215)   1.16 (143)   1.43 (79)
+UST10Y / ZN  x.xx (nnn)   x.xx (nnn)   x.xx (nnn)   x.xx (nn)
 ...
 moves = ratio >= 1.10 and p < 0.01; unclear = one of the two; doesn't = neither
 ```
