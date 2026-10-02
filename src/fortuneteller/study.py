@@ -8,6 +8,9 @@ weeks apart.
 Step 2 (see ``docs/steps/step-2-prices.md``): fetch each instrument's daily closes from Yahoo and
 parse them into dated closes, the date read in the exchange's own time zone, and store them; then
 measure each instrument's move around each CPI release into ``observations``.
+
+Step 3 (see ``docs/steps/step-3-raw-move.md``): compare each instrument's moves on CPI days with its
+moves on all other days.
 """
 
 from __future__ import annotations
@@ -18,7 +21,7 @@ import urllib.error
 import urllib.parse
 import urllib.request
 from bisect import bisect_left
-from collections.abc import Sequence
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from datetime import UTC, date, datetime, time
 from typing import Any, NamedTuple
@@ -410,3 +413,26 @@ def store_observations(con: duckdb.DuckDBPyConnection | None = None) -> dict[str
         con=connection,
     )
     return release_counts
+
+
+def daily_moves(closes: Sequence[DailyClosingPrice], unit: str) -> dict[date, float]:
+    """Each day's absolute move from the previous close, keyed by the day.
+
+    ``closes`` must be in date order. A pair more than ``MAX_CLOSE_GAP_DAYS`` apart is a hole in the
+    data, not a day, and is skipped.
+    """
+    return {
+        after.day: abs(release_move(before, after, unit))
+        for before, after in zip(closes, closes[1:], strict=False)
+        if (after.day - before.day).days <= MAX_CLOSE_GAP_DAYS
+    }
+
+
+def cpi_days(closes: Sequence[DailyClosingPrice], release_dates: Iterable[date]) -> set[date]:
+    """The days whose move is a CPI release's reaction: the close step 2 pairs each release with."""
+    days = set()
+    for release_date in release_dates:
+        pair = closing_price_before_after(closes, release_date)
+        if not isinstance(pair, str):
+            days.add(pair[1].day)
+    return days

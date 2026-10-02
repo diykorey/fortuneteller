@@ -8,26 +8,27 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-CPI release dates checked against BLS: all 391 from 1994 match BLS's release archive; 17 of 18
-sampled from 1990–1993 match BLS's printed schedules. The one wrong date, November 1992 (FRED:
-Sunday 12-13, BLS: Friday 12-11), is corrected in `RELEASE_DATE_CORRECTIONS`, and a weekend
-release date now stops the load. Details in [step-1-releases.md](steps/step-1-releases.md). *(PR #81.)*
+MVP step 3, sub-step 1 — `daily_moves` and `cpi_days` in `study.py`: every day's absolute move
+from `daily_bars` (pairs more than 4 days apart skipped), and the days that are CPI reactions.
+Live run on 2026-10-02: the CPI-day moves equal `observations.ret_1d` for all five instruments,
+649 / 648 / 649 / 312 / 440 CPI days among 14,305 / 14,199 / 14,150 / 6,534 / 9,253 daily moves.
+*(PR #—.)* The step 3 spec is merged *(PR #82)*.
 
 ## In progress
 
-MVP step 3 — **Raw move**: the spec, [step-3-raw-move.md](steps/step-3-raw-move.md) — do these
-instruments move more on CPI days than on ordinary days? Its Decisions section records each choice
-and why; the more precise alternatives are in [precision.md](precision.md).
+Nothing.
 
 ## Next
 
-MVP step 3, sub-step 1 — `daily_moves` and `cpi_days`: every day's absolute move, and which days
-are CPI days; CPI-day moves must equal `observations.ret_1d`.
+MVP step 3, sub-step 2 — `compare_moves`: medians, ratio, permutation `p` with a fixed seed, and
+the verdict; synthetic checks for a planted effect and for no effect.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-02 | Step 3.1: `daily_moves` and `cpi_days`; CPI-day moves match step 2 | PR #— |
+| 2026-10-02 | Step 3 spec: raw move on CPI days; precision doc | PR #82 |
 | 2026-10-02 | Release dates checked against BLS; Nov 1992 corrected; weekend guard | PR #81 |
 | 2026-09-29 | Step 2.5: `load-prices` CLI — step 2 complete | PR #80 |
 | 2026-09-29 | Review hygiene: test isolation, empty key, naive `event_ts`, CI lockfile | PR #79 |
@@ -55,7 +56,7 @@ are CPI days; CPI-day moves must equal `observations.ret_1d`.
 | --- | --- |
 | 1 Releases | Done |
 | 2 Prices | Done |
-| 3 Raw move | Not started |
+| 3 Raw move | In progress — spec, 3.1 done |
 | 4 Surprise | Not started |
 
 ## Known, not yet fixed
