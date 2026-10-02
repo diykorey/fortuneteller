@@ -23,7 +23,8 @@ step ends in a runnable command that prints a real number. "No edge" is a permit
 One document per step: its goal, the obstacle in the way, the sequence, how you know the result is
 right, and the implementation detail. The shape of these documents is fixed by the Legend. They
 live in [`steps/`](steps/): [Step 1 — Releases](steps/step-1-releases.md) and
-[Step 2 — Prices](steps/step-2-prices.md) are done.
+[Step 2 — Prices](steps/step-2-prices.md) are done; [Step 3 — Raw move](steps/step-3-raw-move.md) is
+specified.
 
 **Where are we, and what's next?** → **[Status](status.md)**
 The last completed task and the next one, kept current as work lands.

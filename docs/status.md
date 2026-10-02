@@ -18,14 +18,14 @@ instruments were read.
 
 ## In progress
 
-MVP step 3 — **Raw move**: writing the step 3 spec — do these instruments move abnormally on CPI
-days versus ordinary days? Following the step template in [legend.md](legend.md). Decided so far:
-ordinary days are all other trading days; the more precise baselines are in
-[precision.md](precision.md).
+MVP step 3 — **Raw move**: the spec, [step-3-raw-move.md](steps/step-3-raw-move.md) — do these
+instruments move more on CPI days than on ordinary days? Its Decisions section records each choice
+and why; the more precise alternatives are in [precision.md](precision.md).
 
 ## Next
 
-MVP step 3, sub-step 1 — the first sub-step the spec defines.
+MVP step 3, sub-step 1 — `daily_moves` and `cpi_days`: every day's absolute move, and which days
+are CPI days; CPI-day moves must equal `observations.ret_1d`.
 
 ## Done
 

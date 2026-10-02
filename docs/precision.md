@@ -37,6 +37,13 @@ this by splitting the results by era.
 **Trigger.** Do B or C if an instrument's step 3 result sits near the line between "moves" and
 "doesn't" — then the baseline choice could be what decided it.
 
+## Step 3 — the test for "moves"
+
+| Choice | Now | More precise | Trigger |
+| --- | --- | --- | --- |
+| Decision rule | One ratio of medians and its permutation `p`; a fixed bar (1.10, 0.01) | A confidence interval on the ratio, so the output says how large the effect could plausibly be, not only whether it passed | An instrument comes out *unclear* |
+| Loud and quiet years | All years pooled; eras shown as context | A model of each day's expected volatility (e.g. GARCH), so each CPI day is judged against how loud its own market was | Era ratios disagree with the verdict, e.g. *moves* overall but near 1.00 recently |
+
 ## Steps 1–2 — choices already built in
 
 | Choice | Now | More precise | Trigger |

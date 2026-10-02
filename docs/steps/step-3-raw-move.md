@@ -1,0 +1,139 @@
+# MVP step 3 — Raw move
+
+> Step 3 of the four in the [Roadmap](../roadmap.md); this document follows the step template in the
+> [Legend](../legend.md). Unfamiliar acronym or term? See the [Glossary](../glossary.md). What this
+> step simplifies, and the more precise way, is in [Precision](../precision.md).
+
+## The goal
+
+**In plain words:** do these five markets move more on CPI days than on ordinary days?
+
+Step 2 recorded how much each instrument moved on every CPI release day. On its own that number
+says nothing: the S&P 500 moved a median 0.55% on release days, but it moves about half a percent
+on any day. This step puts the two side by side and gives each instrument a verdict, so we know
+whether CPI matters at all, and for which instruments.
+
+This is the first of the Legend's three must-be-true claims: **events move these instruments
+measurably at all.** If no instrument moves, the project stops here. That outcome is allowed. For
+an instrument that does move, step 4 asks whether the size of the move follows the size of the
+surprise. An instrument that doesn't move gives step 4 nothing to explain.
+
+The deliverable is one command, `uv run fortuneteller raw-move`. It reads what step 2 stored,
+stores nothing, and prints a table: for each instrument, the typical move on CPI days and on
+ordinary days, their ratio, how likely chance alone would give that ratio, and the verdict.
+
+## The way to reach it
+
+Three obstacles.
+
+**A result can look like an effect when it isn't one.** Over 600 release days, some difference from
+ordinary days will always show up. So the rule for "moves" is fixed here, before the real numbers
+are run: the difference must be both **large enough to matter** (ratio ≥ 1.10) and **unlikely to be
+chance** (p < 0.01). Changing the rule after seeing the output is not allowed. If it must change,
+the change and its reason go in [Decisions](#decisions).
+
+**One wild day can decide an average.** The 1987 crash, or 2008, would move a mean by itself. So
+every comparison uses **medians** of the **absolute** move: the typical size of a day, whatever its
+direction.
+
+**Markets have loud and quiet years.** The effect may differ by era. A verdict for each era would
+mean 18 tests instead of 5, and at p < 0.01 one of those passing by luck becomes likely. So the
+verdict uses the full history, and each era gets a row with its ratio and `n` as context only.
+
+## The steps
+
+| # | Step | Done when |
+| --- | --- | --- |
+| 1 | `daily_moves` and `cpi_days`: every day's absolute move from `daily_bars`, and which days are CPI days | Tests pass; on live data the CPI-day moves equal `observations.ret_1d` release for release, and the counts are 649 / 648 / 649 / 312 / 440 |
+| 2 | `compare_moves`: medians, ratio, permutation `p`, verdict | The synthetic checks below pass; two runs give the same `p` |
+| 3 | `uv run fortuneteller raw-move` prints the verdict table, the era rows and the rule | Live run prints all five instruments; an empty database gives a one-line error |
+| 4 | Results: paste the live output into [Results](#results) and read the verdicts off it | Results answers "does CPI matter, and for which instruments?"; status and roadmap updated |
+
+## How you know it is right
+
+Each check below can fail.
+
+- **Same moves as step 2.** Every CPI-day move this step computes must equal that release's
+  `observations.ret_1d`, and the number of CPI days per instrument must equal step 2's: 649 / 648 /
+  649 / 312 / 440. A mismatch means steps 2 and 3 pair different days.
+- **A planted effect is found.** On synthetic data where CPI-day moves are twice the ordinary ones,
+  the verdict is *moves*.
+- **No effect is not invented.** On synthetic data where CPI days are drawn from the same
+  distribution as other days, the verdict is not *moves*.
+- **Repeatable.** Two runs print identical output; the random seed is fixed.
+- **Sanity against step 2.** The S&P 500's CPI-day median must be the 0.55% step 2 measured.
+
+## What this step does not do
+
+- **No direction.** Only the size of the move counts here; up or down is step 4's question.
+- **No surprise.** Step 4 relates the move to expected-vs-actual.
+- **No new table.** Nothing is stored; `abn_ret_1d` in `observations` stays empty.
+- **No events other than CPI**, and **no instruments beyond the five**.
+- **No cleaner baseline.** Jobs-report and Fed days stay in the ordinary pile; see
+  [Decisions](#decisions) and [Precision](../precision.md).
+
+## Decisions
+
+Each choice made while designing this step, the options turned down, and why.
+
+| Decision | Chosen | Turned down | Why |
+| --- | --- | --- | --- |
+| What "ordinary day" means | Every trading day that is not a CPI day | Also removing jobs-report and Fed days; a window of 20 days around each release | Uses only stored data. Noisy days left in the baseline make the CPI effect look **smaller**, never larger, so this choice can miss an effect but not invent one. The other two are in [Precision](../precision.md), with when to build them |
+| What counts as "moves" | Ratio ≥ 1.10 **and** p < 0.01; *unclear* if only one holds; *doesn't* if neither | p alone; ratio alone | p alone passes effects too small to warn about; ratio alone can be luck with 312 releases (gold). Both together means real and big enough |
+| How to measure "typical" | Median of absolute moves | Mean; mean of squared moves (volatility) | One crash day can decide a mean; the median ignores it |
+| How to get `p` | Permutation test, 10,000 relabellings, fixed seed | t-test; adding numpy or scipy | No assumption that moves are normally distributed (they are not), and no new dependency. Takes about 4 s per instrument |
+| How eras count | One verdict over all history; era rows show ratio and `n` only | A verdict per era; only 1990 onwards | 18 tests make a lucky pass likely; choosing 1990 after seeing the numbers would be fitting the rule to the data |
+| Where results go | Printed only | A new table | Step 4 needs the release-day moves, which `observations` already holds, not these summaries |
+
+## Technical details
+
+**Data.** Everything comes from `daily_bars` and `event_instances`; nothing is fetched.
+
+**Daily moves.** For one instrument, take its closes in date order. Each pair of consecutive closes
+gives one move, computed with step 2's `release_move` (`pct` or `bps`), and the absolute value
+is kept. A pair more than `MAX_CLOSE_GAP_DAYS` (4) apart is a hole in the data, not a day, and is
+skipped. Across all five instruments only 29 pairs are skipped. One is a CPI day: UST 10Y's April
+1978 release, which step 2 skips for the same reason.
+
+**CPI days.** For each CPI release, `closing_price_before_after` gives the close it pairs with;
+that close's date is a CPI day. These are exactly step 2's `t1` days. If two releases ever pair
+with the same close, that day counts once (none do today).
+
+**Ratio and `p`.** For one instrument, the CPI-day moves are `cpi` (size `n`), the rest `other`:
+
+- `ratio = median(cpi) / median(other)`.
+- 10,000 times: draw `n` moves at random from `cpi + other`, compute the same ratio of the drawn
+  moves to the rest.
+- `p = (1 + number of draws with a ratio ≥ the real one) / 10,001`, so its smallest value is
+  0.0001.
+
+The median of "the rest" is read from the sorted list of all moves, skipping the drawn positions,
+so each draw costs about `n log n`, not a full sort.
+
+**Eras.** 1970–1989, 1990–2007, 2008–2019, 2020–now, by the date of the move. For each: `n` and
+ratio, or `—` when the instrument has no CPI day in it (VIX and gold before 1990).
+
+**Output.** As below, with real numbers once step 3.4 runs:
+
+```
+instrument   CPI days  median CPI  median other  ratio  p       verdict
+UST10Y / ZN       648      4.2 bp        3.2 bp   1.31  0.0001  moves
+...
+by era: ratio (CPI days)
+instrument   1970-1989    1990-2007    2008-2019    2020-now
+UST10Y / ZN  1.00 (208)   1.39 (215)   1.16 (143)   1.43 (79)
+...
+moves = ratio >= 1.10 and p < 0.01; unclear = one of the two; doesn't = neither
+```
+
+**Errors.** No CPI events: `run fortuneteller load-releases first`. No `daily_bars` for an
+instrument: `run fortuneteller load-prices first`. One line on stderr, exit code 1.
+
+**Code.** Functions in `study.py` (no new module), the handler in `__main__.py`, tests in
+`tests/test_study_raw_move.py`. The synthetic checks build closes in memory and call
+`compare_moves` directly; they need no database.
+
+## Results
+
+*Filled in by step 3.4, from the live run: the table, the verdict for each instrument, and what it
+means for step 4.*
