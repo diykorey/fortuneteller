@@ -20,10 +20,12 @@ import json
 import urllib.error
 import urllib.parse
 import urllib.request
+import random
 from bisect import bisect_left
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from datetime import UTC, date, datetime, time
+from statistics import median
 from typing import Any, NamedTuple
 from zoneinfo import ZoneInfo
 
@@ -80,6 +82,15 @@ MVP_PRICE_SERIES = {
 # A close more than this many calendar days from the release is not "the day before" or "the
 # reaction": four admits Friday -> Tuesday after a Monday holiday and rejects a hole in the data.
 MAX_CLOSE_GAP_DAYS = 4
+
+# Step 3's rule for "moves", fixed before the verdicts were run; see docs/steps/step-3-raw-move.md.
+MOVE_RATIO_BAR = 1.10
+MOVE_P_BAR = 0.01
+PERMUTATIONS = 10_000
+PERMUTATION_SEED = 3
+MOVES = "moves"
+UNCLEAR = "unclear"
+DOESNT_MOVE = "doesn't"
 BEFORE_HISTORY = "before_history"
 NO_CLOSE_NEARBY = "no_close_nearby"
 YAHOO = "yahoo"
@@ -436,3 +447,64 @@ def cpi_days(closes: Sequence[DailyClosingPrice], release_dates: Iterable[date])
         if not isinstance(pair, str):
             days.add(pair[1].day)
     return days
+
+
+@dataclass(frozen=True)
+class MoveComparison:
+    """One instrument's moves on CPI days against its moves on all other days."""
+
+    cpi_days: int
+    median_cpi: float
+    median_other: float
+    ratio: float
+    p: float
+    verdict: str
+
+
+def median_not_drawn(pool: Sequence[float], drawn: Sequence[int]) -> float:
+    """The median of ``pool`` without the positions in ``drawn``, both sorted, without copying it."""
+
+    def kth_not_drawn(k: int) -> float:
+        position = k
+        for i in drawn:
+            if i > position:
+                break
+            position += 1
+        return pool[position]
+
+    rest = len(pool) - len(drawn)
+    return (kth_not_drawn((rest - 1) // 2) + kth_not_drawn(rest // 2)) / 2
+
+
+def move_verdict(ratio: float, p: float) -> str:
+    """``MOVES`` if the ratio is big enough and unlikely to be chance, ``UNCLEAR`` if only one."""
+    big, significant = ratio >= MOVE_RATIO_BAR, p < MOVE_P_BAR
+    if big and significant:
+        return MOVES
+    if big or significant:
+        return UNCLEAR
+    return DOESNT_MOVE
+
+
+def compare_moves(
+    cpi: Sequence[float],
+    other: Sequence[float],
+    permutations: int = PERMUTATIONS,
+    seed: int = PERMUTATION_SEED,
+) -> MoveComparison:
+    """Median CPI-day move over median other-day move, and how often chance does as well.
+
+    ``p`` is the share of random relabellings, drawing as many days as there are CPI days from all
+    of them, whose ratio is at least the real one, counting the real labelling itself.
+    """
+    median_cpi, median_other = median(cpi), median(other)
+    ratio = median_cpi / median_other
+    pool = sorted([*cpi, *other])
+    rng = random.Random(seed)
+    as_large = 0
+    for _ in range(permutations):
+        drawn = sorted(rng.sample(range(len(pool)), len(cpi)))
+        if median([pool[i] for i in drawn]) / median_not_drawn(pool, drawn) >= ratio:
+            as_large += 1
+    p = (as_large + 1) / (permutations + 1)
+    return MoveComparison(len(cpi), median_cpi, median_other, ratio, p, move_verdict(ratio, p))

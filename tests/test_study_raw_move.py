@@ -1,10 +1,22 @@
 """Raw move: every day's absolute move, and which of those days are CPI days."""
 
+import random
 from datetime import date
+from statistics import median
 
 import pytest
 
-from fortuneteller.study import DailyClosingPrice, cpi_days, daily_moves
+from fortuneteller.study import (
+    DOESNT_MOVE,
+    MOVES,
+    UNCLEAR,
+    DailyClosingPrice,
+    compare_moves,
+    cpi_days,
+    daily_moves,
+    median_not_drawn,
+    move_verdict,
+)
 
 
 def _closes(*days_and_prices: tuple[date, float]) -> list[DailyClosingPrice]:
@@ -85,3 +97,85 @@ def test_two_releases_paired_with_one_close_give_one_cpi_day() -> None:
 
     # then Monday counts once
     assert days == {date(2026, 1, 12)}
+
+
+def _sizes(count: int, seed: int) -> list[float]:
+    rng = random.Random(seed)
+    return [rng.expovariate(1.0) for _ in range(count)]
+
+
+def test_the_median_of_the_undrawn_moves_matches_a_plain_median() -> None:
+    # given a sorted pool and many random draws from it
+    pool = sorted(_sizes(41, seed=1))
+    rng = random.Random(2)
+
+    for _ in range(200):
+        drawn = sorted(rng.sample(range(len(pool)), rng.randint(1, 40)))
+
+        # when the median of the rest is read without building the rest
+        result = median_not_drawn(pool, drawn)
+
+        # then it equals the median of the rest built the slow way
+        rest = [move for i, move in enumerate(pool) if i not in set(drawn)]
+        assert result == median(rest)
+
+
+def test_cpi_days_twice_as_large_are_a_move() -> None:
+    # given ordinary days, and CPI days twice their size
+    other = _sizes(2000, seed=1)
+    cpi = [2 * move for move in _sizes(200, seed=2)]
+
+    # when they are compared
+    result = compare_moves(cpi, other)
+
+    # then the ratio is about 2, no relabelling beats it, and the verdict is "moves"
+    assert result.ratio == pytest.approx(2.0, rel=0.25)
+    assert result.p == pytest.approx(1 / 10_001)
+    assert result.verdict == MOVES
+    assert result.cpi_days == 200
+
+
+def test_cpi_days_like_any_other_day_are_not_a_move() -> None:
+    # given CPI days drawn from the same distribution as the other days
+    other = _sizes(2000, seed=1)
+    cpi = _sizes(200, seed=3)
+
+    # when they are compared
+    result = compare_moves(cpi, other)
+
+    # then nothing is found
+    assert result.ratio == pytest.approx(1.0, abs=0.15)
+    assert result.p > 0.01
+    assert result.verdict != MOVES
+
+
+def test_the_same_input_gives_the_same_p() -> None:
+    # given one set of moves
+    other = _sizes(2000, seed=1)
+    cpi = [1.05 * move for move in _sizes(200, seed=4)]
+
+    # when they are compared twice
+    first, second = compare_moves(cpi, other), compare_moves(cpi, other)
+
+    # then the results are identical
+    assert first == second
+
+
+@pytest.mark.parametrize(
+    ("ratio", "p", "expected"),
+    [
+        (1.10, 0.009, MOVES),
+        (1.30, 0.01, UNCLEAR),
+        (1.09, 0.0001, UNCLEAR),
+        (1.05, 0.2, DOESNT_MOVE),
+    ],
+)
+def test_the_verdict_needs_both_size_and_significance(
+    ratio: float, p: float, expected: str
+) -> None:
+    # given a ratio and a p-value
+    # when the verdict is read
+    result = move_verdict(ratio, p)
+
+    # then "moves" needs both, "unclear" one, "doesn't" neither
+    assert result == expected

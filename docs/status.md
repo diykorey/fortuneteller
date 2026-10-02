@@ -8,11 +8,11 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-MVP step 3, sub-step 1 — `daily_moves` and `cpi_days` in `study.py`: every day's absolute move
-from `daily_bars` (pairs more than 4 days apart skipped), and the days that are CPI reactions.
-Live run on 2026-10-02: the CPI-day moves equal `observations.ret_1d` for all five instruments,
-649 / 648 / 649 / 312 / 440 CPI days among 14,305 / 14,199 / 14,150 / 6,534 / 9,253 daily moves.
-*(PR #83.)* The step 3 spec is merged *(PR #82)*.
+MVP step 3, sub-step 2 — `compare_moves` in `study.py`: median CPI-day move over median other-day
+move, a 10,000-relabelling permutation `p` with a fixed seed, and the verdict by the spec's rule
+(`MOVE_RATIO_BAR` 1.10, `MOVE_P_BAR` 0.01). Synthetic checks: CPI days twice as large give
+*moves* at the smallest possible `p`; CPI days like any other do not. About 3 s per instrument on
+live data. *(PR #—.)*
 
 ## In progress
 
@@ -20,13 +20,14 @@ Nothing.
 
 ## Next
 
-MVP step 3, sub-step 2 — `compare_moves`: medians, ratio, permutation `p` with a fixed seed, and
-the verdict; synthetic checks for a planted effect and for no effect.
+MVP step 3, sub-step 3 — `uv run fortuneteller raw-move`: the verdict table, the era rows and the
+rule line; a one-line error on an empty database.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-02 | Step 3.2: `compare_moves` — ratio, permutation `p`, verdict | PR #— |
 | 2026-10-02 | Step 3.1: `daily_moves` and `cpi_days`; CPI-day moves match step 2 | PR #83 |
 | 2026-10-02 | Step 3 spec: raw move on CPI days; precision doc | PR #82 |
 | 2026-10-02 | Release dates checked against BLS; Nov 1992 corrected; weekend guard | PR #81 |
@@ -56,7 +57,7 @@ the verdict; synthetic checks for a planted effect and for no effect.
 | --- | --- |
 | 1 Releases | Done |
 | 2 Prices | Done |
-| 3 Raw move | In progress — spec, 3.1 done |
+| 3 Raw move | In progress — spec, 3.1, 3.2 done |
 | 4 Surprise | Not started |
 
 ## Known, not yet fixed
