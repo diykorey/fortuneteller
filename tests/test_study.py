@@ -60,7 +60,7 @@ def test_valueless_print_is_skipped_and_reported() -> None:
 
 
 def test_shared_release_date_and_irregular_schedule_are_kept() -> None:
-    # given rows with a shared release date, a Sunday release, and a 62-day lag
+    # given rows with a shared release date, a corrected release date, and a 62-day lag
     payload = FIXTURE.read_bytes()
 
     # when it is parsed
@@ -69,7 +69,7 @@ def test_shared_release_date_and_irregular_schedule_are_kept() -> None:
     # then each is kept as published
     by_month = {r.reference_month: r for r in releases}
     assert by_month[date(2025, 11, 1)].released == date(2025, 12, 18)
-    assert by_month[date(1992, 11, 1)].released == date(1992, 12, 13)
+    assert by_month[date(1992, 11, 1)].released == date(1992, 12, 11)
     assert by_month[date(1995, 12, 1)].released == date(1996, 2, 1)
     assert releases[-1] == CpiRelease(date(2026, 8, 1), date(2026, 9, 11), 334.131)
 
@@ -339,3 +339,27 @@ def test_load_releases_reports_a_malformed_reply(
     # then it exits non-zero with a message instead of a traceback
     assert code == 1
     assert "load-releases:" in capsys.readouterr().err
+
+
+def test_known_wrong_release_date_is_corrected_from_bls() -> None:
+    # given FRED dating the November 1992 print Sunday 1992-12-13
+    payload = FIXTURE.read_bytes()
+
+    # when the response is parsed
+    releases, _ = parse_cpi_releases(payload)
+
+    # then the date BLS scheduled and published, Friday 1992-12-11, is used instead
+    by_month = {r.reference_month: r for r in releases}
+    assert by_month[date(1992, 11, 1)].released == date(1992, 12, 11)
+
+
+def test_release_date_on_a_weekend_is_rejected() -> None:
+    # given a print FRED dates on a Saturday, with no correction known for it
+    def saturday(document: dict[str, Any]) -> None:
+        document["observations"][0]["realtime_start"] = "1972-08-19"
+
+    payload = _payload(saturday)
+
+    # when / then parsing refuses it: BLS does not publish CPI on weekends
+    with pytest.raises(FredError, match="1972-07-01: released Saturday 1972-08-19"):
+        parse_cpi_releases(payload)

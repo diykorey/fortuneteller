@@ -8,13 +8,10 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-MVP step 2, sub-step 5 — `uv run fortuneteller load-prices` fetches and stores the five instruments'
-daily closes, rebuilds the observations, and prints the counts. **Step 2 is complete.** Live run on
-2026-09-29, twice, output identical to the spec's: `5 instruments × 649 releases = 2698
-observations` (649 / 648 / 649 / 312 / 440), about 4 seconds per run. *(PR #80.)*
-A failed or malformed Yahoo or FRED reply, or a network timeout, now ends either command with a
-one-line error instead of a traceback, and `load-prices` stores nothing unless all five
-instruments were read.
+CPI release dates checked against BLS: all 391 from 1994 match BLS's release archive; 17 of 18
+sampled from 1990–1993 match BLS's printed schedules. The one wrong date, November 1992 (FRED:
+Sunday 12-13, BLS: Friday 12-11), is corrected in `RELEASE_DATE_CORRECTIONS`, and a weekend
+release date now stops the load. Details in [step-1-releases.md](steps/step-1-releases.md). *(PR #81.)*
 
 ## In progress
 
@@ -29,6 +26,7 @@ days versus ordinary days? Following the step template in [legend.md](legend.md)
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-02 | Release dates checked against BLS; Nov 1992 corrected; weekend guard | PR #81 |
 | 2026-09-29 | Step 2.5: `load-prices` CLI — step 2 complete | PR #80 |
 | 2026-09-29 | Review hygiene: test isolation, empty key, naive `event_ts`, CI lockfile | PR #79 |
 | 2026-09-29 | Review fixes: rebuild observations, loud failures, no provisional bars | PR #78 |
@@ -67,5 +65,5 @@ each is fixed or dropped; it is not rewritten when a task finishes.
 - `daily_bars` rows from a replaced ticker are never deleted, so an old and a new series could mix.
 - `obs_id` depends on the order of `MVP_PRICE_SERIES` and leaves room for ten instruments.
 - The `Prediction` model has no table and no caller.
-- CPI release dates before 1997 have not been checked against the BLS archive. One, 1992-12-13,
-  falls on a Sunday; the other 648 fall on weekdays. Check before step 3 relies on them.
+- CPI release dates for 1972–1989 have not been checked against BLS (its reports for those years
+  were not reachable). Later dates are checked; see step 1's spec.

@@ -40,6 +40,14 @@ CPI_RELEASE_TIME = time(8, 30)
 CPI_RELEASE_ZONE = ZoneInfo("America/New_York")
 FIRST_RELEASE = "first_release"
 
+# FRED release dates checked against BLS and found wrong, by reference month. Every date from 1994
+# matches BLS's release archive; a sample of earlier years matches BLS's printed schedules except
+# these. Source for each: the BLS schedule cited beside it.
+RELEASE_DATE_CORRECTIONS = {
+    # FRED: Sunday 1992-12-13. BLS: "November — December 11" (CPI Detailed Report, May 1992).
+    date(1992, 11, 1): date(1992, 12, 11),
+}
+
 YAHOO_CHART_URL = "https://query1.finance.yahoo.com/v8/finance/chart/"
 # A reply that is not the expected JSON shape raises one of these while it is read.
 MALFORMED_REPLY = (ValueError, KeyError, IndexError, TypeError)
@@ -140,7 +148,8 @@ def parse_cpi_releases(payload: bytes) -> tuple[list[CpiRelease], list[date]]:
     """Parse a FRED initial-release response into records, plus the months printed with no value.
 
     Raises if a release date is not after its reference month — the sign that the series view,
-    not the initial-release view, was fetched.
+    not the initial-release view, was fetched — or falls on a weekend, which BLS never publishes on.
+    Release dates known to be wrong in FRED are replaced from ``RELEASE_DATE_CORRECTIONS``.
     """
     try:
         document: Any = json.loads(payload)
@@ -153,8 +162,14 @@ def parse_cpi_releases(payload: bytes) -> tuple[list[CpiRelease], list[date]]:
         for row in observations:
             reference_month = date.fromisoformat(row["date"])
             released = date.fromisoformat(row["realtime_start"])
+            released = RELEASE_DATE_CORRECTIONS.get(reference_month, released)
             if released <= reference_month:
                 raise FredError(f"{reference_month}: released {released}, not after its month")
+            if released.weekday() >= 5:
+                raise FredError(
+                    f"{reference_month}: released {released:%A} {released}, a weekend; "
+                    "check it against BLS and add it to RELEASE_DATE_CORRECTIONS"
+                )
             if row["value"] == MISSING_VALUE:
                 valueless.append(reference_month)
                 continue
