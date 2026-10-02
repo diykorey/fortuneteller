@@ -44,3 +44,7 @@ seed:
 # load the CPI release history from FRED (needs FT_FRED_API_KEY)
 load-releases:
     uv run fortuneteller load-releases
+
+# load daily closes from Yahoo and measure each release's move (after load-releases)
+load-prices:
+    uv run fortuneteller load-prices

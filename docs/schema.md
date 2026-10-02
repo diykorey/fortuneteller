@@ -20,8 +20,8 @@ through `db.insert_models` (`effect_size_matrix`, which nothing writes yet, has 
 | [`news_sources`](#news_sources) | Reference | News or data feed | `seed` | 25 |
 | [`countries`](#countries) | Reference | Country | `seed` | 10 |
 | [`event_instances`](#event_instances) | Fact | Real event that happened | `load-releases` (MVP step 1) | 649 CPI releases |
-| [`daily_bars`](#daily_bars) | Fact | Instrument × trading day closing price | `study.load_daily_bars` (MVP step 2; the `load-prices` command comes next) | about 58,500 |
-| [`observations`](#observations) | Fact | Event × instrument reaction | `study.store_observations` (MVP step 2; the `load-prices` command comes next) | 2,698 |
+| [`daily_bars`](#daily_bars) | Fact | Instrument × trading day closing price | `load-prices` (MVP step 2) | about 58,500 |
+| [`observations`](#observations) | Fact | Event × instrument reaction | `load-prices` (MVP step 2) | 2,698 |
 | [`effect_size_matrix`](#effect_size_matrix) | Derived | Event type × instrument measurement | Nothing planned yet | 0 |
 
 **Reference** tables are configuration: committed CSVs in `data/seed/`, loaded by
@@ -274,7 +274,7 @@ it looks up the close before the announcement and the close after it, and writes
 release days are unusual. Storing the prices means Yahoo is asked once and later steps read locally.
 Nothing is computed here: the rows are the prices exactly as the source reported them.
 
-Filled by `study.load_daily_bars`, which the `uv run fortuneteller load-prices` command (step 2, sub-step 5) will call. Key: (`instrument`, `day`), so
+Filled by `uv run fortuneteller load-prices` (through `study.load_daily_bars`). Key: (`instrument`, `day`), so
 a re-run overwrites a day rather than adding a second copy.
 
 Example rows:

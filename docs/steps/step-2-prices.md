@@ -54,7 +54,7 @@ compare against, and should read them from the database rather than fetch again.
 | 2 | ~~Fetch one Yahoo ticker and parse it into dated closes~~ **done** | Dates come from the exchange's time zone; empty and weekend rows are dropped |
 | 3 | ~~Store the closes of all five tickers in `daily_bars`~~ **done** | Re-running changes no row count |
 | 4 | ~~Build `observations` from `daily_bars` and `event_instances`~~ **done** | Before/after rule, units, and skips as specified below |
-| 5 | `uv run fortuneteller load-prices` prints the counts | Per-instrument counts and `5 instruments × N releases = M observations` |
+| 5 | ~~`uv run fortuneteller load-prices` prints the counts~~ **done** | Per-instrument counts and `5 instruments × N releases = M observations` |
 
 ## How you know it is right
 

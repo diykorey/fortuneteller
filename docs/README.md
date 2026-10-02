@@ -19,10 +19,11 @@ it can *fail*: three things must be true, and each is tested by a specific part 
 The MVP — four steps that test the first two of those three things — then a feature ladder. Each
 step ends in a runnable command that prints a real number. "No edge" is a permitted answer.
 
-**3. So what exactly are we doing right now?** → **[Step 2 — Prices](steps/step-2-prices.md)**
+**3. So what exactly are we doing right now?** → **[Status](status.md)**, then the step documents
 One document per step: its goal, the obstacle in the way, the sequence, how you know the result is
 right, and the implementation detail. The shape of these documents is fixed by the Legend. They
-live in [`steps/`](steps/); [Step 1 — Releases](steps/step-1-releases.md) is done.
+live in [`steps/`](steps/): [Step 1 — Releases](steps/step-1-releases.md) and
+[Step 2 — Prices](steps/step-2-prices.md) are done.
 
 **Where are we, and what's next?** → **[Status](status.md)**
 The last completed task and the next one, kept current as work lands.
@@ -72,7 +73,7 @@ anywhere and drive nothing.
 | Understand the point of the project | [Legend](legend.md) — the target and the idea |
 | Know why the plan is ordered this way | [Legend](legend.md) — the way, and the three conditions |
 | See what gets built and when | [Roadmap](roadmap.md) |
-| Start working on the current step | [Step 2 — Prices](steps/step-2-prices.md) |
+| Start working on the current step | [Status](status.md) names it; step documents are in [`steps/`](steps/) |
 | Write the document for a new step | [Legend](legend.md) — what every step document must say |
 | Look up a term or ticker | [Glossary](glossary.md) |
 | Know which external services and keys are needed | [Accounts](accounts.md) |
@@ -97,11 +98,12 @@ anywhere and drive nothing.
 
 **M0 — the data spine — is shipped**: typed models, the DuckDB schema, the seed reference tables,
 and a working `init | seed | query-demo` CLI. **[MVP step 1](steps/step-1-releases.md) is done**:
-`load-releases` fills `event_instances` with every US CPI release since 1972. **No prediction code
-exists**, and `observations` is still empty.
+`load-releases` fills `event_instances` with every US CPI release since 1972. **[MVP step
+2](steps/step-2-prices.md) is done**: `load-prices` stores the five instruments' daily closes and
+measures their move around each release — 2,698 observations. **No prediction code exists.**
 
-**Next: [MVP step 2](steps/step-2-prices.md)** — daily prices for the five instruments and the
-return around each release.
+**Next: MVP step 3** — do these instruments move abnormally on CPI days versus ordinary days? Its
+spec is written first.
 [Status](status.md) always has the current task.
 
 ## How this folder grows
