@@ -34,6 +34,9 @@ Ten real shock → aftershock episodes, with verified moves. Hypotheses to measu
 **What is in the database?** → **[Schema](schema.md)**
 Every table and column: what it means, who fills it, and whether anything fills it yet.
 
+**What did we simplify, and what would be more precise?** → **[Precision](precision.md)**
+Each measurement's current shortcut, the more precise way, and what would make it worth building.
+
 **4. What does this word mean?** → **[Glossary](glossary.md)**
 Every acronym, ticker, and piece of jargon. Read it alongside any of the above, not before them.
 

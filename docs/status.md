@@ -18,12 +18,14 @@ instruments were read.
 
 ## In progress
 
-Nothing.
+MVP step 3 — **Raw move**: writing the step 3 spec — do these instruments move abnormally on CPI
+days versus ordinary days? Following the step template in [legend.md](legend.md). Decided so far:
+ordinary days are all other trading days; the more precise baselines are in
+[precision.md](precision.md).
 
 ## Next
 
-MVP step 3 — **Raw move**: write the step 3 spec — do these instruments move abnormally on CPI
-days versus ordinary days? Following the step template in [legend.md](legend.md).
+MVP step 3, sub-step 1 — the first sub-step the spec defines.
 
 ## Done
 
