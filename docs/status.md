@@ -12,7 +12,7 @@ MVP step 3, sub-step 2 — `compare_moves` in `study.py`: median CPI-day move ov
 move, a 10,000-relabelling permutation `p` with a fixed seed, and the verdict by the spec's rule
 (`MOVE_RATIO_BAR` 1.10, `MOVE_P_BAR` 0.01). Synthetic checks: CPI days twice as large give
 *moves* at the smallest possible `p`; CPI days like any other do not. About 3 s per instrument on
-live data. *(PR #—.)*
+live data. *(PR #84.)*
 
 ## In progress
 
@@ -27,7 +27,7 @@ rule line; a one-line error on an empty database.
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-02 | Step 3.2: `compare_moves` — ratio, permutation `p`, verdict | PR #— |
+| 2026-10-02 | Step 3.2: `compare_moves` — ratio, permutation `p`, verdict | PR #84 |
 | 2026-10-02 | Step 3.1: `daily_moves` and `cpi_days`; CPI-day moves match step 2 | PR #83 |
 | 2026-10-02 | Step 3 spec: raw move on CPI days; precision doc | PR #82 |
 | 2026-10-02 | Release dates checked against BLS; Nov 1992 corrected; weekend guard | PR #81 |
