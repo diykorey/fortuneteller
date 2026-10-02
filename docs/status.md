@@ -12,7 +12,7 @@ MVP step 3, sub-step 1 — `daily_moves` and `cpi_days` in `study.py`: every day
 from `daily_bars` (pairs more than 4 days apart skipped), and the days that are CPI reactions.
 Live run on 2026-10-02: the CPI-day moves equal `observations.ret_1d` for all five instruments,
 649 / 648 / 649 / 312 / 440 CPI days among 14,305 / 14,199 / 14,150 / 6,534 / 9,253 daily moves.
-*(PR #—.)* The step 3 spec is merged *(PR #82)*.
+*(PR #83.)* The step 3 spec is merged *(PR #82)*.
 
 ## In progress
 
@@ -27,7 +27,7 @@ the verdict; synthetic checks for a planted effect and for no effect.
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-02 | Step 3.1: `daily_moves` and `cpi_days`; CPI-day moves match step 2 | PR #— |
+| 2026-10-02 | Step 3.1: `daily_moves` and `cpi_days`; CPI-day moves match step 2 | PR #83 |
 | 2026-10-02 | Step 3 spec: raw move on CPI days; precision doc | PR #82 |
 | 2026-10-02 | Release dates checked against BLS; Nov 1992 corrected; weekend guard | PR #81 |
 | 2026-09-29 | Step 2.5: `load-prices` CLI — step 2 complete | PR #80 |
