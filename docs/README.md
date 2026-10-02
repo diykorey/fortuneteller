@@ -106,8 +106,8 @@ and a working `init | seed | query-demo` CLI. **[MVP step 1](steps/step-1-releas
 2](steps/step-2-prices.md) is done**: `load-prices` stores the five instruments' daily closes and
 measures their move around each release — 2,698 observations. **No prediction code exists.**
 
-**Next: MVP step 3** — do these instruments move abnormally on CPI days versus ordinary days? Its
-spec is written first.
+**[MVP step 3](steps/step-3-raw-move.md) is in progress**: `raw-move` compares each instrument's
+moves on CPI days with all other days and gives a verdict; the results go into its spec.
 [Status](status.md) always has the current task.
 
 ## How this folder grows

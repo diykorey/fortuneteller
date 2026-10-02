@@ -1,21 +1,33 @@
-"""Raw move: every day's absolute move, and which of those days are CPI days."""
+"""Raw move: do the instruments move more on CPI days than on all other days?"""
 
 import random
-from datetime import date
+from datetime import date, timedelta
+from pathlib import Path
 from statistics import median
 
+import duckdb
 import pytest
 
+from fortuneteller import db
+from fortuneteller.__main__ import describe_raw_moves, main
+from fortuneteller.models import DailyBar
 from fortuneteller.study import (
     DOESNT_MOVE,
     MOVES,
+    MVP_PRICE_SERIES,
     UNCLEAR,
+    CpiRelease,
     DailyClosingPrice,
+    EraRatio,
+    MoveComparison,
+    RawMove,
     compare_moves,
     cpi_days,
     daily_moves,
+    measure_raw_moves,
     median_not_drawn,
     move_verdict,
+    store_cpi_releases,
 )
 
 
@@ -179,3 +191,100 @@ def test_the_verdict_needs_both_size_and_significance(
 
     # then "moves" needs both, "unclear" one, "doesn't" neither
     assert result == expected
+
+
+def _synthetic_store(con: duckdb.DuckDBPyConnection) -> None:
+    # 36 monthly releases in 2021-2023; prices move 0.5% a day, and 2% on each release day.
+    releases = []
+    for month in range(36):
+        year, month_index = 2021 + month // 12, month % 12 + 1
+        released = date(year, month_index, 12)
+        while released.weekday() >= 5:
+            released += timedelta(days=1)
+        reference = date(year - 1, 12, 1) if month_index == 1 else date(year, month_index - 1, 1)
+        releases.append(CpiRelease(reference, released, 300.0))
+    store_cpi_releases(releases, con=con)
+    release_days = {release.released for release in releases}
+    rng = random.Random(5)
+    day, price, closes = date(2020, 12, 1), 100.0, []
+    while day < date(2024, 1, 31):
+        if day.weekday() < 5:
+            size = 0.02 if day in release_days else 0.005
+            price *= 1 + rng.choice((-1, 1)) * size * rng.uniform(0.5, 1.5)
+            closes.append(DailyBar(instrument="", day=day, close=price, source="s"))
+        day += timedelta(days=1)
+    for instrument in MVP_PRICE_SERIES:
+        bars = [bar.model_copy(update={"instrument": instrument}) for bar in closes]
+        db.insert_models("daily_bars", bars, con=con)
+
+
+def test_release_days_that_move_more_are_found_for_every_instrument() -> None:
+    # given 36 releases on which every instrument moves four times its usual size
+    con = duckdb.connect(":memory:")
+    db.init_db(con=con)
+    _synthetic_store(con)
+
+    # when the raw moves are measured
+    results = measure_raw_moves(con=con)
+
+    # then each instrument moves, and only the 2020-now era has CPI days
+    assert list(results) == list(MVP_PRICE_SERIES)
+    for raw in results.values():
+        assert raw.overall.verdict == MOVES
+        assert raw.overall.cpi_days == 36
+        assert raw.eras["2020-now"].cpi_days == 36
+        assert raw.eras["1970-1989"] == EraRatio(0, None)
+
+
+def test_the_report_shows_each_unit_and_marks_eras_without_cpi_days() -> None:
+    # given one price instrument and one yield, each with a CPI-free era
+    comparison = MoveComparison(649, 0.0055, 0.0051, 1.078, 0.0123, DOESNT_MOVE)
+    eras = {"1970-1989": EraRatio(0, None), "2020-now": EraRatio(79, 1.04)}
+    results = {
+        "SPY / ES": RawMove("pct", comparison, eras),
+        "UST10Y / ZN": RawMove("bps", MoveComparison(648, 4.0, 3.0, 1.33, 0.0001, MOVES), eras),
+    }
+
+    # when the report is written
+    lines = describe_raw_moves(results)
+
+    # then percent and basis points read as such, and a CPI-free era is a dash
+    assert "SPY / ES          649       0.55%         0.51%   1.08  0.0123  doesn't" in lines
+    assert "UST10Y / ZN       648      4.0 bp        3.0 bp   1.33  0.0001  moves" in lines
+    assert "SPY / ES     —            1.04 (79)" in lines
+
+
+def test_raw_move_prints_a_verdict_per_instrument_and_the_rule(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    # given releases and prices stored
+    _synthetic_store(db.get_connection())
+
+    # when the command runs
+    code = main(["raw-move"])
+
+    # then every instrument has a verdict line, and the rule is printed with them
+    out = capsys.readouterr().out
+    assert code == 0
+    assert sum(line.endswith(" moves") for line in out.splitlines()) == 5
+    assert "moves = ratio >= 1.10 and p < 0.01" in out
+
+
+@pytest.mark.parametrize(
+    ("load", "missing"),
+    [(False, "load-releases"), (True, "load-prices")],
+)
+def test_raw_move_names_the_load_to_run_first(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str], load: bool, missing: str
+) -> None:
+    # given an empty store, or releases without prices
+    if load:
+        store_cpi_releases([CpiRelease(date(2022, 8, 1), date(2022, 9, 13), 296.171)])
+
+    # when the command runs
+    code = main(["raw-move"])
+
+    # then it stops with one line naming the command to run first
+    err = capsys.readouterr().err
+    assert code == 1
+    assert f"`fortuneteller {missing}` first" in err

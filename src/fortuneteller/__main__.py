@@ -3,7 +3,8 @@
 Subcommands: ``init`` creates the store (M0-05 ``db.init_db``); ``seed`` / ``query-demo`` load and
 read the seed data (M0-07 ``seed``); ``load-releases`` loads the CPI release history from FRED
 (MVP step 1 ``study``); ``load-prices`` loads the five instruments' daily closes and measures their
-move around each release (MVP step 2).
+move around each release (MVP step 2); ``raw-move`` compares each instrument's moves on CPI days
+with all other days (MVP step 3).
 """
 
 from __future__ import annotations
@@ -107,6 +108,58 @@ def _load_prices(_args: argparse.Namespace) -> int:
     return 0
 
 
+def _move_size(value: float, unit: str) -> str:
+    return f"{value:.1f} bp" if unit == "bps" else f"{value * 100:.2f}%"
+
+
+def describe_raw_moves(results: dict[str, study.RawMove]) -> list[str]:
+    """The report: a verdict line per instrument, an era line per instrument, and the rule."""
+    lines = ["instrument   CPI days  median CPI  median other  ratio  p       verdict"]
+    for instrument, raw in results.items():
+        c = raw.overall
+        lines.append(
+            f"{instrument:<12} {c.cpi_days:>8}  {_move_size(c.median_cpi, raw.unit):>10}  "
+            f"{_move_size(c.median_other, raw.unit):>12}  {c.ratio:>5.2f}  {c.p:.4f}  {c.verdict}"
+        )
+    eras = next(iter(results.values())).eras
+    lines += [
+        "",
+        "by era: ratio (CPI days)",
+        " ".join(["instrument  ", *(f"{e:<12}" for e in eras)]),
+    ]
+    for instrument, raw in results.items():
+        cells = [
+            "—" if era.ratio is None else f"{era.ratio:.2f} ({era.cpi_days})"
+            for era in raw.eras.values()
+        ]
+        lines.append(" ".join([f"{instrument:<12}", *(f"{cell:<12}" for cell in cells)]).rstrip())
+    lines += [
+        "",
+        f"{study.MOVES} = ratio >= {study.MOVE_RATIO_BAR:.2f} and p < {study.MOVE_P_BAR}; "
+        f"{study.UNCLEAR} = one of the two; {study.DOESNT_MOVE} = neither",
+    ]
+    return [line.rstrip() for line in lines]
+
+
+def _raw_move(_args: argparse.Namespace) -> int:
+    con = db.get_connection()
+    db.init_db(con=con)
+    for table, command in (("event_instances", "load-releases"), ("daily_bars", "load-prices")):
+        if db.count_rows(table, con=con) == 0:
+            print(
+                f"raw-move: no {table} stored; run `fortuneteller {command}` first", file=sys.stderr
+            )
+            return 1
+    try:
+        results = study.measure_raw_moves(con=con)
+    except ValueError as exc:
+        print(f"raw-move: {exc}", file=sys.stderr)
+        return 1
+    for line in describe_raw_moves(results):
+        print(line)
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="fortuneteller", description="FortuneTeller CLI")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -127,6 +180,11 @@ def build_parser() -> argparse.ArgumentParser:
         "load-prices", help="load daily closes from Yahoo and measure each release's move"
     )
     p_prices.set_defaults(func=_load_prices)
+
+    p_raw = sub.add_parser(
+        "raw-move", help="compare each instrument's moves on CPI days with all other days"
+    )
+    p_raw.set_defaults(func=_raw_move)
 
     return parser
 
