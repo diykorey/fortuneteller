@@ -118,12 +118,21 @@ found by checking rather than assuming:
 | `2025-10` | Value is `"."` — published with no number | Skip rows whose value is `"."`; count and report them |
 | `2025-10`, `2025-11` | Share release date 2025-12-18 | Distinct `event_id` by reference month; see below |
 | `1995-12` | Published 1996-02-01, a 62-day lag | Accept — a genuine schedule slip, not corrupt data |
-| `1992-11` | Published Sunday 1992-12-13 | Accept, but do not assume release dates are weekdays |
+| `1992-11` | FRED dates it Sunday 1992-12-13; BLS scheduled and published it Friday 1992-12-11 | Corrected in `RELEASE_DATE_CORRECTIONS`. A weekend release date now stops the load (checked 2026-10-02, see below) |
 
 Where two prints share a release date they also share an `event_ts`. Steps 3 and 4 must therefore
 count a **trading day** once, not once per event row, or that day's move is double-weighted. Today
 this is moot — the `2025-10` row is dropped for having no value — but it is a property of the data,
 not a coincidence to rely on.
+
+**Release dates checked against BLS (2026-10-02).** FRED's `realtime_start` is when a vintage was
+recorded, normally the BLS release day. Compared with BLS's own records:
+
+| Period | Releases | Checked against | Result |
+| --- | --- | --- | --- |
+| 1994–2026 | 391 | BLS's CPI news-release archive (two apparent differences re-checked in the release texts) | All match |
+| 1990, 1992, 1993 | 18 | The release schedules printed in BLS's monthly CPI Detailed Reports (FRASER) | 17 match; `1992-11` was wrong and is corrected |
+| 1972–1989 | ~230 | Not checked: those reports were not reachable | Only one odd weekday: `1978-01` on Monday 1978-02-27, the month the revised CPI was launched; plausible, unverified |
 
 **Timezone is computed, not hardcoded.** CPI drops at 08:30 ET, which is 12:30 or 13:30 UTC
 depending on daylight saving. `zoneinfo` handles it; a fixed offset would be wrong half the year,
