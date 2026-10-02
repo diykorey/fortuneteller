@@ -172,8 +172,17 @@ Terms are grouped by what they are about, alphabetical within each group.
   a spike that round-trips in minutes.
 - **Hit rate** — the fraction of past occurrences where the predicted direction was correct. 50% is
   a coin flip and therefore worthless.
+- **Median** — the middle value once a list is sorted. Used instead of the average where one
+  extreme day (a crash) would otherwise decide the answer.
+- **Move ratio** — step 3's measure: the median absolute move on CPI days divided by the median on
+  ordinary days. `1.00` means CPI days are ordinary; `1.30` means they move 30% more.
 - **n / n_obs** — how many observations a number is based on. **Always shown next to any estimate
   here**: an effect size from n=4 is a story, not a measurement.
+- **Permutation test** — a way to ask "could chance alone give this?" without assuming a
+  distribution: relabel days at random many times and see how often the made-up labels produce a
+  result as extreme as the real one.
+- **p-value** — the share of those random relabellings that did at least as well as the real data.
+  Small means chance rarely does it; `p < 0.01` means fewer than 1 in 100.
 - **Return** — the percentage price change over a period.
 - **Standard deviation (SD)** — the typical size of variation in a series. Used both to standardize
   surprises and to judge whether a move is unusual.
