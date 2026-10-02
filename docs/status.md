@@ -11,7 +11,7 @@ Where the work is and what comes next. Two rules keep it current:
 CPI release dates checked against BLS: all 391 from 1994 match BLS's release archive; 17 of 18
 sampled from 1990–1993 match BLS's printed schedules. The one wrong date, November 1992 (FRED:
 Sunday 12-13, BLS: Friday 12-11), is corrected in `RELEASE_DATE_CORRECTIONS`, and a weekend
-release date now stops the load. Details in [step-1-releases.md](steps/step-1-releases.md).
+release date now stops the load. Details in [step-1-releases.md](steps/step-1-releases.md). *(PR #81.)*
 
 ## In progress
 
@@ -26,7 +26,7 @@ days versus ordinary days? Following the step template in [legend.md](legend.md)
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-02 | Release dates checked against BLS; Nov 1992 corrected; weekend guard | this branch |
+| 2026-10-02 | Release dates checked against BLS; Nov 1992 corrected; weekend guard | PR #81 |
 | 2026-09-29 | Step 2.5: `load-prices` CLI — step 2 complete | PR #80 |
 | 2026-09-29 | Review hygiene: test isolation, empty key, naive `event_ts`, CI lockfile | PR #79 |
 | 2026-09-29 | Review fixes: rebuild observations, loud failures, no provisional bars | PR #78 |
