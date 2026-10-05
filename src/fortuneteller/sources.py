@@ -29,6 +29,7 @@ NETWORK_FAILURE = (OSError, http.client.HTTPException)
 
 FRED_OBSERVATIONS_URL = "https://api.stlouisfed.org/fred/series/observations"
 CPI_SERIES_ID = "CPIAUCSL"
+CORE_CPI_SERIES_ID = "CPILFESL"
 MISSING_VALUE = "."
 
 # FRED release dates checked against BLS and found wrong, by reference month. Every date from 1994
@@ -51,20 +52,12 @@ class FredError(RuntimeError):
     pass
 
 
-def fetch_cpi_releases(api_key: str, timeout: float = 30.0) -> bytes:
-    """Return the raw FRED response: every CPI print as first published, with its release date."""
+def _fred_get(api_key: str, params: dict[str, str], timeout: float) -> bytes:
+    """One FRED observations request; any failure becomes a ``FredError`` with the key redacted."""
     if not api_key:
         raise FredError("the FRED API key is empty")
-    params = {
-        "series_id": CPI_SERIES_ID,
-        "api_key": api_key,
-        "file_type": "json",
-        # 4 = initial release only: per reference month, the value as first printed.
-        "output_type": "4",
-        "realtime_start": "1776-07-04",
-        "realtime_end": "9999-12-31",
-    }
-    url = f"{FRED_OBSERVATIONS_URL}?{urllib.parse.urlencode(params)}"
+    query = {**params, "api_key": api_key, "file_type": "json"}
+    url = f"{FRED_OBSERVATIONS_URL}?{urllib.parse.urlencode(query)}"
     try:
         with urllib.request.urlopen(url, timeout=timeout) as response:
             body: bytes = response.read()
@@ -80,6 +73,45 @@ def fetch_cpi_releases(api_key: str, timeout: float = 30.0) -> bytes:
         ) from None
     except NETWORK_FAILURE as exc:
         raise FredError(f"FRED request failed: {exc}".replace(api_key, "<redacted>")) from None
+
+
+def fetch_cpi_releases(
+    api_key: str, series_id: str = CPI_SERIES_ID, timeout: float = 30.0
+) -> bytes:
+    """Return the raw FRED response: each month of a CPI series as first published, with its date."""
+    params = {
+        "series_id": series_id,
+        # 4 = initial release only: per reference month, the value as first printed.
+        "output_type": "4",
+        "realtime_start": "1776-07-04",
+        "realtime_end": "9999-12-31",
+    }
+    return _fred_get(api_key, params, timeout)
+
+
+def fetch_level_as_of(
+    api_key: str, series_id: str, month: date, as_of: date, timeout: float = 30.0
+) -> bytes:
+    """Return the raw FRED response: one month's level as it stood on ``as_of``."""
+    params = {
+        "series_id": series_id,
+        "observation_start": month.isoformat(),
+        "observation_end": month.isoformat(),
+        "realtime_start": as_of.isoformat(),
+        "realtime_end": as_of.isoformat(),
+    }
+    return _fred_get(api_key, params, timeout)
+
+
+def parse_level(payload: bytes) -> float:
+    """Parse a FRED reply that must hold exactly one valued row, as ``fetch_level_as_of`` asks."""
+    try:
+        observations: list[dict[str, str]] = json.loads(payload)["observations"]
+        if len(observations) != 1 or observations[0]["value"] == MISSING_VALUE:
+            raise FredError(f"FRED sent {observations!r}, not one value")
+        return float(observations[0]["value"])
+    except MALFORMED_REPLY as exc:
+        raise FredError(f"FRED sent an unexpected reply: {exc!r}") from None
 
 
 def parse_cpi_releases(payload: bytes) -> tuple[list[CpiRelease], list[date]]:
