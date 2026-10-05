@@ -11,7 +11,7 @@ Where the work is and what comes next. Two rules keep it current:
 `study.py` regrouped by step: each step's constants and types now sit directly above its functions,
 under a heading naming the step and its spec. No behaviour change: every top-level statement is
 identical, only their order moved. Splitting out `sources.py` and `stats.py` waits for their
-second callers, in step 4 sub-steps 2 and 5. *(PR #—.)*
+second callers, in step 4 sub-steps 2 and 5. *(PR #89.)*
 
 ## In progress
 
@@ -26,7 +26,7 @@ MVP step 4, sub-step 1 — the `cpi_surprises` table and its schema doc
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-05 | `study.py` regrouped by step; no behaviour change | PR #— |
+| 2026-10-05 | `study.py` regrouped by step; no behaviour change | PR #89 |
 | 2026-10-05 | `daily_bars` rebuilt per instrument; gold cross-checked, not replaced | PR #88 |
 | 2026-10-05 | Step 4 spec: does the move follow the CPI surprise? | PR #87 |
 | 2026-10-05 | Step 3.4: Results — step 3 complete; CPI moves UST 10Y, DXY, VIX | PR #86 |
