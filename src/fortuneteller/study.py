@@ -34,6 +34,16 @@ import duckdb
 from . import db
 from .models import DailyBar, EventInstance, Observation
 
+
+# A reply that is not the expected JSON shape raises one of these while it is read.
+MALFORMED_REPLY = (ValueError, KeyError, IndexError, TypeError)
+# Network failures urllib does not wrap in URLError, e.g. a read that times out or a dropped reply.
+NETWORK_FAILURE = (OSError, http.client.HTTPException)
+
+
+# Step 1 — the CPI release history from FRED (docs/steps/step-1-releases.md).
+
+
 FRED_OBSERVATIONS_URL = "https://api.stlouisfed.org/fred/series/observations"
 CPI_SERIES_ID = "CPIAUCSL"
 MISSING_VALUE = "."
@@ -53,51 +63,6 @@ RELEASE_DATE_CORRECTIONS = {
     date(1992, 11, 1): date(1992, 12, 11),
 }
 
-YAHOO_CHART_URL = "https://query1.finance.yahoo.com/v8/finance/chart/"
-# A reply that is not the expected JSON shape raises one of these while it is read.
-MALFORMED_REPLY = (ValueError, KeyError, IndexError, TypeError)
-# Network failures urllib does not wrap in URLError, e.g. a read that times out or a dropped reply.
-NETWORK_FAILURE = (OSError, http.client.HTTPException)
-
-# Yahoo refuses requests without a browser-like User-Agent.
-YAHOO_HEADERS = {"User-Agent": "Mozilla/5.0"}
-
-
-class PriceSeries(NamedTuple):
-    ticker: str
-    unit: str
-
-
-# The five MVP instruments, keyed by the exact symbol in data/seed/instruments.csv, with the Yahoo
-# ticker each is read from and the unit its move is measured in: pct for prices, bps for the yield.
-# Order matters: observations are numbered by position in this table.
-MVP_PRICE_SERIES = {
-    "SPY / ES": PriceSeries("^GSPC", "pct"),
-    "UST10Y / ZN": PriceSeries("^TNX", "bps"),
-    "DXY": PriceSeries("DX-Y.NYB", "pct"),
-    "GC / XAU": PriceSeries("GC=F", "pct"),
-    "VIX": PriceSeries("^VIX", "pct"),
-}
-
-# A close more than this many calendar days from the release is not "the day before" or "the
-# reaction": four admits Friday -> Tuesday after a Monday holiday and rejects a hole in the data.
-MAX_CLOSE_GAP_DAYS = 4
-
-# Step 3's rule for "moves", fixed before the verdicts were run; see docs/steps/step-3-raw-move.md.
-MOVE_RATIO_BAR = 1.10
-MOVE_P_BAR = 0.01
-PERMUTATIONS = 10_000
-PERMUTATION_SEED = 3
-MOVES = "moves"
-UNCLEAR = "unclear"
-DOESNT_MOVE = "doesn't"
-# Context only, no verdict: each era's last year. The last era runs to today.
-ERAS = (("1970-1989", 1989), ("1990-2007", 2007), ("2008-2019", 2019), ("2020-now", 9999))
-BEFORE_HISTORY = "before_history"
-NO_CLOSE_NEARBY = "no_close_nearby"
-YAHOO = "yahoo"
-DAILY_CLOSE = "daily_close"
-
 
 @dataclass(frozen=True)
 class CpiRelease:
@@ -106,26 +71,7 @@ class CpiRelease:
     value: float
 
 
-@dataclass(frozen=True)
-class DailyClosingPrice:
-    day: date
-    price: float
-
-
-@dataclass
-class ReleaseCounts:
-    """For one instrument: how many CPI releases were measured, and how many skipped and why."""
-
-    measured: int = 0
-    skipped_before_history: int = 0
-    skipped_no_close_nearby: int = 0
-
-
 class FredError(RuntimeError):
-    pass
-
-
-class YahooError(RuntimeError):
     pass
 
 
@@ -233,6 +179,41 @@ def store_cpi_releases(
     return db.insert_models("event_instances", events, con=con, replace=True)
 
 
+# Step 2 — each instrument's daily closes from Yahoo (docs/steps/step-2-prices.md).
+
+
+YAHOO_CHART_URL = "https://query1.finance.yahoo.com/v8/finance/chart/"
+# Yahoo refuses requests without a browser-like User-Agent.
+YAHOO_HEADERS = {"User-Agent": "Mozilla/5.0"}
+
+
+class PriceSeries(NamedTuple):
+    ticker: str
+    unit: str
+
+
+# The five MVP instruments, keyed by the exact symbol in data/seed/instruments.csv, with the Yahoo
+# ticker each is read from and the unit its move is measured in: pct for prices, bps for the yield.
+# Order matters: observations are numbered by position in this table.
+MVP_PRICE_SERIES = {
+    "SPY / ES": PriceSeries("^GSPC", "pct"),
+    "UST10Y / ZN": PriceSeries("^TNX", "bps"),
+    "DXY": PriceSeries("DX-Y.NYB", "pct"),
+    "GC / XAU": PriceSeries("GC=F", "pct"),
+    "VIX": PriceSeries("^VIX", "pct"),
+}
+
+
+@dataclass(frozen=True)
+class DailyClosingPrice:
+    day: date
+    price: float
+
+
+class YahooError(RuntimeError):
+    pass
+
+
 def fetch_daily_bars(ticker: str, timeout: float = 30.0) -> bytes:
     """Return the raw Yahoo chart response: the ticker's whole daily history."""
     params = {"period1": "0", "period2": "9999999999", "interval": "1d"}
@@ -326,6 +307,27 @@ def load_daily_bars(con: duckdb.DuckDBPyConnection | None = None) -> dict[str, i
         instrument: store_daily_bars(instrument, ticker, closes, con=con)
         for instrument, (ticker, closes) in fetched.items()
     }
+
+
+# Step 2 — each instrument's move around each release, into observations.
+
+
+# A close more than this many calendar days from the release is not "the day before" or "the
+# reaction": four admits Friday -> Tuesday after a Monday holiday and rejects a hole in the data.
+MAX_CLOSE_GAP_DAYS = 4
+BEFORE_HISTORY = "before_history"
+NO_CLOSE_NEARBY = "no_close_nearby"
+YAHOO = "yahoo"
+DAILY_CLOSE = "daily_close"
+
+
+@dataclass
+class ReleaseCounts:
+    """For one instrument: how many CPI releases were measured, and how many skipped and why."""
+
+    measured: int = 0
+    skipped_before_history: int = 0
+    skipped_no_close_nearby: int = 0
 
 
 def closing_price_before_after(
@@ -445,6 +447,21 @@ def store_observations(con: duckdb.DuckDBPyConnection | None = None) -> dict[str
         con=connection,
     )
     return release_counts
+
+
+# Step 3 — moves on CPI days against all other days (docs/steps/step-3-raw-move.md).
+
+
+# Step 3's rule for "moves", fixed before the verdicts were run; see docs/steps/step-3-raw-move.md.
+MOVE_RATIO_BAR = 1.10
+MOVE_P_BAR = 0.01
+PERMUTATIONS = 10_000
+PERMUTATION_SEED = 3
+MOVES = "moves"
+UNCLEAR = "unclear"
+DOESNT_MOVE = "doesn't"
+# Context only, no verdict: each era's last year. The last era runs to today.
+ERAS = (("1970-1989", 1989), ("1990-2007", 2007), ("2008-2019", 2019), ("2020-now", 9999))
 
 
 def daily_moves(closes: Sequence[DailyClosingPrice], unit: str) -> dict[date, float]:
