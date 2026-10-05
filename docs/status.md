@@ -17,13 +17,15 @@ do not. The Precision triggers for the daily window and for small-sample hit rat
 
 ## In progress
 
-Nothing.
+Rung 1 — **More events** (NFP and Fed decisions): the spec,
+[rung-1-more-events.md](steps/rung-1-more-events.md). Scope agreed 2026-10-05: no Fed surprise
+(raw move only); event key = type code × 10⁸ + release date; order keys → NFP → FOMC → clean
+baseline → NFP surprise.
 
 ## Next
 
-**A decision:** what follows the MVP. The options, set out in [mvp-results.md](mvp-results.md):
-more events (roadmap rung 1: NFP and Fed decisions, free), sharper measurement (intraday prices and
-consensus forecasts, paid), or predicting the next release for the 10-year yield (rung 2).
+Rung 1, sub-step 1 — generic keys: `event_id` from type code and release date, `observations`
+keyed by (`event_id`, `instrument`), `cpi_surprises` → `surprises`; CPI's numbers unchanged.
 
 ## Done
 
