@@ -11,7 +11,7 @@ Where the work is and what comes next. Two rules keep it current:
 MVP step 4, sub-step 1 — the `cpi_surprises` table: one row per release × measure (`core`,
 `headline`) × baseline (`trend_12m`, `nowcast`), keyed on all three, referencing
 `event_instances`. Described in [schema.md](schema.md), every value explained; `event_instances`'
-`consensus` and `surprise` columns now say why they stay empty. *(PR #—.)*
+`consensus` and `surprise` columns now say why they stay empty. *(PR #90.)*
 
 ## In progress
 
@@ -27,7 +27,7 @@ October 2025 has no value (the shutdown), so the m/m for October and November 20
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-05 | Step 4.1: `cpi_surprises` table and its schema doc | PR #— |
+| 2026-10-05 | Step 4.1: `cpi_surprises` table and its schema doc | PR #90 |
 | 2026-10-05 | `study.py` regrouped by step; no behaviour change | PR #89 |
 | 2026-10-05 | `daily_bars` rebuilt per instrument; gold cross-checked, not replaced | PR #88 |
 | 2026-10-05 | Step 4 spec: does the move follow the CPI surprise? | PR #87 |
