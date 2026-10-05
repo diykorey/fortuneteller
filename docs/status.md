@@ -10,7 +10,7 @@ Where the work is and what comes next. Two rules keep it current:
 
 `daily_bars` is now rebuilt per instrument on each load (`db.replace_rows`), so closes from a
 replaced ticker can no longer mix with the new ticker's. Gold's precision row now says cross-check
-`GC=F` against spot gold rather than replace it. *(PR #—.)* Before it: the step 4 spec
+`GC=F` against spot gold rather than replace it. *(PR #88.)* Before it: the step 4 spec
 *(PR #87)*.
 
 ## In progress
