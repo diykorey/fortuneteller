@@ -74,6 +74,7 @@ uv run fortuneteller seed        # load the seed CSVs
 uv run fortuneteller query-demo  # a sample effect-size lookup
 uv run fortuneteller load-releases  # CPI release history from FRED (needs FT_FRED_API_KEY)
 uv run fortuneteller load-prices    # daily closes from Yahoo + the move around each release
+uv run fortuneteller raw-move       # do CPI days move more than other days? (about 15 s)
 ```
 
 There is **no prediction code yet** — no surprise computation, no direction resolution, no warnings.

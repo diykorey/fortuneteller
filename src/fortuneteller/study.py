@@ -91,6 +91,8 @@ PERMUTATION_SEED = 3
 MOVES = "moves"
 UNCLEAR = "unclear"
 DOESNT_MOVE = "doesn't"
+# Context only, no verdict: each era's last year. The last era runs to today.
+ERAS = (("1970-1989", 1989), ("1990-2007", 2007), ("2008-2019", 2019), ("2020-now", 9999))
 BEFORE_HISTORY = "before_history"
 NO_CLOSE_NEARBY = "no_close_nearby"
 YAHOO = "yahoo"
@@ -353,33 +355,48 @@ def release_move(before: DailyClosingPrice, after: DailyClosingPrice, unit: str)
     raise ValueError(f"unknown unit {unit!r}: expected 'pct' or 'bps'")
 
 
-def build_observations(
-    con: duckdb.DuckDBPyConnection | None = None,
-) -> tuple[list[Observation], dict[str, ReleaseCounts]]:
-    """Measure every MVP instrument around every stored CPI release, from ``daily_bars``."""
-    events = db.fetch_all(
+def stored_cpi_events(con: duckdb.DuckDBPyConnection | None = None) -> list[EventInstance]:
+    """The stored CPI releases, oldest first."""
+    return db.fetch_all(
         EventInstance,
         "SELECT * FROM event_instances WHERE event_type = ? ORDER BY event_id",
         [CPI_EVENT_TYPE],
         con=con,
     )
+
+
+def release_date(event: EventInstance) -> date:
+    """The New York calendar date the release came out; ``event_ts`` is naive UTC."""
+    return event.event_ts.replace(tzinfo=UTC).astimezone(CPI_RELEASE_ZONE).date()
+
+
+def stored_closes(
+    instrument: str, con: duckdb.DuckDBPyConnection | None = None
+) -> list[DailyClosingPrice]:
+    """One instrument's closes from ``daily_bars`` in date order; none at all is an error."""
+    bars = db.fetch_all(
+        DailyBar,
+        "SELECT * FROM daily_bars WHERE instrument = ? ORDER BY day",
+        [instrument],
+        con,
+    )
+    if not bars:
+        raise ValueError(f"no daily_bars for {instrument}: load its prices first")
+    return [DailyClosingPrice(bar.day, bar.close) for bar in bars]
+
+
+def build_observations(
+    con: duckdb.DuckDBPyConnection | None = None,
+) -> tuple[list[Observation], dict[str, ReleaseCounts]]:
+    """Measure every MVP instrument around every stored CPI release, from ``daily_bars``."""
+    events = stored_cpi_events(con=con)
     observations: list[Observation] = []
     release_counts: dict[str, ReleaseCounts] = {}
     for position, (instrument, (_ticker, unit)) in enumerate(MVP_PRICE_SERIES.items()):
-        bars = db.fetch_all(
-            DailyBar,
-            "SELECT * FROM daily_bars WHERE instrument = ? ORDER BY day",
-            [instrument],
-            con,
-        )
-        if not bars:
-            raise ValueError(f"no daily_bars for {instrument}: load its prices first")
-        closes = [DailyClosingPrice(bar.day, bar.close) for bar in bars]
+        closes = stored_closes(instrument, con=con)
         counts = release_counts[instrument] = ReleaseCounts()
         for event in events:
-            # event_ts is naive UTC; the release date is the New York calendar date.
-            release_date = event.event_ts.replace(tzinfo=UTC).astimezone(CPI_RELEASE_ZONE).date()
-            pair = closing_price_before_after(closes, release_date)
+            pair = closing_price_before_after(closes, release_date(event))
             if pair == BEFORE_HISTORY:
                 counts.skipped_before_history += 1
                 continue
@@ -508,3 +525,44 @@ def compare_moves(
             as_large += 1
     p = (as_large + 1) / (permutations + 1)
     return MoveComparison(len(cpi), median_cpi, median_other, ratio, p, move_verdict(ratio, p))
+
+
+class EraRatio(NamedTuple):
+    cpi_days: int
+    ratio: float | None
+
+
+@dataclass(frozen=True)
+class RawMove:
+    """Step 3's answer for one instrument: the verdict over all history, and each era's ratio."""
+
+    unit: str
+    overall: MoveComparison
+    eras: dict[str, EraRatio]
+
+
+def era_of(day: date) -> str:
+    return next(label for label, last_year in ERAS if day.year <= last_year)
+
+
+def measure_raw_moves(con: duckdb.DuckDBPyConnection | None = None) -> dict[str, RawMove]:
+    """Each MVP instrument's moves on CPI days against its moves on all other days."""
+    release_dates = [release_date(event) for event in stored_cpi_events(con=con)]
+    results: dict[str, RawMove] = {}
+    for instrument, (_ticker, unit) in MVP_PRICE_SERIES.items():
+        closes = stored_closes(instrument, con=con)
+        days = cpi_days(closes, release_dates)
+        by_era: dict[str, tuple[list[float], list[float]]] = {label: ([], []) for label, _ in ERAS}
+        for day, move in daily_moves(closes, unit).items():
+            cpi, other = by_era[era_of(day)]
+            (cpi if day in days else other).append(move)
+        overall = compare_moves(
+            [move for cpi, _ in by_era.values() for move in cpi],
+            [move for _, other in by_era.values() for move in other],
+        )
+        eras = {
+            label: EraRatio(len(cpi), median(cpi) / median(other) if cpi and other else None)
+            for label, (cpi, other) in by_era.items()
+        }
+        results[instrument] = RawMove(unit, overall, eras)
+    return results

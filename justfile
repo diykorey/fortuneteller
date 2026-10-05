@@ -48,3 +48,7 @@ load-releases:
 # load daily closes from Yahoo and measure each release's move (after load-releases)
 load-prices:
     uv run fortuneteller load-prices
+
+# compare each instrument's moves on CPI days with all other days (after load-prices)
+raw-move:
+    uv run fortuneteller raw-move

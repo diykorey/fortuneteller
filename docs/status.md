@@ -8,11 +8,9 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-MVP step 3, sub-step 2 — `compare_moves` in `study.py`: median CPI-day move over median other-day
-move, a 10,000-relabelling permutation `p` with a fixed seed, and the verdict by the spec's rule
-(`MOVE_RATIO_BAR` 1.10, `MOVE_P_BAR` 0.01). Synthetic checks: CPI days twice as large give
-*moves* at the smallest possible `p`; CPI days like any other do not. About 3 s per instrument on
-live data. *(PR #84.)*
+MVP step 3, sub-step 3 — `uv run fortuneteller raw-move` prints a verdict per instrument, the era
+rows and the rule; an empty store gives one line naming the load to run first. Live run on
+2026-10-02: about 14 s, two runs identical. *(PR #85.)*
 
 ## In progress
 
@@ -20,13 +18,14 @@ Nothing.
 
 ## Next
 
-MVP step 3, sub-step 3 — `uv run fortuneteller raw-move`: the verdict table, the era rows and the
-rule line; a one-line error on an empty database.
+MVP step 3, sub-step 4 — Results: paste the live `raw-move` output into the spec, read the verdicts
+off it, and say what they mean for step 4.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-02 | Step 3.3: `raw-move` CLI — verdicts, eras, rule | PR #85 |
 | 2026-10-02 | Step 3.2: `compare_moves` — ratio, permutation `p`, verdict | PR #84 |
 | 2026-10-02 | Step 3.1: `daily_moves` and `cpi_days`; CPI-day moves match step 2 | PR #83 |
 | 2026-10-02 | Step 3 spec: raw move on CPI days; precision doc | PR #82 |
@@ -57,7 +56,7 @@ rule line; a one-line error on an empty database.
 | --- | --- |
 | 1 Releases | Done |
 | 2 Prices | Done |
-| 3 Raw move | In progress — spec, 3.1, 3.2 done |
+| 3 Raw move | In progress — spec, 3.1–3.3 done |
 | 4 Surprise | Not started |
 
 ## Known, not yet fixed
