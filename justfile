@@ -49,6 +49,10 @@ load-releases:
 load-prices:
     uv run fortuneteller load-prices
 
+# load each CPI release's surprise against both expected values (after load-releases)
+load-surprises:
+    uv run fortuneteller load-surprises
+
 # compare each instrument's moves on CPI days with all other days (after load-prices)
 raw-move:
     uv run fortuneteller raw-move
