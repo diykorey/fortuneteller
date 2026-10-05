@@ -8,10 +8,12 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-MVP step 4, sub-step 6 — `uv run fortuneteller surprise` prints the verdict table (core against the
-12-month trend), the context table (the other three measure × baseline combinations) and the rule;
-a missing load is named on one line. Live on 2026-10-05: about 20 s, two runs identical. The
-results are read and recorded in sub-step 7. *(PR #97.)*
+MVP step 4, sub-step 7 — Results in [step-4-surprise.md](steps/step-4-surprise.md) and the
+plain-words summary [mvp-results.md](mvp-results.md). **Step 4 and the MVP are complete.** The
+move follows the core CPI surprise for the 10-year yield (tracks: p 0.0008, hit rate 62%, about
+1 bp per 0.1 pp), weakly (rank correlation 0.17); the dollar is unclear; VIX, the S&P 500 and gold
+do not. The Precision triggers for the daily window and for small-sample hit rates fired.
+*(PR #98.)*
 
 ## In progress
 
@@ -19,14 +21,15 @@ Nothing.
 
 ## Next
 
-MVP step 4, sub-step 7 — Results in [step-4-surprise.md](steps/step-4-surprise.md), and
-`docs/mvp-results.md`: the plain-words MVP summary — what the MVP set out to prove, what it found,
-what it means, what comes next.
+**A decision:** what follows the MVP. The options, set out in [mvp-results.md](mvp-results.md):
+more events (roadmap rung 1: NFP and Fed decisions, free), sharper measurement (intraday prices and
+consensus forecasts, paid), or predicting the next release for the 10-year yield (rung 2).
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-05 | Step 4.7: Results and `mvp-results.md` — step 4 and the MVP complete | PR #98 |
 | 2026-10-05 | Step 4.6: `surprise` CLI — verdict and context tables | PR #97 |
 | 2026-10-05 | Step 4.5: `track_surprises`; shared statistics in `stats.py` | PR #96 |
 | 2026-10-05 | Step 4.4: `load-surprises` — 1,287 surprises stored | PR #95 |
@@ -70,7 +73,7 @@ what it means, what comes next.
 | 1 Releases | Done |
 | 2 Prices | Done |
 | 3 Raw move | Done — moves: UST 10Y, DXY, VIX; doesn't: S&P 500, gold |
-| 4 Surprise | In progress — spec, 4.1–4.6 done |
+| 4 Surprise | Done — tracks: UST 10Y; unclear: DXY; doesn't: VIX, S&P 500, gold |
 
 ## Known, not yet fixed
 

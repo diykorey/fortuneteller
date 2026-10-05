@@ -61,7 +61,7 @@ context) and each instrument's expected direction are fixed below, before any ru
 | 4 | ~~`load-surprises`: the 12-month trend, both expected values, stored in `cpi_surprises`~~ **done** | Re-running changes no count; the August 2022 core surprise is positive against both |
 | 5 | ~~`track_surprises`: rank correlation, permutation `p`, hit rate, slope, verdict~~ **done** | The synthetic checks pass; two runs give the same result |
 | 6 | ~~`uv run fortuneteller surprise` prints the table~~ **done** | The live run prints every instrument × expected value; an empty store gives a one-line error |
-| 7 | Results here, and [`mvp-results.md`](../mvp-results.md) | Both answer: does the move follow the surprise, for which instruments, and what next? |
+| 7 | ~~Results here, and [`mvp-results.md`](../mvp-results.md)~~ **done** | Both answer: does the move follow the surprise, for which instruments, and what next? |
 
 ## How you know it is right
 
@@ -156,4 +156,86 @@ few lines each.
 
 ## Results
 
-*Filled in by step 4.7, from the live run.*
+**Answer: for the 10-year yield, yes, weakly. For the other four, not by the rule fixed above.**
+A core CPI print hotter than its 12-month trend pushes the 10-year yield up the same day, and the
+bigger the surprise, the bigger the rise: about 1 bp per 0.1 pp of surprise, in the expected
+direction on 62% of noticeable surprises. The relationship is real (p 0.0008) but weak (rank
+correlation 0.17): at daily resolution the surprise orders only a small part of the move.
+
+Live run on 2026-10-05, data loaded that day from FRED, the Cleveland Fed and Yahoo. `p` drifts
+slightly as new trading days are added, because the shuffles draw from a slightly different set.
+
+```
+core against the 12-month trend
+instrument   n    expected  rank corr  p       hit rate (n)  per 0.1pp  verdict
+SPY / ES     342  down      0.12       0.0125  54% (106)     -0.12%     doesn't
+UST10Y / ZN  342  up        0.17       0.0008  62% (106)     1.0 bp     tracks
+DXY          342  up        0.14       0.0054  53% (106)     0.07%      unclear
+GC / XAU     311  either    0.09       0.1238  —             -0.07%     doesn't
+VIX          342  up        0.12       0.0139  50% (106)     0.82%      doesn't
+
+context, no verdict
+instrument   measure   baseline   n    rank corr  p       hit rate (n)
+SPY / ES     core      nowcast    155  0.08       0.1627  55% (49)
+UST10Y / ZN  core      nowcast    155  0.35       0.0001  71% (49)
+DXY          core      nowcast    155  0.25       0.0010  53% (49)
+GC / XAU     core      nowcast    155  0.24       0.0027  —
+VIX          core      nowcast    155  0.10       0.1052  53% (49)
+SPY / ES     headline  trend_12m  635  0.02       0.3106  52% (415)
+UST10Y / ZN  headline  trend_12m  634  0.11       0.0034  53% (414)
+DXY          headline  trend_12m  635  0.06       0.0779  55% (415)
+GC / XAU     headline  trend_12m  311  0.07       0.1969  —
+VIX          headline  trend_12m  439  0.02       0.3442  51% (282)
+SPY / ES     headline  nowcast    155  0.08       0.1604  56% (52)
+UST10Y / ZN  headline  nowcast    155  0.27       0.0008  63% (52)
+DXY          headline  nowcast    155  0.26       0.0008  58% (52)
+GC / XAU     headline  nowcast    155  0.17       0.0368  —
+VIX          headline  nowcast    155  0.06       0.2339  54% (52)
+
+tracks = corr as expected, p < 0.01, hit rate >= 60%; unclear = one of the two; doesn't = neither
+```
+
+**Verdicts, exactly as the rule gives them:**
+
+- **UST 10Y — tracks.** p 0.0008, hit rate 62% on 106 releases. The hit rate passes narrowly: on
+  106 releases its sampling error is about ±9 pp, so a true rate near 55% could produce it.
+- **DXY — unclear.** Significant (p 0.0054), but the direction is right on only 53% of noticeable
+  surprises.
+- **S&P 500 — doesn't.** p 0.0125 and a 54% hit rate: neither condition holds.
+- **VIX — doesn't.** p 0.0139 and a 50% hit rate: neither condition holds.
+- **Gold — doesn't.** p 0.12; no expected direction, so no hit rate.
+
+**The context rows** qualify the verdict; they do not change it, and their p-values are 15
+unplanned tests, so anything below 0.01 there is a hypothesis for later, not a finding.
+
+- *Core against the nowcast* is, as sub-step 4 found, almost the same test as core against the
+  trend, restricted to the 155 releases since 2013. On that recent subset the 10-year yield is
+  stronger: rank correlation 0.35, p 0.0001, hit rate 71%. But that hit rate rests on 49 releases,
+  which is the [Precision](../precision.md) trigger for a hit rate on fewer than 50.
+- *Headline against the nowcast* is the one place the nowcast carries market-like information
+  (gasoline). There the 10-year yield (p 0.0008, 63%) and the dollar (p 0.0008, 58%) both follow
+  the surprise since 2013.
+- *Headline against the trend*, over the full history from 1973, is weak everywhere (rank
+  correlations 0.02–0.11): against the trend, headline surprises are mostly gasoline swings.
+
+**Read together with step 3:**
+
+| Instrument | Step 3: moves more on CPI days? | Step 4: move follows the surprise? | Reading |
+| --- | --- | --- | --- |
+| UST 10Y | Yes | Tracks | CPI matters, and the size of the surprise says something about the move |
+| DXY | Yes | Unclear | Matters; whether it follows the surprise is not settled |
+| VIX | Yes | Doesn't | Matters but not forecastable this way: the Legend's "rethink the signal" case |
+| S&P 500 | No | Doesn't | The control behaved: no extra move, no tracking |
+| Gold | No | Doesn't | The control behaved |
+
+**The checks.** All passed: first-published m/m matched the Cleveland Fed's published figure within
+0.0024 pp for every release since 2013 (4.2, 4.3); August 2022 core came in positive against both
+expected values (4.4); every core and headline change matched its stored release day (4.4); a
+planted relationship was found and the same moves shuffled were not (4.5); two runs print the same
+output (4.6).
+
+**Precision triggers this result fires.** *Measuring window*: "step 4 finds a relationship but the
+scatter is too wide to use" — a rank correlation of 0.17 is that case; an intraday window around
+08:30 would remove the rest of the day's news. *Hit-rate cut-off*: the since-2013 hit rates rest
+on fewer than 50 releases. Neither is built now: both need paid data or a decision about what
+comes next, which [`mvp-results.md`](../mvp-results.md) sets out.

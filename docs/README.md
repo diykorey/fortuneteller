@@ -22,9 +22,13 @@ step ends in a runnable command that prints a real number. "No edge" is a permit
 **3. So what exactly are we doing right now?** → **[Status](status.md)**, then the step documents
 One document per step: its goal, the obstacle in the way, the sequence, how you know the result is
 right, and the implementation detail. The shape of these documents is fixed by the Legend. They
-live in [`steps/`](steps/): [Step 1 — Releases](steps/step-1-releases.md) and
-[Step 2 — Prices](steps/step-2-prices.md) and [Step 3 — Raw move](steps/step-3-raw-move.md) are
-done.
+live in [`steps/`](steps/): [Step 1 — Releases](steps/step-1-releases.md),
+[Step 2 — Prices](steps/step-2-prices.md), [Step 3 — Raw move](steps/step-3-raw-move.md) and
+[Step 4 — Surprise](steps/step-4-surprise.md), all done.
+
+**So what did the MVP find?** → **[MVP results](mvp-results.md)**
+The outcome in plain words: which of the Legend's claims held, for which markets, what it means,
+and the options for what comes next.
 
 **Where are we, and what's next?** → **[Status](status.md)**
 The last completed task and the next one, kept current as work lands.
@@ -110,8 +114,10 @@ measures their move around each release — 2,698 observations. **No prediction 
 CPI days with all other days. CPI moves the 10-year yield, the dollar and VIX; the S&P 500 and gold
 show no clear effect.
 
-**Next: [MVP step 4](steps/step-4-surprise.md)** — does the size of the move follow the size of
-the surprise? Its spec is written; the MVP's summary will be `mvp-results.md`.
+**[MVP step 4](steps/step-4-surprise.md) is done, and with it the MVP**: `load-surprises` and
+`surprise` relate each move to the CPI surprise. The 10-year yield follows the surprise, weakly;
+the dollar is unclear; VIX, the S&P 500 and gold do not. **[MVP results](mvp-results.md)** says
+what that means and lays out the options for what comes next.
 [Status](status.md) always has the current task.
 
 ## How this folder grows
