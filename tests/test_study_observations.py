@@ -7,7 +7,7 @@ from typing import NoReturn
 import duckdb
 import pytest
 
-from fortuneteller import db, sources
+from fortuneteller import db, sources, study
 from fortuneteller.__main__ import describe_release_counts, main
 from fortuneteller.models import DailyBar
 from fortuneteller.sources import (
@@ -172,7 +172,7 @@ def test_known_day_is_measured_through_the_store() -> None:
     assert observation["data_source"] == "yahoo"
     assert observation["quality"] == "daily_close"
     assert observation["ret_5m"] is None and observation["abn_ret_1d"] is None
-    assert release_counts["SPY / ES"] == ReleaseCounts(measured=1)
+    assert release_counts[CPI_EVENT_TYPE]["SPY / ES"] == ReleaseCounts(measured=1)
 
 
 def test_yield_move_is_stored_in_basis_points() -> None:
@@ -202,7 +202,7 @@ def test_release_before_an_instruments_history_is_counted_not_stored() -> None:
     release_counts = store_observations(con=con)
 
     # then gold has no row, and the counts say why
-    assert release_counts["GC / XAU"] == ReleaseCounts(skipped_before_history=1)
+    assert release_counts[CPI_EVENT_TYPE]["GC / XAU"] == ReleaseCounts(skipped_before_history=1)
     rows = con.execute("SELECT count(*) FROM observations WHERE instrument = 'GC / XAU'").fetchone()
     assert rows == (0,)
 
@@ -241,7 +241,7 @@ def test_rebuilding_removes_a_row_that_no_longer_applies() -> None:
     release_counts = store_observations(con=con)
 
     # then the old row is gone, so the table matches what this run measured
-    assert release_counts["SPY / ES"] == ReleaseCounts(skipped_before_history=1)
+    assert release_counts[CPI_EVENT_TYPE]["SPY / ES"] == ReleaseCounts(skipped_before_history=1)
     rows = con.execute("SELECT count(*) FROM observations WHERE instrument = 'SPY / ES'").fetchone()
     assert rows == (0,)
     assert db.count_rows("observations", con=con) == 4
@@ -261,20 +261,19 @@ def test_rerunning_changes_no_count_and_events_can_still_be_reloaded() -> None:
     assert db.count_rows("event_instances", con=con) == 1
 
 
-def test_events_of_other_types_are_not_measured() -> None:
-    # given a non-CPI event on the same day as the hot print
+def test_every_event_type_is_measured_and_counted_on_its_own() -> None:
+    # given a jobs report on the same day as the hot print
     con = _store()
-    other = to_event_instance(HOT_PRINT, CPI_EVENT_TYPE).model_copy(
-        update={"event_id": 1, "event_type": "NFP / labor data"}
-    )
-    db.insert_models("event_instances", [other], con=con)
+    store_releases(study.NFP_EVENT_TYPE, [HOT_PRINT], con=con)
 
     # when the observations are built
-    store_observations(con=con)
+    release_counts = store_observations(con=con)
 
-    # then only the CPI event is measured
-    rows = con.execute("SELECT DISTINCT event_id FROM observations").fetchall()
-    assert rows == [(1_2022_09_13,)]
+    # then both events are measured, and each type's releases are counted separately
+    rows = con.execute("SELECT DISTINCT event_id FROM observations ORDER BY 1").fetchall()
+    assert rows == [(1_2022_09_13,), (2_2022_09_13,)]
+    assert list(release_counts) == [CPI_EVENT_TYPE, study.NFP_EVENT_TYPE]
+    assert release_counts[study.NFP_EVENT_TYPE]["SPY / ES"] == ReleaseCounts(measured=1)
 
 
 DXY_1992 = Path(__file__).parent / "data" / "yahoo_dx_y_nyb_1992_12.json"
@@ -302,6 +301,7 @@ def test_load_prices_prints_counts_per_instrument_and_in_total(
     # then both runs report the same measurement, and nothing is duplicated
     assert (first, second) == (0, 0)
     report = (
+        "CPI / inflation surprise\n"
         "SPY / ES     1 observations\n"
         "UST10Y / ZN  1 observations\n"
         "DXY          1 observations\n"

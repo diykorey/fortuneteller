@@ -48,7 +48,7 @@ standard source, are paid. So the Fed gets step 3 only; its surprise is in
 | --- | --- | --- |
 | 1 | ~~Generic keys: `event_id` = type code × 10⁸ + release date (CPI 2022-09-13 → `120220913`); `observations` keyed by (`event_id`, `instrument`); `cpi_surprises` becomes `surprises`~~ **done** | Fact tables reloaded under the new keys; `raw-move` and `surprise` print the CPI numbers unchanged |
 | 2 | ~~NFP releases into `event_instances` (`NFP / labor data`, 08:30 New York)~~ **done** | Weekend guard; dates checked against BLS's Employment Situation archive from 1994; 2026-10 count recorded |
-| 3 | `raw-move` takes an event (`cpi`, `nfp`, `fomc`) | NFP's step 3 verdict printed |
+| 3 | ~~`raw-move` takes an event (`cpi`, `nfp`, `fomc`)~~ **done** (`cpi`, `nfp`; `fomc` with sub-step 4) | NFP's step 3 verdict printed |
 | 4 | FOMC decisions into `event_instances` (`Central-bank decision`, `United States`, 14:00 New York; unscheduled ones `scheduled = false`) | Every target-rate change since 1994 falls on a listed decision; FOMC's step 3 verdict printed |
 | 5 | Clean baseline: "ordinary days" exclude every stored event's reaction day | CPI's step 3 re-run; old and new verdicts recorded side by side |
 | 6 | NFP surprise: first-published monthly payroll change against its 12-month trend, into `surprises`; `surprise` takes an event | August 2022 reads +315k; NFP's step 4 verdict printed |
