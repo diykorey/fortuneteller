@@ -56,3 +56,7 @@ load-surprises:
 # compare each instrument's moves on CPI days with all other days (after load-prices)
 raw-move:
     uv run fortuneteller raw-move
+
+# does each instrument's release-day move follow the CPI surprise? (after load-surprises)
+surprise:
+    uv run fortuneteller surprise

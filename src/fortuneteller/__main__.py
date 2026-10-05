@@ -3,8 +3,9 @@
 Subcommands: ``init`` creates the store (M0-05 ``db.init_db``); ``seed`` / ``query-demo`` load and
 read the seed data (M0-07 ``seed``); ``load-releases`` loads the CPI release history from FRED
 (MVP step 1 ``study``); ``load-prices`` loads the five instruments' daily closes and measures their
-move around each release (MVP step 2); ``load-surprises`` stores each release's surprise (MVP step 4); ``raw-move`` compares each instrument's moves on CPI days
-with all other days (MVP step 3).
+move around each release (MVP step 2); ``raw-move`` compares each instrument's moves on CPI days
+with all other days (MVP step 3); ``load-surprises`` stores each release's CPI surprise and
+``surprise`` measures how the moves follow it (MVP step 4).
 """
 
 from __future__ import annotations
@@ -147,6 +148,71 @@ def _load_surprises(_args: argparse.Namespace) -> int:
     return 0
 
 
+def _direction(sign: int) -> str:
+    return {1: "up", -1: "down"}.get(sign, "either")
+
+
+def _hit_rate(tracking: study.SurpriseTracking) -> str:
+    if tracking.hit_rate is None:
+        return "—"
+    return f"{tracking.hit_rate:.0%} ({tracking.hit_n})"
+
+
+def describe_surprise_tracking(
+    results: dict[tuple[str, str], dict[str, study.SurpriseTracking]],
+) -> list[str]:
+    """The report: the verdict table (core against the trend), the context table, and the rule."""
+    lines = [
+        "core against the 12-month trend",
+        "instrument   n    expected  rank corr  p       hit rate (n)  per 0.1pp  verdict",
+    ]
+    for instrument, t in results.get(study.VERDICT_COMBINATION, {}).items():
+        unit = study.MVP_PRICE_SERIES[instrument].unit
+        lines.append(
+            f"{instrument:<12} {t.n:<4} {_direction(study.EXPECTED_SIGN[instrument]):<9} "
+            f"{t.rank_corr:<10.2f} {t.p:<7.4f} {_hit_rate(t):<13} "
+            f"{_move_size(t.slope, unit):<10} {t.verdict}"
+        )
+    lines += [
+        "",
+        "context, no verdict",
+        "instrument   measure   baseline   n    rank corr  p       hit rate (n)",
+    ]
+    for (measure, baseline), by_instrument in results.items():
+        if (measure, baseline) == study.VERDICT_COMBINATION:
+            continue
+        for instrument, t in by_instrument.items():
+            lines.append(
+                f"{instrument:<12} {measure:<9} {baseline:<10} {t.n:<4} "
+                f"{t.rank_corr:<10.2f} {t.p:<7.4f} {_hit_rate(t)}"
+            )
+    lines += [
+        "",
+        f"{study.TRACKS} = corr as expected, p < {study.TRACK_P_BAR}, hit rate >= "
+        f"{study.HIT_RATE_BAR:.0%}; {study.UNCLEAR} = one of the two; "
+        f"{study.DOESNT_TRACK} = neither",
+    ]
+    return [line.rstrip() for line in lines]
+
+
+def _surprise(_args: argparse.Namespace) -> int:
+    con = db.get_connection()
+    db.init_db(con=con)
+    for table, command in (
+        ("event_instances", "load-releases"),
+        ("observations", "load-prices"),
+        ("cpi_surprises", "load-surprises"),
+    ):
+        if db.count_rows(table, con=con) == 0:
+            print(
+                f"surprise: no {table} stored; run `fortuneteller {command}` first", file=sys.stderr
+            )
+            return 1
+    for line in describe_surprise_tracking(study.track_surprises(con=con)):
+        print(line)
+    return 0
+
+
 def _move_size(value: float, unit: str) -> str:
     return f"{value:.1f} bp" if unit == "bps" else f"{value * 100:.2f}%"
 
@@ -224,6 +290,11 @@ def build_parser() -> argparse.ArgumentParser:
         "load-surprises", help="load each CPI release's surprise against both expected values"
     )
     p_surprises.set_defaults(func=_load_surprises)
+
+    p_surprise = sub.add_parser(
+        "surprise", help="does each instrument's release-day move follow the CPI surprise?"
+    )
+    p_surprise.set_defaults(func=_surprise)
 
     p_raw = sub.add_parser(
         "raw-move", help="compare each instrument's moves on CPI days with all other days"
