@@ -8,25 +8,26 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-MVP step 3, sub-step 4 — Results written into [step-3-raw-move.md](steps/step-3-raw-move.md).
-**Step 3 is complete: CPI matters for three of the five instruments.** On CPI days the 10-year
-yield (ratio 1.25, p 0.0007), the dollar (1.16, 0.003) and VIX (1.19, 0.002) move more than on
-ordinary days; the S&P 500 (1.07, 0.10) and gold (1.02, 0.41) do not. *(PR #86.)*
+`daily_bars` is now rebuilt per instrument on each load (`db.replace_rows`), so closes from a
+replaced ticker can no longer mix with the new ticker's. Gold's precision row now says cross-check
+`GC=F` against spot gold rather than replace it. *(PR #—.)* Before it: the step 4 spec
+*(PR #87)*.
 
 ## In progress
 
-MVP step 4 — **Surprise**: the spec, [step-4-surprise.md](steps/step-4-surprise.md) — does the
-move follow the surprise? Expected values: the 12-month trend and the Cleveland Fed nowcast; core
-decides, headline is context; verdict = rank correlation as expected, p < 0.01, hit rate ≥ 60%.
+Nothing.
 
 ## Next
 
-MVP step 4, sub-step 1 — the `cpi_surprises` table and its schema doc.
+MVP step 4, sub-step 1 — the `cpi_surprises` table and its schema doc
+([step-4-surprise.md](steps/step-4-surprise.md)).
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-05 | `daily_bars` rebuilt per instrument; gold cross-checked, not replaced | PR #— |
+| 2026-10-05 | Step 4 spec: does the move follow the CPI surprise? | PR #87 |
 | 2026-10-05 | Step 3.4: Results — step 3 complete; CPI moves UST 10Y, DXY, VIX | PR #86 |
 | 2026-10-02 | Step 3.3: `raw-move` CLI — verdicts, eras, rule | PR #85 |
 | 2026-10-02 | Step 3.2: `compare_moves` — ratio, permutation `p`, verdict | PR #84 |
@@ -60,7 +61,7 @@ MVP step 4, sub-step 1 — the `cpi_surprises` table and its schema doc.
 | 1 Releases | Done |
 | 2 Prices | Done |
 | 3 Raw move | Done — moves: UST 10Y, DXY, VIX; doesn't: S&P 500, gold |
-| 4 Surprise | Spec in progress |
+| 4 Surprise | Spec done |
 
 ## Known, not yet fixed
 
@@ -68,7 +69,6 @@ Found by the 2026-09-28 codebase review and deliberately left for later. This se
 each is fixed or dropped; it is not rewritten when a task finishes.
 
 - Paths and `.env` resolve from the working directory, so running from elsewhere misses them.
-- `daily_bars` rows from a replaced ticker are never deleted, so an old and a new series could mix.
 - `obs_id` depends on the order of `MVP_PRICE_SERIES` and leaves room for ten instruments.
 - The `Prediction` model has no table and no caller.
 - CPI release dates for 1972–1989 have not been checked against BLS (its reports for those years

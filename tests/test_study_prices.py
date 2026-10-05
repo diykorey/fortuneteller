@@ -224,6 +224,35 @@ def test_store_writes_one_row_per_close_with_its_symbol_and_source() -> None:
     assert row == ("SPY / ES", date(2022, 9, 13), pytest.approx(3932.69), "yahoo:^GSPC")
 
 
+def test_a_new_ticker_replaces_every_close_of_the_old_one() -> None:
+    # given the S&P 500 stored from one ticker, over more days than its replacement covers
+    con = _store()
+    old = [DailyClosingPrice(date(1993, 1, d), 440.0) for d in (26, 27, 28, 29)]
+    store_daily_bars("SPY / ES", "^GSPC", old, con=con)
+
+    # when the instrument is reloaded from a ticker whose history starts later
+    new = [DailyClosingPrice(date(1993, 1, 29), 44.0)]
+    store_daily_bars("SPY / ES", "SPY", new, con=con)
+
+    # then only the new ticker's close remains, so the two series never mix
+    rows = con.execute("SELECT day, close, source FROM daily_bars").fetchall()
+    assert rows == [(date(1993, 1, 29), 44.0, "yahoo:SPY")]
+
+
+def test_reloading_one_instrument_leaves_the_others_alone() -> None:
+    # given closes stored for two instruments
+    con = _store()
+    store_daily_bars("SPY / ES", "^GSPC", [DailyClosingPrice(date(2022, 9, 13), 1.0)], con=con)
+    store_daily_bars("DXY", "DX-Y.NYB", [DailyClosingPrice(date(2022, 9, 13), 2.0)], con=con)
+
+    # when one of them is reloaded
+    store_daily_bars("SPY / ES", "^GSPC", [DailyClosingPrice(date(2022, 9, 14), 3.0)], con=con)
+
+    # then the other keeps its row
+    rows = con.execute("SELECT instrument FROM daily_bars ORDER BY instrument").fetchall()
+    assert rows == [("DXY",), ("SPY / ES",)]
+
+
 def test_day_round_trips_unchanged_under_a_non_utc_session() -> None:
     # given a store whose session time zone is not UTC, as on a developer machine
     con = _store("Europe/Kyiv")
