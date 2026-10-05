@@ -12,6 +12,9 @@ each instrument's move around each CPI release into ``observations``.
 
 Step 3 (see ``docs/steps/step-3-raw-move.md``): compare each instrument's moves on CPI days with its
 moves on all other days.
+
+Step 4 (see ``docs/steps/step-4-surprise.md``): CPI's change as first published, how far it landed
+from two expected values, and whether each instrument's release-day move follows that surprise.
 """
 
 from __future__ import annotations
@@ -27,7 +30,7 @@ from zoneinfo import ZoneInfo
 
 import duckdb
 
-from . import db, sources
+from . import db, sources, stats
 from .models import CpiSurprise, DailyBar, EventInstance, Observation
 from .sources import CpiRelease, DailyClosingPrice, YahooError
 
@@ -287,8 +290,6 @@ def store_observations(con: duckdb.DuckDBPyConnection | None = None) -> dict[str
 # Step 3's rule for "moves", fixed before the verdicts were run; see docs/steps/step-3-raw-move.md.
 MOVE_RATIO_BAR = 1.10
 MOVE_P_BAR = 0.01
-PERMUTATIONS = 10_000
-PERMUTATION_SEED = 3
 MOVES = "moves"
 UNCLEAR = "unclear"
 DOESNT_MOVE = "doesn't"
@@ -331,21 +332,6 @@ class MoveComparison:
     verdict: str
 
 
-def median_not_drawn(pool: Sequence[float], drawn: Sequence[int]) -> float:
-    """The median of ``pool`` without the positions in ``drawn``, both sorted, without copying it."""
-
-    def kth_not_drawn(k: int) -> float:
-        position = k
-        for i in drawn:
-            if i > position:
-                break
-            position += 1
-        return pool[position]
-
-    rest = len(pool) - len(drawn)
-    return (kth_not_drawn((rest - 1) // 2) + kth_not_drawn(rest // 2)) / 2
-
-
 def move_verdict(ratio: float, p: float) -> str:
     """``MOVES`` if the ratio is big enough and unlikely to be chance, ``UNCLEAR`` if only one."""
     big, significant = ratio >= MOVE_RATIO_BAR, p < MOVE_P_BAR
@@ -359,8 +345,8 @@ def move_verdict(ratio: float, p: float) -> str:
 def compare_moves(
     cpi: Sequence[float],
     other: Sequence[float],
-    permutations: int = PERMUTATIONS,
-    seed: int = PERMUTATION_SEED,
+    permutations: int = stats.PERMUTATIONS,
+    seed: int = stats.PERMUTATION_SEED,
 ) -> MoveComparison:
     """Median CPI-day move over median other-day move, and how often chance does as well.
 
@@ -370,13 +356,12 @@ def compare_moves(
     median_cpi, median_other = median(cpi), median(other)
     ratio = median_cpi / median_other
     pool = sorted([*cpi, *other])
-    rng = random.Random(seed)
-    as_large = 0
-    for _ in range(permutations):
+
+    def draw(rng: random.Random) -> float:
         drawn = sorted(rng.sample(range(len(pool)), len(cpi)))
-        if median([pool[i] for i in drawn]) / median_not_drawn(pool, drawn) >= ratio:
-            as_large += 1
-    p = (as_large + 1) / (permutations + 1)
+        return median([pool[i] for i in drawn]) / stats.median_not_drawn(pool, drawn)
+
+    p = stats.permutation_p(ratio, draw, permutations, seed)
     return MoveComparison(len(cpi), median_cpi, median_other, ratio, p, move_verdict(ratio, p))
 
 
@@ -628,3 +613,108 @@ def load_surprises(api_key: str, con: duckdb.DuckDBPyConnection | None = None) -
     rows = build_surprises(events, changes, points)
     db.replace_rows("cpi_surprises", rows, "TRUE", con=con)
     return rows
+
+
+# Step 4's rule for "tracks", fixed before any move was measured; see docs/steps/step-4-surprise.md.
+TRACK_P_BAR = 0.01
+HIT_RATE_BAR = 0.60
+# Surprises smaller than this are noise for the hit rate, in percentage points.
+NOTICEABLE_SURPRISE_PP = 0.1
+TRACKS = "tracks"
+DOESNT_TRACK = "doesn't"
+# The direction a hotter-than-expected CPI should move each instrument; gold has no agreed one.
+EXPECTED_SIGN = {"SPY / ES": -1, "UST10Y / ZN": 1, "DXY": 1, "GC / XAU": 0, "VIX": 1}
+# Core against the trend gives the verdict; the other three are context (decided 2026-10-05).
+VERDICT_COMBINATION = (sources.CORE, TREND_12M)
+COMBINATIONS = (
+    VERDICT_COMBINATION,
+    (sources.CORE, NOWCAST_BASELINE),
+    (sources.HEADLINE, TREND_12M),
+    (sources.HEADLINE, NOWCAST_BASELINE),
+)
+
+
+@dataclass(frozen=True)
+class SurpriseTracking:
+    """How one instrument's release-day moves follow one kind of CPI surprise.
+
+    ``rank_corr`` is multiplied by the expected sign, so positive means "as expected" (absolute for
+    gold). ``slope`` is the move per 0.1 pp of surprise, in the instrument's unit. ``verdict`` is
+    ``None`` on a context row.
+    """
+
+    n: int
+    rank_corr: float
+    p: float
+    hit_rate: float | None
+    hit_n: int
+    slope: float
+    verdict: str | None
+
+
+def track_verdict(p: float, hit_rate: float | None) -> str:
+    """``TRACKS`` if the relation is unlikely to be chance and the direction usually right."""
+    significant = p < TRACK_P_BAR
+    usually_right = hit_rate is not None and hit_rate >= HIT_RATE_BAR
+    if significant and usually_right:
+        return TRACKS
+    if significant or usually_right:
+        return UNCLEAR
+    return DOESNT_TRACK
+
+
+def track_pairs(
+    surprises: Sequence[float], moves: Sequence[float], expected_sign: int, judged: bool
+) -> SurpriseTracking:
+    """Measure how ``moves`` follow ``surprises``, pair by pair; give a verdict if ``judged``."""
+    rho = stats.spearman(surprises, moves)
+    p = stats.spearman_permutation_p(surprises, moves, expected_sign)
+    noticeable = [
+        (s, m) for s, m in zip(surprises, moves, strict=True) if abs(s) >= NOTICEABLE_SURPRISE_PP
+    ]
+    hits = sum(expected_sign * s * m > 0 for s, m in noticeable)
+    hit_rate = hits / len(noticeable) if expected_sign and noticeable else None
+    return SurpriseTracking(
+        n=len(surprises),
+        rank_corr=abs(rho) if expected_sign == 0 else expected_sign * rho,
+        p=p,
+        hit_rate=hit_rate,
+        hit_n=len(noticeable) if hit_rate is not None else 0,
+        slope=stats.theil_sen(surprises, moves) * NOTICEABLE_SURPRISE_PP,
+        verdict=track_verdict(p, hit_rate) if judged else None,
+    )
+
+
+def surprise_pairs(
+    con: duckdb.DuckDBPyConnection | None = None,
+) -> dict[tuple[str, str], dict[str, tuple[list[float], list[float]]]]:
+    """For each measure × baseline, then each instrument: its surprises and release-day moves."""
+    connection = con if con is not None else db.get_connection()
+    pairs: dict[tuple[str, str], dict[str, tuple[list[float], list[float]]]] = {}
+    for measure, baseline in COMBINATIONS:
+        by_instrument: dict[str, tuple[list[float], list[float]]] = {}
+        for instrument in MVP_PRICE_SERIES:
+            rows = connection.execute(
+                "SELECT s.surprise, o.ret_1d FROM cpi_surprises s "
+                "JOIN observations o ON o.event_id = s.event_id "
+                "WHERE s.measure = ? AND s.baseline = ? AND o.instrument = ? ORDER BY s.event_id",
+                [measure, baseline, instrument],
+            ).fetchall()
+            by_instrument[instrument] = ([r[0] for r in rows], [r[1] for r in rows])
+        pairs[(measure, baseline)] = by_instrument
+    return pairs
+
+
+def track_surprises(
+    con: duckdb.DuckDBPyConnection | None = None,
+) -> dict[tuple[str, str], dict[str, SurpriseTracking]]:
+    """Step 4's answer: each instrument × measure × baseline, the verdict on core against trend."""
+    return {
+        combination: {
+            instrument: track_pairs(
+                surprises, moves, EXPECTED_SIGN[instrument], combination == VERDICT_COMBINATION
+            )
+            for instrument, (surprises, moves) in by_instrument.items()
+        }
+        for combination, by_instrument in surprise_pairs(con=con).items()
+    }

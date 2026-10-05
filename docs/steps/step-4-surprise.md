@@ -59,7 +59,7 @@ context) and each instrument's expected direction are fixed below, before any ru
 | 2 | ~~First-published m/m, core and headline: fetch `CPILFESL`, apply the February fix~~ **done** | Tests pass; live: core from 1997, headline from 1972; January 2023 core reads 0.41% |
 | 3 | ~~Cleveland Fed nowcast: fetch, parse, keep the last value before each release~~ **done** | Tests pass; live: our m/m equals Cleveland's "actual" within 0.01 pp for every release since 2013 |
 | 4 | ~~`load-surprises`: the 12-month trend, both expected values, stored in `cpi_surprises`~~ **done** | Re-running changes no count; the August 2022 core surprise is positive against both |
-| 5 | `track_surprises`: rank correlation, permutation `p`, hit rate, slope, verdict | The synthetic checks pass; two runs give the same result |
+| 5 | ~~`track_surprises`: rank correlation, permutation `p`, hit rate, slope, verdict~~ **done** | The synthetic checks pass; two runs give the same result |
 | 6 | `uv run fortuneteller surprise` prints the table | The live run prints every instrument × expected value; an empty store gives a one-line error |
 | 7 | Results here, and [`mvp-results.md`](../mvp-results.md) | Both answer: does the move follow the surprise, for which instruments, and what next? |
 
@@ -149,8 +149,9 @@ context rows say whether that holds since 2013 (core against the nowcast) and wh
 expectation exists (headline against the nowcast); they can qualify the verdict in Results, not
 replace it.
 
-**Code.** Functions in `study.py`, handlers in `__main__.py`, tests in
-`tests/test_study_surprise.py`. No new dependency: Spearman, Theil–Sen and the permutation are a
+**Code.** Functions in `study.py`, the shared statistics (ranks, Spearman, Theil–Sen, the
+permutation test step 3 also uses) in `stats.py`, handlers in `__main__.py`, tests in
+`tests/test_study_surprise.py` and `tests/test_stats.py`. No new dependency: Spearman, Theil–Sen and the permutation are a
 few lines each.
 
 ## Results

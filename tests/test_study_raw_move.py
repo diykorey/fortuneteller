@@ -11,6 +11,7 @@ import pytest
 from fortuneteller import db
 from fortuneteller.__main__ import describe_raw_moves, main
 from fortuneteller.models import DailyBar
+from fortuneteller.stats import median_not_drawn
 from fortuneteller.sources import (
     CpiRelease,
     DailyClosingPrice,
@@ -27,7 +28,6 @@ from fortuneteller.study import (
     cpi_days,
     daily_moves,
     measure_raw_moves,
-    median_not_drawn,
     move_verdict,
     store_cpi_releases,
 )

@@ -1,6 +1,7 @@
 """Surprise: CPI's month-over-month change as first published, and how far it landed from expected."""
 
 import json
+import random
 import urllib.error
 import urllib.parse
 from datetime import date
@@ -27,9 +28,12 @@ from fortuneteller.sources import (
     parse_level,
     parse_nowcasts,
 )
-from fortuneteller.models import EventInstance
+from fortuneteller.models import CpiSurprise, EventInstance
 from fortuneteller.study import (
+    DOESNT_TRACK,
     NOWCAST_BASELINE,
+    TRACKS,
+    UNCLEAR,
     MonthlyChange,
     actual_mismatches,
     build_surprises,
@@ -38,6 +42,8 @@ from fortuneteller.study import (
     nowcast_expectations,
     published_actuals,
     to_event_instance,
+    track_pairs,
+    track_verdict,
     trend_expectations,
 )
 
@@ -498,3 +504,136 @@ def test_load_surprises_reports_a_refusal_on_one_line(
     # then it stops with one line naming the load to run first
     assert code == 1
     assert "run `fortuneteller load-releases` first" in capsys.readouterr().err
+
+
+@pytest.mark.parametrize(
+    ("p", "hit_rate", "expected"),
+    [
+        (0.009, 0.60, TRACKS),
+        (0.009, 0.59, UNCLEAR),
+        (0.01, 0.75, UNCLEAR),
+        (0.20, 0.50, DOESNT_TRACK),
+        (0.0001, None, UNCLEAR),
+    ],
+)
+def test_tracking_needs_significance_and_a_hit_rate(
+    p: float, hit_rate: float | None, expected: str
+) -> None:
+    # given a p-value and a hit rate (None for gold, which has no expected direction)
+    # when the verdict is read
+    result = track_verdict(p, hit_rate)
+
+    # then "tracks" needs both, "unclear" one, "doesn't" neither; gold can reach "unclear" at most
+    assert result == expected
+
+
+def _planted(slope: float, seed: int, n: int = 300) -> tuple[list[float], list[float]]:
+    rng = random.Random(seed)
+    surprises = [rng.gauss(0, 0.15) for _ in range(n)]
+    return surprises, [slope * s + rng.gauss(0, 0.3) for s in surprises]
+
+
+def test_a_move_built_from_the_surprise_tracks_it() -> None:
+    # given moves built as 3 x surprise plus noise, for an instrument expected to rise
+    surprises, moves = _planted(3.0, seed=1)
+
+    # when the pairs are measured
+    result = track_pairs(surprises, moves, expected_sign=1, judged=True)
+
+    # then the relation is found, its slope is about 0.3 per 0.1 pp, and the verdict is "tracks"
+    assert result.verdict == TRACKS
+    assert result.rank_corr > 0.5
+    assert result.slope == pytest.approx(0.3, rel=0.2)
+    assert result.n == 300
+
+
+def test_the_same_moves_shuffled_do_not_track() -> None:
+    # given the planted moves, shuffled across releases
+    surprises, moves = _planted(3.0, seed=1)
+    random.Random(7).shuffle(moves)
+
+    # when the pairs are measured
+    result = track_pairs(surprises, moves, expected_sign=1, judged=True)
+
+    # then nothing is found
+    assert result.verdict != TRACKS
+    assert result.p > 0.01
+
+
+def test_a_fall_tracks_where_a_fall_is_expected() -> None:
+    # given moves that fall with the surprise, for an instrument expected to fall (the S&P 500)
+    surprises, moves = _planted(-3.0, seed=2)
+
+    # when the pairs are measured
+    result = track_pairs(surprises, moves, expected_sign=-1, judged=True)
+
+    # then it tracks, and the correlation reads positive: "as expected"
+    assert result.verdict == TRACKS
+    assert result.rank_corr > 0.5
+
+
+def test_the_hit_rate_counts_only_noticeable_surprises() -> None:
+    # given two small surprises that went the wrong way, and two noticeable ones that went right
+    surprises, moves = [0.05, -0.05, 0.2, -0.3], [-1.0, 1.0, 1.0, -1.0]
+
+    # when the pairs are measured
+    result = track_pairs(surprises, moves, expected_sign=1, judged=False)
+
+    # then the hit rate is 2 of 2, and context rows carry no verdict
+    assert (result.hit_rate, result.hit_n) == (1.0, 2)
+    assert result.verdict is None
+
+
+def test_without_an_expected_direction_there_is_no_hit_rate() -> None:
+    # given gold, with no agreed direction
+    surprises, moves = _planted(-3.0, seed=3)
+
+    # when the pairs are measured
+    result = track_pairs(surprises, moves, expected_sign=0, judged=True)
+
+    # then the two-sided test finds the relation, but with no hit rate it is only "unclear"
+    assert result.hit_rate is None
+    assert result.p < 0.01
+    assert result.verdict == UNCLEAR
+
+
+def test_measuring_twice_gives_the_same_result() -> None:
+    # given one set of pairs
+    surprises, moves = _planted(1.0, seed=4)
+
+    # when they are measured twice
+    first = track_pairs(surprises, moves, expected_sign=1, judged=True)
+    second = track_pairs(surprises, moves, expected_sign=1, judged=True)
+
+    # then the results are identical
+    assert first == second
+
+
+def test_each_instrument_is_measured_against_each_measure_and_baseline() -> None:
+    # given stored surprises and moves for one release
+    con = duckdb.connect(":memory:")
+    db.init_db(con=con)
+    month = date(2022, 8, 1)
+    study.store_cpi_releases([CpiRelease(month, date(2022, 9, 13), 100.0)], con=con)
+    surprises = [
+        CpiSurprise(
+            event_id=202208, measure=m, baseline=b, actual_mom=0.5, expected_mom=0.4, surprise=0.1
+        )
+        for m in (CORE, HEADLINE)
+        for b in (study.TREND_12M, NOWCAST_BASELINE)
+    ]
+    db.insert_models("cpi_surprises", surprises, con=con)
+    con.execute(
+        "INSERT INTO observations (obs_id, event_id, instrument, ret_unit, ret_1d) "
+        "SELECT 2022080 + i, 202208, instrument, 'pct', 0.01 "
+        "FROM (SELECT unnest(?) AS instrument, generate_subscripts(?, 1) - 1 AS i)",
+        [list(study.MVP_PRICE_SERIES), list(study.MVP_PRICE_SERIES)],
+    )
+
+    # when the pairs are gathered
+    pairs = study.surprise_pairs(con=con)
+
+    # then core against the trend comes first, and every instrument has its one pair
+    assert list(pairs)[0] == (CORE, study.TREND_12M)
+    assert len(pairs) == 4
+    assert all(p == ([0.1], [0.01]) for by in pairs.values() for p in by.values())
