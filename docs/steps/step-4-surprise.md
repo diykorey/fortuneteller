@@ -47,7 +47,7 @@ context) and each instrument's expected direction are fixed below, before any ru
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | `cpi_surprises` table in `schema.sql` and `docs/schema.md` | `init` creates it; the doc explains every column and value |
+| 1 | ~~`cpi_surprises` table in `schema.sql` and `docs/schema.md`~~ **done** | `init` creates it; the doc explains every column and value |
 | 2 | First-published m/m, core and headline: fetch `CPILFESL`, apply the February fix | Tests pass; live: core from 1997, headline from 1972; January 2023 core reads 0.41% |
 | 3 | Cleveland Fed nowcast: fetch, parse, keep the last value before each release | Tests pass; live: our m/m equals Cleveland's "actual" within 0.01 pp for every release since 2013 |
 | 4 | `load-surprises`: the 12-month trend, both expected values, stored in `cpi_surprises` | Re-running changes no count; the August 2022 core surprise is positive against both |

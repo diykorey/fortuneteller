@@ -115,3 +115,13 @@ CREATE TABLE IF NOT EXISTS daily_bars (
     source     TEXT,
     PRIMARY KEY (instrument, day)
 );
+
+CREATE TABLE IF NOT EXISTS cpi_surprises (
+    event_id     BIGINT REFERENCES event_instances(event_id),
+    measure      TEXT,
+    baseline     TEXT,
+    actual_mom   DOUBLE,
+    expected_mom DOUBLE,
+    surprise     DOUBLE,
+    PRIMARY KEY (event_id, measure, baseline)
+);
