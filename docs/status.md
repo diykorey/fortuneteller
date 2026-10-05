@@ -13,7 +13,7 @@ plain-words summary [mvp-results.md](mvp-results.md). **Step 4 and the MVP are c
 move follows the core CPI surprise for the 10-year yield (tracks: p 0.0008, hit rate 62%, about
 1 bp per 0.1 pp), weakly (rank correlation 0.17); the dollar is unclear; VIX, the S&P 500 and gold
 do not. The Precision triggers for the daily window and for small-sample hit rates fired.
-*(PR #—.)*
+*(PR #98.)*
 
 ## In progress
 
@@ -29,7 +29,7 @@ consensus forecasts, paid), or predicting the next release for the 10-year yield
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-05 | Step 4.7: Results and `mvp-results.md` — step 4 and the MVP complete | PR #— |
+| 2026-10-05 | Step 4.7: Results and `mvp-results.md` — step 4 and the MVP complete | PR #98 |
 | 2026-10-05 | Step 4.6: `surprise` CLI — verdict and context tables | PR #97 |
 | 2026-10-05 | Step 4.5: `track_surprises`; shared statistics in `stats.py` | PR #96 |
 | 2026-10-05 | Step 4.4: `load-surprises` — 1,287 surprises stored | PR #95 |
