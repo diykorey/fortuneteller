@@ -20,6 +20,8 @@ from .config import settings
 from .models import Surprise
 
 Handler = Callable[[argparse.Namespace], int]
+# The events a command can be pointed at, by their short name on the command line.
+EVENTS = {"cpi": study.CPI_EVENT_TYPE, "nfp": study.NFP_EVENT_TYPE}
 
 
 def _init(_args: argparse.Namespace) -> int:
@@ -110,7 +112,7 @@ def _load_prices(_args: argparse.Namespace) -> int:
     db.init_db(con=con)
     if db.count_rows("event_instances", con=con) == 0:
         print(
-            "load-prices: no CPI releases stored; run `fortuneteller load-releases` first",
+            "load-prices: no releases stored; run `fortuneteller load-releases` first",
             file=sys.stderr,
         )
         return 1
@@ -120,12 +122,14 @@ def _load_prices(_args: argparse.Namespace) -> int:
     except (sources.YahooError, ValueError) as exc:
         print(f"load-prices: {exc}", file=sys.stderr)
         return 1
-    for instrument, counts in release_counts.items():
-        print(describe_release_counts(instrument, counts))
-    first = next(iter(release_counts.values()))
-    releases = first.measured + first.skipped_before_history + first.skipped_no_close_nearby
-    total = sum(counts.measured for counts in release_counts.values())
-    print(f"{len(release_counts)} instruments × {releases} releases = {total} observations")
+    for event_type, by_instrument in release_counts.items():
+        print(event_type)
+        for instrument, counts in by_instrument.items():
+            print(describe_release_counts(instrument, counts))
+        first = next(iter(by_instrument.values()))
+        releases = first.measured + first.skipped_before_history + first.skipped_no_close_nearby
+        total = sum(counts.measured for counts in by_instrument.values())
+        print(f"{len(by_instrument)} instruments × {releases} releases = {total} observations")
     return 0
 
 
@@ -230,24 +234,27 @@ def _move_size(value: float, unit: str) -> str:
     return f"{value:.1f} bp" if unit == "bps" else f"{value * 100:.2f}%"
 
 
-def describe_raw_moves(results: dict[str, study.RawMove]) -> list[str]:
-    """The report: a verdict line per instrument, an era line per instrument, and the rule."""
-    lines = ["instrument   CPI days  median CPI  median other  ratio  p       verdict"]
+def describe_raw_moves(results: dict[str, study.RawMove], label: str = "CPI") -> list[str]:
+    """The report: a verdict line per instrument, an era line per instrument, and the rule.
+
+    ``label`` names the event in the headers: a three-letter name keeps the columns aligned.
+    """
+    lines = [f"instrument   {label} days  median {label}  median other  ratio  p       verdict"]
     for instrument, raw in results.items():
         c = raw.overall
         lines.append(
-            f"{instrument:<12} {c.cpi_days:>8}  {_move_size(c.median_cpi, raw.unit):>10}  "
+            f"{instrument:<12} {c.event_days:>8}  {_move_size(c.median_cpi, raw.unit):>10}  "
             f"{_move_size(c.median_other, raw.unit):>12}  {c.ratio:>5.2f}  {c.p:.4f}  {c.verdict}"
         )
     eras = next(iter(results.values())).eras
     lines += [
         "",
-        "by era: ratio (CPI days)",
+        f"by era: ratio ({label} days)",
         " ".join(["instrument  ", *(f"{e:<12}" for e in eras)]),
     ]
     for instrument, raw in results.items():
         cells = [
-            "—" if era.ratio is None else f"{era.ratio:.2f} ({era.cpi_days})"
+            "—" if era.ratio is None else f"{era.ratio:.2f} ({era.event_days})"
             for era in raw.eras.values()
         ]
         lines.append(" ".join([f"{instrument:<12}", *(f"{cell:<12}" for cell in cells)]).rstrip())
@@ -259,21 +266,27 @@ def describe_raw_moves(results: dict[str, study.RawMove]) -> list[str]:
     return [line.rstrip() for line in lines]
 
 
-def _raw_move(_args: argparse.Namespace) -> int:
+def _raw_move(args: argparse.Namespace) -> int:
+    event_type = EVENTS[args.event]
     con = db.get_connection()
     db.init_db(con=con)
-    for table, command in (("event_instances", "load-releases"), ("daily_bars", "load-prices")):
-        if db.count_rows(table, con=con) == 0:
-            print(
-                f"raw-move: no {table} stored; run `fortuneteller {command}` first", file=sys.stderr
-            )
-            return 1
+    if not study.stored_events(event_type, con=con):
+        print(
+            f"raw-move: no {event_type} releases stored; run `fortuneteller load-releases` first",
+            file=sys.stderr,
+        )
+        return 1
+    if db.count_rows("daily_bars", con=con) == 0:
+        print(
+            "raw-move: no daily_bars stored; run `fortuneteller load-prices` first", file=sys.stderr
+        )
+        return 1
     try:
-        results = study.measure_raw_moves(con=con)
+        results = study.measure_raw_moves(con=con, event_type=event_type)
     except ValueError as exc:
         print(f"raw-move: {exc}", file=sys.stderr)
         return 1
-    for line in describe_raw_moves(results):
+    for line in describe_raw_moves(results, label=args.event.upper()):
         print(line)
     return 0
 
@@ -310,8 +323,9 @@ def build_parser() -> argparse.ArgumentParser:
     p_surprise.set_defaults(func=_surprise)
 
     p_raw = sub.add_parser(
-        "raw-move", help="compare each instrument's moves on CPI days with all other days"
+        "raw-move", help="compare each instrument's moves on an event's days with all other days"
     )
+    p_raw.add_argument("--event", choices=EVENTS, default="cpi", help="the event (default: cpi)")
     p_raw.set_defaults(func=_raw_move)
 
     return parser

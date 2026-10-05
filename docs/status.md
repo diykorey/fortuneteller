@@ -8,11 +8,10 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Rung 1, sub-step 2 — NFP releases. `load-releases` now loads CPI and the jobs report (FRED
-`PAYEMS`): 856 NFP releases, 1955-06-07 … 2026-10-02, keyed `2` + release day. All 392 release
-dates since 1994 match BLS (two archive labels were wrong; BLS's release texts confirm FRED).
-October 2025 payrolls came out with November's on 2025-12-16 and are stored as that one release.
-Release-date corrections are now per series. CPI's `raw-move` output is unchanged. *(PR #101.)*
+Rung 1, sub-step 3 — `load-prices` measures every event type (NFP: 2,785 observations next to
+CPI's 2,698), and `raw-move --event nfp` gives NFP's step 3 verdict. Live on 2026-10-05: **the jobs
+report moves all five markets** — ratios 1.18 (S&P 500) to 1.61 (10-year yield), every p ≤ 0.0023.
+CPI's `raw-move` and `surprise` output is unchanged. *(PR #102.)*
 
 ## In progress
 
@@ -20,13 +19,14 @@ Rung 1 — **More events**: [rung-1-more-events.md](steps/rung-1-more-events.md)
 
 ## Next
 
-Rung 1, sub-step 3 — `raw-move` takes an event (`cpi`, `nfp`); `load-prices` measures every event
-type's moves; NFP's step 3 verdict.
+Rung 1, sub-step 4 — FOMC decisions into `event_instances` from the Fed's calendars (1994 on,
+unscheduled ones included), cross-checked against target-rate changes; `raw-move --event fomc`.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-05 | Rung 1.3: every event's moves; `raw-move --event` — NFP moves all five | PR #102 |
 | 2026-10-05 | Rung 1.2: NFP releases; dates checked against BLS since 1994 | PR #101 |
 | 2026-10-05 | Rung 1.1: generic event keys; `surprises` | PR #100 |
 | 2026-10-05 | Rung 1 spec: more events — NFP and Fed decisions | PR #99 |

@@ -8,7 +8,7 @@ from statistics import median
 import duckdb
 import pytest
 
-from fortuneteller import db
+from fortuneteller import db, study
 from fortuneteller.__main__ import describe_raw_moves, main
 from fortuneteller.models import DailyBar
 from fortuneteller.stats import median_not_drawn
@@ -26,7 +26,7 @@ from fortuneteller.study import (
     MoveComparison,
     RawMove,
     compare_moves,
-    cpi_days,
+    reaction_days,
     daily_moves,
     measure_raw_moves,
     move_verdict,
@@ -86,7 +86,7 @@ def test_a_cpi_day_is_the_first_close_on_or_after_the_release() -> None:
     closes.sort(key=lambda close: close.day)
 
     # when the CPI days are found
-    days = cpi_days(closes, [date(2022, 9, 13), date(1992, 12, 13)])
+    days = reaction_days(closes, [date(2022, 9, 13), date(1992, 12, 13)])
 
     # then they are the release day itself and the Monday after the Sunday
     assert days == {date(2022, 9, 13), date(1992, 12, 14)}
@@ -97,7 +97,7 @@ def test_releases_step_2_skips_are_not_cpi_days() -> None:
     closes = _closes((date(2000, 1, 3), 1.0), (date(2000, 1, 4), 1.0))
 
     # when the CPI days are found
-    days = cpi_days(closes, [date(1999, 12, 14), date(2000, 2, 15)])
+    days = reaction_days(closes, [date(1999, 12, 14), date(2000, 2, 15)])
 
     # then neither release has one
     assert days == set()
@@ -108,7 +108,7 @@ def test_two_releases_paired_with_one_close_give_one_cpi_day() -> None:
     closes = _closes((date(2026, 1, 9), 1.0), (date(2026, 1, 12), 1.0))
 
     # when a Saturday and a Sunday release both pair with Monday
-    days = cpi_days(closes, [date(2026, 1, 10), date(2026, 1, 11)])
+    days = reaction_days(closes, [date(2026, 1, 10), date(2026, 1, 11)])
 
     # then Monday counts once
     assert days == {date(2026, 1, 12)}
@@ -147,7 +147,7 @@ def test_cpi_days_twice_as_large_are_a_move() -> None:
     assert result.ratio == pytest.approx(2.0, rel=0.25)
     assert result.p == pytest.approx(1 / 10_001)
     assert result.verdict == MOVES
-    assert result.cpi_days == 200
+    assert result.event_days == 200
 
 
 def test_cpi_days_like_any_other_day_are_not_a_move() -> None:
@@ -196,7 +196,7 @@ def test_the_verdict_needs_both_size_and_significance(
     assert result == expected
 
 
-def _synthetic_store(con: duckdb.DuckDBPyConnection) -> None:
+def _synthetic_store(con: duckdb.DuckDBPyConnection, event_type: str = CPI_EVENT_TYPE) -> None:
     # 36 monthly releases in 2021-2023; prices move 0.5% a day, and 2% on each release day.
     releases = []
     for month in range(36):
@@ -206,7 +206,7 @@ def _synthetic_store(con: duckdb.DuckDBPyConnection) -> None:
             released += timedelta(days=1)
         reference = date(year - 1, 12, 1) if month_index == 1 else date(year, month_index - 1, 1)
         releases.append(FirstRelease(reference, released, 300.0))
-    store_releases(CPI_EVENT_TYPE, releases, con=con)
+    store_releases(event_type, releases, con=con)
     release_days = {release.released for release in releases}
     rng = random.Random(5)
     day, price, closes = date(2020, 12, 1), 100.0, []
@@ -234,8 +234,8 @@ def test_release_days_that_move_more_are_found_for_every_instrument() -> None:
     assert list(results) == list(MVP_PRICE_SERIES)
     for raw in results.values():
         assert raw.overall.verdict == MOVES
-        assert raw.overall.cpi_days == 36
-        assert raw.eras["2020-now"].cpi_days == 36
+        assert raw.overall.event_days == 36
+        assert raw.eras["2020-now"].event_days == 36
         assert raw.eras["1970-1989"] == EraRatio(0, None)
 
 
@@ -291,3 +291,34 @@ def test_raw_move_names_the_load_to_run_first(
     err = capsys.readouterr().err
     assert code == 1
     assert f"`fortuneteller {missing}` first" in err
+
+
+def test_the_raw_move_of_another_event_is_measured_on_its_own_days() -> None:
+    # given 36 jobs reports on which every instrument moves four times its usual size
+    con = duckdb.connect(":memory:")
+    db.init_db(con=con)
+    _synthetic_store(con, event_type=study.NFP_EVENT_TYPE)
+
+    # when the raw moves are measured for the jobs report
+    results = measure_raw_moves(con=con, event_type=study.NFP_EVENT_TYPE)
+
+    # then each instrument moves on those days
+    assert all(raw.overall.verdict == MOVES for raw in results.values())
+
+
+def test_raw_move_takes_the_event_to_measure(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    # given jobs reports and prices stored, and no CPI releases
+    _synthetic_store(db.get_connection(), event_type=study.NFP_EVENT_TYPE)
+
+    # when the command runs for the jobs report, and for CPI
+    nfp = main(["raw-move", "--event", "nfp"])
+    nfp_out = capsys.readouterr().out
+    cpi = main(["raw-move", "--event", "cpi"])
+
+    # then the jobs report gets its verdicts, and CPI says what to load first
+    assert nfp == 0
+    assert sum(line.endswith(" moves") for line in nfp_out.splitlines()) == 5
+    assert cpi == 1
+    assert "no CPI / inflation surprise releases stored" in capsys.readouterr().err

@@ -21,7 +21,7 @@ through `db.insert_models` (`effect_size_matrix`, which nothing writes yet, has 
 | [`countries`](#countries) | Reference | Country | `seed` | 10 |
 | [`event_instances`](#event_instances) | Fact | Real event that happened | `load-releases` (MVP step 1, rung 1) | 649 CPI + 856 NFP releases |
 | [`daily_bars`](#daily_bars) | Fact | Instrument × trading day closing price | `load-prices` (MVP step 2) | about 58,500 |
-| [`observations`](#observations) | Fact | Event × instrument reaction | `load-prices` (MVP step 2) | 2,698 |
+| [`observations`](#observations) | Fact | Event × instrument reaction | `load-prices` (MVP step 2, rung 1) | 2,698 CPI + 2,785 NFP |
 | [`surprises`](#surprises) | Fact | CPI release × measure × expected value | `load-surprises` (MVP step 4) | 1,287 |
 | [`effect_size_matrix`](#effect_size_matrix) | Derived | Event type × instrument measurement | Nothing planned yet | 0 |
 
@@ -326,10 +326,10 @@ about 2,700 rows.
 
 One row per event × instrument: how that instrument moved around that event. Built from
 `daily_bars` and `event_instances` by `study.store_observations`
-([step 2](steps/step-2-prices.md)): for each CPI release and each of the five instruments, the close
+([step 2](steps/step-2-prices.md)): for each stored release of every event type (CPI, NFP) and each of the five instruments, the close
 of the last trading day before the release and the move to the close of the first trading day on or
 after it. No row when either close is more than 4 calendar days from the release, or the release
-predates the instrument's history. Every run rebuilds the CPI rows in one transaction — deletes them and inserts
+predates the instrument's history. Every run rebuilds the whole table in one transaction — deletes them and inserts
 what it measured — so the table always matches that run, with no rows left from earlier rules or data.
 A run stops with an error if an instrument has no `daily_bars` at all, rather than counting every
 release as before its history.

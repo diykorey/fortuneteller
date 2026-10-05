@@ -236,12 +236,14 @@ def release_move(before: DailyClosingPrice, after: DailyClosingPrice, unit: str)
     raise ValueError(f"unknown unit {unit!r}: expected 'pct' or 'bps'")
 
 
-def stored_cpi_events(con: duckdb.DuckDBPyConnection | None = None) -> list[EventInstance]:
-    """The stored CPI releases, oldest first."""
+def stored_events(
+    event_type: str, con: duckdb.DuckDBPyConnection | None = None
+) -> list[EventInstance]:
+    """The stored events of one type, oldest first."""
     return db.fetch_all(
         EventInstance,
         "SELECT * FROM event_instances WHERE event_type = ? ORDER BY event_id",
-        [CPI_EVENT_TYPE],
+        [event_type],
         con=con,
     )
 
@@ -268,57 +270,71 @@ def stored_closes(
 
 def build_observations(
     con: duckdb.DuckDBPyConnection | None = None,
-) -> tuple[list[Observation], dict[str, ReleaseCounts]]:
-    """Measure every MVP instrument around every stored CPI release, from ``daily_bars``."""
-    events = stored_cpi_events(con=con)
+) -> tuple[list[Observation], dict[str, dict[str, ReleaseCounts]]]:
+    """Measure every MVP instrument around every stored event, from ``daily_bars``.
+
+    The counts are per event type, then per instrument; a type with no stored events is left out.
+    """
+    events = {event_type: stored_events(event_type, con=con) for event_type in EVENT_TYPE_CODES}
     observations: list[Observation] = []
-    release_counts: dict[str, ReleaseCounts] = {}
+    release_counts: dict[str, dict[str, ReleaseCounts]] = {
+        event_type: {} for event_type, typed in events.items() if typed
+    }
     for instrument, (_ticker, unit) in MVP_PRICE_SERIES.items():
         closes = stored_closes(instrument, con=con)
-        counts = release_counts[instrument] = ReleaseCounts()
-        for event in events:
-            pair = closing_price_before_after(closes, release_date(event))
-            if pair == BEFORE_HISTORY:
-                counts.skipped_before_history += 1
-                continue
-            if isinstance(pair, str):
-                counts.skipped_no_close_nearby += 1
-                continue
-            before, after = pair
-            counts.measured += 1
-            observations.append(
-                Observation(
-                    event_id=event.event_id,
-                    instrument=instrument,
-                    px_t0=before.price,
-                    ret_unit=unit,
-                    ret_5m=None,
-                    ret_1h=None,
-                    ret_1d=release_move(before, after, unit),
-                    ret_1w=None,
-                    abn_ret_1d=None,
-                    car=None,
-                    peak_move=None,
-                    half_life_min=None,
-                    realized_dir=None,
-                    data_source=YAHOO,
-                    quality=DAILY_CLOSE,
-                )
-            )
+        for event_type, by_instrument in release_counts.items():
+            counts = by_instrument[instrument] = ReleaseCounts()
+            observations += _observe(events[event_type], instrument, unit, closes, counts)
     return observations, release_counts
 
 
-def store_observations(con: duckdb.DuckDBPyConnection | None = None) -> dict[str, ReleaseCounts]:
-    """Rebuild the CPI observations: the table ends up holding exactly what this run measured."""
+def _observe(
+    events: Sequence[EventInstance],
+    instrument: str,
+    unit: str,
+    closes: Sequence[DailyClosingPrice],
+    counts: ReleaseCounts,
+) -> list[Observation]:
+    observations: list[Observation] = []
+    for event in events:
+        pair = closing_price_before_after(closes, release_date(event))
+        if pair == BEFORE_HISTORY:
+            counts.skipped_before_history += 1
+            continue
+        if isinstance(pair, str):
+            counts.skipped_no_close_nearby += 1
+            continue
+        before, after = pair
+        counts.measured += 1
+        observations.append(
+            Observation(
+                event_id=event.event_id,
+                instrument=instrument,
+                px_t0=before.price,
+                ret_unit=unit,
+                ret_5m=None,
+                ret_1h=None,
+                ret_1d=release_move(before, after, unit),
+                ret_1w=None,
+                abn_ret_1d=None,
+                car=None,
+                peak_move=None,
+                half_life_min=None,
+                realized_dir=None,
+                data_source=YAHOO,
+                quality=DAILY_CLOSE,
+            )
+        )
+    return observations
+
+
+def store_observations(
+    con: duckdb.DuckDBPyConnection | None = None,
+) -> dict[str, dict[str, ReleaseCounts]]:
+    """Rebuild the observations: the table ends up holding exactly what this run measured."""
     connection = con if con is not None else db.get_connection()
     observations, release_counts = build_observations(con=connection)
-    db.replace_rows(
-        "observations",
-        observations,
-        "event_id IN (SELECT event_id FROM event_instances WHERE event_type = ?)",
-        [CPI_EVENT_TYPE],
-        con=connection,
-    )
+    db.replace_rows("observations", observations, "TRUE", con=connection)
     return release_counts
 
 
@@ -348,7 +364,7 @@ def daily_moves(closes: Sequence[DailyClosingPrice], unit: str) -> dict[date, fl
     }
 
 
-def cpi_days(closes: Sequence[DailyClosingPrice], release_dates: Iterable[date]) -> set[date]:
+def reaction_days(closes: Sequence[DailyClosingPrice], release_dates: Iterable[date]) -> set[date]:
     """The days whose move is a CPI release's reaction: the close step 2 pairs each release with."""
     days = set()
     for release_date in release_dates:
@@ -362,7 +378,7 @@ def cpi_days(closes: Sequence[DailyClosingPrice], release_dates: Iterable[date])
 class MoveComparison:
     """One instrument's moves on CPI days against its moves on all other days."""
 
-    cpi_days: int
+    event_days: int
     median_cpi: float
     median_other: float
     ratio: float
@@ -404,7 +420,7 @@ def compare_moves(
 
 
 class EraRatio(NamedTuple):
-    cpi_days: int
+    event_days: int
     ratio: float | None
 
 
@@ -421,13 +437,15 @@ def era_of(day: date) -> str:
     return next(label for label, last_year in ERAS if day.year <= last_year)
 
 
-def measure_raw_moves(con: duckdb.DuckDBPyConnection | None = None) -> dict[str, RawMove]:
-    """Each MVP instrument's moves on CPI days against its moves on all other days."""
-    release_dates = [release_date(event) for event in stored_cpi_events(con=con)]
+def measure_raw_moves(
+    con: duckdb.DuckDBPyConnection | None = None, event_type: str = CPI_EVENT_TYPE
+) -> dict[str, RawMove]:
+    """Each MVP instrument's moves on the event's days against its moves on all other days."""
+    release_dates = [release_date(event) for event in stored_events(event_type, con=con)]
     results: dict[str, RawMove] = {}
     for instrument, (_ticker, unit) in MVP_PRICE_SERIES.items():
         closes = stored_closes(instrument, con=con)
-        days = cpi_days(closes, release_dates)
+        days = reaction_days(closes, release_dates)
         by_era: dict[str, tuple[list[float], list[float]]] = {label: ([], []) for label, _ in ERAS}
         for day, move in daily_moves(closes, unit).items():
             cpi, other = by_era[era_of(day)]
@@ -632,7 +650,7 @@ def load_surprises(api_key: str, con: duckdb.DuckDBPyConnection | None = None) -
     Nothing is stored unless every first-published change matches the Cleveland Fed's published
     one within ``ACTUAL_TOLERANCE_PP``: a wrong actual would make every surprise wrong.
     """
-    events = stored_cpi_events(con=con)
+    events = stored_events(CPI_EVENT_TYPE, con=con)
     if not events:
         raise ValueError("no CPI releases stored; run `fortuneteller load-releases` first")
     changes = {
