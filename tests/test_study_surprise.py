@@ -28,7 +28,7 @@ from fortuneteller.sources import (
     parse_level,
     parse_nowcasts,
 )
-from fortuneteller.models import CpiSurprise, EventInstance
+from fortuneteller.models import Surprise, EventInstance
 from fortuneteller.study import (
     DOESNT_TRACK,
     NOWCAST_BASELINE,
@@ -358,7 +358,7 @@ def test_a_surprise_row_is_actual_minus_expected_for_its_release() -> None:
 
     # then there is one nowcast row, too early in history for a trend, 0.09 pp hot
     assert [(r.event_id, r.measure, r.baseline, r.actual_mom, r.expected_mom) for r in rows] == [
-        (202208, CORE, NOWCAST_BASELINE, 0.57, 0.48)
+        (1_2022_09_13, CORE, NOWCAST_BASELINE, 0.57, 0.48)
     ]
     assert rows[0].surprise == pytest.approx(0.09)
 
@@ -438,9 +438,9 @@ def test_loading_stores_each_surprise_once_however_often_it_runs(
     rows = study.load_surprises("key", con=con)
 
     # then the eight months with a year behind them have a trend row, August a nowcast row too
-    assert db.count_rows("cpi_surprises", con=con) == len(rows) == 9
+    assert db.count_rows("surprises", con=con) == len(rows) == 9
     august = con.execute(
-        "SELECT baseline, surprise FROM cpi_surprises WHERE event_id = 202208 ORDER BY baseline"
+        "SELECT baseline, surprise FROM surprises WHERE event_id = 120220913 ORDER BY baseline"
     ).fetchall()
     assert august == [
         (NOWCAST_BASELINE, pytest.approx(0.09)),
@@ -460,7 +460,7 @@ def test_loading_refuses_when_a_change_differs_from_cleveland_s(
     # when / then nothing is stored, and the month is named
     with pytest.raises(ValueError, match="core: .* 2022-08"):
         study.load_surprises("key", con=con)
-    assert db.count_rows("cpi_surprises", con=con) == 0
+    assert db.count_rows("surprises", con=con) == 0
 
 
 def test_loading_needs_the_releases_first() -> None:
@@ -488,8 +488,8 @@ def test_load_surprises_prints_a_line_per_measure_and_baseline(
     out = capsys.readouterr().out.splitlines()
     assert code == 0
     assert out == [
-        "core      trend_12m    8 surprises, 2022-01 … 2022-08",
-        "core      nowcast      1 surprises, 2022-08 … 2022-08",
+        "core      trend_12m    8 surprises, released 2022-02-14 … 2022-09-13",
+        "core      nowcast      1 surprises, released 2022-09-13 … 2022-09-13",
     ]
 
 
@@ -617,18 +617,22 @@ def test_each_instrument_is_measured_against_each_measure_and_baseline() -> None
     month = date(2022, 8, 1)
     study.store_cpi_releases([CpiRelease(month, date(2022, 9, 13), 100.0)], con=con)
     surprises = [
-        CpiSurprise(
-            event_id=202208, measure=m, baseline=b, actual_mom=0.5, expected_mom=0.4, surprise=0.1
+        Surprise(
+            event_id=1_2022_09_13,
+            measure=m,
+            baseline=b,
+            actual_mom=0.5,
+            expected_mom=0.4,
+            surprise=0.1,
         )
         for m in (CORE, HEADLINE)
         for b in (study.TREND_12M, NOWCAST_BASELINE)
     ]
-    db.insert_models("cpi_surprises", surprises, con=con)
+    db.insert_models("surprises", surprises, con=con)
     con.execute(
-        "INSERT INTO observations (obs_id, event_id, instrument, ret_unit, ret_1d) "
-        "SELECT 2022080 + i, 202208, instrument, 'pct', 0.01 "
-        "FROM (SELECT unnest(?) AS instrument, generate_subscripts(?, 1) - 1 AS i)",
-        [list(study.MVP_PRICE_SERIES), list(study.MVP_PRICE_SERIES)],
+        "INSERT INTO observations (event_id, instrument, ret_unit, ret_1d) "
+        "SELECT 120220913, unnest(?), 'pct', 0.01",
+        [list(study.MVP_PRICE_SERIES)],
     )
 
     # when the pairs are gathered
@@ -673,9 +677,10 @@ def _store_tracking_data(con: duckdb.DuckDBPyConnection) -> None:
     study.store_cpi_releases([CpiRelease(m, released_on(m), 100.0) for m in months], con=con)
     surprises, observations = [], []
     for m in months:
-        event_id, surprise = m.year * 100 + m.month, rng.gauss(0, 0.2)
+        event_id = study.event_id(study.CPI_EVENT_TYPE, released_on(m))
+        surprise = rng.gauss(0, 0.2)
         surprises += [
-            CpiSurprise(
+            Surprise(
                 event_id=event_id,
                 measure=measure,
                 baseline=baseline,
@@ -685,14 +690,13 @@ def _store_tracking_data(con: duckdb.DuckDBPyConnection) -> None:
             )
             for measure, baseline in study.COMBINATIONS
         ]
-        for i, instrument in enumerate(study.MVP_PRICE_SERIES):
+        for instrument in study.MVP_PRICE_SERIES:
             sign = study.EXPECTED_SIGN[instrument] or 1
             move = 0.01 * sign * surprise + rng.gauss(0, 0.0005)
-            observations.append((event_id * 10 + i, event_id, instrument, move))
-    db.insert_models("cpi_surprises", surprises, con=con)
+            observations.append((event_id, instrument, move))
+    db.insert_models("surprises", surprises, con=con)
     con.executemany(
-        "INSERT INTO observations (obs_id, event_id, instrument, ret_unit, ret_1d) "
-        "VALUES (?, ?, ?, 'pct', ?)",
+        "INSERT INTO observations (event_id, instrument, ret_unit, ret_1d) VALUES (?, ?, 'pct', ?)",
         observations,
     )
 
@@ -726,8 +730,7 @@ def test_surprise_names_the_load_to_run_first(
         study.store_cpi_releases([CpiRelease(date(2022, 8, 1), date(2022, 9, 13), 100.0)], con=con)
     if stored >= 2:
         con.execute(
-            "INSERT INTO observations (obs_id, event_id, instrument, ret_1d) "
-            "VALUES (1, 202208, 'DXY', 0.0)"
+            "INSERT INTO observations (event_id, instrument, ret_1d) VALUES (120220913, 'DXY', 0.0)"
         )
 
     # when the command runs

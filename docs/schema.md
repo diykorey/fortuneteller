@@ -22,7 +22,7 @@ through `db.insert_models` (`effect_size_matrix`, which nothing writes yet, has 
 | [`event_instances`](#event_instances) | Fact | Real event that happened | `load-releases` (MVP step 1) | 649 CPI releases |
 | [`daily_bars`](#daily_bars) | Fact | Instrument × trading day closing price | `load-prices` (MVP step 2) | about 58,500 |
 | [`observations`](#observations) | Fact | Event × instrument reaction | `load-prices` (MVP step 2) | 2,698 |
-| [`cpi_surprises`](#cpi_surprises) | Fact | CPI release × measure × expected value | `load-surprises` (MVP step 4) | 1,287 |
+| [`surprises`](#surprises) | Fact | CPI release × measure × expected value | `load-surprises` (MVP step 4) | 1,287 |
 | [`effect_size_matrix`](#effect_size_matrix) | Derived | Event type × instrument measurement | Nothing planned yet | 0 |
 
 **Reference** tables are configuration: committed CSVs in `data/seed/`, loaded by
@@ -233,13 +233,13 @@ change.
 
 | Column | Type | Meaning | Filled today |
 | --- | --- | --- | --- |
-| `event_id` | BIGINT, **PK** | Stable id. For CPI, the reference month as `YYYYMM` (e.g. `202608`). Unique only within CPI: a second event type needs a different key first (see `study.to_event_instance`). | Yes |
+| `event_id` | BIGINT, **PK** | Stable id: the event type's code, then the release day as `YYYYMMDD` — CPI on 2022-09-13 is `120220913` (`study.event_id`). Codes: `1` CPI. Unique across event types, and sorted by date within one. | Yes |
 | `event_type` | TEXT | An `event_types.event_type`. Today always `CPI / inflation surprise`. | Yes |
 | `event_ts` | TIMESTAMP | When the market learned of the event: for CPI, the release day at 08:30 New York time. Stored as **naive UTC**, because DuckDB would shift a time-zone-aware value into the session's time zone. | Yes |
 | `country` | TEXT | A `countries.country`. Today always `United States`. | Yes |
 | `detail` | TEXT | What the event is about. For CPI, the reference month as `YYYY-MM`, i.e. the month whose prices were measured, about six weeks before `event_ts`. | Yes |
 | `scheduled` | BOOLEAN | `true` if the date was known in advance (a data release), `false` if not (a war, a hack). | Yes, `true` |
-| `consensus` | DOUBLE | What forecasters expected before the release, from a survey. | No: no free survey history exists. Step 4's expected values are a trend and a model, so they go in [`cpi_surprises`](#cpi_surprises) instead |
+| `consensus` | DOUBLE | What forecasters expected before the release, from a survey. | No: no free survey history exists. Step 4's expected values are a trend and a model, so they go in [`surprises`](#surprises) instead |
 | `actual` | DOUBLE | The number released. For CPI, the index level as first published, before any revision. | Yes |
 | `surprise` | DOUBLE | `actual − consensus`: the part the market did not expect. | No; see `consensus` |
 | `surprise_sd` | DOUBLE | `surprise` divided by the typical size of past surprises, so surprises of different events compare. | No; nothing planned before a second event type |
@@ -342,9 +342,8 @@ daily prices, so the intraday ones stay empty.
 
 | Column | Type | Meaning | Filled today |
 | --- | --- | --- | --- |
-| `obs_id` | BIGINT, **PK** | Stable id: `event_id × 10 +` the instrument's position (0–4: `SPY / ES`, `UST10Y / ZN`, `DXY`, `GC / XAU`, `VIX`), e.g. `2022080`. Unique only while `event_id` is — the same CPI-only caveat. | Yes |
-| `event_id` | BIGINT | The `event_instances.event_id` it reacts to. The one enforced foreign key in the schema. | Yes |
-| `instrument` | TEXT | An `instruments.symbol`. | Yes |
+| `event_id` | BIGINT, **PK** | The `event_instances.event_id` it reacts to (a foreign key). | Yes |
+| `instrument` | TEXT, **PK** | An `instruments.symbol`. One row per event and instrument. | Yes |
 | `px_t0` | DOUBLE | Price (or yield) just before the event: the close of the last trading day before the release date, the starting point the returns are measured from. | Yes |
 | `ret_unit` | TEXT | Unit of the `ret_*` columns: `pct` (relative change, `0.01` = 1%) for prices, `bps` (basis points, `(yield₁ − yield₀) × 100`) for yields. Values in different units must never be averaged together. | Yes |
 | `ret_5m` | DOUBLE | Move over 5 minutes after the event. Needs intraday data. | No; not in the MVP |
@@ -382,7 +381,7 @@ daily prices, so the intraday ones stay empty.
 | --- | --- |
 | `daily_close` | From daily closing prices, not intraday data: the move includes everything else that happened that day, not only the release. |
 
-## cpi_surprises
+## surprises
 
 **In plain words:** for every CPI release, how far the number landed from what was expected. One
 row is one release, one CPI measure and one way of saying what was expected — "in August 2022
@@ -401,7 +400,7 @@ Example row:
 
 | `event_id` | `measure` | `baseline` | `actual_mom` | `expected_mom` | `surprise` |
 | --- | --- | --- | --- | --- | --- |
-| 202208 | `core` | `nowcast` | 0.567 | 0.480 | 0.087 |
+| 120220913 | `core` | `nowcast` | 0.567 | 0.480 | 0.087 |
 
 | Column | Type | Meaning |
 | --- | --- | --- |

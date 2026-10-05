@@ -16,7 +16,7 @@ from collections.abc import Callable, Sequence
 
 from . import db, seed, sources, study
 from .config import settings
-from .models import CpiSurprise
+from .models import Surprise
 
 Handler = Callable[[argparse.Namespace], int]
 
@@ -116,7 +116,7 @@ def _load_prices(_args: argparse.Namespace) -> int:
     return 0
 
 
-def describe_surprises(rows: Sequence[CpiSurprise]) -> list[str]:
+def describe_surprises(rows: Sequence[Surprise]) -> list[str]:
     """One report line per measure and expected value: how many surprises, over which months."""
     lines = []
     for measure in study.MEASURE_SERIES:
@@ -125,9 +125,9 @@ def describe_surprises(rows: Sequence[CpiSurprise]) -> list[str]:
                 r.event_id for r in rows if r.measure == measure and r.baseline == baseline
             )
             if ids:
-                first, last = (f"{i // 100}-{i % 100:02d}" for i in (ids[0], ids[-1]))
+                first, last = (study.event_date(i) for i in (ids[0], ids[-1]))
                 lines.append(
-                    f"{measure:<9} {baseline:<10} {len(ids):>3} surprises, {first} … {last}"
+                    f"{measure:<9} {baseline:<10} {len(ids):>3} surprises, released {first} … {last}"
                 )
     return lines
 
@@ -201,7 +201,7 @@ def _surprise(_args: argparse.Namespace) -> int:
     for table, command in (
         ("event_instances", "load-releases"),
         ("observations", "load-prices"),
-        ("cpi_surprises", "load-surprises"),
+        ("surprises", "load-surprises"),
     ):
         if db.count_rows(table, con=con) == 0:
             print(

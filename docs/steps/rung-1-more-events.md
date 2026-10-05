@@ -46,7 +46,7 @@ standard source, are paid. So the Fed gets step 3 only; its surprise is in
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | Generic keys: `event_id` = type code × 10⁸ + release date (CPI 2022-09-13 → `120220913`); `observations` keyed by (`event_id`, `instrument`); `cpi_surprises` becomes `surprises` | Fact tables reloaded under the new keys; `raw-move` and `surprise` print the CPI numbers unchanged |
+| 1 | ~~Generic keys: `event_id` = type code × 10⁸ + release date (CPI 2022-09-13 → `120220913`); `observations` keyed by (`event_id`, `instrument`); `cpi_surprises` becomes `surprises`~~ **done** | Fact tables reloaded under the new keys; `raw-move` and `surprise` print the CPI numbers unchanged |
 | 2 | NFP releases into `event_instances` (`NFP / labor data`, 08:30 New York) | Weekend guard; dates checked against BLS's Employment Situation archive from 1994; 2026-10 count recorded |
 | 3 | `raw-move` takes an event (`cpi`, `nfp`, `fomc`) | NFP's step 3 verdict printed |
 | 4 | FOMC decisions into `event_instances` (`Central-bank decision`, `United States`, 14:00 New York; unscheduled ones `scheduled = false`) | Every target-rate change since 1994 falls on a listed decision; FOMC's step 3 verdict printed |
@@ -85,9 +85,10 @@ No Fed surprise. No consensus forecasts, no intraday prices (option 2 in
 
 ## Technical details
 
-**Reloading.** Step 1 changes keys in three fact tables; `init` does not alter existing tables.
-The step deletes and recreates the fact tables (`event_instances`, `observations`, `surprises`)
-and the loads refill them; the reference tables and `daily_bars` are untouched.
+**Reloading.** Step 1 changes keys in three fact tables, and `init` does not alter existing
+tables. So an existing database is deleted and rebuilt: `init`, then `load-releases`,
+`load-prices` and `load-surprises` (about a minute; plus `seed` for the reference tables). Every
+table is refilled from its source, so nothing is lost.
 
 **NFP source.** FRED `PAYEMS`, `output_type=3`, full real-time range, one request: one column per
 release day (`PAYEMS_YYYYMMDD`). For each release day, the first-published change is the newest

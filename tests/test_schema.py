@@ -14,7 +14,7 @@ EXPECTED_TABLES = {
     "observations",
     "effect_size_matrix",
     "daily_bars",
-    "cpi_surprises",
+    "surprises",
 }
 
 
@@ -66,19 +66,19 @@ def test_daily_bars_is_keyed_by_instrument_and_calendar_date() -> None:
     assert key == (["instrument", "day"],)
 
 
-def test_cpi_surprises_holds_one_row_per_release_measure_and_baseline() -> None:
+def test_surprises_holds_one_row_per_release_measure_and_baseline() -> None:
     # given the schema applied to a fresh store
     con = duckdb.connect(":memory:")
     con.execute(settings.schema_path.read_text())
 
-    # when the cpi_surprises columns and primary key are read back
+    # when the surprises columns and primary key are read back
     columns = con.execute(
         "SELECT column_name, data_type FROM information_schema.columns "
-        "WHERE table_name = 'cpi_surprises' ORDER BY ordinal_position"
+        "WHERE table_name = 'surprises' ORDER BY ordinal_position"
     ).fetchall()
     key = con.execute(
         "SELECT constraint_column_names FROM duckdb_constraints() "
-        "WHERE table_name = 'cpi_surprises' AND constraint_type = 'PRIMARY KEY'"
+        "WHERE table_name = 'surprises' AND constraint_type = 'PRIMARY KEY'"
     ).fetchone()
 
     # then each release has at most one surprise per measure and baseline
@@ -91,3 +91,18 @@ def test_cpi_surprises_holds_one_row_per_release_measure_and_baseline() -> None:
         ("surprise", "DOUBLE"),
     ]
     assert key == (["event_id", "measure", "baseline"],)
+
+
+def test_observations_are_keyed_by_event_and_instrument() -> None:
+    # given the schema applied to a fresh store
+    con = duckdb.connect(":memory:")
+    con.execute(settings.schema_path.read_text())
+
+    # when the observations primary key is read back
+    key = con.execute(
+        "SELECT constraint_column_names FROM duckdb_constraints() "
+        "WHERE table_name = 'observations' AND constraint_type = 'PRIMARY KEY'"
+    ).fetchone()
+
+    # then one row per event and instrument, with no number that depends on the instrument order
+    assert key == (["event_id", "instrument"],)

@@ -8,29 +8,27 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-MVP step 4, sub-step 7 — Results in [step-4-surprise.md](steps/step-4-surprise.md) and the
-plain-words summary [mvp-results.md](mvp-results.md). **Step 4 and the MVP are complete.** The
-move follows the core CPI surprise for the 10-year yield (tracks: p 0.0008, hit rate 62%, about
-1 bp per 0.1 pp), weakly (rank correlation 0.17); the dollar is unclear; VIX, the S&P 500 and gold
-do not. The Precision triggers for the daily window and for small-sample hit rates fired.
-*(PR #98.)*
+Rung 1, sub-step 1 — generic keys. `event_id` is the event type's code and the release day
+(`study.event_id`; CPI 2022-09-13 → `120220913`), `observations` is keyed by (`event_id`,
+`instrument`) with `obs_id` gone, and `cpi_surprises` is now `surprises`. On a database rebuilt
+from scratch (under a minute), `raw-move` and `surprise` print exactly the numbers they printed
+before. **An existing database must be deleted and reloaded** (see the rung 1 spec). *(PR #100.)*
 
 ## In progress
 
-Rung 1 — **More events** (NFP and Fed decisions): the spec,
-[rung-1-more-events.md](steps/rung-1-more-events.md). Scope agreed 2026-10-05: no Fed surprise
-(raw move only); event key = type code × 10⁸ + release date; order keys → NFP → FOMC → clean
-baseline → NFP surprise.
+Rung 1 — **More events**: [rung-1-more-events.md](steps/rung-1-more-events.md).
 
 ## Next
 
-Rung 1, sub-step 1 — generic keys: `event_id` from type code and release date, `observations`
-keyed by (`event_id`, `instrument`), `cpi_surprises` → `surprises`; CPI's numbers unchanged.
+Rung 1, sub-step 2 — NFP releases into `event_instances` (`NFP / labor data`): FRED `PAYEMS`
+first releases, weekend guard, release dates checked against BLS.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-05 | Rung 1.1: generic event keys; `surprises` | PR #100 |
+| 2026-10-05 | Rung 1 spec: more events — NFP and Fed decisions | PR #99 |
 | 2026-10-05 | Step 4.7: Results and `mvp-results.md` — step 4 and the MVP complete | PR #98 |
 | 2026-10-05 | Step 4.6: `surprise` CLI — verdict and context tables | PR #97 |
 | 2026-10-05 | Step 4.5: `track_surprises`; shared statistics in `stats.py` | PR #96 |
@@ -83,7 +81,6 @@ Found by the 2026-09-28 codebase review and deliberately left for later. This se
 each is fixed or dropped; it is not rewritten when a task finishes.
 
 - Paths and `.env` resolve from the working directory, so running from elsewhere misses them.
-- `obs_id` depends on the order of `MVP_PRICE_SERIES` and leaves room for ten instruments.
 - The `Prediction` model has no table and no caller.
 - CPI release dates for 1972–1989 have not been checked against BLS (its reports for those years
   were not reachable). Later dates are checked; see step 1's spec.

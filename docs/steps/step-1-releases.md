@@ -92,7 +92,7 @@ grows by one a month: on 2026-09-25 it was 650, through `2026-08` published 2026
 
 | Column | Value |
 | --- | --- |
-| `event_id` | **Reference month** as `YYYYMM` — deterministic, unique, one row per print |
+| `event_id` | **Reference month** as `YYYYMM` — deterministic, unique, one row per print. Rung 1 replaced it with type code + release day (`120220913`) |
 | `event_type` | `CPI / inflation surprise` — the exact key from `event_types.csv` |
 | `event_ts` | Release date at 08:30 America/New_York, stored as **naive** UTC |
 | `country` | `United States` — the exact spelling from `countries.csv` |

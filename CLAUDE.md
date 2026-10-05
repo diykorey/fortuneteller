@@ -15,7 +15,7 @@ design docs (mirrored from a Notion workspace), the seed reference data, a worki
 (`src/fortuneteller/study.py`; requests and parsing of FRED and Yahoo live in `sources.py`), and `load-prices`, which stores daily closes from Yahoo in
 `daily_bars` and each instrument's move around every release in `observations`, `raw-move`
 (MVP step 3), which compares each instrument's moves on CPI days with all other days, and, for MVP
-step 4, `load-surprises` (each release's CPI surprise into `cpi_surprises`) and `surprise` (does
+step 4, `load-surprises` (each release's CPI surprise into `surprises`) and `surprise` (does
 each move follow it?). **No prediction code exists**: step 4 measures past surprises; nothing
 forecasts a release, resolves a direction for a future event, or warns.
 

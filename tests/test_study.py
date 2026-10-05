@@ -13,7 +13,7 @@ import duckdb
 import pytest
 from pydantic import SecretStr
 
-from fortuneteller import db, sources
+from fortuneteller import db, sources, study
 from fortuneteller.__main__ import main
 from fortuneteller.config import settings
 from fortuneteller.sources import (
@@ -139,15 +139,15 @@ def test_event_ts_is_release_day_at_0830_new_york_in_naive_utc() -> None:
     assert all(ts.tzinfo is None for ts in event_ts.values())
 
 
-def test_event_is_keyed_by_reference_month_and_dated_by_release() -> None:
-    # given the two prints first published on the same day
+def test_event_is_keyed_by_type_and_release_day_and_names_its_month() -> None:
+    # given the November 2025 print, first published on 2025-12-18
     release = CpiRelease(date(2025, 11, 1), date(2025, 12, 18), 325.031)
 
     # when the print is mapped
     event = to_event_instance(release)
 
-    # then the id and detail name the month measured, the timestamp the day it was published
-    assert event.event_id == 202511
+    # then the id is CPI's code and the release day, and the detail names the month measured
+    assert event.event_id == 1_2025_12_18
     assert event.detail == "2025-11"
     assert event.event_ts.date() == date(2025, 12, 18)
     assert event.actual == 325.031
@@ -211,7 +211,7 @@ def test_event_ts_round_trips_as_utc_under_a_non_utc_session() -> None:
     con = _store("Europe/Kyiv")
 
     # when the August 2026 print is read back
-    row = con.execute("SELECT event_ts FROM event_instances WHERE event_id = 202608").fetchone()
+    row = con.execute("SELECT event_ts FROM event_instances WHERE event_id = 120260911").fetchone()
 
     # then it is still 08:30 New York in UTC, not shifted to the session zone
     assert row == (datetime(2026, 9, 11, 12, 30),)
@@ -365,3 +365,15 @@ def test_release_date_on_a_weekend_is_rejected() -> None:
     # when / then parsing refuses it: BLS does not publish CPI on weekends
     with pytest.raises(FredError, match="1972-07-01: released Saturday 1972-08-19"):
         parse_cpi_releases(payload)
+
+
+def test_two_event_types_on_the_same_day_get_different_ids() -> None:
+    # given the CPI code and another type's code on one day
+    day = date(2022, 9, 13)
+
+    # when the ids are built
+    cpi = study.event_id(study.CPI_EVENT_TYPE, day)
+
+    # then the type code leads, so another type on that day cannot collide
+    assert cpi == 1_2022_09_13
+    assert cpi // 10**8 == study.EVENT_TYPE_CODES[study.CPI_EVENT_TYPE]

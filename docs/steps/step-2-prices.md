@@ -135,7 +135,7 @@ release date (`event_ts` converted back to New York time):
 
 | Column | Value |
 | --- | --- |
-| `obs_id` | `event_id × 10 + position of the instrument in the table above` (0–4), e.g. `2026082` for DXY and August 2026. Unique only while `event_id` is; same caveat as in step 1 |
+| `obs_id` | Removed in rung 1: rows are keyed by (`event_id`, `instrument`) |
 | `event_id` | The `event_instances.event_id` |
 | `instrument` | The `instruments.symbol` |
 | `px_t0` | `close(t0)` |

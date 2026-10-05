@@ -87,7 +87,6 @@ def test_fact_and_output_models_construct() -> None:
         quality="high",
     )
     observation = Observation(
-        obs_id=1,
         event_id=1,
         instrument="SPY / ES",
         px_t0=None,
