@@ -26,7 +26,7 @@ MVP step 4, sub-step 1 — the `cpi_surprises` table and its schema doc
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-05 | `daily_bars` rebuilt per instrument; gold cross-checked, not replaced | PR #— |
+| 2026-10-05 | `daily_bars` rebuilt per instrument; gold cross-checked, not replaced | PR #88 |
 | 2026-10-05 | Step 4 spec: does the move follow the CPI surprise? | PR #87 |
 | 2026-10-05 | Step 3.4: Results — step 3 complete; CPI moves UST 10Y, DXY, VIX | PR #86 |
 | 2026-10-02 | Step 3.3: `raw-move` CLI — verdicts, eras, rule | PR #85 |
