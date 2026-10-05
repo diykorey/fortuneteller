@@ -31,7 +31,7 @@ from zoneinfo import ZoneInfo
 import duckdb
 
 from . import db, sources, stats
-from .models import CpiSurprise, DailyBar, EventInstance, Observation
+from .models import Surprise, DailyBar, EventInstance, Observation
 from .sources import CpiRelease, DailyClosingPrice, YahooError
 
 
@@ -44,21 +44,32 @@ CPI_COUNTRY = "United States"
 CPI_RELEASE_TIME = time(8, 30)
 CPI_RELEASE_ZONE = ZoneInfo("America/New_York")
 FIRST_RELEASE = "first_release"
+# Each event type's leading digit in event_id; the rest is the release day, so ids from different
+# types never collide and sort by date within a type.
+EVENT_TYPE_CODES = {CPI_EVENT_TYPE: 1}
+
+
+def event_id(event_type: str, released: date) -> int:
+    """The ``event_instances`` key: type code, then the release day (CPI 2022-09-13 → 120220913)."""
+    day = released.year * 10_000 + released.month * 100 + released.day
+    return EVENT_TYPE_CODES[event_type] * 100_000_000 + day
+
+
+def event_date(event_id: int) -> date:
+    """The release day an ``event_id`` was built from."""
+    day = event_id % 100_000_000
+    return date(day // 10_000, day // 100 % 100, day % 100)
 
 
 def to_event_instance(release: CpiRelease) -> EventInstance:
-    """Map one release to its ``event_instances`` row, keyed by reference month (``YYYYMM``).
+    """Map one release to its ``event_instances`` row, keyed by event type and release day.
 
     ``event_ts`` is naive UTC: DuckDB converts an aware datetime written to a ``TIMESTAMP`` column
     into the session time zone, so the offset is applied here and then dropped.
     """
     published = datetime.combine(release.released, CPI_RELEASE_TIME, tzinfo=CPI_RELEASE_ZONE)
     return EventInstance(
-        # YYYYMM is unique only within CPI. event_id is the key of the whole table, so a second
-        # event type keyed this way would collide and replace=True would silently overwrite CPI rows.
-        # Before adding one, replace this with a key generic across event types, e.g. a
-        # deterministic hash of (event_type, detail).
-        event_id=release.reference_month.year * 100 + release.reference_month.month,
+        event_id=event_id(CPI_EVENT_TYPE, release.released),
         event_type=CPI_EVENT_TYPE,
         event_ts=published.astimezone(UTC).replace(tzinfo=None),
         country=CPI_COUNTRY,
@@ -94,7 +105,6 @@ class PriceSeries(NamedTuple):
 
 # The five MVP instruments, keyed by the exact symbol in data/seed/instruments.csv, with the Yahoo
 # ticker each is read from and the unit its move is measured in: pct for prices, bps for the yield.
-# Order matters: observations are numbered by position in this table.
 MVP_PRICE_SERIES = {
     "SPY / ES": PriceSeries("^GSPC", "pct"),
     "UST10Y / ZN": PriceSeries("^TNX", "bps"),
@@ -233,7 +243,7 @@ def build_observations(
     events = stored_cpi_events(con=con)
     observations: list[Observation] = []
     release_counts: dict[str, ReleaseCounts] = {}
-    for position, (instrument, (_ticker, unit)) in enumerate(MVP_PRICE_SERIES.items()):
+    for instrument, (_ticker, unit) in MVP_PRICE_SERIES.items():
         closes = stored_closes(instrument, con=con)
         counts = release_counts[instrument] = ReleaseCounts()
         for event in events:
@@ -248,8 +258,6 @@ def build_observations(
             counts.measured += 1
             observations.append(
                 Observation(
-                    # Unique only while event_id is: the same CPI-only caveat as event_id itself.
-                    obs_id=event.event_id * 10 + position,
                     event_id=event.event_id,
                     instrument=instrument,
                     px_t0=before.price,
@@ -513,7 +521,7 @@ def actual_mismatches(
     ]
 
 
-# The two expected values, as stored in cpi_surprises.baseline.
+# The two expected values, as stored in surprises.baseline.
 TREND_12M = "trend_12m"
 NOWCAST_BASELINE = "nowcast"
 TREND_MONTHS = 12
@@ -544,15 +552,15 @@ def build_surprises(
     events: Iterable[EventInstance],
     changes: Mapping[str, Sequence[MonthlyChange]],
     points: Iterable[sources.NowcastPoint],
-) -> list[CpiSurprise]:
-    """One ``cpi_surprises`` row per stored release, measure and expected value.
+) -> list[Surprise]:
+    """One ``surprises`` row per stored release, measure and expected value.
 
     Each change is matched to its stored release by month, and must have come out the same day:
     core and headline are one BLS release.
     """
     stored = {date.fromisoformat(f"{event.detail}-01"): event for event in events}
     nowcast_points = list(points)
-    rows: list[CpiSurprise] = []
+    rows: list[Surprise] = []
     for measure, measure_changes in changes.items():
         released = {change.reference_month: change.released for change in measure_changes}
         nowcasts = nowcast_expectations(nowcast_points, released)
@@ -576,7 +584,7 @@ def build_surprises(
             for baseline, expected in expected_by.items():
                 if month in expected:
                     rows.append(
-                        CpiSurprise(
+                        Surprise(
                             event_id=event.event_id,
                             measure=measure,
                             baseline=baseline,
@@ -588,8 +596,8 @@ def build_surprises(
     return rows
 
 
-def load_surprises(api_key: str, con: duckdb.DuckDBPyConnection | None = None) -> list[CpiSurprise]:
-    """Fetch both CPI measures and the nowcast, then rebuild ``cpi_surprises`` from them.
+def load_surprises(api_key: str, con: duckdb.DuckDBPyConnection | None = None) -> list[Surprise]:
+    """Fetch both CPI measures and the nowcast, then rebuild ``surprises`` from them.
 
     Nothing is stored unless every first-published change matches the Cleveland Fed's published
     one within ``ACTUAL_TOLERANCE_PP``: a wrong actual would make every surprise wrong.
@@ -611,7 +619,7 @@ def load_surprises(api_key: str, con: duckdb.DuckDBPyConnection | None = None) -
                 f"{ACTUAL_TOLERANCE_PP} pp in {months}"
             )
     rows = build_surprises(events, changes, points)
-    db.replace_rows("cpi_surprises", rows, "TRUE", con=con)
+    db.replace_rows("surprises", rows, "TRUE", con=con)
     return rows
 
 
@@ -695,7 +703,7 @@ def surprise_pairs(
         by_instrument: dict[str, tuple[list[float], list[float]]] = {}
         for instrument in MVP_PRICE_SERIES:
             rows = connection.execute(
-                "SELECT s.surprise, o.ret_1d FROM cpi_surprises s "
+                "SELECT s.surprise, o.ret_1d FROM surprises s "
                 "JOIN observations o ON o.event_id = s.event_id "
                 "WHERE s.measure = ? AND s.baseline = ? AND o.instrument = ? ORDER BY s.event_id",
                 [measure, baseline, instrument],

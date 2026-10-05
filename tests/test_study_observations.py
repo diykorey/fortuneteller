@@ -164,8 +164,7 @@ def test_known_day_is_measured_through_the_store() -> None:
 
     # then the S&P 500 row holds the close before and the 4.32% fall
     observation = _spx_row(con)
-    assert observation["obs_id"] == 2022080
-    assert observation["event_id"] == 202208
+    assert observation["event_id"] == 1_2022_09_13
     assert observation["px_t0"] == pytest.approx(4110.41)
     assert observation["ret_unit"] == "pct"
     assert observation["ret_1d"] == pytest.approx(-0.0432, abs=1e-4)
@@ -183,11 +182,11 @@ def test_yield_move_is_stored_in_basis_points() -> None:
     # when the observations are built
     store_observations(con=con)
 
-    # then the row is numbered by the instrument's position and measured in bps
+    # then the row belongs to the release and is measured in bps
     row = con.execute(
-        "SELECT obs_id, ret_unit, ret_1d FROM observations WHERE instrument = 'UST10Y / ZN'"
+        "SELECT event_id, ret_unit, ret_1d FROM observations WHERE instrument = 'UST10Y / ZN'"
     ).fetchone()
-    assert row == (2022081, "bps", pytest.approx(6.0))
+    assert row == (1_2022_09_13, "bps", pytest.approx(6.0))
 
 
 def test_release_before_an_instruments_history_is_counted_not_stored() -> None:
@@ -272,7 +271,7 @@ def test_events_of_other_types_are_not_measured() -> None:
 
     # then only the CPI event is measured
     rows = con.execute("SELECT DISTINCT event_id FROM observations").fetchall()
-    assert rows == [(202208,)]
+    assert rows == [(1_2022_09_13,)]
 
 
 DXY_1992 = Path(__file__).parent / "data" / "yahoo_dx_y_nyb_1992_12.json"

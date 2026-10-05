@@ -37,7 +37,7 @@ _TABLES: frozenset[str] = frozenset(
         "observations",
         "effect_size_matrix",
         "daily_bars",
-        "cpi_surprises",
+        "surprises",
     }
 )
 

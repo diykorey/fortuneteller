@@ -105,7 +105,7 @@ record per reference month, with series `CPI Inflation`, `Core CPI Inflation`, `
 Inflation` and `Actual Core CPI Inflation`, each a daily path in m/m percent. Unofficial like
 Yahoo's: no key, may change shape, checked by the 0.01 pp test above.
 
-**`cpi_surprises`** — key (`event_id`, `measure`, `baseline`):
+**`cpi_surprises`** (renamed `surprises` in rung 1) — key (`event_id`, `measure`, `baseline`):
 
 | Column | Type | Value |
 | --- | --- | --- |

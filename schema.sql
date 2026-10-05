@@ -75,7 +75,6 @@ CREATE TABLE IF NOT EXISTS event_instances (
 );
 
 CREATE TABLE IF NOT EXISTS observations (
-    obs_id        BIGINT PRIMARY KEY,
     event_id      BIGINT REFERENCES event_instances(event_id),
     instrument    TEXT,
     px_t0         DOUBLE,
@@ -90,7 +89,8 @@ CREATE TABLE IF NOT EXISTS observations (
     half_life_min DOUBLE,
     realized_dir  TEXT,
     data_source   TEXT,
-    quality       TEXT
+    quality       TEXT,
+    PRIMARY KEY (event_id, instrument)
 );
 
 CREATE TABLE IF NOT EXISTS effect_size_matrix (
@@ -116,7 +116,7 @@ CREATE TABLE IF NOT EXISTS daily_bars (
     PRIMARY KEY (instrument, day)
 );
 
-CREATE TABLE IF NOT EXISTS cpi_surprises (
+CREATE TABLE IF NOT EXISTS surprises (
     event_id     BIGINT REFERENCES event_instances(event_id),
     measure      TEXT,
     baseline     TEXT,
