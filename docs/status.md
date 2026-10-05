@@ -13,7 +13,7 @@ rank correlation in the expected direction, its permutation `p`, the hit rate on
 least 0.1 pp, the Theil–Sen slope, and the verdict on core against the trend. Part C of the
 `study.py` review with it: the shared statistics moved to `stats.py`, one permutation test for
 steps 3 and 4; `raw-move` prints exactly the same output as before. Live: about 15 s, two runs
-identical; no verdict printed yet. *(PR #—.)*
+identical; no verdict printed yet. *(PR #96.)*
 
 ## In progress
 
@@ -28,7 +28,7 @@ trend), the context table, and the rule.
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-05 | Step 4.5: `track_surprises`; shared statistics in `stats.py` | PR #— |
+| 2026-10-05 | Step 4.5: `track_surprises`; shared statistics in `stats.py` | PR #96 |
 | 2026-10-05 | Step 4.4: `load-surprises` — 1,287 surprises stored | PR #95 |
 | 2026-10-05 | Step 4.3: Cleveland Fed nowcast; expected value before each release | PR #94 |
 | 2026-10-05 | Step 4.2: first-published m/m, core and headline, with the January fix | PR #92 |
