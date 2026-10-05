@@ -12,7 +12,7 @@ Rung 1, sub-step 2 — NFP releases. `load-releases` now loads CPI and the jobs 
 `PAYEMS`): 856 NFP releases, 1955-06-07 … 2026-10-02, keyed `2` + release day. All 392 release
 dates since 1994 match BLS (two archive labels were wrong; BLS's release texts confirm FRED).
 October 2025 payrolls came out with November's on 2025-12-16 and are stored as that one release.
-Release-date corrections are now per series. CPI's `raw-move` output is unchanged. *(PR #—.)*
+Release-date corrections are now per series. CPI's `raw-move` output is unchanged. *(PR #101.)*
 
 ## In progress
 
@@ -27,7 +27,7 @@ type's moves; NFP's step 3 verdict.
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-05 | Rung 1.2: NFP releases; dates checked against BLS since 1994 | PR #— |
+| 2026-10-05 | Rung 1.2: NFP releases; dates checked against BLS since 1994 | PR #101 |
 | 2026-10-05 | Rung 1.1: generic event keys; `surprises` | PR #100 |
 | 2026-10-05 | Rung 1 spec: more events — NFP and Fed decisions | PR #99 |
 | 2026-10-05 | Step 4.7: Results and `mvp-results.md` — step 4 and the MVP complete | PR #98 |
