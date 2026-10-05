@@ -14,7 +14,7 @@ MVP step 4, sub-step 4 — `uv run fortuneteller load-surprises` stores 1,287 su
 published actual by more than 0.01 pp. August 2022 core: +0.087 pp against the nowcast, +0.095
 against the trend. About 47 s. **Finding:** for core, the Cleveland nowcast is almost exactly the
 12-month trend (median gap 0.003 pp, correlation 0.997), so the two baselines are not independent
-for core; for headline they are (0.46). Recorded in [precision.md](precision.md). *(PR #—.)*
+for core; for headline they are (0.46). Recorded in [precision.md](precision.md). *(PR #95.)*
 
 ## In progress
 
@@ -30,7 +30,7 @@ to `stats.py` (part C of the `study.py` review).
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-05 | Step 4.4: `load-surprises` — 1,287 surprises stored | PR #— |
+| 2026-10-05 | Step 4.4: `load-surprises` — 1,287 surprises stored | PR #95 |
 | 2026-10-05 | Step 4.3: Cleveland Fed nowcast; expected value before each release | PR #94 |
 | 2026-10-05 | Step 4.2: first-published m/m, core and headline, with the January fix | PR #92 |
 | 2026-10-05 | `sources.py`: FRED and Yahoo requests and parsing moved out of `study.py` | PR #91 |
