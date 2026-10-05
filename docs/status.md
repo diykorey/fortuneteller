@@ -13,7 +13,7 @@ and, per release, the last nowcast made before the release day (`study.nowcast_e
 Live on 2026-10-05: 155 expected values for core and for headline, 2013-08 … 2026-08; no month
 differs from Cleveland's published actual by more than 0.01 pp; and for all 155 months Cleveland
 records the actual on the day FRED gives as the release date. August 2022 core: expected +0.48%,
-published +0.57%. *(PR #—.)*
+published +0.57%. *(PR #94.)*
 
 ## In progress
 
@@ -29,7 +29,7 @@ by more than 0.01 pp.
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-05 | Step 4.3: Cleveland Fed nowcast; expected value before each release | PR #— |
+| 2026-10-05 | Step 4.3: Cleveland Fed nowcast; expected value before each release | PR #94 |
 | 2026-10-05 | Step 4.2: first-published m/m, core and headline, with the January fix | PR #92 |
 | 2026-10-05 | `sources.py`: FRED and Yahoo requests and parsing moved out of `study.py` | PR #91 |
 | 2026-10-05 | Step 4.1: `cpi_surprises` table and its schema doc | PR #90 |
