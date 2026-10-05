@@ -30,8 +30,11 @@ Three obstacles.
 published. So step 4 uses two expected values and compares them. The **12-month trend** of
 first-published core m/m covers every release from 1998, but measures surprise against the trend,
 not against the market. The **Cleveland Fed nowcast** is a model forecast close to what the market
-saw, but starts in 2013 (about 155 releases). If the move follows the surprise against both, the
-result is strong. If only the trend shows it, the result is suspect.
+saw, but starts in 2013 (about 155 releases). The plan was to read agreement between the two as
+the strong result. Sub-step 4 found that **for core the nowcast is almost exactly the trend**
+(median gap 0.003 pp, correlation 0.997): its information is oil and gasoline prices, which move
+headline, not core. So no free expectation of core independent of its trend exists, and the
+verdict is plainly "surprise against the trend". See [Decisions](#decisions).
 
 **The number the market saw is not the number FRED stores today.** FRED's first-release series
 gives each month's index level as first published, so m/m as first published is this month's
@@ -84,6 +87,7 @@ window. No conditioning on regime. No event beyond CPI. `event_instances.consens
 | Decision | Chosen | Turned down | Why |
 | --- | --- | --- | --- |
 | Where "expected" comes from | Both: 12-month trend (all history) and Cleveland Fed nowcast (2013 on), side by side | Nowcast only; trend only | Agreement between the two is the strongest result free data allows; trend alone can mistake trend for surprise |
+| How the two are read (decided 2026-10-05, after sub-step 4 found the core nowcast ≈ the trend, before any move was measured) | **Core against the 12-month trend decides** (from 1998, 342 releases). Core against the nowcast, and headline against both, are context without a verdict | Both core baselines as verdicts; headline against the nowcast as the verdict | For core the two baselines are nearly the same test, so a second core verdict adds no evidence. Headline against the nowcast is the one place the nowcast carries market-like information, so it is shown, but core stays the measure markets trade. Survey consensus remains the upgrade ([Precision](../precision.md)) |
 | Which CPI number | Core decides the verdict; headline is context | Headline only; both as verdicts | Markets have traded core since the 2000s (August 2022: headline +0.06 pp, core hot); one verdict measure keeps the test count down |
 | The computed baseline | Average of the previous 12 first-published core m/m | Last month's m/m; a fitted forecasting model (AR) | Stable and needs no model. **A fitted model would forecast better** and is listed in [Precision](../precision.md) |
 | What "tracks" means | Rank correlation in the expected direction, p < 0.01, **and** hit rate ≥ 60% on surprises ≥ 0.1 pp; *unclear* if one; *doesn't* if neither | Regression slope and its p; hit rate alone | Ranks resist crash days; the hit rate is what a warning needs; both together means real and usable |
@@ -115,7 +119,8 @@ Yahoo's: no key, may change shape, checked by the 0.01 pp test above.
 A release gets a `trend_12m` row once 12 earlier first-published m/m values exist, and a `nowcast`
 row when Cleveland has a value before its release date.
 
-**The measurement**, for each instrument × baseline, on core:
+**The measurement**, for each instrument, on core against the 12-month trend (the verdict), then
+the same numbers without a verdict for core against the nowcast and headline against both:
 
 - Pairs: each release's core surprise with its `observations.ret_1d`.
 - Rank correlation: Spearman, times the expected sign, so positive means "as expected"; gold uses
@@ -125,21 +130,24 @@ row when Cleveland has a value before its release date.
 - Hit rate: among releases with |surprise| ≥ 0.1 pp, the share whose move had the expected sign,
   with that `n`. Gold: `—`.
 - Slope: Theil–Sen, in bp (UST) or % per 0.1 pp of surprise. Reported, not judged.
-- Headline: the rank correlation only, per instrument × baseline, as context.
 
 **Output:**
 
 ```
-instrument   baseline   n    expected  rank corr  p       hit rate (n)  per 0.1pp  verdict
-UST10Y / ZN  trend_12m  nnn  up        x.xx       0.xxxx  xx% (nnn)     x.x bp     …
-UST10Y / ZN  nowcast    nnn  up        x.xx       0.xxxx  xx% (nn)      x.x bp     …
+core against the 12-month trend
+instrument   n    expected  rank corr  p       hit rate (n)  per 0.1pp  verdict
+UST10Y / ZN  nnn  up        x.xx       0.xxxx  xx% (nnn)     x.x bp     …
 ...
-headline (context): rank corr by instrument × baseline
+context, no verdict: core against the nowcast; headline against the trend; headline against the nowcast
+instrument   measure   baseline   n    rank corr  p       hit rate (n)
+...
 tracks = corr as expected, p < 0.01, hit rate >= 60%; unclear = one of the two; doesn't = neither
 ```
 
-**Reading the two baselines together:** both *tracks* is the MVP's positive result. Only
-`trend_12m` *tracks*: suspect, report as trend-following. Only `nowcast`: real but 2013 onward.
+**Reading the result:** *tracks* means the move follows the surprise against the trend. The
+context rows say whether that holds since 2013 (core against the nowcast) and where a market-like
+expectation exists (headline against the nowcast); they can qualify the verdict in Results, not
+replace it.
 
 **Code.** Functions in `study.py`, handlers in `__main__.py`, tests in
 `tests/test_study_surprise.py`. No new dependency: Spearman, Theil–Sen and the permutation are a
