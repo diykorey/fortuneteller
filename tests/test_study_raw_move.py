@@ -13,10 +13,11 @@ from fortuneteller.__main__ import describe_raw_moves, main
 from fortuneteller.models import DailyBar
 from fortuneteller.stats import median_not_drawn
 from fortuneteller.sources import (
-    CpiRelease,
+    FirstRelease,
     DailyClosingPrice,
 )
 from fortuneteller.study import (
+    CPI_EVENT_TYPE,
     DOESNT_MOVE,
     MOVES,
     MVP_PRICE_SERIES,
@@ -29,7 +30,7 @@ from fortuneteller.study import (
     daily_moves,
     measure_raw_moves,
     move_verdict,
-    store_cpi_releases,
+    store_releases,
 )
 
 
@@ -204,8 +205,8 @@ def _synthetic_store(con: duckdb.DuckDBPyConnection) -> None:
         while released.weekday() >= 5:
             released += timedelta(days=1)
         reference = date(year - 1, 12, 1) if month_index == 1 else date(year, month_index - 1, 1)
-        releases.append(CpiRelease(reference, released, 300.0))
-    store_cpi_releases(releases, con=con)
+        releases.append(FirstRelease(reference, released, 300.0))
+    store_releases(CPI_EVENT_TYPE, releases, con=con)
     release_days = {release.released for release in releases}
     rng = random.Random(5)
     day, price, closes = date(2020, 12, 1), 100.0, []
@@ -281,7 +282,7 @@ def test_raw_move_names_the_load_to_run_first(
 ) -> None:
     # given an empty store, or releases without prices
     if load:
-        store_cpi_releases([CpiRelease(date(2022, 8, 1), date(2022, 9, 13), 296.171)])
+        store_releases(CPI_EVENT_TYPE, [FirstRelease(date(2022, 8, 1), date(2022, 9, 13), 296.171)])
 
     # when the command runs
     code = main(["raw-move"])

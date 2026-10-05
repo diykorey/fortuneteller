@@ -17,16 +17,27 @@ from fortuneteller import db, sources, study
 from fortuneteller.__main__ import main
 from fortuneteller.config import settings
 from fortuneteller.sources import (
-    CpiRelease,
+    CPI_SERIES_ID,
+    FirstRelease,
     FredError,
-    parse_cpi_releases,
+    parse_first_releases,
 )
 from fortuneteller.study import (
-    store_cpi_releases,
+    CPI_EVENT_TYPE,
+    store_releases,
     to_event_instance,
 )
 
 FIXTURE = Path(__file__).parent / "data" / "fred_cpi_initial_release.json"
+# Shaped like FRED's reply for PAYEMS: October and November 2025 first published on one day.
+NFP_FIXTURE = Path(__file__).parent / "data" / "fred_nfp_initial_release.json"
+
+
+def _fred_answers(monkeypatch: pytest.MonkeyPatch) -> None:
+    def fetch(_key: str, series_id: str) -> bytes:
+        return (NFP_FIXTURE if series_id == sources.NFP_SERIES_ID else FIXTURE).read_bytes()
+
+    monkeypatch.setattr(sources, "fetch_first_releases", fetch)
 
 
 def _payload(mutate: Any = None) -> bytes:
@@ -41,10 +52,10 @@ def test_release_date_comes_from_realtime_start_not_reference_month() -> None:
     payload = FIXTURE.read_bytes()
 
     # when it is parsed
-    releases, _ = parse_cpi_releases(payload)
+    releases, _ = parse_first_releases(payload, CPI_SERIES_ID)
 
     # then the first print is dated by publication, six weeks after the month it measures
-    assert releases[0] == CpiRelease(date(1972, 7, 1), date(1972, 8, 22), 125.31)
+    assert releases[0] == FirstRelease(date(1972, 7, 1), date(1972, 8, 22), 125.31)
     assert all(r.released > r.reference_month for r in releases)
 
 
@@ -53,7 +64,7 @@ def test_valueless_print_is_skipped_and_reported() -> None:
     payload = FIXTURE.read_bytes()
 
     # when it is parsed
-    releases, valueless = parse_cpi_releases(payload)
+    releases, valueless = parse_first_releases(payload, CPI_SERIES_ID)
 
     # then that month is reported, not stored, and every other row survives
     assert valueless == [date(2025, 10, 1)]
@@ -66,14 +77,14 @@ def test_shared_release_date_and_irregular_schedule_are_kept() -> None:
     payload = FIXTURE.read_bytes()
 
     # when it is parsed
-    releases, _ = parse_cpi_releases(payload)
+    releases, _ = parse_first_releases(payload, CPI_SERIES_ID)
 
     # then each is kept as published
     by_month = {r.reference_month: r for r in releases}
     assert by_month[date(2025, 11, 1)].released == date(2025, 12, 18)
     assert by_month[date(1992, 11, 1)].released == date(1992, 12, 11)
     assert by_month[date(1995, 12, 1)].released == date(1996, 2, 1)
-    assert releases[-1] == CpiRelease(date(2026, 8, 1), date(2026, 9, 11), 334.131)
+    assert releases[-1] == FirstRelease(date(2026, 8, 1), date(2026, 9, 11), 334.131)
 
 
 def test_release_on_its_reference_month_is_rejected() -> None:
@@ -85,7 +96,7 @@ def test_release_on_its_reference_month_is_rejected() -> None:
 
     # when / then parsing refuses it
     with pytest.raises(FredError, match="1972-07-01"):
-        parse_cpi_releases(payload)
+        parse_first_releases(payload, CPI_SERIES_ID)
 
 
 def test_truncated_response_is_rejected() -> None:
@@ -97,7 +108,7 @@ def test_truncated_response_is_rejected() -> None:
 
     # when / then parsing refuses it
     with pytest.raises(FredError, match="reported 7 rows but sent 6"):
-        parse_cpi_releases(payload)
+        parse_first_releases(payload, CPI_SERIES_ID)
 
 
 def test_http_error_does_not_leak_the_api_key(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -113,7 +124,7 @@ def test_http_error_does_not_leak_the_api_key(monkeypatch: pytest.MonkeyPatch) -
 
     # when the fetch fails
     with pytest.raises(FredError) as caught:
-        sources.fetch_cpi_releases(key)
+        sources.fetch_first_releases(key)
 
     # then neither the message nor the exception chain carries the key
     assert "HTTP 400" in str(caught.value)
@@ -123,8 +134,11 @@ def test_http_error_does_not_leak_the_api_key(monkeypatch: pytest.MonkeyPatch) -
 
 
 def _events_by_month() -> dict[str, datetime]:
-    releases, _ = parse_cpi_releases(FIXTURE.read_bytes())
-    return {e.detail or "": e.event_ts for e in map(to_event_instance, releases)}
+    releases, _ = parse_first_releases(FIXTURE.read_bytes(), CPI_SERIES_ID)
+    return {
+        r.reference_month.strftime("%Y-%m"): to_event_instance(r, CPI_EVENT_TYPE).event_ts
+        for r in releases
+    }
 
 
 def test_event_ts_is_release_day_at_0830_new_york_in_naive_utc() -> None:
@@ -141,10 +155,10 @@ def test_event_ts_is_release_day_at_0830_new_york_in_naive_utc() -> None:
 
 def test_event_is_keyed_by_type_and_release_day_and_names_its_month() -> None:
     # given the November 2025 print, first published on 2025-12-18
-    release = CpiRelease(date(2025, 11, 1), date(2025, 12, 18), 325.031)
+    release = FirstRelease(date(2025, 11, 1), date(2025, 12, 18), 325.031)
 
     # when the print is mapped
-    event = to_event_instance(release)
+    event = to_event_instance(release, CPI_EVENT_TYPE)
 
     # then the id is CPI's code and the release day, and the detail names the month measured
     assert event.event_id == 1_2025_12_18
@@ -159,11 +173,11 @@ def test_event_is_keyed_by_type_and_release_day_and_names_its_month() -> None:
 
 def test_event_ids_are_stable_and_unique() -> None:
     # given every print in the fixture, including two sharing a release date
-    releases, _ = parse_cpi_releases(FIXTURE.read_bytes())
+    releases, _ = parse_first_releases(FIXTURE.read_bytes(), CPI_SERIES_ID)
 
     # when they are mapped twice
-    first = [to_event_instance(r).event_id for r in releases]
-    second = [to_event_instance(r).event_id for r in releases]
+    first = [to_event_instance(r, CPI_EVENT_TYPE).event_id for r in releases]
+    second = [to_event_instance(r, CPI_EVENT_TYPE).event_id for r in releases]
 
     # then the ids repeat exactly and never collide
     assert first == second
@@ -177,7 +191,9 @@ def test_event_keys_match_the_seed_reference_tables() -> None:
             return {row[name] for row in csv.DictReader(handle)}
 
     # when a mapped event is built
-    event = to_event_instance(CpiRelease(date(2026, 8, 1), date(2026, 9, 11), 334.131))
+    event = to_event_instance(
+        FirstRelease(date(2026, 8, 1), date(2026, 9, 11), 334.131), CPI_EVENT_TYPE
+    )
 
     # then its join keys exist exactly as written
     assert event.event_type in column("event_types.csv", "event_type")
@@ -188,18 +204,18 @@ def _store(time_zone: str = "UTC") -> duckdb.DuckDBPyConnection:
     con = duckdb.connect(":memory:")
     con.execute(f"SET TimeZone = '{time_zone}'")
     db.init_db(con=con)
-    releases, _ = parse_cpi_releases(FIXTURE.read_bytes())
-    store_cpi_releases(releases, con=con)
+    releases, _ = parse_first_releases(FIXTURE.read_bytes(), CPI_SERIES_ID)
+    store_releases(CPI_EVENT_TYPE, releases, con=con)
     return con
 
 
 def test_rerunning_the_store_changes_no_row_count() -> None:
     # given the fixture releases already stored once
     con = _store()
-    releases, _ = parse_cpi_releases(FIXTURE.read_bytes())
+    releases, _ = parse_first_releases(FIXTURE.read_bytes(), CPI_SERIES_ID)
 
     # when they are stored again
-    written = store_cpi_releases(releases, con=con)
+    written = store_releases(CPI_EVENT_TYPE, releases, con=con)
 
     # then every row is overwritten in place, not appended
     assert written == 6
@@ -222,7 +238,7 @@ def test_load_releases_prints_count_range_and_skipped_months(
 ) -> None:
     # given a configured key and FRED answering with the saved response
     monkeypatch.setattr(settings, "fred_api_key", SecretStr("test-key"))
-    monkeypatch.setattr(sources, "fetch_cpi_releases", lambda _key: FIXTURE.read_bytes())
+    _fred_answers(monkeypatch)
 
     # when the command runs twice
     first = main(["load-releases"])
@@ -231,9 +247,11 @@ def test_load_releases_prints_count_range_and_skipped_months(
     # then each run reports the same load, and the table holds one row per print
     assert (first, second) == (0, 0)
     report = "loaded 6 CPI releases, 1972-08-22 … 2026-09-11\n"
-    report += "skipped 1 printed without a value: 2025-10\n"
+    report += "  skipped 1 printed without a value: 2025-10\n"
+    report += "loaded 3 NFP releases, 2025-11-20 … 2026-01-09\n"
+    report += "  1 first published with a later month: 2025-10\n"
     assert capsys.readouterr().out == report * 2
-    assert db.count_rows("event_instances", con=db.get_connection()) == 6
+    assert db.count_rows("event_instances", con=db.get_connection()) == 9
 
 
 def test_load_releases_without_a_key_fails_before_fetching(
@@ -242,10 +260,10 @@ def test_load_releases_without_a_key_fails_before_fetching(
     # given no key configured
     monkeypatch.setattr(settings, "fred_api_key", None)
 
-    def fetch(_key: str) -> NoReturn:
+    def fetch(_key: str, series_id: str) -> NoReturn:
         raise AssertionError("fetched without a key")
 
-    monkeypatch.setattr(sources, "fetch_cpi_releases", fetch)
+    monkeypatch.setattr(sources, "fetch_first_releases", fetch)
 
     # when the command runs
     code = main(["load-releases"])
@@ -261,10 +279,10 @@ def test_load_releases_with_an_empty_key_fails_before_fetching(
     # given the key set to an empty value, as a bare FT_FRED_API_KEY= line in .env gives
     monkeypatch.setattr(settings, "fred_api_key", SecretStr(""))
 
-    def fetch(_key: str) -> NoReturn:
+    def fetch(_key: str, series_id: str) -> NoReturn:
         raise AssertionError("fetched with an empty key")
 
-    monkeypatch.setattr(sources, "fetch_cpi_releases", fetch)
+    monkeypatch.setattr(sources, "fetch_first_releases", fetch)
 
     # when the command runs
     code = main(["load-releases"])
@@ -278,7 +296,7 @@ def test_fetch_refuses_an_empty_key() -> None:
     # given an empty key, which would also make error redaction replace every empty substring
     # when / then the fetch refuses before any request is made
     with pytest.raises(FredError, match="empty"):
-        sources.fetch_cpi_releases("")
+        sources.fetch_first_releases("")
 
 
 def test_load_releases_reports_a_fred_failure(
@@ -287,10 +305,10 @@ def test_load_releases_reports_a_fred_failure(
     # given FRED rejecting the request
     monkeypatch.setattr(settings, "fred_api_key", SecretStr("test-key"))
 
-    def fetch(_key: str) -> NoReturn:
+    def fetch(_key: str, series_id: str) -> NoReturn:
         raise FredError("FRED returned HTTP 400: Bad Request")
 
-    monkeypatch.setattr(sources, "fetch_cpi_releases", fetch)
+    monkeypatch.setattr(sources, "fetch_first_releases", fetch)
 
     # when the command runs
     code = main(["load-releases"])
@@ -305,7 +323,7 @@ def test_non_json_fred_reply_is_a_fred_error() -> None:
     # given FRED answering with something that is not JSON
     # when / then parsing reports it as a FRED failure, not a JSON traceback
     with pytest.raises(FredError, match="unexpected reply"):
-        parse_cpi_releases(b"<html>Service Unavailable</html>")
+        parse_first_releases(b"<html>Service Unavailable</html>", CPI_SERIES_ID)
 
 
 def test_fred_read_timeout_is_a_fred_error_without_the_key(
@@ -321,7 +339,7 @@ def test_fred_read_timeout_is_a_fred_error_without_the_key(
 
     # when the fetch fails
     with pytest.raises(FredError) as caught:
-        sources.fetch_cpi_releases(key)
+        sources.fetch_first_releases(key)
 
     # then the error is a FRED failure that does not carry the key
     assert "timed out" in str(caught.value)
@@ -333,7 +351,7 @@ def test_load_releases_reports_a_malformed_reply(
 ) -> None:
     # given a configured key and FRED answering with something that is not JSON
     monkeypatch.setattr(settings, "fred_api_key", SecretStr("test-key"))
-    monkeypatch.setattr(sources, "fetch_cpi_releases", lambda _key: b"not json")
+    monkeypatch.setattr(sources, "fetch_first_releases", lambda _key, series_id: b"not json")
 
     # when the command runs
     code = main(["load-releases"])
@@ -348,7 +366,7 @@ def test_known_wrong_release_date_is_corrected_from_bls() -> None:
     payload = FIXTURE.read_bytes()
 
     # when the response is parsed
-    releases, _ = parse_cpi_releases(payload)
+    releases, _ = parse_first_releases(payload, CPI_SERIES_ID)
 
     # then the date BLS scheduled and published, Friday 1992-12-11, is used instead
     by_month = {r.reference_month: r for r in releases}
@@ -364,7 +382,7 @@ def test_release_date_on_a_weekend_is_rejected() -> None:
 
     # when / then parsing refuses it: BLS does not publish CPI on weekends
     with pytest.raises(FredError, match="1972-07-01: released Saturday 1972-08-19"):
-        parse_cpi_releases(payload)
+        parse_first_releases(payload, CPI_SERIES_ID)
 
 
 def test_two_event_types_on_the_same_day_get_different_ids() -> None:
@@ -377,3 +395,61 @@ def test_two_event_types_on_the_same_day_get_different_ids() -> None:
     # then the type code leads, so another type on that day cannot collide
     assert cpi == 1_2022_09_13
     assert cpi // 10**8 == study.EVENT_TYPE_CODES[study.CPI_EVENT_TYPE]
+
+
+def test_months_first_published_on_one_day_are_one_release() -> None:
+    # given October and November 2025 payrolls, both first published on 2025-12-16
+    releases, _ = parse_first_releases(NFP_FIXTURE.read_bytes(), sources.NFP_SERIES_ID)
+
+    # when they are reduced to one release per day
+    kept, carried = study.one_release_per_day(releases)
+
+    # then the release day is November's event, and October is reported as carried by it
+    assert [r.reference_month for r in kept] == [
+        date(2025, 9, 1),
+        date(2025, 11, 1),
+        date(2025, 12, 1),
+    ]
+    assert [r.reference_month for r in carried] == [date(2025, 10, 1)]
+
+
+def test_two_releases_on_one_day_are_refused_rather_than_overwritten() -> None:
+    # given October and November 2025 payrolls on one day, not yet merged
+    releases, _ = parse_first_releases(NFP_FIXTURE.read_bytes(), sources.NFP_SERIES_ID)
+    con = duckdb.connect(":memory:")
+    db.init_db(con=con)
+
+    # when / then storing them is refused: they would share an event_id
+    with pytest.raises(ValueError, match="two releases on one day"):
+        study.store_releases(study.NFP_EVENT_TYPE, releases, con=con)
+
+
+def test_a_date_correction_belongs_to_its_own_series() -> None:
+    # given a payrolls release for November 1992, the month CPI's date is corrected for
+    payload = json.dumps(
+        {
+            "count": 1,
+            "observations": [
+                {"date": "1992-11-01", "realtime_start": "1992-12-04", "value": "108000"}
+            ],
+        }
+    ).encode()
+
+    # when it is parsed as payrolls
+    releases, _ = parse_first_releases(payload, sources.NFP_SERIES_ID)
+
+    # then FRED's date stands: CPI's correction does not apply to another series
+    assert releases[0].released == date(1992, 12, 4)
+
+
+def test_a_payrolls_release_is_keyed_with_its_own_type_code() -> None:
+    # given the September 2026 jobs report, released 2026-10-02
+    release = FirstRelease(date(2026, 9, 1), date(2026, 10, 2), 160000.0)
+
+    # when it is mapped
+    event = to_event_instance(release, study.NFP_EVENT_TYPE)
+
+    # then it is an NFP event at 08:30 New York, keyed 2 + its release day
+    assert event.event_id == 2_2026_10_02
+    assert event.event_type == "NFP / labor data"
+    assert event.event_ts == datetime(2026, 10, 2, 12, 30)

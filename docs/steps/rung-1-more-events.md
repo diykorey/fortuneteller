@@ -47,7 +47,7 @@ standard source, are paid. So the Fed gets step 3 only; its surprise is in
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~Generic keys: `event_id` = type code × 10⁸ + release date (CPI 2022-09-13 → `120220913`); `observations` keyed by (`event_id`, `instrument`); `cpi_surprises` becomes `surprises`~~ **done** | Fact tables reloaded under the new keys; `raw-move` and `surprise` print the CPI numbers unchanged |
-| 2 | NFP releases into `event_instances` (`NFP / labor data`, 08:30 New York) | Weekend guard; dates checked against BLS's Employment Situation archive from 1994; 2026-10 count recorded |
+| 2 | ~~NFP releases into `event_instances` (`NFP / labor data`, 08:30 New York)~~ **done** | Weekend guard; dates checked against BLS's Employment Situation archive from 1994; 2026-10 count recorded |
 | 3 | `raw-move` takes an event (`cpi`, `nfp`, `fomc`) | NFP's step 3 verdict printed |
 | 4 | FOMC decisions into `event_instances` (`Central-bank decision`, `United States`, 14:00 New York; unscheduled ones `scheduled = false`) | Every target-rate change since 1994 falls on a listed decision; FOMC's step 3 verdict printed |
 | 5 | Clean baseline: "ordinary days" exclude every stored event's reaction day | CPI's step 3 re-run; old and new verdicts recorded side by side |
@@ -89,6 +89,13 @@ No Fed surprise. No consensus forecasts, no intraday prices (option 2 in
 tables. So an existing database is deleted and rebuilt: `init`, then `load-releases`,
 `load-prices` and `load-surprises` (about a minute; plus `seed` for the reference tables). Every
 table is refilled from its source, so nothing is lost.
+
+**NFP release dates, checked 2026-10-05.** All 392 release dates from January 1994 match BLS's
+Employment Situation archive. Two looked wrong at first, June 1997 and December 1999, but BLS's
+own release texts ("embargoed until 8:30 A.M., Thursday, July 3, 1997"; "Friday, January 7,
+2000") confirm FRED; the archive list's labels for those two are wrong. Dates before 1994 are not
+checked. October 2025 was first published with November on 2025-12-16, after the shutdown; that
+release day is stored once, as November (`study.one_release_per_day`).
 
 **NFP source.** FRED `PAYEMS`, `output_type=3`, full real-time range, one request: one column per
 release day (`PAYEMS_YYYYMMDD`). For each release day, the first-published change is the newest
