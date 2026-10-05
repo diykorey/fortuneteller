@@ -220,3 +220,86 @@ def parse_daily_bars(payload: bytes, today: date | None = None) -> list[DailyClo
         return [DailyClosingPrice(day, by_day[day]) for day in sorted(by_day)]
     except MALFORMED_REPLY as exc:
         raise YahooError(f"Yahoo sent an unexpected reply: {exc!r}") from None
+
+
+# Cleveland Fed
+
+
+CLEVELAND_NOWCAST_URL = (
+    "https://www.clevelandfed.org/-/media/files/webcharts/inflationnowcasting/nowcast_month.json"
+)
+CORE = "core"
+HEADLINE = "headline"
+NOWCAST = "nowcast"
+ACTUAL = "actual"
+# The chart series step 4 reads, by name in the file; the PCE series are left out.
+CLEVELAND_SERIES = {
+    "Core CPI Inflation": (CORE, NOWCAST),
+    "CPI Inflation": (HEADLINE, NOWCAST),
+    "Actual Core CPI Inflation": (CORE, ACTUAL),
+    "Actual CPI Inflation": (HEADLINE, ACTUAL),
+}
+
+
+@dataclass(frozen=True)
+class NowcastPoint:
+    """One value from the Cleveland Fed's chart: a month's CPI change in percent, as estimated on
+    ``day`` (``NOWCAST``) or as published that day (``ACTUAL``)."""
+
+    reference_month: date
+    measure: str
+    kind: str
+    day: date
+    percent: float
+
+
+class ClevelandError(RuntimeError):
+    pass
+
+
+def fetch_nowcasts(timeout: float = 30.0) -> bytes:
+    """Return the raw Cleveland Fed chart data: every month's daily nowcast path since 2013."""
+    try:
+        with urllib.request.urlopen(CLEVELAND_NOWCAST_URL, timeout=timeout) as response:
+            body: bytes = response.read()
+            return body
+    except urllib.error.HTTPError as exc:
+        raise ClevelandError(f"Cleveland Fed returned HTTP {exc.code}") from None
+    except urllib.error.URLError as exc:
+        raise ClevelandError(f"Cleveland Fed request failed: {exc.reason}") from None
+    except NETWORK_FAILURE as exc:
+        raise ClevelandError(f"Cleveland Fed request failed: {exc}") from None
+
+
+def parse_nowcasts(payload: bytes) -> list[NowcastPoint]:
+    """Parse the Cleveland Fed's chart data into dated values.
+
+    One record per reference month, with day labels as ``MM/DD`` and no year. A month's path runs
+    from that month up to three months on, so a label month before the reference month belongs to
+    the next year (December's path ends in January).
+    """
+    try:
+        records: Any = json.loads(payload)
+        points: list[NowcastPoint] = []
+        for record in records:
+            year, month = (int(part) for part in record["chart"]["subcaption"].split("-"))
+            labels = [c["label"] for c in record["categories"][0]["category"] if not c.get("vline")]
+            days = [
+                date(year if int(m) >= month else year + 1, int(m), int(d))
+                for m, d in (label.split("/") for label in labels)
+            ]
+            for series in record["dataset"]:
+                if series["seriesname"] not in CLEVELAND_SERIES:
+                    continue
+                measure, kind = CLEVELAND_SERIES[series["seriesname"]]
+                values = series["data"]
+                if len(values) != len(days):
+                    raise ClevelandError(f"{year}-{month}: {len(values)} values, {len(days)} days")
+                points += [
+                    NowcastPoint(date(year, month, 1), measure, kind, day, float(value["value"]))
+                    for day, value in zip(days, values, strict=True)
+                    if value["value"]
+                ]
+        return points
+    except MALFORMED_REPLY as exc:
+        raise ClevelandError(f"Cleveland Fed sent an unexpected reply: {exc!r}") from None

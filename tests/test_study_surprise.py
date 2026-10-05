@@ -1,14 +1,36 @@
 """Surprise: CPI's month-over-month change as first published, and how far it landed from expected."""
 
 import json
+import urllib.error
 import urllib.parse
 from datetime import date
+from pathlib import Path
+from typing import NoReturn
 
 import pytest
 
 from fortuneteller import sources, study
-from fortuneteller.sources import CORE_CPI_SERIES_ID, CpiRelease, FredError, parse_level
-from fortuneteller.study import MonthlyChange, first_published_changes, load_first_published_changes
+from fortuneteller.sources import (
+    ACTUAL,
+    CORE,
+    CORE_CPI_SERIES_ID,
+    HEADLINE,
+    NOWCAST,
+    ClevelandError,
+    CpiRelease,
+    FredError,
+    NowcastPoint,
+    parse_level,
+    parse_nowcasts,
+)
+from fortuneteller.study import (
+    MonthlyChange,
+    actual_mismatches,
+    first_published_changes,
+    load_first_published_changes,
+    nowcast_expectations,
+    published_actuals,
+)
 
 
 def _release(month: tuple[int, int], released: tuple[int, int, int], level: float) -> CpiRelease:
@@ -168,3 +190,108 @@ def test_each_measure_reads_its_own_fred_series() -> None:
 
     # then core is CPILFESL, and headline is CPIAUCSL, the series step 1 loads
     assert series == {"core": CORE_CPI_SERIES_ID, "headline": sources.CPI_SERIES_ID}
+
+
+NOWCAST_2022 = Path(__file__).parent / "data" / "cleveland_nowcast_2022.json"
+
+
+def test_the_nowcast_file_becomes_dated_points_per_measure() -> None:
+    # given the Cleveland Fed's file for August and December 2022
+    payload = NOWCAST_2022.read_bytes()
+
+    # when it is parsed
+    points = parse_nowcasts(payload)
+
+    # then each value has its full date, even where December's path runs into January
+    assert (
+        NowcastPoint(date(2022, 8, 1), CORE, ACTUAL, date(2022, 9, 13), 0.567267801202265) in points
+    )
+    assert (
+        NowcastPoint(date(2022, 8, 1), CORE, NOWCAST, date(2022, 9, 12), 0.479891397462036)
+        in points
+    )
+    assert (
+        NowcastPoint(date(2022, 12, 1), CORE, ACTUAL, date(2023, 1, 12), 0.302600094645844)
+        in points
+    )
+    assert {point.measure for point in points} == {CORE, HEADLINE}
+
+
+@pytest.mark.parametrize(
+    "payload",
+    [b"<html>moved</html>", b'[{"chart": {}}]', b'[{"chart": {"subcaption": "2022-8"}}]'],
+)
+def test_a_nowcast_file_of_another_shape_is_refused(payload: bytes) -> None:
+    # given a reply that is not the expected chart data
+    # when / then it is refused with the source named
+    with pytest.raises(ClevelandError):
+        parse_nowcasts(payload)
+
+
+def test_the_expected_value_is_the_last_nowcast_before_the_release_day() -> None:
+    # given nowcasts for August 2022 made on Friday, Monday, and the Tuesday of the release
+    august = date(2022, 8, 1)
+    points = [
+        NowcastPoint(august, CORE, NOWCAST, date(2022, 9, 9), 0.40),
+        NowcastPoint(august, CORE, NOWCAST, date(2022, 9, 12), 0.45),
+        NowcastPoint(august, CORE, NOWCAST, date(2022, 9, 13), 0.60),
+    ]
+
+    # when the expected value is taken for a Tuesday release, and for a Monday one
+    tuesday = nowcast_expectations(points, {august: date(2022, 9, 13)})
+    monday = nowcast_expectations(points, {august: date(2022, 9, 12)})
+
+    # then it is the day before's nowcast, never one made on the release day itself
+    assert tuesday == {(CORE, august): 0.45}
+    assert monday == {(CORE, august): 0.40}
+
+
+def test_the_real_file_gives_august_2022_s_expected_core_change() -> None:
+    # given the Cleveland Fed's file and the August 2022 release day
+    points = parse_nowcasts(NOWCAST_2022.read_bytes())
+
+    # when the expected value is taken
+    expected = nowcast_expectations(points, {date(2022, 8, 1): date(2022, 9, 13)})
+
+    # then core was expected to rise 0.48%, against the 0.57% published
+    assert expected[(CORE, date(2022, 8, 1))] == pytest.approx(0.479891397462036)
+
+
+def test_a_month_without_a_nowcast_before_its_release_has_no_expected_value() -> None:
+    # given the August 2022 nowcasts and a release date before the first of them
+    points = parse_nowcasts(NOWCAST_2022.read_bytes())
+
+    # when the expected value is taken
+    expected = nowcast_expectations(points, {date(2022, 8, 1): date(2022, 7, 1)})
+
+    # then there is none
+    assert (CORE, date(2022, 8, 1)) not in expected
+
+
+def test_changes_that_differ_from_cleveland_s_actual_are_named() -> None:
+    # given Cleveland's published actuals and our changes, one of them off by 0.02 pp
+    points = parse_nowcasts(NOWCAST_2022.read_bytes())
+    ours = [
+        MonthlyChange(date(2022, 8, 1), date(2022, 9, 13), 0.567267801202265 + 0.005),
+        MonthlyChange(date(2022, 12, 1), date(2023, 1, 12), 0.302600094645844 + 0.02),
+    ]
+
+    # when they are compared within 0.01 pp
+    mismatches = actual_mismatches(ours, published_actuals(points), CORE)
+
+    # then only December is named
+    assert mismatches == [date(2022, 12, 1)]
+
+
+def test_the_nowcast_request_reports_a_failure_as_cleveland_s(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # given a network that refuses the connection
+    def refuse(*_args: object, **_kwargs: object) -> NoReturn:
+        raise urllib.error.URLError("connection refused")
+
+    monkeypatch.setattr(sources.urllib.request, "urlopen", refuse)
+
+    # when / then the failure names the source
+    with pytest.raises(ClevelandError, match="Cleveland Fed request failed"):
+        sources.fetch_nowcasts()
