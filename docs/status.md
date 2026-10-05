@@ -13,7 +13,7 @@ MVP step 4, sub-step 2 — first-published month-over-month CPI, core and headli
 that day. Live on 2026-10-05: core 354 months from 1997-01, headline 647 from 1972-08; against the
 Cleveland Fed's published actuals for 155 months since 2013 the worst gap is 0.0024 pp; January
 2023 core reads 0.412%. October and November 2025 get no change (October was never published).
-About 45 s, mostly the 84 one-month FRED requests. *(PR #—.)*
+About 45 s, mostly the 84 one-month FRED requests. *(PR #92.)*
 
 ## In progress
 
@@ -28,7 +28,7 @@ release; check our m/m against its "actual" within 0.01 pp (November 2025 except
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-05 | Step 4.2: first-published m/m, core and headline, with the January fix | PR #— |
+| 2026-10-05 | Step 4.2: first-published m/m, core and headline, with the January fix | PR #92 |
 | 2026-10-05 | `sources.py`: FRED and Yahoo requests and parsing moved out of `study.py` | PR #91 |
 | 2026-10-05 | Step 4.1: `cpi_surprises` table and its schema doc | PR #90 |
 | 2026-10-05 | `study.py` regrouped by step; no behaviour change | PR #89 |
