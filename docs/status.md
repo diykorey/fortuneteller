@@ -10,7 +10,7 @@ Where the work is and what comes next. Two rules keep it current:
 
 MVP step 3, sub-step 3 — `uv run fortuneteller raw-move` prints a verdict per instrument, the era
 rows and the rule; an empty store gives one line naming the load to run first. Live run on
-2026-10-02: about 14 s, two runs identical. *(PR #—.)*
+2026-10-02: about 14 s, two runs identical. *(PR #85.)*
 
 ## In progress
 
@@ -25,7 +25,7 @@ off it, and say what they mean for step 4.
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-02 | Step 3.3: `raw-move` CLI — verdicts, eras, rule | PR #— |
+| 2026-10-02 | Step 3.3: `raw-move` CLI — verdicts, eras, rule | PR #85 |
 | 2026-10-02 | Step 3.2: `compare_moves` — ratio, permutation `p`, verdict | PR #84 |
 | 2026-10-02 | Step 3.1: `daily_moves` and `cpi_days`; CPI-day moves match step 2 | PR #83 |
 | 2026-10-02 | Step 3 spec: raw move on CPI days; precision doc | PR #82 |
