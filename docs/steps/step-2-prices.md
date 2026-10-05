@@ -145,7 +145,9 @@ release date (`event_ts` converted back to New York time):
 | `quality` | `daily_close` — measured from daily closes, not intraday; add it to the schema doc's values |
 | everything else | `NULL` |
 
-Both tables are written with `insert_models(replace=True)`, so a re-run overwrites by key.
+Both tables are rebuilt with `db.replace_rows`: `daily_bars` one instrument at a time, `observations`
+as a whole. A re-run leaves exactly what that run produced, so closes from a replaced ticker cannot
+linger.
 
 **Data quirks, all verified present on 2026-09-25.**
 

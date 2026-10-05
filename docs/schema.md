@@ -274,8 +274,9 @@ it looks up the close before the announcement and the close after it, and writes
 release days are unusual. Storing the prices means Yahoo is asked once and later steps read locally.
 Nothing is computed here: the rows are the prices exactly as the source reported them.
 
-Filled by `uv run fortuneteller load-prices` (through `study.load_daily_bars`). Key: (`instrument`, `day`), so
-a re-run overwrites a day rather than adding a second copy.
+Filled by `uv run fortuneteller load-prices` (through `study.load_daily_bars`). Key: (`instrument`, `day`).
+Each load replaces all of an instrument's rows, so the table holds exactly what the current ticker
+returned: closes from an earlier ticker for the same instrument cannot mix in.
 
 Example rows:
 

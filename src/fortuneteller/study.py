@@ -294,12 +294,16 @@ def store_daily_bars(
     closes: Sequence[DailyClosingPrice],
     con: duckdb.DuckDBPyConnection | None = None,
 ) -> int:
-    """Write one instrument's closes to ``daily_bars``; re-running overwrites by (instrument, day)."""
+    """Replace one instrument's closes in ``daily_bars`` with ``closes``.
+
+    Every earlier row of the instrument goes, so closes from a previous ticker can never mix with
+    the new ones.
+    """
     source = f"yahoo:{ticker}"
     bars = [
         DailyBar(instrument=instrument, day=c.day, close=c.price, source=source) for c in closes
     ]
-    return db.insert_models("daily_bars", bars, con=con, replace=True)
+    return db.replace_rows("daily_bars", bars, "instrument = ?", [instrument], con=con)
 
 
 def load_daily_bars(con: duckdb.DuckDBPyConnection | None = None) -> dict[str, int]:

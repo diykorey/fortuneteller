@@ -116,8 +116,8 @@ def replace_rows(
 ) -> int:
     """Delete the rows of ``table`` matching ``where``, then insert ``rows``, in one transaction.
 
-    For derived tables rebuilt on every run: an upsert alone would keep rows the new run no longer
-    produces. ``where`` is SQL from this codebase, never from outside; its values go in ``params``.
+    For tables rebuilt from their source on every run: an upsert alone would keep rows the new run
+    no longer produces. ``where`` is SQL from this codebase, never from outside; its values go in ``params``.
     """
     if table not in _TABLES:
         raise ValueError(f"unknown table: {table!r}")
