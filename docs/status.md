@@ -8,9 +8,10 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-MVP step 3, sub-step 3 — `uv run fortuneteller raw-move` prints a verdict per instrument, the era
-rows and the rule; an empty store gives one line naming the load to run first. Live run on
-2026-10-02: about 14 s, two runs identical. *(PR #85.)*
+MVP step 3, sub-step 4 — Results written into [step-3-raw-move.md](steps/step-3-raw-move.md).
+**Step 3 is complete: CPI matters for three of the five instruments.** On CPI days the 10-year
+yield (ratio 1.25, p 0.0007), the dollar (1.16, 0.003) and VIX (1.19, 0.002) move more than on
+ordinary days; the S&P 500 (1.07, 0.10) and gold (1.02, 0.41) do not. *(PR #86.)*
 
 ## In progress
 
@@ -18,13 +19,15 @@ Nothing.
 
 ## Next
 
-MVP step 3, sub-step 4 — Results: paste the live `raw-move` output into the spec, read the verdicts
-off it, and say what they mean for step 4.
+MVP step 4 — **Surprise**: write the step 4 spec — does the size of the move follow the size of
+the surprise, for UST 10Y, DXY and VIX? It starts with the roadmap's open decision: market
+consensus or a computed baseline as the expected value.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-05 | Step 3.4: Results — step 3 complete; CPI moves UST 10Y, DXY, VIX | PR #86 |
 | 2026-10-02 | Step 3.3: `raw-move` CLI — verdicts, eras, rule | PR #85 |
 | 2026-10-02 | Step 3.2: `compare_moves` — ratio, permutation `p`, verdict | PR #84 |
 | 2026-10-02 | Step 3.1: `daily_moves` and `cpi_days`; CPI-day moves match step 2 | PR #83 |
@@ -56,7 +59,7 @@ off it, and say what they mean for step 4.
 | --- | --- |
 | 1 Releases | Done |
 | 2 Prices | Done |
-| 3 Raw move | In progress — spec, 3.1–3.3 done |
+| 3 Raw move | Done — moves: UST 10Y, DXY, VIX; doesn't: S&P 500, gold |
 | 4 Surprise | Not started |
 
 ## Known, not yet fixed
