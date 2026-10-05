@@ -40,6 +40,11 @@ adjustment and last month's level moves the same day: January 2023 core reads 0.
 was published as 0.41%. So for each February release, last month's level is fetched as it stood on
 the release day.
 
+**One month was never published.** The 2025 government shutdown left October 2025 without a CPI.
+October and November 2025 therefore get no change and no surprise (November has no October to
+compare with), and the 12-month trend averages the months that exist. November 2025 is the one
+known exception to the check against Cleveland's "actual", which estimates it (−0.09%).
+
 **Testing many things invites a lucky pass.** The rule, the measure (core decides, headline is
 context) and each instrument's expected direction are fixed below, before any run.
 
@@ -48,7 +53,7 @@ context) and each instrument's expected direction are fixed below, before any ru
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~`cpi_surprises` table in `schema.sql` and `docs/schema.md`~~ **done** | `init` creates it; the doc explains every column and value |
-| 2 | First-published m/m, core and headline: fetch `CPILFESL`, apply the February fix | Tests pass; live: core from 1997, headline from 1972; January 2023 core reads 0.41% |
+| 2 | ~~First-published m/m, core and headline: fetch `CPILFESL`, apply the February fix~~ **done** | Tests pass; live: core from 1997, headline from 1972; January 2023 core reads 0.41% |
 | 3 | Cleveland Fed nowcast: fetch, parse, keep the last value before each release | Tests pass; live: our m/m equals Cleveland's "actual" within 0.01 pp for every release since 2013 |
 | 4 | `load-surprises`: the 12-month trend, both expected values, stored in `cpi_surprises` | Re-running changes no count; the August 2022 core surprise is positive against both |
 | 5 | `track_surprises`: rank correlation, permutation `p`, hit rate, slope, verdict | The synthetic checks pass; two runs give the same result |

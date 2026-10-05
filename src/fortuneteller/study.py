@@ -18,7 +18,7 @@ from __future__ import annotations
 
 import random
 from bisect import bisect_left
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from datetime import UTC, date, datetime, time
 from statistics import median
@@ -419,3 +419,67 @@ def measure_raw_moves(con: duckdb.DuckDBPyConnection | None = None) -> dict[str,
         }
         results[instrument] = RawMove(unit, overall, eras)
     return results
+
+
+# Step 4 — the CPI surprise (docs/steps/step-4-surprise.md).
+
+
+# Core decides step 4's verdicts; headline is context. Each is read from its own FRED series.
+MEASURE_SERIES = {"core": sources.CORE_CPI_SERIES_ID, "headline": sources.CPI_SERIES_ID}
+
+
+@dataclass(frozen=True)
+class MonthlyChange:
+    """One month's CPI change as first published, in percent (``0.4`` means +0.4%)."""
+
+    reference_month: date
+    released: date
+    percent: float
+
+
+def previous_month(month: date) -> date:
+    return date(month.year - 1, 12, 1) if month.month == 1 else date(month.year, month.month - 1, 1)
+
+
+def first_published_changes(
+    releases: Sequence[CpiRelease], revised_previous: Mapping[date, float]
+) -> list[MonthlyChange]:
+    """Each month's change as BLS first published it, oldest first.
+
+    A month is compared with the previous month's first-published level, except January: it comes
+    out on the day BLS revises its seasonal factors, so December's level that day comes from
+    ``revised_previous``, keyed by the January month. A month whose previous month has no level
+    (the first month, or after a month never published, like October 2025) gets no change.
+    """
+    levels = {release.reference_month: release.value for release in releases}
+    changes: list[MonthlyChange] = []
+    for release in sorted(releases, key=lambda release: release.reference_month):
+        month = release.reference_month
+        if previous_month(month) not in levels:
+            continue
+        if month.month == 1:
+            if month not in revised_previous:
+                raise ValueError(f"{month:%Y-%m}: no December level as revised on its release day")
+            previous = revised_previous[month]
+        else:
+            previous = levels[previous_month(month)]
+        changes.append(MonthlyChange(month, release.released, (release.value / previous - 1) * 100))
+    return changes
+
+
+def load_first_published_changes(api_key: str, series_id: str) -> list[MonthlyChange]:
+    """Fetch a CPI series' first releases and each January's revised December, then the changes."""
+    releases, _valueless = sources.parse_cpi_releases(
+        sources.fetch_cpi_releases(api_key, series_id=series_id)
+    )
+    months = {release.reference_month for release in releases}
+    revised_previous = {
+        release.reference_month: sources.parse_level(
+            sources.fetch_level_as_of(
+                api_key, series_id, previous_month(release.reference_month), release.released
+            )
+        )
+        for release in releases
+        if release.reference_month.month == 1 and previous_month(release.reference_month) in months
+    }
+    return first_published_changes(releases, revised_previous)
