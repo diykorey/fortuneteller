@@ -11,7 +11,7 @@ Where the work is and what comes next. Two rules keep it current:
 Part B of the `study.py` review: requesting and parsing the outside sources (FRED, Yahoo) moved to
 `sources.py`, ahead of step 4's second FRED series and the Cleveland Fed nowcast. `study.py` keeps
 turning records into rows and measuring them. No behaviour change: every moved statement is
-identical, and `load_daily_bars` only calls `sources.` by name. *(PR #—.)*
+identical, and `load_daily_bars` only calls `sources.` by name. *(PR #91.)*
 
 ## In progress
 
@@ -27,7 +27,7 @@ October 2025 has no value (the shutdown), so the m/m for October and November 20
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-05 | `sources.py`: FRED and Yahoo requests and parsing moved out of `study.py` | PR #— |
+| 2026-10-05 | `sources.py`: FRED and Yahoo requests and parsing moved out of `study.py` | PR #91 |
 | 2026-10-05 | Step 4.1: `cpi_surprises` table and its schema doc | PR #90 |
 | 2026-10-05 | `study.py` regrouped by step; no behaviour change | PR #89 |
 | 2026-10-05 | `daily_bars` rebuilt per instrument; gold cross-checked, not replaced | PR #88 |
