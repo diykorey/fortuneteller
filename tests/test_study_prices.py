@@ -15,15 +15,17 @@ from typing import Any, NoReturn
 import duckdb
 import pytest
 
-from fortuneteller import db, study
+from fortuneteller import db, sources
 from fortuneteller.config import settings
 from fortuneteller.models import DailyBar
-from fortuneteller.study import (
-    MVP_PRICE_SERIES,
+from fortuneteller.sources import (
     DailyClosingPrice,
     YahooError,
-    load_daily_bars,
     parse_daily_bars,
+)
+from fortuneteller.study import (
+    MVP_PRICE_SERIES,
+    load_daily_bars,
     store_daily_bars,
 )
 
@@ -168,10 +170,10 @@ def test_fetch_asks_for_the_whole_daily_history(monkeypatch: pytest.MonkeyPatch)
         seen.append(request)
         return io.BytesIO(GSPC_2022.read_bytes())
 
-    monkeypatch.setattr(study.urllib.request, "urlopen", answer)
+    monkeypatch.setattr(sources.urllib.request, "urlopen", answer)
 
     # when a ticker with special characters is fetched
-    body = study.fetch_daily_bars("^GSPC")
+    body = sources.fetch_daily_bars("^GSPC")
 
     # then the ticker is escaped, the full daily range is requested with a browser User-Agent
     assert body == GSPC_2022.read_bytes()
@@ -186,11 +188,11 @@ def test_fetch_failure_names_the_ticker(monkeypatch: pytest.MonkeyPatch) -> None
     def reject(request: urllib.request.Request, timeout: float) -> NoReturn:
         raise urllib.error.HTTPError(request.full_url, 404, "Not Found", Message(), io.BytesIO())
 
-    monkeypatch.setattr(study.urllib.request, "urlopen", reject)
+    monkeypatch.setattr(sources.urllib.request, "urlopen", reject)
 
     # when / then the fetch fails with an error that says which ticker and why
     with pytest.raises(YahooError, match=r"HTTP 404 for DX-Y\.NYB"):
-        study.fetch_daily_bars("DX-Y.NYB")
+        sources.fetch_daily_bars("DX-Y.NYB")
 
 
 def _store(time_zone: str = "UTC") -> duckdb.DuckDBPyConnection:
@@ -205,7 +207,7 @@ def _answer_from_fixtures(monkeypatch: pytest.MonkeyPatch) -> None:
     def fetch(ticker: str) -> bytes:
         return (DXY_1992 if ticker == "DX-Y.NYB" else GSPC_2022).read_bytes()
 
-    monkeypatch.setattr(study, "fetch_daily_bars", fetch)
+    monkeypatch.setattr(sources, "fetch_daily_bars", fetch)
 
 
 def test_store_writes_one_row_per_close_with_its_symbol_and_source() -> None:
@@ -344,11 +346,11 @@ def test_read_timeout_is_a_yahoo_error(monkeypatch: pytest.MonkeyPatch) -> None:
     def stall(request: urllib.request.Request, timeout: float) -> NoReturn:
         raise TimeoutError("timed out")
 
-    monkeypatch.setattr(study.urllib.request, "urlopen", stall)
+    monkeypatch.setattr(sources.urllib.request, "urlopen", stall)
 
     # when / then the fetch fails with an error naming the ticker
     with pytest.raises(YahooError, match=r"for \^VIX failed: timed out"):
-        study.fetch_daily_bars("^VIX")
+        sources.fetch_daily_bars("^VIX")
 
 
 def test_a_bad_ticker_stores_nothing_for_any_instrument(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -363,7 +365,7 @@ def test_a_bad_ticker_stores_nothing_for_any_instrument(monkeypatch: pytest.Monk
             return _payload(GSPC_2022, no_bars)
         return GSPC_2022.read_bytes()
 
-    monkeypatch.setattr(study, "fetch_daily_bars", fetch)
+    monkeypatch.setattr(sources, "fetch_daily_bars", fetch)
     con = _store()
 
     # when the five instruments are loaded

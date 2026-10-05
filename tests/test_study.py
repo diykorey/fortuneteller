@@ -13,13 +13,15 @@ import duckdb
 import pytest
 from pydantic import SecretStr
 
-from fortuneteller import db, study
+from fortuneteller import db, sources
 from fortuneteller.__main__ import main
 from fortuneteller.config import settings
-from fortuneteller.study import (
+from fortuneteller.sources import (
     CpiRelease,
     FredError,
     parse_cpi_releases,
+)
+from fortuneteller.study import (
     store_cpi_releases,
     to_event_instance,
 )
@@ -101,17 +103,17 @@ def test_truncated_response_is_rejected() -> None:
 def test_http_error_does_not_leak_the_api_key(monkeypatch: pytest.MonkeyPatch) -> None:
     # given FRED rejecting the request and echoing the key back in both the URL and the body
     key = "abcdef0123456789abcdef0123456789"
-    url = f"{study.FRED_OBSERVATIONS_URL}?api_key={key}"
+    url = f"{sources.FRED_OBSERVATIONS_URL}?api_key={key}"
     body = f'{{"error_message": "Bad Request. {url}"}}'.encode()
 
     def reject(*_args: Any, **_kwargs: Any) -> NoReturn:
         raise urllib.error.HTTPError(url, 400, "Bad Request", Message(), io.BytesIO(body))
 
-    monkeypatch.setattr(study.urllib.request, "urlopen", reject)
+    monkeypatch.setattr(sources.urllib.request, "urlopen", reject)
 
     # when the fetch fails
     with pytest.raises(FredError) as caught:
-        study.fetch_cpi_releases(key)
+        sources.fetch_cpi_releases(key)
 
     # then neither the message nor the exception chain carries the key
     assert "HTTP 400" in str(caught.value)
@@ -220,7 +222,7 @@ def test_load_releases_prints_count_range_and_skipped_months(
 ) -> None:
     # given a configured key and FRED answering with the saved response
     monkeypatch.setattr(settings, "fred_api_key", SecretStr("test-key"))
-    monkeypatch.setattr(study, "fetch_cpi_releases", lambda _key: FIXTURE.read_bytes())
+    monkeypatch.setattr(sources, "fetch_cpi_releases", lambda _key: FIXTURE.read_bytes())
 
     # when the command runs twice
     first = main(["load-releases"])
@@ -243,7 +245,7 @@ def test_load_releases_without_a_key_fails_before_fetching(
     def fetch(_key: str) -> NoReturn:
         raise AssertionError("fetched without a key")
 
-    monkeypatch.setattr(study, "fetch_cpi_releases", fetch)
+    monkeypatch.setattr(sources, "fetch_cpi_releases", fetch)
 
     # when the command runs
     code = main(["load-releases"])
@@ -262,7 +264,7 @@ def test_load_releases_with_an_empty_key_fails_before_fetching(
     def fetch(_key: str) -> NoReturn:
         raise AssertionError("fetched with an empty key")
 
-    monkeypatch.setattr(study, "fetch_cpi_releases", fetch)
+    monkeypatch.setattr(sources, "fetch_cpi_releases", fetch)
 
     # when the command runs
     code = main(["load-releases"])
@@ -276,7 +278,7 @@ def test_fetch_refuses_an_empty_key() -> None:
     # given an empty key, which would also make error redaction replace every empty substring
     # when / then the fetch refuses before any request is made
     with pytest.raises(FredError, match="empty"):
-        study.fetch_cpi_releases("")
+        sources.fetch_cpi_releases("")
 
 
 def test_load_releases_reports_a_fred_failure(
@@ -288,7 +290,7 @@ def test_load_releases_reports_a_fred_failure(
     def fetch(_key: str) -> NoReturn:
         raise FredError("FRED returned HTTP 400: Bad Request")
 
-    monkeypatch.setattr(study, "fetch_cpi_releases", fetch)
+    monkeypatch.setattr(sources, "fetch_cpi_releases", fetch)
 
     # when the command runs
     code = main(["load-releases"])
@@ -315,11 +317,11 @@ def test_fred_read_timeout_is_a_fred_error_without_the_key(
     def stall(url: str, timeout: float) -> NoReturn:
         raise TimeoutError(f"timed out fetching {url}")
 
-    monkeypatch.setattr(study.urllib.request, "urlopen", stall)
+    monkeypatch.setattr(sources.urllib.request, "urlopen", stall)
 
     # when the fetch fails
     with pytest.raises(FredError) as caught:
-        study.fetch_cpi_releases(key)
+        sources.fetch_cpi_releases(key)
 
     # then the error is a FRED failure that does not carry the key
     assert "timed out" in str(caught.value)
@@ -331,7 +333,7 @@ def test_load_releases_reports_a_malformed_reply(
 ) -> None:
     # given a configured key and FRED answering with something that is not JSON
     monkeypatch.setattr(settings, "fred_api_key", SecretStr("test-key"))
-    monkeypatch.setattr(study, "fetch_cpi_releases", lambda _key: b"not json")
+    monkeypatch.setattr(sources, "fetch_cpi_releases", lambda _key: b"not json")
 
     # when the command runs
     code = main(["load-releases"])
