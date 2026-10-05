@@ -12,7 +12,7 @@ Rung 1, sub-step 1 — generic keys. `event_id` is the event type's code and the
 (`study.event_id`; CPI 2022-09-13 → `120220913`), `observations` is keyed by (`event_id`,
 `instrument`) with `obs_id` gone, and `cpi_surprises` is now `surprises`. On a database rebuilt
 from scratch (under a minute), `raw-move` and `surprise` print exactly the numbers they printed
-before. **An existing database must be deleted and reloaded** (see the rung 1 spec). *(PR #—.)*
+before. **An existing database must be deleted and reloaded** (see the rung 1 spec). *(PR #100.)*
 
 ## In progress
 
@@ -27,7 +27,7 @@ first releases, weekend guard, release dates checked against BLS.
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-05 | Rung 1.1: generic event keys; `surprises` | PR #— |
+| 2026-10-05 | Rung 1.1: generic event keys; `surprises` | PR #100 |
 | 2026-10-05 | Rung 1 spec: more events — NFP and Fed decisions | PR #99 |
 | 2026-10-05 | Step 4.7: Results and `mvp-results.md` — step 4 and the MVP complete | PR #98 |
 | 2026-10-05 | Step 4.6: `surprise` CLI — verdict and context tables | PR #97 |
