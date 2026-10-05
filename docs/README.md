@@ -23,8 +23,8 @@ step ends in a runnable command that prints a real number. "No edge" is a permit
 One document per step: its goal, the obstacle in the way, the sequence, how you know the result is
 right, and the implementation detail. The shape of these documents is fixed by the Legend. They
 live in [`steps/`](steps/): [Step 1 — Releases](steps/step-1-releases.md) and
-[Step 2 — Prices](steps/step-2-prices.md) are done; [Step 3 — Raw move](steps/step-3-raw-move.md) is
-specified.
+[Step 2 — Prices](steps/step-2-prices.md) and [Step 3 — Raw move](steps/step-3-raw-move.md) are
+done.
 
 **Where are we, and what's next?** → **[Status](status.md)**
 The last completed task and the next one, kept current as work lands.
@@ -106,8 +106,12 @@ and a working `init | seed | query-demo` CLI. **[MVP step 1](steps/step-1-releas
 2](steps/step-2-prices.md) is done**: `load-prices` stores the five instruments' daily closes and
 measures their move around each release — 2,698 observations. **No prediction code exists.**
 
-**[MVP step 3](steps/step-3-raw-move.md) is in progress**: `raw-move` compares each instrument's
-moves on CPI days with all other days and gives a verdict; the results go into its spec.
+**[MVP step 3](steps/step-3-raw-move.md) is done**: `raw-move` compares each instrument's moves on
+CPI days with all other days. CPI moves the 10-year yield, the dollar and VIX; the S&P 500 and gold
+show no clear effect.
+
+**Next: MVP step 4** — does the size of the move follow the size of the surprise? Its spec is
+written first.
 [Status](status.md) always has the current task.
 
 ## How this folder grows

@@ -8,7 +8,7 @@ FortuneTeller — an event-driven market-impact prediction & warning system: ing
 / climate / macro events, predict which instruments move (direction + magnitude + horizon) with
 **calibrated** confidence. A warning product, not HFT (latency budget is seconds-to-minutes).
 
-The repo is **bootstrapping**. What exists today is M0 — the data spine — plus MVP steps 1 and 2: the
+The repo is **bootstrapping**. What exists today is M0 — the data spine — plus MVP steps 1–3: the
 design docs (mirrored from a Notion workspace), the seed reference data, a working
 `init | seed | query-demo` CLI over DuckDB (M0-01…09; ruff + mypy --strict + pytest green), and
 `load-releases`, which loads the real CPI release history from FRED into `event_instances`
