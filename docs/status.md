@@ -8,12 +8,14 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-MVP step 4, sub-step 3 — the Cleveland Fed nowcast (`sources.fetch_nowcasts`, `parse_nowcasts`)
-and, per release, the last nowcast made before the release day (`study.nowcast_expectations`).
-Live on 2026-10-05: 155 expected values for core and for headline, 2013-08 … 2026-08; no month
-differs from Cleveland's published actual by more than 0.01 pp; and for all 155 months Cleveland
-records the actual on the day FRED gives as the release date. August 2022 core: expected +0.48%,
-published +0.57%. *(PR #94.)*
+MVP step 4, sub-step 4 — `uv run fortuneteller load-surprises` stores 1,287 surprises in
+`cpi_surprises`: core 342 against the 12-month trend (1998-01 … 2026-08) and 155 against the nowcast
+(2013-08 …); headline 635 and 155. It refuses to store anything if a month differs from Cleveland's
+published actual by more than 0.01 pp. August 2022 core: +0.087 pp against the nowcast, +0.095
+against the trend. About 47 s. **Finding:** for core, the Cleveland nowcast is almost exactly the
+12-month trend (median gap 0.003 pp, correlation 0.997), so the two baselines are not independent
+for core; for headline they are (0.46). Recorded in [precision.md](precision.md). **Decided:** core
+against the trend gives the verdict; the other three combinations are context (spec, Decisions). *(PR #95.)*
 
 ## In progress
 
@@ -21,14 +23,15 @@ Nothing.
 
 ## Next
 
-MVP step 4, sub-step 4 — `load-surprises`: the 12-month trend, actual minus expected against both
-baselines, stored in `cpi_surprises`; refuse to store if any month differs from Cleveland's actual
-by more than 0.01 pp.
+MVP step 4, sub-step 5 —
+`track_surprises`: rank correlation, permutation `p`, hit rate, slope, verdict; the statistics move
+to `stats.py` (part C of the `study.py` review).
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-05 | Step 4.4: `load-surprises` — 1,287 surprises stored | PR #95 |
 | 2026-10-05 | Step 4.3: Cleveland Fed nowcast; expected value before each release | PR #94 |
 | 2026-10-05 | Step 4.2: first-published m/m, core and headline, with the January fix | PR #92 |
 | 2026-10-05 | `sources.py`: FRED and Yahoo requests and parsing moved out of `study.py` | PR #91 |
@@ -69,7 +72,7 @@ by more than 0.01 pp.
 | 1 Releases | Done |
 | 2 Prices | Done |
 | 3 Raw move | Done — moves: UST 10Y, DXY, VIX; doesn't: S&P 500, gold |
-| 4 Surprise | In progress — spec, 4.1–4.3 done |
+| 4 Surprise | In progress — spec, 4.1–4.4 done |
 
 ## Known, not yet fixed
 

@@ -140,6 +140,15 @@ class DailyBar(_DomainModel):
     source: str
 
 
+class CpiSurprise(_DomainModel):
+    event_id: int
+    measure: str
+    baseline: str
+    actual_mom: float
+    expected_mom: float
+    surprise: float
+
+
 class Observation(_DomainModel):
     obs_id: int
     event_id: int

@@ -72,7 +72,7 @@ Toolchain is `uv` (Python 3.12). `just` recipes wrap these; if `just` isn't inst
 
 ```bash
 uv sync                              # install deps + dev group (ruff, mypy, pytest)
-uv run fortuneteller --help          # CLI: init | seed | query-demo | load-releases | load-prices | raw-move
+uv run fortuneteller --help          # CLI: init | seed | query-demo | load-releases | load-prices | load-surprises | raw-move
 uv run ruff check                    # lint (line length 100)
 uv run ruff format                   # format
 uv run mypy src                      # type check (strict)

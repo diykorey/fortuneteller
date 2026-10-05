@@ -3,7 +3,7 @@
 Subcommands: ``init`` creates the store (M0-05 ``db.init_db``); ``seed`` / ``query-demo`` load and
 read the seed data (M0-07 ``seed``); ``load-releases`` loads the CPI release history from FRED
 (MVP step 1 ``study``); ``load-prices`` loads the five instruments' daily closes and measures their
-move around each release (MVP step 2); ``raw-move`` compares each instrument's moves on CPI days
+move around each release (MVP step 2); ``load-surprises`` stores each release's surprise (MVP step 4); ``raw-move`` compares each instrument's moves on CPI days
 with all other days (MVP step 3).
 """
 
@@ -15,6 +15,7 @@ from collections.abc import Callable, Sequence
 
 from . import db, seed, sources, study
 from .config import settings
+from .models import CpiSurprise
 
 Handler = Callable[[argparse.Namespace], int]
 
@@ -48,10 +49,16 @@ def _query_demo(_args: argparse.Namespace) -> int:
     return 0
 
 
-def _load_releases(_args: argparse.Namespace) -> int:
+def _fred_key(command: str) -> str:
     api_key = settings.fred_api_key.get_secret_value() if settings.fred_api_key else ""
     if not api_key:
-        print("load-releases: FT_FRED_API_KEY is not set (see docs/accounts.md)", file=sys.stderr)
+        print(f"{command}: FT_FRED_API_KEY is not set (see docs/accounts.md)", file=sys.stderr)
+    return api_key
+
+
+def _load_releases(_args: argparse.Namespace) -> int:
+    api_key = _fred_key("load-releases")
+    if not api_key:
         return 1
     try:
         payload = sources.fetch_cpi_releases(api_key)
@@ -105,6 +112,38 @@ def _load_prices(_args: argparse.Namespace) -> int:
     releases = first.measured + first.skipped_before_history + first.skipped_no_close_nearby
     total = sum(counts.measured for counts in release_counts.values())
     print(f"{len(release_counts)} instruments × {releases} releases = {total} observations")
+    return 0
+
+
+def describe_surprises(rows: Sequence[CpiSurprise]) -> list[str]:
+    """One report line per measure and expected value: how many surprises, over which months."""
+    lines = []
+    for measure in study.MEASURE_SERIES:
+        for baseline in (study.TREND_12M, study.NOWCAST_BASELINE):
+            ids = sorted(
+                r.event_id for r in rows if r.measure == measure and r.baseline == baseline
+            )
+            if ids:
+                first, last = (f"{i // 100}-{i % 100:02d}" for i in (ids[0], ids[-1]))
+                lines.append(
+                    f"{measure:<9} {baseline:<10} {len(ids):>3} surprises, {first} … {last}"
+                )
+    return lines
+
+
+def _load_surprises(_args: argparse.Namespace) -> int:
+    api_key = _fred_key("load-surprises")
+    if not api_key:
+        return 1
+    con = db.get_connection()
+    db.init_db(con=con)
+    try:
+        rows = study.load_surprises(api_key, con=con)
+    except (sources.FredError, sources.ClevelandError, ValueError) as exc:
+        print(f"load-surprises: {exc}", file=sys.stderr)
+        return 1
+    for line in describe_surprises(rows):
+        print(line)
     return 0
 
 
@@ -180,6 +219,11 @@ def build_parser() -> argparse.ArgumentParser:
         "load-prices", help="load daily closes from Yahoo and measure each release's move"
     )
     p_prices.set_defaults(func=_load_prices)
+
+    p_surprises = sub.add_parser(
+        "load-surprises", help="load each CPI release's surprise against both expected values"
+    )
+    p_surprises.set_defaults(func=_load_surprises)
 
     p_raw = sub.add_parser(
         "raw-move", help="compare each instrument's moves on CPI days with all other days"

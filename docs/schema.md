@@ -22,7 +22,7 @@ through `db.insert_models` (`effect_size_matrix`, which nothing writes yet, has 
 | [`event_instances`](#event_instances) | Fact | Real event that happened | `load-releases` (MVP step 1) | 649 CPI releases |
 | [`daily_bars`](#daily_bars) | Fact | Instrument × trading day closing price | `load-prices` (MVP step 2) | about 58,500 |
 | [`observations`](#observations) | Fact | Event × instrument reaction | `load-prices` (MVP step 2) | 2,698 |
-| [`cpi_surprises`](#cpi_surprises) | Fact | CPI release × measure × expected value | `load-surprises` (MVP step 4) | about 1,300 |
+| [`cpi_surprises`](#cpi_surprises) | Fact | CPI release × measure × expected value | `load-surprises` (MVP step 4) | 1,287 |
 | [`effect_size_matrix`](#effect_size_matrix) | Derived | Event type × instrument measurement | Nothing planned yet | 0 |
 
 **Reference** tables are configuration: committed CSVs in `data/seed/`, loaded by
@@ -394,8 +394,8 @@ and asks whether bigger surprises bring bigger moves. There is no free history o
 expected, so each release gets two expected values, and step 4 compares the answers they give.
 
 Filled by `uv run fortuneteller load-surprises` (step 4). Key: (`event_id`, `measure`, `baseline`).
-About 1,300 rows: headline from 1973 and core from 1998 against the 12-month trend, and both
-against the nowcast from 2013.
+1,287 rows on 2026-10-05: against the 12-month trend, core 342 (from 1998) and headline 635 (from
+1973); against the nowcast, 155 each (from 2013).
 
 Example row:
 

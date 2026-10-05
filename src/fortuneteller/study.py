@@ -28,7 +28,7 @@ from zoneinfo import ZoneInfo
 import duckdb
 
 from . import db, sources
-from .models import DailyBar, EventInstance, Observation
+from .models import CpiSurprise, DailyBar, EventInstance, Observation
 from .sources import CpiRelease, DailyClosingPrice, YahooError
 
 
@@ -526,3 +526,105 @@ def actual_mismatches(
         if (measure, change.reference_month) in actuals
         and abs(change.percent - actuals[(measure, change.reference_month)]) > ACTUAL_TOLERANCE_PP
     ]
+
+
+# The two expected values, as stored in cpi_surprises.baseline.
+TREND_12M = "trend_12m"
+NOWCAST_BASELINE = "nowcast"
+TREND_MONTHS = 12
+
+
+def trend_expectations(changes: Sequence[MonthlyChange]) -> dict[date, float]:
+    """Each month's 12-month trend: the average first-published change over the 12 months before it.
+
+    Every one of those was published before the month's own release, so the trend uses only what
+    was known then. A month gets a trend once a full year of history lies behind it; a month never
+    published inside the year (October 2025) is skipped, and the rest are averaged.
+    """
+    percents = {change.reference_month: change.percent for change in changes}
+    first = min(percents, default=date.max)
+    trend: dict[date, float] = {}
+    for month in percents:
+        window = [month]
+        for _ in range(TREND_MONTHS):
+            window.append(previous_month(window[-1]))
+        if window[-1] < first:
+            continue
+        known = [percents[m] for m in window[1:] if m in percents]
+        trend[month] = sum(known) / len(known)
+    return trend
+
+
+def build_surprises(
+    events: Iterable[EventInstance],
+    changes: Mapping[str, Sequence[MonthlyChange]],
+    points: Iterable[sources.NowcastPoint],
+) -> list[CpiSurprise]:
+    """One ``cpi_surprises`` row per stored release, measure and expected value.
+
+    Each change is matched to its stored release by month, and must have come out the same day:
+    core and headline are one BLS release.
+    """
+    stored = {date.fromisoformat(f"{event.detail}-01"): event for event in events}
+    nowcast_points = list(points)
+    rows: list[CpiSurprise] = []
+    for measure, measure_changes in changes.items():
+        released = {change.reference_month: change.released for change in measure_changes}
+        nowcasts = nowcast_expectations(nowcast_points, released)
+        expected_by = {
+            TREND_12M: trend_expectations(measure_changes),
+            NOWCAST_BASELINE: {m: v for (kind, m), v in nowcasts.items() if kind == measure},
+        }
+        for change in measure_changes:
+            month = change.reference_month
+            event = stored.get(month)
+            if event is None:
+                raise ValueError(
+                    f"{measure} {month:%Y-%m}: no CPI release stored for it; "
+                    "run `fortuneteller load-releases` first"
+                )
+            if release_date(event) != change.released:
+                raise ValueError(
+                    f"{measure} {month:%Y-%m}: released {change.released}, "
+                    f"but the stored release is {release_date(event)}"
+                )
+            for baseline, expected in expected_by.items():
+                if month in expected:
+                    rows.append(
+                        CpiSurprise(
+                            event_id=event.event_id,
+                            measure=measure,
+                            baseline=baseline,
+                            actual_mom=change.percent,
+                            expected_mom=expected[month],
+                            surprise=change.percent - expected[month],
+                        )
+                    )
+    return rows
+
+
+def load_surprises(api_key: str, con: duckdb.DuckDBPyConnection | None = None) -> list[CpiSurprise]:
+    """Fetch both CPI measures and the nowcast, then rebuild ``cpi_surprises`` from them.
+
+    Nothing is stored unless every first-published change matches the Cleveland Fed's published
+    one within ``ACTUAL_TOLERANCE_PP``: a wrong actual would make every surprise wrong.
+    """
+    events = stored_cpi_events(con=con)
+    if not events:
+        raise ValueError("no CPI releases stored; run `fortuneteller load-releases` first")
+    changes = {
+        measure: load_first_published_changes(api_key, series_id)
+        for measure, series_id in MEASURE_SERIES.items()
+    }
+    points = sources.parse_nowcasts(sources.fetch_nowcasts())
+    actuals = published_actuals(points)
+    for measure, measure_changes in changes.items():
+        if missed := actual_mismatches(measure_changes, actuals, measure):
+            months = ", ".join(f"{month:%Y-%m}" for month in missed)
+            raise ValueError(
+                f"{measure}: first-published change differs from the Cleveland Fed's by more than "
+                f"{ACTUAL_TOLERANCE_PP} pp in {months}"
+            )
+    rows = build_surprises(events, changes, points)
+    db.replace_rows("cpi_surprises", rows, "TRUE", con=con)
+    return rows

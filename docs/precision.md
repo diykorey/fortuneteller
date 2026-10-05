@@ -50,7 +50,7 @@ this by splitting the results by era.
 | Choice | Now | More precise | Trigger |
 | --- | --- | --- | --- |
 | Computed baseline | Average of the previous 12 first-published core m/m: a plain trend | **A fitted forecasting model** (e.g. autoregressive, AR), which forecasts each month better and so leaves a truer surprise | Only `trend_12m` *tracks*, or the two baselines disagree |
-| Market expectation | Cleveland Fed nowcast: a model, 2013 on | Economists' survey consensus (Bloomberg, Reuters), what the market actually priced; paid | The nowcast result sits near the line, or a free consensus history turns up |
+| Market expectation | Cleveland Fed nowcast: a model, 2013 on. **For core it is almost exactly the 12-month trend** (median gap 0.003 pp, correlation 0.997, measured 2026-10-05): its information is oil and gasoline prices, which move headline, not core. So for core it is not an independent check on the trend; for headline it is (correlation 0.46) | Economists' survey consensus (Bloomberg, Reuters), what the market actually priced; paid | The nowcast result sits near the line, or a free consensus history turns up |
 | Core before 1997 | No core verdict before 1997: FRED's first-release core starts then | Earlier first-published core from BLS's printed releases | A conclusion needs the 1970s–90s |
 | Hit-rate cut-off | Surprises of at least 0.1 pp count; smaller ones are noise | A cut-off scaled to each era's typical surprise | Hit rate rests on fewer than 50 releases |
 
