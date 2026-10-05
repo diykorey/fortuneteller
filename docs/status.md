@@ -8,10 +8,12 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Part B of the `study.py` review: requesting and parsing the outside sources (FRED, Yahoo) moved to
-`sources.py`, ahead of step 4's second FRED series and the Cleveland Fed nowcast. `study.py` keeps
-turning records into rows and measuring them. No behaviour change: every moved statement is
-identical, and `load_daily_bars` only calls `sources.` by name. *(PR #91.)*
+MVP step 4, sub-step 2 — first-published month-over-month CPI, core and headline
+(`study.load_first_published_changes`), with each January measured against December as revised
+that day. Live on 2026-10-05: core 354 months from 1997-01, headline 647 from 1972-08; against the
+Cleveland Fed's published actuals for 155 months since 2013 the worst gap is 0.0024 pp; January
+2023 core reads 0.412%. October and November 2025 get no change (October was never published).
+About 45 s, mostly the 84 one-month FRED requests. *(PR #—.)*
 
 ## In progress
 
@@ -19,14 +21,14 @@ Nothing.
 
 ## Next
 
-MVP step 4, sub-step 2 — first-published m/m for core and headline: fetch `CPILFESL`, apply the
-February fix; move the fetch and parse code to `sources.py` (part B of the `study.py` review).
-October 2025 has no value (the shutdown), so the m/m for October and November 2025 needs a rule.
+MVP step 4, sub-step 3 — the Cleveland Fed nowcast: fetch, parse, keep the last value before each
+release; check our m/m against its "actual" within 0.01 pp (November 2025 excepted).
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-05 | Step 4.2: first-published m/m, core and headline, with the January fix | PR #— |
 | 2026-10-05 | `sources.py`: FRED and Yahoo requests and parsing moved out of `study.py` | PR #91 |
 | 2026-10-05 | Step 4.1: `cpi_surprises` table and its schema doc | PR #90 |
 | 2026-10-05 | `study.py` regrouped by step; no behaviour change | PR #89 |
@@ -65,7 +67,7 @@ October 2025 has no value (the shutdown), so the m/m for October and November 20
 | 1 Releases | Done |
 | 2 Prices | Done |
 | 3 Raw move | Done — moves: UST 10Y, DXY, VIX; doesn't: S&P 500, gold |
-| 4 Surprise | In progress — spec, 4.1 done |
+| 4 Surprise | In progress — spec, 4.1, 4.2 done |
 
 ## Known, not yet fixed
 
