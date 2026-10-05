@@ -13,6 +13,7 @@ from __future__ import annotations
 import argparse
 import sys
 from collections.abc import Callable, Sequence
+from datetime import date
 
 from . import db, seed, sources, study
 from .config import settings
@@ -57,27 +58,39 @@ def _fred_key(command: str) -> str:
     return api_key
 
 
+def _months(releases: Sequence[sources.FirstRelease] | Sequence[date]) -> str:
+    months = [r if isinstance(r, date) else r.reference_month for r in releases]
+    return ", ".join(month.strftime("%Y-%m") for month in months)
+
+
 def _load_releases(_args: argparse.Namespace) -> int:
     api_key = _fred_key("load-releases")
     if not api_key:
         return 1
+    parsed = {}
     try:
-        payload = sources.fetch_cpi_releases(api_key)
-        releases, valueless = sources.parse_cpi_releases(payload)
+        for event_type, series_id in study.RELEASE_SERIES.items():
+            payload = sources.fetch_first_releases(api_key, series_id=series_id)
+            parsed[event_type] = sources.parse_first_releases(payload, series_id)
     except sources.FredError as exc:
         print(f"load-releases: {exc}", file=sys.stderr)
         return 1
-    if not releases:
-        print("load-releases: FRED returned no CPI releases", file=sys.stderr)
-        return 1
+    for event_type, (releases, _valueless) in parsed.items():
+        if not releases:
+            print(f"load-releases: FRED returned no {event_type} releases", file=sys.stderr)
+            return 1
     con = db.get_connection()
     db.init_db(con=con)
-    loaded = study.store_cpi_releases(releases, con=con)
-    released = [release.released for release in releases]
-    print(f"loaded {loaded} CPI releases, {min(released)} … {max(released)}")
-    if valueless:
-        months = ", ".join(month.strftime("%Y-%m") for month in valueless)
-        print(f"skipped {len(valueless)} printed without a value: {months}")
+    for event_type, (releases, valueless) in parsed.items():
+        kept, carried = study.one_release_per_day(releases)
+        loaded = study.store_releases(event_type, kept, con=con)
+        label = event_type.split(" /")[0]
+        released = [release.released for release in kept]
+        print(f"loaded {loaded} {label} releases, {min(released)} … {max(released)}")
+        if valueless:
+            print(f"  skipped {len(valueless)} printed without a value: {_months(valueless)}")
+        if carried:
+            print(f"  {len(carried)} first published with a later month: {_months(carried)}")
     return 0
 
 

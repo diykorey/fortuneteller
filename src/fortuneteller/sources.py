@@ -30,19 +30,22 @@ NETWORK_FAILURE = (OSError, http.client.HTTPException)
 FRED_OBSERVATIONS_URL = "https://api.stlouisfed.org/fred/series/observations"
 CPI_SERIES_ID = "CPIAUCSL"
 CORE_CPI_SERIES_ID = "CPILFESL"
+NFP_SERIES_ID = "PAYEMS"
 MISSING_VALUE = "."
 
-# FRED release dates checked against BLS and found wrong, by reference month. Every date from 1994
-# matches BLS's release archive; a sample of earlier years matches BLS's printed schedules except
-# these. Source for each: the BLS schedule cited beside it.
-RELEASE_DATE_CORRECTIONS = {
-    # FRED: Sunday 1992-12-13. BLS: "November — December 11" (CPI Detailed Report, May 1992).
-    date(1992, 11, 1): date(1992, 12, 11),
+# FRED release dates checked against BLS and found wrong, by series and reference month. CPI: every
+# date from 1994 matches BLS's release archive, and a sample of earlier years its printed schedules,
+# except these. NFP: every date from 1994 matches BLS's release texts. Source beside each.
+RELEASE_DATE_CORRECTIONS: dict[str, dict[date, date]] = {
+    CPI_SERIES_ID: {
+        # FRED: Sunday 1992-12-13. BLS: "November — December 11" (CPI Detailed Report, May 1992).
+        date(1992, 11, 1): date(1992, 12, 11),
+    },
 }
 
 
 @dataclass(frozen=True)
-class CpiRelease:
+class FirstRelease:
     reference_month: date
     released: date
     value: float
@@ -75,7 +78,7 @@ def _fred_get(api_key: str, params: dict[str, str], timeout: float) -> bytes:
         raise FredError(f"FRED request failed: {exc}".replace(api_key, "<redacted>")) from None
 
 
-def fetch_cpi_releases(
+def fetch_first_releases(
     api_key: str, series_id: str = CPI_SERIES_ID, timeout: float = 30.0
 ) -> bytes:
     """Return the raw FRED response: each month of a CPI series as first published, with its date."""
@@ -114,25 +117,27 @@ def parse_level(payload: bytes) -> float:
         raise FredError(f"FRED sent an unexpected reply: {exc!r}") from None
 
 
-def parse_cpi_releases(payload: bytes) -> tuple[list[CpiRelease], list[date]]:
+def parse_first_releases(payload: bytes, series_id: str) -> tuple[list[FirstRelease], list[date]]:
     """Parse a FRED initial-release response into records, plus the months printed with no value.
 
     Raises if a release date is not after its reference month — the sign that the series view,
     not the initial-release view, was fetched — or falls on a weekend, which BLS never publishes on.
-    Release dates known to be wrong in FRED are replaced from ``RELEASE_DATE_CORRECTIONS``.
+    Release dates known to be wrong in FRED are replaced from ``series_id``'s entry in
+    ``RELEASE_DATE_CORRECTIONS``.
     """
+    corrections = RELEASE_DATE_CORRECTIONS.get(series_id, {})
     try:
         document: Any = json.loads(payload)
         observations: list[dict[str, str]] = document["observations"]
         if document["count"] != len(observations):
             raise FredError(f"FRED reported {document['count']} rows but sent {len(observations)}")
 
-        releases: list[CpiRelease] = []
+        releases: list[FirstRelease] = []
         valueless: list[date] = []
         for row in observations:
             reference_month = date.fromisoformat(row["date"])
             released = date.fromisoformat(row["realtime_start"])
-            released = RELEASE_DATE_CORRECTIONS.get(reference_month, released)
+            released = corrections.get(reference_month, released)
             if released <= reference_month:
                 raise FredError(f"{reference_month}: released {released}, not after its month")
             if released.weekday() >= 5:
@@ -143,7 +148,7 @@ def parse_cpi_releases(payload: bytes) -> tuple[list[CpiRelease], list[date]]:
             if row["value"] == MISSING_VALUE:
                 valueless.append(reference_month)
                 continue
-            releases.append(CpiRelease(reference_month, released, float(row["value"])))
+            releases.append(FirstRelease(reference_month, released, float(row["value"])))
         return releases, valueless
     except MALFORMED_REPLY as exc:
         raise FredError(f"FRED sent an unexpected reply: {exc!r}") from None

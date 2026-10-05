@@ -32,7 +32,7 @@ import duckdb
 
 from . import db, sources, stats
 from .models import Surprise, DailyBar, EventInstance, Observation
-from .sources import CpiRelease, DailyClosingPrice, YahooError
+from .sources import FirstRelease, DailyClosingPrice, YahooError
 
 
 # Step 1 — the CPI release history from FRED (docs/steps/step-1-releases.md).
@@ -40,13 +40,17 @@ from .sources import CpiRelease, DailyClosingPrice, YahooError
 
 # Exact keys from data/seed/event_types.csv and countries.csv — joins match on these strings.
 CPI_EVENT_TYPE = "CPI / inflation surprise"
-CPI_COUNTRY = "United States"
-CPI_RELEASE_TIME = time(8, 30)
-CPI_RELEASE_ZONE = ZoneInfo("America/New_York")
+NFP_EVENT_TYPE = "NFP / labor data"
+UNITED_STATES = "United States"
+# CPI and the jobs report both come out at 08:30 New York time.
+RELEASE_TIME = time(8, 30)
+NEW_YORK = ZoneInfo("America/New_York")
 FIRST_RELEASE = "first_release"
 # Each event type's leading digit in event_id; the rest is the release day, so ids from different
 # types never collide and sort by date within a type.
-EVENT_TYPE_CODES = {CPI_EVENT_TYPE: 1}
+EVENT_TYPE_CODES = {CPI_EVENT_TYPE: 1, NFP_EVENT_TYPE: 2}
+# The FRED series each scheduled data release is read from, as first published.
+RELEASE_SERIES = {CPI_EVENT_TYPE: sources.CPI_SERIES_ID, NFP_EVENT_TYPE: sources.NFP_SERIES_ID}
 
 
 def event_id(event_type: str, released: date) -> int:
@@ -61,18 +65,18 @@ def event_date(event_id: int) -> date:
     return date(day // 10_000, day // 100 % 100, day % 100)
 
 
-def to_event_instance(release: CpiRelease) -> EventInstance:
+def to_event_instance(release: FirstRelease, event_type: str) -> EventInstance:
     """Map one release to its ``event_instances`` row, keyed by event type and release day.
 
     ``event_ts`` is naive UTC: DuckDB converts an aware datetime written to a ``TIMESTAMP`` column
     into the session time zone, so the offset is applied here and then dropped.
     """
-    published = datetime.combine(release.released, CPI_RELEASE_TIME, tzinfo=CPI_RELEASE_ZONE)
+    published = datetime.combine(release.released, RELEASE_TIME, tzinfo=NEW_YORK)
     return EventInstance(
-        event_id=event_id(CPI_EVENT_TYPE, release.released),
-        event_type=CPI_EVENT_TYPE,
+        event_id=event_id(event_type, release.released),
+        event_type=event_type,
         event_ts=published.astimezone(UTC).replace(tzinfo=None),
-        country=CPI_COUNTRY,
+        country=UNITED_STATES,
         detail=release.reference_month.strftime("%Y-%m"),
         scheduled=True,
         consensus=None,
@@ -87,11 +91,37 @@ def to_event_instance(release: CpiRelease) -> EventInstance:
     )
 
 
-def store_cpi_releases(
-    releases: Sequence[CpiRelease], con: duckdb.DuckDBPyConnection | None = None
+def one_release_per_day(
+    releases: Sequence[FirstRelease],
+) -> tuple[list[FirstRelease], list[FirstRelease]]:
+    """The newest month first published on each release day, and the earlier months it carried.
+
+    A release day is one event: the market reacts to it once. When a release carries two months
+    for the first time (October 2025's payrolls came out with November's, after the shutdown), the
+    event is the newer month.
+    """
+    newest: dict[date, FirstRelease] = {}
+    for release in releases:
+        current = newest.get(release.released)
+        if current is None or release.reference_month > current.reference_month:
+            newest[release.released] = release
+    kept = sorted(newest.values(), key=lambda release: release.reference_month)
+    carried = [release for release in releases if release not in kept]
+    return kept, carried
+
+
+def store_releases(
+    event_type: str,
+    releases: Sequence[FirstRelease],
+    con: duckdb.DuckDBPyConnection | None = None,
 ) -> int:
-    """Write the releases to ``event_instances``; re-running overwrites by ``event_id``."""
-    events = [to_event_instance(release) for release in releases]
+    """Write one event type's releases to ``event_instances``; re-running overwrites by key.
+
+    Two releases on one day would share an ``event_id``; ``one_release_per_day`` merges them first.
+    """
+    if len({release.released for release in releases}) != len(releases):
+        raise ValueError(f"{event_type}: two releases on one day; merge them first")
+    events = [to_event_instance(release, event_type) for release in releases]
     return db.insert_models("event_instances", events, con=con, replace=True)
 
 
@@ -218,7 +248,7 @@ def stored_cpi_events(con: duckdb.DuckDBPyConnection | None = None) -> list[Even
 
 def release_date(event: EventInstance) -> date:
     """The New York calendar date the release came out; ``event_ts`` is naive UTC."""
-    return event.event_ts.replace(tzinfo=UTC).astimezone(CPI_RELEASE_ZONE).date()
+    return event.event_ts.replace(tzinfo=UTC).astimezone(NEW_YORK).date()
 
 
 def stored_closes(
@@ -435,7 +465,7 @@ def previous_month(month: date) -> date:
 
 
 def first_published_changes(
-    releases: Sequence[CpiRelease], revised_previous: Mapping[date, float]
+    releases: Sequence[FirstRelease], revised_previous: Mapping[date, float]
 ) -> list[MonthlyChange]:
     """Each month's change as BLS first published it, oldest first.
 
@@ -462,8 +492,8 @@ def first_published_changes(
 
 def load_first_published_changes(api_key: str, series_id: str) -> list[MonthlyChange]:
     """Fetch a CPI series' first releases and each January's revised December, then the changes."""
-    releases, _valueless = sources.parse_cpi_releases(
-        sources.fetch_cpi_releases(api_key, series_id=series_id)
+    releases, _valueless = sources.parse_first_releases(
+        sources.fetch_first_releases(api_key, series_id=series_id), series_id
     )
     months = {release.reference_month for release in releases}
     revised_previous = {

@@ -11,26 +11,27 @@ from fortuneteller import db, sources
 from fortuneteller.__main__ import describe_release_counts, main
 from fortuneteller.models import DailyBar
 from fortuneteller.sources import (
-    CpiRelease,
+    FirstRelease,
     YahooError,
     DailyClosingPrice,
     parse_daily_bars,
 )
 from fortuneteller.study import (
+    CPI_EVENT_TYPE,
     BEFORE_HISTORY,
     MVP_PRICE_SERIES,
     NO_CLOSE_NEARBY,
     ReleaseCounts,
     closing_price_before_after,
     release_move,
-    store_cpi_releases,
+    store_releases,
     store_observations,
     to_event_instance,
 )
 
 GSPC_2022 = Path(__file__).parent / "data" / "yahoo_gspc_2022_09.json"
 # August 2022 CPI: released 2022-09-13, the S&P 500's worst day in two years.
-HOT_PRINT = CpiRelease(date(2022, 8, 1), date(2022, 9, 13), 296.171)
+HOT_PRINT = FirstRelease(date(2022, 8, 1), date(2022, 9, 13), 296.171)
 
 
 def _closes(*days: tuple[int, int, int]) -> list[DailyClosingPrice]:
@@ -136,7 +137,7 @@ def _store(
     con = duckdb.connect(":memory:")
     con.execute(f"SET TimeZone = '{time_zone}'")
     db.init_db(con=con)
-    store_cpi_releases([HOT_PRINT], con=con)
+    store_releases(CPI_EVENT_TYPE, [HOT_PRINT], con=con)
     spx = parse_daily_bars(GSPC_2022.read_bytes())
     for instrument in MVP_PRICE_SERIES:
         bars = _bars(instrument, (closes or {}).get(instrument, spx))
@@ -218,7 +219,9 @@ def test_instrument_without_any_prices_fails_loudly() -> None:
 def test_release_date_is_the_new_york_calendar_date() -> None:
     # given the hot print stamped 22:00 New York time, already 2022-09-14 in UTC
     con = _store()
-    late = to_event_instance(HOT_PRINT).model_copy(update={"event_ts": datetime(2022, 9, 14, 2, 0)})
+    late = to_event_instance(HOT_PRINT, CPI_EVENT_TYPE).model_copy(
+        update={"event_ts": datetime(2022, 9, 14, 2, 0)}
+    )
     db.insert_models("event_instances", [late], con=con, replace=True)
 
     # when the observations are built
@@ -251,7 +254,7 @@ def test_rerunning_changes_no_count_and_events_can_still_be_reloaded() -> None:
 
     # when the observations are rebuilt and the events they point at are stored again
     store_observations(con=con)
-    store_cpi_releases([HOT_PRINT], con=con)
+    store_releases(CPI_EVENT_TYPE, [HOT_PRINT], con=con)
 
     # then nothing is duplicated and the foreign key does not block the event reload
     assert db.count_rows("observations", con=con) == 5
@@ -261,7 +264,7 @@ def test_rerunning_changes_no_count_and_events_can_still_be_reloaded() -> None:
 def test_events_of_other_types_are_not_measured() -> None:
     # given a non-CPI event on the same day as the hot print
     con = _store()
-    other = to_event_instance(HOT_PRINT).model_copy(
+    other = to_event_instance(HOT_PRINT, CPI_EVENT_TYPE).model_copy(
         update={"event_id": 1, "event_type": "NFP / labor data"}
     )
     db.insert_models("event_instances", [other], con=con)
@@ -289,7 +292,7 @@ def test_load_prices_prints_counts_per_instrument_and_in_total(
     tmp_db: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     # given the hot print loaded, and gold's saved prices ending decades before it
-    store_cpi_releases([HOT_PRINT])
+    store_releases(CPI_EVENT_TYPE, [HOT_PRINT])
     _yahoo_answers(monkeypatch, gold=DXY_1992)
 
     # when the command runs twice
@@ -331,7 +334,7 @@ def test_load_prices_reports_a_yahoo_failure(
     tmp_db: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     # given the releases loaded and Yahoo rejecting the request
-    store_cpi_releases([HOT_PRINT])
+    store_releases(CPI_EVENT_TYPE, [HOT_PRINT])
 
     def fetch(ticker: str) -> NoReturn:
         raise YahooError(f"Yahoo returned HTTP 404 for {ticker}")
@@ -365,7 +368,7 @@ def test_load_prices_reports_a_malformed_reply(
     tmp_db: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     # given the releases loaded and Yahoo answering with a page that is not JSON
-    store_cpi_releases([HOT_PRINT])
+    store_releases(CPI_EVENT_TYPE, [HOT_PRINT])
     monkeypatch.setattr(sources, "fetch_daily_bars", lambda _ticker: b"<html>consent</html>")
 
     # when the command runs

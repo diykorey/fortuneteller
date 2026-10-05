@@ -22,7 +22,7 @@ from fortuneteller.sources import (
     HEADLINE,
     NOWCAST,
     ClevelandError,
-    CpiRelease,
+    FirstRelease,
     FredError,
     NowcastPoint,
     parse_level,
@@ -30,6 +30,7 @@ from fortuneteller.sources import (
 )
 from fortuneteller.models import Surprise, EventInstance
 from fortuneteller.study import (
+    CPI_EVENT_TYPE,
     DOESNT_TRACK,
     NOWCAST_BASELINE,
     TRACKS,
@@ -49,8 +50,8 @@ from fortuneteller.study import (
 )
 
 
-def _release(month: tuple[int, int], released: tuple[int, int, int], level: float) -> CpiRelease:
-    return CpiRelease(date(*month, 1), date(*released), level)
+def _release(month: tuple[int, int], released: tuple[int, int, int], level: float) -> FirstRelease:
+    return FirstRelease(date(*month, 1), date(*released), level)
 
 
 def test_a_month_s_change_is_its_level_over_the_previous_month_s() -> None:
@@ -152,7 +153,7 @@ def test_loading_asks_for_each_january_s_december_as_of_its_release_day(
         requested.append({"series": [series_id], "month": [str(month)], "as_of": [str(as_of)]})
         return json.dumps({"count": 1, "observations": [{"date": "x", "value": "100.2"}]}).encode()
 
-    monkeypatch.setattr(sources, "fetch_cpi_releases", lambda _key, series_id: _dump(releases))
+    monkeypatch.setattr(sources, "fetch_first_releases", lambda _key, series_id: _dump(releases))
     monkeypatch.setattr(sources, "fetch_level_as_of", fetch)
 
     # when the core changes are loaded
@@ -344,7 +345,7 @@ def test_the_trend_averages_the_months_that_exist_around_a_gap() -> None:
 
 
 def _event(month: date, released: date) -> EventInstance:
-    return to_event_instance(CpiRelease(month, released, 100.0))
+    return to_event_instance(FirstRelease(month, released, 100.0), CPI_EVENT_TYPE)
 
 
 def test_a_surprise_row_is_actual_minus_expected_for_its_release() -> None:
@@ -421,7 +422,9 @@ def released_on(month: date) -> date:
 
 def _store_events(con: duckdb.DuckDBPyConnection) -> None:
     months = [change.reference_month for change in _changes(*[0.0] * 20, start=(2021, 1))]
-    study.store_cpi_releases([CpiRelease(m, released_on(m), 100.0) for m in months], con=con)
+    study.store_releases(
+        CPI_EVENT_TYPE, [FirstRelease(m, released_on(m), 100.0) for m in months], con=con
+    )
 
 
 def test_loading_stores_each_surprise_once_however_often_it_runs(
@@ -615,7 +618,7 @@ def test_each_instrument_is_measured_against_each_measure_and_baseline() -> None
     con = duckdb.connect(":memory:")
     db.init_db(con=con)
     month = date(2022, 8, 1)
-    study.store_cpi_releases([CpiRelease(month, date(2022, 9, 13), 100.0)], con=con)
+    study.store_releases(CPI_EVENT_TYPE, [FirstRelease(month, date(2022, 9, 13), 100.0)], con=con)
     surprises = [
         Surprise(
             event_id=1_2022_09_13,
@@ -674,7 +677,9 @@ def _store_tracking_data(con: duckdb.DuckDBPyConnection) -> None:
     # 40 releases; each instrument's move is 0.01 x its expected sign x the core surprise, plus noise.
     rng = random.Random(9)
     months = [change.reference_month for change in _changes(*[0.0] * 40, start=(2020, 1))]
-    study.store_cpi_releases([CpiRelease(m, released_on(m), 100.0) for m in months], con=con)
+    study.store_releases(
+        CPI_EVENT_TYPE, [FirstRelease(m, released_on(m), 100.0) for m in months], con=con
+    )
     surprises, observations = [], []
     for m in months:
         event_id = study.event_id(study.CPI_EVENT_TYPE, released_on(m))
@@ -727,7 +732,9 @@ def test_surprise_names_the_load_to_run_first(
     # given a store missing releases, prices, or surprises
     con = db.get_connection()
     if stored >= 1:
-        study.store_cpi_releases([CpiRelease(date(2022, 8, 1), date(2022, 9, 13), 100.0)], con=con)
+        study.store_releases(
+            CPI_EVENT_TYPE, [FirstRelease(date(2022, 8, 1), date(2022, 9, 13), 100.0)], con=con
+        )
     if stored >= 2:
         con.execute(
             "INSERT INTO observations (event_id, instrument, ret_1d) VALUES (120220913, 'DXY', 0.0)"

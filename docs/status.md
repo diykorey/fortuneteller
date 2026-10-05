@@ -8,11 +8,11 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Rung 1, sub-step 1 — generic keys. `event_id` is the event type's code and the release day
-(`study.event_id`; CPI 2022-09-13 → `120220913`), `observations` is keyed by (`event_id`,
-`instrument`) with `obs_id` gone, and `cpi_surprises` is now `surprises`. On a database rebuilt
-from scratch (under a minute), `raw-move` and `surprise` print exactly the numbers they printed
-before. **An existing database must be deleted and reloaded** (see the rung 1 spec). *(PR #100.)*
+Rung 1, sub-step 2 — NFP releases. `load-releases` now loads CPI and the jobs report (FRED
+`PAYEMS`): 856 NFP releases, 1955-06-07 … 2026-10-02, keyed `2` + release day. All 392 release
+dates since 1994 match BLS (two archive labels were wrong; BLS's release texts confirm FRED).
+October 2025 payrolls came out with November's on 2025-12-16 and are stored as that one release.
+Release-date corrections are now per series. CPI's `raw-move` output is unchanged. *(PR #101.)*
 
 ## In progress
 
@@ -20,13 +20,14 @@ Rung 1 — **More events**: [rung-1-more-events.md](steps/rung-1-more-events.md)
 
 ## Next
 
-Rung 1, sub-step 2 — NFP releases into `event_instances` (`NFP / labor data`): FRED `PAYEMS`
-first releases, weekend guard, release dates checked against BLS.
+Rung 1, sub-step 3 — `raw-move` takes an event (`cpi`, `nfp`); `load-prices` measures every event
+type's moves; NFP's step 3 verdict.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-05 | Rung 1.2: NFP releases; dates checked against BLS since 1994 | PR #101 |
 | 2026-10-05 | Rung 1.1: generic event keys; `surprises` | PR #100 |
 | 2026-10-05 | Rung 1 spec: more events — NFP and Fed decisions | PR #99 |
 | 2026-10-05 | Step 4.7: Results and `mvp-results.md` — step 4 and the MVP complete | PR #98 |
@@ -82,5 +83,5 @@ each is fixed or dropped; it is not rewritten when a task finishes.
 
 - Paths and `.env` resolve from the working directory, so running from elsewhere misses them.
 - The `Prediction` model has no table and no caller.
-- CPI release dates for 1972–1989 have not been checked against BLS (its reports for those years
-  were not reachable). Later dates are checked; see step 1's spec.
+- CPI release dates for 1972–1989, and NFP release dates before 1994, have not been checked against
+  BLS. Later dates are checked; see step 1's spec and rung 1's.
