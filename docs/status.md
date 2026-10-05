@@ -11,7 +11,7 @@ Where the work is and what comes next. Two rules keep it current:
 MVP step 4, sub-step 6 — `uv run fortuneteller surprise` prints the verdict table (core against the
 12-month trend), the context table (the other three measure × baseline combinations) and the rule;
 a missing load is named on one line. Live on 2026-10-05: about 20 s, two runs identical. The
-results are read and recorded in sub-step 7. *(PR #—.)*
+results are read and recorded in sub-step 7. *(PR #97.)*
 
 ## In progress
 
@@ -27,7 +27,7 @@ what it means, what comes next.
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-05 | Step 4.6: `surprise` CLI — verdict and context tables | PR #— |
+| 2026-10-05 | Step 4.6: `surprise` CLI — verdict and context tables | PR #97 |
 | 2026-10-05 | Step 4.5: `track_surprises`; shared statistics in `stats.py` | PR #96 |
 | 2026-10-05 | Step 4.4: `load-surprises` — 1,287 surprises stored | PR #95 |
 | 2026-10-05 | Step 4.3: Cleveland Fed nowcast; expected value before each release | PR #94 |
