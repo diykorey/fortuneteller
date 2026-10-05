@@ -44,7 +44,9 @@ connects. The documents form one chain, from *why* to *what exactly*:
 - **[Legend](docs/legend.md)** — the target, the bet behind it, the way we intend to get there, and
   the template every step document follows.
 - **[Roadmap](docs/roadmap.md)** — what gets built, in what order, and what "done" means.
-- **[Step 1 — Releases](docs/steps/step-1-releases.md)** and **[Step 2 — Prices](docs/steps/step-2-prices.md)** — done; [status](docs/status.md) names the step being worked on now.
+- **[MVP results](docs/mvp-results.md)** — what the MVP found, in plain words, and the options for
+  what comes next. The four step documents behind it are in [`docs/steps/`](docs/steps/);
+  [status](docs/status.md) names the task being worked on now.
 - **[Glossary](docs/glossary.md)** — every acronym, ticker, and piece of jargon, explained.
 
 The pre-2026-09-11 design corpus — architecture sketches, reference-table documentation, the old
@@ -62,10 +64,10 @@ tests/           # pytest suite (ruff + mypy --strict + pytest is the gate)
 
 ## Status
 
-Bootstrapping, **measurable-spine first**. **M0 — the data spine — is complete, and so are steps 1
-and 2 of the MVP.** Today the repo gives you typed Pydantic models, a DuckDB schema, the committed
-seed tables, a CLI that loads and queries them, the real CPI release history from FRED, and each
-instrument's measured move around every release:
+Bootstrapping, **measurable-spine first**. **M0 — the data spine — and the MVP are complete.**
+Today the repo gives you typed Pydantic models, a DuckDB schema, the committed seed tables, a CLI
+that loads and queries them, the real CPI release history from FRED, each instrument's measured
+move around every release, and how that move relates to the CPI surprise:
 
 ```bash
 uv sync
@@ -79,14 +81,14 @@ uv run fortuneteller raw-move       # do CPI days move more than other days? (ab
 uv run fortuneteller surprise       # does each move follow the CPI surprise? (about 20 s)
 ```
 
-There is **no prediction code yet** — no surprise computation, no direction resolution, no warnings.
+There is **no prediction code yet**: the MVP measures the past; nothing forecasts a release or warns.
 An earlier attempt at that layer was reset on 2026-08-05 for being over-engineered for the stage; it
 is preserved on the `main_05082026` branch.
 
-Next is the MVP: a measured answer to **does the edge exist** — one event type (CPI) × five liquid
-instruments, from real historical data, in four steps. Not a predictor, not a product: a table of
-real numbers with an honest `n` beside each. Everything else waits behind it. See the
-[roadmap](docs/roadmap.md).
+The MVP answered **does the edge exist** for one event type (CPI) × five liquid instruments, from
+real historical data: CPI moves the 10-year yield, the dollar and VIX, and the 10-year yield's move
+follows the size of the surprise, weakly. See [MVP results](docs/mvp-results.md) for what that
+means and the options for what comes next, and the [roadmap](docs/roadmap.md) for the ladder.
 
 > **Data provenance:** the seed reference tables are partial (read-only Notion export limits) and
 > the effect-size values in them are illustrative placeholders, not measurements — replacing them
