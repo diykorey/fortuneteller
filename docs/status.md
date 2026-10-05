@@ -8,14 +8,12 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-MVP step 4, sub-step 4 — `uv run fortuneteller load-surprises` stores 1,287 surprises in
-`cpi_surprises`: core 342 against the 12-month trend (1998-01 … 2026-08) and 155 against the nowcast
-(2013-08 …); headline 635 and 155. It refuses to store anything if a month differs from Cleveland's
-published actual by more than 0.01 pp. August 2022 core: +0.087 pp against the nowcast, +0.095
-against the trend. About 47 s. **Finding:** for core, the Cleveland nowcast is almost exactly the
-12-month trend (median gap 0.003 pp, correlation 0.997), so the two baselines are not independent
-for core; for headline they are (0.46). Recorded in [precision.md](precision.md). **Decided:** core
-against the trend gives the verdict; the other three combinations are context (spec, Decisions). *(PR #95.)*
+MVP step 4, sub-step 5 — `study.track_surprises`: for each instrument × measure × baseline, the
+rank correlation in the expected direction, its permutation `p`, the hit rate on surprises of at
+least 0.1 pp, the Theil–Sen slope, and the verdict on core against the trend. Part C of the
+`study.py` review with it: the shared statistics moved to `stats.py`, one permutation test for
+steps 3 and 4; `raw-move` prints exactly the same output as before. Live: about 15 s, two runs
+identical; no verdict printed yet. *(PR #—.)*
 
 ## In progress
 
@@ -23,14 +21,14 @@ Nothing.
 
 ## Next
 
-MVP step 4, sub-step 5 —
-`track_surprises`: rank correlation, permutation `p`, hit rate, slope, verdict; the statistics move
-to `stats.py` (part C of the `study.py` review).
+MVP step 4, sub-step 6 — `uv run fortuneteller surprise`: the verdict table (core against the
+trend), the context table, and the rule.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-05 | Step 4.5: `track_surprises`; shared statistics in `stats.py` | PR #— |
 | 2026-10-05 | Step 4.4: `load-surprises` — 1,287 surprises stored | PR #95 |
 | 2026-10-05 | Step 4.3: Cleveland Fed nowcast; expected value before each release | PR #94 |
 | 2026-10-05 | Step 4.2: first-published m/m, core and headline, with the January fix | PR #92 |
@@ -72,7 +70,7 @@ to `stats.py` (part C of the `study.py` review).
 | 1 Releases | Done |
 | 2 Prices | Done |
 | 3 Raw move | Done — moves: UST 10Y, DXY, VIX; doesn't: S&P 500, gold |
-| 4 Surprise | In progress — spec, 4.1–4.4 done |
+| 4 Surprise | In progress — spec, 4.1–4.5 done |
 
 ## Known, not yet fixed
 
