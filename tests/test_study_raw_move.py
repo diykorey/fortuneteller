@@ -11,13 +11,15 @@ import pytest
 from fortuneteller import db
 from fortuneteller.__main__ import describe_raw_moves, main
 from fortuneteller.models import DailyBar
+from fortuneteller.sources import (
+    CpiRelease,
+    DailyClosingPrice,
+)
 from fortuneteller.study import (
     DOESNT_MOVE,
     MOVES,
     MVP_PRICE_SERIES,
     UNCLEAR,
-    CpiRelease,
-    DailyClosingPrice,
     EraRatio,
     MoveComparison,
     RawMove,

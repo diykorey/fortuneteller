@@ -13,7 +13,7 @@ import argparse
 import sys
 from collections.abc import Callable, Sequence
 
-from . import db, seed, study
+from . import db, seed, sources, study
 from .config import settings
 
 Handler = Callable[[argparse.Namespace], int]
@@ -54,9 +54,9 @@ def _load_releases(_args: argparse.Namespace) -> int:
         print("load-releases: FT_FRED_API_KEY is not set (see docs/accounts.md)", file=sys.stderr)
         return 1
     try:
-        payload = study.fetch_cpi_releases(api_key)
-        releases, valueless = study.parse_cpi_releases(payload)
-    except study.FredError as exc:
+        payload = sources.fetch_cpi_releases(api_key)
+        releases, valueless = sources.parse_cpi_releases(payload)
+    except sources.FredError as exc:
         print(f"load-releases: {exc}", file=sys.stderr)
         return 1
     if not releases:
@@ -96,7 +96,7 @@ def _load_prices(_args: argparse.Namespace) -> int:
     try:
         study.load_daily_bars(con=con)
         release_counts = study.store_observations(con=con)
-    except (study.YahooError, ValueError) as exc:
+    except (sources.YahooError, ValueError) as exc:
         print(f"load-prices: {exc}", file=sys.stderr)
         return 1
     for instrument, counts in release_counts.items():

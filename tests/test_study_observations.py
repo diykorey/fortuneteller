@@ -7,19 +7,21 @@ from typing import NoReturn
 import duckdb
 import pytest
 
-from fortuneteller import db, study
+from fortuneteller import db, sources
 from fortuneteller.__main__ import describe_release_counts, main
 from fortuneteller.models import DailyBar
+from fortuneteller.sources import (
+    CpiRelease,
+    YahooError,
+    DailyClosingPrice,
+    parse_daily_bars,
+)
 from fortuneteller.study import (
     BEFORE_HISTORY,
     MVP_PRICE_SERIES,
     NO_CLOSE_NEARBY,
-    CpiRelease,
     ReleaseCounts,
-    YahooError,
-    DailyClosingPrice,
     closing_price_before_after,
-    parse_daily_bars,
     release_move,
     store_cpi_releases,
     store_observations,
@@ -281,7 +283,7 @@ def _yahoo_answers(monkeypatch: pytest.MonkeyPatch, gold: Path = GSPC_2022) -> N
     def fetch(ticker: str) -> bytes:
         return (gold if ticker == "GC=F" else GSPC_2022).read_bytes()
 
-    monkeypatch.setattr(study, "fetch_daily_bars", fetch)
+    monkeypatch.setattr(sources, "fetch_daily_bars", fetch)
 
 
 def test_load_prices_prints_counts_per_instrument_and_in_total(
@@ -316,7 +318,7 @@ def test_load_prices_needs_the_releases_first(
     def fetch(_ticker: str) -> NoReturn:
         raise AssertionError("fetched prices with no releases to measure")
 
-    monkeypatch.setattr(study, "fetch_daily_bars", fetch)
+    monkeypatch.setattr(sources, "fetch_daily_bars", fetch)
 
     # when the command runs
     code = main(["load-prices"])
@@ -335,7 +337,7 @@ def test_load_prices_reports_a_yahoo_failure(
     def fetch(ticker: str) -> NoReturn:
         raise YahooError(f"Yahoo returned HTTP 404 for {ticker}")
 
-    monkeypatch.setattr(study, "fetch_daily_bars", fetch)
+    monkeypatch.setattr(sources, "fetch_daily_bars", fetch)
 
     # when the command runs
     code = main(["load-prices"])
@@ -365,7 +367,7 @@ def test_load_prices_reports_a_malformed_reply(
 ) -> None:
     # given the releases loaded and Yahoo answering with a page that is not JSON
     store_cpi_releases([HOT_PRINT])
-    monkeypatch.setattr(study, "fetch_daily_bars", lambda _ticker: b"<html>consent</html>")
+    monkeypatch.setattr(sources, "fetch_daily_bars", lambda _ticker: b"<html>consent</html>")
 
     # when the command runs
     code = main(["load-prices"])
