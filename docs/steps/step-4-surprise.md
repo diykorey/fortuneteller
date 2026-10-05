@@ -60,7 +60,7 @@ context) and each instrument's expected direction are fixed below, before any ru
 | 3 | ~~Cleveland Fed nowcast: fetch, parse, keep the last value before each release~~ **done** | Tests pass; live: our m/m equals Cleveland's "actual" within 0.01 pp for every release since 2013 |
 | 4 | ~~`load-surprises`: the 12-month trend, both expected values, stored in `cpi_surprises`~~ **done** | Re-running changes no count; the August 2022 core surprise is positive against both |
 | 5 | ~~`track_surprises`: rank correlation, permutation `p`, hit rate, slope, verdict~~ **done** | The synthetic checks pass; two runs give the same result |
-| 6 | `uv run fortuneteller surprise` prints the table | The live run prints every instrument × expected value; an empty store gives a one-line error |
+| 6 | ~~`uv run fortuneteller surprise` prints the table~~ **done** | The live run prints every instrument × expected value; an empty store gives a one-line error |
 | 7 | Results here, and [`mvp-results.md`](../mvp-results.md) | Both answer: does the move follow the surprise, for which instruments, and what next? |
 
 ## How you know it is right

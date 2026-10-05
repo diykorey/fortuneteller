@@ -13,9 +13,11 @@ design docs (mirrored from a Notion workspace), the seed reference data, a worki
 `init | seed | query-demo` CLI over DuckDB (M0-01…09; ruff + mypy --strict + pytest green), and
 `load-releases`, which loads the real CPI release history from FRED into `event_instances`
 (`src/fortuneteller/study.py`; requests and parsing of FRED and Yahoo live in `sources.py`), and `load-prices`, which stores daily closes from Yahoo in
-`daily_bars` and each instrument's move around every release in `observations`, and `raw-move`
-(MVP step 3), which compares each instrument's moves on CPI days with all other days.
-**No prediction code exists**: no surprise computation, no direction resolution, no warnings.
+`daily_bars` and each instrument's move around every release in `observations`, `raw-move`
+(MVP step 3), which compares each instrument's moves on CPI days with all other days, and, for MVP
+step 4, `load-surprises` (each release's CPI surprise into `cpi_surprises`) and `surprise` (does
+each move follow it?). **No prediction code exists**: step 4 measures past surprises; nothing
+forecasts a release, resolves a direction for a future event, or warns.
 
 ## The 2026-08-05 reset — read before planning any work
 
@@ -72,7 +74,7 @@ Toolchain is `uv` (Python 3.12). `just` recipes wrap these; if `just` isn't inst
 
 ```bash
 uv sync                              # install deps + dev group (ruff, mypy, pytest)
-uv run fortuneteller --help          # CLI: init | seed | query-demo | load-releases | load-prices | load-surprises | raw-move
+uv run fortuneteller --help          # CLI: init | seed | query-demo | load-releases | load-prices | load-surprises | raw-move | surprise
 uv run ruff check                    # lint (line length 100)
 uv run ruff format                   # format
 uv run mypy src                      # type check (strict)

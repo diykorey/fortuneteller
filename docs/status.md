@@ -8,12 +8,10 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-MVP step 4, sub-step 5 — `study.track_surprises`: for each instrument × measure × baseline, the
-rank correlation in the expected direction, its permutation `p`, the hit rate on surprises of at
-least 0.1 pp, the Theil–Sen slope, and the verdict on core against the trend. Part C of the
-`study.py` review with it: the shared statistics moved to `stats.py`, one permutation test for
-steps 3 and 4; `raw-move` prints exactly the same output as before. Live: about 15 s, two runs
-identical; no verdict printed yet. *(PR #96.)*
+MVP step 4, sub-step 6 — `uv run fortuneteller surprise` prints the verdict table (core against the
+12-month trend), the context table (the other three measure × baseline combinations) and the rule;
+a missing load is named on one line. Live on 2026-10-05: about 20 s, two runs identical. The
+results are read and recorded in sub-step 7. *(PR #97.)*
 
 ## In progress
 
@@ -21,13 +19,15 @@ Nothing.
 
 ## Next
 
-MVP step 4, sub-step 6 — `uv run fortuneteller surprise`: the verdict table (core against the
-trend), the context table, and the rule.
+MVP step 4, sub-step 7 — Results in [step-4-surprise.md](steps/step-4-surprise.md), and
+`docs/mvp-results.md`: the plain-words MVP summary — what the MVP set out to prove, what it found,
+what it means, what comes next.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-05 | Step 4.6: `surprise` CLI — verdict and context tables | PR #97 |
 | 2026-10-05 | Step 4.5: `track_surprises`; shared statistics in `stats.py` | PR #96 |
 | 2026-10-05 | Step 4.4: `load-surprises` — 1,287 surprises stored | PR #95 |
 | 2026-10-05 | Step 4.3: Cleveland Fed nowcast; expected value before each release | PR #94 |
@@ -70,7 +70,7 @@ trend), the context table, and the rule.
 | 1 Releases | Done |
 | 2 Prices | Done |
 | 3 Raw move | Done — moves: UST 10Y, DXY, VIX; doesn't: S&P 500, gold |
-| 4 Surprise | In progress — spec, 4.1–4.5 done |
+| 4 Surprise | In progress — spec, 4.1–4.6 done |
 
 ## Known, not yet fixed
 

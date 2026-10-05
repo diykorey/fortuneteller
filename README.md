@@ -76,6 +76,7 @@ uv run fortuneteller load-releases  # CPI release history from FRED (needs FT_FR
 uv run fortuneteller load-prices    # daily closes from Yahoo + the move around each release
 uv run fortuneteller load-surprises # each release's CPI surprise, FRED + Cleveland Fed (about 45 s)
 uv run fortuneteller raw-move       # do CPI days move more than other days? (about 15 s)
+uv run fortuneteller surprise       # does each move follow the CPI surprise? (about 20 s)
 ```
 
 There is **no prediction code yet** — no surprise computation, no direction resolution, no warnings.

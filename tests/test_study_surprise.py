@@ -13,7 +13,7 @@ import pytest
 from pydantic import SecretStr
 
 from fortuneteller import db, sources, study
-from fortuneteller.__main__ import main
+from fortuneteller.__main__ import describe_surprise_tracking, main
 from fortuneteller.config import settings
 from fortuneteller.sources import (
     ACTUAL,
@@ -33,6 +33,7 @@ from fortuneteller.study import (
     DOESNT_TRACK,
     NOWCAST_BASELINE,
     TRACKS,
+    SurpriseTracking,
     UNCLEAR,
     MonthlyChange,
     actual_mismatches,
@@ -637,3 +638,101 @@ def test_each_instrument_is_measured_against_each_measure_and_baseline() -> None
     assert list(pairs)[0] == (CORE, study.TREND_12M)
     assert len(pairs) == 4
     assert all(p == ([0.1], [0.01]) for by in pairs.values() for p in by.values())
+
+
+def test_the_report_shows_the_verdict_table_then_the_context_and_the_rule() -> None:
+    # given one verdict row per unit, a gold row without a hit rate, and one context row
+    yield_row = SurpriseTracking(342, 0.21, 0.0001, 0.64, 180, 1.2, TRACKS)
+    tracked = SurpriseTracking(342, 0.21, 0.0001, 0.64, 180, 0.012, TRACKS)
+    gold = SurpriseTracking(311, 0.05, 0.4, None, 0, -0.0003, DOESNT_TRACK)
+    context = SurpriseTracking(155, 0.30, 0.0002, 0.7, 60, 0.002, None)
+    results = {
+        (CORE, study.TREND_12M): {"UST10Y / ZN": yield_row, "SPY / ES": tracked, "GC / XAU": gold},
+        (CORE, NOWCAST_BASELINE): {"DXY": context},
+    }
+
+    # when the report is written
+    lines = describe_surprise_tracking(results)
+
+    # then units, expected directions and the missing hit rate read plainly
+    assert lines[:5] == [
+        "core against the 12-month trend",
+        "instrument   n    expected  rank corr  p       hit rate (n)  per 0.1pp  verdict",
+        "UST10Y / ZN  342  up        0.21       0.0001  64% (180)     1.2 bp     tracks",
+        "SPY / ES     342  down      0.21       0.0001  64% (180)     1.20%      tracks",
+        "GC / XAU     311  either    0.05       0.4000  —             -0.03%     doesn't",
+    ]
+    assert "DXY          core      nowcast    155  0.30       0.0002  70% (60)" in lines
+    assert lines[-1].startswith("tracks = corr as expected, p < 0.01, hit rate >= 60%")
+
+
+def _store_tracking_data(con: duckdb.DuckDBPyConnection) -> None:
+    # 40 releases; each instrument's move is 0.01 x its expected sign x the core surprise, plus noise.
+    rng = random.Random(9)
+    months = [change.reference_month for change in _changes(*[0.0] * 40, start=(2020, 1))]
+    study.store_cpi_releases([CpiRelease(m, released_on(m), 100.0) for m in months], con=con)
+    surprises, observations = [], []
+    for m in months:
+        event_id, surprise = m.year * 100 + m.month, rng.gauss(0, 0.2)
+        surprises += [
+            CpiSurprise(
+                event_id=event_id,
+                measure=measure,
+                baseline=baseline,
+                actual_mom=0.3,
+                expected_mom=0.3 - surprise,
+                surprise=surprise,
+            )
+            for measure, baseline in study.COMBINATIONS
+        ]
+        for i, instrument in enumerate(study.MVP_PRICE_SERIES):
+            sign = study.EXPECTED_SIGN[instrument] or 1
+            move = 0.01 * sign * surprise + rng.gauss(0, 0.0005)
+            observations.append((event_id * 10 + i, event_id, instrument, move))
+    db.insert_models("cpi_surprises", surprises, con=con)
+    con.executemany(
+        "INSERT INTO observations (obs_id, event_id, instrument, ret_unit, ret_1d) "
+        "VALUES (?, ?, ?, 'pct', ?)",
+        observations,
+    )
+
+
+def test_surprise_prints_a_verdict_per_instrument_and_the_context(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    # given releases, moves and surprises stored, every move following the surprise
+    _store_tracking_data(db.get_connection())
+
+    # when the command runs
+    code = main(["surprise"])
+
+    # then four instruments track, gold is unclear at most, and every context row is printed
+    out = capsys.readouterr().out.splitlines()
+    assert code == 0
+    assert sum(line.endswith(" tracks") for line in out) == 4
+    assert sum(" nowcast " in line or " trend_12m " in line for line in out) == 15
+
+
+@pytest.mark.parametrize(
+    ("stored", "missing"),
+    [(0, "load-releases"), (1, "load-prices"), (2, "load-surprises")],
+)
+def test_surprise_names_the_load_to_run_first(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str], stored: int, missing: str
+) -> None:
+    # given a store missing releases, prices, or surprises
+    con = db.get_connection()
+    if stored >= 1:
+        study.store_cpi_releases([CpiRelease(date(2022, 8, 1), date(2022, 9, 13), 100.0)], con=con)
+    if stored >= 2:
+        con.execute(
+            "INSERT INTO observations (obs_id, event_id, instrument, ret_1d) "
+            "VALUES (1, 202208, 'DXY', 0.0)"
+        )
+
+    # when the command runs
+    code = main(["surprise"])
+
+    # then it stops with one line naming the command to run first
+    assert code == 1
+    assert f"`fortuneteller {missing}` first" in capsys.readouterr().err
