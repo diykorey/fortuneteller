@@ -110,8 +110,8 @@ measures their move around each release — 2,698 observations. **No prediction 
 CPI days with all other days. CPI moves the 10-year yield, the dollar and VIX; the S&P 500 and gold
 show no clear effect.
 
-**Next: MVP step 4** — does the size of the move follow the size of the surprise? Its spec is
-written first.
+**Next: [MVP step 4](steps/step-4-surprise.md)** — does the size of the move follow the size of
+the surprise? Its spec is written; the MVP's summary will be `mvp-results.md`.
 [Status](status.md) always has the current task.
 
 ## How this folder grows

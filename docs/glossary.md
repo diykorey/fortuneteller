@@ -153,6 +153,9 @@ Terms are grouped by what they are about, alphabetical within each group.
   simple model of one.
 - **CAR** (Cumulative Abnormal Return) — abnormal returns added up across an event window, to
   capture a move that builds over hours rather than landing at once.
+- **Computed baseline / 12-month trend** — step 4's always-available expected value: the average of
+  the previous 12 months' first-published m/m changes. Surprise against it is surprise against the
+  trend, not against what the market expected.
 - **Close-to-close return** — the move from one day's closing price to a later day's closing
   price. The MVP's measure of a release-day reaction, because old price history has closes only.
 - **Daily bar / OHLC** — one row per trading day holding Open, High, Low, Close prices. The MVP's
@@ -178,14 +181,21 @@ Terms are grouped by what they are about, alphabetical within each group.
   ordinary days. `1.00` means CPI days are ordinary; `1.30` means they move 30% more.
 - **n / n_obs** — how many observations a number is based on. **Always shown next to any estimate
   here**: an effect size from n=4 is a story, not a measurement.
+- **Nowcast** — an estimate of a number for the current period, made before the official figure is
+  published.
 - **Permutation test** — a way to ask "could chance alone give this?" without assuming a
   distribution: relabel days at random many times and see how often the made-up labels produce a
   result as extreme as the real one.
 - **p-value** — the share of those random relabellings that did at least as well as the real data.
   Small means chance rarely does it; `p < 0.01` means fewer than 1 in 100.
 - **Return** — the percentage price change over a period.
+- **Spearman rank correlation** — how consistently one quantity rises with another, computed on
+  their ranks instead of their values: +1 always together, 0 unrelated, −1 always opposite. One
+  extreme day can shift it only by one rank.
 - **Standard deviation (SD)** — the typical size of variation in a series. Used both to standardize
   surprises and to judge whether a move is unusual.
+- **Theil–Sen slope** — the median of the slopes between every pair of points. A line fit that one
+  extreme point cannot drag. Step 4's "move per 0.1 pp of surprise".
 - **t0 / t1** — the two closes a release-day move is measured between: `t0` is the last trading day
   before the release date, `t1` the first trading day on or after it.
 - **Tick data** — every individual trade and quote, the highest-resolution (and most expensive)
@@ -225,6 +235,11 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **BLS** (Bureau of Labor Statistics) — the US agency that publishes CPI and Non-Farm Payrolls.
 - **CPIAUCSL** — the **FRED series ID** for seasonally adjusted headline US CPI. The MVP's source
   for actuals.
+- **Cleveland Fed nowcast** — the Federal Reserve Bank of Cleveland's daily model estimate of this
+  month's CPI change, from oil and gasoline prices and past inflation, published since 2013 with
+  free history. Step 4's market-like expected value: a model, not a survey.
+- **CPILFESL** — the FRED series ID for seasonally adjusted core US CPI (all items less food and
+  energy). Its first-release history on FRED starts in 1997.
 - **Economic calendar** — a commercial listing of upcoming releases with forecasts. The usual source
   of **consensus**, and rarely free for long histories.
 - **FRED** (Federal Reserve Economic Data) — the St. Louis Fed's free database and API of economic

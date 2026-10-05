@@ -45,6 +45,15 @@ this by splitting the results by era.
 | Coarse old yields | `^TNX` closes before 1990 are rounded to whole basis points, so many daily moves tie and the 1970–1989 UST ratio moves in coarse steps | A finer source for those years; FRED's `DGS10` is identical, so none free is known | The 1970–1989 UST era row matters to a conclusion |
 | Loud and quiet years | All years pooled; eras shown as context | A model of each day's expected volatility (e.g. GARCH), so each CPI day is judged against how loud its own market was | Era ratios disagree with the verdict, e.g. *moves* overall but near 1.00 recently |
 
+## Step 4 — the expected value and the surprise
+
+| Choice | Now | More precise | Trigger |
+| --- | --- | --- | --- |
+| Computed baseline | Average of the previous 12 first-published core m/m: a plain trend | **A fitted forecasting model** (e.g. autoregressive, AR), which forecasts each month better and so leaves a truer surprise | Only `trend_12m` *tracks*, or the two baselines disagree |
+| Market expectation | Cleveland Fed nowcast: a model, 2013 on | Economists' survey consensus (Bloomberg, Reuters), what the market actually priced; paid | The nowcast result sits near the line, or a free consensus history turns up |
+| Core before 1997 | No core verdict before 1997: FRED's first-release core starts then | Earlier first-published core from BLS's printed releases | A conclusion needs the 1970s–90s |
+| Hit-rate cut-off | Surprises of at least 0.1 pp count; smaller ones are noise | A cut-off scaled to each era's typical surprise | Hit rate rests on fewer than 50 releases |
+
 ## Steps 1–2 — choices already built in
 
 | Choice | Now | More precise | Trigger |
