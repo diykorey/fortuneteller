@@ -15,13 +15,13 @@ ordinary days; the S&P 500 (1.07, 0.10) and gold (1.02, 0.41) do not. *(PR #86.)
 
 ## In progress
 
-Nothing.
+MVP step 4 — **Surprise**: the spec, [step-4-surprise.md](steps/step-4-surprise.md) — does the
+move follow the surprise? Expected values: the 12-month trend and the Cleveland Fed nowcast; core
+decides, headline is context; verdict = rank correlation as expected, p < 0.01, hit rate ≥ 60%.
 
 ## Next
 
-MVP step 4 — **Surprise**: write the step 4 spec — does the size of the move follow the size of
-the surprise, for UST 10Y, DXY and VIX? It starts with the roadmap's open decision: market
-consensus or a computed baseline as the expected value.
+MVP step 4, sub-step 1 — the `cpi_surprises` table and its schema doc.
 
 ## Done
 
@@ -60,7 +60,7 @@ consensus or a computed baseline as the expected value.
 | 1 Releases | Done |
 | 2 Prices | Done |
 | 3 Raw move | Done — moves: UST 10Y, DXY, VIX; doesn't: S&P 500, gold |
-| 4 Surprise | Not started |
+| 4 Surprise | Spec in progress |
 
 ## Known, not yet fixed
 
