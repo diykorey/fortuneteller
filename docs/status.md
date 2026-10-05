@@ -8,10 +8,10 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-`study.py` regrouped by step: each step's constants and types now sit directly above its functions,
-under a heading naming the step and its spec. No behaviour change: every top-level statement is
-identical, only their order moved. Splitting out `sources.py` and `stats.py` waits for their
-second callers, in step 4 sub-steps 2 and 5. *(PR #89.)*
+MVP step 4, sub-step 1 — the `cpi_surprises` table: one row per release × measure (`core`,
+`headline`) × baseline (`trend_12m`, `nowcast`), keyed on all three, referencing
+`event_instances`. Described in [schema.md](schema.md), every value explained; `event_instances`'
+`consensus` and `surprise` columns now say why they stay empty. *(PR #90.)*
 
 ## In progress
 
@@ -19,13 +19,15 @@ Nothing.
 
 ## Next
 
-MVP step 4, sub-step 1 — the `cpi_surprises` table and its schema doc
-([step-4-surprise.md](steps/step-4-surprise.md)).
+MVP step 4, sub-step 2 — first-published m/m for core and headline: fetch `CPILFESL`, apply the
+February fix; move the fetch and parse code to `sources.py` (part B of the `study.py` review).
+October 2025 has no value (the shutdown), so the m/m for October and November 2025 needs a rule.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-05 | Step 4.1: `cpi_surprises` table and its schema doc | PR #90 |
 | 2026-10-05 | `study.py` regrouped by step; no behaviour change | PR #89 |
 | 2026-10-05 | `daily_bars` rebuilt per instrument; gold cross-checked, not replaced | PR #88 |
 | 2026-10-05 | Step 4 spec: does the move follow the CPI surprise? | PR #87 |
@@ -62,7 +64,7 @@ MVP step 4, sub-step 1 — the `cpi_surprises` table and its schema doc
 | 1 Releases | Done |
 | 2 Prices | Done |
 | 3 Raw move | Done — moves: UST 10Y, DXY, VIX; doesn't: S&P 500, gold |
-| 4 Surprise | Spec done |
+| 4 Surprise | In progress — spec, 4.1 done |
 
 ## Known, not yet fixed
 

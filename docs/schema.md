@@ -22,6 +22,7 @@ through `db.insert_models` (`effect_size_matrix`, which nothing writes yet, has 
 | [`event_instances`](#event_instances) | Fact | Real event that happened | `load-releases` (MVP step 1) | 649 CPI releases |
 | [`daily_bars`](#daily_bars) | Fact | Instrument × trading day closing price | `load-prices` (MVP step 2) | about 58,500 |
 | [`observations`](#observations) | Fact | Event × instrument reaction | `load-prices` (MVP step 2) | 2,698 |
+| [`cpi_surprises`](#cpi_surprises) | Fact | CPI release × measure × expected value | `load-surprises` (MVP step 4) | about 1,300 |
 | [`effect_size_matrix`](#effect_size_matrix) | Derived | Event type × instrument measurement | Nothing planned yet | 0 |
 
 **Reference** tables are configuration: committed CSVs in `data/seed/`, loaded by
@@ -238,11 +239,11 @@ change.
 | `country` | TEXT | A `countries.country`. Today always `United States`. | Yes |
 | `detail` | TEXT | What the event is about. For CPI, the reference month as `YYYY-MM`, i.e. the month whose prices were measured, about six weeks before `event_ts`. | Yes |
 | `scheduled` | BOOLEAN | `true` if the date was known in advance (a data release), `false` if not (a war, a hack). | Yes, `true` |
-| `consensus` | DOUBLE | What was expected before the release. | No; step 4 |
+| `consensus` | DOUBLE | What forecasters expected before the release, from a survey. | No: no free survey history exists. Step 4's expected values are a trend and a model, so they go in [`cpi_surprises`](#cpi_surprises) instead |
 | `actual` | DOUBLE | The number released. For CPI, the index level as first published, before any revision. | Yes |
-| `surprise` | DOUBLE | `actual − consensus`: the part the market did not expect. | No; step 4 |
-| `surprise_sd` | DOUBLE | `surprise` divided by the typical size of past surprises, so surprises of different events compare. | No; step 4 |
-| `surprise_source` | TEXT | Where `consensus` came from, or that it was a computed baseline. | No; step 4 |
+| `surprise` | DOUBLE | `actual − consensus`: the part the market did not expect. | No; see `consensus` |
+| `surprise_sd` | DOUBLE | `surprise` divided by the typical size of past surprises, so surprises of different events compare. | No; nothing planned before a second event type |
+| `surprise_source` | TEXT | Where `consensus` came from. | No; see `consensus` |
 | `priced_in_prior` | DOUBLE | How much the market had priced in beforehand (e.g. from options or prediction markets). | No; nothing planned |
 | `vix_t0` | DOUBLE | VIX level at the event, as a measure of market nervousness. | No; nothing planned |
 | `rate_regime` | TEXT | Whether the Fed was hiking, cutting, or on hold. | No; nothing planned |
@@ -380,6 +381,52 @@ daily prices, so the intraday ones stay empty.
 | Value | Meaning |
 | --- | --- |
 | `daily_close` | From daily closing prices, not intraday data: the move includes everything else that happened that day, not only the release. |
+
+## cpi_surprises
+
+**In plain words:** for every CPI release, how far the number landed from what was expected. One
+row is one release, one CPI measure and one way of saying what was expected — "in August 2022
+(released 2022-09-13), core CPI rose 0.57% against a nowcast of 0.48%: a surprise of +0.09 percentage points".
+
+It exists because the market moves on the part of a release it did not expect.
+[Step 4](steps/step-4-surprise.md) pairs each surprise with that release's move in `observations`
+and asks whether bigger surprises bring bigger moves. There is no free history of what forecasters
+expected, so each release gets two expected values, and step 4 compares the answers they give.
+
+Filled by `uv run fortuneteller load-surprises` (step 4). Key: (`event_id`, `measure`, `baseline`).
+About 1,300 rows: headline from 1973 and core from 1998 against the 12-month trend, and both
+against the nowcast from 2013.
+
+Example row:
+
+| `event_id` | `measure` | `baseline` | `actual_mom` | `expected_mom` | `surprise` |
+| --- | --- | --- | --- | --- | --- |
+| 202208 | `core` | `nowcast` | 0.567 | 0.480 | 0.087 |
+
+| Column | Type | Meaning |
+| --- | --- | --- |
+| `event_id` | BIGINT, **PK** | The release, an `event_instances.event_id`. Core and headline come out in the same BLS release, so they share it. |
+| `measure` | TEXT, **PK** | Which CPI number; see below. |
+| `baseline` | TEXT, **PK** | Where the expected value came from; see below. |
+| `actual_mom` | DOUBLE | The month-over-month change **as first published**, in percent (`0.567` means +0.567%). The number the market saw, not today's revised one. |
+| `expected_mom` | DOUBLE | What `baseline` expected that change to be, in percent. |
+| `surprise` | DOUBLE | `actual_mom − expected_mom`, in percentage points. Positive means CPI came in hotter than expected. |
+
+### Values
+
+**`measure`** — which CPI number the row is about:
+
+| Value | Meaning |
+| --- | --- |
+| `core` | CPI without food and energy (FRED `CPILFESL`). Step 4's verdicts are about this one: markets have traded core since the 2000s. First-published history starts in 1997. |
+| `headline` | All items (FRED `CPIAUCSL`), the series `event_instances.actual` holds. Shown as context, without a verdict. |
+
+**`baseline`** — what "expected" means:
+
+| Value | Meaning |
+| --- | --- |
+| `trend_12m` | The average of the previous 12 months' first-published changes. Available for every release once a year of history exists, but it measures surprise against the trend, not against what the market expected. |
+| `nowcast` | The Cleveland Fed's model estimate, the last one published before the release day. Close to what the market saw, but only from 2013. |
 
 ## effect_size_matrix
 
