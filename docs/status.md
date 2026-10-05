@@ -11,7 +11,7 @@ Where the work is and what comes next. Two rules keep it current:
 MVP step 3, sub-step 4 — Results written into [step-3-raw-move.md](steps/step-3-raw-move.md).
 **Step 3 is complete: CPI matters for three of the five instruments.** On CPI days the 10-year
 yield (ratio 1.25, p 0.0007), the dollar (1.16, 0.003) and VIX (1.19, 0.002) move more than on
-ordinary days; the S&P 500 (1.07, 0.10) and gold (1.02, 0.41) do not. *(PR #—.)*
+ordinary days; the S&P 500 (1.07, 0.10) and gold (1.02, 0.41) do not. *(PR #86.)*
 
 ## In progress
 
@@ -27,7 +27,7 @@ consensus or a computed baseline as the expected value.
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-05 | Step 3.4: Results — step 3 complete; CPI moves UST 10Y, DXY, VIX | PR #— |
+| 2026-10-05 | Step 3.4: Results — step 3 complete; CPI moves UST 10Y, DXY, VIX | PR #86 |
 | 2026-10-02 | Step 3.3: `raw-move` CLI — verdicts, eras, rule | PR #85 |
 | 2026-10-02 | Step 3.2: `compare_moves` — ratio, permutation `p`, verdict | PR #84 |
 | 2026-10-02 | Step 3.1: `daily_moves` and `cpi_days`; CPI-day moves match step 2 | PR #83 |
