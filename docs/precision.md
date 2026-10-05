@@ -54,6 +54,14 @@ this by splitting the results by era.
 | Core before 1997 | No core verdict before 1997: FRED's first-release core starts then | Earlier first-published core from BLS's printed releases | A conclusion needs the 1970s–90s |
 | Hit-rate cut-off | Surprises of at least 0.1 pp count; smaller ones are noise | A cut-off scaled to each era's typical surprise | Hit rate rests on fewer than 50 releases |
 
+## Rung 1 — more events
+
+| Choice | Now | More precise | Trigger |
+| --- | --- | --- | --- |
+| Fed surprise | None: the Fed gets step 3 only, because no free history of what the market expected exists | The change implied by Fed funds futures the day before each decision (the standard measure); paid | Fed decisions turn out to move markets in step 3 |
+| Fed decision time | 14:00 New York for every decision; early statements (1994–1995) came at other times | Each statement's actual time | Intraday data arrives |
+| NFP hit-rate cut-off | Surprises of at least 50k count | A cut-off scaled to each era's typical surprise | Hit rate rests on fewer than 50 releases |
+
 ## Steps 1–2 — choices already built in
 
 | Choice | Now | More precise | Trigger |

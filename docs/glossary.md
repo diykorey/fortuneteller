@@ -55,6 +55,8 @@ Terms are grouped by what they are about, alphabetical within each group.
   heavily forecast, and reliably market-moving.
 - **Fed / FOMC** (Federal Open Market Committee) — the committee that sets the US policy interest
   rate, meeting eight times a year with a decision at 2:00 p.m. New York time.
+- **Inter-meeting (unscheduled) decision** — a Fed rate change made outside the published meeting
+  calendar, usually in a crisis (2001, 2008, March 2020). Stored with `scheduled = false`.
 - **GDP** (Gross Domestic Product) — total economic output; a quarterly growth release.
 - **Initial release / first print** — the value a statistical agency publishes the first time,
   before later revisions. The only version the market could have reacted to on the day, so it is the
@@ -244,9 +246,17 @@ Terms are grouped by what they are about, alphabetical within each group.
   of **consensus**, and rarely free for long histories.
 - **FRED** (Federal Reserve Economic Data) — the St. Louis Fed's free database and API of economic
   series, including CPI. Free, keyed, reliable; carries actuals but not market expectations.
+- **FRED new-and-revised view** (`output_type=3`) — one column per release day, holding the month
+  first published that day and the months revised that day. Rung 1 reads NFP's first-published
+  changes from it in one request.
 - **GDELT** — a free global database of news events. A detection-stage source, deferred.
+- **PAYEMS** — the FRED series ID for total US non-farm payrolls, in thousands of jobs: the NFP
+  headline number.
 - **Series ID** — a data provider's unique code for one time series (e.g. `CPIAUCSL`). Load-bearing
   the way instrument symbols are: the wrong ID silently fetches the wrong data.
+- **DFEDTAR / DFEDTARU** — FRED series IDs for the Fed's federal funds target: a single rate until
+  2008-12-15 (`DFEDTAR`), then the upper end of a range (`DFEDTARU`). Rung 1 uses them to check that
+  no Fed decision is missing from the calendar.
 - **DGS10** — the FRED series ID for the daily 10-year Treasury yield. Used to cross-check Yahoo's
   `^TNX`.
 - **Stooq** — a free source of historical price data. Since at least 2026-09 it sits behind a
