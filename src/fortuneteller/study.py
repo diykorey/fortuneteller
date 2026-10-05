@@ -425,7 +425,7 @@ def measure_raw_moves(con: duckdb.DuckDBPyConnection | None = None) -> dict[str,
 
 
 # Core decides step 4's verdicts; headline is context. Each is read from its own FRED series.
-MEASURE_SERIES = {"core": sources.CORE_CPI_SERIES_ID, "headline": sources.CPI_SERIES_ID}
+MEASURE_SERIES = {sources.CORE: sources.CORE_CPI_SERIES_ID, sources.HEADLINE: sources.CPI_SERIES_ID}
 
 
 @dataclass(frozen=True)
@@ -483,3 +483,46 @@ def load_first_published_changes(api_key: str, series_id: str) -> list[MonthlyCh
         if release.reference_month.month == 1 and previous_month(release.reference_month) in months
     }
     return first_published_changes(releases, revised_previous)
+
+
+# Our first-published change and Cleveland's published one may differ by rounding, not by more.
+ACTUAL_TOLERANCE_PP = 0.01
+
+
+def nowcast_expectations(
+    points: Iterable[sources.NowcastPoint], release_dates: Mapping[date, date]
+) -> dict[tuple[str, date], float]:
+    """The last nowcast made before each month's release day, keyed by (measure, month).
+
+    A nowcast made on the release day itself may already know the number, so it is never used.
+    """
+    latest: dict[tuple[str, date], tuple[date, float]] = {}
+    for point in points:
+        released = release_dates.get(point.reference_month)
+        if point.kind != sources.NOWCAST or released is None or point.day >= released:
+            continue
+        key = (point.measure, point.reference_month)
+        if key not in latest or point.day > latest[key][0]:
+            latest[key] = (point.day, point.percent)
+    return {key: percent for key, (_day, percent) in latest.items()}
+
+
+def published_actuals(points: Iterable[sources.NowcastPoint]) -> dict[tuple[str, date], float]:
+    """Cleveland's record of each month's published change, keyed by (measure, month)."""
+    return {
+        (point.measure, point.reference_month): point.percent
+        for point in points
+        if point.kind == sources.ACTUAL
+    }
+
+
+def actual_mismatches(
+    changes: Iterable[MonthlyChange], actuals: Mapping[tuple[str, date], float], measure: str
+) -> list[date]:
+    """Months where our first-published change differs from Cleveland's by more than rounding."""
+    return [
+        change.reference_month
+        for change in changes
+        if (measure, change.reference_month) in actuals
+        and abs(change.percent - actuals[(measure, change.reference_month)]) > ACTUAL_TOLERANCE_PP
+    ]

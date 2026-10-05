@@ -8,12 +8,12 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-MVP step 4, sub-step 2 — first-published month-over-month CPI, core and headline
-(`study.load_first_published_changes`), with each January measured against December as revised
-that day. Live on 2026-10-05: core 354 months from 1997-01, headline 647 from 1972-08; against the
-Cleveland Fed's published actuals for 155 months since 2013 the worst gap is 0.0024 pp; January
-2023 core reads 0.412%. October and November 2025 get no change (October was never published).
-About 45 s, mostly the 84 one-month FRED requests. *(PR #92.)*
+MVP step 4, sub-step 3 — the Cleveland Fed nowcast (`sources.fetch_nowcasts`, `parse_nowcasts`)
+and, per release, the last nowcast made before the release day (`study.nowcast_expectations`).
+Live on 2026-10-05: 155 expected values for core and for headline, 2013-08 … 2026-08; no month
+differs from Cleveland's published actual by more than 0.01 pp; and for all 155 months Cleveland
+records the actual on the day FRED gives as the release date. August 2022 core: expected +0.48%,
+published +0.57%. *(PR #94.)*
 
 ## In progress
 
@@ -21,13 +21,15 @@ Nothing.
 
 ## Next
 
-MVP step 4, sub-step 3 — the Cleveland Fed nowcast: fetch, parse, keep the last value before each
-release; check our m/m against its "actual" within 0.01 pp (November 2025 excepted).
+MVP step 4, sub-step 4 — `load-surprises`: the 12-month trend, actual minus expected against both
+baselines, stored in `cpi_surprises`; refuse to store if any month differs from Cleveland's actual
+by more than 0.01 pp.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-05 | Step 4.3: Cleveland Fed nowcast; expected value before each release | PR #94 |
 | 2026-10-05 | Step 4.2: first-published m/m, core and headline, with the January fix | PR #92 |
 | 2026-10-05 | `sources.py`: FRED and Yahoo requests and parsing moved out of `study.py` | PR #91 |
 | 2026-10-05 | Step 4.1: `cpi_surprises` table and its schema doc | PR #90 |
@@ -67,7 +69,7 @@ release; check our m/m against its "actual" within 0.01 pp (November 2025 except
 | 1 Releases | Done |
 | 2 Prices | Done |
 | 3 Raw move | Done — moves: UST 10Y, DXY, VIX; doesn't: S&P 500, gold |
-| 4 Surprise | In progress — spec, 4.1, 4.2 done |
+| 4 Surprise | In progress — spec, 4.1–4.3 done |
 
 ## Known, not yet fixed
 
