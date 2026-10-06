@@ -16,13 +16,14 @@ under the 60% bar. *(PR #107.)*
 
 ## In progress
 
-Nothing. Rung 1 is complete.
+**Event flows and expectation sources**: [event-flows.md](steps/event-flows.md). One standard way
+to plug in a new event type or a new source of "expected"; a refactor with byte-identical output.
+Spec under review.
 
 ## Next
 
-A decision, set out in [`mvp-results.md`](mvp-results.md#what-comes-next): sharper measurement
-(paid consensus forecasts and intraday prices), a better free forecast of each jobs report, or
-rung 2 (predict the 10-year yield's direction before each CPI release).
+Event flows, step 1 — `expectations.py`: `Expectation`, `ExpectationSource`, `Trend12m`,
+`ClevelandNowcast` and the validating `build_surprises`, with `load-surprises` routed through it.
 
 ## Done
 
