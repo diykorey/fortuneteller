@@ -3,7 +3,8 @@
 > The MVP's outcome in plain words. The detail, the numbers and how they were checked are in the
 > step documents: [1 Releases](steps/step-1-releases.md), [2 Prices](steps/step-2-prices.md),
 > [3 Raw move](steps/step-3-raw-move.md), [4 Surprise](steps/step-4-surprise.md). Terms are in
-> the [Glossary](glossary.md). Measured on data loaded 2026-10-05.
+> the [Glossary](glossary.md). Measured on data loaded 2026-10-05; the rung 1 section on
+> 2026-10-06, with [its own document](steps/rung-1-more-events.md).
 
 ## What we set out to prove
 
@@ -67,15 +68,60 @@ that rests on 49 releases and was not a planned test, so it is a lead, not a res
 **What it does not mean.** Nothing here predicts a future release, and nothing should be used to
 trade or to warn. The numbers describe the past.
 
+## Rung 1 — more events
+
+Measured 2026-10-06. Detail and checks in [rung 1](steps/rung-1-more-events.md).
+
+The same steps ran on two more events: the monthly jobs report (NFP, 1955 on) and the Fed's rate
+decisions (1994 on, including 14 unscheduled ones). Two fixes came with them:
+
+- **A cleaner baseline.** "Ordinary days" now leave out every CPI, jobs-report and Fed day.
+- **The right close for each market.** A move starts at the last close before the event. Gold
+  settles at 13:30, before the Fed's 14:00 statement, so on Fed days it reacts the next day.
+
+**1. Do the events move markets? Yes, all three; the jobs report most.**
+
+| Market | CPI | Jobs report | Fed decision |
+| --- | --- | --- | --- |
+| 10-year yield | Yes (+33%) | **Yes (+67%)** | Unclear (+23%) |
+| Dollar index | Yes (+18%) | Yes (+25%) | Yes, borderline (+22%) |
+| VIX | Yes (+22%) | Yes (+31%) | Yes (+25%) |
+| S&P 500 | No | Yes (+19%) | Yes (+30%) |
+| Gold | No | Yes (+27%) | **Yes (+81%)** |
+
+The percentages say how much bigger the median move is than on an ordinary day. CPI's answers did
+not change with the cleaner baseline; its numbers rose a little.
+
+**2. Does the move follow the jobs-report surprise? Clearly related, but not reliable enough.**
+When payrolls beat their 12-month trend, the 10-year yield and the dollar tend to rise. The link
+is far beyond chance (p 0.0001 over about 670 reports) and stronger than CPI's. But the direction
+is right only 58% (yield) and 56% (dollar) of the time, under the 60% bar fixed in advance, so
+neither passes. The other three markets have no agreed direction for good jobs news, and do not
+pass either. The Fed gets no surprise test: there is no free record of what the market expected.
+
+| Market | CPI surprise | Jobs-report surprise |
+| --- | --- | --- |
+| 10-year yield | **Yes, weakly** (right 62%) | Unclear (right 58%) |
+| Dollar index | Unclear (right 53%) | Unclear (right 56%) |
+| VIX, S&P 500 | No | No |
+| Gold | No | Unclear (no agreed direction) |
+
+**What it means.** The method works beyond CPI: the jobs report and the Fed move markets clearly,
+and every check on the data held. The surprise link is still the weak point. For the jobs report
+it is real but misses the bar, which again points at the measurement rather than the market: the
+"expected" value is a trend, not the forecast economists published.
+
 ## What comes next
 
 A decision, not yet made. The options:
 
 | Option | What it is | Cost | What it would tell us |
 | --- | --- | --- | --- |
-| **More events** (roadmap rung 1) | Add the jobs report (NFP) and Fed decisions, with the same steps | Free (FRED) | Whether the method works beyond CPI, and a cleaner step 3 baseline with those days removed |
-| **Sharper measurement** | Intraday prices around 08:30, and economists' consensus forecasts | Paid data | Whether the weak link is the market or our daily window and trend baseline |
-| **Predict the next release** (rung 2) | Forecast the 10-year yield's direction before each CPI release, and grade it after | Free | Claim 3, for the one market where claim 2 holds; but on a 62% signal |
+| ~~**More events**~~ (roadmap rung 1) | ~~Add the jobs report (NFP) and Fed decisions~~ **done**, above | — | — |
+| **Sharper measurement** | Economists' consensus forecasts for CPI and payrolls, and intraday prices around the release | Paid data | Whether the yield's and the dollar's jobs-report link passes the bar against a real forecast; for CPI, whether the weak link is the market or our daily window |
+| **A better free forecast** | A model of each jobs report from what is published before it (weekly jobless claims, the ADP report) | Free | The same question as above, without paying, but with a model in place of the market's view |
+| **Predict the next release** (rung 2) | Forecast the 10-year yield's direction before each CPI release, and grade it after | Free | Claim 3, for the one link that passes; but on a 62% signal |
 
-The roadmap's order is rung 1 next. The case for sharper measurement first is that the one
-positive result is weak and both of its shortcuts are known.
+Rung 1 strengthened the case for better expected values before predicting: two links (the yield
+and the dollar on jobs reports) are clearly real but sit just under the bar, and the expected value
+is the known shortcut.

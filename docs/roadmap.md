@@ -67,7 +67,7 @@ In order. Each rung is worth building only because the one below it worked.
 
 | # | Feature | Why it waits |
 | --- | --- | --- |
-| 1 | **[More events](steps/rung-1-more-events.md)** — NFP, Fed decisions | Same code, more rows. Widen only once one event type is measured. |
+| 1 | **[More events](steps/rung-1-more-events.md)** — NFP, Fed decisions. **Done** 2026-10-06; results in [MVP results](mvp-results.md#rung-1--more-events) | Same code, more rows. Widen only once one event type is measured. |
 | 2 | **Predict the next release** | A prediction is only worth emitting once it comes from measured numbers. |
 | 3 | **Honest confidence** — hit rate → probability, magnitude bands, silence on low-`n` cells | "70%" must mean 70%. Needs enough measured history to calibrate against. |
 | 4 | **Keep score** — log predictions, grade them against outcomes | You cannot grade predictions you are not yet making. |

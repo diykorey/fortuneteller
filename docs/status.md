@@ -8,26 +8,27 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Rung 1, sub-step 7 — NFP surprise: 844 payroll surprises against the 12-month trend, from FRED's
-revision history (all 856 stored reports match it; five first prints match BLS). `surprise --event
-nfp`: the 10-year yield and the dollar follow the surprise at p 0.0001 but go the expected way only
-58% and 56% of the time, under the 60% bar, so both are *unclear*; gold *unclear*; the S&P 500 and
-VIX *doesn't*. Unchanged without the COVID months. CPI's `surprise` output unchanged. *(PR #106.)*
+Rung 1, sub-step 8 — results: the rung 1 spec's Results, and a rung 1 section in
+[`mvp-results.md`](mvp-results.md#rung-1--more-events). **Rung 1 is complete.** All three events move
+markets, the jobs report most (all five; the 10-year yield +67%). The yield's and the dollar's
+moves follow the payroll surprise (p 0.0001) but go the expected way only 58% and 56% of the time,
+under the 60% bar. *(PR pending.)*
 
 ## In progress
 
-Rung 1 — **More events**: [rung-1-more-events.md](steps/rung-1-more-events.md).
+Nothing. Rung 1 is complete.
 
 ## Next
 
-Rung 1, sub-step 8 — results: the rung 1 spec's Results section, and a rung 1 section in
-`mvp-results.md`, per event: does it move the five markets, and (NFP) does the move follow the
-surprise.
+A decision, set out in [`mvp-results.md`](mvp-results.md#what-comes-next): sharper measurement
+(paid consensus forecasts and intraday prices), a better free forecast of each jobs report, or
+rung 2 (predict the 10-year yield's direction before each CPI release).
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-06 | Rung 1.8: Results; rung 1 section in `mvp-results.md` — rung 1 complete | PR pending |
 | 2026-10-06 | Rung 1.7: NFP surprise; yield and dollar follow it but miss the hit-rate bar | PR #106 |
 | 2026-10-06 | Rung 1.6: clean baseline; CPI and NFP verdicts hold, Fed's dollar just moves | PR #105 |
 | 2026-10-06 | Rung 1.5: reaction close by event time; gold moves on Fed days (1.79) | PR #104 |
@@ -82,6 +83,14 @@ surprise.
 | 3 Raw move | Done — moves: UST 10Y, DXY, VIX; doesn't: S&P 500, gold |
 | 4 Surprise | Done — tracks: UST 10Y; unclear: DXY; doesn't: VIX, S&P 500, gold |
 
+## Rung 1 progress
+
+| Event | Step 3 (moves?) | Step 4 (follows the surprise?) |
+| --- | --- | --- |
+| CPI (clean baseline) | moves: UST 10Y, DXY, VIX; doesn't: S&P 500, gold | as the MVP |
+| NFP | moves: all five | unclear: UST 10Y, DXY, gold; doesn't: S&P 500, VIX |
+| Fed | moves: S&P 500, DXY (borderline), gold, VIX; unclear: UST 10Y | none: no free expected value |
+
 ## Known, not yet fixed
 
 Found by the 2026-09-28 codebase review and deliberately left for later. This section stays until
@@ -91,3 +100,6 @@ each is fixed or dropped; it is not rewritten when a task finishes.
 - The `Prediction` model has no table and no caller.
 - CPI release dates for 1972–1989, and NFP release dates before 1994, have not been checked against
   BLS. Later dates are checked; see step 1's spec and rung 1's.
+- In 1990–2007 the 10-year yield and the dollar move more the day after a Fed decision than on the
+  day; either their close then came before the statement, or the reaction ran on. See
+  [Precision](precision.md), "Close times".
