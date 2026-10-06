@@ -11,7 +11,7 @@ Where the work is and what comes next. Two rules keep it current:
 Event flows, step 3 — the CLI takes its `--event` choices, report labels and surprise rules from
 the flows (`flows.flow_named`), and `study` takes the event or rule it measures as an argument; the
 `SURPRISE_RULES` dict, `RELEASE_SERIES` and the CLI's `EVENTS` / `EVENT_LABELS` are gone. Every
-report, the Fed's refusal and `load-surprises`' output identical to `main`'s. *(PR pending.)*
+report, the Fed's refusal and `load-surprises`' output identical to `main`'s. *(PR #110.)*
 
 ## In progress
 
@@ -26,7 +26,7 @@ a toy flow and a toy source registered only in a test; schema.md, glossary, stat
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-06 | Event flows step 3: the CLI and measurement driven by the flows | PR pending |
+| 2026-10-06 | Event flows step 3: the CLI and measurement driven by the flows | PR #110 |
 | 2026-10-06 | Event flows step 2: CPI, NFP and Fed as flows behind `EVENT_FLOWS` | PR #109 |
 | 2026-10-06 | Event flows spec and step 1: expectation sources, validated surprises | PR #108 |
 | 2026-10-06 | Rung 1.8: Results; rung 1 section in `mvp-results.md` — rung 1 complete | PR #107 |
