@@ -13,7 +13,7 @@ calendars: 275 since 1994-02-04, 14 unscheduled, every one of the 92 target-rate
 decision. `raw-move --event fomc` on 2026-10-05: **Fed days move the S&P 500 (1.28) and VIX (1.22)**;
 the 10-year yield (1.14) and the dollar (1.20) are *unclear*. Gold's *doesn't* (0.78) is not a
 finding: gold settles at 13:30, before the 14:00 decision (next-day ratio 1.80). CPI and NFP output
-unchanged. *(PR pending.)*
+unchanged. *(PR #103.)*
 
 ## In progress
 
@@ -28,7 +28,7 @@ reacts at its next close (gold on Fed days), and unscheduled Fed decisions at th
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-05 | Rung 1.4: Fed decisions since 1994; S&P 500 and VIX move; gold's close precedes them | PR pending |
+| 2026-10-05 | Rung 1.4: Fed decisions since 1994; S&P 500 and VIX move; gold's close precedes them | PR #103 |
 | 2026-10-05 | Rung 1.3: every event's moves; `raw-move --event` — NFP moves all five | PR #102 |
 | 2026-10-05 | Rung 1.2: NFP releases; dates checked against BLS since 1994 | PR #101 |
 | 2026-10-05 | Rung 1.1: generic event keys; `surprises` | PR #100 |
