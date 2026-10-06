@@ -95,6 +95,42 @@ def fetch_first_releases(
     return _fred_get(api_key, params, timeout)
 
 
+def fetch_vintages(api_key: str, series_id: str, timeout: float = 120.0) -> bytes:
+    """Return the raw FRED response: every level of a series as it stood on each release day."""
+    params = {
+        "series_id": series_id,
+        # 3 = new and revised: one column per release day, holding the months published that day.
+        "output_type": "3",
+        "realtime_start": "1776-07-04",
+        "realtime_end": "9999-12-31",
+    }
+    return _fred_get(api_key, params, timeout)
+
+
+def parse_vintages(payload: bytes, series_id: str) -> dict[date, dict[date, float]]:
+    """Parse a FRED new-and-revised response: each month's levels, keyed by the day each came out.
+
+    Columns are named ``<series_id>_YYYYMMDD``; an empty cell means the month was not published or
+    revised that day.
+    """
+    prefix = f"{series_id}_"
+    try:
+        document: Any = json.loads(payload)
+        observations: list[dict[str, str]] = document["observations"]
+        if document["count"] != len(observations):
+            raise FredError(f"FRED reported {document['count']} rows but sent {len(observations)}")
+        return {
+            date.fromisoformat(row["date"]): {
+                datetime.strptime(column.removeprefix(prefix), "%Y%m%d").date(): float(value)
+                for column, value in row.items()
+                if column.startswith(prefix) and value != MISSING_VALUE
+            }
+            for row in observations
+        }
+    except MALFORMED_REPLY as exc:
+        raise FredError(f"FRED sent an unexpected reply: {exc!r}") from None
+
+
 def fetch_level_as_of(
     api_key: str, series_id: str, month: date, as_of: date, timeout: float = 30.0
 ) -> bytes:

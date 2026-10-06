@@ -2,10 +2,11 @@
 
 Subcommands: ``init`` creates the store (M0-05 ``db.init_db``); ``seed`` / ``query-demo`` load and
 read the seed data (M0-07 ``seed``); ``load-releases`` loads the CPI and jobs-report release
-histories from FRED (MVP step 1 ``study``) and the Fed's decisions (rung 1); ``load-prices`` loads the five instruments' daily closes and measures their
-move around each release (MVP step 2); ``raw-move`` compares each instrument's moves on an event's
-days with ordinary days, which no stored event touched (MVP step 3); ``load-surprises`` stores each release's CPI surprise and
-``surprise`` measures how the moves follow it (MVP step 4).
+histories from FRED (MVP step 1 ``study``) and the Fed's decisions (rung 1); ``load-prices`` loads
+the five instruments' daily closes and measures their move around each release (MVP step 2);
+``raw-move`` compares each instrument's moves on an event's days with ordinary days, which no
+stored event touched (MVP step 3); ``load-surprises`` stores each release's CPI and payroll surprise
+and ``surprise`` measures how the moves follow it (MVP step 4, rung 1).
 """
 
 from __future__ import annotations
@@ -147,7 +148,7 @@ def _load_prices(_args: argparse.Namespace) -> int:
 def describe_surprises(rows: Sequence[Surprise]) -> list[str]:
     """One report line per measure and expected value: how many surprises, over which months."""
     lines = []
-    for measure in study.MEASURE_SERIES:
+    for measure in (*study.MEASURE_SERIES, study.PAYROLLS):
         for baseline in (study.TREND_12M, study.NOWCAST_BASELINE):
             ids = sorted(
                 r.event_id for r in rows if r.measure == measure and r.baseline == baseline
@@ -188,26 +189,30 @@ def _hit_rate(tracking: study.SurpriseTracking) -> str:
 
 def describe_surprise_tracking(
     results: dict[tuple[str, str], dict[str, study.SurpriseTracking]],
+    event_type: str = study.CPI_EVENT_TYPE,
 ) -> list[str]:
-    """The report: the verdict table (core against the trend), the context table, and the rule."""
+    """The report: the verdict table, the context table if the event has one, and the rule."""
+    rule = study.SURPRISE_RULES[event_type]
+    verdict_combination = rule.combinations[0]
     lines = [
-        "core against the 12-month trend",
-        "instrument   n    expected  rank corr  p       hit rate (n)  per 0.1pp  verdict",
+        f"{verdict_combination[0]} against the 12-month trend",
+        f"instrument   n    expected  rank corr  p       hit rate (n)  per {rule.step:<5}  verdict",
     ]
-    for instrument, t in results.get(study.VERDICT_COMBINATION, {}).items():
+    for instrument, t in results.get(verdict_combination, {}).items():
         unit = study.MVP_PRICE_SERIES[instrument].unit
         lines.append(
-            f"{instrument:<12} {t.n:<4} {_direction(study.EXPECTED_SIGN[instrument]):<9} "
+            f"{instrument:<12} {t.n:<4} {_direction(rule.expected_sign[instrument]):<9} "
             f"{t.rank_corr:<10.2f} {t.p:<7.4f} {_hit_rate(t):<13} "
             f"{_move_size(t.slope, unit):<10} {t.verdict}"
         )
-    lines += [
-        "",
-        "context, no verdict",
-        "instrument   measure   baseline   n    rank corr  p       hit rate (n)",
-    ]
+    if len(rule.combinations) > 1:
+        lines += [
+            "",
+            "context, no verdict",
+            "instrument   measure   baseline   n    rank corr  p       hit rate (n)",
+        ]
     for (measure, baseline), by_instrument in results.items():
-        if (measure, baseline) == study.VERDICT_COMBINATION:
+        if (measure, baseline) == verdict_combination:
             continue
         for instrument, t in by_instrument.items():
             lines.append(
@@ -223,20 +228,33 @@ def describe_surprise_tracking(
     return [line.rstrip() for line in lines]
 
 
-def _surprise(_args: argparse.Namespace) -> int:
+def _surprise(args: argparse.Namespace) -> int:
+    event_type = EVENTS[args.event]
+    if event_type not in study.SURPRISE_RULES:
+        print(
+            f"surprise: {event_type} has no surprise: no free record of what the market expected",
+            file=sys.stderr,
+        )
+        return 1
     con = db.get_connection()
     db.init_db(con=con)
-    for table, command in (
-        ("event_instances", "load-releases"),
-        ("observations", "load-prices"),
-        ("surprises", "load-surprises"),
+    measure, baseline = study.SURPRISE_RULES[event_type].combinations[0]
+    stored = con.execute(
+        "SELECT count(*) FROM surprises WHERE measure = ? AND baseline = ?", [measure, baseline]
+    ).fetchone()
+    for missing, command in (
+        (not study.stored_events(event_type, con=con), "load-releases"),
+        (db.count_rows("observations", con=con) == 0, "load-prices"),
+        (stored is None or stored[0] == 0, "load-surprises"),
     ):
-        if db.count_rows(table, con=con) == 0:
+        if missing:
             print(
-                f"surprise: no {table} stored; run `fortuneteller {command}` first", file=sys.stderr
+                f"surprise: nothing for {args.event} yet; run `fortuneteller {command}` first",
+                file=sys.stderr,
             )
             return 1
-    for line in describe_surprise_tracking(study.track_surprises(con=con)):
+    results = study.track_surprises(con=con, event_type=event_type)
+    for line in describe_surprise_tracking(results, event_type):
         print(line)
     return 0
 
@@ -330,7 +348,10 @@ def build_parser() -> argparse.ArgumentParser:
     p_surprises.set_defaults(func=_load_surprises)
 
     p_surprise = sub.add_parser(
-        "surprise", help="does each instrument's release-day move follow the CPI surprise?"
+        "surprise", help="does each instrument's release-day move follow the event's surprise?"
+    )
+    p_surprise.add_argument(
+        "--event", choices=EVENTS, default="cpi", help="the event (default: cpi)"
     )
     p_surprise.set_defaults(func=_surprise)
 

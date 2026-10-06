@@ -62,6 +62,7 @@ this by splitting the results by era.
 | Fed decision time | Each statement's time from a source; 2005 to mid-2006 assumed 14:15 (the minutes give none; 14:15 either side); 2007-08-10 and 2007-08-17 known only as "morning" | The exact minute for those | Only the side of each close matters, and all of them are on a known side |
 | Close times | Each instrument's close in New York, measured on 2026-09 data (S&P 500 16:00, yield 15:00, dollar 15:00, gold 13:30, VIX 16:15) and assumed for all history | Each exchange's close time by era | In 1990–2007 the yield's and the dollar's next-day move beats their Fed-day move (0.97 vs 1.32, 0.84 vs 1.15): either their close came before 14:15 then, or the reaction runs into the next day. Daily data cannot tell which |
 | NFP hit-rate cut-off | Surprises of at least 50k count | A cut-off scaled to each era's typical surprise | Hit rate rests on fewer than 50 releases |
+| NFP expected value | The 12-month trend of first-published payroll changes, as for CPI | Economists' consensus (paid), or a model that uses the weekly jobless claims and the ADP report published before each release | The yield and the dollar rank-correlate at p 0.0001 but miss the 60% hit-rate bar (58%, 56%): a truer expected value may decide them |
 
 ## Steps 1–2 — choices already built in
 
