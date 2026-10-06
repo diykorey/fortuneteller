@@ -12,7 +12,7 @@ Event flows, step 2 — `flows.py`: `EventFlow` with `CpiFlow`, `NfpFlow` and `F
 its own source, checks and surprise rule; `load-releases` and `load-surprises` run them from
 `EVENT_FLOWS`, and `load-releases` stores nothing unless every flow succeeds. Against `main` on real
 data: both loads' output, all five reports, `event_instances` (1,780 rows, from an empty database)
-and `surprises` (2,131 rows) identical. *(PR pending.)*
+and `surprises` (2,131 rows) identical. *(PR #109.)*
 
 ## In progress
 
@@ -27,7 +27,7 @@ flows; the old event-specific constants (`RELEASE_SERIES`, `SURPRISE_RULES`, the
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-06 | Event flows step 2: CPI, NFP and Fed as flows behind `EVENT_FLOWS` | PR pending |
+| 2026-10-06 | Event flows step 2: CPI, NFP and Fed as flows behind `EVENT_FLOWS` | PR #109 |
 | 2026-10-06 | Event flows spec and step 1: expectation sources, validated surprises | PR #108 |
 | 2026-10-06 | Rung 1.8: Results; rung 1 section in `mvp-results.md` — rung 1 complete | PR #107 |
 | 2026-10-06 | Rung 1.7: NFP surprise; yield and dollar follow it but miss the hit-rate bar | PR #106 |
