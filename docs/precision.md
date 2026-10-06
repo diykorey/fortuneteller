@@ -59,8 +59,8 @@ this by splitting the results by era.
 | Choice | Now | More precise | Trigger |
 | --- | --- | --- | --- |
 | Fed surprise | None: the Fed gets step 3 only, because no free history of what the market expected exists | The change implied by Fed funds futures the day before each decision (the standard measure); paid | Fed decisions turn out to move markets in step 3 |
-| Fed decision time | 14:00 New York for every decision; unscheduled ones, at least, came at other times (to check from the statements) | Each statement's actual time | Sub-step 5: an instrument's reaction day depends on whether the decision came before its close |
-| Reaction close | Every instrument's move is close-to-close on the decision day. Gold's close (COMEX settlement, 13:30) comes before the 14:00 decision, so its Fed-day move is the hour before: ratio 0.79 on the day, 1.80 on the next | Pair the last close before the event with the first close after it, by each instrument's close time | Sub-step 5, planned |
+| Fed decision time | Each statement's time from a source; 2005 to mid-2006 assumed 14:15 (the minutes give none; 14:15 either side); 2007-08-10 and 2007-08-17 known only as "morning" | The exact minute for those | Only the side of each close matters, and all of them are on a known side |
+| Close times | Each instrument's close in New York, measured on 2026-09 data (S&P 500 16:00, yield 15:00, dollar 15:00, gold 13:30, VIX 16:15) and assumed for all history | Each exchange's close time by era | In 1990–2007 the yield's and the dollar's next-day move beats their Fed-day move (0.97 vs 1.32, 0.84 vs 1.15): either their close came before 14:15 then, or the reaction runs into the next day. Daily data cannot tell which |
 | NFP hit-rate cut-off | Surprises of at least 50k count | A cut-off scaled to each era's typical surprise | Hit rate rests on fewer than 50 releases |
 
 ## Steps 1–2 — choices already built in
