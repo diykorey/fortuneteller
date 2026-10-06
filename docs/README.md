@@ -42,6 +42,9 @@ Every table and column: what it means, who fills it, and whether anything fills 
 **What did we simplify, and what would be more precise?** → **[Precision](precision.md)**
 Each measurement's current shortcut, the more precise way, and what would make it worth building.
 
+**How do I add an event type or an expectation source?** → **[Extending](extending.md)**
+One class and one line in a list, for either; what then happens on its own.
+
 **4. What does this word mean?** → **[Glossary](glossary.md)**
 Every acronym, ticker, and piece of jargon. Read it alongside any of the above, not before them.
 

@@ -40,15 +40,16 @@ UNITED_STATES = "United States"
 # CPI and the jobs report both come out at 08:30 New York time.
 RELEASE_TIME = time(8, 30)
 FIRST_RELEASE = "first_release"
-# Each event type's leading digit in event_id; the rest is the release day, so ids from different
-# types never collide and sort by date within a type.
-EVENT_TYPE_CODES = {CPI_EVENT_TYPE: 1, NFP_EVENT_TYPE: 2, FOMC_EVENT_TYPE: 3}
 
 
 def event_id(event_type: str, released: date) -> int:
-    """The ``event_instances`` key: type code, then the release day (CPI 2022-09-13 → 120220913)."""
+    """The ``event_instances`` key: the flow's type code, then the release day (CPI 2022-09-13 →
+    120220913), so ids from different types never collide and sort by date within a type."""
+    codes = [flow.type_code for flow in EVENT_FLOWS if flow.event_type == event_type]
+    if not codes:
+        raise ValueError(f"{event_type}: no event flow in EVENT_FLOWS")
     day = released.year * 10_000 + released.month * 100 + released.day
-    return EVENT_TYPE_CODES[event_type] * 100_000_000 + day
+    return codes[0] * 100_000_000 + day
 
 
 def event_date(event_id: int) -> date:
@@ -493,6 +494,7 @@ class EventBatch:
 
 class EventFlow(Protocol):
     event_type: str
+    type_code: int
     cli_name: str
     label: str
     surprise_rule: SurpriseRule | None
@@ -530,6 +532,7 @@ class CpiFlow:
     each checked against the Cleveland Fed's published figure."""
 
     event_type = CPI_EVENT_TYPE
+    type_code = 1
     cli_name = "cpi"
     label = "CPI"
     surprise_rule: SurpriseRule | None = CPI_SURPRISE_RULE
@@ -561,6 +564,7 @@ class NfpFlow:
     revision history."""
 
     event_type = NFP_EVENT_TYPE
+    type_code = 2
     cli_name = "nfp"
     label = "NFP"
     surprise_rule: SurpriseRule | None = NFP_SURPRISE_RULE
@@ -577,6 +581,7 @@ class FedFlow:
     its target rate. No surprise: there is no free record of what the market expected."""
 
     event_type = FOMC_EVENT_TYPE
+    type_code = 3
     cli_name = "fomc"
     label = "Fed"
     surprise_rule: SurpriseRule | None = None

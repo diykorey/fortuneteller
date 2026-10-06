@@ -15,13 +15,11 @@ import argparse
 import sys
 from collections.abc import Callable, Iterable, Sequence
 
-from . import db, flows, seed, sources, study
+from . import db, expectations, flows, seed, sources, study
 from .config import settings
 from .models import Surprise
 
 Handler = Callable[[argparse.Namespace], int]
-# The events a command can be pointed at: each flow's short name on the command line.
-EVENT_NAMES = [flow.cli_name for flow in flows.EVENT_FLOWS]
 
 
 def _init(_args: argparse.Namespace) -> int:
@@ -159,7 +157,7 @@ def describe_surprise_tracking(
     """The report: the verdict table, the context table if the rule has one, and the rule."""
     verdict_combination = rule.combinations[0]
     lines = [
-        f"{verdict_combination[0]} against the 12-month trend",
+        f"{verdict_combination[0]} against {_source_label(verdict_combination[1])}",
         f"instrument   n    expected  rank corr  p       hit rate (n)  per {rule.step:<5}  verdict",
     ]
     for instrument, t in results.get(verdict_combination, {}).items():
@@ -223,6 +221,10 @@ def _surprise(args: argparse.Namespace) -> int:
     for line in describe_surprise_tracking(results, rule):
         print(line)
     return 0
+
+
+def _source_label(name: str) -> str:
+    return next(s.label for s in expectations.EXPECTATION_SOURCES if s.name == name)
 
 
 def _any_of(labels: Iterable[str]) -> str:
@@ -294,6 +296,8 @@ def _raw_move(args: argparse.Namespace) -> int:
 
 
 def build_parser() -> argparse.ArgumentParser:
+    # Each flow's short name on the command line, read when the parser is built.
+    event_names = [flow.cli_name for flow in flows.EVENT_FLOWS]
     parser = argparse.ArgumentParser(prog="fortuneteller", description="FortuneTeller CLI")
     sub = parser.add_subparsers(dest="command", required=True)
 
@@ -325,7 +329,7 @@ def build_parser() -> argparse.ArgumentParser:
         "surprise", help="does each instrument's release-day move follow the event's surprise?"
     )
     p_surprise.add_argument(
-        "--event", choices=EVENT_NAMES, default="cpi", help="the event (default: cpi)"
+        "--event", choices=event_names, default="cpi", help="the event (default: cpi)"
     )
     p_surprise.set_defaults(func=_surprise)
 
@@ -333,7 +337,7 @@ def build_parser() -> argparse.ArgumentParser:
         "raw-move", help="compare each instrument's moves on an event's days with ordinary days"
     )
     p_raw.add_argument(
-        "--event", choices=EVENT_NAMES, default="cpi", help="the event (default: cpi)"
+        "--event", choices=event_names, default="cpi", help="the event (default: cpi)"
     )
     p_raw.set_defaults(func=_raw_move)
 

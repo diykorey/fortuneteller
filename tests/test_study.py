@@ -419,7 +419,7 @@ def test_two_event_types_on_the_same_day_get_different_ids() -> None:
 
     # then the type code leads, so another type on that day cannot collide
     assert cpi == 1_2022_09_13
-    assert cpi // 10**8 == flows.EVENT_TYPE_CODES[flows.CPI_EVENT_TYPE]
+    assert cpi // 10**8 == flows.CpiFlow.type_code
 
 
 def test_months_first_published_on_one_day_are_one_release() -> None:
