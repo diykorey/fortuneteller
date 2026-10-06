@@ -12,7 +12,7 @@ Event flows, step 1 — `expectations.py`: `Actual`, `Expectation`, `Expectation
 `ClevelandNowcast`, and `build_surprises`, which checks every expectation against its event (stored,
 same measure and unit, known before the announcement) before computing a surprise.
 `load-surprises` runs through it: all 2,131 `surprises` rows identical to `main`'s, and every
-report byte-identical. *(PR pending.)*
+report byte-identical. *(PR #108.)*
 
 ## In progress
 
@@ -27,7 +27,7 @@ Event flows, step 2 — `flows.py`: `EventFlow`, `CpiFlow`, `NfpFlow`, `FedFlow`
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-06 | Event flows spec and step 1: expectation sources, validated surprises | PR pending |
+| 2026-10-06 | Event flows spec and step 1: expectation sources, validated surprises | PR #108 |
 | 2026-10-06 | Rung 1.8: Results; rung 1 section in `mvp-results.md` — rung 1 complete | PR #107 |
 | 2026-10-06 | Rung 1.7: NFP surprise; yield and dollar follow it but miss the hit-rate bar | PR #106 |
 | 2026-10-06 | Rung 1.6: clean baseline; CPI and NFP verdicts hold, Fed's dollar just moves | PR #105 |
