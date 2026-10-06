@@ -185,3 +185,8 @@ the measurement rather than a finding.
 is the trigger for a cleaner baseline (jobs-report and Fed days removed). It is not built now: it
 needs the NFP and FOMC calendars, which ladder rung 1 loads anyway. No instrument came out
 *unclear*, so the decision rule's trigger did not fire.
+
+**Re-run on the clean baseline (rung 1, sub-step 6, 2026-10-06).** With jobs-report and Fed days
+removed from the ordinary pile, every CPI verdict holds and every ratio rises a little: UST 10Y
+1.33, DXY 1.18, VIX 1.22, S&P 500 1.09 (p 0.06, still *doesn't*), gold 1.04. Side by side in
+[rung 1](rung-1-more-events.md). `raw-move` now always uses the clean baseline.

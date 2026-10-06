@@ -10,8 +10,8 @@ about six weeks apart.
 Step 2 (see ``docs/steps/step-2-prices.md``): store each instrument's daily closes; then measure
 each instrument's move around each CPI release into ``observations``.
 
-Step 3 (see ``docs/steps/step-3-raw-move.md``): compare each instrument's moves on CPI days with its
-moves on all other days.
+Step 3 (see ``docs/steps/step-3-raw-move.md``): compare each instrument's moves on an event's days
+with its moves on ordinary days, the days no stored event reacted on.
 
 Step 4 (see ``docs/steps/step-4-surprise.md``): CPI's change as first published, how far it landed
 from two expected values, and whether each instrument's release-day move follows that surprise.
@@ -474,7 +474,7 @@ def store_observations(
     return release_counts
 
 
-# Step 3 — moves on CPI days against all other days (docs/steps/step-3-raw-move.md).
+# Step 3 — moves on an event's days against ordinary days (docs/steps/step-3-raw-move.md).
 
 
 # Step 3's rule for "moves", fixed before the verdicts were run; see docs/steps/step-3-raw-move.md.
@@ -515,10 +515,11 @@ def reaction_days(closes: Sequence[DailyClosingPrice], first_days: Iterable[date
 
 @dataclass(frozen=True)
 class MoveComparison:
-    """One instrument's moves on CPI days against its moves on all other days."""
+    """One instrument's moves on an event's days against its moves on ordinary days."""
 
     event_days: int
-    median_cpi: float
+    other_days: int
+    median_event: float
     median_other: float
     ratio: float
     p: float
@@ -536,26 +537,27 @@ def move_verdict(ratio: float, p: float) -> str:
 
 
 def compare_moves(
-    cpi: Sequence[float],
+    event: Sequence[float],
     other: Sequence[float],
     permutations: int = stats.PERMUTATIONS,
     seed: int = stats.PERMUTATION_SEED,
 ) -> MoveComparison:
-    """Median CPI-day move over median other-day move, and how often chance does as well.
+    """Median event-day move over median other-day move, and how often chance does as well.
 
-    ``p`` is the share of random relabellings, drawing as many days as there are CPI days from all
-    of them, whose ratio is at least the real one, counting the real labelling itself.
+    ``p`` is the share of random relabellings, drawing as many days as there are event days from
+    all of them, whose ratio is at least the real one, counting the real labelling itself.
     """
-    median_cpi, median_other = median(cpi), median(other)
-    ratio = median_cpi / median_other
-    pool = sorted([*cpi, *other])
+    median_event, median_other = median(event), median(other)
+    ratio = median_event / median_other
+    pool = sorted([*event, *other])
 
     def draw(rng: random.Random) -> float:
-        drawn = sorted(rng.sample(range(len(pool)), len(cpi)))
+        drawn = sorted(rng.sample(range(len(pool)), len(event)))
         return median([pool[i] for i in drawn]) / stats.median_not_drawn(pool, drawn)
 
     p = stats.permutation_p(ratio, draw, permutations, seed)
-    return MoveComparison(len(cpi), median_cpi, median_other, ratio, p, move_verdict(ratio, p))
+    verdict = move_verdict(ratio, p)
+    return MoveComparison(len(event), len(other), median_event, median_other, ratio, p, verdict)
 
 
 class EraRatio(NamedTuple):
@@ -579,23 +581,34 @@ def era_of(day: date) -> str:
 def measure_raw_moves(
     con: duckdb.DuckDBPyConnection | None = None, event_type: str = CPI_EVENT_TYPE
 ) -> dict[str, RawMove]:
-    """Each MVP instrument's moves on the event's days against its moves on all other days."""
+    """Each MVP instrument's moves on the event's days against its moves on ordinary days.
+
+    An ordinary day is one that is no stored event's reaction day, of any type: a jobs-report or
+    Fed day is not a fair "other day" for CPI.
+    """
     events = stored_events(event_type, con=con)
+    every_event = [event for typed in EVENT_TYPE_CODES for event in stored_events(typed, con=con)]
     results: dict[str, RawMove] = {}
     for instrument, (_ticker, unit, close) in MVP_PRICE_SERIES.items():
         closes = stored_closes(instrument, con=con)
         days = reaction_days(closes, [first_reaction_day(event, close) for event in events])
+        busy = reaction_days(closes, [first_reaction_day(event, close) for event in every_event])
         by_era: dict[str, tuple[list[float], list[float]]] = {label: ([], []) for label, _ in ERAS}
         for day, move in daily_moves(closes, unit).items():
-            cpi, other = by_era[era_of(day)]
-            (cpi if day in days else other).append(move)
+            on_event, other = by_era[era_of(day)]
+            if day in days:
+                on_event.append(move)
+            elif day not in busy:
+                other.append(move)
         overall = compare_moves(
-            [move for cpi, _ in by_era.values() for move in cpi],
+            [move for on_event, _ in by_era.values() for move in on_event],
             [move for _, other in by_era.values() for move in other],
         )
         eras = {
-            label: EraRatio(len(cpi), median(cpi) / median(other) if cpi and other else None)
-            for label, (cpi, other) in by_era.items()
+            label: EraRatio(
+                len(on_event), median(on_event) / median(other) if on_event and other else None
+            )
+            for label, (on_event, other) in by_era.items()
         }
         results[instrument] = RawMove(unit, overall, eras)
     return results

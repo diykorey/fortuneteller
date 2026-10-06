@@ -163,6 +163,8 @@ Terms are grouped by what they are about, alphabetical within each group.
   Each market's close is at its own time: stocks 16:00 New York, while gold futures' daily close
   is the COMEX *settlement*, 13:30 New York — before a 14:00 Fed decision, so gold's reaction to
   one lands on the next day's close.
+- **Ordinary day** — step 3's baseline: a trading day that is no stored event's reaction day (no
+  CPI, jobs report or Fed decision), since rung 1's sub-step 6.
 - **First reaction day** — the first day whose close can carry an event: its own day if it came
   before the instrument's close, otherwise the next (`study.first_reaction_day`).
 - **Daily bar / OHLC** — one row per trading day holding Open, High, Low, Close prices. The MVP's

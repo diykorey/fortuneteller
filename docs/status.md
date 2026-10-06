@@ -8,11 +8,10 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Rung 1, sub-step 5 — each event reacts at the first close after it: every instrument has its New
-York close time (gold 13:30, yield and dollar 15:00, S&P 500 16:00, VIX 16:15), and every Fed
-decision the time its statement came out (14:15 until 2013, 14:00 since, 25 sourced exceptions).
-Gold's Fed ratio goes from 0.78 to **1.79, moves**. CPI, NFP and `surprise` unchanged. *(PR
-#104.)*
+Rung 1, sub-step 6 — clean baseline: `raw-move`'s ordinary days now exclude every stored event's
+reaction day (CPI, NFP, Fed). No CPI or NFP verdict changed; every ratio rose by 0.01–0.08 (CPI's
+UST 10Y 1.25 → 1.33). The Fed's dollar moved from *unclear* to *moves*, at p 0.0096 against the
+0.01 bar. *(PR pending.)*
 
 ## In progress
 
@@ -20,13 +19,14 @@ Rung 1 — **More events**: [rung-1-more-events.md](steps/rung-1-more-events.md)
 
 ## Next
 
-Rung 1, sub-step 6 — clean baseline: "ordinary days" exclude every stored event's reaction day;
-CPI's step 3 re-run, old and new verdicts side by side.
+Rung 1, sub-step 7 — NFP surprise: first-published monthly payroll change against its 12-month
+trend, into `surprises`; `surprise` takes an event; NFP's step 4 verdict.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-06 | Rung 1.6: clean baseline; CPI and NFP verdicts hold, Fed's dollar just moves | PR pending |
 | 2026-10-06 | Rung 1.5: reaction close by event time; gold moves on Fed days (1.79) | PR #104 |
 | 2026-10-05 | Rung 1.4: Fed decisions since 1994; S&P 500 and VIX move; gold's close precedes them | PR #103 |
 | 2026-10-05 | Rung 1.3: every event's moves; `raw-move --event` — NFP moves all five | PR #102 |

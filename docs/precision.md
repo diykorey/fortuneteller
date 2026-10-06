@@ -15,11 +15,11 @@ depends on what "ordinary" means.
 
 | | Option | Ordinary days are | Cost |
 | --- | --- | --- | --- |
-| **Now** | A. All other days | Every trading day that is not a CPI release day | None: the data is already stored |
-| Better | B. Other releases removed | As A, minus jobs-report (NFP) and Fed-decision (FOMC) days | Both calendars loaded (rung 1); the baseline change is rung 1's sub-step 6 |
+| Was | A. All other days | Every trading day that is not a CPI release day | None: the data is already stored |
+| **Now** | B. Other releases removed | As A, minus every stored event's reaction day: jobs reports (NFP) and Fed decisions (FOMC) | Built in rung 1, sub-step 6. It moved no CPI verdict; every ratio rose by 0.02–0.08 |
 | Better | C. Matched window | The 20 trading days around each release, without the release day | None in data; a different comparison per release |
 
-**Why A is enough for now.** Jobs-report and Fed days are noisy, and A leaves them in the ordinary
+**Why A was enough for the MVP.** Jobs-report and Fed days are noisy, and A leaves them in the ordinary
 pile. That raises the baseline, so the CPI effect A reports is **smaller than the true effect,
 never larger**. If CPI days still stand out against it, they stand out. A can produce a false "no
 effect", never a false "effect".
