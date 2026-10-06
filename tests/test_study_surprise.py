@@ -28,25 +28,33 @@ from fortuneteller.sources import (
     parse_level,
     parse_nowcasts,
 )
+from fortuneteller.expectations import (
+    NOWCAST_BASELINE,
+    Actual,
+    Expectation,
+    Trend12m,
+    build_surprises,
+    end_of_day,
+    event_month,
+    nowcast_expectations,
+)
 from fortuneteller.models import Surprise, EventInstance
 from fortuneteller.study import (
     CPI_EVENT_TYPE,
     DOESNT_TRACK,
-    NOWCAST_BASELINE,
+    PERCENT,
     TRACKS,
     SurpriseTracking,
     UNCLEAR,
     MonthlyChange,
     actual_mismatches,
-    build_surprises,
     first_published_changes,
     load_first_published_changes,
-    nowcast_expectations,
     published_actuals,
+    to_actuals,
     to_event_instance,
     track_pairs,
     track_verdict,
-    trend_expectations,
 )
 
 
@@ -259,8 +267,8 @@ def test_the_expected_value_is_the_last_nowcast_before_the_release_day() -> None
     monday = nowcast_expectations(points, {august: date(2022, 9, 12)})
 
     # then it is the day before's nowcast, never one made on the release day itself
-    assert tuesday == {(CORE, august): 0.45}
-    assert monday == {(CORE, august): 0.40}
+    assert tuesday == {(CORE, august): (date(2022, 9, 12), 0.45)}
+    assert monday == {(CORE, august): (date(2022, 9, 9), 0.40)}
 
 
 def test_the_real_file_gives_august_2022_s_expected_core_change() -> None:
@@ -271,7 +279,7 @@ def test_the_real_file_gives_august_2022_s_expected_core_change() -> None:
     expected = nowcast_expectations(points, {date(2022, 8, 1): date(2022, 9, 13)})
 
     # then core was expected to rise 0.48%, against the 0.57% published
-    assert expected[(CORE, date(2022, 8, 1))] == pytest.approx(0.479891397462036)
+    assert expected[(CORE, date(2022, 8, 1))][1] == pytest.approx(0.479891397462036)
 
 
 def test_a_month_without_a_nowcast_before_its_release_has_no_expected_value() -> None:
@@ -322,6 +330,16 @@ def _changes(*percents: float, start: tuple[int, int] = (2021, 1)) -> list[Month
     return changes
 
 
+def trend_expectations(changes: list[MonthlyChange]) -> dict[date, float]:
+    events = [_event(change.reference_month, change.released) for change in changes]
+    actuals = to_actuals(changes, CPI_EVENT_TYPE, CORE, PERCENT, events)
+    months = {event.event_id: event_month(event) for event in events}
+    return {
+        months[expectation.event_id]: expectation.value
+        for expectation in Trend12m().expectations(events, actuals, "key")
+    }
+
+
 def test_the_trend_is_the_average_of_the_previous_twelve_months() -> None:
     # given thirteen months of changes: 0.1 to 1.2, then 2.0
     changes = _changes(*(m / 10 for m in range(1, 13)), 2.0)
@@ -351,36 +369,89 @@ def _event(month: date, released: date) -> EventInstance:
 def test_a_surprise_row_is_actual_minus_expected_for_its_release() -> None:
     # given August 2022 core, released 2022-09-13, and a nowcast of 0.48 made the day before
     august, released = date(2022, 8, 1), date(2022, 9, 13)
-    changes = {CORE: [MonthlyChange(august, released, 0.57)]}
-    points = [NowcastPoint(august, CORE, NOWCAST, date(2022, 9, 12), 0.48)]
+    event = _event(august, released)
+    actual = Actual(event.event_id, CORE, august, 0.57, PERCENT)
+    nowcast = Expectation(
+        event.event_id, CORE, NOWCAST_BASELINE, 0.48, PERCENT, end_of_day(date(2022, 9, 12))
+    )
 
     # when the surprises are built against the stored release
-    rows = build_surprises([_event(august, released)], changes, points)
+    rows = build_surprises([event], [actual], [nowcast], [CPI_EVENT_TYPE])
 
-    # then there is one nowcast row, too early in history for a trend, 0.09 pp hot
+    # then there is one nowcast row, 0.09 pp hot
     assert [(r.event_id, r.measure, r.baseline, r.actual_mom, r.expected_mom) for r in rows] == [
         (1_2022_09_13, CORE, NOWCAST_BASELINE, 0.57, 0.48)
     ]
     assert rows[0].surprise == pytest.approx(0.09)
 
 
+def _refusal(**changed: object) -> str:
+    august = date(2022, 8, 1)
+    event = _event(august, date(2022, 9, 13))
+    actual = Actual(event.event_id, CORE, august, 0.57, PERCENT)
+    fields: dict[str, object] = {
+        "event_id": event.event_id,
+        "measure": CORE,
+        "source": NOWCAST_BASELINE,
+        "value": 0.48,
+        "unit": PERCENT,
+        "known_at": end_of_day(date(2022, 9, 12)),
+    }
+    fields.update(changed)
+    with pytest.raises(ValueError) as refused:
+        build_surprises([event], [actual], [Expectation(**fields)], [CPI_EVENT_TYPE])
+    return str(refused.value)
+
+
+@pytest.mark.parametrize(
+    ("changed", "reason"),
+    [
+        ({"event_id": 1_2022_09_14}, "no stored event with a surprise"),
+        ({"measure": "headline"}, "no actual for headline"),
+        ({"unit": "thousands"}, "in thousands, the actual in percent"),
+        ({"known_at": end_of_day(date(2022, 9, 13))}, "not before the event"),
+    ],
+)
+def test_an_expectation_that_does_not_fit_its_event_is_refused(
+    changed: dict[str, object], reason: str
+) -> None:
+    # given August 2022's release and actual, and a nowcast broken in exactly one way
+
+    # when / then the surprises are refused with that reason
+    assert reason in _refusal(**changed)
+
+
+def test_an_expectation_for_an_event_without_a_surprise_is_refused() -> None:
+    # given August 2022's release stored, but its type not among those with a surprise
+    august = date(2022, 8, 1)
+    event = _event(august, date(2022, 9, 13))
+    actual = Actual(event.event_id, CORE, august, 0.57, PERCENT)
+    nowcast = Expectation(
+        event.event_id, CORE, NOWCAST_BASELINE, 0.48, PERCENT, end_of_day(date(2022, 9, 12))
+    )
+
+    # when / then it is refused
+    with pytest.raises(ValueError, match="no stored event with a surprise"):
+        build_surprises([event], [actual], [nowcast], [])
+
+
 def test_a_change_released_on_another_day_than_its_stored_release_is_refused() -> None:
     # given a core change released a day after the stored CPI release
     august = date(2022, 8, 1)
-    changes = {CORE: [MonthlyChange(august, date(2022, 9, 14), 0.57)]}
+    changes = [MonthlyChange(august, date(2022, 9, 14), 0.57)]
 
-    # when / then the surprises are refused rather than paired with the wrong day
+    # when / then the actuals are refused rather than paired with the wrong day
     with pytest.raises(ValueError, match="2022-08"):
-        build_surprises([_event(august, date(2022, 9, 13))], changes, [])
+        to_actuals(changes, CPI_EVENT_TYPE, CORE, PERCENT, [_event(august, date(2022, 9, 13))])
 
 
 def test_a_change_without_a_stored_release_asks_for_the_releases() -> None:
     # given a change for a month whose release is not stored
-    changes = {CORE: [MonthlyChange(date(2022, 8, 1), date(2022, 9, 13), 0.57)]}
+    changes = [MonthlyChange(date(2022, 8, 1), date(2022, 9, 13), 0.57)]
 
     # when / then the message says which load to run
     with pytest.raises(ValueError, match="load-releases"):
-        build_surprises([], changes, [])
+        to_actuals(changes, CPI_EVENT_TYPE, CORE, PERCENT, [])
 
 
 def _nowcast_file(month: str, actual_core: float) -> bytes:

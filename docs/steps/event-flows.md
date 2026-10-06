@@ -43,7 +43,7 @@ byte-identical and `surprises` identical row for row.
 | Record | Fields | Today |
 | --- | --- | --- |
 | `EventInstance` | event id, type, announcement time (UTC), country, detail, scheduled | unchanged: the `event_instances` row |
-| `Actual` | event id, measure, value, unit | new; replaces `MonthlyChange` |
+| `Actual` | event id, measure, period (the month measured), value, unit | new; what `MonthlyChange` carried into the surprise. A month first published in a later month's release (October 2025 payrolls) is an `Actual` of that release, feeding the trend but getting no surprise |
 | `Expectation` | event id, measure, source, value, unit, `known_at` | new; replaces `trend_expectations`' and `nowcast_expectations`' dicts |
 | `Surprise` | event id, measure, source, actual, expected, surprise | unchanged: the `surprises` row; `baseline` holds the source name |
 
@@ -55,13 +55,13 @@ class EventFlow(Protocol):
     cli_name: str                          # "cpi", "nfp", "fomc"
     label: str                             # "CPI", "NFP", "Fed": three letters keep reports aligned
     surprise_rule: SurpriseRule | None     # verdict combination, signs, cut-off; None: no surprise
-    def events(self, keys: Settings) -> EventBatch: ...            # events + report lines
-    def actuals(self, events: Sequence[EventInstance], keys: Settings) -> list[Actual]: ...
+    def events(self, api_key: str) -> EventBatch: ...              # events + report lines
+    def actuals(self, events: Sequence[EventInstance], api_key: str) -> list[Actual]: ...
 
 class ExpectationSource(Protocol):
     name: str                              # stored as surprises.baseline
     def expectations(
-        self, events: Sequence[EventInstance], actuals: Sequence[Actual], keys: Settings
+        self, events: Sequence[EventInstance], actuals: Sequence[Actual], api_key: str
     ) -> list[Expectation]: ...
 
 EVENT_FLOWS = [CpiFlow(), NfpFlow(), FedFlow()]
@@ -88,7 +88,7 @@ one line in `EXPECTATION_SOURCES`; validation applies to it, and its rows sit ne
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | `expectations.py`: `Expectation`, `ExpectationSource`, `Trend12m`, `ClevelandNowcast`, the validating `build_surprises`; `load-surprises` routed through it | Each validation failure has a test; every report byte-identical |
+| 1 | ~~`expectations.py`: `Expectation`, `ExpectationSource`, `Trend12m`, `ClevelandNowcast`, the validating `build_surprises`; `load-surprises` routed through it~~ **done** | Each validation failure has a test; every report byte-identical |
 | 2 | `flows.py`: `Actual`, `EventFlow`, `CpiFlow`, `NfpFlow`, `FedFlow`; `load-releases` and `load-surprises` routed through `EVENT_FLOWS` | Every load and report byte-identical; `surprises` identical row for row |
 | 3 | The CLI derives `--event` choices, labels and surprise rules from the flows; the old event-specific constants are deleted | No event type is named outside its flow; every report byte-identical |
 | 4 | A short "adding an event type / an expectation source" recipe; schema.md, glossary, status | A toy flow and a toy source, registered only in a test, run end to end |
@@ -115,12 +115,14 @@ loading, no configuration file: the two lists are the registry.
 | File | Holds after the refactor |
 | --- | --- |
 | `sources.py` | unchanged: fetching and parsing FRED, Yahoo, Cleveland, the Fed |
-| `flows.py` | `Actual`, `EventBatch`, `EventFlow`, `SurpriseRule`, `event_id` / `event_date`, the three flows, `EVENT_FLOWS` |
-| `expectations.py` | `Expectation`, `ExpectationSource`, `Trend12m`, `ClevelandNowcast`, `build_surprises`, `EXPECTATION_SOURCES` |
+| `flows.py` | `EventBatch`, `EventFlow`, `SurpriseRule`, `event_id` / `event_date`, the three flows, `EVENT_FLOWS` |
+| `expectations.py` | `Actual`, `Expectation`, `ExpectationSource`, `Trend12m`, `ClevelandNowcast`, `build_surprises`, `EXPECTATION_SOURCES` |
 | `study.py` | measurement only: prices, observations, raw move, surprise tracking |
 | `__main__.py` | commands, driven by the two lists |
 
-`Actual` and `Expectation` are frozen dataclasses: they are never stored. `known_at` is a naive UTC
+`Actual` and `Expectation` are frozen dataclasses: they are never stored. `Actual` lives in
+`expectations.py`, so the flows import it and nothing imports in a circle. The FRED key is the one
+input every flow and source may need, so it is passed as a string. `known_at` is a naive UTC
 `datetime`, like `event_ts`. Two new modules and no new package, so rule 1 holds.
 
 ## Results

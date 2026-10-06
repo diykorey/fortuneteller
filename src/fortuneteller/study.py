@@ -26,13 +26,21 @@ from dataclasses import dataclass
 from datetime import UTC, date, datetime, time, timedelta
 from statistics import median
 from typing import NamedTuple
-from zoneinfo import ZoneInfo
 
 import duckdb
 
 from . import db, sources, stats
 from .models import Surprise, DailyBar, EventInstance, Observation
-from .sources import FirstRelease, DailyClosingPrice, YahooError
+from .expectations import (
+    EXPECTATION_SOURCES,
+    NOWCAST_BASELINE,
+    TREND_12M,
+    Actual,
+    build_surprises,
+    event_month,
+    previous_month,
+)
+from .sources import NEW_YORK, FirstRelease, DailyClosingPrice, YahooError
 
 
 # Step 1 — the CPI release history from FRED (docs/steps/step-1-releases.md).
@@ -45,7 +53,6 @@ FOMC_EVENT_TYPE = "Central-bank decision"
 UNITED_STATES = "United States"
 # CPI and the jobs report both come out at 08:30 New York time.
 RELEASE_TIME = time(8, 30)
-NEW_YORK = ZoneInfo("America/New_York")
 FIRST_RELEASE = "first_release"
 # Each event type's leading digit in event_id; the rest is the release day, so ids from different
 # types never collide and sort by date within a type.
@@ -633,10 +640,6 @@ class MonthlyChange:
     change: float
 
 
-def previous_month(month: date) -> date:
-    return date(month.year - 1, 12, 1) if month.month == 1 else date(month.year, month.month - 1, 1)
-
-
 def first_published_changes(
     releases: Sequence[FirstRelease], revised_previous: Mapping[date, float]
 ) -> list[MonthlyChange]:
@@ -725,24 +728,6 @@ def load_first_published_changes(api_key: str, series_id: str) -> list[MonthlyCh
 ACTUAL_TOLERANCE_PP = 0.01
 
 
-def nowcast_expectations(
-    points: Iterable[sources.NowcastPoint], release_dates: Mapping[date, date]
-) -> dict[tuple[str, date], float]:
-    """The last nowcast made before each month's release day, keyed by (measure, month).
-
-    A nowcast made on the release day itself may already know the number, so it is never used.
-    """
-    latest: dict[tuple[str, date], tuple[date, float]] = {}
-    for point in points:
-        released = release_dates.get(point.reference_month)
-        if point.kind != sources.NOWCAST or released is None or point.day >= released:
-            continue
-        key = (point.measure, point.reference_month)
-        if key not in latest or point.day > latest[key][0]:
-            latest[key] = (point.day, point.percent)
-    return {key: percent for key, (_day, percent) in latest.items()}
-
-
 def published_actuals(points: Iterable[sources.NowcastPoint]) -> dict[tuple[str, date], float]:
     """Cleveland's record of each month's published change, keyed by (measure, month)."""
     return {
@@ -764,92 +749,6 @@ def actual_mismatches(
     ]
 
 
-# The two expected values, as stored in surprises.baseline.
-TREND_12M = "trend_12m"
-NOWCAST_BASELINE = "nowcast"
-TREND_MONTHS = 12
-
-
-def trend_expectations(changes: Sequence[MonthlyChange]) -> dict[date, float]:
-    """Each month's 12-month trend: the average first-published change over the 12 months before it.
-
-    Only changes published before the month's own release day count, so the trend uses only what
-    was known then: October 2025 payrolls, first published with November, are not in November's.
-    A month gets a trend once a full year of history lies behind it; a month missing inside the
-    year (CPI's October 2025, never published) is skipped, and the rest are averaged.
-    """
-    by_month = {change.reference_month: change for change in changes}
-    first = min(by_month, default=date.max)
-    trend: dict[date, float] = {}
-    for month, change in by_month.items():
-        window = [month]
-        for _ in range(TREND_MONTHS):
-            window.append(previous_month(window[-1]))
-        if window[-1] < first:
-            continue
-        known = [
-            by_month[m].change
-            for m in window[1:]
-            if m in by_month and by_month[m].released < change.released
-        ]
-        if known:
-            trend[month] = sum(known) / len(known)
-    return trend
-
-
-def build_surprises(
-    events: Iterable[EventInstance],
-    changes: Mapping[str, Sequence[MonthlyChange]],
-    points: Iterable[sources.NowcastPoint],
-) -> list[Surprise]:
-    """One ``surprises`` row per stored release, measure and expected value.
-
-    Each change is matched to its stored release by month, and must have come out the same day:
-    core and headline are one BLS release. A change with no stored month is skipped only if it came
-    out with a later month that is stored (October 2025 payrolls, with November).
-    """
-    stored_events_list = list(events)
-    stored = {date.fromisoformat(f"{event.detail}-01"): event for event in stored_events_list}
-    release_days = {release_date(event) for event in stored_events_list}
-    nowcast_points = list(points)
-    rows: list[Surprise] = []
-    for measure, measure_changes in changes.items():
-        released = {change.reference_month: change.released for change in measure_changes}
-        nowcasts = nowcast_expectations(nowcast_points, released)
-        expected_by = {
-            TREND_12M: trend_expectations(measure_changes),
-            NOWCAST_BASELINE: {m: v for (kind, m), v in nowcasts.items() if kind == measure},
-        }
-        for change in measure_changes:
-            month = change.reference_month
-            event = stored.get(month)
-            if event is None:
-                if change.released in release_days:
-                    continue
-                raise ValueError(
-                    f"{measure} {month:%Y-%m}: no release stored for it; "
-                    "run `fortuneteller load-releases` first"
-                )
-            if release_date(event) != change.released:
-                raise ValueError(
-                    f"{measure} {month:%Y-%m}: released {change.released}, "
-                    f"but the stored release is {release_date(event)}"
-                )
-            for baseline, expected in expected_by.items():
-                if month in expected:
-                    rows.append(
-                        Surprise(
-                            event_id=event.event_id,
-                            measure=measure,
-                            baseline=baseline,
-                            actual_mom=change.change,
-                            expected_mom=expected[month],
-                            surprise=change.change - expected[month],
-                        )
-                    )
-    return rows
-
-
 def load_surprises(api_key: str, con: duckdb.DuckDBPyConnection | None = None) -> list[Surprise]:
     """Fetch both CPI measures and the nowcast, and payrolls if jobs reports are stored; then
     rebuild ``surprises`` from them.
@@ -865,24 +764,71 @@ def load_surprises(api_key: str, con: duckdb.DuckDBPyConnection | None = None) -
         measure: load_first_published_changes(api_key, series_id)
         for measure, series_id in MEASURE_SERIES.items()
     }
-    points = sources.parse_nowcasts(sources.fetch_nowcasts())
-    actuals = published_actuals(points)
+    published = published_actuals(sources.parse_nowcasts(sources.fetch_nowcasts()))
     for measure, measure_changes in changes.items():
-        if missed := actual_mismatches(measure_changes, actuals, measure):
+        if missed := actual_mismatches(measure_changes, published, measure):
             months = ", ".join(f"{month:%Y-%m}" for month in missed)
             raise ValueError(
                 f"{measure}: first-published change differs from the Cleveland Fed's by more than "
                 f"{ACTUAL_TOLERANCE_PP} pp in {months}"
             )
-    rows = build_surprises(events, changes, points)
+    actuals = [
+        actual
+        for measure, measure_changes in changes.items()
+        for actual in to_actuals(measure_changes, CPI_EVENT_TYPE, measure, PERCENT, events)
+    ]
     if jobs := stored_events(NFP_EVENT_TYPE, con=con):
-        rows += payroll_surprises(api_key, jobs)
+        actuals += payroll_actuals(api_key, jobs)
+        events += jobs
+    expected = [
+        expectation
+        for source in EXPECTATION_SOURCES
+        for expectation in source.expectations(events, actuals, api_key)
+    ]
+    rows = build_surprises(events, actuals, expected, SURPRISE_RULES)
     db.replace_rows("surprises", rows, "TRUE", con=con)
     return rows
 
 
-def payroll_surprises(api_key: str, jobs: Sequence[EventInstance]) -> list[Surprise]:
-    """Each stored jobs report's payroll surprise against the 12-month trend."""
+# The unit each measure's actual and expected values are in.
+PERCENT = "percent"
+THOUSANDS = "thousands"
+
+
+def to_actuals(
+    changes: Iterable[MonthlyChange],
+    event_type: str,
+    measure: str,
+    unit: str,
+    events: Sequence[EventInstance],
+) -> list[Actual]:
+    """Each change as the ``Actual`` of the stored event that first published it.
+
+    A change must come out on a stored release day: its own month's (a month carried into a later
+    release, October 2025 payrolls, rides on that one's), or it is refused.
+    """
+    stored = {event.event_id for event in events}
+    by_month = {event_month(event): event for event in events}
+    actuals = []
+    for change in changes:
+        key = event_id(event_type, change.released)
+        if key not in stored:
+            month = change.reference_month
+            if (own := by_month.get(month)) is not None:
+                raise ValueError(
+                    f"{measure} {month:%Y-%m}: released {change.released}, "
+                    f"but the stored release is {release_date(own)}"
+                )
+            raise ValueError(
+                f"{measure} {month:%Y-%m}: no release stored for it; "
+                "run `fortuneteller load-releases` first"
+            )
+        actuals.append(Actual(key, measure, change.reference_month, change.change, unit))
+    return actuals
+
+
+def payroll_actuals(api_key: str, jobs: Sequence[EventInstance]) -> list[Actual]:
+    """Each stored jobs report's first-published payroll change, checked against FRED's history."""
     vintages = sources.parse_vintages(
         sources.fetch_vintages(api_key, sources.NFP_SERIES_ID), sources.NFP_SERIES_ID
     )
@@ -891,9 +837,9 @@ def payroll_surprises(api_key: str, jobs: Sequence[EventInstance]) -> list[Surpr
         raise ValueError(
             f"{PAYROLLS}: the stored first release differs from FRED's revision history in {months}"
         )
-    since = min(date.fromisoformat(f"{event.detail}-01") for event in jobs)
+    since = min(event_month(event) for event in jobs)
     changes = first_published_payroll_changes(vintages, since)
-    return build_surprises(jobs, {PAYROLLS: changes}, [])
+    return to_actuals(changes, NFP_EVENT_TYPE, PAYROLLS, THOUSANDS, jobs)
 
 
 # Step 4's rule for "tracks", fixed before any move was measured; see docs/steps/step-4-surprise.md.
