@@ -129,7 +129,43 @@ def store_releases(
 # Fed decisions (docs/steps/rung-1-more-events.md). From 1994, the first decision announced the day
 # it was made; the year pages run to 2020, the current calendar from 2021.
 FED_HISTORY_YEARS = range(1994, 2021)
+# When each decision's statement came out, New York time: 14:15 until the first at 14:00, on
+# 2013-03-20, and then 14:00. The 1994-2006 times come from Gürkaynak, Sack & Swanson's
+# appendix (2005) and Swanson's account of 14:15 through March 2011; 2006-2015 from the minutes
+# ("to be released at"); since 2016 from the statements themselves.
+FOMC_TIME_UNTIL_2013 = time(14, 15)
 FOMC_TIME = time(14, 0)
+FOMC_TIME_FROM = date(2013, 3, 20)
+FOMC_ANNOUNCED_AT = {
+    date(1994, 2, 4): time(11, 5),
+    date(1994, 4, 18): time(10, 6),
+    date(1994, 8, 16): time(13, 18),
+    date(1996, 3, 26): time(11, 39),
+    date(1998, 10, 15): time(15, 15),
+    date(2001, 1, 3): time(13, 13),
+    date(2001, 4, 18): time(10, 54),
+    date(2001, 9, 17): time(8, 20),
+    # The 2007-08 calls were announced in the morning; the hour is not published. The call on
+    # 2007-08-10 began at 08:45; the cut of 2007-08-17 came "before the market opens".
+    date(2007, 8, 10): time(9, 15),
+    date(2007, 8, 17): time(8, 15),
+    date(2008, 1, 22): time(8, 30),
+    date(2008, 3, 11): time(8, 30),
+    date(2008, 10, 8): time(7, 0),
+    date(2010, 5, 9): time(21, 15),
+    # 2011-2012 statements on press-conference days.
+    date(2011, 4, 27): time(12, 30),
+    date(2011, 6, 22): time(12, 30),
+    date(2011, 11, 2): time(12, 30),
+    date(2012, 1, 25): time(12, 30),
+    date(2012, 4, 25): time(12, 30),
+    date(2012, 6, 20): time(12, 30),
+    date(2012, 9, 13): time(12, 30),
+    date(2012, 12, 12): time(12, 30),
+    date(2019, 10, 11): time(11, 0),
+    date(2020, 3, 3): time(10, 0),
+    date(2020, 3, 15): time(17, 0),
+}
 FED_CALENDAR = "fed_calendar"
 # The target rate the Fed sets: one rate until 2008-12-15, the top of a range from 2008-12-16.
 TARGET_RATE_SERIES = (
@@ -140,9 +176,16 @@ TARGET_RATE_SERIES = (
 TARGET_EFFECT_DAYS = 3
 
 
+def fomc_announced_at(day: date) -> time:
+    """The New York time the decision of ``day`` was announced."""
+    if day in FOMC_ANNOUNCED_AT:
+        return FOMC_ANNOUNCED_AT[day]
+    return FOMC_TIME if day >= FOMC_TIME_FROM else FOMC_TIME_UNTIL_2013
+
+
 def fomc_event_instance(decision: sources.FomcDecision) -> EventInstance:
-    """Map one Fed decision to its ``event_instances`` row, at 14:00 New York on its day."""
-    announced = datetime.combine(decision.day, FOMC_TIME, tzinfo=NEW_YORK)
+    """Map one Fed decision to its ``event_instances`` row, at the time it was announced."""
+    announced = datetime.combine(decision.day, fomc_announced_at(decision.day), tzinfo=NEW_YORK)
     return EventInstance(
         event_id=event_id(FOMC_EVENT_TYPE, decision.day),
         event_type=FOMC_EVENT_TYPE,
@@ -210,16 +253,19 @@ def store_fomc_decisions(
 class PriceSeries(NamedTuple):
     ticker: str
     unit: str
+    close: time
 
 
 # The five MVP instruments, keyed by the exact symbol in data/seed/instruments.csv, with the Yahoo
-# ticker each is read from and the unit its move is measured in: pct for prices, bps for the yield.
+# ticker each is read from, the unit its move is measured in (pct for prices, bps for the yield)
+# and the New York time of its daily close: the intraday price Yahoo's close matches, measured on
+# 2026-09 data. Gold's is the COMEX settlement.
 MVP_PRICE_SERIES = {
-    "SPY / ES": PriceSeries("^GSPC", "pct"),
-    "UST10Y / ZN": PriceSeries("^TNX", "bps"),
-    "DXY": PriceSeries("DX-Y.NYB", "pct"),
-    "GC / XAU": PriceSeries("GC=F", "pct"),
-    "VIX": PriceSeries("^VIX", "pct"),
+    "SPY / ES": PriceSeries("^GSPC", "pct", time(16, 0)),
+    "UST10Y / ZN": PriceSeries("^TNX", "bps", time(15, 0)),
+    "DXY": PriceSeries("DX-Y.NYB", "pct", time(15, 0)),
+    "GC / XAU": PriceSeries("GC=F", "pct", time(13, 30)),
+    "VIX": PriceSeries("^VIX", "pct", time(16, 15)),
 }
 
 
@@ -248,7 +294,7 @@ def load_daily_bars(con: duckdb.DuckDBPyConnection | None = None) -> dict[str, i
     as it was rather than half-refreshed.
     """
     fetched: dict[str, tuple[str, list[DailyClosingPrice]]] = {}
-    for instrument, (ticker, _unit) in MVP_PRICE_SERIES.items():
+    for instrument, (ticker, _unit, _close) in MVP_PRICE_SERIES.items():
         payload = sources.fetch_daily_bars(ticker)
         try:
             closes = sources.parse_daily_bars(payload)
@@ -332,6 +378,16 @@ def release_date(event: EventInstance) -> date:
     return event.event_ts.replace(tzinfo=UTC).astimezone(NEW_YORK).date()
 
 
+def first_reaction_day(event: EventInstance, close: time) -> date:
+    """The first day whose close can carry the event: the next day if it came at or after the close.
+
+    Passed to ``closing_price_before_after``, this pairs the last close before the event with the
+    first after it: a Fed decision at 14:00 reacts in gold, which closes at 13:30, the next day.
+    """
+    announced = event.event_ts.replace(tzinfo=UTC).astimezone(NEW_YORK)
+    return announced.date() + timedelta(days=1 if announced.time() >= close else 0)
+
+
 def stored_closes(
     instrument: str, con: duckdb.DuckDBPyConnection | None = None
 ) -> list[DailyClosingPrice]:
@@ -359,11 +415,11 @@ def build_observations(
     release_counts: dict[str, dict[str, ReleaseCounts]] = {
         event_type: {} for event_type, typed in events.items() if typed
     }
-    for instrument, (_ticker, unit) in MVP_PRICE_SERIES.items():
+    for instrument, (_ticker, unit, close) in MVP_PRICE_SERIES.items():
         closes = stored_closes(instrument, con=con)
         for event_type, by_instrument in release_counts.items():
             counts = by_instrument[instrument] = ReleaseCounts()
-            observations += _observe(events[event_type], instrument, unit, closes, counts)
+            observations += _observe(events[event_type], instrument, unit, close, closes, counts)
     return observations, release_counts
 
 
@@ -371,12 +427,13 @@ def _observe(
     events: Sequence[EventInstance],
     instrument: str,
     unit: str,
+    close: time,
     closes: Sequence[DailyClosingPrice],
     counts: ReleaseCounts,
 ) -> list[Observation]:
     observations: list[Observation] = []
     for event in events:
-        pair = closing_price_before_after(closes, release_date(event))
+        pair = closing_price_before_after(closes, first_reaction_day(event, close))
         if pair == BEFORE_HISTORY:
             counts.skipped_before_history += 1
             continue
@@ -443,11 +500,14 @@ def daily_moves(closes: Sequence[DailyClosingPrice], unit: str) -> dict[date, fl
     }
 
 
-def reaction_days(closes: Sequence[DailyClosingPrice], release_dates: Iterable[date]) -> set[date]:
-    """The days whose move is an event's reaction: the close step 2 pairs each event with."""
+def reaction_days(closes: Sequence[DailyClosingPrice], first_days: Iterable[date]) -> set[date]:
+    """The days whose move is an event's reaction: the close step 2 pairs each event with.
+
+    ``first_days`` are the events' ``first_reaction_day`` for this instrument.
+    """
     days = set()
-    for release_date in release_dates:
-        pair = closing_price_before_after(closes, release_date)
+    for first_day in first_days:
+        pair = closing_price_before_after(closes, first_day)
         if not isinstance(pair, str):
             days.add(pair[1].day)
     return days
@@ -520,11 +580,11 @@ def measure_raw_moves(
     con: duckdb.DuckDBPyConnection | None = None, event_type: str = CPI_EVENT_TYPE
 ) -> dict[str, RawMove]:
     """Each MVP instrument's moves on the event's days against its moves on all other days."""
-    release_dates = [release_date(event) for event in stored_events(event_type, con=con)]
+    events = stored_events(event_type, con=con)
     results: dict[str, RawMove] = {}
-    for instrument, (_ticker, unit) in MVP_PRICE_SERIES.items():
+    for instrument, (_ticker, unit, close) in MVP_PRICE_SERIES.items():
         closes = stored_closes(instrument, con=con)
-        days = reaction_days(closes, release_dates)
+        days = reaction_days(closes, [first_reaction_day(event, close) for event in events])
         by_era: dict[str, tuple[list[float], list[float]]] = {label: ([], []) for label, _ in ERAS}
         for day, move in daily_moves(closes, unit).items():
             cpi, other = by_era[era_of(day)]

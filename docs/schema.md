@@ -237,7 +237,7 @@ change.
 | --- | --- | --- | --- |
 | `event_id` | BIGINT, **PK** | Stable id: the event type's code, then the release day as `YYYYMMDD` — CPI on 2022-09-13 is `120220913` (`study.event_id`). Codes: `1` CPI, `2` NFP, `3` US central-bank decision. Unique across event types, and sorted by date within one. | Yes |
 | `event_type` | TEXT | An `event_types.event_type`: `CPI / inflation surprise`, `NFP / labor data` or `Central-bank decision`. | Yes |
-| `event_ts` | TIMESTAMP | When the market learned of the event: for CPI and NFP, the release day at 08:30 New York time; for a Fed decision, its day at 14:00 New York time, for every decision ([Precision](precision.md)). Stored as **naive UTC**, because DuckDB would shift a time-zone-aware value into the session's time zone. | Yes |
+| `event_ts` | TIMESTAMP | When the market learned of the event: for CPI and NFP, the release day at 08:30 New York time; for a Fed decision, the time its statement came out: 14:15 New York until 2013-03-20 and 14:00 since, with the exceptions listed in `study.FOMC_ANNOUNCED_AT` (unscheduled decisions, and 12:30 on the 2011–2012 press-conference days); sources in [rung 1](steps/rung-1-more-events.md). Stored as **naive UTC**, because DuckDB would shift a time-zone-aware value into the session's time zone. | Yes |
 | `country` | TEXT | A `countries.country`. Today always `United States`. | Yes |
 | `detail` | TEXT | What the event is about. For CPI and NFP, the reference month as `YYYY-MM`, i.e. the month measured: about six weeks before `event_ts` for CPI, about one for NFP. When a release day first publishes two months (NFP, October and November 2025), the row is the newer month. For a Fed decision, `scheduled meeting` or `unscheduled`. | Yes |
 | `scheduled` | BOOLEAN | `true` if the date was known in advance (a data release, a scheduled Fed meeting), `false` if not (an emergency Fed cut, a war, a hack). | Yes |
@@ -329,9 +329,10 @@ about 2,700 rows.
 
 One row per event × instrument: how that instrument moved around that event. Built from
 `daily_bars` and `event_instances` by `study.store_observations`
-([step 2](steps/step-2-prices.md)): for each stored release of every event type (CPI, NFP, Fed) and each of the five instruments, the close
-of the last trading day before the release and the move to the close of the first trading day on or
-after it. No row when either close is more than 4 calendar days from the release, or the release
+([step 2](steps/step-2-prices.md)): for each stored release of every event type (CPI, NFP, Fed) and each of the five instruments, the last close before the event and the move to the first close after it. Each instrument has its
+own close time (`study.MVP_PRICE_SERIES`): an event at or after it, such as a 14:00 Fed decision for
+gold, which settles at 13:30, reacts at the next day's close (`study.first_reaction_day`). CPI and
+NFP at 08:30 come before every close. No row when either close is more than 4 calendar days from the release, or the release
 predates the instrument's history. Every run rebuilds the whole table in one transaction — deletes them and inserts
 what it measured — so the table always matches that run, with no rows left from earlier rules or data.
 A run stops with an error if an instrument has no `daily_bars` at all, rather than counting every
@@ -350,7 +351,7 @@ daily prices, so the intraday ones stay empty.
 | --- | --- | --- | --- |
 | `event_id` | BIGINT, **PK** | The `event_instances.event_id` it reacts to (a foreign key). | Yes |
 | `instrument` | TEXT, **PK** | An `instruments.symbol`. One row per event and instrument. | Yes |
-| `px_t0` | DOUBLE | Price (or yield) just before the event: the close of the last trading day before the release date, the starting point the returns are measured from. | Yes |
+| `px_t0` | DOUBLE | Price (or yield) just before the event: the last close before the event, the starting point the returns are measured from. | Yes |
 | `ret_unit` | TEXT | Unit of the `ret_*` columns: `pct` (relative change, `0.01` = 1%) for prices, `bps` (basis points, `(yield₁ − yield₀) × 100`) for yields. Values in different units must never be averaged together. | Yes |
 | `ret_5m` | DOUBLE | Move over 5 minutes after the event. Needs intraday data. | No; not in the MVP |
 | `ret_1h` | DOUBLE | Move over 1 hour after the event. Needs intraday data. | No; not in the MVP |

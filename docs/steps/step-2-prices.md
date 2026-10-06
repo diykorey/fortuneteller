@@ -34,7 +34,8 @@ closes that day. So the reaction is the close of the last trading day **before**
 (`t0`) to the close of the first trading day **on or after** it (`t1`). "On or after" matters: CPI
 has been released on a Sunday (1992-12-13), and then the first reaction is Monday's close. Opening
 prices are no use here — Yahoo's history before the 1990s records only closes, with the open copied
-from the close.
+from the close. An event that comes after an instrument's close reacts at its next close instead;
+that only happens to Fed decisions ([rung 1](rung-1-more-events.md), sub-step 5).
 
 **Which calendar date a bar belongs to.** Yahoo stamps each daily bar with a moment in time, not a
 date, and the moment differs per ticker: 13:30 UTC for the S&P 500, 04:00 UTC (midnight New York)

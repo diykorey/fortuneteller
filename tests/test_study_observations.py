@@ -216,8 +216,8 @@ def test_instrument_without_any_prices_fails_loudly() -> None:
         store_observations(con=con)
 
 
-def test_release_date_is_the_new_york_calendar_date() -> None:
-    # given the hot print stamped 22:00 New York time, already 2022-09-14 in UTC
+def test_a_release_after_the_close_is_measured_from_that_close() -> None:
+    # given the hot print stamped 22:00 New York time on 09-13, after the S&P 500 closed
     con = _store()
     late = to_event_instance(HOT_PRINT, CPI_EVENT_TYPE).model_copy(
         update={"event_ts": datetime(2022, 9, 14, 2, 0)}
@@ -227,8 +227,8 @@ def test_release_date_is_the_new_york_calendar_date() -> None:
     # when the observations are built
     store_observations(con=con)
 
-    # then the move is measured around New York's 09-13, not UTC's 09-14
-    assert _spx_row(con)["px_t0"] == pytest.approx(4110.41)
+    # then the move starts at 09-13's close, the last one before the print, not 09-12's
+    assert _spx_row(con)["px_t0"] == pytest.approx(3932.69, abs=0.01)
 
 
 def test_rebuilding_removes_a_row_that_no_longer_applies() -> None:

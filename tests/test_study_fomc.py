@@ -1,14 +1,21 @@
 """Fed decisions: dates from the Fed's meeting calendars, checked against target-rate changes."""
 
 import json
-from datetime import date, datetime
+from datetime import date, datetime, time
 from pathlib import Path
 
 import duckdb
 import pytest
 
 from fortuneteller import db, sources, study
-from fortuneteller.sources import FedError, FomcDecision, parse_fomc_calendar, parse_fomc_history
+from fortuneteller.models import EventInstance
+from fortuneteller.sources import (
+    DailyClosingPrice,
+    FedError,
+    FomcDecision,
+    parse_fomc_calendar,
+    parse_fomc_history,
+)
 
 DATA = Path(__file__).parent / "data"
 
@@ -120,20 +127,40 @@ def test_a_target_change_without_a_decision_is_named() -> None:
     assert unmatched == [date(2022, 3, 17)]
 
 
-def test_a_decision_becomes_an_event_at_2_pm_new_york() -> None:
-    # given the unscheduled cut announced on Sunday 2020-03-15
+def test_a_decision_becomes_an_event_at_its_announced_time() -> None:
+    # given the unscheduled cut announced at 17:00 New York on Sunday 2020-03-15
     decision = FomcDecision(date(2020, 3, 15), scheduled=False)
 
     # when it is mapped
     event = study.fomc_event_instance(decision)
 
-    # then it is a US central-bank decision keyed 3 + its day, at 14:00 New York, unscheduled
+    # then it is a US central-bank decision keyed 3 + its day, at 21:00 UTC, unscheduled
     assert event.event_id == 3_2020_03_15
     assert event.event_type == "Central-bank decision"
     assert event.country == "United States"
-    assert event.event_ts == datetime(2020, 3, 15, 18, 0)
+    assert event.event_ts == datetime(2020, 3, 15, 21, 0)
     assert not event.scheduled
     assert event.actual is None
+
+
+@pytest.mark.parametrize(
+    ("day", "announced"),
+    [
+        (date(2008, 12, 16), time(14, 15)),
+        (date(2012, 6, 20), time(12, 30)),
+        (date(2013, 1, 30), time(14, 15)),
+        (date(2013, 3, 20), time(14, 0)),
+        (date(2001, 9, 17), time(8, 20)),
+    ],
+)
+def test_a_scheduled_statement_came_at_14_15_until_march_2013(day: date, announced: time) -> None:
+    # given a decision day: a scheduled one before or after 2013-03-20, or a listed exception
+
+    # when its announcement time is looked up
+    looked_up = study.fomc_announced_at(day)
+
+    # then it is the era's time, or the exception's own
+    assert looked_up == announced
 
 
 def test_loading_refuses_when_a_target_change_has_no_decision(
@@ -171,3 +198,46 @@ def test_stored_decisions_are_measured_like_any_other_event() -> None:
     # then it is one event of its type, released the day it was announced
     events = study.stored_events(study.FOMC_EVENT_TYPE, con=con)
     assert [study.release_date(e) for e in events] == [date(2020, 3, 15)]
+
+
+GOLD_CLOSE = study.MVP_PRICE_SERIES["GC / XAU"].close
+SPX_CLOSE = study.MVP_PRICE_SERIES["SPY / ES"].close
+
+
+def _event_at(utc: datetime) -> EventInstance:
+    decision = study.fomc_event_instance(FomcDecision(date(2020, 1, 29), scheduled=True))
+    return decision.model_copy(update={"event_ts": utc})
+
+
+def test_a_decision_after_gold_settles_reacts_in_gold_the_next_day() -> None:
+    # given a decision at 14:00 New York on 2020-01-29
+    event = _event_at(datetime(2020, 1, 29, 19, 0))
+
+    # when its first reaction day is found for gold (13:30) and the S&P 500 (16:00)
+    gold, spx = (study.first_reaction_day(event, close) for close in (GOLD_CLOSE, SPX_CLOSE))
+
+    # then gold's is the next day, the S&P 500's the same day
+    assert (gold, spx) == (date(2020, 1, 30), date(2020, 1, 29))
+
+
+def test_a_winter_release_at_8_30_reacts_in_gold_the_same_day() -> None:
+    # given a release at 08:30 New York in January: 13:30 UTC, gold's close as a UTC clock reads it
+    event = _event_at(datetime(2020, 1, 14, 13, 30))
+
+    # when its first reaction day is found for gold
+    first = study.first_reaction_day(event, GOLD_CLOSE)
+
+    # then the time is compared in New York, so it is the same day
+    assert first == date(2020, 1, 14)
+
+
+def test_a_sunday_evening_decision_pairs_fridays_close_with_mondays() -> None:
+    # given the cut announced at 17:00 New York on Sunday 2020-03-15, and closes either side
+    event = study.fomc_event_instance(FomcDecision(date(2020, 3, 15), scheduled=False))
+    closes = [DailyClosingPrice(date(2020, 3, 13), 1.0), DailyClosingPrice(date(2020, 3, 16), 0.9)]
+
+    # when the S&P 500's closes are paired around it
+    pair = study.closing_price_before_after(closes, study.first_reaction_day(event, SPX_CLOSE))
+
+    # then the move runs from Friday's close to Monday's
+    assert pair == (closes[0], closes[1])

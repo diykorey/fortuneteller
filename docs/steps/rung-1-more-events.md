@@ -50,7 +50,7 @@ standard source, are paid. So the Fed gets step 3 only; its surprise is in
 | 2 | ~~NFP releases into `event_instances` (`NFP / labor data`, 08:30 New York)~~ **done** | Weekend guard; dates checked against BLS's Employment Situation archive from 1994; 2026-10 count recorded |
 | 3 | ~~`raw-move` takes an event (`cpi`, `nfp`, `fomc`)~~ **done** | NFP's step 3 verdict printed |
 | 4 | ~~FOMC decisions into `event_instances` (`Central-bank decision`, `United States`, 14:00 New York; unscheduled ones `scheduled = false`)~~ **done** | Every target-rate change since 1994 falls on a listed decision; FOMC's step 3 verdict printed |
-| 5 | Reaction close by event time: an event after an instrument's daily close reacts at its next close; each unscheduled Fed decision at its announced time | Gold's Fed-day move measured after the decision; CPI and NFP output unchanged |
+| 5 | ~~Reaction close by event time: an event after an instrument's daily close reacts at its next close; each Fed decision at its announced time~~ **done** | Gold's Fed-day move measured after the decision; CPI and NFP output unchanged |
 | 6 | Clean baseline: "ordinary days" exclude every stored event's reaction day | CPI's step 3 re-run; old and new verdicts recorded side by side |
 | 7 | NFP surprise: first-published monthly payroll change against its 12-month trend, into `surprises`; `surprise` takes an event | August 2022 reads +315k; NFP's step 4 verdict printed |
 | 8 | Results here, and a rung 1 section in [`mvp-results.md`](../mvp-results.md) | Says, per event, whether it moves the five markets and (NFP) whether the move follows the surprise |
@@ -131,6 +131,28 @@ on the day and 1.80 on the next. Gold's Fed verdict from sub-step 4 (*doesn't*, 
 therefore not a finding; sub-step 5 fixes the pairing. The dollar's next-day ratio (1.46, against
 1.15 on the day) suggests its Yahoo close time is worth checking in the same sub-step; the others
 close after 14:00.
+
+**Close timing, 2026-10-06.** Each instrument's close is the intraday time its Yahoo close
+matches (September 2026 data): S&P 500 16:00, yield and dollar 15:00, gold 13:30, VIX 16:15. Each
+Fed decision carries the time its statement came out:
+
+- 1994–2004: Gürkaynak, Sack & Swanson's appendix (2005).
+- Mid-2006–2015: the minutes ("to be released at").
+- Since 2016: the statements themselves.
+- 2008-03-11: the 2008-03-10 call ("8:30 a.m. … tomorrow").
+
+The statements came at 14:15 until 2013-01-30 and at 14:00 from 2013-03-20, with 25 exceptions in
+`study.FOMC_ANNOUNCED_AT`. Those include the 12:30 statements on the 2011–2012 press-conference
+days, and 1998-10-15 at 15:15, after the yield's and the dollar's close.
+
+Gold's Fed ratio is now 1.79 (*moves*, p 0.0001), up from 0.78. CPI, NFP and `surprise` are
+unchanged: `main`'s code gives the same output on the same database.
+
+Two cells remain open. In 1990–2007 the yield's and the dollar's next-day ratios beat their Fed-day
+ratios; see [Precision](../precision.md).
+
+Five of the 14 unscheduled decisions are liquidity or implementation statements, not rate moves:
+2007-08-10, 2007-08-17, 2008-03-11, 2010-05-09 and 2019-10-11.
 
 **Code.** As before: fetching and parsing in `sources.py`, measurement in `study.py`, statistics
 in `stats.py`, commands in `__main__.py`. Event-specific values (series ID, release time, expected

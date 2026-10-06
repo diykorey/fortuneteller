@@ -8,12 +8,11 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Rung 1, sub-step 4 — `load-releases` also loads the Fed's rate decisions from its meeting
-calendars: 275 since 1994-02-04, 14 unscheduled, every one of the 92 target-rate changes on a
-decision. `raw-move --event fomc` on 2026-10-05: **Fed days move the S&P 500 (1.28) and VIX (1.22)**;
-the 10-year yield (1.14) and the dollar (1.20) are *unclear*. Gold's *doesn't* (0.78) is not a
-finding: gold settles at 13:30, before the 14:00 decision (next-day ratio 1.80). CPI and NFP output
-unchanged. *(PR #103.)*
+Rung 1, sub-step 5 — each event reacts at the first close after it: every instrument has its New
+York close time (gold 13:30, yield and dollar 15:00, S&P 500 16:00, VIX 16:15), and every Fed
+decision the time its statement came out (14:15 until 2013, 14:00 since, 25 sourced exceptions).
+Gold's Fed ratio goes from 0.78 to **1.79, moves**. CPI, NFP and `surprise` unchanged. *(PR
+#104.)*
 
 ## In progress
 
@@ -21,13 +20,14 @@ Rung 1 — **More events**: [rung-1-more-events.md](steps/rung-1-more-events.md)
 
 ## Next
 
-Rung 1, sub-step 5 — reaction close by event time: an event after an instrument's daily close
-reacts at its next close (gold on Fed days), and unscheduled Fed decisions at their announced times.
+Rung 1, sub-step 6 — clean baseline: "ordinary days" exclude every stored event's reaction day;
+CPI's step 3 re-run, old and new verdicts side by side.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-06 | Rung 1.5: reaction close by event time; gold moves on Fed days (1.79) | PR #104 |
 | 2026-10-05 | Rung 1.4: Fed decisions since 1994; S&P 500 and VIX move; gold's close precedes them | PR #103 |
 | 2026-10-05 | Rung 1.3: every event's moves; `raw-move --event` — NFP moves all five | PR #102 |
 | 2026-10-05 | Rung 1.2: NFP releases; dates checked against BLS since 1994 | PR #101 |
