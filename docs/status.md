@@ -11,7 +11,7 @@ Where the work is and what comes next. Two rules keep it current:
 Rung 1, sub-step 6 — clean baseline: `raw-move`'s ordinary days now exclude every stored event's
 reaction day (CPI, NFP, Fed). No CPI or NFP verdict changed; every ratio rose by 0.01–0.08 (CPI's
 UST 10Y 1.25 → 1.33). The Fed's dollar moved from *unclear* to *moves*, at p 0.0096 against the
-0.01 bar. *(PR pending.)*
+0.01 bar. *(PR #105.)*
 
 ## In progress
 
@@ -26,7 +26,7 @@ trend, into `surprises`; `surprise` takes an event; NFP's step 4 verdict.
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-06 | Rung 1.6: clean baseline; CPI and NFP verdicts hold, Fed's dollar just moves | PR pending |
+| 2026-10-06 | Rung 1.6: clean baseline; CPI and NFP verdicts hold, Fed's dollar just moves | PR #105 |
 | 2026-10-06 | Rung 1.5: reaction close by event time; gold moves on Fed days (1.79) | PR #104 |
 | 2026-10-05 | Rung 1.4: Fed decisions since 1994; S&P 500 and VIX move; gold's close precedes them | PR #103 |
 | 2026-10-05 | Rung 1.3: every event's moves; `raw-move --event` — NFP moves all five | PR #102 |
