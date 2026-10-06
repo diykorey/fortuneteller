@@ -239,3 +239,8 @@ scatter is too wide to use" — a rank correlation of 0.17 is that case; an intr
 08:30 would remove the rest of the day's news. *Hit-rate cut-off*: the since-2013 hit rates rest
 on fewer than 50 releases. Neither is built now: both need paid data or a decision about what
 comes next, which [`mvp-results.md`](../mvp-results.md) sets out.
+
+**Rung 1 (sub-step 7, 2026-10-06).** The same measurement runs on the jobs report:
+`surprise --event nfp`, results in [rung 1](rung-1-more-events.md). The 12-month trend now counts
+only months published before the release day; for CPI that changes nothing, and `surprise` prints
+the same numbers as before.

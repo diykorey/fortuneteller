@@ -76,9 +76,9 @@ uv run fortuneteller seed        # load the seed CSVs
 uv run fortuneteller query-demo  # a sample effect-size lookup
 uv run fortuneteller load-releases  # CPI and NFP from FRED, Fed decisions from the Fed (needs FT_FRED_API_KEY)
 uv run fortuneteller load-prices    # daily closes from Yahoo + the move around each release
-uv run fortuneteller load-surprises # each release's CPI surprise, FRED + Cleveland Fed (about 45 s)
+uv run fortuneteller load-surprises # each CPI and jobs-report surprise, FRED + Cleveland Fed (about 45 s)
 uv run fortuneteller raw-move       # do CPI days move more than other days? --event nfp | fomc (about 15 s)
-uv run fortuneteller surprise       # does each move follow the CPI surprise? (about 20 s)
+uv run fortuneteller surprise       # does each move follow the CPI surprise? --event nfp for jobs (about 20 s)
 ```
 
 There is **no prediction code yet**: the MVP measures the past; nothing forecasts a release or warns.

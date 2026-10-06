@@ -619,15 +619,18 @@ def measure_raw_moves(
 
 # Core decides step 4's verdicts; headline is context. Each is read from its own FRED series.
 MEASURE_SERIES = {sources.CORE: sources.CORE_CPI_SERIES_ID, sources.HEADLINE: sources.CPI_SERIES_ID}
+# The jobs report's measure (rung 1): the monthly change in non-farm payrolls, in thousands.
+PAYROLLS = "payrolls"
 
 
 @dataclass(frozen=True)
 class MonthlyChange:
-    """One month's CPI change as first published, in percent (``0.4`` means +0.4%)."""
+    """One month's change as first published: CPI in percent (``0.4`` is +0.4%), payrolls in
+    thousands of jobs."""
 
     reference_month: date
     released: date
-    percent: float
+    change: float
 
 
 def previous_month(month: date) -> date:
@@ -658,6 +661,46 @@ def first_published_changes(
             previous = levels[previous_month(month)]
         changes.append(MonthlyChange(month, release.released, (release.value / previous - 1) * 100))
     return changes
+
+
+def first_published_payroll_changes(
+    vintages: Mapping[date, Mapping[date, float]], since: date
+) -> list[MonthlyChange]:
+    """Each month's payroll change as BLS first published it, from ``since`` on, oldest first.
+
+    Payrolls revise the two months before in every release, so the change is the month's first
+    level minus the previous month's level as it stood that same day, revised or not.
+    """
+    changes: list[MonthlyChange] = []
+    for month in sorted(vintages):
+        levels = vintages[month]
+        earlier = vintages.get(previous_month(month), {})
+        if month < since or not levels:
+            continue
+        released = min(levels)
+        known = [day for day in earlier if day <= released]
+        if not known:
+            continue
+        changes.append(MonthlyChange(month, released, levels[released] - earlier[max(known)]))
+    return changes
+
+
+def payroll_level_mismatches(
+    vintages: Mapping[date, Mapping[date, float]], events: Iterable[EventInstance]
+) -> list[date]:
+    """Stored jobs reports whose first-published level or day differs from FRED's revision history.
+
+    The stored ``actual`` comes from FRED's first-release view, the vintages from its
+    new-and-revised view; a release on which the two disagree would give a wrong change.
+    """
+    missed = []
+    for event in events:
+        month = date.fromisoformat(f"{event.detail}-01")
+        levels = vintages.get(month, {})
+        first = min(levels, default=None)
+        if first != release_date(event) or first is None or levels[first] != event.actual:
+            missed.append(month)
+    return missed
 
 
 def load_first_published_changes(api_key: str, series_id: str) -> list[MonthlyChange]:
@@ -717,7 +760,7 @@ def actual_mismatches(
         change.reference_month
         for change in changes
         if (measure, change.reference_month) in actuals
-        and abs(change.percent - actuals[(measure, change.reference_month)]) > ACTUAL_TOLERANCE_PP
+        and abs(change.change - actuals[(measure, change.reference_month)]) > ACTUAL_TOLERANCE_PP
     ]
 
 
@@ -730,21 +773,27 @@ TREND_MONTHS = 12
 def trend_expectations(changes: Sequence[MonthlyChange]) -> dict[date, float]:
     """Each month's 12-month trend: the average first-published change over the 12 months before it.
 
-    Every one of those was published before the month's own release, so the trend uses only what
-    was known then. A month gets a trend once a full year of history lies behind it; a month never
-    published inside the year (October 2025) is skipped, and the rest are averaged.
+    Only changes published before the month's own release day count, so the trend uses only what
+    was known then: October 2025 payrolls, first published with November, are not in November's.
+    A month gets a trend once a full year of history lies behind it; a month missing inside the
+    year (CPI's October 2025, never published) is skipped, and the rest are averaged.
     """
-    percents = {change.reference_month: change.percent for change in changes}
-    first = min(percents, default=date.max)
+    by_month = {change.reference_month: change for change in changes}
+    first = min(by_month, default=date.max)
     trend: dict[date, float] = {}
-    for month in percents:
+    for month, change in by_month.items():
         window = [month]
         for _ in range(TREND_MONTHS):
             window.append(previous_month(window[-1]))
         if window[-1] < first:
             continue
-        known = [percents[m] for m in window[1:] if m in percents]
-        trend[month] = sum(known) / len(known)
+        known = [
+            by_month[m].change
+            for m in window[1:]
+            if m in by_month and by_month[m].released < change.released
+        ]
+        if known:
+            trend[month] = sum(known) / len(known)
     return trend
 
 
@@ -756,9 +805,12 @@ def build_surprises(
     """One ``surprises`` row per stored release, measure and expected value.
 
     Each change is matched to its stored release by month, and must have come out the same day:
-    core and headline are one BLS release.
+    core and headline are one BLS release. A change with no stored month is skipped only if it came
+    out with a later month that is stored (October 2025 payrolls, with November).
     """
-    stored = {date.fromisoformat(f"{event.detail}-01"): event for event in events}
+    stored_events_list = list(events)
+    stored = {date.fromisoformat(f"{event.detail}-01"): event for event in stored_events_list}
+    release_days = {release_date(event) for event in stored_events_list}
     nowcast_points = list(points)
     rows: list[Surprise] = []
     for measure, measure_changes in changes.items():
@@ -772,8 +824,10 @@ def build_surprises(
             month = change.reference_month
             event = stored.get(month)
             if event is None:
+                if change.released in release_days:
+                    continue
                 raise ValueError(
-                    f"{measure} {month:%Y-%m}: no CPI release stored for it; "
+                    f"{measure} {month:%Y-%m}: no release stored for it; "
                     "run `fortuneteller load-releases` first"
                 )
             if release_date(event) != change.released:
@@ -788,19 +842,21 @@ def build_surprises(
                             event_id=event.event_id,
                             measure=measure,
                             baseline=baseline,
-                            actual_mom=change.percent,
+                            actual_mom=change.change,
                             expected_mom=expected[month],
-                            surprise=change.percent - expected[month],
+                            surprise=change.change - expected[month],
                         )
                     )
     return rows
 
 
 def load_surprises(api_key: str, con: duckdb.DuckDBPyConnection | None = None) -> list[Surprise]:
-    """Fetch both CPI measures and the nowcast, then rebuild ``surprises`` from them.
+    """Fetch both CPI measures and the nowcast, and payrolls if jobs reports are stored; then
+    rebuild ``surprises`` from them.
 
-    Nothing is stored unless every first-published change matches the Cleveland Fed's published
-    one within ``ACTUAL_TOLERANCE_PP``: a wrong actual would make every surprise wrong.
+    Nothing is stored unless every first-published CPI change matches the Cleveland Fed's published
+    one within ``ACTUAL_TOLERANCE_PP``, and every stored jobs report matches FRED's revision
+    history: a wrong actual would make every surprise wrong.
     """
     events = stored_events(CPI_EVENT_TYPE, con=con)
     if not events:
@@ -819,8 +875,25 @@ def load_surprises(api_key: str, con: duckdb.DuckDBPyConnection | None = None) -
                 f"{ACTUAL_TOLERANCE_PP} pp in {months}"
             )
     rows = build_surprises(events, changes, points)
+    if jobs := stored_events(NFP_EVENT_TYPE, con=con):
+        rows += payroll_surprises(api_key, jobs)
     db.replace_rows("surprises", rows, "TRUE", con=con)
     return rows
+
+
+def payroll_surprises(api_key: str, jobs: Sequence[EventInstance]) -> list[Surprise]:
+    """Each stored jobs report's payroll surprise against the 12-month trend."""
+    vintages = sources.parse_vintages(
+        sources.fetch_vintages(api_key, sources.NFP_SERIES_ID), sources.NFP_SERIES_ID
+    )
+    if missed := payroll_level_mismatches(vintages, jobs):
+        months = ", ".join(f"{month:%Y-%m}" for month in missed)
+        raise ValueError(
+            f"{PAYROLLS}: the stored first release differs from FRED's revision history in {months}"
+        )
+    since = min(date.fromisoformat(f"{event.detail}-01") for event in jobs)
+    changes = first_published_payroll_changes(vintages, since)
+    return build_surprises(jobs, {PAYROLLS: changes}, [])
 
 
 # Step 4's rule for "tracks", fixed before any move was measured; see docs/steps/step-4-surprise.md.
@@ -840,6 +913,31 @@ COMBINATIONS = (
     (sources.HEADLINE, TREND_12M),
     (sources.HEADLINE, NOWCAST_BASELINE),
 )
+# The direction a stronger-than-expected jobs report should move each instrument: rates and the
+# dollar up; equities, VIX and gold have no agreed sign ("good news is bad news"). Rung 1 decision.
+NFP_EXPECTED_SIGN = {"SPY / ES": 0, "UST10Y / ZN": 1, "DXY": 1, "GC / XAU": 0, "VIX": 0}
+# Payroll surprises smaller than this are noise for the hit rate, in thousands of jobs.
+NOTICEABLE_PAYROLLS_K = 50.0
+
+
+@dataclass(frozen=True)
+class SurpriseRule:
+    """What step 4 measures for one event type. The first combination gives the verdict; the
+    hit rate counts surprises of at least ``noticeable``, and the slope is per ``noticeable``,
+    which the report names ``step``."""
+
+    combinations: tuple[tuple[str, str], ...]
+    expected_sign: Mapping[str, int]
+    noticeable: float
+    step: str
+
+
+SURPRISE_RULES = {
+    CPI_EVENT_TYPE: SurpriseRule(COMBINATIONS, EXPECTED_SIGN, NOTICEABLE_SURPRISE_PP, "0.1pp"),
+    NFP_EVENT_TYPE: SurpriseRule(
+        ((PAYROLLS, TREND_12M),), NFP_EXPECTED_SIGN, NOTICEABLE_PAYROLLS_K, "50k"
+    ),
+}
 
 
 @dataclass(frozen=True)
@@ -872,14 +970,19 @@ def track_verdict(p: float, hit_rate: float | None) -> str:
 
 
 def track_pairs(
-    surprises: Sequence[float], moves: Sequence[float], expected_sign: int, judged: bool
+    surprises: Sequence[float],
+    moves: Sequence[float],
+    expected_sign: int,
+    judged: bool,
+    step: float = NOTICEABLE_SURPRISE_PP,
 ) -> SurpriseTracking:
-    """Measure how ``moves`` follow ``surprises``, pair by pair; give a verdict if ``judged``."""
+    """Measure how ``moves`` follow ``surprises``, pair by pair; give a verdict if ``judged``.
+
+    Surprises of at least ``step`` count for the hit rate; the slope is per ``step``.
+    """
     rho = stats.spearman(surprises, moves)
     p = stats.spearman_permutation_p(surprises, moves, expected_sign)
-    noticeable = [
-        (s, m) for s, m in zip(surprises, moves, strict=True) if abs(s) >= NOTICEABLE_SURPRISE_PP
-    ]
+    noticeable = [(s, m) for s, m in zip(surprises, moves, strict=True) if abs(s) >= step]
     hits = sum(expected_sign * s * m > 0 for s, m in noticeable)
     hit_rate = hits / len(noticeable) if expected_sign and noticeable else None
     return SurpriseTracking(
@@ -888,18 +991,19 @@ def track_pairs(
         p=p,
         hit_rate=hit_rate,
         hit_n=len(noticeable) if hit_rate is not None else 0,
-        slope=stats.theil_sen(surprises, moves) * NOTICEABLE_SURPRISE_PP,
+        slope=stats.theil_sen(surprises, moves) * step,
         verdict=track_verdict(p, hit_rate) if judged else None,
     )
 
 
 def surprise_pairs(
     con: duckdb.DuckDBPyConnection | None = None,
+    combinations: Sequence[tuple[str, str]] = COMBINATIONS,
 ) -> dict[tuple[str, str], dict[str, tuple[list[float], list[float]]]]:
     """For each measure × baseline, then each instrument: its surprises and release-day moves."""
     connection = con if con is not None else db.get_connection()
     pairs: dict[tuple[str, str], dict[str, tuple[list[float], list[float]]]] = {}
-    for measure, baseline in COMBINATIONS:
+    for measure, baseline in combinations:
         by_instrument: dict[str, tuple[list[float], list[float]]] = {}
         for instrument in MVP_PRICE_SERIES:
             rows = connection.execute(
@@ -914,15 +1018,22 @@ def surprise_pairs(
 
 
 def track_surprises(
-    con: duckdb.DuckDBPyConnection | None = None,
+    con: duckdb.DuckDBPyConnection | None = None, event_type: str = CPI_EVENT_TYPE
 ) -> dict[tuple[str, str], dict[str, SurpriseTracking]]:
-    """Step 4's answer: each instrument × measure × baseline, the verdict on core against trend."""
+    """Step 4's answer for one event: each instrument × measure × baseline, with the verdict on the
+    event's first combination (core against the trend for CPI, payrolls against it for NFP)."""
+    rule = SURPRISE_RULES[event_type]
+    verdict_combination = rule.combinations[0]
     return {
         combination: {
             instrument: track_pairs(
-                surprises, moves, EXPECTED_SIGN[instrument], combination == VERDICT_COMBINATION
+                surprises,
+                moves,
+                rule.expected_sign[instrument],
+                combination == verdict_combination,
+                rule.noticeable,
             )
             for instrument, (surprises, moves) in by_instrument.items()
         }
-        for combination, by_instrument in surprise_pairs(con=con).items()
+        for combination, by_instrument in surprise_pairs(con, rule.combinations).items()
     }

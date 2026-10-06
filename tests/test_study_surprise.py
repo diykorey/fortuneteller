@@ -79,7 +79,7 @@ def test_january_is_measured_against_december_as_revised_that_day() -> None:
     changes = first_published_changes(releases, revised_previous={date(2023, 1, 1): 100.2})
 
     # then January's change is the one BLS published, against the revised December
-    assert changes[0].percent == pytest.approx((100.5 / 100.2 - 1) * 100)
+    assert changes[0].change == pytest.approx((100.5 / 100.2 - 1) * 100)
 
 
 def test_january_without_its_revised_december_is_refused() -> None:
@@ -163,7 +163,7 @@ def test_loading_asks_for_each_january_s_december_as_of_its_release_day(
     assert requested == [
         {"series": [CORE_CPI_SERIES_ID], "month": ["2022-12-01"], "as_of": ["2023-02-14"]}
     ]
-    assert [round(change.percent, 3) for change in changes] == [0.1, round(0.3 / 100.2 * 100, 3)]
+    assert [round(change.change, 3) for change in changes] == [0.1, round(0.3 / 100.2 * 100, 3)]
 
 
 def test_the_level_request_asks_for_one_month_on_one_day(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -402,7 +402,7 @@ def _nowcast_file(month: str, actual_core: float) -> bytes:
 def _sources_answer(monkeypatch: pytest.MonkeyPatch, actual_core: float) -> None:
     # Core: 0.2% a month through 2022-07, then a hot 0.57% August, released 2022-09-13.
     changes = [
-        MonthlyChange(change.reference_month, released_on(change.reference_month), change.percent)
+        MonthlyChange(change.reference_month, released_on(change.reference_month), change.change)
         for change in _changes(*[0.2] * 19, 0.57, start=(2021, 1))
     ]
 
@@ -746,3 +746,104 @@ def test_surprise_names_the_load_to_run_first(
     # then it stops with one line naming the command to run first
     assert code == 1
     assert f"`fortuneteller {missing}` first" in capsys.readouterr().err
+
+
+def _jobs_answer(monkeypatch: pytest.MonkeyPatch, months: list[date]) -> list[FirstRelease]:
+    # Payrolls rise by 100k every month, each printed on the 5th of the next and never revised.
+    releases = [
+        FirstRelease(m, date(m.year + m.month // 12, m.month % 12 + 1, 5), 1000.0 + 100 * i)
+        for i, m in enumerate(months)
+    ]
+    rows = []
+    for i, release in enumerate(releases):
+        row = {"date": release.reference_month.isoformat()}
+        row[f"PAYEMS_{release.released:%Y%m%d}"] = str(release.value)
+        if i + 1 < len(releases):
+            row[f"PAYEMS_{releases[i + 1].released:%Y%m%d}"] = str(release.value)
+        rows.append(row)
+    payload = json.dumps({"count": len(rows), "observations": rows}).encode()
+    monkeypatch.setattr(sources, "fetch_vintages", lambda _key, _series: payload)
+    return releases
+
+
+def test_loading_adds_payroll_surprises_when_jobs_reports_are_stored(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # given the CPI setup, and 15 stored jobs reports rising 100k a month
+    _sources_answer(monkeypatch, actual_core=0.57)
+    con = duckdb.connect(":memory:")
+    db.init_db(con=con)
+    _store_events(con)
+    months = [date(2021 + i // 12, i % 12 + 1, 1) for i in range(15)]
+    study.store_releases(study.NFP_EVENT_TYPE, _jobs_answer(monkeypatch, months), con=con)
+
+    # when the surprises are loaded
+    study.load_surprises("key", con=con)
+
+    # then the two months with a full year behind them were exactly on trend
+    payrolls = con.execute(
+        "SELECT actual_mom, expected_mom, surprise FROM surprises WHERE measure = 'payrolls'"
+    ).fetchall()
+    assert payrolls == [(100.0, 100.0, 0.0), (100.0, 100.0, 0.0)]
+
+
+def test_loading_refuses_a_jobs_report_stored_unlike_fred_s_history(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # given the CPI setup, and March 2021's jobs report stored 1k off what FRED first printed
+    _sources_answer(monkeypatch, actual_core=0.57)
+    con = duckdb.connect(":memory:")
+    db.init_db(con=con)
+    _store_events(con)
+    months = [date(2021 + i // 12, i % 12 + 1, 1) for i in range(15)]
+    releases = _jobs_answer(monkeypatch, months)
+    releases[2] = FirstRelease(releases[2].reference_month, releases[2].released, 1201.0)
+    study.store_releases(study.NFP_EVENT_TYPE, releases, con=con)
+
+    # when / then nothing is stored, and the month is named
+    with pytest.raises(ValueError, match="payrolls: .* 2021-03"):
+        study.load_surprises("key", con=con)
+    assert db.count_rows("surprises", con=con) == 0
+
+
+def test_surprise_refuses_the_fed(tmp_db: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    # given nothing stored
+
+    # when the Fed's surprise is asked for
+    code = main(["surprise", "--event", "fomc"])
+
+    # then it is refused with the reason: no free record of what the market expected
+    assert code == 1
+    assert "no surprise" in capsys.readouterr().err
+
+
+def test_surprise_for_jobs_asks_for_its_surprises_first(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    # given CPI's tracking data stored, but no payroll surprises
+    _store_tracking_data(db.get_connection())
+
+    # when the jobs report's tracking is asked for
+    code = main(["surprise", "--event", "nfp"])
+
+    # then it says which load to run instead of printing an empty table
+    assert code == 1
+    assert "nfp" in capsys.readouterr().err
+
+
+def test_the_jobs_report_has_its_own_signs_cut_off_and_no_context_table() -> None:
+    # given one tracked yield row
+    row = SurpriseTracking(400, 0.2, 0.0001, 0.65, 300, 1.5, TRACKS)
+
+    # when the jobs report's tracking is written
+    lines = describe_surprise_tracking(
+        {(study.PAYROLLS, study.TREND_12M): {"UST10Y / ZN": row}}, study.NFP_EVENT_TYPE
+    )
+
+    # then it is payrolls against the trend, per 50k, and the rule follows straight after
+    assert lines[:3] == [
+        "payrolls against the 12-month trend",
+        "instrument   n    expected  rank corr  p       hit rate (n)  per 50k    verdict",
+        "UST10Y / ZN  400  up        0.20       0.0001  65% (300)     1.5 bp     tracks",
+    ]
+    assert "context, no verdict" not in lines

@@ -52,7 +52,7 @@ standard source, are paid. So the Fed gets step 3 only; its surprise is in
 | 4 | ~~FOMC decisions into `event_instances` (`Central-bank decision`, `United States`, 14:00 New York; unscheduled ones `scheduled = false`)~~ **done** | Every target-rate change since 1994 falls on a listed decision; FOMC's step 3 verdict printed |
 | 5 | ~~Reaction close by event time: an event after an instrument's daily close reacts at its next close; each Fed decision at its announced time~~ **done** | Gold's Fed-day move measured after the decision; CPI and NFP output unchanged |
 | 6 | ~~Clean baseline: "ordinary days" exclude every stored event's reaction day~~ **done** | CPI's step 3 re-run; old and new verdicts recorded side by side |
-| 7 | NFP surprise: first-published monthly payroll change against its 12-month trend, into `surprises`; `surprise` takes an event | August 2022 reads +315k; NFP's step 4 verdict printed |
+| 7 | ~~NFP surprise: first-published monthly payroll change against its 12-month trend, into `surprises`; `surprise` takes an event~~ **done** | August 2022 reads +315k; NFP's step 4 verdict printed |
 | 8 | Results here, and a rung 1 section in [`mvp-results.md`](../mvp-results.md) | Says, per event, whether it moves the five markets and (NFP) whether the move follows the surprise |
 
 ## How you know it is right
@@ -175,6 +175,41 @@ Old (all other days) and new (ordinary days), on the same data:
 
 As [Precision](../precision.md) predicted, removing noisy days only raises the ratios. The one flip,
 the Fed's dollar, sits at p 0.0096 against a 0.01 bar: a borderline result, not a strong one.
+
+**NFP surprise, 2026-10-06.** The changes are built from FRED `PAYEMS`, `output_type=3`
+(`sources.parse_vintages`, `study.first_published_payroll_changes`). Each month's change is its
+first level minus the previous month's level as it stood that day. Checks:
+
+- **All 856 stored jobs reports** match FRED's revision history on release day and first level.
+  `load-surprises` refuses to store anything otherwise (`study.payroll_level_mismatches`).
+- **Five first prints agree with BLS's own release texts:** August 2022 +315k, April 2020 −20.5M,
+  September 2008 −159k, November 2025 +64k, June 1997 +217k.
+- **CPI's `surprise` output is unchanged**, compared with `main` on the same database.
+
+844 payroll surprises, 1956-06-08 … 2026-10-02: every report but the first twelve.
+
+The trend now counts only months published *before* the release day. October 2025 came out with
+November on 2025-12-16, so it is not in November's trend. CPI's trends are unchanged by this.
+
+October 2025 has no surprise of its own: its release day is stored as November. Five of the 14
+unscheduled Fed decisions are not rate moves either, and the results say so.
+
+NFP's step 4 verdict, payrolls against the trend:
+
+| Instrument | Expected | Rank corr | p | Hit rate (n) | Per 50k | Verdict |
+| --- | --- | --- | --- | --- | --- | --- |
+| UST 10Y | up | 0.26 | 0.0001 | 58% (466) | 0.6 bp | unclear |
+| DXY | up | 0.16 | 0.0001 | 56% (457) | 0.02% | unclear |
+| Gold | either | 0.16 | 0.0036 | — | −0.04% | unclear |
+| S&P 500 | either | 0.01 | 0.71 | — | 0.00% | doesn't |
+| VIX | either | 0.05 | 0.28 | — | −0.07% | doesn't |
+
+The yield and the dollar follow the payroll surprise beyond doubt: p 0.0001, over 669–681
+releases. But they go the expected way only 58% and 56% of the time, short of the 60% bar. Gold,
+the S&P 500 and VIX have no agreed sign, so no hit rate, and *unclear* is the best they can reach.
+
+**Without March 2020 – April 2021**, whose surprises the −20.5M April 2020 print distorts for a year,
+every verdict is the same: yield 0.25 and 58%, dollar 0.17 and 56%, gold p 0.0082.
 
 **Code.** As before: fetching and parsing in `sources.py`, measurement in `study.py`, statistics
 in `stats.py`, commands in `__main__.py`. Event-specific values (series ID, release time, expected

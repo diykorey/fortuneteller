@@ -22,7 +22,7 @@ through `db.insert_models` (`effect_size_matrix`, which nothing writes yet, has 
 | [`event_instances`](#event_instances) | Fact | Real event that happened | `load-releases` (MVP step 1, rung 1) | 649 CPI + 856 NFP releases + 275 Fed decisions |
 | [`daily_bars`](#daily_bars) | Fact | Instrument × trading day closing price | `load-prices` (MVP step 2) | about 58,500 |
 | [`observations`](#observations) | Fact | Event × instrument reaction | `load-prices` (MVP step 2, rung 1) | 2,698 CPI + 2,785 NFP + 1,316 Fed |
-| [`surprises`](#surprises) | Fact | CPI release × measure × expected value | `load-surprises` (MVP step 4) | 1,287 |
+| [`surprises`](#surprises) | Fact | CPI or jobs-report release × measure × expected value | `load-surprises` (MVP step 4, rung 1) | 1,287 CPI + 844 NFP |
 | [`effect_size_matrix`](#effect_size_matrix) | Derived | Event type × instrument measurement | Nothing planned yet | 0 |
 
 **Reference** tables are configuration: committed CSVs in `data/seed/`, loaded by
@@ -390,7 +390,7 @@ daily prices, so the intraday ones stay empty.
 
 ## surprises
 
-**In plain words:** for every CPI release, how far the number landed from what was expected. One
+**In plain words:** for every CPI release and jobs report, how far the number landed from what was expected. One
 row is one release, one CPI measure and one way of saying what was expected — "in August 2022
 (released 2022-09-13), core CPI rose 0.57% against a nowcast of 0.48%: a surprise of +0.09 percentage points".
 
@@ -399,9 +399,11 @@ It exists because the market moves on the part of a release it did not expect.
 and asks whether bigger surprises bring bigger moves. There is no free history of what forecasters
 expected, so each release gets two expected values, and step 4 compares the answers they give.
 
-Filled by `uv run fortuneteller load-surprises` (step 4). Key: (`event_id`, `measure`, `baseline`).
-1,287 rows on 2026-10-05: against the 12-month trend, core 342 (from 1998) and headline 635 (from
-1973); against the nowcast, 155 each (from 2013).
+Filled by `uv run fortuneteller load-surprises` (step 4, and rung 1 for payrolls). Key:
+(`event_id`, `measure`, `baseline`). 1,287 CPI rows on 2026-10-05: against the 12-month trend, core
+342 (from 1998) and headline 635 (from 1973); against the nowcast, 155 each (from 2013). 844
+payroll rows on 2026-10-06, against the trend only (from 1956): every stored jobs report but the
+first twelve.
 
 Example row:
 
@@ -414,9 +416,9 @@ Example row:
 | `event_id` | BIGINT, **PK** | The release, an `event_instances.event_id`. Core and headline come out in the same BLS release, so they share it. |
 | `measure` | TEXT, **PK** | Which CPI number; see below. |
 | `baseline` | TEXT, **PK** | Where the expected value came from; see below. |
-| `actual_mom` | DOUBLE | The month-over-month change **as first published**, in percent (`0.567` means +0.567%). The number the market saw, not today's revised one. |
-| `expected_mom` | DOUBLE | What `baseline` expected that change to be, in percent. |
-| `surprise` | DOUBLE | `actual_mom − expected_mom`, in percentage points. Positive means CPI came in hotter than expected. |
+| `actual_mom` | DOUBLE | The month-over-month change **as first published**: for CPI in percent (`0.567` means +0.567%); for `payrolls` in thousands of jobs (`315` means +315,000). The number the market saw, not today's revised one. |
+| `expected_mom` | DOUBLE | What `baseline` expected that change to be, in the same unit. |
+| `surprise` | DOUBLE | `actual_mom − expected_mom`: percentage points for CPI, thousands of jobs for payrolls. Positive means hotter or stronger than expected. |
 
 ### Values
 
@@ -426,12 +428,13 @@ Example row:
 | --- | --- |
 | `core` | CPI without food and energy (FRED `CPILFESL`). Step 4's verdicts are about this one: markets have traded core since the 2000s. First-published history starts in 1997. |
 | `headline` | All items (FRED `CPIAUCSL`), the series `event_instances.actual` holds. Shown as context, without a verdict. |
+| `payrolls` | The jobs report's monthly change in total non-farm payrolls (FRED `PAYEMS`), in thousands: the month's first level minus the previous month's level as revised that same day. Only with `trend_12m`. |
 
 **`baseline`** — what "expected" means:
 
 | Value | Meaning |
 | --- | --- |
-| `trend_12m` | The average of the previous 12 months' first-published changes. Available for every release once a year of history exists, but it measures surprise against the trend, not against what the market expected. |
+| `trend_12m` | The average of the previous 12 months' first-published changes, counting only those published before the release day. Available for every release once a year of history exists, but it measures surprise against the trend, not against what the market expected. |
 | `nowcast` | The Cleveland Fed's model estimate, the last one published before the release day. Close to what the market saw, but only from 2013. |
 
 ## effect_size_matrix
