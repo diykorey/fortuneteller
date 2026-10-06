@@ -168,6 +168,12 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **Vintage / new-and-revised view** — a series' values as they stood on one release day. FRED's
   `output_type=3` returns one column per release day; payrolls need it because every jobs report
   revises the two months before.
+- **Event flow** — one event type's way in (`flows.py`, from step 2 of
+  [event flows](steps/event-flows.md)): fetch from its own source, run its own checks, return the
+  common records.
+- **Expectation source** — one way of saying what was expected (`expectations.py`): the 12-month
+  trend, the Cleveland Fed's nowcast. Each returns `Expectation`s, checked against their event before
+  a surprise is computed.
 - **First reaction day** — the first day whose close can carry an event: its own day if it came
   before the instrument's close, otherwise the next (`study.first_reaction_day`).
 - **Daily bar / OHLC** — one row per trading day holding Open, High, Low, Close prices. The MVP's

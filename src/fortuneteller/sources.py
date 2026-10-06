@@ -20,6 +20,9 @@ from datetime import date, datetime
 from typing import Any
 from zoneinfo import ZoneInfo
 
+# Every release time and market close in this project is New York's.
+NEW_YORK = ZoneInfo("America/New_York")
+
 
 # A reply that is not the expected JSON shape raises one of these while it is read.
 MALFORMED_REPLY = (ValueError, KeyError, IndexError, TypeError)

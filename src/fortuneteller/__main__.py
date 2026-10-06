@@ -16,7 +16,7 @@ import sys
 from collections.abc import Callable, Sequence
 from datetime import date
 
-from . import db, seed, sources, study
+from . import db, expectations, seed, sources, study
 from .config import settings
 from .models import Surprise
 
@@ -149,7 +149,7 @@ def describe_surprises(rows: Sequence[Surprise]) -> list[str]:
     """One report line per measure and expected value: how many surprises, over which months."""
     lines = []
     for measure in (*study.MEASURE_SERIES, study.PAYROLLS):
-        for baseline in (study.TREND_12M, study.NOWCAST_BASELINE):
+        for baseline in (expectations.TREND_12M, expectations.NOWCAST_BASELINE):
             ids = sorted(
                 r.event_id for r in rows if r.measure == measure and r.baseline == baseline
             )
