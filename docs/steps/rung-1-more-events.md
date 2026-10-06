@@ -53,7 +53,7 @@ standard source, are paid. So the Fed gets step 3 only; its surprise is in
 | 5 | ~~Reaction close by event time: an event after an instrument's daily close reacts at its next close; each Fed decision at its announced time~~ **done** | Gold's Fed-day move measured after the decision; CPI and NFP output unchanged |
 | 6 | ~~Clean baseline: "ordinary days" exclude every stored event's reaction day~~ **done** | CPI's step 3 re-run; old and new verdicts recorded side by side |
 | 7 | ~~NFP surprise: first-published monthly payroll change against its 12-month trend, into `surprises`; `surprise` takes an event~~ **done** | August 2022 reads +315k; NFP's step 4 verdict printed |
-| 8 | Results here, and a rung 1 section in [`mvp-results.md`](../mvp-results.md) | Says, per event, whether it moves the five markets and (NFP) whether the move follows the surprise |
+| 8 | ~~Results here, and a rung 1 section in [`mvp-results.md`](../mvp-results.md)~~ **done** | Says, per event, whether it moves the five markets and (NFP) whether the move follows the surprise |
 
 ## How you know it is right
 
@@ -218,4 +218,50 @@ which rule 2 allows.
 
 ## Results
 
-*Filled in by sub-step 8.*
+Measured 2026-10-06, all on one database, with the rules the MVP fixed in advance (step 3:
+ratio ≥ 1.10 and p < 0.01; step 4: p < 0.01 and hit rate ≥ 60%). Ordinary days exclude every
+event's reaction day; each move starts at the last close before the event.
+
+**Does the event move the market more than an ordinary day?** Ratio of medians, verdict.
+
+| Market | CPI (649 releases) | Jobs report (681) | Fed decision (274) |
+| --- | --- | --- | --- |
+| 10-year yield | 1.33 moves | 1.67 moves | 1.23 unclear (p 0.03) |
+| Dollar index | 1.18 moves | 1.25 moves | 1.22 moves (p 0.0096, borderline) |
+| VIX | 1.22 moves | 1.31 moves | 1.25 moves |
+| S&P 500 | 1.09 doesn't | 1.19 moves | 1.30 moves |
+| Gold | 1.04 doesn't | 1.27 moves | 1.81 moves |
+
+**Does the move follow the surprise?** Against the 12-month trend; no Fed surprise.
+
+| Market | CPI (core) | Jobs report (payrolls) |
+| --- | --- | --- |
+| 10-year yield | tracks: corr 0.17, right 62% | unclear: corr 0.26, p 0.0001, right 58% |
+| Dollar index | unclear: corr 0.14, right 53% | unclear: corr 0.16, p 0.0001, right 56% |
+| VIX | doesn't | doesn't |
+| S&P 500 | doesn't | doesn't |
+| Gold | doesn't | unclear (no agreed sign, so at most unclear) |
+
+**What it says.**
+
+- **The jobs report is the strongest of the three events.** It moves all five markets, and the
+  10-year yield most of all: 67% more than an ordinary day.
+- **Fed days move the risk markets most:** the S&P 500, VIX and gold.
+- **CPI moves rates, the dollar and VIX, but not equities or gold.** Against the clean baseline its
+  ratios rose slightly and no verdict changed.
+- **The yield's and the dollar's moves follow the payroll surprise more clearly than CPI's:** rank
+  correlations of 0.26 and 0.16 at p 0.0001, over 670-odd releases. But they go the expected way
+  only 58% and 56% of the time, under the 60% bar, so neither *tracks*. A surprise against the
+  trend, not against the economists' consensus, is the likely limit; see
+  [Precision](../precision.md).
+
+**What it does not say.**
+
+- **The Fed's dollar verdict is borderline** (p 0.0096 against 0.01), not a strong result.
+- **Five of the 14 unscheduled Fed decisions were not rate changes:** 2007-08-10, 2007-08-17,
+  2008-03-11, 2010-05-09 and 2019-10-11 were liquidity and implementation statements. They count
+  as Fed days here.
+- **One question is still open.** In 1990–2007 the yield and the dollar moved more the day after a
+  Fed decision than on the day itself. Daily closes cannot say whether their close came before the
+  statement then, or the reaction ran into the next day.
+- **Nothing here predicts.** As with the MVP, these numbers describe the past.

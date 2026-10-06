@@ -64,10 +64,11 @@ tests/           # pytest suite (ruff + mypy --strict + pytest is the gate)
 
 ## Status
 
-Bootstrapping, **measurable-spine first**. **M0 — the data spine — and the MVP are complete.**
-Today the repo gives you typed Pydantic models, a DuckDB schema, the committed seed tables, a CLI
-that loads and queries them, the real CPI release history from FRED, each instrument's measured
-move around every release, and how that move relates to the CPI surprise:
+Bootstrapping, **measurable-spine first**. **M0 — the data spine — the MVP and rung 1 are
+complete.** Today the repo gives you typed Pydantic models, a DuckDB schema, the committed seed
+tables, a CLI that loads and queries them, the real CPI and jobs-report release histories and the
+Fed's decisions, each instrument's measured move around every event, and how that move relates to
+the CPI and payroll surprises:
 
 ```bash
 uv sync
@@ -87,7 +88,9 @@ is preserved on the `main_05082026` branch.
 
 The MVP answered **does the edge exist** for one event type (CPI) × five liquid instruments, from
 real historical data: CPI moves the 10-year yield, the dollar and VIX, and the 10-year yield's move
-follows the size of the surprise, weakly. See [MVP results](docs/mvp-results.md) for what that
+follows the size of the surprise, weakly. Rung 1 added the jobs report and Fed decisions: both
+move markets, the jobs report most, and the yield's and the dollar's moves follow the payroll
+surprise clearly but just short of the bar. See [MVP results](docs/mvp-results.md) for what that
 means and the options for what comes next, and the [roadmap](docs/roadmap.md) for the ladder.
 
 > **Data provenance:** the seed reference tables are partial (read-only Notion export limits) and
