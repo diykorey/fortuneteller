@@ -616,7 +616,7 @@ def test_a_move_built_from_the_surprise_tracks_it() -> None:
     surprises, moves = _planted(3.0, seed=1)
 
     # when the pairs are measured
-    result = track_pairs(surprises, moves, expected_sign=1, judged=True)
+    result = track_pairs(surprises, moves, expected_sign=1, judged=True, step=0.1)
 
     # then the relation is found, its slope is about 0.3 per 0.1 pp, and the verdict is "tracks"
     assert result.verdict == TRACKS
@@ -631,7 +631,7 @@ def test_the_same_moves_shuffled_do_not_track() -> None:
     random.Random(7).shuffle(moves)
 
     # when the pairs are measured
-    result = track_pairs(surprises, moves, expected_sign=1, judged=True)
+    result = track_pairs(surprises, moves, expected_sign=1, judged=True, step=0.1)
 
     # then nothing is found
     assert result.verdict != TRACKS
@@ -643,7 +643,7 @@ def test_a_fall_tracks_where_a_fall_is_expected() -> None:
     surprises, moves = _planted(-3.0, seed=2)
 
     # when the pairs are measured
-    result = track_pairs(surprises, moves, expected_sign=-1, judged=True)
+    result = track_pairs(surprises, moves, expected_sign=-1, judged=True, step=0.1)
 
     # then it tracks, and the correlation reads positive: "as expected"
     assert result.verdict == TRACKS
@@ -655,7 +655,7 @@ def test_the_hit_rate_counts_only_noticeable_surprises() -> None:
     surprises, moves = [0.05, -0.05, 0.2, -0.3], [-1.0, 1.0, 1.0, -1.0]
 
     # when the pairs are measured
-    result = track_pairs(surprises, moves, expected_sign=1, judged=False)
+    result = track_pairs(surprises, moves, expected_sign=1, judged=False, step=0.1)
 
     # then the hit rate is 2 of 2, and context rows carry no verdict
     assert (result.hit_rate, result.hit_n) == (1.0, 2)
@@ -667,7 +667,7 @@ def test_without_an_expected_direction_there_is_no_hit_rate() -> None:
     surprises, moves = _planted(-3.0, seed=3)
 
     # when the pairs are measured
-    result = track_pairs(surprises, moves, expected_sign=0, judged=True)
+    result = track_pairs(surprises, moves, expected_sign=0, judged=True, step=0.1)
 
     # then the two-sided test finds the relation, but with no hit rate it is only "unclear"
     assert result.hit_rate is None
@@ -680,8 +680,8 @@ def test_measuring_twice_gives_the_same_result() -> None:
     surprises, moves = _planted(1.0, seed=4)
 
     # when they are measured twice
-    first = track_pairs(surprises, moves, expected_sign=1, judged=True)
-    second = track_pairs(surprises, moves, expected_sign=1, judged=True)
+    first = track_pairs(surprises, moves, expected_sign=1, judged=True, step=0.1)
+    second = track_pairs(surprises, moves, expected_sign=1, judged=True, step=0.1)
 
     # then the results are identical
     assert first == second
@@ -713,7 +713,7 @@ def test_each_instrument_is_measured_against_each_measure_and_baseline() -> None
     )
 
     # when the pairs are gathered
-    pairs = study.surprise_pairs(con=con)
+    pairs = study.surprise_pairs(flows.COMBINATIONS, con=con)
 
     # then core against the trend comes first, and every instrument has its one pair
     assert list(pairs)[0] == (CORE, TREND_12M)
@@ -733,7 +733,7 @@ def test_the_report_shows_the_verdict_table_then_the_context_and_the_rule() -> N
     }
 
     # when the report is written
-    lines = describe_surprise_tracking(results)
+    lines = describe_surprise_tracking(results, flows.CPI_SURPRISE_RULE)
 
     # then units, expected directions and the missing hit rate read plainly
     assert lines[:5] == [
@@ -911,7 +911,7 @@ def test_the_jobs_report_has_its_own_signs_cut_off_and_no_context_table() -> Non
 
     # when the jobs report's tracking is written
     lines = describe_surprise_tracking(
-        {(flows.PAYROLLS, TREND_12M): {"UST10Y / ZN": row}}, flows.NFP_EVENT_TYPE
+        {(flows.PAYROLLS, TREND_12M): {"UST10Y / ZN": row}}, flows.NFP_SURPRISE_RULE
     )
 
     # then it is payrolls against the trend, per 50k, and the rule follows straight after

@@ -28,14 +28,7 @@ import duckdb
 
 from . import db, sources, stats
 from .models import DailyBar, EventInstance, Observation
-from .flows import (
-    COMBINATIONS,
-    CPI_EVENT_TYPE,
-    EVENT_TYPE_CODES,
-    NOTICEABLE_SURPRISE_PP,
-    SURPRISE_RULES,
-    stored_events,
-)
+from .flows import EVENT_FLOWS, SurpriseRule, stored_events
 from .sources import NEW_YORK, DailyClosingPrice, YahooError
 
 
@@ -185,7 +178,7 @@ def build_observations(
 
     The counts are per event type, then per instrument; a type with no stored events is left out.
     """
-    events = {event_type: stored_events(event_type, con=con) for event_type in EVENT_TYPE_CODES}
+    events = {flow.event_type: stored_events(flow.event_type, con=con) for flow in EVENT_FLOWS}
     observations: list[Observation] = []
     release_counts: dict[str, dict[str, ReleaseCounts]] = {
         event_type: {} for event_type, typed in events.items() if typed
@@ -354,7 +347,7 @@ def era_of(day: date) -> str:
 
 
 def measure_raw_moves(
-    con: duckdb.DuckDBPyConnection | None = None, event_type: str = CPI_EVENT_TYPE
+    event_type: str, con: duckdb.DuckDBPyConnection | None = None
 ) -> dict[str, RawMove]:
     """Each MVP instrument's moves on the event's days against its moves on ordinary days.
 
@@ -362,7 +355,7 @@ def measure_raw_moves(
     Fed day is not a fair "other day" for CPI.
     """
     events = stored_events(event_type, con=con)
-    every_event = [event for typed in EVENT_TYPE_CODES for event in stored_events(typed, con=con)]
+    every_event = [e for flow in EVENT_FLOWS for e in stored_events(flow.event_type, con=con)]
     results: dict[str, RawMove] = {}
     for instrument, (_ticker, unit, close) in MVP_PRICE_SERIES.items():
         closes = stored_closes(instrument, con=con)
@@ -430,7 +423,7 @@ def track_pairs(
     moves: Sequence[float],
     expected_sign: int,
     judged: bool,
-    step: float = NOTICEABLE_SURPRISE_PP,
+    step: float,
 ) -> SurpriseTracking:
     """Measure how ``moves`` follow ``surprises``, pair by pair; give a verdict if ``judged``.
 
@@ -453,8 +446,8 @@ def track_pairs(
 
 
 def surprise_pairs(
+    combinations: Sequence[tuple[str, str]],
     con: duckdb.DuckDBPyConnection | None = None,
-    combinations: Sequence[tuple[str, str]] = COMBINATIONS,
 ) -> dict[tuple[str, str], dict[str, tuple[list[float], list[float]]]]:
     """For each measure × baseline, then each instrument: its surprises and release-day moves."""
     connection = con if con is not None else db.get_connection()
@@ -474,11 +467,10 @@ def surprise_pairs(
 
 
 def track_surprises(
-    con: duckdb.DuckDBPyConnection | None = None, event_type: str = CPI_EVENT_TYPE
+    rule: SurpriseRule, con: duckdb.DuckDBPyConnection | None = None
 ) -> dict[tuple[str, str], dict[str, SurpriseTracking]]:
-    """Step 4's answer for one event: each instrument × measure × baseline, with the verdict on the
-    event's first combination (core against the trend for CPI, payrolls against it for NFP)."""
-    rule = SURPRISE_RULES[event_type]
+    """Step 4's answer for one event's rule: each instrument × measure × baseline, with the verdict
+    on the rule's first combination (core against the trend for CPI, payrolls for NFP)."""
     verdict_combination = rule.combinations[0]
     return {
         combination: {
@@ -491,5 +483,5 @@ def track_surprises(
             )
             for instrument, (surprises, moves) in by_instrument.items()
         }
-        for combination, by_instrument in surprise_pairs(con, rule.combinations).items()
+        for combination, by_instrument in surprise_pairs(rule.combinations, con=con).items()
     }

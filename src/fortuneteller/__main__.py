@@ -13,21 +13,15 @@ from __future__ import annotations
 
 import argparse
 import sys
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Iterable, Sequence
 
-from . import db, expectations, flows, seed, sources, study
+from . import db, flows, seed, sources, study
 from .config import settings
 from .models import Surprise
 
 Handler = Callable[[argparse.Namespace], int]
-# The events a command can be pointed at, by their short name on the command line.
-EVENTS = {
-    "cpi": flows.CPI_EVENT_TYPE,
-    "nfp": flows.NFP_EVENT_TYPE,
-    "fomc": flows.FOMC_EVENT_TYPE,
-}
-# Three letters keep the report's columns aligned.
-EVENT_LABELS = {"cpi": "CPI", "nfp": "NFP", "fomc": "Fed"}
+# The events a command can be pointed at: each flow's short name on the command line.
+EVENT_NAMES = [flow.cli_name for flow in flows.EVENT_FLOWS]
 
 
 def _init(_args: argparse.Namespace) -> int:
@@ -120,18 +114,15 @@ def _load_prices(_args: argparse.Namespace) -> int:
 
 
 def describe_surprises(rows: Sequence[Surprise]) -> list[str]:
-    """One report line per measure and expected value: how many surprises, over which months."""
+    """One report line per measure and expected value, in the order the rows came: how many
+    surprises, over which release days."""
     lines = []
-    for measure in (*flows.MEASURE_SERIES, flows.PAYROLLS):
-        for baseline in (expectations.TREND_12M, expectations.NOWCAST_BASELINE):
-            ids = sorted(
-                r.event_id for r in rows if r.measure == measure and r.baseline == baseline
-            )
-            if ids:
-                first, last = (flows.event_date(i) for i in (ids[0], ids[-1]))
-                lines.append(
-                    f"{measure:<9} {baseline:<10} {len(ids):>3} surprises, released {first} … {last}"
-                )
+    for measure, baseline in dict.fromkeys((r.measure, r.baseline) for r in rows):
+        ids = sorted(r.event_id for r in rows if r.measure == measure and r.baseline == baseline)
+        first, last = (flows.event_date(i) for i in (ids[0], ids[-1]))
+        lines.append(
+            f"{measure:<9} {baseline:<10} {len(ids):>3} surprises, released {first} … {last}"
+        )
     return lines
 
 
@@ -163,10 +154,9 @@ def _hit_rate(tracking: study.SurpriseTracking) -> str:
 
 def describe_surprise_tracking(
     results: dict[tuple[str, str], dict[str, study.SurpriseTracking]],
-    event_type: str = flows.CPI_EVENT_TYPE,
+    rule: flows.SurpriseRule,
 ) -> list[str]:
-    """The report: the verdict table, the context table if the event has one, and the rule."""
-    rule = flows.SURPRISE_RULES[event_type]
+    """The report: the verdict table, the context table if the rule has one, and the rule."""
     verdict_combination = rule.combinations[0]
     lines = [
         f"{verdict_combination[0]} against the 12-month trend",
@@ -203,21 +193,23 @@ def describe_surprise_tracking(
 
 
 def _surprise(args: argparse.Namespace) -> int:
-    event_type = EVENTS[args.event]
-    if event_type not in flows.SURPRISE_RULES:
+    flow = flows.flow_named(args.event)
+    rule = flow.surprise_rule
+    if rule is None:
         print(
-            f"surprise: {event_type} has no surprise: no free record of what the market expected",
+            f"surprise: {flow.event_type} has no surprise: no free record of what the market "
+            "expected",
             file=sys.stderr,
         )
         return 1
     con = db.get_connection()
     db.init_db(con=con)
-    measure, baseline = flows.SURPRISE_RULES[event_type].combinations[0]
+    measure, baseline = rule.combinations[0]
     stored = con.execute(
         "SELECT count(*) FROM surprises WHERE measure = ? AND baseline = ?", [measure, baseline]
     ).fetchone()
     for missing, command in (
-        (not flows.stored_events(event_type, con=con), "load-releases"),
+        (not flows.stored_events(flow.event_type, con=con), "load-releases"),
         (db.count_rows("observations", con=con) == 0, "load-prices"),
         (stored is None or stored[0] == 0, "load-surprises"),
     ):
@@ -227,17 +219,22 @@ def _surprise(args: argparse.Namespace) -> int:
                 file=sys.stderr,
             )
             return 1
-    results = study.track_surprises(con=con, event_type=event_type)
-    for line in describe_surprise_tracking(results, event_type):
+    results = study.track_surprises(rule, con=con)
+    for line in describe_surprise_tracking(results, rule):
         print(line)
     return 0
+
+
+def _any_of(labels: Iterable[str]) -> str:
+    *rest, last = labels
+    return f"{', '.join(rest)} or {last}" if rest else last
 
 
 def _move_size(value: float, unit: str) -> str:
     return f"{value:.1f} bp" if unit == "bps" else f"{value * 100:.2f}%"
 
 
-def describe_raw_moves(results: dict[str, study.RawMove], label: str = "CPI") -> list[str]:
+def describe_raw_moves(results: dict[str, study.RawMove], label: str) -> list[str]:
     """The report: a verdict line per instrument, an era line per instrument, and the rule.
 
     ``label`` names the event in the headers: a three-letter name keeps the columns aligned.
@@ -265,13 +262,14 @@ def describe_raw_moves(results: dict[str, study.RawMove], label: str = "CPI") ->
         "",
         f"{study.MOVES} = ratio >= {study.MOVE_RATIO_BAR:.2f} and p < {study.MOVE_P_BAR}; "
         f"{study.UNCLEAR} = one of the two; {study.DOESNT_MOVE} = neither; "
-        "other = days with no CPI, NFP or Fed reaction",
+        f"other = days with no {_any_of(flow.label for flow in flows.EVENT_FLOWS)} reaction",
     ]
     return [line.rstrip() for line in lines]
 
 
 def _raw_move(args: argparse.Namespace) -> int:
-    event_type = EVENTS[args.event]
+    flow = flows.flow_named(args.event)
+    event_type = flow.event_type
     con = db.get_connection()
     db.init_db(con=con)
     if not flows.stored_events(event_type, con=con):
@@ -286,11 +284,11 @@ def _raw_move(args: argparse.Namespace) -> int:
         )
         return 1
     try:
-        results = study.measure_raw_moves(con=con, event_type=event_type)
+        results = study.measure_raw_moves(event_type, con=con)
     except ValueError as exc:
         print(f"raw-move: {exc}", file=sys.stderr)
         return 1
-    for line in describe_raw_moves(results, label=EVENT_LABELS[args.event]):
+    for line in describe_raw_moves(results, label=flow.label):
         print(line)
     return 0
 
@@ -308,7 +306,9 @@ def build_parser() -> argparse.ArgumentParser:
     p_demo = sub.add_parser("query-demo", help="print a sample effect-size lookup row")
     p_demo.set_defaults(func=_query_demo)
 
-    p_releases = sub.add_parser("load-releases", help="load CPI and NFP releases and Fed decisions")
+    p_releases = sub.add_parser(
+        "load-releases", help="load every event type's history (CPI, NFP, Fed)"
+    )
     p_releases.set_defaults(func=_load_releases)
 
     p_prices = sub.add_parser(
@@ -317,7 +317,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_prices.set_defaults(func=_load_prices)
 
     p_surprises = sub.add_parser(
-        "load-surprises", help="load each CPI release's surprise against both expected values"
+        "load-surprises", help="load each event's surprise against every expected value"
     )
     p_surprises.set_defaults(func=_load_surprises)
 
@@ -325,14 +325,16 @@ def build_parser() -> argparse.ArgumentParser:
         "surprise", help="does each instrument's release-day move follow the event's surprise?"
     )
     p_surprise.add_argument(
-        "--event", choices=EVENTS, default="cpi", help="the event (default: cpi)"
+        "--event", choices=EVENT_NAMES, default="cpi", help="the event (default: cpi)"
     )
     p_surprise.set_defaults(func=_surprise)
 
     p_raw = sub.add_parser(
         "raw-move", help="compare each instrument's moves on an event's days with ordinary days"
     )
-    p_raw.add_argument("--event", choices=EVENTS, default="cpi", help="the event (default: cpi)")
+    p_raw.add_argument(
+        "--event", choices=EVENT_NAMES, default="cpi", help="the event (default: cpi)"
+    )
     p_raw.set_defaults(func=_raw_move)
 
     return parser

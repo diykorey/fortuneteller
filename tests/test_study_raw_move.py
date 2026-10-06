@@ -231,7 +231,7 @@ def test_release_days_that_move_more_are_found_for_every_instrument() -> None:
     _synthetic_store(con)
 
     # when the raw moves are measured
-    results = measure_raw_moves(con=con)
+    results = measure_raw_moves(CPI_EVENT_TYPE, con=con)
 
     # then each instrument moves, and only the 2020-now era has CPI days
     assert list(results) == list(MVP_PRICE_SERIES)
@@ -254,7 +254,7 @@ def test_the_report_shows_each_unit_and_marks_eras_without_cpi_days() -> None:
     }
 
     # when the report is written
-    lines = describe_raw_moves(results)
+    lines = describe_raw_moves(results, label="CPI")
 
     # then percent and basis points read as such, and a CPI-free era is a dash
     assert "SPY / ES          649       0.55%         0.51%   1.08  0.0123  doesn't" in lines
@@ -334,7 +334,7 @@ def test_another_events_days_are_not_ordinary_days() -> None:
     con = duckdb.connect(":memory:")
     db.init_db(con=con)
     _synthetic_store(con)
-    before = measure_raw_moves(con=con)["SPY / ES"].overall
+    before = measure_raw_moves(CPI_EVENT_TYPE, con=con)["SPY / ES"].overall
     jobs = [
         FirstRelease(
             date(2021 + m // 12, m % 12 + 1, 1), _weekday(date(2021 + m // 12, m % 12 + 1, 3)), 1.0
@@ -344,7 +344,7 @@ def test_another_events_days_are_not_ordinary_days() -> None:
     store_releases(NFP_EVENT_TYPE, jobs, con=con)
 
     # when CPI's raw move is measured again
-    after = measure_raw_moves(con=con)["SPY / ES"].overall
+    after = measure_raw_moves(CPI_EVENT_TYPE, con=con)["SPY / ES"].overall
 
     # then the jobs days leave the ordinary days, and the CPI days stay as they were
     assert before.other_days - after.other_days == 36
