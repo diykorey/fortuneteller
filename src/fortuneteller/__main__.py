@@ -14,18 +14,17 @@ from __future__ import annotations
 import argparse
 import sys
 from collections.abc import Callable, Sequence
-from datetime import date
 
-from . import db, expectations, seed, sources, study
+from . import db, expectations, flows, seed, sources, study
 from .config import settings
 from .models import Surprise
 
 Handler = Callable[[argparse.Namespace], int]
 # The events a command can be pointed at, by their short name on the command line.
 EVENTS = {
-    "cpi": study.CPI_EVENT_TYPE,
-    "nfp": study.NFP_EVENT_TYPE,
-    "fomc": study.FOMC_EVENT_TYPE,
+    "cpi": flows.CPI_EVENT_TYPE,
+    "nfp": flows.NFP_EVENT_TYPE,
+    "fomc": flows.FOMC_EVENT_TYPE,
 }
 # Three letters keep the report's columns aligned.
 EVENT_LABELS = {"cpi": "CPI", "nfp": "NFP", "fomc": "Fed"}
@@ -67,44 +66,19 @@ def _fred_key(command: str) -> str:
     return api_key
 
 
-def _months(releases: Sequence[sources.FirstRelease] | Sequence[date]) -> str:
-    months = [r if isinstance(r, date) else r.reference_month for r in releases]
-    return ", ".join(month.strftime("%Y-%m") for month in months)
-
-
 def _load_releases(_args: argparse.Namespace) -> int:
     api_key = _fred_key("load-releases")
     if not api_key:
         return 1
-    parsed = {}
+    con = db.get_connection()
+    db.init_db(con=con)
     try:
-        for event_type, series_id in study.RELEASE_SERIES.items():
-            payload = sources.fetch_first_releases(api_key, series_id=series_id)
-            parsed[event_type] = sources.parse_first_releases(payload, series_id)
-        decisions = study.load_fomc_decisions(api_key)
+        report = flows.load_releases(api_key, con=con)
     except (sources.FredError, sources.FedError, ValueError) as exc:
         print(f"load-releases: {exc}", file=sys.stderr)
         return 1
-    for event_type, (releases, _valueless) in parsed.items():
-        if not releases:
-            print(f"load-releases: FRED returned no {event_type} releases", file=sys.stderr)
-            return 1
-    con = db.get_connection()
-    db.init_db(con=con)
-    for event_type, (releases, valueless) in parsed.items():
-        kept, carried = study.one_release_per_day(releases)
-        loaded = study.store_releases(event_type, kept, con=con)
-        label = event_type.split(" /")[0]
-        released = [release.released for release in kept]
-        print(f"loaded {loaded} {label} releases, {min(released)} … {max(released)}")
-        if valueless:
-            print(f"  skipped {len(valueless)} printed without a value: {_months(valueless)}")
-        if carried:
-            print(f"  {len(carried)} first published with a later month: {_months(carried)}")
-    loaded = study.store_fomc_decisions(decisions, con=con)
-    unscheduled = sum(not decision.scheduled for decision in decisions)
-    first, last = decisions[0].day, decisions[-1].day
-    print(f"loaded {loaded} Fed decisions, {first} … {last} ({unscheduled} unscheduled)")
+    for line in report:
+        print(line)
     return 0
 
 
@@ -148,13 +122,13 @@ def _load_prices(_args: argparse.Namespace) -> int:
 def describe_surprises(rows: Sequence[Surprise]) -> list[str]:
     """One report line per measure and expected value: how many surprises, over which months."""
     lines = []
-    for measure in (*study.MEASURE_SERIES, study.PAYROLLS):
+    for measure in (*flows.MEASURE_SERIES, flows.PAYROLLS):
         for baseline in (expectations.TREND_12M, expectations.NOWCAST_BASELINE):
             ids = sorted(
                 r.event_id for r in rows if r.measure == measure and r.baseline == baseline
             )
             if ids:
-                first, last = (study.event_date(i) for i in (ids[0], ids[-1]))
+                first, last = (flows.event_date(i) for i in (ids[0], ids[-1]))
                 lines.append(
                     f"{measure:<9} {baseline:<10} {len(ids):>3} surprises, released {first} … {last}"
                 )
@@ -168,7 +142,7 @@ def _load_surprises(_args: argparse.Namespace) -> int:
     con = db.get_connection()
     db.init_db(con=con)
     try:
-        rows = study.load_surprises(api_key, con=con)
+        rows = flows.load_surprises(api_key, con=con)
     except (sources.FredError, sources.ClevelandError, ValueError) as exc:
         print(f"load-surprises: {exc}", file=sys.stderr)
         return 1
@@ -189,10 +163,10 @@ def _hit_rate(tracking: study.SurpriseTracking) -> str:
 
 def describe_surprise_tracking(
     results: dict[tuple[str, str], dict[str, study.SurpriseTracking]],
-    event_type: str = study.CPI_EVENT_TYPE,
+    event_type: str = flows.CPI_EVENT_TYPE,
 ) -> list[str]:
     """The report: the verdict table, the context table if the event has one, and the rule."""
-    rule = study.SURPRISE_RULES[event_type]
+    rule = flows.SURPRISE_RULES[event_type]
     verdict_combination = rule.combinations[0]
     lines = [
         f"{verdict_combination[0]} against the 12-month trend",
@@ -230,7 +204,7 @@ def describe_surprise_tracking(
 
 def _surprise(args: argparse.Namespace) -> int:
     event_type = EVENTS[args.event]
-    if event_type not in study.SURPRISE_RULES:
+    if event_type not in flows.SURPRISE_RULES:
         print(
             f"surprise: {event_type} has no surprise: no free record of what the market expected",
             file=sys.stderr,
@@ -238,12 +212,12 @@ def _surprise(args: argparse.Namespace) -> int:
         return 1
     con = db.get_connection()
     db.init_db(con=con)
-    measure, baseline = study.SURPRISE_RULES[event_type].combinations[0]
+    measure, baseline = flows.SURPRISE_RULES[event_type].combinations[0]
     stored = con.execute(
         "SELECT count(*) FROM surprises WHERE measure = ? AND baseline = ?", [measure, baseline]
     ).fetchone()
     for missing, command in (
-        (not study.stored_events(event_type, con=con), "load-releases"),
+        (not flows.stored_events(event_type, con=con), "load-releases"),
         (db.count_rows("observations", con=con) == 0, "load-prices"),
         (stored is None or stored[0] == 0, "load-surprises"),
     ):
@@ -300,7 +274,7 @@ def _raw_move(args: argparse.Namespace) -> int:
     event_type = EVENTS[args.event]
     con = db.get_connection()
     db.init_db(con=con)
-    if not study.stored_events(event_type, con=con):
+    if not flows.stored_events(event_type, con=con):
         print(
             f"raw-move: no {event_type} releases stored; run `fortuneteller load-releases` first",
             file=sys.stderr,

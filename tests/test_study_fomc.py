@@ -7,7 +7,7 @@ from pathlib import Path
 import duckdb
 import pytest
 
-from fortuneteller import db, sources, study
+from fortuneteller import db, flows, sources, study
 from fortuneteller.models import EventInstance
 from fortuneteller.sources import (
     DailyClosingPrice,
@@ -121,7 +121,7 @@ def test_a_target_change_without_a_decision_is_named() -> None:
     ]
 
     # when the changes are matched to decisions
-    unmatched = study.unmatched_target_changes(decisions, rates)
+    unmatched = flows.unmatched_target_changes(decisions, rates)
 
     # then a change effective a day or a weekend after its decision is matched, a lone one is not
     assert unmatched == [date(2022, 3, 17)]
@@ -132,7 +132,7 @@ def test_a_decision_becomes_an_event_at_its_announced_time() -> None:
     decision = FomcDecision(date(2020, 3, 15), scheduled=False)
 
     # when it is mapped
-    event = study.fomc_event_instance(decision)
+    event = flows.fomc_event_instance(decision)
 
     # then it is a US central-bank decision keyed 3 + its day, at 21:00 UTC, unscheduled
     assert event.event_id == 3_2020_03_15
@@ -157,7 +157,7 @@ def test_a_scheduled_statement_came_at_14_15_until_march_2013(day: date, announc
     # given a decision day: a scheduled one before or after 2013-03-20, or a listed exception
 
     # when its announcement time is looked up
-    looked_up = study.fomc_announced_at(day)
+    looked_up = flows.fomc_announced_at(day)
 
     # then it is the era's time, or the exception's own
     assert looked_up == announced
@@ -167,7 +167,7 @@ def test_loading_refuses_when_a_target_change_has_no_decision(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     # given the Fed's pages answering with only 1994, and the target rising on a day with no decision
-    monkeypatch.setattr(study, "FED_HISTORY_YEARS", range(1994, 1995))
+    monkeypatch.setattr(flows, "FED_HISTORY_YEARS", range(1994, 1995))
     pages = {
         sources.fed_history_url(1994): (DATA / "fed_fomc_history_1994.htm").read_bytes(),
         sources.FED_CALENDAR_URL: (DATA / "fed_fomc_calendar_2025.htm").read_bytes(),
@@ -184,7 +184,7 @@ def test_loading_refuses_when_a_target_change_has_no_decision(
 
     # when / then the load is refused, naming the day
     with pytest.raises(ValueError, match="1994-06-02"):
-        study.load_fomc_decisions("key")
+        flows.load_fomc_decisions("key")
 
 
 def test_stored_decisions_are_measured_like_any_other_event() -> None:
@@ -193,11 +193,11 @@ def test_stored_decisions_are_measured_like_any_other_event() -> None:
     db.init_db(con=con)
 
     # when it is stored and read back
-    study.store_fomc_decisions([FomcDecision(date(2020, 3, 15), scheduled=False)], con=con)
+    flows.store_fomc_decisions([FomcDecision(date(2020, 3, 15), scheduled=False)], con=con)
 
     # then it is one event of its type, released the day it was announced
-    events = study.stored_events(study.FOMC_EVENT_TYPE, con=con)
-    assert [study.release_date(e) for e in events] == [date(2020, 3, 15)]
+    events = flows.stored_events(flows.FOMC_EVENT_TYPE, con=con)
+    assert [flows.release_date(e) for e in events] == [date(2020, 3, 15)]
 
 
 GOLD_CLOSE = study.MVP_PRICE_SERIES["GC / XAU"].close
@@ -205,7 +205,7 @@ SPX_CLOSE = study.MVP_PRICE_SERIES["SPY / ES"].close
 
 
 def _event_at(utc: datetime) -> EventInstance:
-    decision = study.fomc_event_instance(FomcDecision(date(2020, 1, 29), scheduled=True))
+    decision = flows.fomc_event_instance(FomcDecision(date(2020, 1, 29), scheduled=True))
     return decision.model_copy(update={"event_ts": utc})
 
 
@@ -233,7 +233,7 @@ def test_a_winter_release_at_8_30_reacts_in_gold_the_same_day() -> None:
 
 def test_a_sunday_evening_decision_pairs_fridays_close_with_mondays() -> None:
     # given the cut announced at 17:00 New York on Sunday 2020-03-15, and closes either side
-    event = study.fomc_event_instance(FomcDecision(date(2020, 3, 15), scheduled=False))
+    event = flows.fomc_event_instance(FomcDecision(date(2020, 3, 15), scheduled=False))
     closes = [DailyClosingPrice(date(2020, 3, 13), 1.0), DailyClosingPrice(date(2020, 3, 16), 0.9)]
 
     # when the S&P 500's closes are paired around it

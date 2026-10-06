@@ -8,11 +8,11 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Event flows, step 1 — `expectations.py`: `Actual`, `Expectation`, `ExpectationSource`, `Trend12m`,
-`ClevelandNowcast`, and `build_surprises`, which checks every expectation against its event (stored,
-same measure and unit, known before the announcement) before computing a surprise.
-`load-surprises` runs through it: all 2,131 `surprises` rows identical to `main`'s, and every
-report byte-identical. *(PR #108.)*
+Event flows, step 2 — `flows.py`: `EventFlow` with `CpiFlow`, `NfpFlow` and `FedFlow`, each holding
+its own source, checks and surprise rule; `load-releases` and `load-surprises` run them from
+`EVENT_FLOWS`, and `load-releases` stores nothing unless every flow succeeds. Against `main` on real
+data: both loads' output, all five reports, `event_instances` (1,780 rows, from an empty database)
+and `surprises` (2,131 rows) identical. *(PR pending.)*
 
 ## In progress
 
@@ -20,13 +20,14 @@ report byte-identical. *(PR #108.)*
 
 ## Next
 
-Event flows, step 2 — `flows.py`: `EventFlow`, `CpiFlow`, `NfpFlow`, `FedFlow`; `load-releases` and
-`load-surprises` routed through `EVENT_FLOWS`.
+Event flows, step 3 — the CLI takes its `--event` choices, labels and surprise rules from the
+flows; the old event-specific constants (`RELEASE_SERIES`, `SURPRISE_RULES`, the CLI's `EVENTS`) go.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-06 | Event flows step 2: CPI, NFP and Fed as flows behind `EVENT_FLOWS` | PR pending |
 | 2026-10-06 | Event flows spec and step 1: expectation sources, validated surprises | PR #108 |
 | 2026-10-06 | Rung 1.8: Results; rung 1 section in `mvp-results.md` — rung 1 complete | PR #107 |
 | 2026-10-06 | Rung 1.7: NFP surprise; yield and dollar follow it but miss the hit-rate bar | PR #106 |
