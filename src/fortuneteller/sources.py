@@ -1,14 +1,17 @@
 """The outside sources: request each one's data and parse the reply into plain records.
 
-FRED (``docs/steps/step-1-releases.md``): the CPI release history, each value as first published
-with its release date. Yahoo (``docs/steps/step-2-prices.md``): each instrument's daily closes, by
-trading date in the exchange's own time zone. Nothing here touches the database.
+FRED (``docs/steps/step-1-releases.md``): the CPI and jobs-report release histories, each value as
+first published with its release date. Yahoo (``docs/steps/step-2-prices.md``): each instrument's
+daily closes, by trading date in the exchange's own time zone. The Cleveland Fed: CPI nowcasts.
+The Federal Reserve (``docs/steps/rung-1-more-events.md``): the days it announced its decisions.
+Nothing here touches the database.
 """
 
 from __future__ import annotations
 
 import http.client
 import json
+import re
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -158,8 +161,8 @@ def parse_first_releases(payload: bytes, series_id: str) -> tuple[list[FirstRele
 
 
 YAHOO_CHART_URL = "https://query1.finance.yahoo.com/v8/finance/chart/"
-# Yahoo refuses requests without a browser-like User-Agent.
-YAHOO_HEADERS = {"User-Agent": "Mozilla/5.0"}
+# Yahoo refuses requests without a browser-like User-Agent; the Fed's pages are sent it too.
+BROWSER_HEADERS = {"User-Agent": "Mozilla/5.0"}
 
 
 @dataclass(frozen=True)
@@ -176,7 +179,7 @@ def fetch_daily_bars(ticker: str, timeout: float = 30.0) -> bytes:
     """Return the raw Yahoo chart response: the ticker's whole daily history."""
     params = {"period1": "0", "period2": "9999999999", "interval": "1d"}
     url = f"{YAHOO_CHART_URL}{urllib.parse.quote(ticker, safe='')}?{urllib.parse.urlencode(params)}"
-    request = urllib.request.Request(url, headers=YAHOO_HEADERS)
+    request = urllib.request.Request(url, headers=BROWSER_HEADERS)
     try:
         with urllib.request.urlopen(request, timeout=timeout) as response:
             body: bytes = response.read()
@@ -308,3 +311,131 @@ def parse_nowcasts(payload: bytes) -> list[NowcastPoint]:
         return points
     except MALFORMED_REPLY as exc:
         raise ClevelandError(f"Cleveland Fed sent an unexpected reply: {exc!r}") from None
+
+
+# Federal Reserve
+
+
+FED_HISTORY_URL = "https://www.federalreserve.gov/monetarypolicy/fomchistorical{year}.htm"
+FED_CALENDAR_URL = "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm"
+MONTHS = ("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec")
+# A year page's heading per meeting, in the forms the pages use: "January 29-30 Meeting - 2008",
+# "January 31-February 1 Meeting - 1995", "April/May 30-1 Meeting - 2013",
+# "March 15 (unscheduled) Meeting - 2020", "October 4 (unscheduled) - 2019",
+# "March 19 (notation vote) - 2020", "January 21 Conference Call - 2008".
+# From this meeting on, the Fed issued a statement after every one, change or not.
+EVERY_MEETING_STATEMENT = date(1999, 5, 18)
+FOMC_HEADING = re.compile(
+    r"\s*(?P<month>[A-Za-z/]+)\s+(?P<first>\d+)(?:-(?:(?P<last_month>[A-Za-z]+)\s+)?(?P<last>\d+))?"
+    r"\s*(?:\((?P<note>[^)]*)\))?\s*(?P<kind>Meeting|Conference Call)?\s*-\s*(?P<year>\d{4})"
+)
+STATEMENT_LINK = re.compile(r'href="[^"]*?(\d{8})[^"]*"[^>]*>\s*Statement')
+CALENDAR_STATEMENT = re.compile(r"Statement:.*?pressreleases/monetary(\d{8})a\.htm", re.S)
+
+
+@dataclass(frozen=True)
+class FomcDecision:
+    """A day the Fed announced a policy decision; unscheduled ones came between meetings."""
+
+    day: date
+    scheduled: bool
+
+
+class FedError(RuntimeError):
+    pass
+
+
+def fed_history_url(year: int) -> str:
+    return FED_HISTORY_URL.format(year=year)
+
+
+def fetch_fed_page(url: str, timeout: float = 30.0) -> bytes:
+    """Return one of the Fed's calendar pages."""
+    request = urllib.request.Request(url, headers=BROWSER_HEADERS)
+    try:
+        with urllib.request.urlopen(request, timeout=timeout) as response:
+            body: bytes = response.read()
+            return body
+    except urllib.error.HTTPError as exc:
+        raise FedError(f"the Fed returned HTTP {exc.code} for {url}") from None
+    except urllib.error.URLError as exc:
+        raise FedError(f"the Fed request for {url} failed: {exc.reason}") from None
+    except NETWORK_FAILURE as exc:
+        raise FedError(f"the Fed request for {url} failed: {exc}") from None
+
+
+def _day(digits: str) -> date:
+    return date(int(digits[:4]), int(digits[4:6]), int(digits[6:]))
+
+
+def parse_fomc_history(payload: bytes) -> list[FomcDecision]:
+    """Parse one of the Fed's year pages (1994–2020) into its decisions, oldest first.
+
+    A meeting or call that issued a statement is a decision on the statement's date: the day the
+    market heard it (the call of 2008-01-21 was announced on the 22nd). A scheduled meeting with
+    no statement before May 1999 is a decision on its last day: the Fed then announced only
+    changes, and the market watched for one. Cancelled meetings, notation votes, calls without a
+    statement and later meetings without one (2003-09-15, a briefing) are not decisions.
+    """
+    html = payload.decode("utf-8", errors="replace")
+    blocks = re.split(r"<h5[^>]*>", html)[1:]
+    if not blocks:
+        raise FedError("the Fed's year page lists no FOMC meetings")
+    decisions: dict[date, bool] = {}
+    for block in blocks:
+        heading, body = block.split("</h5>", 1)
+        match = FOMC_HEADING.match(heading)
+        if match is None:
+            raise FedError(f"unrecognised FOMC heading: {heading.strip()!r}")
+        note = (match["note"] or "").lower()
+        if note in ("cancelled", "notation vote"):
+            continue
+        scheduled = match["kind"] == "Meeting" and note != "unscheduled"
+        statement = STATEMENT_LINK.search(body.split("<h5", 1)[0])
+        if statement:
+            decisions.setdefault(_day(statement[1]), scheduled)
+        elif scheduled:
+            month = match["last_month"] or match["month"].split("/")[-1]
+            day = date(
+                int(match["year"]),
+                MONTHS.index(month[:3]) + 1,
+                int(match["last"] or match["first"]),
+            )
+            if day < EVERY_MEETING_STATEMENT:
+                decisions.setdefault(day, True)
+    return [FomcDecision(day, scheduled) for day, scheduled in sorted(decisions.items())]
+
+
+def parse_fomc_calendar(payload: bytes) -> list[FomcDecision]:
+    """Parse the Fed's current calendar (2021 on): each meeting with a statement, on its date.
+
+    Meetings still to come have no statement yet, so they are not decisions.
+    """
+    html = payload.decode("utf-8", errors="replace")
+    rows = re.split(r'class="(?:fomc-meeting--shaded )?row fomc-meeting"', html)[1:]
+    if not rows:
+        raise FedError("the Fed's calendar lists no FOMC meetings")
+    decisions: dict[date, bool] = {}
+    for row in rows:
+        statement = CALENDAR_STATEMENT.search(row)
+        if statement:
+            decisions.setdefault(_day(statement[1]), "unscheduled" not in row[:600])
+    return [FomcDecision(day, scheduled) for day, scheduled in sorted(decisions.items())]
+
+
+def fetch_series(api_key: str, series_id: str, timeout: float = 30.0) -> bytes:
+    """Return the raw FRED response: a series' observations as they stand today."""
+    return _fred_get(api_key, {"series_id": series_id}, timeout)
+
+
+def parse_series(payload: bytes) -> list[tuple[date, float]]:
+    """Parse a FRED observations response into (date, value), skipping days with no value."""
+    try:
+        observations: list[dict[str, str]] = json.loads(payload)["observations"]
+        return [
+            (date.fromisoformat(row["date"]), float(row["value"]))
+            for row in observations
+            if row["value"] != MISSING_VALUE
+        ]
+    except MALFORMED_REPLY as exc:
+        raise FredError(f"FRED sent an unexpected reply: {exc!r}") from None

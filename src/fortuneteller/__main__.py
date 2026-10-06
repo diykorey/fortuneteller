@@ -1,10 +1,10 @@
 """Command-line entry point for FortuneTeller.
 
 Subcommands: ``init`` creates the store (M0-05 ``db.init_db``); ``seed`` / ``query-demo`` load and
-read the seed data (M0-07 ``seed``); ``load-releases`` loads the CPI release history from FRED
-(MVP step 1 ``study``); ``load-prices`` loads the five instruments' daily closes and measures their
-move around each release (MVP step 2); ``raw-move`` compares each instrument's moves on CPI days
-with all other days (MVP step 3); ``load-surprises`` stores each release's CPI surprise and
+read the seed data (M0-07 ``seed``); ``load-releases`` loads the CPI and jobs-report release
+histories from FRED (MVP step 1 ``study``) and the Fed's decisions (rung 1); ``load-prices`` loads the five instruments' daily closes and measures their
+move around each release (MVP step 2); ``raw-move`` compares each instrument's moves on an event's
+days with all other days (MVP step 3); ``load-surprises`` stores each release's CPI surprise and
 ``surprise`` measures how the moves follow it (MVP step 4).
 """
 
@@ -21,7 +21,13 @@ from .models import Surprise
 
 Handler = Callable[[argparse.Namespace], int]
 # The events a command can be pointed at, by their short name on the command line.
-EVENTS = {"cpi": study.CPI_EVENT_TYPE, "nfp": study.NFP_EVENT_TYPE}
+EVENTS = {
+    "cpi": study.CPI_EVENT_TYPE,
+    "nfp": study.NFP_EVENT_TYPE,
+    "fomc": study.FOMC_EVENT_TYPE,
+}
+# Three letters keep the report's columns aligned.
+EVENT_LABELS = {"cpi": "CPI", "nfp": "NFP", "fomc": "Fed"}
 
 
 def _init(_args: argparse.Namespace) -> int:
@@ -74,7 +80,8 @@ def _load_releases(_args: argparse.Namespace) -> int:
         for event_type, series_id in study.RELEASE_SERIES.items():
             payload = sources.fetch_first_releases(api_key, series_id=series_id)
             parsed[event_type] = sources.parse_first_releases(payload, series_id)
-    except sources.FredError as exc:
+        decisions = study.load_fomc_decisions(api_key)
+    except (sources.FredError, sources.FedError, ValueError) as exc:
         print(f"load-releases: {exc}", file=sys.stderr)
         return 1
     for event_type, (releases, _valueless) in parsed.items():
@@ -93,6 +100,10 @@ def _load_releases(_args: argparse.Namespace) -> int:
             print(f"  skipped {len(valueless)} printed without a value: {_months(valueless)}")
         if carried:
             print(f"  {len(carried)} first published with a later month: {_months(carried)}")
+    loaded = study.store_fomc_decisions(decisions, con=con)
+    unscheduled = sum(not decision.scheduled for decision in decisions)
+    first, last = decisions[0].day, decisions[-1].day
+    print(f"loaded {loaded} Fed decisions, {first} … {last} ({unscheduled} unscheduled)")
     return 0
 
 
@@ -286,7 +297,7 @@ def _raw_move(args: argparse.Namespace) -> int:
     except ValueError as exc:
         print(f"raw-move: {exc}", file=sys.stderr)
         return 1
-    for line in describe_raw_moves(results, label=args.event.upper()):
+    for line in describe_raw_moves(results, label=EVENT_LABELS[args.event]):
         print(line)
     return 0
 
@@ -304,7 +315,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_demo = sub.add_parser("query-demo", help="print a sample effect-size lookup row")
     p_demo.set_defaults(func=_query_demo)
 
-    p_releases = sub.add_parser("load-releases", help="load the CPI release history from FRED")
+    p_releases = sub.add_parser("load-releases", help="load CPI and NFP releases and Fed decisions")
     p_releases.set_defaults(func=_load_releases)
 
     p_prices = sub.add_parser(

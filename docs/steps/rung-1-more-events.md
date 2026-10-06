@@ -48,11 +48,12 @@ standard source, are paid. So the Fed gets step 3 only; its surprise is in
 | --- | --- | --- |
 | 1 | ~~Generic keys: `event_id` = type code × 10⁸ + release date (CPI 2022-09-13 → `120220913`); `observations` keyed by (`event_id`, `instrument`); `cpi_surprises` becomes `surprises`~~ **done** | Fact tables reloaded under the new keys; `raw-move` and `surprise` print the CPI numbers unchanged |
 | 2 | ~~NFP releases into `event_instances` (`NFP / labor data`, 08:30 New York)~~ **done** | Weekend guard; dates checked against BLS's Employment Situation archive from 1994; 2026-10 count recorded |
-| 3 | ~~`raw-move` takes an event (`cpi`, `nfp`, `fomc`)~~ **done** (`cpi`, `nfp`; `fomc` with sub-step 4) | NFP's step 3 verdict printed |
-| 4 | FOMC decisions into `event_instances` (`Central-bank decision`, `United States`, 14:00 New York; unscheduled ones `scheduled = false`) | Every target-rate change since 1994 falls on a listed decision; FOMC's step 3 verdict printed |
-| 5 | Clean baseline: "ordinary days" exclude every stored event's reaction day | CPI's step 3 re-run; old and new verdicts recorded side by side |
-| 6 | NFP surprise: first-published monthly payroll change against its 12-month trend, into `surprises`; `surprise` takes an event | August 2022 reads +315k; NFP's step 4 verdict printed |
-| 7 | Results here, and a rung 1 section in [`mvp-results.md`](../mvp-results.md) | Says, per event, whether it moves the five markets and (NFP) whether the move follows the surprise |
+| 3 | ~~`raw-move` takes an event (`cpi`, `nfp`, `fomc`)~~ **done** | NFP's step 3 verdict printed |
+| 4 | ~~FOMC decisions into `event_instances` (`Central-bank decision`, `United States`, 14:00 New York; unscheduled ones `scheduled = false`)~~ **done** | Every target-rate change since 1994 falls on a listed decision; FOMC's step 3 verdict printed |
+| 5 | Reaction close by event time: an event after an instrument's daily close reacts at its next close; each unscheduled Fed decision at its announced time | Gold's Fed-day move measured after the decision; CPI and NFP output unchanged |
+| 6 | Clean baseline: "ordinary days" exclude every stored event's reaction day | CPI's step 3 re-run; old and new verdicts recorded side by side |
+| 7 | NFP surprise: first-published monthly payroll change against its 12-month trend, into `surprises`; `surprise` takes an event | August 2022 reads +315k; NFP's step 4 verdict printed |
+| 8 | Results here, and a rung 1 section in [`mvp-results.md`](../mvp-results.md) | Says, per event, whether it moves the five markets and (NFP) whether the move follows the surprise |
 
 ## How you know it is right
 
@@ -77,7 +78,7 @@ No Fed surprise. No consensus forecasts, no intraday prices (option 2 in
 | --- | --- | --- | --- |
 | Fed surprise | Out of scope: step 3 only | A proxy from the day's own move | The only free proxy is the market's reaction itself, which would measure the move against itself |
 | Event key | Type code × 10⁸ + release date: `1` CPI, `2` NFP, `3` US central-bank decision | A hash of type and detail | Readable, sortable, unique per type and day |
-| Order | Keys, NFP, FOMC, clean baseline, NFP surprise | FOMC first | NFP reuses the most CPI code |
+| Order | Keys, NFP, FOMC, close timing, clean baseline, NFP surprise | FOMC first | NFP reuses the most CPI code; close timing changes the reaction days the clean baseline removes |
 | Ordinary days | Days with no stored event's reaction, for every event | A separate baseline per event | One rule; each event's baseline excludes the others |
 | NFP surprise measure | Monthly payroll change, thousands, against its 12-month trend | Unemployment rate | The payroll number is the headline the market trades first |
 | NFP expected direction of a strong print | UST 10Y up, DXY up; S&P 500, VIX, gold two-sided | A sign for every instrument | "Good news is bad news" makes equities' sign regime-dependent; only rates and the dollar have an agreed one |
@@ -103,8 +104,33 @@ month minus the previous month in that same column (or, if not revised that day,
 value). The release date is the column's date.
 
 **Fed source.** `https://www.federalreserve.gov/monetarypolicy/fomchistorical<year>.htm` for
-1994–2020 and `…/fomccalendars.htm` from 2021. Each decision's date is the meeting's last day.
-Cross-check: FRED `DFEDTAR` (to 2008-12-15), `DFEDTARU` (from 2008-12-16).
+1994–2020 and `…/fomccalendars.htm` from 2021 (`sources.parse_fomc_history`,
+`parse_fomc_calendar`). The rule:
+
+- A meeting or conference call with a statement is a decision on the statement's date: the day the
+  market heard it (the call of 2008-01-21 was announced on the 22nd).
+- A scheduled meeting with no statement is a decision on its last day, but only before May 1999:
+  until then the Fed announced only changes, and the market watched for one. Later meetings without
+  a statement are not decisions (2003-09-15 was a briefing).
+- Cancelled meetings, notation votes and calls without a statement are not decisions.
+- A meeting is unscheduled (`scheduled = false`) if it is a call or marked unscheduled.
+
+Cross-check: FRED `DFEDTAR` (to 2008-12-15), `DFEDTARU` (from 2008-12-16). Every change in the
+target must fall on a decision day or up to 3 days after it (since 2017 a new target takes effect
+the next day); `load-releases` refuses to store the decisions otherwise, naming the day.
+
+**Fed decisions, loaded 2026-10-05.** 275 decisions, 1994-02-04 … 2026-09-16, 14 unscheduled.
+Every target change, 92 of them, falls on a decision. 2001-09-17 has no move: markets were shut
+11–14 September, so no close lies within 4 days before it. The cross-check catches only a missing
+decision that changed the rate; a year with no change (2021) is covered only by the calendar page,
+so if the Fed moves 2021 to its year pages, `FED_HISTORY_YEARS` must grow with it.
+
+**Gold closes before the Fed decides.** `GC=F`'s daily close is the COMEX settlement, 13:30 New
+York; decisions come at 14:00. So gold's "Fed-day" move ends before the decision: its ratio is 0.79
+on the day and 1.80 on the next. Gold's Fed verdict from sub-step 4 (*doesn't*, ratio 0.78) is
+therefore not a finding; sub-step 5 fixes the pairing. The dollar's next-day ratio (1.46, against
+1.15 on the day) suggests its Yahoo close time is worth checking in the same sub-step; the others
+close after 14:00.
 
 **Code.** As before: fetching and parsing in `sources.py`, measurement in `study.py`, statistics
 in `stats.py`, commands in `__main__.py`. Event-specific values (series ID, release time, expected
@@ -113,4 +139,4 @@ which rule 2 allows.
 
 ## Results
 
-*Filled in by sub-step 7.*
+*Filled in by sub-step 8.*

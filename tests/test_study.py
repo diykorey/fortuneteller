@@ -17,6 +17,7 @@ from fortuneteller import db, sources, study
 from fortuneteller.__main__ import main
 from fortuneteller.config import settings
 from fortuneteller.sources import (
+    FomcDecision,
     CPI_SERIES_ID,
     FirstRelease,
     FredError,
@@ -236,22 +237,25 @@ def test_event_ts_round_trips_as_utc_under_a_non_utc_session() -> None:
 def test_load_releases_prints_count_range_and_skipped_months(
     tmp_db: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    # given a configured key and FRED answering with the saved response
+    # given a configured key, FRED answering with the saved response, and two Fed decisions
     monkeypatch.setattr(settings, "fred_api_key", SecretStr("test-key"))
     _fred_answers(monkeypatch)
+    decisions = [FomcDecision(date(2020, 3, 3), False), FomcDecision(date(2020, 3, 18), True)]
+    monkeypatch.setattr(study, "load_fomc_decisions", lambda _key: decisions)
 
     # when the command runs twice
     first = main(["load-releases"])
     second = main(["load-releases"])
 
-    # then each run reports the same load, and the table holds one row per print
+    # then each run reports the same load, and the table holds one row per print and decision
     assert (first, second) == (0, 0)
     report = "loaded 6 CPI releases, 1972-08-22 … 2026-09-11\n"
     report += "  skipped 1 printed without a value: 2025-10\n"
     report += "loaded 3 NFP releases, 2025-11-20 … 2026-01-09\n"
     report += "  1 first published with a later month: 2025-10\n"
+    report += "loaded 2 Fed decisions, 2020-03-03 … 2020-03-18 (1 unscheduled)\n"
     assert capsys.readouterr().out == report * 2
-    assert db.count_rows("event_instances", con=db.get_connection()) == 9
+    assert db.count_rows("event_instances", con=db.get_connection()) == 11
 
 
 def test_load_releases_without_a_key_fails_before_fetching(
