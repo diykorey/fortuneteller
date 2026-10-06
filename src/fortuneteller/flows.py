@@ -43,8 +43,6 @@ FIRST_RELEASE = "first_release"
 # Each event type's leading digit in event_id; the rest is the release day, so ids from different
 # types never collide and sort by date within a type.
 EVENT_TYPE_CODES = {CPI_EVENT_TYPE: 1, NFP_EVENT_TYPE: 2, FOMC_EVENT_TYPE: 3}
-# The FRED series each scheduled data release is read from, as first published.
-RELEASE_SERIES = {CPI_EVENT_TYPE: sources.CPI_SERIES_ID, NFP_EVENT_TYPE: sources.NFP_SERIES_ID}
 
 
 def event_id(event_type: str, released: date) -> int:
@@ -476,12 +474,10 @@ class SurpriseRule:
     step: str
 
 
-SURPRISE_RULES = {
-    CPI_EVENT_TYPE: SurpriseRule(COMBINATIONS, EXPECTED_SIGN, NOTICEABLE_SURPRISE_PP, "0.1pp"),
-    NFP_EVENT_TYPE: SurpriseRule(
-        ((PAYROLLS, TREND_12M),), NFP_EXPECTED_SIGN, NOTICEABLE_PAYROLLS_K, "50k"
-    ),
-}
+CPI_SURPRISE_RULE = SurpriseRule(COMBINATIONS, EXPECTED_SIGN, NOTICEABLE_SURPRISE_PP, "0.1pp")
+NFP_SURPRISE_RULE = SurpriseRule(
+    ((PAYROLLS, TREND_12M),), NFP_EXPECTED_SIGN, NOTICEABLE_PAYROLLS_K, "50k"
+)
 
 
 # The flows.
@@ -536,7 +532,7 @@ class CpiFlow:
     event_type = CPI_EVENT_TYPE
     cli_name = "cpi"
     label = "CPI"
-    surprise_rule: SurpriseRule | None = SURPRISE_RULES[CPI_EVENT_TYPE]
+    surprise_rule: SurpriseRule | None = CPI_SURPRISE_RULE
 
     def events(self, api_key: str) -> EventBatch:
         return _release_batch(self.event_type, self.label, sources.CPI_SERIES_ID, api_key)
@@ -567,7 +563,7 @@ class NfpFlow:
     event_type = NFP_EVENT_TYPE
     cli_name = "nfp"
     label = "NFP"
-    surprise_rule: SurpriseRule | None = SURPRISE_RULES[NFP_EVENT_TYPE]
+    surprise_rule: SurpriseRule | None = NFP_SURPRISE_RULE
 
     def events(self, api_key: str) -> EventBatch:
         return _release_batch(self.event_type, self.label, sources.NFP_SERIES_ID, api_key)
@@ -599,6 +595,11 @@ class FedFlow:
 
 
 EVENT_FLOWS: list[EventFlow] = [CpiFlow(), NfpFlow(), FedFlow()]
+
+
+def flow_named(cli_name: str) -> EventFlow:
+    """The flow the command line calls ``cli_name``."""
+    return next(flow for flow in EVENT_FLOWS if flow.cli_name == cli_name)
 
 
 def load_releases(api_key: str, con: duckdb.DuckDBPyConnection | None = None) -> list[str]:
@@ -633,6 +634,7 @@ def load_surprises(api_key: str, con: duckdb.DuckDBPyConnection | None = None) -
         for source in EXPECTATION_SOURCES
         for expectation in source.expectations(events, actuals, api_key)
     ]
-    rows = build_surprises(events, actuals, expected, SURPRISE_RULES)
+    with_surprise = [flow.event_type for flow in EVENT_FLOWS if flow.surprise_rule is not None]
+    rows = build_surprises(events, actuals, expected, with_surprise)
     db.replace_rows("surprises", rows, "TRUE", con=con)
     return rows
