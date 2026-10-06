@@ -23,7 +23,7 @@ import random
 from bisect import bisect_left
 from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
-from datetime import UTC, date, datetime, time
+from datetime import UTC, date, datetime, time, timedelta
 from statistics import median
 from typing import NamedTuple
 from zoneinfo import ZoneInfo
@@ -41,6 +41,7 @@ from .sources import FirstRelease, DailyClosingPrice, YahooError
 # Exact keys from data/seed/event_types.csv and countries.csv — joins match on these strings.
 CPI_EVENT_TYPE = "CPI / inflation surprise"
 NFP_EVENT_TYPE = "NFP / labor data"
+FOMC_EVENT_TYPE = "Central-bank decision"
 UNITED_STATES = "United States"
 # CPI and the jobs report both come out at 08:30 New York time.
 RELEASE_TIME = time(8, 30)
@@ -48,7 +49,7 @@ NEW_YORK = ZoneInfo("America/New_York")
 FIRST_RELEASE = "first_release"
 # Each event type's leading digit in event_id; the rest is the release day, so ids from different
 # types never collide and sort by date within a type.
-EVENT_TYPE_CODES = {CPI_EVENT_TYPE: 1, NFP_EVENT_TYPE: 2}
+EVENT_TYPE_CODES = {CPI_EVENT_TYPE: 1, NFP_EVENT_TYPE: 2, FOMC_EVENT_TYPE: 3}
 # The FRED series each scheduled data release is read from, as first published.
 RELEASE_SERIES = {CPI_EVENT_TYPE: sources.CPI_SERIES_ID, NFP_EVENT_TYPE: sources.NFP_SERIES_ID}
 
@@ -122,6 +123,84 @@ def store_releases(
     if len({release.released for release in releases}) != len(releases):
         raise ValueError(f"{event_type}: two releases on one day; merge them first")
     events = [to_event_instance(release, event_type) for release in releases]
+    return db.insert_models("event_instances", events, con=con, replace=True)
+
+
+# Fed decisions (docs/steps/rung-1-more-events.md). From 1994, the first decision announced the day
+# it was made; the year pages run to 2020, the current calendar from 2021.
+FED_HISTORY_YEARS = range(1994, 2021)
+FOMC_TIME = time(14, 0)
+FED_CALENDAR = "fed_calendar"
+# The target rate the Fed sets: one rate until 2008-12-15, the top of a range from 2008-12-16.
+TARGET_RATE_SERIES = (
+    ("DFEDTAR", date(1994, 1, 1), date(2008, 12, 15)),
+    ("DFEDTARU", date(2008, 12, 16), date.max),
+)
+# A new target takes effect up to a weekend after it is announced (since 2017, the next day).
+TARGET_EFFECT_DAYS = 3
+
+
+def fomc_event_instance(decision: sources.FomcDecision) -> EventInstance:
+    """Map one Fed decision to its ``event_instances`` row, at 14:00 New York on its day."""
+    announced = datetime.combine(decision.day, FOMC_TIME, tzinfo=NEW_YORK)
+    return EventInstance(
+        event_id=event_id(FOMC_EVENT_TYPE, decision.day),
+        event_type=FOMC_EVENT_TYPE,
+        event_ts=announced.astimezone(UTC).replace(tzinfo=None),
+        country=UNITED_STATES,
+        detail="scheduled meeting" if decision.scheduled else "unscheduled",
+        scheduled=decision.scheduled,
+        consensus=None,
+        actual=None,
+        surprise=None,
+        surprise_sd=None,
+        surprise_source=None,
+        priced_in_prior=None,
+        vix_t0=None,
+        rate_regime=None,
+        quality=FED_CALENDAR,
+    )
+
+
+def unmatched_target_changes(
+    decisions: Iterable[sources.FomcDecision], rates: Sequence[tuple[date, float]]
+) -> list[date]:
+    """Days the target rate changed with no decision announced that day or shortly before.
+
+    A change with no decision means the calendar is missing a meeting.
+    """
+    days = {decision.day for decision in decisions}
+    changes = [
+        day for (_, before), (day, after) in zip(rates, rates[1:], strict=False) if after != before
+    ]
+    return [
+        day
+        for day in changes
+        if not any(day - timedelta(days=lag) in days for lag in range(TARGET_EFFECT_DAYS + 1))
+    ]
+
+
+def load_fomc_decisions(api_key: str) -> list[sources.FomcDecision]:
+    """Every Fed decision since 1994, refused if a target-rate change has no decision."""
+    pages = [sources.fetch_fed_page(sources.fed_history_url(year)) for year in FED_HISTORY_YEARS]
+    calendar = sources.fetch_fed_page(sources.FED_CALENDAR_URL)
+    decisions = [d for page in pages for d in sources.parse_fomc_history(page)]
+    decisions += sources.parse_fomc_calendar(calendar)
+    rates = []
+    for series_id, start, end in TARGET_RATE_SERIES:
+        series = sources.parse_series(sources.fetch_series(api_key, series_id))
+        rates += [(day, value) for day, value in series if start <= day <= end]
+    if unmatched := unmatched_target_changes(decisions, rates):
+        days = ", ".join(str(day) for day in unmatched)
+        raise ValueError(f"the target rate changed with no Fed decision on {days}")
+    return sorted(decisions, key=lambda decision: decision.day)
+
+
+def store_fomc_decisions(
+    decisions: Sequence[sources.FomcDecision], con: duckdb.DuckDBPyConnection | None = None
+) -> int:
+    """Write the Fed's decisions to ``event_instances``; re-running overwrites by key."""
+    events = [fomc_event_instance(decision) for decision in decisions]
     return db.insert_models("event_instances", events, con=con, replace=True)
 
 
@@ -365,7 +444,7 @@ def daily_moves(closes: Sequence[DailyClosingPrice], unit: str) -> dict[date, fl
 
 
 def reaction_days(closes: Sequence[DailyClosingPrice], release_dates: Iterable[date]) -> set[date]:
-    """The days whose move is a CPI release's reaction: the close step 2 pairs each release with."""
+    """The days whose move is an event's reaction: the close step 2 pairs each event with."""
     days = set()
     for release_date in release_dates:
         pair = closing_price_before_after(closes, release_date)

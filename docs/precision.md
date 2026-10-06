@@ -16,7 +16,7 @@ depends on what "ordinary" means.
 | | Option | Ordinary days are | Cost |
 | --- | --- | --- | --- |
 | **Now** | A. All other days | Every trading day that is not a CPI release day | None: the data is already stored |
-| Better | B. Other releases removed | As A, minus jobs-report (NFP) and Fed-decision (FOMC) days | Two more release calendars to load and check |
+| Better | B. Other releases removed | As A, minus jobs-report (NFP) and Fed-decision (FOMC) days | Both calendars loaded (rung 1); the baseline change is rung 1's sub-step 6 |
 | Better | C. Matched window | The 20 trading days around each release, without the release day | None in data; a different comparison per release |
 
 **Why A is enough for now.** Jobs-report and Fed days are noisy, and A leaves them in the ordinary
@@ -59,7 +59,8 @@ this by splitting the results by era.
 | Choice | Now | More precise | Trigger |
 | --- | --- | --- | --- |
 | Fed surprise | None: the Fed gets step 3 only, because no free history of what the market expected exists | The change implied by Fed funds futures the day before each decision (the standard measure); paid | Fed decisions turn out to move markets in step 3 |
-| Fed decision time | 14:00 New York for every decision; early statements (1994–1995) came at other times | Each statement's actual time | Intraday data arrives |
+| Fed decision time | 14:00 New York for every decision; unscheduled ones, at least, came at other times (to check from the statements) | Each statement's actual time | Sub-step 5: an instrument's reaction day depends on whether the decision came before its close |
+| Reaction close | Every instrument's move is close-to-close on the decision day. Gold's close (COMEX settlement, 13:30) comes before the 14:00 decision, so its Fed-day move is the hour before: ratio 0.79 on the day, 1.80 on the next | Pair the last close before the event with the first close after it, by each instrument's close time | Sub-step 5, planned |
 | NFP hit-rate cut-off | Surprises of at least 50k count | A cut-off scaled to each era's typical surprise | Hit rate rests on fewer than 50 releases |
 
 ## Steps 1–2 — choices already built in
