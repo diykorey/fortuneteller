@@ -8,7 +8,7 @@ from statistics import median
 import duckdb
 import pytest
 
-from fortuneteller import db, study
+from fortuneteller import db, flows
 from fortuneteller.__main__ import describe_raw_moves, main
 from fortuneteller.models import DailyBar
 from fortuneteller.stats import median_not_drawn
@@ -16,9 +16,12 @@ from fortuneteller.sources import (
     FirstRelease,
     DailyClosingPrice,
 )
-from fortuneteller.study import (
+from fortuneteller.flows import (
     CPI_EVENT_TYPE,
     NFP_EVENT_TYPE,
+    store_releases,
+)
+from fortuneteller.study import (
     DOESNT_MOVE,
     MOVES,
     MVP_PRICE_SERIES,
@@ -31,7 +34,6 @@ from fortuneteller.study import (
     daily_moves,
     measure_raw_moves,
     move_verdict,
-    store_releases,
 )
 
 
@@ -300,10 +302,10 @@ def test_the_raw_move_of_another_event_is_measured_on_its_own_days() -> None:
     # given 36 jobs reports on which every instrument moves four times its usual size
     con = duckdb.connect(":memory:")
     db.init_db(con=con)
-    _synthetic_store(con, event_type=study.NFP_EVENT_TYPE)
+    _synthetic_store(con, event_type=flows.NFP_EVENT_TYPE)
 
     # when the raw moves are measured for the jobs report
-    results = measure_raw_moves(con=con, event_type=study.NFP_EVENT_TYPE)
+    results = measure_raw_moves(con=con, event_type=flows.NFP_EVENT_TYPE)
 
     # then each instrument moves on those days
     assert all(raw.overall.verdict == MOVES for raw in results.values())
@@ -313,7 +315,7 @@ def test_raw_move_takes_the_event_to_measure(
     tmp_db: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
     # given jobs reports and prices stored, and no CPI releases
-    _synthetic_store(db.get_connection(), event_type=study.NFP_EVENT_TYPE)
+    _synthetic_store(db.get_connection(), event_type=flows.NFP_EVENT_TYPE)
 
     # when the command runs for the jobs report, and for CPI
     nfp = main(["raw-move", "--event", "nfp"])

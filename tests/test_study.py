@@ -13,7 +13,7 @@ import duckdb
 import pytest
 from pydantic import SecretStr
 
-from fortuneteller import db, sources, study
+from fortuneteller import db, flows, sources
 from fortuneteller.__main__ import main
 from fortuneteller.config import settings
 from fortuneteller.sources import (
@@ -23,7 +23,7 @@ from fortuneteller.sources import (
     FredError,
     parse_first_releases,
 )
-from fortuneteller.study import (
+from fortuneteller.flows import (
     CPI_EVENT_TYPE,
     store_releases,
     to_event_instance,
@@ -241,7 +241,7 @@ def test_load_releases_prints_count_range_and_skipped_months(
     monkeypatch.setattr(settings, "fred_api_key", SecretStr("test-key"))
     _fred_answers(monkeypatch)
     decisions = [FomcDecision(date(2020, 3, 3), False), FomcDecision(date(2020, 3, 18), True)]
-    monkeypatch.setattr(study, "load_fomc_decisions", lambda _key: decisions)
+    monkeypatch.setattr(flows, "load_fomc_decisions", lambda _key: decisions)
 
     # when the command runs twice
     first = main(["load-releases"])
@@ -256,6 +256,27 @@ def test_load_releases_prints_count_range_and_skipped_months(
     report += "loaded 2 Fed decisions, 2020-03-03 … 2020-03-18 (1 unscheduled)\n"
     assert capsys.readouterr().out == report * 2
     assert db.count_rows("event_instances", con=db.get_connection()) == 11
+
+
+def test_load_releases_stores_nothing_when_any_flow_fails(
+    tmp_db: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    # given FRED answering for CPI and NFP, and the Fed's pages failing
+    monkeypatch.setattr(settings, "fred_api_key", SecretStr("test-key"))
+    _fred_answers(monkeypatch)
+
+    def unreachable(_key: str) -> NoReturn:
+        raise sources.FedError("the Fed's page did not answer")
+
+    monkeypatch.setattr(flows, "load_fomc_decisions", unreachable)
+
+    # when the command runs
+    code = main(["load-releases"])
+
+    # then it fails with the Fed named, and not even CPI's releases are stored
+    assert code == 1
+    assert "the Fed's page did not answer" in capsys.readouterr().err
+    assert db.count_rows("event_instances", con=db.get_connection()) == 0
 
 
 def test_load_releases_without_a_key_fails_before_fetching(
@@ -394,11 +415,11 @@ def test_two_event_types_on_the_same_day_get_different_ids() -> None:
     day = date(2022, 9, 13)
 
     # when the ids are built
-    cpi = study.event_id(study.CPI_EVENT_TYPE, day)
+    cpi = flows.event_id(flows.CPI_EVENT_TYPE, day)
 
     # then the type code leads, so another type on that day cannot collide
     assert cpi == 1_2022_09_13
-    assert cpi // 10**8 == study.EVENT_TYPE_CODES[study.CPI_EVENT_TYPE]
+    assert cpi // 10**8 == flows.EVENT_TYPE_CODES[flows.CPI_EVENT_TYPE]
 
 
 def test_months_first_published_on_one_day_are_one_release() -> None:
@@ -406,7 +427,7 @@ def test_months_first_published_on_one_day_are_one_release() -> None:
     releases, _ = parse_first_releases(NFP_FIXTURE.read_bytes(), sources.NFP_SERIES_ID)
 
     # when they are reduced to one release per day
-    kept, carried = study.one_release_per_day(releases)
+    kept, carried = flows.one_release_per_day(releases)
 
     # then the release day is November's event, and October is reported as carried by it
     assert [r.reference_month for r in kept] == [
@@ -425,7 +446,7 @@ def test_two_releases_on_one_day_are_refused_rather_than_overwritten() -> None:
 
     # when / then storing them is refused: they would share an event_id
     with pytest.raises(ValueError, match="two releases on one day"):
-        study.store_releases(study.NFP_EVENT_TYPE, releases, con=con)
+        flows.store_releases(flows.NFP_EVENT_TYPE, releases, con=con)
 
 
 def test_a_date_correction_belongs_to_its_own_series() -> None:
@@ -451,7 +472,7 @@ def test_a_payrolls_release_is_keyed_with_its_own_type_code() -> None:
     release = FirstRelease(date(2026, 9, 1), date(2026, 10, 2), 160000.0)
 
     # when it is mapped
-    event = to_event_instance(release, study.NFP_EVENT_TYPE)
+    event = to_event_instance(release, flows.NFP_EVENT_TYPE)
 
     # then it is an NFP event at 08:30 New York, keyed 2 + its release day
     assert event.event_id == 2_2026_10_02

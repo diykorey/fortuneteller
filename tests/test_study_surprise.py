@@ -12,7 +12,7 @@ import duckdb
 import pytest
 from pydantic import SecretStr
 
-from fortuneteller import db, sources, study
+from fortuneteller import db, flows, sources, study
 from fortuneteller.__main__ import describe_surprise_tracking, main
 from fortuneteller.config import settings
 from fortuneteller.sources import (
@@ -30,6 +30,7 @@ from fortuneteller.sources import (
 )
 from fortuneteller.expectations import (
     NOWCAST_BASELINE,
+    TREND_12M,
     Actual,
     Expectation,
     Trend12m,
@@ -39,13 +40,9 @@ from fortuneteller.expectations import (
     nowcast_expectations,
 )
 from fortuneteller.models import Surprise, EventInstance
-from fortuneteller.study import (
+from fortuneteller.flows import (
     CPI_EVENT_TYPE,
-    DOESNT_TRACK,
     PERCENT,
-    TRACKS,
-    SurpriseTracking,
-    UNCLEAR,
     MonthlyChange,
     actual_mismatches,
     first_published_changes,
@@ -53,6 +50,12 @@ from fortuneteller.study import (
     published_actuals,
     to_actuals,
     to_event_instance,
+)
+from fortuneteller.study import (
+    DOESNT_TRACK,
+    TRACKS,
+    SurpriseTracking,
+    UNCLEAR,
     track_pairs,
     track_verdict,
 )
@@ -211,7 +214,7 @@ def _dump(document: dict[str, object]) -> bytes:
 def test_each_measure_reads_its_own_fred_series() -> None:
     # given the two CPI measures step 4 uses
     # when their FRED series are looked up
-    series = study.MEASURE_SERIES
+    series = flows.MEASURE_SERIES
 
     # then core is CPILFESL, and headline is CPIAUCSL, the series step 1 loads
     assert series == {"core": CORE_CPI_SERIES_ID, "headline": sources.CPI_SERIES_ID}
@@ -480,7 +483,7 @@ def _sources_answer(monkeypatch: pytest.MonkeyPatch, actual_core: float) -> None
     def load(_key: str, series_id: str) -> list[MonthlyChange]:
         return changes if series_id == CORE_CPI_SERIES_ID else []
 
-    monkeypatch.setattr(study, "load_first_published_changes", load)
+    monkeypatch.setattr(flows, "load_first_published_changes", load)
     monkeypatch.setattr(sources, "fetch_nowcasts", lambda: _nowcast_file("2022-8", actual_core))
 
 
@@ -493,7 +496,7 @@ def released_on(month: date) -> date:
 
 def _store_events(con: duckdb.DuckDBPyConnection) -> None:
     months = [change.reference_month for change in _changes(*[0.0] * 20, start=(2021, 1))]
-    study.store_releases(
+    flows.store_releases(
         CPI_EVENT_TYPE, [FirstRelease(m, released_on(m), 100.0) for m in months], con=con
     )
 
@@ -508,8 +511,8 @@ def test_loading_stores_each_surprise_once_however_often_it_runs(
     _store_events(con)
 
     # when the surprises are loaded twice
-    study.load_surprises("key", con=con)
-    rows = study.load_surprises("key", con=con)
+    flows.load_surprises("key", con=con)
+    rows = flows.load_surprises("key", con=con)
 
     # then the eight months with a year behind them have a trend row, August a nowcast row too
     assert db.count_rows("surprises", con=con) == len(rows) == 9
@@ -518,7 +521,7 @@ def test_loading_stores_each_surprise_once_however_often_it_runs(
     ).fetchall()
     assert august == [
         (NOWCAST_BASELINE, pytest.approx(0.09)),
-        (study.TREND_12M, pytest.approx(0.37)),
+        (TREND_12M, pytest.approx(0.37)),
     ]
 
 
@@ -533,7 +536,7 @@ def test_loading_refuses_when_a_change_differs_from_cleveland_s(
 
     # when / then nothing is stored, and the month is named
     with pytest.raises(ValueError, match="core: .* 2022-08"):
-        study.load_surprises("key", con=con)
+        flows.load_surprises("key", con=con)
     assert db.count_rows("surprises", con=con) == 0
 
 
@@ -544,7 +547,7 @@ def test_loading_needs_the_releases_first() -> None:
 
     # when / then the message says which load to run
     with pytest.raises(ValueError, match="load-releases"):
-        study.load_surprises("key", con=con)
+        flows.load_surprises("key", con=con)
 
 
 def test_load_surprises_prints_a_line_per_measure_and_baseline(
@@ -689,7 +692,7 @@ def test_each_instrument_is_measured_against_each_measure_and_baseline() -> None
     con = duckdb.connect(":memory:")
     db.init_db(con=con)
     month = date(2022, 8, 1)
-    study.store_releases(CPI_EVENT_TYPE, [FirstRelease(month, date(2022, 9, 13), 100.0)], con=con)
+    flows.store_releases(CPI_EVENT_TYPE, [FirstRelease(month, date(2022, 9, 13), 100.0)], con=con)
     surprises = [
         Surprise(
             event_id=1_2022_09_13,
@@ -700,7 +703,7 @@ def test_each_instrument_is_measured_against_each_measure_and_baseline() -> None
             surprise=0.1,
         )
         for m in (CORE, HEADLINE)
-        for b in (study.TREND_12M, NOWCAST_BASELINE)
+        for b in (TREND_12M, NOWCAST_BASELINE)
     ]
     db.insert_models("surprises", surprises, con=con)
     con.execute(
@@ -713,7 +716,7 @@ def test_each_instrument_is_measured_against_each_measure_and_baseline() -> None
     pairs = study.surprise_pairs(con=con)
 
     # then core against the trend comes first, and every instrument has its one pair
-    assert list(pairs)[0] == (CORE, study.TREND_12M)
+    assert list(pairs)[0] == (CORE, TREND_12M)
     assert len(pairs) == 4
     assert all(p == ([0.1], [0.01]) for by in pairs.values() for p in by.values())
 
@@ -725,7 +728,7 @@ def test_the_report_shows_the_verdict_table_then_the_context_and_the_rule() -> N
     gold = SurpriseTracking(311, 0.05, 0.4, None, 0, -0.0003, DOESNT_TRACK)
     context = SurpriseTracking(155, 0.30, 0.0002, 0.7, 60, 0.002, None)
     results = {
-        (CORE, study.TREND_12M): {"UST10Y / ZN": yield_row, "SPY / ES": tracked, "GC / XAU": gold},
+        (CORE, TREND_12M): {"UST10Y / ZN": yield_row, "SPY / ES": tracked, "GC / XAU": gold},
         (CORE, NOWCAST_BASELINE): {"DXY": context},
     }
 
@@ -748,12 +751,12 @@ def _store_tracking_data(con: duckdb.DuckDBPyConnection) -> None:
     # 40 releases; each instrument's move is 0.01 x its expected sign x the core surprise, plus noise.
     rng = random.Random(9)
     months = [change.reference_month for change in _changes(*[0.0] * 40, start=(2020, 1))]
-    study.store_releases(
+    flows.store_releases(
         CPI_EVENT_TYPE, [FirstRelease(m, released_on(m), 100.0) for m in months], con=con
     )
     surprises, observations = [], []
     for m in months:
-        event_id = study.event_id(study.CPI_EVENT_TYPE, released_on(m))
+        event_id = flows.event_id(flows.CPI_EVENT_TYPE, released_on(m))
         surprise = rng.gauss(0, 0.2)
         surprises += [
             Surprise(
@@ -764,10 +767,10 @@ def _store_tracking_data(con: duckdb.DuckDBPyConnection) -> None:
                 expected_mom=0.3 - surprise,
                 surprise=surprise,
             )
-            for measure, baseline in study.COMBINATIONS
+            for measure, baseline in flows.COMBINATIONS
         ]
         for instrument in study.MVP_PRICE_SERIES:
-            sign = study.EXPECTED_SIGN[instrument] or 1
+            sign = flows.EXPECTED_SIGN[instrument] or 1
             move = 0.01 * sign * surprise + rng.gauss(0, 0.0005)
             observations.append((event_id, instrument, move))
     db.insert_models("surprises", surprises, con=con)
@@ -803,7 +806,7 @@ def test_surprise_names_the_load_to_run_first(
     # given a store missing releases, prices, or surprises
     con = db.get_connection()
     if stored >= 1:
-        study.store_releases(
+        flows.store_releases(
             CPI_EVENT_TYPE, [FirstRelease(date(2022, 8, 1), date(2022, 9, 13), 100.0)], con=con
         )
     if stored >= 2:
@@ -846,10 +849,10 @@ def test_loading_adds_payroll_surprises_when_jobs_reports_are_stored(
     db.init_db(con=con)
     _store_events(con)
     months = [date(2021 + i // 12, i % 12 + 1, 1) for i in range(15)]
-    study.store_releases(study.NFP_EVENT_TYPE, _jobs_answer(monkeypatch, months), con=con)
+    flows.store_releases(flows.NFP_EVENT_TYPE, _jobs_answer(monkeypatch, months), con=con)
 
     # when the surprises are loaded
-    study.load_surprises("key", con=con)
+    flows.load_surprises("key", con=con)
 
     # then the two months with a full year behind them were exactly on trend
     payrolls = con.execute(
@@ -869,11 +872,11 @@ def test_loading_refuses_a_jobs_report_stored_unlike_fred_s_history(
     months = [date(2021 + i // 12, i % 12 + 1, 1) for i in range(15)]
     releases = _jobs_answer(monkeypatch, months)
     releases[2] = FirstRelease(releases[2].reference_month, releases[2].released, 1201.0)
-    study.store_releases(study.NFP_EVENT_TYPE, releases, con=con)
+    flows.store_releases(flows.NFP_EVENT_TYPE, releases, con=con)
 
     # when / then nothing is stored, and the month is named
     with pytest.raises(ValueError, match="payrolls: .* 2021-03"):
-        study.load_surprises("key", con=con)
+        flows.load_surprises("key", con=con)
     assert db.count_rows("surprises", con=con) == 0
 
 
@@ -908,7 +911,7 @@ def test_the_jobs_report_has_its_own_signs_cut_off_and_no_context_table() -> Non
 
     # when the jobs report's tracking is written
     lines = describe_surprise_tracking(
-        {(study.PAYROLLS, study.TREND_12M): {"UST10Y / ZN": row}}, study.NFP_EVENT_TYPE
+        {(flows.PAYROLLS, TREND_12M): {"UST10Y / ZN": row}}, flows.NFP_EVENT_TYPE
     )
 
     # then it is payrolls against the trend, per 50k, and the rule follows straight after

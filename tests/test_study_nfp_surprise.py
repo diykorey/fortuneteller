@@ -5,11 +5,11 @@ from pathlib import Path
 
 import pytest
 
-from fortuneteller import study
+from fortuneteller import flows
 from fortuneteller.expectations import Trend12m, build_surprises, previous_month
 from fortuneteller.models import EventInstance, Surprise
 from fortuneteller.sources import NFP_SERIES_ID, FirstRelease, parse_vintages
-from fortuneteller.study import NFP_EVENT_TYPE, PAYROLLS, MonthlyChange
+from fortuneteller.flows import NFP_EVENT_TYPE, PAYROLLS, MonthlyChange
 
 DATA = Path(__file__).parent / "data"
 
@@ -25,7 +25,7 @@ def test_a_change_is_measured_against_the_previous_month_as_revised_that_day() -
     # when the first-published changes are taken
     changes = {
         c.reference_month: c
-        for c in study.first_published_payroll_changes(vintages, date(2022, 7, 1))
+        for c in flows.first_published_payroll_changes(vintages, date(2022, 7, 1))
     }
 
     # then August 2022 is +315k, the BLS headline, though July was first printed 107k higher
@@ -42,7 +42,7 @@ def test_months_before_the_first_stored_release_are_left_out() -> None:
     vintages = _vintages()
 
     # when the changes are taken from August 2022
-    changes = study.first_published_payroll_changes(vintages, date(2022, 8, 1))
+    changes = flows.first_published_payroll_changes(vintages, date(2022, 8, 1))
 
     # then June and July 2022 are not among them
     assert min(c.reference_month for c in changes) == date(2022, 8, 1)
@@ -65,13 +65,13 @@ def _stored(changes: list[MonthlyChange]) -> list[EventInstance]:
         change.released: change for change in sorted(changes, key=lambda c: c.reference_month)
     }
     return [
-        study.to_event_instance(FirstRelease(c.reference_month, c.released, 1.0), NFP_EVENT_TYPE)
+        flows.to_event_instance(FirstRelease(c.reference_month, c.released, 1.0), NFP_EVENT_TYPE)
         for c in newest.values()
     ]
 
 
 def _surprises(changes: list[MonthlyChange], events: list[EventInstance]) -> list[Surprise]:
-    actuals = study.to_actuals(changes, NFP_EVENT_TYPE, PAYROLLS, study.THOUSANDS, events)
+    actuals = flows.to_actuals(changes, NFP_EVENT_TYPE, PAYROLLS, flows.THOUSANDS, events)
     expected = Trend12m().expectations(events, actuals, "key")
     return build_surprises(events, actuals, expected, [NFP_EVENT_TYPE])
 
@@ -115,16 +115,16 @@ def test_a_stored_release_that_disagrees_with_the_revision_history_is_named() ->
     # given August 2022 stored as FRED first printed it, and September stored 1k off
     vintages = _vintages()
     events = [
-        study.to_event_instance(
+        flows.to_event_instance(
             FirstRelease(date(2022, 8, 1), date(2022, 9, 2), 152744.0), NFP_EVENT_TYPE
         ),
-        study.to_event_instance(
+        flows.to_event_instance(
             FirstRelease(date(2022, 9, 1), date(2022, 10, 7), 153019.0), NFP_EVENT_TYPE
         ),
     ]
 
     # when they are checked against the vintages
-    missed = study.payroll_level_mismatches(vintages, events)
+    missed = flows.payroll_level_mismatches(vintages, events)
 
     # then only September is named
     assert missed == [date(2022, 9, 1)]

@@ -89,7 +89,7 @@ one line in `EXPECTATION_SOURCES`; validation applies to it, and its rows sit ne
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~`expectations.py`: `Expectation`, `ExpectationSource`, `Trend12m`, `ClevelandNowcast`, the validating `build_surprises`; `load-surprises` routed through it~~ **done** | Each validation failure has a test; every report byte-identical |
-| 2 | `flows.py`: `Actual`, `EventFlow`, `CpiFlow`, `NfpFlow`, `FedFlow`; `load-releases` and `load-surprises` routed through `EVENT_FLOWS` | Every load and report byte-identical; `surprises` identical row for row |
+| 2 | ~~`flows.py`: `Actual`, `EventFlow`, `CpiFlow`, `NfpFlow`, `FedFlow`; `load-releases` and `load-surprises` routed through `EVENT_FLOWS`~~ **done** | Every load and report byte-identical; `surprises` identical row for row |
 | 3 | The CLI derives `--event` choices, labels and surprise rules from the flows; the old event-specific constants are deleted | No event type is named outside its flow; every report byte-identical |
 | 4 | A short "adding an event type / an expectation source" recipe; schema.md, glossary, status | A toy flow and a toy source, registered only in a test, run end to end |
 

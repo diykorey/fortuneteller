@@ -7,7 +7,7 @@ from typing import NoReturn
 import duckdb
 import pytest
 
-from fortuneteller import db, sources, study
+from fortuneteller import db, flows, sources
 from fortuneteller.__main__ import describe_release_counts, main
 from fortuneteller.models import DailyBar
 from fortuneteller.sources import (
@@ -16,17 +16,19 @@ from fortuneteller.sources import (
     DailyClosingPrice,
     parse_daily_bars,
 )
-from fortuneteller.study import (
+from fortuneteller.flows import (
     CPI_EVENT_TYPE,
+    store_releases,
+    to_event_instance,
+)
+from fortuneteller.study import (
     BEFORE_HISTORY,
     MVP_PRICE_SERIES,
     NO_CLOSE_NEARBY,
     ReleaseCounts,
     closing_price_before_after,
     release_move,
-    store_releases,
     store_observations,
-    to_event_instance,
 )
 
 GSPC_2022 = Path(__file__).parent / "data" / "yahoo_gspc_2022_09.json"
@@ -264,7 +266,7 @@ def test_rerunning_changes_no_count_and_events_can_still_be_reloaded() -> None:
 def test_every_event_type_is_measured_and_counted_on_its_own() -> None:
     # given a jobs report on the same day as the hot print
     con = _store()
-    store_releases(study.NFP_EVENT_TYPE, [HOT_PRINT], con=con)
+    store_releases(flows.NFP_EVENT_TYPE, [HOT_PRINT], con=con)
 
     # when the observations are built
     release_counts = store_observations(con=con)
@@ -272,8 +274,8 @@ def test_every_event_type_is_measured_and_counted_on_its_own() -> None:
     # then both events are measured, and each type's releases are counted separately
     rows = con.execute("SELECT DISTINCT event_id FROM observations ORDER BY 1").fetchall()
     assert rows == [(1_2022_09_13,), (2_2022_09_13,)]
-    assert list(release_counts) == [CPI_EVENT_TYPE, study.NFP_EVENT_TYPE]
-    assert release_counts[study.NFP_EVENT_TYPE]["SPY / ES"] == ReleaseCounts(measured=1)
+    assert list(release_counts) == [CPI_EVENT_TYPE, flows.NFP_EVENT_TYPE]
+    assert release_counts[flows.NFP_EVENT_TYPE]["SPY / ES"] == ReleaseCounts(measured=1)
 
 
 DXY_1992 = Path(__file__).parent / "data" / "yahoo_dx_y_nyb_1992_12.json"
