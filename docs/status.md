@@ -30,7 +30,7 @@ source or a jobs-report model is now one `ExpectationSource`.
 | Date | What | Where |
 | --- | --- | --- |
 | 2026-10-06 | Event flows step 4: the recipe; a made-up flow and source plug in — refactor complete | PR pending |
-| 2026-10-06 | Event flows step 3: the CLI and measurement driven by the flows | PR pending |
+| 2026-10-06 | Event flows step 3: the CLI and measurement driven by the flows | PR #110 |
 | 2026-10-06 | Event flows step 2: CPI, NFP and Fed as flows behind `EVENT_FLOWS` | PR #109 |
 | 2026-10-06 | Event flows spec and step 1: expectation sources, validated surprises | PR #108 |
 | 2026-10-06 | Rung 1.8: Results; rung 1 section in `mvp-results.md` — rung 1 complete | PR #107 |
