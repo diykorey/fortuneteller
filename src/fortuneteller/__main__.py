@@ -4,7 +4,7 @@ Subcommands: ``init`` creates the store (M0-05 ``db.init_db``); ``seed`` / ``que
 read the seed data (M0-07 ``seed``); ``load-releases`` loads the CPI and jobs-report release
 histories from FRED (MVP step 1 ``study``) and the Fed's decisions (rung 1); ``load-prices`` loads the five instruments' daily closes and measures their
 move around each release (MVP step 2); ``raw-move`` compares each instrument's moves on an event's
-days with all other days (MVP step 3); ``load-surprises`` stores each release's CPI surprise and
+days with ordinary days, which no stored event touched (MVP step 3); ``load-surprises`` stores each release's CPI surprise and
 ``surprise`` measures how the moves follow it (MVP step 4).
 """
 
@@ -254,7 +254,7 @@ def describe_raw_moves(results: dict[str, study.RawMove], label: str = "CPI") ->
     for instrument, raw in results.items():
         c = raw.overall
         lines.append(
-            f"{instrument:<12} {c.event_days:>8}  {_move_size(c.median_cpi, raw.unit):>10}  "
+            f"{instrument:<12} {c.event_days:>8}  {_move_size(c.median_event, raw.unit):>10}  "
             f"{_move_size(c.median_other, raw.unit):>12}  {c.ratio:>5.2f}  {c.p:.4f}  {c.verdict}"
         )
     eras = next(iter(results.values())).eras
@@ -272,7 +272,8 @@ def describe_raw_moves(results: dict[str, study.RawMove], label: str = "CPI") ->
     lines += [
         "",
         f"{study.MOVES} = ratio >= {study.MOVE_RATIO_BAR:.2f} and p < {study.MOVE_P_BAR}; "
-        f"{study.UNCLEAR} = one of the two; {study.DOESNT_MOVE} = neither",
+        f"{study.UNCLEAR} = one of the two; {study.DOESNT_MOVE} = neither; "
+        "other = days with no CPI, NFP or Fed reaction",
     ]
     return [line.rstrip() for line in lines]
 
@@ -334,7 +335,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_surprise.set_defaults(func=_surprise)
 
     p_raw = sub.add_parser(
-        "raw-move", help="compare each instrument's moves on an event's days with all other days"
+        "raw-move", help="compare each instrument's moves on an event's days with ordinary days"
     )
     p_raw.add_argument("--event", choices=EVENTS, default="cpi", help="the event (default: cpi)")
     p_raw.set_defaults(func=_raw_move)

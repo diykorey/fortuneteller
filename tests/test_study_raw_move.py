@@ -18,6 +18,7 @@ from fortuneteller.sources import (
 )
 from fortuneteller.study import (
     CPI_EVENT_TYPE,
+    NFP_EVENT_TYPE,
     DOESNT_MOVE,
     MOVES,
     MVP_PRICE_SERIES,
@@ -241,11 +242,13 @@ def test_release_days_that_move_more_are_found_for_every_instrument() -> None:
 
 def test_the_report_shows_each_unit_and_marks_eras_without_cpi_days() -> None:
     # given one price instrument and one yield, each with a CPI-free era
-    comparison = MoveComparison(649, 0.0055, 0.0051, 1.078, 0.0123, DOESNT_MOVE)
+    comparison = MoveComparison(649, 9000, 0.0055, 0.0051, 1.078, 0.0123, DOESNT_MOVE)
     eras = {"1970-1989": EraRatio(0, None), "2020-now": EraRatio(79, 1.04)}
     results = {
         "SPY / ES": RawMove("pct", comparison, eras),
-        "UST10Y / ZN": RawMove("bps", MoveComparison(648, 4.0, 3.0, 1.33, 0.0001, MOVES), eras),
+        "UST10Y / ZN": RawMove(
+            "bps", MoveComparison(648, 9000, 4.0, 3.0, 1.33, 0.0001, MOVES), eras
+        ),
     }
 
     # when the report is written
@@ -322,3 +325,31 @@ def test_raw_move_takes_the_event_to_measure(
     assert sum(line.endswith(" moves") for line in nfp_out.splitlines()) == 5
     assert cpi == 1
     assert "no CPI / inflation surprise releases stored" in capsys.readouterr().err
+
+
+def test_another_events_days_are_not_ordinary_days() -> None:
+    # given the 36 CPI releases, then 36 jobs reports on other days
+    con = duckdb.connect(":memory:")
+    db.init_db(con=con)
+    _synthetic_store(con)
+    before = measure_raw_moves(con=con)["SPY / ES"].overall
+    jobs = [
+        FirstRelease(
+            date(2021 + m // 12, m % 12 + 1, 1), _weekday(date(2021 + m // 12, m % 12 + 1, 3)), 1.0
+        )
+        for m in range(36)
+    ]
+    store_releases(NFP_EVENT_TYPE, jobs, con=con)
+
+    # when CPI's raw move is measured again
+    after = measure_raw_moves(con=con)["SPY / ES"].overall
+
+    # then the jobs days leave the ordinary days, and the CPI days stay as they were
+    assert before.other_days - after.other_days == 36
+    assert after.event_days == before.event_days == 36
+
+
+def _weekday(day: date) -> date:
+    while day.weekday() >= 5:
+        day += timedelta(days=1)
+    return day

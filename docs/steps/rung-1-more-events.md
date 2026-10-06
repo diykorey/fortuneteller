@@ -51,7 +51,7 @@ standard source, are paid. So the Fed gets step 3 only; its surprise is in
 | 3 | ~~`raw-move` takes an event (`cpi`, `nfp`, `fomc`)~~ **done** | NFP's step 3 verdict printed |
 | 4 | ~~FOMC decisions into `event_instances` (`Central-bank decision`, `United States`, 14:00 New York; unscheduled ones `scheduled = false`)~~ **done** | Every target-rate change since 1994 falls on a listed decision; FOMC's step 3 verdict printed |
 | 5 | ~~Reaction close by event time: an event after an instrument's daily close reacts at its next close; each Fed decision at its announced time~~ **done** | Gold's Fed-day move measured after the decision; CPI and NFP output unchanged |
-| 6 | Clean baseline: "ordinary days" exclude every stored event's reaction day | CPI's step 3 re-run; old and new verdicts recorded side by side |
+| 6 | ~~Clean baseline: "ordinary days" exclude every stored event's reaction day~~ **done** | CPI's step 3 re-run; old and new verdicts recorded side by side |
 | 7 | NFP surprise: first-published monthly payroll change against its 12-month trend, into `surprises`; `surprise` takes an event | August 2022 reads +315k; NFP's step 4 verdict printed |
 | 8 | Results here, and a rung 1 section in [`mvp-results.md`](../mvp-results.md) | Says, per event, whether it moves the five markets and (NFP) whether the move follows the surprise |
 
@@ -153,6 +153,28 @@ ratios; see [Precision](../precision.md).
 
 Five of the 14 unscheduled decisions are liquidity or implementation statements, not rate moves:
 2007-08-10, 2007-08-17, 2008-03-11, 2010-05-09 and 2019-10-11.
+
+**Clean baseline, 2026-10-06.** A day is ordinary only if no stored event, of any type, reacted on
+it at that instrument's close (`study.measure_raw_moves`). A day that is two events' reaction day
+counts as an event day for both: 20 CPI days are also Fed days, none is also a jobs-report day.
+Old (all other days) and new (ordinary days), on the same data:
+
+| Event | Instrument | Old ratio, p | New ratio, p | Verdict |
+| --- | --- | --- | --- | --- |
+| CPI | S&P 500 | 1.07, 0.0999 | 1.09, 0.0624 | doesn't → doesn't |
+| CPI | UST 10Y | 1.25, 0.0007 | 1.33, 0.0002 | moves → moves |
+| CPI | DXY | 1.16, 0.0037 | 1.18, 0.0010 | moves → moves |
+| CPI | Gold | 1.02, 0.4151 | 1.04, 0.2722 | doesn't → doesn't |
+| CPI | VIX | 1.19, 0.0020 | 1.22, 0.0006 | moves → moves |
+| NFP | all five | 1.18–1.61 | 1.19–1.67 | moves → moves |
+| Fed | S&P 500 | 1.28, 0.0010 | 1.30, 0.0010 | moves → moves |
+| Fed | UST 10Y | 1.16, 0.1110 | 1.23, 0.0316 | unclear → unclear |
+| Fed | DXY | 1.20, 0.0178 | 1.22, 0.0096 | unclear → **moves**, just under the bar |
+| Fed | Gold | 1.79, 0.0001 | 1.81, 0.0001 | moves → moves |
+| Fed | VIX | 1.22, 0.0034 | 1.25, 0.0020 | moves → moves |
+
+As [Precision](../precision.md) predicted, removing noisy days only raises the ratios. The one flip,
+the Fed's dollar, sits at p 0.0096 against a 0.01 bar: a borderline result, not a strong one.
 
 **Code.** As before: fetching and parsing in `sources.py`, measurement in `study.py`, statistics
 in `stats.py`, commands in `__main__.py`. Event-specific values (series ID, release time, expected
