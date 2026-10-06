@@ -12,7 +12,7 @@ Rung 1, sub-step 7 — NFP surprise: 844 payroll surprises against the 12-month 
 revision history (all 856 stored reports match it; five first prints match BLS). `surprise --event
 nfp`: the 10-year yield and the dollar follow the surprise at p 0.0001 but go the expected way only
 58% and 56% of the time, under the 60% bar, so both are *unclear*; gold *unclear*; the S&P 500 and
-VIX *doesn't*. Unchanged without the COVID months. CPI's `surprise` output unchanged. *(PR pending.)*
+VIX *doesn't*. Unchanged without the COVID months. CPI's `surprise` output unchanged. *(PR #106.)*
 
 ## In progress
 
@@ -28,7 +28,7 @@ surprise.
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-06 | Rung 1.7: NFP surprise; yield and dollar follow it but miss the hit-rate bar | PR pending |
+| 2026-10-06 | Rung 1.7: NFP surprise; yield and dollar follow it but miss the hit-rate bar | PR #106 |
 | 2026-10-06 | Rung 1.6: clean baseline; CPI and NFP verdicts hold, Fed's dollar just moves | PR #105 |
 | 2026-10-06 | Rung 1.5: reaction close by event time; gold moves on Fed days (1.79) | PR #104 |
 | 2026-10-05 | Rung 1.4: Fed decisions since 1994; S&P 500 and VIX move; gold's close precedes them | PR #103 |
