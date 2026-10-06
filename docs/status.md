@@ -12,7 +12,7 @@ Rung 1, sub-step 8 — results: the rung 1 spec's Results, and a rung 1 section 
 [`mvp-results.md`](mvp-results.md#rung-1--more-events). **Rung 1 is complete.** All three events move
 markets, the jobs report most (all five; the 10-year yield +67%). The yield's and the dollar's
 moves follow the payroll surprise (p 0.0001) but go the expected way only 58% and 56% of the time,
-under the 60% bar. *(PR pending.)*
+under the 60% bar. *(PR #107.)*
 
 ## In progress
 
@@ -28,7 +28,7 @@ rung 2 (predict the 10-year yield's direction before each CPI release).
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-06 | Rung 1.8: Results; rung 1 section in `mvp-results.md` — rung 1 complete | PR pending |
+| 2026-10-06 | Rung 1.8: Results; rung 1 section in `mvp-results.md` — rung 1 complete | PR #107 |
 | 2026-10-06 | Rung 1.7: NFP surprise; yield and dollar follow it but miss the hit-rate bar | PR #106 |
 | 2026-10-06 | Rung 1.6: clean baseline; CPI and NFP verdicts hold, Fed's dollar just moves | PR #105 |
 | 2026-10-06 | Rung 1.5: reaction close by event time; gold moves on Fed days (1.79) | PR #104 |
