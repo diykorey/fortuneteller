@@ -12,7 +12,7 @@ Rung 1, sub-step 5 — each event reacts at the first close after it: every inst
 York close time (gold 13:30, yield and dollar 15:00, S&P 500 16:00, VIX 16:15), and every Fed
 decision the time its statement came out (14:15 until 2013, 14:00 since, 25 sourced exceptions).
 Gold's Fed ratio goes from 0.78 to **1.79, moves**. CPI, NFP and `surprise` unchanged. *(PR
-pending.)*
+#104.)*
 
 ## In progress
 
@@ -27,7 +27,7 @@ CPI's step 3 re-run, old and new verdicts side by side.
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-06 | Rung 1.5: reaction close by event time; gold moves on Fed days (1.79) | PR pending |
+| 2026-10-06 | Rung 1.5: reaction close by event time; gold moves on Fed days (1.79) | PR #104 |
 | 2026-10-05 | Rung 1.4: Fed decisions since 1994; S&P 500 and VIX move; gold's close precedes them | PR #103 |
 | 2026-10-05 | Rung 1.3: every event's moves; `raw-move --event` — NFP moves all five | PR #102 |
 | 2026-10-05 | Rung 1.2: NFP releases; dates checked against BLS since 1994 | PR #101 |
