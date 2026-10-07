@@ -12,7 +12,7 @@ Event flows, step 4 — the recipe, [Extending](extending.md), and `tests/test_e
 made-up flow and source, registered only in the test, run through `load-releases`,
 `load-surprises` and `surprise`. Two hidden dependencies the test found are gone: event-type codes
 are each flow's `type_code`, and reports name a source by its `label`. **Event flows complete.**
-*(PR pending.)*
+*(PR #111.)*
 
 ## In progress
 
@@ -29,7 +29,7 @@ source or a jobs-report model is now one `ExpectationSource`.
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-06 | Event flows step 4: the recipe; a made-up flow and source plug in — refactor complete | PR pending |
+| 2026-10-06 | Event flows step 4: the recipe; a made-up flow and source plug in — refactor complete | PR #111 |
 | 2026-10-06 | Event flows step 3: the CLI and measurement driven by the flows | PR #110 |
 | 2026-10-06 | Event flows step 2: CPI, NFP and Fed as flows behind `EVENT_FLOWS` | PR #109 |
 | 2026-10-06 | Event flows spec and step 1: expectation sources, validated surprises | PR #108 |
