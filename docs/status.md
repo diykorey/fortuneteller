@@ -11,7 +11,7 @@ Where the work is and what comes next. Two rules keep it current:
 Jobs-report forecast, step 1 — the inputs (`expectations.load_model_inputs`): ADP's first-published
 monthly change from both FRED series (185 months, 2011 on, none for June–August 2022; four checked
 against ADP's releases) and the change in 4-week-average jobless claims between survey weeks (207
-months, 2009 on). *(PR pending.)*
+months, 2009 on). *(PR #112.)*
 
 ## In progress
 
@@ -26,7 +26,7 @@ each report on earlier reports only.
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-07 | Jobs-report forecast spec and step 1: ADP and claims inputs | PR pending |
+| 2026-10-07 | Jobs-report forecast spec and step 1: ADP and claims inputs | PR #112 |
 | 2026-10-06 | Event flows step 4: the recipe; a made-up flow and source plug in — refactor complete | PR #111 |
 | 2026-10-06 | Event flows step 3: the CLI and measurement driven by the flows | PR #110 |
 | 2026-10-06 | Event flows step 2: CPI, NFP and Fed as flows behind `EVENT_FLOWS` | PR #109 |
