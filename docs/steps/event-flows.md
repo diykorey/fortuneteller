@@ -52,6 +52,7 @@ byte-identical and `surprises` identical row for row.
 ```python
 class EventFlow(Protocol):
     event_type: str
+    type_code: int                         # the leading digit of the type's event ids
     cli_name: str                          # "cpi", "nfp", "fomc"
     label: str                             # "CPI", "NFP", "Fed": three letters keep reports aligned
     surprise_rule: SurpriseRule | None     # verdict combination, signs, cut-off; None: no surprise
@@ -60,6 +61,7 @@ class EventFlow(Protocol):
 
 class ExpectationSource(Protocol):
     name: str                              # stored as surprises.baseline
+    label: str                             # how reports name it: "the 12-month trend"
     def expectations(
         self, events: Sequence[EventInstance], actuals: Sequence[Actual], api_key: str
     ) -> list[Expectation]: ...
@@ -91,7 +93,7 @@ one line in `EXPECTATION_SOURCES`; validation applies to it, and its rows sit ne
 | 1 | ~~`expectations.py`: `Expectation`, `ExpectationSource`, `Trend12m`, `ClevelandNowcast`, the validating `build_surprises`; `load-surprises` routed through it~~ **done** | Each validation failure has a test; every report byte-identical |
 | 2 | ~~`flows.py`: `Actual`, `EventFlow`, `CpiFlow`, `NfpFlow`, `FedFlow`; `load-releases` and `load-surprises` routed through `EVENT_FLOWS`~~ **done** | Every load and report byte-identical; `surprises` identical row for row |
 | 3 | ~~The CLI derives `--event` choices, labels and surprise rules from the flows; the old event-specific constants are deleted~~ **done** | No event type is named outside its flow; every report byte-identical |
-| 4 | A short "adding an event type / an expectation source" recipe; schema.md, glossary, status | A toy flow and a toy source, registered only in a test, run end to end |
+| 4 | ~~A short "adding an event type / an expectation source" recipe; schema.md, glossary, status~~ **done** | A toy flow and a toy source, registered only in a test, run end to end |
 
 ## How you know it is right
 
@@ -127,4 +129,16 @@ input every flow and source may need, so it is passed as a string. `known_at` is
 
 ## Results
 
-*Filled in by step 4.*
+Done 2026-10-06, in four PRs; the recipe is [Extending](../extending.md).
+
+- **Nothing changed.** On real data, against `main`: both loads' output, all five reports,
+  `event_instances` (1,780 rows) and `surprises` (2,131 rows), identical.
+- **Plugging in touches nothing else.** `tests/test_event_flows.py` registers a made-up housing
+  flow and a made-up consensus; `load-releases`, `load-surprises` and `surprise --event housing`
+  take them in, and a consensus known too late is refused by the shared check.
+- **Two hidden dependencies, found by that test and removed.** A new event type also needed an
+  entry in an `EVENT_TYPE_CODES` dict: the code is now the flow's `type_code`. The `surprise` report
+  hard-coded "against the 12-month trend": each source now has a `label`.
+- **Where the code went.** `study.py` (measurement) went from about 1,040 lines to 487;
+  `flows.py` (645) holds every event's own code, `expectations.py` (238) every source and the
+  shared check.

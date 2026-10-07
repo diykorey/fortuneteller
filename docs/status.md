@@ -8,24 +8,28 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Event flows, step 3 — the CLI takes its `--event` choices, report labels and surprise rules from
-the flows (`flows.flow_named`), and `study` takes the event or rule it measures as an argument; the
-`SURPRISE_RULES` dict, `RELEASE_SERIES` and the CLI's `EVENTS` / `EVENT_LABELS` are gone. Every
-report, the Fed's refusal and `load-surprises`' output identical to `main`'s. *(PR #110.)*
+Event flows, step 4 — the recipe, [Extending](extending.md), and `tests/test_event_flows.py`: a
+made-up flow and source, registered only in the test, run through `load-releases`,
+`load-surprises` and `surprise`. Two hidden dependencies the test found are gone: event-type codes
+are each flow's `type_code`, and reports name a source by its `label`. **Event flows complete.**
+*(PR #111.)*
 
 ## In progress
 
-**Event flows and expectation sources**: [event-flows.md](steps/event-flows.md).
+Nothing. The event-flows refactor is complete.
 
 ## Next
 
-Event flows, step 4 — a short recipe for adding an event type or an expectation source, proved by
-a toy flow and a toy source registered only in a test; schema.md, glossary, status.
+The decision left after rung 1, in [`mvp-results.md`](mvp-results.md#what-comes-next): sharper
+measurement (paid consensus forecasts, intraday prices), a better free forecast of each jobs
+report, or rung 2 (predict the 10-year yield's direction before each CPI release). A consensus
+source or a jobs-report model is now one `ExpectationSource`.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-06 | Event flows step 4: the recipe; a made-up flow and source plug in — refactor complete | PR #111 |
 | 2026-10-06 | Event flows step 3: the CLI and measurement driven by the flows | PR #110 |
 | 2026-10-06 | Event flows step 2: CPI, NFP and Fed as flows behind `EVENT_FLOWS` | PR #109 |
 | 2026-10-06 | Event flows spec and step 1: expectation sources, validated surprises | PR #108 |

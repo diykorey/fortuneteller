@@ -415,7 +415,7 @@ Example row:
 | --- | --- | --- |
 | `event_id` | BIGINT, **PK** | The release, an `event_instances.event_id`. Core and headline come out in the same BLS release, so they share it. |
 | `measure` | TEXT, **PK** | Which CPI number; see below. |
-| `baseline` | TEXT, **PK** | Where the expected value came from; see below. |
+| `baseline` | TEXT, **PK** | Where the expected value came from: the `name` of an expectation source in `expectations.EXPECTATION_SOURCES`; see below. |
 | `actual_mom` | DOUBLE | The month-over-month change **as first published**: for CPI in percent (`0.567` means +0.567%); for `payrolls` in thousands of jobs (`315` means +315,000). The number the market saw, not today's revised one. |
 | `expected_mom` | DOUBLE | What `baseline` expected that change to be, in the same unit. |
 | `surprise` | DOUBLE | `actual_mom − expected_mom`: percentage points for CPI, thousands of jobs for payrolls. Positive means hotter or stronger than expected. |

@@ -48,6 +48,7 @@ class Expectation:
 
 class ExpectationSource(Protocol):
     name: str
+    label: str
 
     def expectations(
         self, events: Sequence[EventInstance], actuals: Sequence[Actual], api_key: str
@@ -83,6 +84,7 @@ class Trend12m:
     """
 
     name = TREND_12M
+    label = "the 12-month trend"
 
     def expectations(
         self, events: Sequence[EventInstance], actuals: Sequence[Actual], api_key: str
@@ -153,6 +155,7 @@ class ClevelandNowcast:
     """The Cleveland Fed's CPI nowcast: the last one made before the release day, 2013 on."""
 
     name = NOWCAST_BASELINE
+    label = "the Cleveland Fed's nowcast"
 
     def expectations(
         self, events: Sequence[EventInstance], actuals: Sequence[Actual], api_key: str
