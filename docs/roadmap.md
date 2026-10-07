@@ -61,6 +61,19 @@ to test:
 If consensus proves unobtainable, step 4 falls back to the computed baseline **and says so in its
 output**. The claim shrinks; it does not get quietly overstated.
 
+## Next steps, in order
+
+Decided 2026-10-07, after rung 1: sharpen the measurement before predicting, then predict, then
+widen. Each new expected value is one expectation source and each new event one event flow
+([Extending](extending.md)).
+
+| # | Step | Why now |
+| --- | --- | --- |
+| 1 | **[A free forecast of each jobs report](steps/nfp-forecast.md)** — ADP and jobless claims, fitted on earlier reports only | The yield's and the dollar's jobs-report links sit just under the bar against the trend; a real forecast is the known shortcut, and it is free |
+| 2 | **Paid consensus forecasts** for CPI and payrolls, and intraday prices around the release | The cleanest test of the weak links; needs a paid data source chosen first |
+| 3 | **Predict the next release** — rung 2 below | Built on whichever links pass after steps 1–2 |
+| 4 | **More events** — GDP, PCE, retail sales, ECB decisions, each one event flow | Widens what the measured core covers |
+
 ## After the MVP — the feature ladder
 
 In order. Each rung is worth building only because the one below it worked.

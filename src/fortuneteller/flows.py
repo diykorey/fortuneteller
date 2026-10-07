@@ -18,6 +18,8 @@ import duckdb
 from . import db, sources
 from .expectations import (
     EXPECTATION_SOURCES,
+    MonthlyChange,
+    first_published_payroll_changes,
     NOWCAST_BASELINE,
     TREND_12M,
     Actual,
@@ -273,16 +275,6 @@ MEASURE_SERIES = {sources.CORE: sources.CORE_CPI_SERIES_ID, sources.HEADLINE: so
 PAYROLLS = "payrolls"
 
 
-@dataclass(frozen=True)
-class MonthlyChange:
-    """One month's change as first published: CPI in percent (``0.4`` is +0.4%), payrolls in
-    thousands of jobs."""
-
-    reference_month: date
-    released: date
-    change: float
-
-
 def first_published_changes(
     releases: Sequence[FirstRelease], revised_previous: Mapping[date, float]
 ) -> list[MonthlyChange]:
@@ -306,28 +298,6 @@ def first_published_changes(
         else:
             previous = levels[previous_month(month)]
         changes.append(MonthlyChange(month, release.released, (release.value / previous - 1) * 100))
-    return changes
-
-
-def first_published_payroll_changes(
-    vintages: Mapping[date, Mapping[date, float]], since: date
-) -> list[MonthlyChange]:
-    """Each month's payroll change as BLS first published it, from ``since`` on, oldest first.
-
-    Payrolls revise the two months before in every release, so the change is the month's first
-    level minus the previous month's level as it stood that same day, revised or not.
-    """
-    changes: list[MonthlyChange] = []
-    for month in sorted(vintages):
-        levels = vintages[month]
-        earlier = vintages.get(previous_month(month), {})
-        if month < since or not levels:
-            continue
-        released = min(levels)
-        known = [day for day in earlier if day <= released]
-        if not known:
-            continue
-        changes.append(MonthlyChange(month, released, levels[released] - earlier[max(known)]))
     return changes
 
 

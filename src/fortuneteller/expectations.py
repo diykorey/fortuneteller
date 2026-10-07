@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
-from datetime import UTC, date, datetime, time
+from datetime import UTC, date, datetime, time, timedelta
 from typing import Protocol
 
 from . import sources
@@ -57,6 +57,97 @@ class ExpectationSource(Protocol):
 
 def previous_month(month: date) -> date:
     return date(month.year - 1, 12, 1) if month.month == 1 else date(month.year, month.month - 1, 1)
+
+
+@dataclass(frozen=True)
+class MonthlyChange:
+    """One month's change as first published: CPI in percent (``0.4`` is +0.4%), payrolls in
+    thousands of jobs."""
+
+    reference_month: date
+    released: date
+    change: float
+
+
+def first_published_payroll_changes(
+    vintages: Mapping[date, Mapping[date, float]], since: date
+) -> list[MonthlyChange]:
+    """Each month's payroll change as BLS first published it, from ``since`` on, oldest first.
+
+    Payrolls revise the two months before in every release, so the change is the month's first
+    level minus the previous month's level as it stood that same day, revised or not.
+    """
+    changes: list[MonthlyChange] = []
+    for month in sorted(vintages):
+        levels = vintages[month]
+        earlier = vintages.get(previous_month(month), {})
+        if month < since or not levels:
+            continue
+        released = min(levels)
+        known = [day for day in earlier if day <= released]
+        if not known:
+            continue
+        changes.append(MonthlyChange(month, released, levels[released] - earlier[max(known)]))
+    return changes
+
+
+# The jobs-report forecast's inputs (docs/steps/nfp-forecast.md), each as first published.
+
+# ADP's private payrolls on FRED, read in thousands of jobs: the old method to May 2022, the new one
+# from September 2022, with ADP paused in between.
+ADP_SERIES = (("NPPTTL", 1.0), ("ADPMNUSNERSA", 0.001))
+# ADP's first print comes 20 to 45 days after its month starts. A month first seen later is history
+# republished (at the start of FRED's record in 2011, at the relaunch in 2022): nobody had it in time.
+ADP_FIRST_PRINT_DAYS = 50
+CLAIMS_SERIES = "IC4WSA"
+
+
+def adp_changes(
+    vintages: Mapping[str, Mapping[date, Mapping[date, float]]],
+) -> dict[date, MonthlyChange]:
+    """ADP's change for each month, in thousands, as first published in time for its jobs report."""
+    changes: dict[date, MonthlyChange] = {}
+    for series_id, scale in ADP_SERIES:
+        for change in first_published_payroll_changes(vintages[series_id], date.min):
+            if (change.released - change.reference_month).days <= ADP_FIRST_PRINT_DAYS:
+                changes[change.reference_month] = MonthlyChange(
+                    change.reference_month, change.released, change.change * scale
+                )
+    return changes
+
+
+def survey_week(month: date) -> date:
+    """The last day (a Saturday) of the week that includes the 12th: the jobs report's survey week."""
+    twelfth = month.replace(day=12)
+    return twelfth + timedelta(days=(5 - twelfth.weekday()) % 7)
+
+
+def claims_changes(first_prints: Iterable[sources.FirstRelease]) -> dict[date, MonthlyChange]:
+    """For each month, the change in 4-week-average initial claims, in thousands, from the previous
+    month's survey week to its own, both as first printed; known when the month's week came out.
+
+    ``first_prints`` are FRED first releases keyed by each week's last day.
+    """
+    weeks = {release.reference_month: release for release in first_prints}
+    changes: dict[date, MonthlyChange] = {}
+    for week, release in weeks.items():
+        month = week.replace(day=1)
+        earlier = weeks.get(survey_week(previous_month(month)))
+        if survey_week(month) == week and earlier is not None:
+            change = (release.value - earlier.value) / 1000
+            changes[month] = MonthlyChange(month, release.released, change)
+    return changes
+
+
+def load_model_inputs(api_key: str) -> tuple[dict[date, MonthlyChange], dict[date, MonthlyChange]]:
+    """ADP's and the claims' monthly changes from FRED, each as first published."""
+    vintages = {
+        series_id: sources.parse_vintages(sources.fetch_vintages(api_key, series_id), series_id)
+        for series_id, _scale in ADP_SERIES
+    }
+    payload = sources.fetch_first_releases(api_key, series_id=CLAIMS_SERIES)
+    weeks, _valueless = sources.parse_first_releases(payload, CLAIMS_SERIES)
+    return adp_changes(vintages), claims_changes(weeks)
 
 
 def event_month(event: EventInstance) -> date:

@@ -1,0 +1,37 @@
+{
+ "realtime_start": "1776-07-04",
+ "realtime_end": "9999-12-31",
+ "observation_start": "1600-01-01",
+ "observation_end": "9999-12-31",
+ "units": "lin",
+ "output_type": 3,
+ "file_type": "json",
+ "order_by": "observation_date",
+ "sort_order": "asc",
+ "count": 4,
+ "offset": 0,
+ "limit": 100000,
+ "observations": [
+  {
+   "date": "2020-03-01",
+   "NPPTTL_20200401": "129443.017",
+   "NPPTTL_20200506": "129288.841",
+   "NPPTTL_20200603": "129135.563"
+  },
+  {
+   "date": "2020-04-01",
+   "NPPTTL_20200506": "109052.774",
+   "NPPTTL_20200603": "109578.778",
+   "NPPTTL_20200701": "109726.685"
+  },
+  {
+   "date": "2022-04-01",
+   "NPPTTL_20220504": "129402.574",
+   "NPPTTL_20220602": "129127.873"
+  },
+  {
+   "date": "2022-05-01",
+   "NPPTTL_20220602": "129256.098"
+  }
+ ]
+}
