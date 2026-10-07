@@ -56,7 +56,7 @@ part 2, when there is a second country to decide it with.
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~Flow identity: `country` and `zone` on `EventFlow`; `stored_events(flow)` by event type and country; `EVENT_FLOWS` checked for duplicates; `release_date` in the flow's zone~~ **done** | A UK flow of the same event type, in a test, stores and reads back apart from the US's |
-| 2 | Surprises per flow: `Trend12m` grouped by flow; `surprise_pairs` / `track_surprises` per flow; `end_of_day(day, zone)`; each market's close in its own zone | The same test's UK trend and report leave the US's untouched; every US output byte-identical to `main` |
+| 2 | ~~Surprises per flow: `Trend12m` grouped by flow; `surprise_pairs` / `track_surprises` per flow; `end_of_day(day, zone)`; each market's close in its own zone~~ **done** | The same test's UK trend and report leave the US's untouched; every US output byte-identical to `main` |
 
 ## How you know it is right
 
@@ -81,4 +81,17 @@ duplicate check. `expectations.py`: `Trend12m`'s grouping, `end_of_day`. `study.
 
 ## Results
 
-*Filled in by step 2.*
+Done 2026-10-07. Every event flow is now identified by (event type, origin country):
+
+- Stored events, the 12-month trend and the `surprise` report all read one flow at a time. A made-up
+  UK housing flow, with the same event type and measure as a US one, ten times the numbers and
+  moving markets the other way, leaves the US trend, surprises and report byte-identical; the UK's
+  trend is its own (`tests/test_event_flows.py`).
+- Release dates, day-only expectations (`end_of_day`) and each market's close are read in their own
+  time zones. A Fed decision at 14:00 New York reacts the next day in a London market closing at
+  16:30 London time.
+- Two flows sharing a (type, country) pair, type code or command-line name fail at import.
+- On real data, every load and report, and `event_instances`, `observations`, `surprises` and
+  `daily_bars` row for row, are identical to `main`'s before this work.
+
+Part 2, [cross-country effects](../roadmap.md#next-steps-in-order), builds on this.
