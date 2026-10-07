@@ -196,7 +196,7 @@ def test_stored_decisions_are_measured_like_any_other_event() -> None:
     flows.store_fomc_decisions([FomcDecision(date(2020, 3, 15), scheduled=False)], con=con)
 
     # then it is one event of its type, released the day it was announced
-    events = flows.stored_events(flows.FOMC_EVENT_TYPE, con=con)
+    events = flows.stored_events(flows.FED_FLOW, con=con)
     assert [flows.release_date(e) for e in events] == [date(2020, 3, 15)]
 
 

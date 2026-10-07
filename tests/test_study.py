@@ -24,7 +24,7 @@ from fortuneteller.sources import (
     parse_first_releases,
 )
 from fortuneteller.flows import (
-    CPI_EVENT_TYPE,
+    CPI_FLOW,
     store_releases,
     to_event_instance,
 )
@@ -137,7 +137,7 @@ def test_http_error_does_not_leak_the_api_key(monkeypatch: pytest.MonkeyPatch) -
 def _events_by_month() -> dict[str, datetime]:
     releases, _ = parse_first_releases(FIXTURE.read_bytes(), CPI_SERIES_ID)
     return {
-        r.reference_month.strftime("%Y-%m"): to_event_instance(r, CPI_EVENT_TYPE).event_ts
+        r.reference_month.strftime("%Y-%m"): to_event_instance(r, CPI_FLOW).event_ts
         for r in releases
     }
 
@@ -159,7 +159,7 @@ def test_event_is_keyed_by_type_and_release_day_and_names_its_month() -> None:
     release = FirstRelease(date(2025, 11, 1), date(2025, 12, 18), 325.031)
 
     # when the print is mapped
-    event = to_event_instance(release, CPI_EVENT_TYPE)
+    event = to_event_instance(release, CPI_FLOW)
 
     # then the id is CPI's code and the release day, and the detail names the month measured
     assert event.event_id == 1_2025_12_18
@@ -177,8 +177,8 @@ def test_event_ids_are_stable_and_unique() -> None:
     releases, _ = parse_first_releases(FIXTURE.read_bytes(), CPI_SERIES_ID)
 
     # when they are mapped twice
-    first = [to_event_instance(r, CPI_EVENT_TYPE).event_id for r in releases]
-    second = [to_event_instance(r, CPI_EVENT_TYPE).event_id for r in releases]
+    first = [to_event_instance(r, CPI_FLOW).event_id for r in releases]
+    second = [to_event_instance(r, CPI_FLOW).event_id for r in releases]
 
     # then the ids repeat exactly and never collide
     assert first == second
@@ -192,9 +192,7 @@ def test_event_keys_match_the_seed_reference_tables() -> None:
             return {row[name] for row in csv.DictReader(handle)}
 
     # when a mapped event is built
-    event = to_event_instance(
-        FirstRelease(date(2026, 8, 1), date(2026, 9, 11), 334.131), CPI_EVENT_TYPE
-    )
+    event = to_event_instance(FirstRelease(date(2026, 8, 1), date(2026, 9, 11), 334.131), CPI_FLOW)
 
     # then its join keys exist exactly as written
     assert event.event_type in column("event_types.csv", "event_type")
@@ -206,7 +204,7 @@ def _store(time_zone: str = "UTC") -> duckdb.DuckDBPyConnection:
     con.execute(f"SET TimeZone = '{time_zone}'")
     db.init_db(con=con)
     releases, _ = parse_first_releases(FIXTURE.read_bytes(), CPI_SERIES_ID)
-    store_releases(CPI_EVENT_TYPE, releases, con=con)
+    store_releases(CPI_FLOW, releases, con=con)
     return con
 
 
@@ -216,7 +214,7 @@ def test_rerunning_the_store_changes_no_row_count() -> None:
     releases, _ = parse_first_releases(FIXTURE.read_bytes(), CPI_SERIES_ID)
 
     # when they are stored again
-    written = store_releases(CPI_EVENT_TYPE, releases, con=con)
+    written = store_releases(CPI_FLOW, releases, con=con)
 
     # then every row is overwritten in place, not appended
     assert written == 6
@@ -415,7 +413,7 @@ def test_two_event_types_on_the_same_day_get_different_ids() -> None:
     day = date(2022, 9, 13)
 
     # when the ids are built
-    cpi = flows.event_id(flows.CPI_EVENT_TYPE, day)
+    cpi = flows.event_id(flows.CPI_FLOW, day)
 
     # then the type code leads, so another type on that day cannot collide
     assert cpi == 1_2022_09_13
@@ -446,7 +444,7 @@ def test_two_releases_on_one_day_are_refused_rather_than_overwritten() -> None:
 
     # when / then storing them is refused: they would share an event_id
     with pytest.raises(ValueError, match="two releases on one day"):
-        flows.store_releases(flows.NFP_EVENT_TYPE, releases, con=con)
+        flows.store_releases(flows.NFP_FLOW, releases, con=con)
 
 
 def test_a_date_correction_belongs_to_its_own_series() -> None:
@@ -472,7 +470,7 @@ def test_a_payrolls_release_is_keyed_with_its_own_type_code() -> None:
     release = FirstRelease(date(2026, 9, 1), date(2026, 10, 2), 160000.0)
 
     # when it is mapped
-    event = to_event_instance(release, flows.NFP_EVENT_TYPE)
+    event = to_event_instance(release, flows.NFP_FLOW)
 
     # then it is an NFP event at 08:30 New York, keyed 2 + its release day
     assert event.event_id == 2_2026_10_02

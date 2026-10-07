@@ -9,7 +9,7 @@ from fortuneteller import flows
 from fortuneteller.expectations import Trend12m, build_surprises, previous_month
 from fortuneteller.models import EventInstance, Surprise
 from fortuneteller.sources import NFP_SERIES_ID, FirstRelease, parse_vintages
-from fortuneteller.flows import NFP_EVENT_TYPE, PAYROLLS, MonthlyChange
+from fortuneteller.flows import NFP_EVENT_TYPE, NFP_FLOW, PAYROLLS, MonthlyChange
 
 DATA = Path(__file__).parent / "data"
 
@@ -65,13 +65,13 @@ def _stored(changes: list[MonthlyChange]) -> list[EventInstance]:
         change.released: change for change in sorted(changes, key=lambda c: c.reference_month)
     }
     return [
-        flows.to_event_instance(FirstRelease(c.reference_month, c.released, 1.0), NFP_EVENT_TYPE)
+        flows.to_event_instance(FirstRelease(c.reference_month, c.released, 1.0), NFP_FLOW)
         for c in newest.values()
     ]
 
 
 def _surprises(changes: list[MonthlyChange], events: list[EventInstance]) -> list[Surprise]:
-    actuals = flows.to_actuals(changes, NFP_EVENT_TYPE, PAYROLLS, flows.THOUSANDS, events)
+    actuals = flows.to_actuals(changes, NFP_FLOW, PAYROLLS, flows.THOUSANDS, events)
     expected = Trend12m().expectations(events, actuals, "key")
     return build_surprises(events, actuals, expected, [NFP_EVENT_TYPE])
 
@@ -116,10 +116,10 @@ def test_a_stored_release_that_disagrees_with_the_revision_history_is_named() ->
     vintages = _vintages()
     events = [
         flows.to_event_instance(
-            FirstRelease(date(2022, 8, 1), date(2022, 9, 2), 152744.0), NFP_EVENT_TYPE
+            FirstRelease(date(2022, 8, 1), date(2022, 9, 2), 152744.0), NFP_FLOW
         ),
         flows.to_event_instance(
-            FirstRelease(date(2022, 9, 1), date(2022, 10, 7), 153019.0), NFP_EVENT_TYPE
+            FirstRelease(date(2022, 9, 1), date(2022, 10, 7), 153019.0), NFP_FLOW
         ),
     ]
 
