@@ -175,9 +175,10 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **Vintage / new-and-revised view** — a series' values as they stood on one release day. FRED's
   `output_type=3` returns one column per release day; payrolls need it because every jobs report
   revises the two months before.
-- **Event flow** — one event type's way in (`flows.py`, from step 2 of
+- **Event flow** — one event type's way in from one origin country (`flows.py`, from step 2 of
   [event flows](steps/event-flows.md)): fetch from its own source, run its own checks, return the
-  common records.
+  common records. Identified by (event type, country), so UK CPI would be a flow apart from US CPI
+  ([country-aware events](steps/country-aware-events.md)).
 - **Expectation source** — one way of saying what was expected (`expectations.py`): the 12-month
   trend, the Cleveland Fed's nowcast. Each returns `Expectation`s, checked against their event before
   a surprise is computed.
