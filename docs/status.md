@@ -12,7 +12,7 @@ Country-aware events, step 1 — flow identity: each event flow carries its orig
 release `zone`; events are read back by event type and country, so a UK CPI flow beside the US's
 never mixes with it; flows sharing a (type, country) pair, type code or name are refused at import;
 release dates are read in the flow's zone. Every US load and report byte-identical to `main`.
-*(PR #TBD.)*
+*(PR #113.)*
 
 ## In progress
 
@@ -28,7 +28,7 @@ Country-aware events, step 2 — surprises per flow: `Trend12m` grouped by flow,
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-07 | Country-aware events spec and step 1: flow identity by type and country | PR #TBD |
+| 2026-10-07 | Country-aware events spec and step 1: flow identity by type and country | PR #113 |
 | 2026-10-07 | Jobs-report forecast spec and step 1: ADP and claims inputs | PR #112 |
 | 2026-10-06 | Event flows step 4: the recipe; a made-up flow and source plug in — refactor complete | PR #111 |
 | 2026-10-06 | Event flows step 3: the CLI and measurement driven by the flows | PR #110 |
