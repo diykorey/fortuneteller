@@ -16,14 +16,13 @@ are each flow's `type_code`, and reports name a source by its `label`. **Event f
 
 ## In progress
 
-Nothing. The event-flows refactor is complete.
+**A free forecast of each jobs report**: [nfp-forecast.md](steps/nfp-forecast.md). Spec under
+review.
 
 ## Next
 
-The decision left after rung 1, in [`mvp-results.md`](mvp-results.md#what-comes-next): sharper
-measurement (paid consensus forecasts, intraday prices), a better free forecast of each jobs
-report, or rung 2 (predict the 10-year yield's direction before each CPI release). A consensus
-source or a jobs-report model is now one `ExpectationSource`.
+Jobs-report forecast, step 1 — the inputs: ADP's first-published monthly changes (both FRED
+series) and the survey-week jobless-claims changes.
 
 ## Done
 
