@@ -28,7 +28,7 @@ import duckdb
 
 from . import db, sources, stats
 from .models import DailyBar, EventInstance, Observation
-from .flows import EVENT_FLOWS, SurpriseRule, stored_events
+from .flows import EVENT_FLOWS, EventFlow, SurpriseRule, stored_events
 from .sources import NEW_YORK, DailyClosingPrice, YahooError
 
 
@@ -173,21 +173,21 @@ def stored_closes(
 
 def build_observations(
     con: duckdb.DuckDBPyConnection | None = None,
-) -> tuple[list[Observation], dict[str, dict[str, ReleaseCounts]]]:
+) -> tuple[list[Observation], dict[EventFlow, dict[str, ReleaseCounts]]]:
     """Measure every MVP instrument around every stored event, from ``daily_bars``.
 
-    The counts are per event type, then per instrument; a type with no stored events is left out.
+    The counts are per event flow, then per instrument; a flow with no stored events is left out.
     """
-    events = {flow.event_type: stored_events(flow.event_type, con=con) for flow in EVENT_FLOWS}
+    events = {flow: stored_events(flow, con=con) for flow in EVENT_FLOWS}
     observations: list[Observation] = []
-    release_counts: dict[str, dict[str, ReleaseCounts]] = {
-        event_type: {} for event_type, typed in events.items() if typed
+    release_counts: dict[EventFlow, dict[str, ReleaseCounts]] = {
+        flow: {} for flow, typed in events.items() if typed
     }
     for instrument, (_ticker, unit, close) in MVP_PRICE_SERIES.items():
         closes = stored_closes(instrument, con=con)
-        for event_type, by_instrument in release_counts.items():
+        for flow, by_instrument in release_counts.items():
             counts = by_instrument[instrument] = ReleaseCounts()
-            observations += _observe(events[event_type], instrument, unit, close, closes, counts)
+            observations += _observe(events[flow], instrument, unit, close, closes, counts)
     return observations, release_counts
 
 
@@ -234,7 +234,7 @@ def _observe(
 
 def store_observations(
     con: duckdb.DuckDBPyConnection | None = None,
-) -> dict[str, dict[str, ReleaseCounts]]:
+) -> dict[EventFlow, dict[str, ReleaseCounts]]:
     """Rebuild the observations: the table ends up holding exactly what this run measured."""
     connection = con if con is not None else db.get_connection()
     observations, release_counts = build_observations(con=connection)
@@ -347,15 +347,15 @@ def era_of(day: date) -> str:
 
 
 def measure_raw_moves(
-    event_type: str, con: duckdb.DuckDBPyConnection | None = None
+    flow: EventFlow, con: duckdb.DuckDBPyConnection | None = None
 ) -> dict[str, RawMove]:
     """Each MVP instrument's moves on the event's days against its moves on ordinary days.
 
     An ordinary day is one that is no stored event's reaction day, of any type: a jobs-report or
     Fed day is not a fair "other day" for CPI.
     """
-    events = stored_events(event_type, con=con)
-    every_event = [e for flow in EVENT_FLOWS for e in stored_events(flow.event_type, con=con)]
+    events = stored_events(flow, con=con)
+    every_event = [e for each in EVENT_FLOWS for e in stored_events(each, con=con)]
     results: dict[str, RawMove] = {}
     for instrument, (_ticker, unit, close) in MVP_PRICE_SERIES.items():
         closes = stored_closes(instrument, con=con)

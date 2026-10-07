@@ -17,7 +17,7 @@ from fortuneteller.sources import (
     parse_daily_bars,
 )
 from fortuneteller.flows import (
-    CPI_EVENT_TYPE,
+    CPI_FLOW,
     store_releases,
     to_event_instance,
 )
@@ -139,7 +139,7 @@ def _store(
     con = duckdb.connect(":memory:")
     con.execute(f"SET TimeZone = '{time_zone}'")
     db.init_db(con=con)
-    store_releases(CPI_EVENT_TYPE, [HOT_PRINT], con=con)
+    store_releases(CPI_FLOW, [HOT_PRINT], con=con)
     spx = parse_daily_bars(GSPC_2022.read_bytes())
     for instrument in MVP_PRICE_SERIES:
         bars = _bars(instrument, (closes or {}).get(instrument, spx))
@@ -174,7 +174,7 @@ def test_known_day_is_measured_through_the_store() -> None:
     assert observation["data_source"] == "yahoo"
     assert observation["quality"] == "daily_close"
     assert observation["ret_5m"] is None and observation["abn_ret_1d"] is None
-    assert release_counts[CPI_EVENT_TYPE]["SPY / ES"] == ReleaseCounts(measured=1)
+    assert release_counts[CPI_FLOW]["SPY / ES"] == ReleaseCounts(measured=1)
 
 
 def test_yield_move_is_stored_in_basis_points() -> None:
@@ -204,7 +204,7 @@ def test_release_before_an_instruments_history_is_counted_not_stored() -> None:
     release_counts = store_observations(con=con)
 
     # then gold has no row, and the counts say why
-    assert release_counts[CPI_EVENT_TYPE]["GC / XAU"] == ReleaseCounts(skipped_before_history=1)
+    assert release_counts[CPI_FLOW]["GC / XAU"] == ReleaseCounts(skipped_before_history=1)
     rows = con.execute("SELECT count(*) FROM observations WHERE instrument = 'GC / XAU'").fetchone()
     assert rows == (0,)
 
@@ -221,7 +221,7 @@ def test_instrument_without_any_prices_fails_loudly() -> None:
 def test_a_release_after_the_close_is_measured_from_that_close() -> None:
     # given the hot print stamped 22:00 New York time on 09-13, after the S&P 500 closed
     con = _store()
-    late = to_event_instance(HOT_PRINT, CPI_EVENT_TYPE).model_copy(
+    late = to_event_instance(HOT_PRINT, CPI_FLOW).model_copy(
         update={"event_ts": datetime(2022, 9, 14, 2, 0)}
     )
     db.insert_models("event_instances", [late], con=con, replace=True)
@@ -243,7 +243,7 @@ def test_rebuilding_removes_a_row_that_no_longer_applies() -> None:
     release_counts = store_observations(con=con)
 
     # then the old row is gone, so the table matches what this run measured
-    assert release_counts[CPI_EVENT_TYPE]["SPY / ES"] == ReleaseCounts(skipped_before_history=1)
+    assert release_counts[CPI_FLOW]["SPY / ES"] == ReleaseCounts(skipped_before_history=1)
     rows = con.execute("SELECT count(*) FROM observations WHERE instrument = 'SPY / ES'").fetchone()
     assert rows == (0,)
     assert db.count_rows("observations", con=con) == 4
@@ -256,7 +256,7 @@ def test_rerunning_changes_no_count_and_events_can_still_be_reloaded() -> None:
 
     # when the observations are rebuilt and the events they point at are stored again
     store_observations(con=con)
-    store_releases(CPI_EVENT_TYPE, [HOT_PRINT], con=con)
+    store_releases(CPI_FLOW, [HOT_PRINT], con=con)
 
     # then nothing is duplicated and the foreign key does not block the event reload
     assert db.count_rows("observations", con=con) == 5
@@ -266,7 +266,7 @@ def test_rerunning_changes_no_count_and_events_can_still_be_reloaded() -> None:
 def test_every_event_type_is_measured_and_counted_on_its_own() -> None:
     # given a jobs report on the same day as the hot print
     con = _store()
-    store_releases(flows.NFP_EVENT_TYPE, [HOT_PRINT], con=con)
+    store_releases(flows.NFP_FLOW, [HOT_PRINT], con=con)
 
     # when the observations are built
     release_counts = store_observations(con=con)
@@ -274,8 +274,8 @@ def test_every_event_type_is_measured_and_counted_on_its_own() -> None:
     # then both events are measured, and each type's releases are counted separately
     rows = con.execute("SELECT DISTINCT event_id FROM observations ORDER BY 1").fetchall()
     assert rows == [(1_2022_09_13,), (2_2022_09_13,)]
-    assert list(release_counts) == [CPI_EVENT_TYPE, flows.NFP_EVENT_TYPE]
-    assert release_counts[flows.NFP_EVENT_TYPE]["SPY / ES"] == ReleaseCounts(measured=1)
+    assert list(release_counts) == [CPI_FLOW, flows.NFP_FLOW]
+    assert release_counts[flows.NFP_FLOW]["SPY / ES"] == ReleaseCounts(measured=1)
 
 
 DXY_1992 = Path(__file__).parent / "data" / "yahoo_dx_y_nyb_1992_12.json"
@@ -293,7 +293,7 @@ def test_load_prices_prints_counts_per_instrument_and_in_total(
     tmp_db: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     # given the hot print loaded, and gold's saved prices ending decades before it
-    store_releases(CPI_EVENT_TYPE, [HOT_PRINT])
+    store_releases(CPI_FLOW, [HOT_PRINT])
     _yahoo_answers(monkeypatch, gold=DXY_1992)
 
     # when the command runs twice
@@ -336,7 +336,7 @@ def test_load_prices_reports_a_yahoo_failure(
     tmp_db: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     # given the releases loaded and Yahoo rejecting the request
-    store_releases(CPI_EVENT_TYPE, [HOT_PRINT])
+    store_releases(CPI_FLOW, [HOT_PRINT])
 
     def fetch(ticker: str) -> NoReturn:
         raise YahooError(f"Yahoo returned HTTP 404 for {ticker}")
@@ -370,7 +370,7 @@ def test_load_prices_reports_a_malformed_reply(
     tmp_db: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
     # given the releases loaded and Yahoo answering with a page that is not JSON
-    store_releases(CPI_EVENT_TYPE, [HOT_PRINT])
+    store_releases(CPI_FLOW, [HOT_PRINT])
     monkeypatch.setattr(sources, "fetch_daily_bars", lambda _ticker: b"<html>consent</html>")
 
     # when the command runs

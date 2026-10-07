@@ -55,7 +55,7 @@ part 2, when there is a second country to decide it with.
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | Flow identity: `country` and `zone` on `EventFlow`; `stored_events(event_type, country)`; `EVENT_FLOWS` checked for duplicates; `release_date` in the flow's zone | A UK flow of the same event type, in a test, stores and reads back apart from the US's |
+| 1 | ~~Flow identity: `country` and `zone` on `EventFlow`; `stored_events(flow)` by event type and country; `EVENT_FLOWS` checked for duplicates; `release_date` in the flow's zone~~ **done** | A UK flow of the same event type, in a test, stores and reads back apart from the US's |
 | 2 | Surprises per flow: `Trend12m` grouped by flow; `surprise_pairs` / `track_surprises` per flow; `end_of_day(day, zone)`; each market's close in its own zone | The same test's UK trend and report leave the US's untouched; every US output byte-identical to `main` |
 
 ## How you know it is right

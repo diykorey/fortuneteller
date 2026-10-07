@@ -42,6 +42,7 @@ from fortuneteller.expectations import (
 from fortuneteller.models import Surprise, EventInstance
 from fortuneteller.flows import (
     CPI_EVENT_TYPE,
+    CPI_FLOW,
     PERCENT,
     MonthlyChange,
     actual_mismatches,
@@ -335,7 +336,7 @@ def _changes(*percents: float, start: tuple[int, int] = (2021, 1)) -> list[Month
 
 def trend_expectations(changes: list[MonthlyChange]) -> dict[date, float]:
     events = [_event(change.reference_month, change.released) for change in changes]
-    actuals = to_actuals(changes, CPI_EVENT_TYPE, CORE, PERCENT, events)
+    actuals = to_actuals(changes, CPI_FLOW, CORE, PERCENT, events)
     months = {event.event_id: event_month(event) for event in events}
     return {
         months[expectation.event_id]: expectation.value
@@ -366,7 +367,7 @@ def test_the_trend_averages_the_months_that_exist_around_a_gap() -> None:
 
 
 def _event(month: date, released: date) -> EventInstance:
-    return to_event_instance(FirstRelease(month, released, 100.0), CPI_EVENT_TYPE)
+    return to_event_instance(FirstRelease(month, released, 100.0), CPI_FLOW)
 
 
 def test_a_surprise_row_is_actual_minus_expected_for_its_release() -> None:
@@ -445,7 +446,7 @@ def test_a_change_released_on_another_day_than_its_stored_release_is_refused() -
 
     # when / then the actuals are refused rather than paired with the wrong day
     with pytest.raises(ValueError, match="2022-08"):
-        to_actuals(changes, CPI_EVENT_TYPE, CORE, PERCENT, [_event(august, date(2022, 9, 13))])
+        to_actuals(changes, CPI_FLOW, CORE, PERCENT, [_event(august, date(2022, 9, 13))])
 
 
 def test_a_change_without_a_stored_release_asks_for_the_releases() -> None:
@@ -454,7 +455,7 @@ def test_a_change_without_a_stored_release_asks_for_the_releases() -> None:
 
     # when / then the message says which load to run
     with pytest.raises(ValueError, match="load-releases"):
-        to_actuals(changes, CPI_EVENT_TYPE, CORE, PERCENT, [])
+        to_actuals(changes, CPI_FLOW, CORE, PERCENT, [])
 
 
 def _nowcast_file(month: str, actual_core: float) -> bytes:
@@ -497,7 +498,7 @@ def released_on(month: date) -> date:
 def _store_events(con: duckdb.DuckDBPyConnection) -> None:
     months = [change.reference_month for change in _changes(*[0.0] * 20, start=(2021, 1))]
     flows.store_releases(
-        CPI_EVENT_TYPE, [FirstRelease(m, released_on(m), 100.0) for m in months], con=con
+        CPI_FLOW, [FirstRelease(m, released_on(m), 100.0) for m in months], con=con
     )
 
 
@@ -692,7 +693,7 @@ def test_each_instrument_is_measured_against_each_measure_and_baseline() -> None
     con = duckdb.connect(":memory:")
     db.init_db(con=con)
     month = date(2022, 8, 1)
-    flows.store_releases(CPI_EVENT_TYPE, [FirstRelease(month, date(2022, 9, 13), 100.0)], con=con)
+    flows.store_releases(CPI_FLOW, [FirstRelease(month, date(2022, 9, 13), 100.0)], con=con)
     surprises = [
         Surprise(
             event_id=1_2022_09_13,
@@ -752,11 +753,11 @@ def _store_tracking_data(con: duckdb.DuckDBPyConnection) -> None:
     rng = random.Random(9)
     months = [change.reference_month for change in _changes(*[0.0] * 40, start=(2020, 1))]
     flows.store_releases(
-        CPI_EVENT_TYPE, [FirstRelease(m, released_on(m), 100.0) for m in months], con=con
+        CPI_FLOW, [FirstRelease(m, released_on(m), 100.0) for m in months], con=con
     )
     surprises, observations = [], []
     for m in months:
-        event_id = flows.event_id(flows.CPI_EVENT_TYPE, released_on(m))
+        event_id = flows.event_id(flows.CPI_FLOW, released_on(m))
         surprise = rng.gauss(0, 0.2)
         surprises += [
             Surprise(
@@ -807,7 +808,7 @@ def test_surprise_names_the_load_to_run_first(
     con = db.get_connection()
     if stored >= 1:
         flows.store_releases(
-            CPI_EVENT_TYPE, [FirstRelease(date(2022, 8, 1), date(2022, 9, 13), 100.0)], con=con
+            CPI_FLOW, [FirstRelease(date(2022, 8, 1), date(2022, 9, 13), 100.0)], con=con
         )
     if stored >= 2:
         con.execute(
@@ -849,7 +850,7 @@ def test_loading_adds_payroll_surprises_when_jobs_reports_are_stored(
     db.init_db(con=con)
     _store_events(con)
     months = [date(2021 + i // 12, i % 12 + 1, 1) for i in range(15)]
-    flows.store_releases(flows.NFP_EVENT_TYPE, _jobs_answer(monkeypatch, months), con=con)
+    flows.store_releases(flows.NFP_FLOW, _jobs_answer(monkeypatch, months), con=con)
 
     # when the surprises are loaded
     flows.load_surprises("key", con=con)
@@ -872,7 +873,7 @@ def test_loading_refuses_a_jobs_report_stored_unlike_fred_s_history(
     months = [date(2021 + i // 12, i % 12 + 1, 1) for i in range(15)]
     releases = _jobs_answer(monkeypatch, months)
     releases[2] = FirstRelease(releases[2].reference_month, releases[2].released, 1201.0)
-    flows.store_releases(flows.NFP_EVENT_TYPE, releases, con=con)
+    flows.store_releases(flows.NFP_FLOW, releases, con=con)
 
     # when / then nothing is stored, and the month is named
     with pytest.raises(ValueError, match="payrolls: .* 2021-03"):

@@ -17,8 +17,9 @@ from fortuneteller.sources import (
     DailyClosingPrice,
 )
 from fortuneteller.flows import (
-    CPI_EVENT_TYPE,
-    NFP_EVENT_TYPE,
+    CPI_FLOW,
+    NFP_FLOW,
+    EventFlow,
     store_releases,
 )
 from fortuneteller.study import (
@@ -199,7 +200,7 @@ def test_the_verdict_needs_both_size_and_significance(
     assert result == expected
 
 
-def _synthetic_store(con: duckdb.DuckDBPyConnection, event_type: str = CPI_EVENT_TYPE) -> None:
+def _synthetic_store(con: duckdb.DuckDBPyConnection, flow: EventFlow = CPI_FLOW) -> None:
     # 36 monthly releases in 2021-2023; prices move 0.5% a day, and 2% on each release day.
     releases = []
     for month in range(36):
@@ -209,7 +210,7 @@ def _synthetic_store(con: duckdb.DuckDBPyConnection, event_type: str = CPI_EVENT
             released += timedelta(days=1)
         reference = date(year - 1, 12, 1) if month_index == 1 else date(year, month_index - 1, 1)
         releases.append(FirstRelease(reference, released, 300.0))
-    store_releases(event_type, releases, con=con)
+    store_releases(flow, releases, con=con)
     release_days = {release.released for release in releases}
     rng = random.Random(5)
     day, price, closes = date(2020, 12, 1), 100.0, []
@@ -231,7 +232,7 @@ def test_release_days_that_move_more_are_found_for_every_instrument() -> None:
     _synthetic_store(con)
 
     # when the raw moves are measured
-    results = measure_raw_moves(CPI_EVENT_TYPE, con=con)
+    results = measure_raw_moves(CPI_FLOW, con=con)
 
     # then each instrument moves, and only the 2020-now era has CPI days
     assert list(results) == list(MVP_PRICE_SERIES)
@@ -287,7 +288,7 @@ def test_raw_move_names_the_load_to_run_first(
 ) -> None:
     # given an empty store, or releases without prices
     if load:
-        store_releases(CPI_EVENT_TYPE, [FirstRelease(date(2022, 8, 1), date(2022, 9, 13), 296.171)])
+        store_releases(CPI_FLOW, [FirstRelease(date(2022, 8, 1), date(2022, 9, 13), 296.171)])
 
     # when the command runs
     code = main(["raw-move"])
@@ -302,10 +303,10 @@ def test_the_raw_move_of_another_event_is_measured_on_its_own_days() -> None:
     # given 36 jobs reports on which every instrument moves four times its usual size
     con = duckdb.connect(":memory:")
     db.init_db(con=con)
-    _synthetic_store(con, event_type=flows.NFP_EVENT_TYPE)
+    _synthetic_store(con, flow=flows.NFP_FLOW)
 
     # when the raw moves are measured for the jobs report
-    results = measure_raw_moves(con=con, event_type=flows.NFP_EVENT_TYPE)
+    results = measure_raw_moves(con=con, flow=flows.NFP_FLOW)
 
     # then each instrument moves on those days
     assert all(raw.overall.verdict == MOVES for raw in results.values())
@@ -315,7 +316,7 @@ def test_raw_move_takes_the_event_to_measure(
     tmp_db: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
     # given jobs reports and prices stored, and no CPI releases
-    _synthetic_store(db.get_connection(), event_type=flows.NFP_EVENT_TYPE)
+    _synthetic_store(db.get_connection(), flow=flows.NFP_FLOW)
 
     # when the command runs for the jobs report, and for CPI
     nfp = main(["raw-move", "--event", "nfp"])
@@ -334,17 +335,17 @@ def test_another_events_days_are_not_ordinary_days() -> None:
     con = duckdb.connect(":memory:")
     db.init_db(con=con)
     _synthetic_store(con)
-    before = measure_raw_moves(CPI_EVENT_TYPE, con=con)["SPY / ES"].overall
+    before = measure_raw_moves(CPI_FLOW, con=con)["SPY / ES"].overall
     jobs = [
         FirstRelease(
             date(2021 + m // 12, m % 12 + 1, 1), _weekday(date(2021 + m // 12, m % 12 + 1, 3)), 1.0
         )
         for m in range(36)
     ]
-    store_releases(NFP_EVENT_TYPE, jobs, con=con)
+    store_releases(NFP_FLOW, jobs, con=con)
 
     # when CPI's raw move is measured again
-    after = measure_raw_moves(CPI_EVENT_TYPE, con=con)["SPY / ES"].overall
+    after = measure_raw_moves(CPI_FLOW, con=con)["SPY / ES"].overall
 
     # then the jobs days leave the ordinary days, and the CPI days stay as they were
     assert before.other_days - after.other_days == 36

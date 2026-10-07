@@ -12,6 +12,7 @@ from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from datetime import UTC, date, datetime, time, timedelta
 from typing import Protocol
+from zoneinfo import ZoneInfo
 
 import duckdb
 
@@ -44,14 +45,11 @@ RELEASE_TIME = time(8, 30)
 FIRST_RELEASE = "first_release"
 
 
-def event_id(event_type: str, released: date) -> int:
-    """The ``event_instances`` key: the flow's type code, then the release day (CPI 2022-09-13 →
-    120220913), so ids from different types never collide and sort by date within a type."""
-    codes = [flow.type_code for flow in EVENT_FLOWS if flow.event_type == event_type]
-    if not codes:
-        raise ValueError(f"{event_type}: no event flow in EVENT_FLOWS")
+def event_id(flow: EventFlow, released: date) -> int:
+    """The ``event_instances`` key: the flow's type code, then the release day (US CPI 2022-09-13 →
+    120220913), so ids from different flows never collide and sort by date within a flow."""
     day = released.year * 10_000 + released.month * 100 + released.day
-    return codes[0] * 100_000_000 + day
+    return flow.type_code * 100_000_000 + day
 
 
 def event_date(event_id: int) -> date:
@@ -60,18 +58,19 @@ def event_date(event_id: int) -> date:
     return date(day // 10_000, day // 100 % 100, day % 100)
 
 
-def to_event_instance(release: FirstRelease, event_type: str) -> EventInstance:
-    """Map one release to its ``event_instances`` row, keyed by event type and release day.
+def to_event_instance(release: FirstRelease, flow: EventFlow) -> EventInstance:
+    """Map one release to its ``event_instances`` row, keyed by its flow and release day, at
+    ``RELEASE_TIME`` in the flow's time zone.
 
     ``event_ts`` is naive UTC: DuckDB converts an aware datetime written to a ``TIMESTAMP`` column
     into the session time zone, so the offset is applied here and then dropped.
     """
-    published = datetime.combine(release.released, RELEASE_TIME, tzinfo=NEW_YORK)
+    published = datetime.combine(release.released, RELEASE_TIME, tzinfo=flow.zone)
     return EventInstance(
-        event_id=event_id(event_type, release.released),
-        event_type=event_type,
+        event_id=event_id(flow, release.released),
+        event_type=flow.event_type,
         event_ts=published.astimezone(UTC).replace(tzinfo=None),
-        country=UNITED_STATES,
+        country=flow.country,
         detail=release.reference_month.strftime("%Y-%m"),
         scheduled=True,
         consensus=None,
@@ -106,17 +105,17 @@ def one_release_per_day(
 
 
 def store_releases(
-    event_type: str,
+    flow: EventFlow,
     releases: Sequence[FirstRelease],
     con: duckdb.DuckDBPyConnection | None = None,
 ) -> int:
-    """Write one event type's releases to ``event_instances``; re-running overwrites by key.
+    """Write one flow's releases to ``event_instances``; re-running overwrites by key.
 
     Two releases on one day would share an ``event_id``; ``one_release_per_day`` merges them first.
     """
     if len({release.released for release in releases}) != len(releases):
-        raise ValueError(f"{event_type}: two releases on one day; merge them first")
-    return store_events([to_event_instance(release, event_type) for release in releases], con=con)
+        raise ValueError(f"{flow.event_type}: two releases on one day; merge them first")
+    return store_events([to_event_instance(release, flow) for release in releases], con=con)
 
 
 def store_events(
@@ -187,12 +186,14 @@ def fomc_announced_at(day: date) -> time:
 
 def fomc_event_instance(decision: sources.FomcDecision) -> EventInstance:
     """Map one Fed decision to its ``event_instances`` row, at the time it was announced."""
-    announced = datetime.combine(decision.day, fomc_announced_at(decision.day), tzinfo=NEW_YORK)
+    announced = datetime.combine(
+        decision.day, fomc_announced_at(decision.day), tzinfo=FED_FLOW.zone
+    )
     return EventInstance(
-        event_id=event_id(FOMC_EVENT_TYPE, decision.day),
-        event_type=FOMC_EVENT_TYPE,
+        event_id=event_id(FED_FLOW, decision.day),
+        event_type=FED_FLOW.event_type,
         event_ts=announced.astimezone(UTC).replace(tzinfo=None),
-        country=UNITED_STATES,
+        country=FED_FLOW.country,
         detail="scheduled meeting" if decision.scheduled else "unscheduled",
         scheduled=decision.scheduled,
         consensus=None,
@@ -250,20 +251,28 @@ def store_fomc_decisions(
 
 
 def stored_events(
-    event_type: str, con: duckdb.DuckDBPyConnection | None = None
+    flow: EventFlow, con: duckdb.DuckDBPyConnection | None = None
 ) -> list[EventInstance]:
-    """The stored events of one type, oldest first."""
+    """One flow's stored events, its event type in its country, oldest first."""
     return db.fetch_all(
         EventInstance,
-        "SELECT * FROM event_instances WHERE event_type = ? ORDER BY event_id",
-        [event_type],
+        "SELECT * FROM event_instances WHERE event_type = ? AND country = ? ORDER BY event_id",
+        [flow.event_type, flow.country],
         con=con,
     )
 
 
+def flow_of(event: EventInstance) -> EventFlow:
+    """The flow an event came from: its event type in its country."""
+    for flow in EVENT_FLOWS:
+        if (flow.event_type, flow.country) == (event.event_type, event.country):
+            return flow
+    raise ValueError(f"{event.event_type} in {event.country}: no event flow in EVENT_FLOWS")
+
+
 def release_date(event: EventInstance) -> date:
-    """The New York calendar date the release came out; ``event_ts`` is naive UTC."""
-    return event.event_ts.replace(tzinfo=UTC).astimezone(NEW_YORK).date()
+    """The calendar date the release came out, in its flow's time zone; ``event_ts`` is naive UTC."""
+    return event.event_ts.replace(tzinfo=UTC).astimezone(flow_of(event).zone).date()
 
 
 # Step 4 — each event's actuals (docs/steps/step-4-surprise.md).
@@ -369,7 +378,7 @@ THOUSANDS = "thousands"
 
 def to_actuals(
     changes: Iterable[MonthlyChange],
-    event_type: str,
+    flow: EventFlow,
     measure: str,
     unit: str,
     events: Sequence[EventInstance],
@@ -383,7 +392,7 @@ def to_actuals(
     by_month = {event_month(event): event for event in events}
     actuals = []
     for change in changes:
-        key = event_id(event_type, change.released)
+        key = event_id(flow, change.released)
         if key not in stored:
             month = change.reference_month
             if (own := by_month.get(month)) is not None:
@@ -411,7 +420,7 @@ def payroll_actuals(api_key: str, jobs: Sequence[EventInstance]) -> list[Actual]
         )
     since = min(event_month(event) for event in jobs)
     changes = first_published_payroll_changes(vintages, since)
-    return to_actuals(changes, NFP_EVENT_TYPE, PAYROLLS, THOUSANDS, jobs)
+    return to_actuals(changes, NFP_FLOW, PAYROLLS, THOUSANDS, jobs)
 
 
 # CPI surprises smaller than this are noise for the hit rate, in percentage points.
@@ -464,6 +473,8 @@ class EventBatch:
 
 class EventFlow(Protocol):
     event_type: str
+    country: str
+    zone: ZoneInfo
     type_code: int
     cli_name: str
     label: str
@@ -478,15 +489,15 @@ def _months(months: Iterable[date]) -> str:
     return ", ".join(f"{month:%Y-%m}" for month in months)
 
 
-def _release_batch(event_type: str, label: str, series_id: str, api_key: str) -> EventBatch:
+def _release_batch(flow: EventFlow, series_id: str, api_key: str) -> EventBatch:
     """A FRED first-release history as events: one per release day, the newest month kept."""
     payload = sources.fetch_first_releases(api_key, series_id=series_id)
     releases, valueless = sources.parse_first_releases(payload, series_id)
     if not releases:
-        raise ValueError(f"FRED returned no {event_type} releases")
+        raise ValueError(f"FRED returned no {flow.event_type} releases")
     kept, carried = one_release_per_day(releases)
     released = [release.released for release in kept]
-    report = [f"loaded {len(kept)} {label} releases, {min(released)} … {max(released)}"]
+    report = [f"loaded {len(kept)} {flow.label} releases, {min(released)} … {max(released)}"]
     if valueless:
         report.append(f"  skipped {len(valueless)} printed without a value: {_months(valueless)}")
     if carried:
@@ -494,7 +505,7 @@ def _release_batch(event_type: str, label: str, series_id: str, api_key: str) ->
             f"  {len(carried)} first published with a later month: "
             f"{_months(release.reference_month for release in carried)}"
         )
-    return EventBatch([to_event_instance(release, event_type) for release in kept], report)
+    return EventBatch([to_event_instance(release, flow) for release in kept], report)
 
 
 class CpiFlow:
@@ -502,13 +513,15 @@ class CpiFlow:
     each checked against the Cleveland Fed's published figure."""
 
     event_type = CPI_EVENT_TYPE
+    country = UNITED_STATES
+    zone = NEW_YORK
     type_code = 1
     cli_name = "cpi"
     label = "CPI"
     surprise_rule: SurpriseRule | None = CPI_SURPRISE_RULE
 
     def events(self, api_key: str) -> EventBatch:
-        return _release_batch(self.event_type, self.label, sources.CPI_SERIES_ID, api_key)
+        return _release_batch(self, sources.CPI_SERIES_ID, api_key)
 
     def actuals(self, events: Sequence[EventInstance], api_key: str) -> list[Actual]:
         changes = {
@@ -525,7 +538,7 @@ class CpiFlow:
         return [
             actual
             for measure, measure_changes in changes.items()
-            for actual in to_actuals(measure_changes, self.event_type, measure, PERCENT, events)
+            for actual in to_actuals(measure_changes, self, measure, PERCENT, events)
         ]
 
 
@@ -534,13 +547,15 @@ class NfpFlow:
     revision history."""
 
     event_type = NFP_EVENT_TYPE
+    country = UNITED_STATES
+    zone = NEW_YORK
     type_code = 2
     cli_name = "nfp"
     label = "NFP"
     surprise_rule: SurpriseRule | None = NFP_SURPRISE_RULE
 
     def events(self, api_key: str) -> EventBatch:
-        return _release_batch(self.event_type, self.label, sources.NFP_SERIES_ID, api_key)
+        return _release_batch(self, sources.NFP_SERIES_ID, api_key)
 
     def actuals(self, events: Sequence[EventInstance], api_key: str) -> list[Actual]:
         return payroll_actuals(api_key, events)
@@ -551,6 +566,8 @@ class FedFlow:
     its target rate. No surprise: there is no free record of what the market expected."""
 
     event_type = FOMC_EVENT_TYPE
+    country = UNITED_STATES
+    zone = NEW_YORK
     type_code = 3
     cli_name = "fomc"
     label = "Fed"
@@ -569,7 +586,22 @@ class FedFlow:
         return []
 
 
-EVENT_FLOWS: list[EventFlow] = [CpiFlow(), NfpFlow(), FedFlow()]
+CPI_FLOW, NFP_FLOW, FED_FLOW = CpiFlow(), NfpFlow(), FedFlow()
+EVENT_FLOWS: list[EventFlow] = [CPI_FLOW, NFP_FLOW, FED_FLOW]
+
+
+def check_flows(event_flows: Sequence[EventFlow]) -> None:
+    """Refuse two flows with the same event type and country, type code or command-line name."""
+    for what, keys in (
+        ("event type and country", [(f.event_type, f.country) for f in event_flows]),
+        ("type code", [f.type_code for f in event_flows]),
+        ("command-line name", [f.cli_name for f in event_flows]),
+    ):
+        if len(set(keys)) != len(keys):
+            raise ValueError(f"two event flows share a {what}")
+
+
+check_flows(EVENT_FLOWS)
 
 
 def flow_named(cli_name: str) -> EventFlow:
@@ -599,7 +631,7 @@ def load_surprises(api_key: str, con: duckdb.DuckDBPyConnection | None = None) -
     for flow in EVENT_FLOWS:
         if flow.surprise_rule is None:
             continue
-        if typed := stored_events(flow.event_type, con=con):
+        if typed := stored_events(flow, con=con):
             events += typed
             actuals += flow.actuals(typed, api_key)
     if not events:

@@ -8,25 +8,27 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Jobs-report forecast, step 1 — the inputs (`expectations.load_model_inputs`): ADP's first-published
-monthly change from both FRED series (185 months, 2011 on, none for June–August 2022; four checked
-against ADP's releases) and the change in 4-week-average jobless claims between survey weeks (207
-months, 2009 on). *(PR #112.)*
+Country-aware events, step 1 — flow identity: each event flow carries its origin `country` and
+release `zone`; events are read back by event type and country, so a UK CPI flow beside the US's
+never mixes with it; flows sharing a (type, country) pair, type code or name are refused at import;
+release dates are read in the flow's zone. Every US load and report byte-identical to `main`.
+*(PR #TBD.)*
 
 ## In progress
 
-**Country-aware events**: [country-aware-events.md](steps/country-aware-events.md). Spec under
-review. The jobs-report forecast is paused after its step 1 until this is done.
+**Country-aware events**: [country-aware-events.md](steps/country-aware-events.md). The jobs-report
+forecast is paused after its step 1 until this is done.
 
 ## Next
 
-Country-aware events, step 1 — flow identity: `country` and `zone` on `EventFlow`, stored events
-read by (event type, country), duplicate flows refused, release dates in the flow's zone.
+Country-aware events, step 2 — surprises per flow: `Trend12m` grouped by flow, `surprise_pairs` and
+`track_surprises` per flow, `end_of_day(day, zone)`, each market's close in its own zone.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-07 | Country-aware events spec and step 1: flow identity by type and country | PR #TBD |
 | 2026-10-07 | Jobs-report forecast spec and step 1: ADP and claims inputs | PR #112 |
 | 2026-10-06 | Event flows step 4: the recipe; a made-up flow and source plug in — refactor complete | PR #111 |
 | 2026-10-06 | Event flows step 3: the CLI and measurement driven by the flows | PR #110 |

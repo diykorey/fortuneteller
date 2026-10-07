@@ -100,8 +100,8 @@ def _load_prices(_args: argparse.Namespace) -> int:
     except (sources.YahooError, ValueError) as exc:
         print(f"load-prices: {exc}", file=sys.stderr)
         return 1
-    for event_type, by_instrument in release_counts.items():
-        print(event_type)
+    for flow, by_instrument in release_counts.items():
+        print(flow.event_type)
         for instrument, counts in by_instrument.items():
             print(describe_release_counts(instrument, counts))
         first = next(iter(by_instrument.values()))
@@ -207,7 +207,7 @@ def _surprise(args: argparse.Namespace) -> int:
         "SELECT count(*) FROM surprises WHERE measure = ? AND baseline = ?", [measure, baseline]
     ).fetchone()
     for missing, command in (
-        (not flows.stored_events(flow.event_type, con=con), "load-releases"),
+        (not flows.stored_events(flow, con=con), "load-releases"),
         (db.count_rows("observations", con=con) == 0, "load-prices"),
         (stored is None or stored[0] == 0, "load-surprises"),
     ):
@@ -274,7 +274,7 @@ def _raw_move(args: argparse.Namespace) -> int:
     event_type = flow.event_type
     con = db.get_connection()
     db.init_db(con=con)
-    if not flows.stored_events(event_type, con=con):
+    if not flows.stored_events(flow, con=con):
         print(
             f"raw-move: no {event_type} releases stored; run `fortuneteller load-releases` first",
             file=sys.stderr,
@@ -286,7 +286,7 @@ def _raw_move(args: argparse.Namespace) -> int:
         )
         return 1
     try:
-        results = study.measure_raw_moves(event_type, con=con)
+        results = study.measure_raw_moves(flow, con=con)
     except ValueError as exc:
         print(f"raw-move: {exc}", file=sys.stderr)
         return 1

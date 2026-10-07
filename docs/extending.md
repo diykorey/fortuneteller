@@ -11,6 +11,8 @@ Write one class in `src/fortuneteller/flows.py` and add it to `EVENT_FLOWS`.
 ```python
 class GdpFlow:
     event_type = "Other macro data (GDP/PMI/PCE/retail/claims)"  # a row of data/seed/event_types.csv
+    country = UNITED_STATES       # a row of data/seed/countries.csv: the origin country
+    zone = NEW_YORK               # the release's time zone: release times and dates are read in it
     type_code = 4                 # the leading digit of its event ids; unique per flow
     cli_name = "gdp"              # --event gdp
     label = "GDP"                 # three letters keep the reports aligned
@@ -37,6 +39,12 @@ From there, with no other change:
   measure), and `surprise --event gdp` gives its verdict.
 
 Fetching and parsing the outside source go in `src/fortuneteller/sources.py`, as for the others.
+
+The same event type from another country is another flow: the same `event_type`, its own
+`country`, `zone`, `type_code` and `cli_name`. Its events are stored and read apart from the US's;
+`EVENT_FLOWS` refuses two flows sharing a (type, country) pair, a type code or a name. Until
+[country-aware events](steps/country-aware-events.md) step 2, its trend and surprise reports would
+still mix with a US flow's measures of the same name, so name its measures apart.
 
 ## A new expectation source
 
