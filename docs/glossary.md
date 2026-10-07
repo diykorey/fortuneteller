@@ -45,6 +45,9 @@ Terms are grouped by what they are about, alphabetical within each group.
 ## Economic releases (the events)
 
 - **Actual** — the number a release actually printed.
+- **ADP** (ADP National Employment Report) — a private payroll processor's monthly count of
+  private-sector jobs, published two days before the jobs report and watched as a preview of it.
+  Changed method in 2022 after a three-month pause; FRED has each method as its own series.
 - **Consensus** — what forecasters collectively expected the release to be, published in advance by
   economic calendars. The reference point that makes "surprise" meaningful, and the **scarcest free
   data in this project** — actuals are easy, history of expectations is not.
@@ -57,6 +60,10 @@ Terms are grouped by what they are about, alphabetical within each group.
   rate, meeting eight times a year with a decision at 2:00 p.m. New York time.
 - **Inter-meeting (unscheduled) decision** — a Fed rate change made outside the published meeting
   calendar, usually in a crisis (2001, 2008, March 2020). Stored with `scheduled = false`.
+- **Jobless claims (initial claims)** — the weekly count of new unemployment-insurance filings,
+  published each Thursday; its 4-week average smooths the weekly noise. Rises when layoffs rise.
+- **Survey week** — the week that includes the 12th of the month: the week the jobs report's
+  payroll survey counts. The jobs-report forecast compares claims between survey weeks.
 - **GDP** (Gross Domestic Product) — total economic output; a quarterly growth release.
 - **Initial release / first print** — the value a statistical agency publishes the first time,
   before later revisions. The only version the market could have reacted to on the day, so it is the

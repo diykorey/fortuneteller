@@ -62,7 +62,7 @@ reports in all.
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | Inputs: ADP's first-published monthly changes (both series) and the survey-week claims changes, from FRED | August 2022's gap is empty; a sample of ADP first prints matches ADP's releases |
+| 1 | ~~Inputs: ADP's first-published monthly changes (both series) and the survey-week claims changes, from FRED~~ **done** | August 2022's gap is empty; a sample of ADP first prints matches ADP's releases |
 | 2 | `stats.least_squares` and the `PayrollModel` source, refitted before each report | No forecast uses a report or input published at or after it (the shared check passes); a planted relationship is recovered |
 | 3 | `payroll_model` in `EXPECTATION_SOURCES` and in NFP's rule as context; `surprise --event nfp` prints model and trend on the same reports | The comparison table printed; CPI's output unchanged |
 | 4 | Results here and in [`mvp-results.md`](../mvp-results.md) | Says whether the yield's and the dollar's links clear the bar against the forecast, with and without COVID |
@@ -81,6 +81,13 @@ reports in all.
 
 No paid data, no consensus, no intraday prices. No other event's forecast. No change to NFP's
 official verdict. No tuning: the inputs, the 36-report minimum and the COVID window are fixed here.
+
+**Inputs, checked 2026-10-07** (`expectations.load_model_inputs`). ADP: 185 months with a first
+print in time, March 2011 to September 2026, none for June–August 2022. A first print comes 20–45
+days after its month starts; anything FRED first shows later (history republished in 2011, 2022
+and 2023) is not one, so a month counts only if first published within 50 days of its start.
+Four first prints match ADP's own releases: April 2020 −20,236k, May 2022 +128k, September 2022
++208k (the relaunch), September 2025 −32k. Claims: a monthly change for 207 months from July 2009.
 
 ## Technical details
 

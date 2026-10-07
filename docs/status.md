@@ -8,26 +8,25 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Event flows, step 4 — the recipe, [Extending](extending.md), and `tests/test_event_flows.py`: a
-made-up flow and source, registered only in the test, run through `load-releases`,
-`load-surprises` and `surprise`. Two hidden dependencies the test found are gone: event-type codes
-are each flow's `type_code`, and reports name a source by its `label`. **Event flows complete.**
-*(PR #111.)*
+Jobs-report forecast, step 1 — the inputs (`expectations.load_model_inputs`): ADP's first-published
+monthly change from both FRED series (185 months, 2011 on, none for June–August 2022; four checked
+against ADP's releases) and the change in 4-week-average jobless claims between survey weeks (207
+months, 2009 on). *(PR pending.)*
 
 ## In progress
 
-**A free forecast of each jobs report**: [nfp-forecast.md](steps/nfp-forecast.md). Spec under
-review.
+**A free forecast of each jobs report**: [nfp-forecast.md](steps/nfp-forecast.md).
 
 ## Next
 
-Jobs-report forecast, step 1 — the inputs: ADP's first-published monthly changes (both FRED
-series) and the survey-week jobless-claims changes.
+Jobs-report forecast, step 2 — `stats.least_squares` and the `PayrollModel` source, refitted before
+each report on earlier reports only.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-07 | Jobs-report forecast spec and step 1: ADP and claims inputs | PR pending |
 | 2026-10-06 | Event flows step 4: the recipe; a made-up flow and source plug in — refactor complete | PR #111 |
 | 2026-10-06 | Event flows step 3: the CLI and measurement driven by the flows | PR #110 |
 | 2026-10-06 | Event flows step 2: CPI, NFP and Fed as flows behind `EVENT_FLOWS` | PR #109 |

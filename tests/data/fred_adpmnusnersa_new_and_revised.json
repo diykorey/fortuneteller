@@ -1,0 +1,44 @@
+{
+ "realtime_start": "1776-07-04",
+ "realtime_end": "9999-12-31",
+ "observation_start": "1600-01-01",
+ "observation_end": "9999-12-31",
+ "units": "lin",
+ "output_type": 3,
+ "file_type": "json",
+ "order_by": "observation_date",
+ "sort_order": "asc",
+ "count": 6,
+ "offset": 0,
+ "limit": 100000,
+ "observations": [
+  {
+   "date": "2022-06-01",
+   "ADPMNUSNERSA_20230201": "125295000"
+  },
+  {
+   "date": "2022-07-01",
+   "ADPMNUSNERSA_20230201": "125753000"
+  },
+  {
+   "date": "2022-08-01",
+   "ADPMNUSNERSA_20221005": "121624000.0",
+   "ADPMNUSNERSA_20221102": "121571000.0"
+  },
+  {
+   "date": "2022-09-01",
+   "ADPMNUSNERSA_20221005": "121832000.0",
+   "ADPMNUSNERSA_20221102": "121763000.0"
+  },
+  {
+   "date": "2025-08-01",
+   "ADPMNUSNERSA_20250904": "134617000.0",
+   "ADPMNUSNERSA_20251001": "134558000.0"
+  },
+  {
+   "date": "2025-09-01",
+   "ADPMNUSNERSA_20251001": "134526000.0",
+   "ADPMNUSNERSA_20251105": "134529000.0"
+  }
+ ]
+}
