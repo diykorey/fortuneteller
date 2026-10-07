@@ -23,12 +23,13 @@ from dataclasses import dataclass
 from datetime import UTC, date, time, timedelta
 from statistics import median
 from typing import NamedTuple
+from zoneinfo import ZoneInfo
 
 import duckdb
 
 from . import db, sources, stats
 from .models import DailyBar, EventInstance, Observation
-from .flows import EVENT_FLOWS, EventFlow, SurpriseRule, stored_events
+from .flows import EVENT_FLOWS, EventFlow, stored_events
 from .sources import NEW_YORK, DailyClosingPrice, YahooError
 
 
@@ -39,18 +40,19 @@ class PriceSeries(NamedTuple):
     ticker: str
     unit: str
     close: time
+    zone: ZoneInfo
 
 
 # The five MVP instruments, keyed by the exact symbol in data/seed/instruments.csv, with the Yahoo
 # ticker each is read from, the unit its move is measured in (pct for prices, bps for the yield)
-# and the New York time of its daily close: the intraday price Yahoo's close matches, measured on
-# 2026-09 data. Gold's is the COMEX settlement.
+# and the local time and zone of its daily close: the intraday price Yahoo's close matches, measured
+# on 2026-09 data. Gold's is the COMEX settlement.
 MVP_PRICE_SERIES = {
-    "SPY / ES": PriceSeries("^GSPC", "pct", time(16, 0)),
-    "UST10Y / ZN": PriceSeries("^TNX", "bps", time(15, 0)),
-    "DXY": PriceSeries("DX-Y.NYB", "pct", time(15, 0)),
-    "GC / XAU": PriceSeries("GC=F", "pct", time(13, 30)),
-    "VIX": PriceSeries("^VIX", "pct", time(16, 15)),
+    "SPY / ES": PriceSeries("^GSPC", "pct", time(16, 0), NEW_YORK),
+    "UST10Y / ZN": PriceSeries("^TNX", "bps", time(15, 0), NEW_YORK),
+    "DXY": PriceSeries("DX-Y.NYB", "pct", time(15, 0), NEW_YORK),
+    "GC / XAU": PriceSeries("GC=F", "pct", time(13, 30), NEW_YORK),
+    "VIX": PriceSeries("^VIX", "pct", time(16, 15), NEW_YORK),
 }
 
 
@@ -79,7 +81,7 @@ def load_daily_bars(con: duckdb.DuckDBPyConnection | None = None) -> dict[str, i
     as it was rather than half-refreshed.
     """
     fetched: dict[str, tuple[str, list[DailyClosingPrice]]] = {}
-    for instrument, (ticker, _unit, _close) in MVP_PRICE_SERIES.items():
+    for instrument, (ticker, *_rest) in MVP_PRICE_SERIES.items():
         payload = sources.fetch_daily_bars(ticker)
         try:
             closes = sources.parse_daily_bars(payload)
@@ -146,14 +148,15 @@ def release_move(before: DailyClosingPrice, after: DailyClosingPrice, unit: str)
     raise ValueError(f"unknown unit {unit!r}: expected 'pct' or 'bps'")
 
 
-def first_reaction_day(event: EventInstance, close: time) -> date:
-    """The first day whose close can carry the event: the next day if it came at or after the close.
+def first_reaction_day(event: EventInstance, series: PriceSeries) -> date:
+    """The first day whose close can carry the event: the next day if it came at or after the close,
+    both read in the market's own time zone.
 
     Passed to ``closing_price_before_after``, this pairs the last close before the event with the
     first after it: a Fed decision at 14:00 reacts in gold, which closes at 13:30, the next day.
     """
-    announced = event.event_ts.replace(tzinfo=UTC).astimezone(NEW_YORK)
-    return announced.date() + timedelta(days=1 if announced.time() >= close else 0)
+    announced = event.event_ts.replace(tzinfo=UTC).astimezone(series.zone)
+    return announced.date() + timedelta(days=1 if announced.time() >= series.close else 0)
 
 
 def stored_closes(
@@ -183,25 +186,24 @@ def build_observations(
     release_counts: dict[EventFlow, dict[str, ReleaseCounts]] = {
         flow: {} for flow, typed in events.items() if typed
     }
-    for instrument, (_ticker, unit, close) in MVP_PRICE_SERIES.items():
+    for instrument, series in MVP_PRICE_SERIES.items():
         closes = stored_closes(instrument, con=con)
         for flow, by_instrument in release_counts.items():
             counts = by_instrument[instrument] = ReleaseCounts()
-            observations += _observe(events[flow], instrument, unit, close, closes, counts)
+            observations += _observe(events[flow], instrument, series, closes, counts)
     return observations, release_counts
 
 
 def _observe(
     events: Sequence[EventInstance],
     instrument: str,
-    unit: str,
-    close: time,
+    series: PriceSeries,
     closes: Sequence[DailyClosingPrice],
     counts: ReleaseCounts,
 ) -> list[Observation]:
     observations: list[Observation] = []
     for event in events:
-        pair = closing_price_before_after(closes, first_reaction_day(event, close))
+        pair = closing_price_before_after(closes, first_reaction_day(event, series))
         if pair == BEFORE_HISTORY:
             counts.skipped_before_history += 1
             continue
@@ -215,10 +217,10 @@ def _observe(
                 event_id=event.event_id,
                 instrument=instrument,
                 px_t0=before.price,
-                ret_unit=unit,
+                ret_unit=series.unit,
                 ret_5m=None,
                 ret_1h=None,
-                ret_1d=release_move(before, after, unit),
+                ret_1d=release_move(before, after, series.unit),
                 ret_1w=None,
                 abn_ret_1d=None,
                 car=None,
@@ -357,12 +359,12 @@ def measure_raw_moves(
     events = stored_events(flow, con=con)
     every_event = [e for each in EVENT_FLOWS for e in stored_events(each, con=con)]
     results: dict[str, RawMove] = {}
-    for instrument, (_ticker, unit, close) in MVP_PRICE_SERIES.items():
+    for instrument, series in MVP_PRICE_SERIES.items():
         closes = stored_closes(instrument, con=con)
-        days = reaction_days(closes, [first_reaction_day(event, close) for event in events])
-        busy = reaction_days(closes, [first_reaction_day(event, close) for event in every_event])
+        days = reaction_days(closes, [first_reaction_day(event, series) for event in events])
+        busy = reaction_days(closes, [first_reaction_day(event, series) for event in every_event])
         by_era: dict[str, tuple[list[float], list[float]]] = {label: ([], []) for label, _ in ERAS}
-        for day, move in daily_moves(closes, unit).items():
+        for day, move in daily_moves(closes, series.unit).items():
             on_event, other = by_era[era_of(day)]
             if day in days:
                 on_event.append(move)
@@ -378,7 +380,7 @@ def measure_raw_moves(
             )
             for label, (on_event, other) in by_era.items()
         }
-        results[instrument] = RawMove(unit, overall, eras)
+        results[instrument] = RawMove(series.unit, overall, eras)
     return results
 
 
@@ -446,10 +448,12 @@ def track_pairs(
 
 
 def surprise_pairs(
+    flow: EventFlow,
     combinations: Sequence[tuple[str, str]],
     con: duckdb.DuckDBPyConnection | None = None,
 ) -> dict[tuple[str, str], dict[str, tuple[list[float], list[float]]]]:
-    """For each measure × baseline, then each instrument: its surprises and release-day moves."""
+    """For each measure × baseline, then each instrument: one flow's surprises and release-day
+    moves, its event type in its country only."""
     connection = con if con is not None else db.get_connection()
     pairs: dict[tuple[str, str], dict[str, tuple[list[float], list[float]]]] = {}
     for measure, baseline in combinations:
@@ -458,8 +462,10 @@ def surprise_pairs(
             rows = connection.execute(
                 "SELECT s.surprise, o.ret_1d FROM surprises s "
                 "JOIN observations o ON o.event_id = s.event_id "
-                "WHERE s.measure = ? AND s.baseline = ? AND o.instrument = ? ORDER BY s.event_id",
-                [measure, baseline, instrument],
+                "JOIN event_instances e ON e.event_id = s.event_id "
+                "WHERE e.event_type = ? AND e.country = ? "
+                "AND s.measure = ? AND s.baseline = ? AND o.instrument = ? ORDER BY s.event_id",
+                [flow.event_type, flow.country, measure, baseline, instrument],
             ).fetchall()
             by_instrument[instrument] = ([r[0] for r in rows], [r[1] for r in rows])
         pairs[(measure, baseline)] = by_instrument
@@ -467,10 +473,13 @@ def surprise_pairs(
 
 
 def track_surprises(
-    rule: SurpriseRule, con: duckdb.DuckDBPyConnection | None = None
+    flow: EventFlow, con: duckdb.DuckDBPyConnection | None = None
 ) -> dict[tuple[str, str], dict[str, SurpriseTracking]]:
-    """Step 4's answer for one event's rule: each instrument × measure × baseline, with the verdict
+    """Step 4's answer for one flow's rule: each instrument × measure × baseline, with the verdict
     on the rule's first combination (core against the trend for CPI, payrolls for NFP)."""
+    rule = flow.surprise_rule
+    if rule is None:
+        raise ValueError(f"{flow.event_type} in {flow.country} has no surprise rule")
     verdict_combination = rule.combinations[0]
     return {
         combination: {
@@ -483,5 +492,5 @@ def track_surprises(
             )
             for instrument, (surprises, moves) in by_instrument.items()
         }
-        for combination, by_instrument in surprise_pairs(rule.combinations, con=con).items()
+        for combination, by_instrument in surprise_pairs(flow, rule.combinations, con=con).items()
     }

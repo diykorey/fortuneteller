@@ -5,10 +5,11 @@ from datetime import UTC, date, datetime, time, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
+import duckdb
 import pytest
 from pydantic import SecretStr
 
-from fortuneteller import db, expectations, flows, study
+from fortuneteller import db, expectations, flows, sources, study
 from fortuneteller.__main__ import main
 from fortuneteller.config import settings
 from fortuneteller.expectations import Actual, Expectation, event_month, own_actuals
@@ -27,6 +28,7 @@ class HousingFlow:
     type_code = 9
     cli_name = "housing"
     label = "Hou"
+    per_month = 10.0
     surprise_rule = SurpriseRule(
         ((STARTS, "toy_consensus"), (STARTS, expectations.TREND_12M)),
         {instrument: 1 for instrument in study.MVP_PRICE_SERIES},
@@ -39,7 +41,7 @@ class HousingFlow:
         for i in range(14):
             month = date(2024 + i // 12, i % 12 + 1, 1)
             released = date(month.year + month.month // 12, month.month % 12 + 1, 17)
-            announced = datetime.combine(released, time(8, 30), tzinfo=NEW_YORK)
+            announced = datetime.combine(released, time(8, 30), tzinfo=self.zone)
             events.append(
                 EventInstance(
                     event_id=flows.event_id(self, released),
@@ -59,11 +61,17 @@ class HousingFlow:
                     quality="first_release",
                 )
             )
-        return EventBatch(events, [f"loaded {len(events)} Hou releases"])
+        return EventBatch(events, [f"loaded {len(events)} {self.label} releases"])
 
     def actuals(self, events: Sequence[EventInstance], api_key: str) -> list[Actual]:
         return [
-            Actual(e.event_id, STARTS, event_month(e), 10.0 * event_month(e).month, "thousands")
+            Actual(
+                e.event_id,
+                STARTS,
+                event_month(e),
+                self.per_month * event_month(e).month,
+                "thousands",
+            )
             for e in events
         ]
 
@@ -233,3 +241,94 @@ def test_two_flows_with_one_identity_are_refused(duplicate: ForeignCpiFlow) -> N
     with pytest.raises(ValueError, match="two event flows share"):
         flows.check_flows(registered)
     flows.check_flows([*flows.EVENT_FLOWS, UK_CPI])
+
+
+class UkHousingFlow(HousingFlow):
+    # The same release from the UK: same event type and measure, ten times the numbers.
+    country = "United Kingdom"
+    zone = ZoneInfo("Europe/London")
+    type_code = 7
+    cli_name = "uk-housing"
+    label = "UKH"
+    per_month = 100.0
+
+
+def _moves(con: duckdb.DuckDBPyConnection, country: str, sign: int) -> None:
+    # Every instrument moves with the toy surprise of the country's events, times ``sign``.
+    rows = con.execute(
+        "SELECT s.event_id, s.surprise FROM surprises s JOIN event_instances e USING (event_id) "
+        "WHERE s.baseline = 'toy_consensus' AND e.country = ?",
+        [country],
+    )
+    con.executemany(
+        "INSERT INTO observations (event_id, instrument, ret_unit, ret_1d) VALUES (?, ?, 'pct', ?)",
+        [
+            (event, instrument, sign * s / 1000)
+            for event, s in rows.fetchall()
+            for instrument in study.MVP_PRICE_SERIES
+        ],
+    )
+
+
+def _us_surprises(con: duckdb.DuckDBPyConnection) -> list[tuple[object, ...]]:
+    return con.execute(
+        "SELECT s.* FROM surprises s JOIN event_instances e USING (event_id) "
+        "WHERE e.country = 'United States' ORDER BY ALL"
+    ).fetchall()
+
+
+def test_a_second_country_leaves_the_firsts_trend_and_report_untouched(
+    tmp_db: Path, plugged: ToyConsensus, capsys: pytest.CaptureFixture[str]
+) -> None:
+    # given US housing loaded, measured and reported on its own
+    con = db.get_connection()
+    assert main(["load-releases"]) == 0
+    assert main(["load-surprises"]) == 0
+    _moves(con, "United States", 1)
+    capsys.readouterr()
+    assert main(["surprise", "--event", "housing"]) == 0
+    alone, us_rows = capsys.readouterr().out, _us_surprises(con)
+
+    # when UK housing, same type and measure, ten times the numbers and moving the other way, joins
+    flows.EVENT_FLOWS.append(UkHousingFlow())
+    assert main(["load-releases"]) == 0
+    assert main(["load-surprises"]) == 0
+    _moves(con, "United Kingdom", -1)
+    capsys.readouterr()
+    assert main(["surprise", "--event", "housing"]) == 0
+    beside = capsys.readouterr().out
+    assert main(["surprise", "--event", "uk-housing"]) == 0
+    uk = capsys.readouterr().out
+
+    # then the US trend, surprises and report are as before, and the UK has its own
+    assert _us_surprises(con) == us_rows
+    assert beside == alone
+    assert uk != alone
+    uk_trend = con.execute(
+        "SELECT s.expected_mom FROM surprises s JOIN event_instances e USING (event_id) "
+        "WHERE e.country = 'United Kingdom' AND s.baseline = 'trend_12m' ORDER BY s.event_id"
+    ).fetchall()
+    assert uk_trend == [(650.0,), (650.0,)]
+
+
+def test_a_markets_close_is_read_in_its_own_zone() -> None:
+    # given a Fed decision at 14:00 New York, and a London market closing at 16:30 London
+    london = study.PriceSeries("^FTSE", "pct", time(16, 30), ZoneInfo("Europe/London"))
+    in_new_york = london._replace(zone=NEW_YORK)
+    decision = flows.fomc_event_instance(sources.FomcDecision(date(2022, 9, 21), True))
+
+    # when its first reaction day is found
+    day = study.first_reaction_day(decision, london)
+
+    # then it is the next day: 19:00 in London is after the close, 14:00 in New York is not
+    assert day == date(2022, 9, 22)
+    assert study.first_reaction_day(decision, in_new_york) == date(2022, 9, 21)
+
+
+def test_a_day_only_value_is_known_at_the_end_of_its_own_zones_day() -> None:
+    # given a value dated 2022-09-12 in Tokyo
+    # when its end of day is found
+    known = expectations.end_of_day(date(2022, 9, 12), ZoneInfo("Asia/Tokyo"))
+
+    # then it is Tokyo's midnight, in naive UTC
+    assert known == datetime(2022, 9, 12, 14, 59, 59)

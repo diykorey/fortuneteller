@@ -204,7 +204,9 @@ def _surprise(args: argparse.Namespace) -> int:
     db.init_db(con=con)
     measure, baseline = rule.combinations[0]
     stored = con.execute(
-        "SELECT count(*) FROM surprises WHERE measure = ? AND baseline = ?", [measure, baseline]
+        "SELECT count(*) FROM surprises s JOIN event_instances e ON e.event_id = s.event_id "
+        "WHERE e.event_type = ? AND e.country = ? AND s.measure = ? AND s.baseline = ?",
+        [flow.event_type, flow.country, measure, baseline],
     ).fetchone()
     for missing, command in (
         (not flows.stored_events(flow, con=con), "load-releases"),
@@ -217,7 +219,7 @@ def _surprise(args: argparse.Namespace) -> int:
                 file=sys.stderr,
             )
             return 1
-    results = study.track_surprises(rule, con=con)
+    results = study.track_surprises(flow, con=con)
     for line in describe_surprise_tracking(results, rule):
         print(line)
     return 0
