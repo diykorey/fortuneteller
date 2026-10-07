@@ -15,12 +15,13 @@ months, 2009 on). *(PR #112.)*
 
 ## In progress
 
-**A free forecast of each jobs report**: [nfp-forecast.md](steps/nfp-forecast.md).
+**Country-aware events**: [country-aware-events.md](steps/country-aware-events.md). Spec under
+review. The jobs-report forecast is paused after its step 1 until this is done.
 
 ## Next
 
-Jobs-report forecast, step 2 — `stats.least_squares` and the `PayrollModel` source, refitted before
-each report on earlier reports only.
+Country-aware events, step 1 — flow identity: `country` and `zone` on `EventFlow`, stored events
+read by (event type, country), duplicate flows refused, release dates in the flow's zone.
 
 ## Done
 
