@@ -12,7 +12,7 @@ Country-aware events, step 2 — surprises per flow: the 12-month trend averages
 type from one country, the `surprise` report reads one flow's surprises, and release dates,
 day-only expectations and each market's close are read in their own time zones. A made-up UK
 housing flow beside a US one leaves the US trend, surprises and report unchanged. Every US load and
-report byte-identical to `main`. Country-aware events part 1 complete. *(PR #TBD.)*
+report byte-identical to `main`. Country-aware events part 1 complete. *(PR #114.)*
 
 ## In progress
 
@@ -28,7 +28,7 @@ each report on earlier reports only.
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-07 | Country-aware events step 2: trends and reports per flow, each market's zone — part 1 complete | PR #TBD |
+| 2026-10-07 | Country-aware events step 2: trends and reports per flow, each market's zone — part 1 complete | PR #114 |
 | 2026-10-07 | Country-aware events spec and step 1: flow identity by type and country | PR #113 |
 | 2026-10-07 | Jobs-report forecast spec and step 1: ADP and claims inputs | PR #112 |
 | 2026-10-06 | Event flows step 4: the recipe; a made-up flow and source plug in — refactor complete | PR #111 |
