@@ -12,7 +12,7 @@ Jobs-report forecast, step 2 — `stats.least_squares` and the `PayrollModel` ex
 payrolls on ADP's change, the claims change and the 12-month trend, refitted before every report
 on earlier reports only, COVID months not fitted on. On real data, 148 forecasts (2014-02 …
 2026-09), none in the 2022 ADP gap, all passing the shared check; mean absolute error 76.6k against
-the trend's 79.6k without COVID. Not yet registered. *(PR #TBD.)*
+the trend's 79.6k without COVID. Not yet registered. *(PR #115.)*
 
 ## In progress
 
@@ -27,7 +27,7 @@ context; `surprise --event nfp` prints model and trend on the same reports.
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-08 | Jobs-report forecast step 2: least squares and the payroll model | PR #TBD |
+| 2026-10-08 | Jobs-report forecast step 2: least squares and the payroll model | PR #115 |
 | 2026-10-07 | Country-aware events step 2: trends and reports per flow, each market's zone — part 1 complete | PR #114 |
 | 2026-10-07 | Country-aware events spec and step 1: flow identity by type and country | PR #113 |
 | 2026-10-07 | Jobs-report forecast spec and step 1: ADP and claims inputs | PR #112 |
