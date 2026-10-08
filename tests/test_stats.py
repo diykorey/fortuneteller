@@ -1,4 +1,5 @@
-"""Shared statistics: ranks, rank correlation, robust slope, and the permutation test."""
+"""Shared statistics: ranks, rank correlation, robust slope, least squares and the permutation
+test."""
 
 import random
 
@@ -6,6 +7,7 @@ import pytest
 
 from fortuneteller.stats import (
     PERMUTATIONS,
+    least_squares,
     permutation_p,
     ranks,
     spearman,
@@ -113,3 +115,26 @@ def test_a_falling_relation_is_found_by_the_two_sided_test() -> None:
 
     # then it is significant
     assert p < 0.01
+
+
+def test_least_squares_recovers_planted_coefficients() -> None:
+    # given 40 rows of three inputs and y = 20 + 0.5·a − 2·b + 0.3·c exactly
+    rng = random.Random(1)
+    rows = [[rng.uniform(-300, 300), rng.uniform(-50, 50), rng.uniform(0, 400)] for _ in range(40)]
+    y = [20 + 0.5 * a - 2 * b + 0.3 * c for a, b, c in rows]
+
+    # when the fit is made
+    coefficients = least_squares(rows, y)
+
+    # then the intercept and every slope come back
+    assert coefficients == pytest.approx([20, 0.5, -2, 0.3], abs=1e-9)
+
+
+def test_least_squares_refuses_a_column_that_is_a_mix_of_the_others() -> None:
+    # given a third input that is always the first plus twice the second
+    rows = [[float(i), float(i % 7), float(i + 2 * (i % 7))] for i in range(20)]
+    y = [float(i * i) for i in range(20)]
+
+    # when / then the fit is refused
+    with pytest.raises(ValueError, match="singular"):
+        least_squares(rows, y)

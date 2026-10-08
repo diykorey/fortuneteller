@@ -182,6 +182,12 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **Expectation source** — one way of saying what was expected (`expectations.py`): the 12-month
   trend, the Cleveland Fed's nowcast. Each returns `Expectation`s, checked against their event before
   a surprise is computed.
+- **Least squares (OLS)** — fitting a straight-line formula by making the squared misses as small
+  as possible (`stats.least_squares`). The payroll model fits payrolls on ADP's change, the claims
+  change and the 12-month trend this way, refitted before every report on earlier reports only.
+- **Payroll model** — the jobs report's free forecast, the `payroll_model` expectation source
+  (`expectations.PayrollModel`, [nfp-forecast](steps/nfp-forecast.md)). It leaves out
+  March 2020 – April 2021 when fitting, so COVID's prints cannot dominate the formula.
 - **First reaction day** — the first day whose close can carry an event: its own day if it came
   before the instrument's close, otherwise the next (`study.first_reaction_day`).
 - **Daily bar / OHLC** — one row per trading day holding Open, High, Low, Close prices. The MVP's
