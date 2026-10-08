@@ -12,6 +12,7 @@ from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from datetime import UTC, date, datetime, time, timedelta
 from typing import Protocol
+from zoneinfo import ZoneInfo
 
 from . import sources
 from .models import EventInstance, Surprise
@@ -166,7 +167,8 @@ TREND_MONTHS = 12
 
 
 class Trend12m:
-    """The average of the previous 12 months' first-published values, for any measure.
+    """The average of the previous 12 months' first-published values, for any measure, within one
+    event type from one country: UK CPI's core never enters US CPI's trend.
 
     Only months announced before the event count, so the trend uses only what was known then:
     October 2025 payrolls, published with November, are not in November's. A month gets a trend
@@ -181,9 +183,11 @@ class Trend12m:
         self, events: Sequence[EventInstance], actuals: Sequence[Actual], api_key: str
     ) -> list[Expectation]:
         announced = {event.event_id: event.event_ts for event in events}
+        origin = {event.event_id: (event.event_type, event.country) for event in events}
         expected: list[Expectation] = []
-        for measure in dict.fromkeys(actual.measure for actual in actuals):
-            by_period = {a.period: a for a in actuals if a.measure == measure}
+        for group in dict.fromkeys((origin[a.event_id], a.measure) for a in actuals):
+            _origin, measure = group
+            by_period = {a.period: a for a in actuals if (origin[a.event_id], a.measure) == group}
             first = min(by_period)
             for actual in own_actuals(events, by_period.values()):
                 window = [actual.period]
@@ -233,13 +237,9 @@ def nowcast_expectations(
     return latest
 
 
-def end_of_day(day: date) -> datetime:
-    """The last second of a New York day, as naive UTC: when a day-only value was surely known."""
-    return (
-        datetime.combine(day, time(23, 59, 59), tzinfo=NEW_YORK)
-        .astimezone(UTC)
-        .replace(tzinfo=None)
-    )
+def end_of_day(day: date, zone: ZoneInfo) -> datetime:
+    """The last second of a day in ``zone``, as naive UTC: when a day-only value was surely known."""
+    return datetime.combine(day, time(23, 59, 59), tzinfo=zone).astimezone(UTC).replace(tzinfo=None)
 
 
 class ClevelandNowcast:
@@ -247,6 +247,7 @@ class ClevelandNowcast:
 
     name = NOWCAST_BASELINE
     label = "the Cleveland Fed's nowcast"
+    zone = NEW_YORK
 
     def expectations(
         self, events: Sequence[EventInstance], actuals: Sequence[Actual], api_key: str
@@ -259,7 +260,7 @@ class ClevelandNowcast:
         release_dates = {
             actual.period: by_id[actual.event_id]
             .event_ts.replace(tzinfo=UTC)
-            .astimezone(NEW_YORK)
+            .astimezone(self.zone)
             .date()
             for actual in wanted
         }
@@ -268,7 +269,12 @@ class ClevelandNowcast:
         )
         return [
             Expectation(
-                actual.event_id, actual.measure, self.name, value, actual.unit, end_of_day(day)
+                actual.event_id,
+                actual.measure,
+                self.name,
+                value,
+                actual.unit,
+                end_of_day(day, self.zone),
             )
             for actual in wanted
             if (key := (actual.measure, actual.period)) in latest

@@ -8,26 +8,27 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Country-aware events, step 1 — flow identity: each event flow carries its origin `country` and
-release `zone`; events are read back by event type and country, so a UK CPI flow beside the US's
-never mixes with it; flows sharing a (type, country) pair, type code or name are refused at import;
-release dates are read in the flow's zone. Every US load and report byte-identical to `main`.
-*(PR #113.)*
+Country-aware events, step 2 — surprises per flow: the 12-month trend averages within one event
+type from one country, the `surprise` report reads one flow's surprises, and release dates,
+day-only expectations and each market's close are read in their own time zones. A made-up UK
+housing flow beside a US one leaves the US trend, surprises and report unchanged. Every US load and
+report byte-identical to `main`. Country-aware events part 1 complete. *(PR #114.)*
 
 ## In progress
 
-**Country-aware events**: [country-aware-events.md](steps/country-aware-events.md). The jobs-report
-forecast is paused after its step 1 until this is done.
+**A free forecast of each jobs report**: [nfp-forecast.md](steps/nfp-forecast.md), resumed after
+country-aware events.
 
 ## Next
 
-Country-aware events, step 2 — surprises per flow: `Trend12m` grouped by flow, `surprise_pairs` and
-`track_surprises` per flow, `end_of_day(day, zone)`, each market's close in its own zone.
+Jobs-report forecast, step 2 — `stats.least_squares` and the `PayrollModel` source, refitted before
+each report on earlier reports only.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-07 | Country-aware events step 2: trends and reports per flow, each market's zone — part 1 complete | PR #114 |
 | 2026-10-07 | Country-aware events spec and step 1: flow identity by type and country | PR #113 |
 | 2026-10-07 | Jobs-report forecast spec and step 1: ADP and claims inputs | PR #112 |
 | 2026-10-06 | Event flows step 4: the recipe; a made-up flow and source plug in — refactor complete | PR #111 |

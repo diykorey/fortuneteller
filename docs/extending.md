@@ -42,9 +42,10 @@ Fetching and parsing the outside source go in `src/fortuneteller/sources.py`, as
 
 The same event type from another country is another flow: the same `event_type`, its own
 `country`, `zone`, `type_code` and `cli_name`. Its events are stored and read apart from the US's;
-`EVENT_FLOWS` refuses two flows sharing a (type, country) pair, a type code or a name. Until
-[country-aware events](steps/country-aware-events.md) step 2, its trend and surprise reports would
-still mix with a US flow's measures of the same name, so name its measures apart.
+`EVENT_FLOWS` refuses two flows sharing a (type, country) pair, a type code or a name. Its 12-month
+trend and its `surprise` report use its own events only, even with the same measure names as the
+US's ([country-aware events](steps/country-aware-events.md)). A market outside New York gives its
+`PriceSeries` its own close time and `zone`.
 
 ## A new expectation source
 

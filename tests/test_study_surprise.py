@@ -16,6 +16,7 @@ from fortuneteller import db, flows, sources, study
 from fortuneteller.__main__ import describe_surprise_tracking, main
 from fortuneteller.config import settings
 from fortuneteller.sources import (
+    NEW_YORK,
     ACTUAL,
     CORE,
     CORE_CPI_SERIES_ID,
@@ -376,7 +377,12 @@ def test_a_surprise_row_is_actual_minus_expected_for_its_release() -> None:
     event = _event(august, released)
     actual = Actual(event.event_id, CORE, august, 0.57, PERCENT)
     nowcast = Expectation(
-        event.event_id, CORE, NOWCAST_BASELINE, 0.48, PERCENT, end_of_day(date(2022, 9, 12))
+        event.event_id,
+        CORE,
+        NOWCAST_BASELINE,
+        0.48,
+        PERCENT,
+        end_of_day(date(2022, 9, 12), NEW_YORK),
     )
 
     # when the surprises are built against the stored release
@@ -399,7 +405,7 @@ def _refusal(**changed: object) -> str:
         "source": NOWCAST_BASELINE,
         "value": 0.48,
         "unit": PERCENT,
-        "known_at": end_of_day(date(2022, 9, 12)),
+        "known_at": end_of_day(date(2022, 9, 12), NEW_YORK),
     }
     fields.update(changed)
     with pytest.raises(ValueError) as refused:
@@ -413,7 +419,7 @@ def _refusal(**changed: object) -> str:
         ({"event_id": 1_2022_09_14}, "no stored event with a surprise"),
         ({"measure": "headline"}, "no actual for headline"),
         ({"unit": "thousands"}, "in thousands, the actual in percent"),
-        ({"known_at": end_of_day(date(2022, 9, 13))}, "not before the event"),
+        ({"known_at": end_of_day(date(2022, 9, 13), NEW_YORK)}, "not before the event"),
     ],
 )
 def test_an_expectation_that_does_not_fit_its_event_is_refused(
@@ -431,7 +437,12 @@ def test_an_expectation_for_an_event_without_a_surprise_is_refused() -> None:
     event = _event(august, date(2022, 9, 13))
     actual = Actual(event.event_id, CORE, august, 0.57, PERCENT)
     nowcast = Expectation(
-        event.event_id, CORE, NOWCAST_BASELINE, 0.48, PERCENT, end_of_day(date(2022, 9, 12))
+        event.event_id,
+        CORE,
+        NOWCAST_BASELINE,
+        0.48,
+        PERCENT,
+        end_of_day(date(2022, 9, 12), NEW_YORK),
     )
 
     # when / then it is refused
@@ -714,7 +725,7 @@ def test_each_instrument_is_measured_against_each_measure_and_baseline() -> None
     )
 
     # when the pairs are gathered
-    pairs = study.surprise_pairs(flows.COMBINATIONS, con=con)
+    pairs = study.surprise_pairs(flows.CPI_FLOW, flows.COMBINATIONS, con=con)
 
     # then core against the trend comes first, and every instrument has its one pair
     assert list(pairs)[0] == (CORE, TREND_12M)

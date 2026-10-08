@@ -200,8 +200,8 @@ def test_stored_decisions_are_measured_like_any_other_event() -> None:
     assert [flows.release_date(e) for e in events] == [date(2020, 3, 15)]
 
 
-GOLD_CLOSE = study.MVP_PRICE_SERIES["GC / XAU"].close
-SPX_CLOSE = study.MVP_PRICE_SERIES["SPY / ES"].close
+GOLD = study.MVP_PRICE_SERIES["GC / XAU"]
+SPX = study.MVP_PRICE_SERIES["SPY / ES"]
 
 
 def _event_at(utc: datetime) -> EventInstance:
@@ -214,7 +214,7 @@ def test_a_decision_after_gold_settles_reacts_in_gold_the_next_day() -> None:
     event = _event_at(datetime(2020, 1, 29, 19, 0))
 
     # when its first reaction day is found for gold (13:30) and the S&P 500 (16:00)
-    gold, spx = (study.first_reaction_day(event, close) for close in (GOLD_CLOSE, SPX_CLOSE))
+    gold, spx = (study.first_reaction_day(event, series) for series in (GOLD, SPX))
 
     # then gold's is the next day, the S&P 500's the same day
     assert (gold, spx) == (date(2020, 1, 30), date(2020, 1, 29))
@@ -225,7 +225,7 @@ def test_a_winter_release_at_8_30_reacts_in_gold_the_same_day() -> None:
     event = _event_at(datetime(2020, 1, 14, 13, 30))
 
     # when its first reaction day is found for gold
-    first = study.first_reaction_day(event, GOLD_CLOSE)
+    first = study.first_reaction_day(event, GOLD)
 
     # then the time is compared in New York, so it is the same day
     assert first == date(2020, 1, 14)
@@ -237,7 +237,7 @@ def test_a_sunday_evening_decision_pairs_fridays_close_with_mondays() -> None:
     closes = [DailyClosingPrice(date(2020, 3, 13), 1.0), DailyClosingPrice(date(2020, 3, 16), 0.9)]
 
     # when the S&P 500's closes are paired around it
-    pair = study.closing_price_before_after(closes, study.first_reaction_day(event, SPX_CLOSE))
+    pair = study.closing_price_before_after(closes, study.first_reaction_day(event, SPX))
 
     # then the move runs from Friday's close to Monday's
     assert pair == (closes[0], closes[1])
