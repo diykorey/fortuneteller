@@ -15,6 +15,8 @@ class Settings(BaseSettings):
     db_path: Path = Path("data/fortuneteller.duckdb")
     seed_dir: Path = Path("data/seed")
     schema_path: Path = Path("schema.sql")
+    # Replies from slow outside sources that no longer change; ignored by git.
+    cache_dir: Path = Path("data/cache")
     # SecretStr so the value cannot print itself in a traceback or repr; read it with
     # .get_secret_value() at the call site.
     fred_api_key: SecretStr | None = None

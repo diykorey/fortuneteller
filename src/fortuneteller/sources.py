@@ -9,14 +9,17 @@ Nothing here touches the database.
 
 from __future__ import annotations
 
+import html
 import http.client
 import json
 import re
 import urllib.error
 import urllib.parse
 import urllib.request
+from collections.abc import Callable, Iterable
 from dataclasses import dataclass
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
+from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo
 
@@ -480,3 +483,156 @@ def parse_series(payload: bytes) -> list[tuple[date, float]]:
         ]
     except MALFORMED_REPLY as exc:
         raise FredError(f"FRED sent an unexpected reply: {exc!r}") from None
+
+
+# Economic calendars: the published consensus (docs/steps/free-consensus.md).
+
+
+NASDAQ_CALENDAR_URL = "https://api.nasdaq.com/api/calendar/economicevents?date={day}"
+TRADINGVIEW_CALENDAR_URL = "https://economic-calendar.tradingview.com/events"
+CALENDAR_HEADERS = {
+    **BROWSER_HEADERS,
+    "Accept": "application/json",
+    "Origin": "https://www.tradingview.com",
+}
+UNITED_STATES_NAMES = ("United States", "US")
+# A value's suffix and the factor that puts it in the project's unit: thousands of jobs, percent.
+CALENDAR_SUFFIXES = {"K": 1.0, "M": 1000.0, "%": 1.0}
+
+
+@dataclass(frozen=True)
+class CalendarRow:
+    """One US release on an economic calendar, on its New York day, in percent or thousands."""
+
+    name: str
+    day: date
+    actual: float | None
+    consensus: float | None
+
+
+class CalendarError(RuntimeError):
+    pass
+
+
+def _calendar_get(url: str, what: str, timeout: float) -> bytes:
+    request = urllib.request.Request(url, headers=CALENDAR_HEADERS)
+    try:
+        with urllib.request.urlopen(request, timeout=timeout) as response:
+            body: bytes = response.read()
+            return body
+    except urllib.error.HTTPError as exc:
+        raise CalendarError(f"{what}: HTTP {exc.code}") from None
+    except urllib.error.URLError as exc:
+        raise CalendarError(f"{what} failed: {exc.reason}") from None
+    except NETWORK_FAILURE as exc:
+        raise CalendarError(f"{what} failed: {exc}") from None
+
+
+def _cached(path: Path, final: bool, fetch: Callable[[], bytes]) -> bytes:
+    """A reply kept in ``path`` once it can no longer change; fetched while it still might."""
+    if path.exists():
+        return path.read_bytes()
+    body = fetch()
+    if final:
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(body)
+    return body
+
+
+def fetch_nasdaq_day(
+    day: date, cache_dir: Path, today: date | None = None, timeout: float = 60.0
+) -> bytes:
+    """Nasdaq's calendar for one New York day.
+
+    Nasdaq answers a request for a day with the day before's releases, so the next day is asked.
+    Once that next day is past, the reply is final and kept under ``cache_dir/nasdaq``.
+    """
+    asked = day + timedelta(days=1)
+    today = today if today is not None else datetime.now(NEW_YORK).date()
+    return _cached(
+        cache_dir / "nasdaq" / f"{day}.json",
+        asked < today,
+        lambda: _calendar_get(NASDAQ_CALENDAR_URL.format(day=asked), f"Nasdaq {day}", timeout),
+    )
+
+
+def calendar_number(text: str | float | None) -> float | None:
+    """A calendar value as a number in percent or thousands; ``None`` when blank."""
+    if text is None or isinstance(text, (int, float)):
+        return text
+    cleaned = html.unescape(text).replace("\xa0", " ").replace(",", "").strip()
+    if not cleaned:
+        return None
+    factor = CALENDAR_SUFFIXES.get(cleaned[-1], 1.0)
+    try:
+        return float(cleaned.rstrip("".join(CALENDAR_SUFFIXES))) * factor
+    except ValueError:
+        raise CalendarError(f"unreadable calendar value {text!r}") from None
+
+
+def parse_nasdaq_day(payload: bytes, day: date, names: Iterable[str]) -> list[CalendarRow]:
+    """The US rows named in ``names`` from one Nasdaq calendar day."""
+    wanted = set(names)
+    try:
+        rows: Any = (json.loads(payload).get("data") or {}).get("rows") or []
+        return [
+            CalendarRow(
+                row["eventName"],
+                day,
+                calendar_number(row["actual"]),
+                calendar_number(row["consensus"]),
+            )
+            for row in rows
+            if row["country"] in UNITED_STATES_NAMES and row["eventName"] in wanted
+        ]
+    except MALFORMED_REPLY as exc:
+        raise CalendarError(f"Nasdaq sent an unexpected reply for {day}: {exc!r}") from None
+
+
+def quarter_start(day: date) -> date:
+    return date(day.year, (day.month - 1) // 3 * 3 + 1, 1)
+
+
+def fetch_tradingview_quarter(
+    start: date, cache_dir: Path, today: date | None = None, timeout: float = 60.0
+) -> bytes:
+    """TradingView's US calendar for the quarter starting ``start``; kept under
+    ``cache_dir/tradingview`` once the quarter is over."""
+    end = date(start.year + start.month // 10, (start.month + 2) % 12 + 1, 1) - timedelta(days=1)
+    today = today if today is not None else datetime.now(NEW_YORK).date()
+    params = {
+        "from": f"{start}T00:00:00.000Z",
+        "to": f"{end}T23:59:59.000Z",
+        "countries": "US",
+    }
+    url = f"{TRADINGVIEW_CALENDAR_URL}?{urllib.parse.urlencode(params)}"
+    return _cached(
+        cache_dir / "tradingview" / f"{start}.json",
+        end < today,
+        lambda: _calendar_get(url, f"TradingView {start}", timeout),
+    )
+
+
+def parse_tradingview(payload: bytes, names: Iterable[str]) -> list[CalendarRow]:
+    """The US rows named in ``names`` from a TradingView calendar reply, on their New York day."""
+    wanted = set(names)
+    try:
+        document: Any = json.loads(payload)
+        if document.get("status") == "no_data":
+            return []
+        if document.get("status") != "ok":
+            raise CalendarError(f"TradingView answered {document.get('status')!r}")
+        return [
+            CalendarRow(
+                row["title"],
+                datetime.fromisoformat(row["date"].replace("Z", "+00:00"))
+                .astimezone(NEW_YORK)
+                .date(),
+                calendar_number(row.get("actual")),
+                calendar_number(row.get("forecast")),
+            )
+            for row in document["result"]
+            if row.get("country") in UNITED_STATES_NAMES and row["title"] in wanted
+        ]
+    except MALFORMED_REPLY as exc:
+        raise CalendarError(f"TradingView sent an unexpected reply: {exc!r}") from None
