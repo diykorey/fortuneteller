@@ -194,8 +194,9 @@ def test_compared_baselines_are_judged_on_the_same_reports() -> None:
     con = _side_by_side_store()
 
     # when they are put side by side, with and without COVID's months
-    everything = study.side_by_side(flows.NFP_FLOW, con=con)
-    without = study.side_by_side(flows.NFP_FLOW, expectations.COVID_MONTHS, con=con)
+    pair = (expectations.TREND_12M, expectations.PAYROLL_MODEL)
+    everything = study.side_by_side(flows.NFP_FLOW, pair, con=con)
+    without = study.side_by_side(flows.NFP_FLOW, pair, expectations.COVID_MONTHS, con=con)
 
     # then both are judged on the model's 20, then on its 8 outside March 2020 – April 2021
     for results, n in ((everything, 20), (without, 8)):

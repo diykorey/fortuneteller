@@ -133,11 +133,15 @@ def _load_surprises(_args: argparse.Namespace) -> int:
     db.init_db(con=con)
     try:
         rows = flows.load_surprises(api_key, con=con)
-    except (sources.FredError, sources.ClevelandError, ValueError) as exc:
+    except (sources.FredError, sources.ClevelandError, sources.CalendarError, ValueError) as exc:
         print(f"load-surprises: {exc}", file=sys.stderr)
         return 1
     for line in describe_surprises(rows):
         print(line)
+    for source in expectations.EXPECTATION_SOURCES:
+        if isinstance(source, expectations.NasdaqConsensus):
+            for note in source.left_out:
+                print(f"  no consensus: {note}")
     return 0
 
 
@@ -224,10 +228,12 @@ def _surprise(args: argparse.Namespace) -> int:
     results = study.track_surprises(flow, con=con)
     for line in describe_surprise_tracking(results, rule):
         print(line)
-    if rule.compared:
-        covid = expectations.COVID_MONTHS
+    covid = expectations.COVID_MONTHS
+    for pair in rule.compared:
         for leave_out, scope in ((None, "all"), (covid, f"without {_months_between(*covid)}")):
-            side_by_side = study.side_by_side(flow, leave_out, con=con)
+            side_by_side = study.side_by_side(flow, pair, leave_out, con=con)
+            if not side_by_side:
+                continue
             for line in describe_side_by_side(side_by_side, rule, scope):
                 print(line)
     return 0
@@ -242,18 +248,20 @@ def describe_side_by_side(
 ) -> list[str]:
     """The compared baselines judged on the same reports; the official verdict stays above."""
     measure = rule.combinations[0][0]
+    width = max(14, *(len(baseline) for baseline in results))
     lines = [
         "",
         f"{measure} against {' and '.join(_source_label(b) for b in results)}, "
         f"on the same reports ({scope}); not the official verdict",
-        f"instrument   baseline       n    rank corr  p       hit rate (n)  per {rule.step:<5}  verdict",
+        f"instrument   {'baseline':<{width}} n    rank corr  p       hit rate (n)  "
+        f"per {rule.step:<5}  verdict",
     ]
     for instrument in study.MVP_PRICE_SERIES:
         unit = study.MVP_PRICE_SERIES[instrument].unit
         for baseline, by_instrument in results.items():
             t = by_instrument[instrument]
             lines.append(
-                f"{instrument:<12} {baseline:<14} {t.n:<4} {t.rank_corr:<10.2f} {t.p:<7.4f} "
+                f"{instrument:<12} {baseline:<{width}} {t.n:<4} {t.rank_corr:<10.2f} {t.p:<7.4f} "
                 f"{_hit_rate(t):<13} {_move_size(t.slope, unit):<10} {t.verdict}"
             )
     return [line.rstrip() for line in lines]

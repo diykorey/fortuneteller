@@ -1,14 +1,14 @@
 """The published consensus: Nasdaq's calendar, each release's row, checked against TradingView's."""
 
 import json
-from datetime import date
+from datetime import date, datetime
 from pathlib import Path
 
 import pytest
 
-from fortuneteller import sources
-from fortuneteller.expectations import Actual, match_consensus
-from fortuneteller.sources import CalendarError, CalendarRow
+from fortuneteller import expectations, flows, sources
+from fortuneteller.expectations import Actual, build_surprises, match_consensus
+from fortuneteller.sources import CalendarError, CalendarRow, FirstRelease
 
 
 def _nasdaq(*rows: tuple[str, str, str, str]) -> bytes:
@@ -190,3 +190,23 @@ def test_a_day_without_any_consensus_is_simply_skipped() -> None:
 
     # then there is nothing, and nothing to report
     assert (consensus, left_out) == ({}, [])
+
+
+def test_the_source_gives_each_release_its_consensus_known_the_evening_before(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # given CPI released 2026-09-11 with a first print of 0.31, and calendars that agree on 0.2
+    event = flows.to_event_instance(
+        FirstRelease(date(2026, 8, 1), date(2026, 9, 11), 100.0), flows.CPI_FLOW
+    )
+    actual = Actual(event.event_id, sources.CORE, date(2026, 8, 1), 0.31, "percent")
+    rows = [CalendarRow("Core CPI", DAY, 0.3, 0.2), CalendarRow("Core CPI", DAY, 2.4, 2.4)]
+    checks = [CalendarRow("Core Inflation Rate MoM", DAY, 0.3, 0.2)]
+    monkeypatch.setattr(expectations, "fetch_calendars", lambda days, cache_dir: (rows, checks))
+
+    # when the source is asked
+    found = expectations.NasdaqConsensus().expectations([event], [actual], "key")
+
+    # then it expects 0.2, known at the end of the New York day before, which the shared check takes
+    assert [(e.value, e.known_at) for e in found] == [(0.2, datetime(2026, 9, 11, 3, 59, 59))]
+    assert len(build_surprises([event], [actual], found, [flows.CPI_EVENT_TYPE])) == 1

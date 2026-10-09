@@ -714,8 +714,7 @@ def test_each_instrument_is_measured_against_each_measure_and_baseline() -> None
             expected_mom=0.4,
             surprise=0.1,
         )
-        for m in (CORE, HEADLINE)
-        for b in (TREND_12M, NOWCAST_BASELINE)
+        for m, b in flows.COMBINATIONS
     ]
     db.insert_models("surprises", surprises, con=con)
     con.execute(
@@ -729,7 +728,7 @@ def test_each_instrument_is_measured_against_each_measure_and_baseline() -> None
 
     # then core against the trend comes first, and every instrument has its one pair
     assert list(pairs)[0] == (CORE, TREND_12M)
-    assert len(pairs) == 4
+    assert len(pairs) == len(flows.COMBINATIONS) == 6
     assert all(p == ([0.1], [0.01]) for by in pairs.values() for p in by.values())
 
 
@@ -755,7 +754,7 @@ def test_the_report_shows_the_verdict_table_then_the_context_and_the_rule() -> N
         "SPY / ES     342  down      0.21       0.0001  64% (180)     1.20%      tracks",
         "GC / XAU     311  either    0.05       0.4000  —             -0.03%     doesn't",
     ]
-    assert "DXY          core      nowcast    155  0.30       0.0002  70% (60)" in lines
+    assert f"DXY          core      {'nowcast':<16} 155  0.30       0.0002  70% (60)" in lines
     assert lines[-1].startswith("tracks = corr as expected, p < 0.01, hit rate >= 60%")
 
 
@@ -801,11 +800,17 @@ def test_surprise_prints_a_verdict_per_instrument_and_the_context(
     # when the command runs
     code = main(["surprise"])
 
-    # then four instruments track, gold is unclear at most, and every context row is printed
+    # then four instruments track, gold is unclear at most, every context row is printed, and each
+    # compared pair is judged side by side, with and without COVID
     out = capsys.readouterr().out.splitlines()
+    official = out[: out.index("")]
+    context = out[out.index("context, no verdict") + 2 :]
+    context = context[: context.index("")]
     assert code == 0
-    assert sum(line.endswith(" tracks") for line in out) == 4
-    assert sum(" nowcast " in line or " trend_12m " in line for line in out) == 15
+    assert sum(line.endswith(" tracks") for line in official) == 4
+    assert sum(" nowcast " in line or " trend_12m " in line for line in context) == 15
+    assert sum(" nasdaq_consensus " in line for line in context) == 10
+    assert sum("on the same reports" in line for line in out) == 4
 
 
 @pytest.mark.parametrize(
@@ -940,6 +945,6 @@ def test_the_jobs_report_has_its_own_signs_cut_off_and_the_model_as_context() ->
     ]
     assert lines[4:7] == [
         "context, no verdict",
-        "instrument   measure   baseline      n    rank corr  p       hit rate (n)",
-        "UST10Y / ZN  payrolls  payroll_model 148  0.30       0.0002  70% (90)",
+        "instrument   measure   baseline         n    rank corr  p       hit rate (n)",
+        "UST10Y / ZN  payrolls  payroll_model    148  0.30       0.0002  70% (90)",
     ]

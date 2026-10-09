@@ -21,6 +21,7 @@ from .expectations import (
     EXPECTATION_SOURCES,
     MonthlyChange,
     first_published_payroll_changes,
+    NASDAQ_CONSENSUS,
     NOWCAST_BASELINE,
     PAYROLL_MODEL,
     TREND_12M,
@@ -433,6 +434,8 @@ COMBINATIONS = (
     (sources.CORE, NOWCAST_BASELINE),
     (sources.HEADLINE, TREND_12M),
     (sources.HEADLINE, NOWCAST_BASELINE),
+    (sources.CORE, NASDAQ_CONSENSUS),
+    (sources.HEADLINE, NASDAQ_CONSENSUS),
 )
 # The direction a stronger-than-expected jobs report should move each instrument: rates and the
 # dollar up; equities, VIX and gold have no agreed sign ("good news is bad news"). Rung 1 decision.
@@ -445,23 +448,29 @@ NOTICEABLE_PAYROLLS_K = 50.0
 class SurpriseRule:
     """What step 4 measures for one event type. The first combination gives the verdict; the
     hit rate counts surprises of at least ``noticeable``, and the slope is per ``noticeable``,
-    which the report names ``step``. ``compared`` baselines of the verdict's measure are also judged
-    side by side on the reports they all cover."""
+    which the report names ``step``. Each pair of ``compared`` baselines of the verdict's measure is
+    also judged side by side, on the reports both cover."""
 
     combinations: tuple[tuple[str, str], ...]
     expected_sign: Mapping[str, int]
     noticeable: float
     step: str
-    compared: tuple[str, ...] = ()
+    compared: tuple[tuple[str, str], ...] = ()
 
 
-CPI_SURPRISE_RULE = SurpriseRule(COMBINATIONS, EXPECTED_SIGN, NOTICEABLE_SURPRISE_PP, "0.1pp")
+CPI_SURPRISE_RULE = SurpriseRule(
+    COMBINATIONS,
+    EXPECTED_SIGN,
+    NOTICEABLE_SURPRISE_PP,
+    "0.1pp",
+    compared=((TREND_12M, NASDAQ_CONSENSUS), (NOWCAST_BASELINE, NASDAQ_CONSENSUS)),
+)
 NFP_SURPRISE_RULE = SurpriseRule(
-    ((PAYROLLS, TREND_12M), (PAYROLLS, PAYROLL_MODEL)),
+    ((PAYROLLS, TREND_12M), (PAYROLLS, PAYROLL_MODEL), (PAYROLLS, NASDAQ_CONSENSUS)),
     NFP_EXPECTED_SIGN,
     NOTICEABLE_PAYROLLS_K,
     "50k",
-    compared=(TREND_12M, PAYROLL_MODEL),
+    compared=((TREND_12M, PAYROLL_MODEL), (TREND_12M, NASDAQ_CONSENSUS)),
 )
 
 
