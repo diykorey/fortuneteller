@@ -11,7 +11,7 @@ Where the work is and what comes next. Two rules keep it current:
 Free consensus, step 1 — Nasdaq's calendar fetched day by day with a local cache, each release's
 row picked by its actual, checked against TradingView's: 220 core CPI, 219 headline CPI and 222
 payroll consensus values, 2008 to today; five releases left out, each named. Spec revised to use
-Nasdaq. *(PR #TBD.)*
+Nasdaq. *(PR #120.)*
 
 ## In progress
 
@@ -27,7 +27,7 @@ NFP's rules gain it as context.
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-09 | Free consensus: spec revised to Nasdaq; step 1, the calendars fetched and matched | PR #TBD |
+| 2026-10-09 | Free consensus: spec revised to Nasdaq; step 1, the calendars fetched and matched | PR #120 |
 | 2026-10-09 | Data sources survey: ~250 free sources from FinceptTerminal graded; Nasdaq, TradingView and Forex Factory consensus compared | PR #119 |
 | 2026-10-09 | Jobs-report forecast step 4: results — both links pass since 2014, against the trend too | PR #117 |
 | 2026-10-09 | Jobs-report forecast step 3: the model beside the trend on the same reports | PR #116 |
