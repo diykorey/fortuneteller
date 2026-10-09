@@ -64,7 +64,7 @@ reports in all.
 | --- | --- | --- |
 | 1 | ~~Inputs: ADP's first-published monthly changes (both series) and the survey-week claims changes, from FRED~~ **done** | August 2022's gap is empty; a sample of ADP first prints matches ADP's releases |
 | 2 | ~~`stats.least_squares` and the `PayrollModel` source, refitted before each report~~ **done** | No forecast uses a report or input published at or after it (the shared check passes); a planted relationship is recovered |
-| 3 | `payroll_model` in `EXPECTATION_SOURCES` and in NFP's rule as context; `surprise --event nfp` prints model and trend on the same reports | The comparison table printed; CPI's output unchanged |
+| 3 | ~~`payroll_model` in `EXPECTATION_SOURCES` and in NFP's rule as context; `surprise --event nfp` prints model and trend on the same reports~~ **done** | The comparison table printed; CPI's output unchanged |
 | 4 | Results here and in [`mvp-results.md`](../mvp-results.md) | Says whether the yield's and the dollar's links clear the bar against the forecast, with and without COVID |
 
 ## How you know it is right

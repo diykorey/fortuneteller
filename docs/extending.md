@@ -21,6 +21,7 @@ class GdpFlow:
         expected_sign={"SPY / ES": 1, "UST10Y / ZN": 1, "DXY": 1, "GC / XAU": 0, "VIX": -1},
         noticeable=0.2,           # hit-rate cut-off and slope step, in the measure's unit
         step="0.2pp",
+        compared=(),              # baselines also judged side by side on the reports they share
     )
 
     def events(self, api_key: str) -> EventBatch:
