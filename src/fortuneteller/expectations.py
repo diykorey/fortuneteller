@@ -9,8 +9,10 @@ actual, then stores ``actual − expected``. A new source is one class and one l
 from __future__ import annotations
 
 from collections.abc import Iterable, Mapping, Sequence
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from datetime import UTC, date, datetime, time, timedelta
+from pathlib import Path
 from typing import Protocol
 from zoneinfo import ZoneInfo
 
@@ -355,6 +357,105 @@ class PayrollModel:
                 )
             )
         return expected
+
+
+# The published consensus (docs/steps/free-consensus.md).
+
+# Each measure's row on Nasdaq's calendar and on TradingView's, the decimals its actual is published
+# to, and the gap between the two calendars' consensus past which a release gets none.
+CONSENSUS_ROWS = {
+    sources.CORE: ("Core CPI", "Core Inflation Rate MoM", 1, 0.2),
+    sources.HEADLINE: ("CPI", "Inflation Rate MoM", 1, 0.2),
+    PAYROLLS: ("Nonfarm Payrolls", "Non Farm Payrolls", 0, 25.0),
+}
+# Nasdaq's calendar carries no consensus before 2008 (checked 2026-10-09): earlier days are not asked.
+CONSENSUS_SINCE = date(2008, 1, 1)
+# Release days whose Nasdaq row cannot be told, found 2026-10-09: no row's actual is our first
+# print (core CPI, payrolls), or two are (headline CPI's month-on-month and year-on-year equal).
+UNREADABLE_CONSENSUS = {
+    (sources.CORE, date(2008, 10, 16)),
+    (PAYROLLS, date(2020, 5, 8)),
+    (sources.HEADLINE, date(2015, 11, 17)),
+    (sources.HEADLINE, date(2020, 7, 14)),
+}
+
+
+def _published(value: float, decimals: int, row: float | None) -> bool:
+    return row is not None and abs(round(value, decimals) - row) < 0.5 * 10**-decimals
+
+
+def match_consensus(
+    actuals: Iterable[Actual],
+    released: Mapping[int, date],
+    nasdaq: Iterable[sources.CalendarRow],
+    tradingview: Iterable[sources.CalendarRow],
+) -> tuple[dict[tuple[int, str], float], list[str]]:
+    """Nasdaq's consensus for each actual, keyed by (event, measure), and the releases left out.
+
+    A release's row is the one whose actual is our first print as published; none or two refuses
+    everything, naming the day, except the days in ``UNREADABLE_CONSENSUS``. A release whose
+    consensus differs from TradingView's by more than the measure's gap is left out.
+    ``released`` is each event's New York release day.
+    """
+    by_day: dict[tuple[str, date], list[sources.CalendarRow]] = {}
+    for row in nasdaq:
+        if row.consensus is not None:
+            by_day.setdefault((row.name, row.day), []).append(row)
+    checks = {(row.name, row.day): row.consensus for row in tradingview}
+    consensus: dict[tuple[int, str], float] = {}
+    left_out: list[str] = []
+    problems: list[str] = []
+    for actual in actuals:
+        if actual.measure not in CONSENSUS_ROWS:
+            continue
+        nasdaq_name, check_name, decimals, gap = CONSENSUS_ROWS[actual.measure]
+        day = released[actual.event_id]
+        candidates = by_day.get((nasdaq_name, day), [])
+        if not candidates:
+            continue
+        rows = [r for r in candidates if _published(actual.value, decimals, r.actual)]
+        where = f"{actual.measure} on {day}"
+        if len(rows) != 1 or rows[0].consensus is None:
+            if (actual.measure, day) in UNREADABLE_CONSENSUS:
+                left_out.append(f"{where}: no single Nasdaq row matches the first print")
+            else:
+                problems.append(f"{where}: {len(rows)} Nasdaq rows match the first print")
+            continue
+        value = rows[0].consensus
+        check = checks.get((check_name, day))
+        if check is not None and abs(value - check) > gap + 1e-9:
+            left_out.append(f"{where}: Nasdaq {value:g}, TradingView {check:g}")
+            continue
+        consensus[(actual.event_id, actual.measure)] = value
+    if problems:
+        raise ValueError("Nasdaq consensus refused: " + "; ".join(problems))
+    return consensus, left_out
+
+
+def fetch_calendars(
+    days: Iterable[date], cache_dir: Path
+) -> tuple[list[sources.CalendarRow], list[sources.CalendarRow]]:
+    """Nasdaq's and TradingView's rows for the consensus measures on ``days`` from
+    ``CONSENSUS_SINCE``; Nasdaq answers slowly, so four of its days are asked at a time."""
+    days = sorted({day for day in days if day >= CONSENSUS_SINCE})
+    nasdaq_names = [names[0] for names in CONSENSUS_ROWS.values()]
+    check_names = [names[1] for names in CONSENSUS_ROWS.values()]
+    with ThreadPoolExecutor(4) as pool:
+        replies = list(pool.map(lambda d: sources.fetch_nasdaq_day(d, cache_dir), days))
+    nasdaq = [
+        row
+        for day, reply in zip(days, replies, strict=True)
+        for row in sources.parse_nasdaq_day(reply, day, nasdaq_names)
+    ]
+    quarters = sorted({sources.quarter_start(day) for day in days})
+    tradingview = [
+        row
+        for quarter in quarters
+        for row in sources.parse_tradingview(
+            sources.fetch_tradingview_quarter(quarter, cache_dir), check_names
+        )
+    ]
+    return nasdaq, tradingview
 
 
 EXPECTATION_SOURCES: list[ExpectationSource] = [Trend12m(), ClevelandNowcast(), PayrollModel()]

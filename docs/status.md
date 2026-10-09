@@ -8,26 +8,26 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Jobs-report forecast, step 4 — results: on the 148 reports since 2014 with a forecast, the 10-year
-yield and the dollar pass the bar against the forecast, with and without COVID, but against the
-12-month trend too; the forecast's typical miss is 77k against the trend's 80k outside COVID. NFP's
-official verdict, over 681 reports, stays unclear. The jobs-report forecast is complete.
-*(PR #117.)*
+Free consensus, step 1 — Nasdaq's calendar fetched day by day with a local cache, each release's
+row picked by its actual, checked against TradingView's: 220 core CPI, 219 headline CPI and 222
+payroll consensus values, 2008 to today; five releases left out, each named. Spec revised to use
+Nasdaq. *(PR #120.)*
 
 ## In progress
 
-**A free consensus, as context**: [free-consensus.md](steps/free-consensus.md). Spec under review.
-Chosen 2026-10-09: free sources only; paid consensus and intraday prices deferred.
+**A free consensus, as context**: [free-consensus.md](steps/free-consensus.md). Chosen 2026-10-09:
+free sources only; paid consensus and intraday prices deferred.
 
 ## Next
 
-Free consensus, step 1 — fetch, verify and parse Forex Factory's forecasts; match each row to a
-stored release, refusing any that does not fit.
+Free consensus, step 2 — the `NasdaqConsensus` expectation source; `compared` as pairs; CPI's and
+NFP's rules gain it as context.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-09 | Free consensus: spec revised to Nasdaq; step 1, the calendars fetched and matched | PR #120 |
 | 2026-10-09 | Data sources survey: ~250 free sources from FinceptTerminal graded; Nasdaq, TradingView and Forex Factory consensus compared | PR #119 |
 | 2026-10-09 | Jobs-report forecast step 4: results — both links pass since 2014, against the trend too | PR #117 |
 | 2026-10-09 | Jobs-report forecast step 3: the model beside the trend on the same reports | PR #116 |

@@ -219,3 +219,4 @@ __marimo__/
 
 # FortuneTeller — local DuckDB store
 *.duckdb
+data/cache/

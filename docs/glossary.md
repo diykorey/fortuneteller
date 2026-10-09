@@ -51,7 +51,7 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **Consensus** — what forecasters collectively expected the release to be, published in advance by
   economic calendars. The reference point that makes "surprise" meaningful, and the **scarcest free
   data in this project** — actuals are easy, history of expectations is not. The free stand-in used
-  is Forex Factory's forecast ([free consensus](steps/free-consensus.md)).
+  is Nasdaq's calendar consensus ([free consensus](steps/free-consensus.md)).
 - **Core vs headline** — *headline* includes food and energy prices; *core* strips them out because
   they are volatile. Markets usually react more to core.
 - **CPI** (Consumer Price Index) — the main US inflation measure, published monthly by the
@@ -186,8 +186,9 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **Least squares (OLS)** — fitting a straight-line formula by making the squared misses as small
   as possible (`stats.least_squares`). The payroll model fits payrolls on ADP's change, the claims
   change and the 12-month trend this way, refitted before every report on earlier reports only.
-- **Forex Factory forecast** — the `Forecast` column of Forex Factory's economic calendar, from a
-  community copy covering 2007 – April 2025; the `ff_forecast` expectation source.
+- **Nasdaq consensus** — the `Consensus` column of Nasdaq's economic calendar, 2008 to today; the
+  `nasdaq_consensus` expectation source, checked against TradingView's calendar. Compared with
+  other free sources in [Data sources](data-sources.md#which-free-consensus-is-best).
 - **Payroll model** — the jobs report's free forecast, the `payroll_model` expectation source
   (`expectations.PayrollModel`, [nfp-forecast](steps/nfp-forecast.md)). It leaves out
   March 2020 – April 2021 when fitting, so COVID's prints cannot dominate the formula.
