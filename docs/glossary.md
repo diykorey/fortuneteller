@@ -185,6 +185,11 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **Least squares (OLS)** — fitting a straight-line formula by making the squared misses as small
   as possible (`stats.least_squares`). The payroll model fits payrolls on ADP's change, the claims
   change and the 12-month trend this way, refitted before every report on earlier reports only.
+- **Consensus** — the median forecast of economists surveyed before a release (Bloomberg's,
+  Reuters'). Paid; the free stand-in here is Forex Factory's forecast
+  ([free consensus](steps/free-consensus.md)), whose method is not published.
+- **Forex Factory forecast** — the `Forecast` column of Forex Factory's economic calendar, from a
+  community copy covering 2007 – April 2025; the `ff_forecast` expectation source.
 - **Payroll model** — the jobs report's free forecast, the `payroll_model` expectation source
   (`expectations.PayrollModel`, [nfp-forecast](steps/nfp-forecast.md)). It leaves out
   March 2020 – April 2021 when fitting, so COVID's prints cannot dominate the formula.
