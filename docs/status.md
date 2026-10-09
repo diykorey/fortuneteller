@@ -16,12 +16,13 @@ official verdict, over 681 reports, stays unclear. The jobs-report forecast is c
 
 ## In progress
 
-Nothing. The next roadmap step, paid consensus forecasts, needs a paid data source chosen first.
+**A free consensus, as context**: [free-consensus.md](steps/free-consensus.md). Spec under review.
+Chosen 2026-10-09: free sources only; paid consensus and intraday prices deferred.
 
 ## Next
 
-Paid consensus forecasts (roadmap step 2) — choose the data source: what each offers for CPI and
-payroll consensus history and intraday prices, and its cost; then a spec.
+Free consensus, step 1 — fetch, verify and parse Forex Factory's forecasts; match each row to a
+stored release, refusing any that does not fit.
 
 ## Done
 
