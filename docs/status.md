@@ -11,7 +11,7 @@ Where the work is and what comes next. Two rules keep it current:
 Jobs-report forecast, step 3 — `payroll_model` is an expectation source: `load-surprises` stores its
 148 payroll surprises, and `surprise --event nfp` shows it as context and judges it beside the trend
 on exactly the same reports, with and without March 2020 – April 2021. The trend keeps the official
-verdict; CPI's output is byte-identical to `main`. *(PR #TBD.)*
+verdict; CPI's output is byte-identical to `main`. *(PR #116.)*
 
 ## In progress
 
@@ -26,7 +26,7 @@ the dollar's links clear the bar against the forecast, with and without COVID.
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-09 | Jobs-report forecast step 3: the model beside the trend on the same reports | PR #TBD |
+| 2026-10-09 | Jobs-report forecast step 3: the model beside the trend on the same reports | PR #116 |
 | 2026-10-08 | Jobs-report forecast step 2: least squares and the payroll model | PR #115 |
 | 2026-10-07 | Country-aware events step 2: trends and reports per flow, each market's zone — part 1 complete | PR #114 |
 | 2026-10-07 | Country-aware events spec and step 1: flow identity by type and country | PR #113 |
