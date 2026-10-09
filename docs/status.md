@@ -12,7 +12,7 @@ Jobs-report forecast, step 4 — results: on the 148 reports since 2014 with a f
 yield and the dollar pass the bar against the forecast, with and without COVID, but against the
 12-month trend too; the forecast's typical miss is 77k against the trend's 80k outside COVID. NFP's
 official verdict, over 681 reports, stays unclear. The jobs-report forecast is complete.
-*(PR #TBD.)*
+*(PR #117.)*
 
 ## In progress
 
@@ -27,7 +27,7 @@ payroll consensus history and intraday prices, and its cost; then a spec.
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-09 | Jobs-report forecast step 4: results — both links pass since 2014, against the trend too | PR #TBD |
+| 2026-10-09 | Jobs-report forecast step 4: results — both links pass since 2014, against the trend too | PR #117 |
 | 2026-10-09 | Jobs-report forecast step 3: the model beside the trend on the same reports | PR #116 |
 | 2026-10-08 | Jobs-report forecast step 2: least squares and the payroll model | PR #115 |
 | 2026-10-07 | Country-aware events step 2: trends and reports per flow, each market's zone — part 1 complete | PR #114 |
