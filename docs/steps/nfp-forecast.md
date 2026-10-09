@@ -63,7 +63,7 @@ reports in all.
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~Inputs: ADP's first-published monthly changes (both series) and the survey-week claims changes, from FRED~~ **done** | August 2022's gap is empty; a sample of ADP first prints matches ADP's releases |
-| 2 | `stats.least_squares` and the `PayrollModel` source, refitted before each report | No forecast uses a report or input published at or after it (the shared check passes); a planted relationship is recovered |
+| 2 | ~~`stats.least_squares` and the `PayrollModel` source, refitted before each report~~ **done** | No forecast uses a report or input published at or after it (the shared check passes); a planted relationship is recovered |
 | 3 | `payroll_model` in `EXPECTATION_SOURCES` and in NFP's rule as context; `surprise --event nfp` prints model and trend on the same reports | The comparison table printed; CPI's output unchanged |
 | 4 | Results here and in [`mvp-results.md`](../mvp-results.md) | Says whether the yield's and the dollar's links clear the bar against the forecast, with and without COVID |
 
@@ -88,6 +88,16 @@ days after its month starts; anything FRED first shows later (history republishe
 and 2023) is not one, so a month counts only if first published within 50 days of its start.
 Four first prints match ADP's own releases: April 2020 −20,236k, May 2022 +128k, September 2022
 +208k (the relaunch), September 2025 −32k. Claims: a monthly change for 207 months from July 2009.
+
+**The model, checked 2026-10-08** (`expectations.PayrollModel`, not yet in `EXPECTATION_SOURCES`).
+On real data it forecasts 148 reports, February 2014 to September 2026, and none for June–August
+2022. Every forecast passes the shared check, and no ADP or claims first print is dated on or after
+its report. The tests plant a known formula and recover it; changing every number published at
+or after a report leaves that report's forecast unchanged; COVID months are forecast but not fitted
+on; an ADP print dated on its report's day is refused. For the record, not for tuning: mean
+absolute error against the first print is 76.6k for the model and 79.6k for the trend on the same
+134 reports without COVID (195.1k and 381.2k with it). That is not clearly smaller, so on those
+numbers the model adds little; step 4 gives the verdict.
 
 ## Technical details
 

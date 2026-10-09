@@ -117,3 +117,28 @@ def theil_sen(x: Sequence[float], y: Sequence[float]) -> float:
         if x[j] != x[i]
     ]
     return median(slopes)
+
+
+def least_squares(rows: Sequence[Sequence[float]], y: Sequence[float]) -> list[float]:
+    """Ordinary least squares: the intercept, then one coefficient per column of ``rows``.
+
+    Solves the normal equations by Gaussian elimination; a singular system (too few rows, or one
+    column a mix of the others) is refused rather than answered.
+    """
+    columns = len(rows[0]) + 1
+    design = [[1.0, *row] for row in rows]
+    system = [
+        [_dot([r[i] for r in design], [r[j] for r in design]) for j in range(columns)]
+        + [_dot([r[i] for r in design], y)]
+        for i in range(columns)
+    ]
+    for col in range(columns):
+        pivot = max(range(col, columns), key=lambda r: abs(system[r][col]))
+        if abs(system[pivot][col]) < 1e-9 * max(1.0, max(abs(v) for v in system[pivot])):
+            raise ValueError("least squares: singular system; the columns do not pin the fit")
+        system[col], system[pivot] = system[pivot], system[col]
+        for r in range(columns):
+            if r != col:
+                factor = system[r][col] / system[col][col]
+                system[r] = [a - factor * b for a, b in zip(system[r], system[col], strict=True)]
+    return [system[i][columns] / system[i][i] for i in range(columns)]

@@ -29,7 +29,7 @@ from .expectations import (
     previous_month,
 )
 from .models import EventInstance, Surprise
-from .sources import NEW_YORK, FirstRelease
+from .sources import NEW_YORK, PAYROLLS, FirstRelease
 
 
 # Step 1 — the CPI release history from FRED (docs/steps/step-1-releases.md).
@@ -280,8 +280,6 @@ def release_date(event: EventInstance) -> date:
 
 # Core decides step 4's verdicts; headline is context. Each is read from its own FRED series.
 MEASURE_SERIES = {sources.CORE: sources.CORE_CPI_SERIES_ID, sources.HEADLINE: sources.CPI_SERIES_ID}
-# The jobs report's measure (rung 1): the monthly change in non-farm payrolls, in thousands.
-PAYROLLS = "payrolls"
 
 
 def first_published_changes(

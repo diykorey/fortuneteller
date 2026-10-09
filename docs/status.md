@@ -8,26 +8,26 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Country-aware events, step 2 — surprises per flow: the 12-month trend averages within one event
-type from one country, the `surprise` report reads one flow's surprises, and release dates,
-day-only expectations and each market's close are read in their own time zones. A made-up UK
-housing flow beside a US one leaves the US trend, surprises and report unchanged. Every US load and
-report byte-identical to `main`. Country-aware events part 1 complete. *(PR #114.)*
+Jobs-report forecast, step 2 — `stats.least_squares` and the `PayrollModel` expectation source:
+payrolls on ADP's change, the claims change and the 12-month trend, refitted before every report
+on earlier reports only, COVID months not fitted on. On real data, 148 forecasts (2014-02 …
+2026-09), none in the 2022 ADP gap, all passing the shared check; mean absolute error 76.6k against
+the trend's 79.6k without COVID. Not yet registered. *(PR #115.)*
 
 ## In progress
 
-**A free forecast of each jobs report**: [nfp-forecast.md](steps/nfp-forecast.md), resumed after
-country-aware events.
+**A free forecast of each jobs report**: [nfp-forecast.md](steps/nfp-forecast.md).
 
 ## Next
 
-Jobs-report forecast, step 2 — `stats.least_squares` and the `PayrollModel` source, refitted before
-each report on earlier reports only.
+Jobs-report forecast, step 3 — `payroll_model` in `EXPECTATION_SOURCES` and in NFP's rule as
+context; `surprise --event nfp` prints model and trend on the same reports.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-08 | Jobs-report forecast step 2: least squares and the payroll model | PR #115 |
 | 2026-10-07 | Country-aware events step 2: trends and reports per flow, each market's zone — part 1 complete | PR #114 |
 | 2026-10-07 | Country-aware events spec and step 1: flow identity by type and country | PR #113 |
 | 2026-10-07 | Jobs-report forecast spec and step 1: ADP and claims inputs | PR #112 |

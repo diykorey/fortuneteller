@@ -277,6 +277,8 @@ CLEVELAND_NOWCAST_URL = (
 )
 CORE = "core"
 HEADLINE = "headline"
+# The jobs report's measure (rung 1): the monthly change in non-farm payrolls, in thousands.
+PAYROLLS = "payrolls"
 NOWCAST = "nowcast"
 ACTUAL = "actual"
 # The chart series step 4 reads, by name in the file; the PCE series are left out.

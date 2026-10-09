@@ -14,9 +14,9 @@ from datetime import UTC, date, datetime, time, timedelta
 from typing import Protocol
 from zoneinfo import ZoneInfo
 
-from . import sources
+from . import sources, stats
 from .models import EventInstance, Surprise
-from .sources import NEW_YORK
+from .sources import NEW_YORK, PAYROLLS
 
 
 @dataclass(frozen=True)
@@ -280,6 +280,81 @@ class ClevelandNowcast:
             if (key := (actual.measure, actual.period)) in latest
             for day, value in [latest[key]]
         ]
+
+
+PAYROLL_MODEL = "payroll_model"
+# A fit needs this many earlier reports with every input (docs/steps/nfp-forecast.md).
+MODEL_MIN_REPORTS = 36
+# COVID's prints (April 2020: −20.5M) would dominate every later fit: these months are not fitted
+# on, though their reports are still forecast.
+COVID_MONTHS = (date(2020, 3, 1), date(2021, 4, 1))
+
+
+@dataclass(frozen=True)
+class _ModelReport:
+    actual: Actual
+    announced: datetime
+    inputs: tuple[float, float, float]
+    inputs_known: datetime
+
+
+class PayrollModel:
+    """The jobs report's free forecast: payrolls on ADP's change, the claims change and the
+    12-month trend, each as first published, refitted by least squares before every report on
+    earlier reports only. Known when its newest input, or newest report fitted on, came out."""
+
+    name = PAYROLL_MODEL
+    label = "the payroll model"
+    zone = NEW_YORK
+
+    def expectations(
+        self, events: Sequence[EventInstance], actuals: Sequence[Actual], api_key: str
+    ) -> list[Expectation]:
+        payrolls = [a for a in actuals if a.measure == PAYROLLS]
+        if not payrolls:
+            return []
+        adp, claims = load_model_inputs(api_key)
+        trend = {t.event_id: t for t in Trend12m().expectations(events, payrolls, api_key)}
+        announced = {event.event_id: event.event_ts for event in events}
+        reports = sorted(
+            (
+                _ModelReport(
+                    actual,
+                    announced[actual.event_id],
+                    (adp[month].change, claims[month].change, trend[actual.event_id].value),
+                    max(
+                        end_of_day(adp[month].released, self.zone),
+                        end_of_day(claims[month].released, self.zone),
+                        trend[actual.event_id].known_at,
+                    ),
+                )
+                for actual in own_actuals(events, payrolls)
+                if (month := actual.period) in adp and month in claims and actual.event_id in trend
+            ),
+            key=lambda report: report.announced,
+        )
+        expected: list[Expectation] = []
+        for report in reports:
+            fitted = [
+                earlier
+                for earlier in reports
+                if earlier.announced < report.announced
+                and not COVID_MONTHS[0] <= earlier.actual.period <= COVID_MONTHS[1]
+            ]
+            if len(fitted) < MODEL_MIN_REPORTS:
+                continue
+            intercept, *slopes = stats.least_squares(
+                [f.inputs for f in fitted], [f.actual.value for f in fitted]
+            )
+            value = intercept + sum(b * x for b, x in zip(slopes, report.inputs, strict=True))
+            known_at = max(report.inputs_known, max(f.announced for f in fitted))
+            actual = report.actual
+            expected.append(
+                Expectation(
+                    actual.event_id, actual.measure, self.name, value, actual.unit, known_at
+                )
+            )
+        return expected
 
 
 EXPECTATION_SOURCES: list[ExpectationSource] = [Trend12m(), ClevelandNowcast()]
