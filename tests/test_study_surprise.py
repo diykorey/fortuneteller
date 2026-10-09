@@ -12,7 +12,7 @@ import duckdb
 import pytest
 from pydantic import SecretStr
 
-from fortuneteller import db, flows, sources, study
+from fortuneteller import db, expectations, flows, sources, study
 from fortuneteller.__main__ import describe_surprise_tracking, main
 from fortuneteller.config import settings
 from fortuneteller.sources import (
@@ -849,6 +849,7 @@ def _jobs_answer(monkeypatch: pytest.MonkeyPatch, months: list[date]) -> list[Fi
         rows.append(row)
     payload = json.dumps({"count": len(rows), "observations": rows}).encode()
     monkeypatch.setattr(sources, "fetch_vintages", lambda _key, _series: payload)
+    monkeypatch.setattr(expectations, "load_model_inputs", lambda _key: ({}, {}))
     return releases
 
 
@@ -917,13 +918,18 @@ def test_surprise_for_jobs_asks_for_its_surprises_first(
     assert "nfp" in capsys.readouterr().err
 
 
-def test_the_jobs_report_has_its_own_signs_cut_off_and_no_context_table() -> None:
-    # given one tracked yield row
+def test_the_jobs_report_has_its_own_signs_cut_off_and_the_model_as_context() -> None:
+    # given one tracked yield row against the trend, and one against the payroll model
     row = SurpriseTracking(400, 0.2, 0.0001, 0.65, 300, 1.5, TRACKS)
+    model = SurpriseTracking(148, 0.3, 0.0002, 0.7, 90, 2.0, None)
 
     # when the jobs report's tracking is written
     lines = describe_surprise_tracking(
-        {(flows.PAYROLLS, TREND_12M): {"UST10Y / ZN": row}}, flows.NFP_SURPRISE_RULE
+        {
+            (flows.PAYROLLS, TREND_12M): {"UST10Y / ZN": row},
+            (flows.PAYROLLS, expectations.PAYROLL_MODEL): {"UST10Y / ZN": model},
+        },
+        flows.NFP_SURPRISE_RULE,
     )
 
     # then it is payrolls against the trend, per 50k, and the rule follows straight after
@@ -932,4 +938,8 @@ def test_the_jobs_report_has_its_own_signs_cut_off_and_no_context_table() -> Non
         "instrument   n    expected  rank corr  p       hit rate (n)  per 50k    verdict",
         "UST10Y / ZN  400  up        0.20       0.0001  65% (300)     1.5 bp     tracks",
     ]
-    assert "context, no verdict" not in lines
+    assert lines[4:7] == [
+        "context, no verdict",
+        "instrument   measure   baseline      n    rank corr  p       hit rate (n)",
+        "UST10Y / ZN  payrolls  payroll_model 148  0.30       0.0002  70% (90)",
+    ]

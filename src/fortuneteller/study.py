@@ -459,17 +459,56 @@ def surprise_pairs(
     for measure, baseline in combinations:
         by_instrument: dict[str, tuple[list[float], list[float]]] = {}
         for instrument in MVP_PRICE_SERIES:
-            rows = connection.execute(
-                "SELECT s.surprise, o.ret_1d FROM surprises s "
-                "JOIN observations o ON o.event_id = s.event_id "
-                "JOIN event_instances e ON e.event_id = s.event_id "
-                "WHERE e.event_type = ? AND e.country = ? "
-                "AND s.measure = ? AND s.baseline = ? AND o.instrument = ? ORDER BY s.event_id",
-                [flow.event_type, flow.country, measure, baseline, instrument],
-            ).fetchall()
-            by_instrument[instrument] = ([r[0] for r in rows], [r[1] for r in rows])
+            rows = _flow_pairs(flow, measure, baseline, instrument, connection)
+            by_instrument[instrument] = ([r[2] for r in rows], [r[3] for r in rows])
         pairs[(measure, baseline)] = by_instrument
     return pairs
+
+
+def _flow_pairs(
+    flow: EventFlow, measure: str, baseline: str, instrument: str, con: duckdb.DuckDBPyConnection
+) -> list[tuple[int, str, float, float]]:
+    """One flow's (event id, month, surprise, release-day move) rows, oldest first."""
+    rows = con.execute(
+        "SELECT s.event_id, e.detail, s.surprise, o.ret_1d FROM surprises s "
+        "JOIN observations o ON o.event_id = s.event_id "
+        "JOIN event_instances e ON e.event_id = s.event_id "
+        "WHERE e.event_type = ? AND e.country = ? "
+        "AND s.measure = ? AND s.baseline = ? AND o.instrument = ? ORDER BY s.event_id",
+        [flow.event_type, flow.country, measure, baseline, instrument],
+    ).fetchall()
+    return [(r[0], r[1], r[2], r[3]) for r in rows]
+
+
+def side_by_side(
+    flow: EventFlow,
+    leave_out: tuple[date, date] | None = None,
+    con: duckdb.DuckDBPyConnection | None = None,
+) -> dict[str, dict[str, SurpriseTracking]]:
+    """The rule's ``compared`` baselines, each judged on exactly the reports they all cover, per
+    instrument; months from ``leave_out[0]`` to ``leave_out[1]`` are dropped."""
+    connection = con if con is not None else db.get_connection()
+    rule = flow.surprise_rule
+    if rule is None or not rule.compared:
+        raise ValueError(f"{flow.event_type} in {flow.country} compares no baselines")
+    measure = rule.combinations[0][0]
+    results: dict[str, dict[str, SurpriseTracking]] = {b: {} for b in rule.compared}
+    for instrument in MVP_PRICE_SERIES:
+        rows = {b: _flow_pairs(flow, measure, b, instrument, connection) for b in rule.compared}
+        shared = set.intersection(*({r[0] for r in found} for found in rows.values()))
+        if leave_out is not None:
+            first, last = (f"{month:%Y-%m}" for month in leave_out)
+            shared -= {r[0] for r in rows[rule.compared[0]] if first <= r[1] <= last}
+        for baseline, found in rows.items():
+            kept = [r for r in found if r[0] in shared]
+            results[baseline][instrument] = track_pairs(
+                [r[2] for r in kept],
+                [r[3] for r in kept],
+                rule.expected_sign[instrument],
+                True,
+                rule.noticeable,
+            )
+    return results
 
 
 def track_surprises(

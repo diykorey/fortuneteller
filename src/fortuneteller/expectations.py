@@ -357,7 +357,7 @@ class PayrollModel:
         return expected
 
 
-EXPECTATION_SOURCES: list[ExpectationSource] = [Trend12m(), ClevelandNowcast()]
+EXPECTATION_SOURCES: list[ExpectationSource] = [Trend12m(), ClevelandNowcast(), PayrollModel()]
 
 
 def build_surprises(

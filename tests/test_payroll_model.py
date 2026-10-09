@@ -1,13 +1,16 @@
-"""The jobs-report forecast: refitted before every report, on earlier reports only."""
+"""The jobs-report forecast: refitted before every report on earlier reports only, and judged
+beside the trend on the same reports."""
 
 import random
 from collections.abc import Callable
 from dataclasses import replace
 from datetime import date
 
+import duckdb
 import pytest
 
-from fortuneteller import expectations, flows
+from fortuneteller import db, expectations, flows, study
+from fortuneteller.__main__ import describe_side_by_side
 from fortuneteller.expectations import (
     Actual,
     Expectation,
@@ -18,6 +21,7 @@ from fortuneteller.expectations import (
 )
 from fortuneteller.models import EventInstance
 from fortuneteller.sources import PAYROLLS, FirstRelease
+from fortuneteller.study import SurpriseTracking
 
 
 def _planted(adp: float, claims: float, trend: float) -> float:
@@ -156,3 +160,73 @@ def test_the_shared_check_accepts_the_model_and_refuses_a_late_input(
         build_surprises(
             history.events, history.actuals, list(forecasts.values()), [flows.NFP_EVENT_TYPE]
         )
+
+
+def _side_by_side_store() -> duckdb.DuckDBPyConnection:
+    # 30 jobs reports, July 2019 – December 2021: the trend has all, the model the last 20.
+    con = duckdb.connect(":memory:")
+    db.init_db(con=con)
+    months = [date(2019 + (6 + i) // 12, (6 + i) % 12 + 1, 1) for i in range(30)]
+    flows.store_releases(
+        flows.NFP_FLOW,
+        [FirstRelease(m, date(m.year + m.month // 12, m.month % 12 + 1, 6), 1.0) for m in months],
+        con=con,
+    )
+    rng = random.Random(4)
+    for i, event in enumerate(flows.stored_events(flows.NFP_FLOW, con=con)):
+        baselines = [expectations.TREND_12M] + ([expectations.PAYROLL_MODEL] if i >= 10 else [])
+        for baseline in baselines:
+            con.execute(
+                "INSERT INTO surprises VALUES (?, ?, ?, 0, 0, ?)",
+                [event.event_id, PAYROLLS, baseline, rng.gauss(0, 100)],
+            )
+        for instrument in study.MVP_PRICE_SERIES:
+            con.execute(
+                "INSERT INTO observations (event_id, instrument, ret_unit, ret_1d) "
+                "VALUES (?, ?, 'pct', ?)",
+                [event.event_id, instrument, rng.gauss(0, 1)],
+            )
+    return con
+
+
+def test_compared_baselines_are_judged_on_the_same_reports() -> None:
+    # given the trend on 30 reports and the model on the last 20
+    con = _side_by_side_store()
+
+    # when they are put side by side, with and without COVID's months
+    everything = study.side_by_side(flows.NFP_FLOW, con=con)
+    without = study.side_by_side(flows.NFP_FLOW, expectations.COVID_MONTHS, con=con)
+
+    # then both are judged on the model's 20, then on its 8 outside March 2020 – April 2021
+    for results, n in ((everything, 20), (without, 8)):
+        for baseline in (expectations.TREND_12M, expectations.PAYROLL_MODEL):
+            assert {t.n for t in results[baseline].values()} == {n}
+            assert results[baseline]["UST10Y / ZN"].verdict is not None
+    official = study.track_surprises(flows.NFP_FLOW, con=con)
+    assert official[(PAYROLLS, expectations.TREND_12M)]["UST10Y / ZN"].n == 30
+
+
+def test_the_side_by_side_table_names_both_baselines_and_its_scope() -> None:
+    # given one instrument's rows for the trend and the model
+    trend = SurpriseTracking(134, 0.2, 0.001, 0.58, 80, 1.5, "unclear")
+    model = SurpriseTracking(134, 0.3, 0.0001, 0.62, 70, 2.0, "tracks")
+    results = {
+        expectations.TREND_12M: {i: trend for i in study.MVP_PRICE_SERIES},
+        expectations.PAYROLL_MODEL: {i: model for i in study.MVP_PRICE_SERIES},
+    }
+
+    # when it is written
+    lines = describe_side_by_side(results, flows.NFP_SURPRISE_RULE, "all")
+
+    # then it says what it compares and that it is not the official verdict, a row per baseline
+    assert lines[1] == (
+        "payrolls against the 12-month trend and the payroll model, on the same reports (all); "
+        "not the official verdict"
+    )
+    assert lines[2].startswith("instrument   baseline       n    rank corr")
+    assert lines[5] == (
+        "UST10Y / ZN  trend_12m      134  0.20       0.0010  58% (80)      1.5 bp     unclear"
+    )
+    assert lines[6] == (
+        "UST10Y / ZN  payroll_model  134  0.30       0.0001  62% (70)      2.0 bp     tracks"
+    )

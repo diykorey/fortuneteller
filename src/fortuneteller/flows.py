@@ -22,6 +22,7 @@ from .expectations import (
     MonthlyChange,
     first_published_payroll_changes,
     NOWCAST_BASELINE,
+    PAYROLL_MODEL,
     TREND_12M,
     Actual,
     build_surprises,
@@ -444,17 +445,23 @@ NOTICEABLE_PAYROLLS_K = 50.0
 class SurpriseRule:
     """What step 4 measures for one event type. The first combination gives the verdict; the
     hit rate counts surprises of at least ``noticeable``, and the slope is per ``noticeable``,
-    which the report names ``step``."""
+    which the report names ``step``. ``compared`` baselines of the verdict's measure are also judged
+    side by side on the reports they all cover."""
 
     combinations: tuple[tuple[str, str], ...]
     expected_sign: Mapping[str, int]
     noticeable: float
     step: str
+    compared: tuple[str, ...] = ()
 
 
 CPI_SURPRISE_RULE = SurpriseRule(COMBINATIONS, EXPECTED_SIGN, NOTICEABLE_SURPRISE_PP, "0.1pp")
 NFP_SURPRISE_RULE = SurpriseRule(
-    ((PAYROLLS, TREND_12M),), NFP_EXPECTED_SIGN, NOTICEABLE_PAYROLLS_K, "50k"
+    ((PAYROLLS, TREND_12M), (PAYROLLS, PAYROLL_MODEL)),
+    NFP_EXPECTED_SIGN,
+    NOTICEABLE_PAYROLLS_K,
+    "50k",
+    compared=(TREND_12M, PAYROLL_MODEL),
 )
 
 
