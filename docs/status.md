@@ -28,6 +28,7 @@ stored release, refusing any that does not fit.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-09 | Data sources survey: ~250 free sources from FinceptTerminal graded; Nasdaq, TradingView and Forex Factory consensus compared | PR #TBD |
 | 2026-10-09 | Jobs-report forecast step 4: results — both links pass since 2014, against the trend too | PR #117 |
 | 2026-10-09 | Jobs-report forecast step 3: the model beside the trend on the same reports | PR #116 |
 | 2026-10-08 | Jobs-report forecast step 2: least squares and the payroll model | PR #115 |
