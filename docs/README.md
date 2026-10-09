@@ -45,6 +45,10 @@ Each measurement's current shortcut, the more precise way, and what would make i
 **How do I add an event type or an expectation source?** → **[Extending](extending.md)**
 One class and one line in a list, for either; what then happens on its own.
 
+**Which free data sources exist, and which would help?** → **[Data sources](data-sources.md)**
+About 250 free sources, from an analysis of FinceptTerminal, graded useful, could be useful or
+useless, with what each gives and what it would take.
+
 **4. What does this word mean?** → **[Glossary](glossary.md)**
 Every acronym, ticker, and piece of jargon. Read it alongside any of the above, not before them.
 
