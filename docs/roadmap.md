@@ -69,7 +69,7 @@ widen. Each new expected value is one expectation source and each new event one 
 
 | # | Step | Why now |
 | --- | --- | --- |
-| 1 | **[A free forecast of each jobs report](steps/nfp-forecast.md)** — ADP and jobless claims, fitted on earlier reports only. Step 1 done; paused for 1a | The yield's and the dollar's jobs-report links sit just under the bar against the trend; a real forecast is the known shortcut, and it is free |
+| 1 | **[A free forecast of each jobs report](steps/nfp-forecast.md)** — ADP and jobless claims, fitted on earlier reports only. **Done**: both links pass since 2014, against the forecast and the trend alike; the full history stays unclear | The yield's and the dollar's jobs-report links sit just under the bar against the trend; a real forecast is the known shortcut, and it is free |
 | 1a | **[Country-aware events](steps/country-aware-events.md)** — a flow is its event type and origin country; trends and reports per flow; each market's own time zone. **Done** | Events are told apart by type alone, so a second country would mix with the US's; cheap now, before more depends on it |
 | 2 | **Paid consensus forecasts** for CPI and payrolls, and intraday prices around the release | The cleanest test of the weak links; needs a paid data source chosen first |
 | 3 | **Predict the next release** — rung 2 below | Built on whichever links pass after steps 1–2 |

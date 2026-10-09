@@ -111,6 +111,24 @@ and every check on the data held. The surprise link is still the weak point. For
 it is real but misses the bar, which again points at the measurement rather than the market: the
 "expected" value is a trend, not the forecast economists published.
 
+## A free forecast of each jobs report
+
+Measured 2026-10-09. Detail in [nfp-forecast](steps/nfp-forecast.md#results).
+
+Rung 1's jobs-report links sat just under the bar, against a 12-month trend. A model forecast each
+report from what was published before it (ADP's report, weekly jobless claims and the trend),
+refitted before every report on earlier reports only: 148 reports, 2014 on.
+
+**Against the forecast, the 10-year yield and the dollar pass**, with and without COVID: the yield
+right 66% of the time (63% without COVID), the dollar 65% (68%), both p ≤ 0.0003. **But the trend
+passes too on the same reports** (yield 64% / 60%, dollar 63% / 66%). The forecast is only a little
+sharper: its typical miss is 77k jobs against the trend's 80k outside COVID.
+
+**What it means.** The jobs-report link is reliable since 2014 whichever expected value is used;
+what kept it under the bar over the full history is the earlier decades, not the trend. The
+official verdict, over 681 reports since 1956, stays unclear. A better free forecast was not the
+shortcut; whether the market's own view, the paid consensus, would add more is the next question.
+
 ## What comes next
 
 A decision, not yet made. The options:
@@ -119,7 +137,7 @@ A decision, not yet made. The options:
 | --- | --- | --- | --- |
 | ~~**More events**~~ (roadmap rung 1) | ~~Add the jobs report (NFP) and Fed decisions~~ **done**, above | — | — |
 | **Sharper measurement** | Economists' consensus forecasts for CPI and payrolls, and intraday prices around the release | Paid data | Whether the yield's and the dollar's jobs-report link passes the bar against a real forecast; for CPI, whether the weak link is the market or our daily window |
-| **A better free forecast** | A model of each jobs report from what is published before it (weekly jobless claims, the ADP report) | Free | The same question as above, without paying, but with a model in place of the market's view |
+| ~~**A better free forecast**~~ | ~~A model of each jobs report from what is published before it (weekly jobless claims, the ADP report)~~ **done**, above: both links pass since 2014, but against the trend too | — | — |
 | **Predict the next release** (rung 2) | Forecast the 10-year yield's direction before each CPI release, and grade it after | Free | Claim 3, for the one link that passes; but on a 62% signal |
 
 Rung 1 strengthened the case for better expected values before predicting: two links (the yield
