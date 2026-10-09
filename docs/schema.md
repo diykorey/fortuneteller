@@ -403,7 +403,8 @@ Filled by `uv run fortuneteller load-surprises` (step 4, and rung 1 for payrolls
 (`event_id`, `measure`, `baseline`). 1,287 CPI rows on 2026-10-05: against the 12-month trend, core
 342 (from 1998) and headline 635 (from 1973); against the nowcast, 155 each (from 2013). 844
 payroll rows on 2026-10-06 against the trend (from 1956): every stored jobs report but the first
-twelve; and, from 2026-10-09, 148 against the payroll model (from 2014).
+twelve; and, from 2026-10-09, 148 against the payroll model (from 2014). Against Nasdaq's consensus,
+from 2026-10-09: core 220, headline 219 and payrolls 222, all from 2008.
 
 Example row:
 
@@ -428,7 +429,7 @@ Example row:
 | --- | --- |
 | `core` | CPI without food and energy (FRED `CPILFESL`). Step 4's verdicts are about this one: markets have traded core since the 2000s. First-published history starts in 1997. |
 | `headline` | All items (FRED `CPIAUCSL`), the series `event_instances.actual` holds. Shown as context, without a verdict. |
-| `payrolls` | The jobs report's monthly change in total non-farm payrolls (FRED `PAYEMS`), in thousands: the month's first level minus the previous month's level as revised that same day. With `trend_12m` and `payroll_model`. |
+| `payrolls` | The jobs report's monthly change in total non-farm payrolls (FRED `PAYEMS`), in thousands: the month's first level minus the previous month's level as revised that same day. With `trend_12m`, `payroll_model` and `nasdaq_consensus`. |
 
 **`baseline`** — what "expected" means:
 
@@ -436,6 +437,7 @@ Example row:
 | --- | --- |
 | `trend_12m` | The average of the previous 12 months' first-published changes, counting only those published before the release day. Available for every release once a year of history exists, but it measures surprise against the trend, not against what the market expected. |
 | `nowcast` | The Cleveland Fed's model estimate, the last one published before the release day. Close to what the market saw, but only from 2013. |
+| `nasdaq_consensus` | The consensus published on Nasdaq's economic calendar before the release, checked against TradingView's; counted as known by the end of the day before. Core CPI, headline CPI and payrolls, from 2008 ([free consensus](steps/free-consensus.md)). |
 | `payroll_model` | Payrolls only: a least-squares forecast from ADP's change, the jobless-claims change and the 12-month trend, each as first published, refitted before every report on earlier reports only ([nfp-forecast](steps/nfp-forecast.md)). From 2014; none for June–August 2022, when ADP paused. |
 
 ## effect_size_matrix

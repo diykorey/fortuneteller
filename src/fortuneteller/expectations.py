@@ -17,6 +17,7 @@ from typing import Protocol
 from zoneinfo import ZoneInfo
 
 from . import sources, stats
+from .config import settings
 from .models import EventInstance, Surprise
 from .sources import NEW_YORK, PAYROLLS
 
@@ -458,7 +459,54 @@ def fetch_calendars(
     return nasdaq, tradingview
 
 
-EXPECTATION_SOURCES: list[ExpectationSource] = [Trend12m(), ClevelandNowcast(), PayrollModel()]
+NASDAQ_CONSENSUS = "nasdaq_consensus"
+
+
+class NasdaqConsensus:
+    """The consensus published on Nasdaq's calendar before each CPI and jobs report, 2008 on,
+    checked against TradingView's; known by the end of the day before the release (assumed)."""
+
+    name = NASDAQ_CONSENSUS
+    label = "Nasdaq's consensus"
+    zone = NEW_YORK
+
+    def __init__(self) -> None:
+        self.left_out: list[str] = []
+
+    def expectations(
+        self, events: Sequence[EventInstance], actuals: Sequence[Actual], api_key: str
+    ) -> list[Expectation]:
+        wanted = [a for a in own_actuals(events, actuals) if a.measure in CONSENSUS_ROWS]
+        if not wanted:
+            return []
+        released = {
+            event.event_id: event.event_ts.replace(tzinfo=UTC).astimezone(self.zone).date()
+            for event in events
+        }
+        nasdaq, tradingview = fetch_calendars(
+            (released[a.event_id] for a in wanted), settings.cache_dir
+        )
+        consensus, self.left_out = match_consensus(wanted, released, nasdaq, tradingview)
+        return [
+            Expectation(
+                a.event_id,
+                a.measure,
+                self.name,
+                consensus[(a.event_id, a.measure)],
+                a.unit,
+                end_of_day(released[a.event_id] - timedelta(days=1), self.zone),
+            )
+            for a in wanted
+            if (a.event_id, a.measure) in consensus
+        ]
+
+
+EXPECTATION_SOURCES: list[ExpectationSource] = [
+    Trend12m(),
+    ClevelandNowcast(),
+    PayrollModel(),
+    NasdaqConsensus(),
+]
 
 
 def build_surprises(

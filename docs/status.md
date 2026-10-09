@@ -8,10 +8,10 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Free consensus, step 1 — Nasdaq's calendar fetched day by day with a local cache, each release's
-row picked by its actual, checked against TradingView's: 220 core CPI, 219 headline CPI and 222
-payroll consensus values, 2008 to today; five releases left out, each named. Spec revised to use
-Nasdaq. *(PR #120.)*
+Free consensus, step 2 — `nasdaq_consensus` is an expectation source: 661 surprises (core CPI 220,
+headline 219, payrolls 222, from 2008), shown as context; `compared` is now pairs, so `surprise`
+judges the consensus beside the trend (and, for CPI, the nowcast) on the same reports, with and
+without COVID. Every official table byte-identical to `main`. *(PR #121.)*
 
 ## In progress
 
@@ -20,13 +20,14 @@ free sources only; paid consensus and intraday prices deferred.
 
 ## Next
 
-Free consensus, step 2 — the `NasdaqConsensus` expectation source; `compared` as pairs; CPI's and
-NFP's rules gain it as context.
+Free consensus, step 3 — results here and in `mvp-results.md`: per pair, with and without COVID,
+whether the yield and the dollar track better against the consensus.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-09 | Free consensus step 2: Nasdaq's consensus as a source, judged beside the trend | PR #121 |
 | 2026-10-09 | Free consensus: spec revised to Nasdaq; step 1, the calendars fetched and matched | PR #120 |
 | 2026-10-09 | Data sources survey: ~250 free sources from FinceptTerminal graded; Nasdaq, TradingView and Forex Factory consensus compared | PR #119 |
 | 2026-10-09 | Jobs-report forecast step 4: results — both links pass since 2014, against the trend too | PR #117 |

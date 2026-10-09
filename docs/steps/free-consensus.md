@@ -64,7 +64,7 @@ with D + 1; and the month-on-month and year-on-year rows share one name (`Core C
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~Fetch with the cache, pick each release's row, check against TradingView, with the refusals above~~ **done** | No row, two rows, an unparseable value and a TradingView gap are each handled in a test; real data gives about 222 consensus values per measure |
-| 2 | `NasdaqConsensus` source; `compared` as pairs; both rules gain it | NFP's (trend, model) table byte-identical to `main`'s; CPI's official tables unchanged |
+| 2 | ~~`NasdaqConsensus` source; `compared` as pairs; both rules gain it~~ **done** | NFP's (trend, model) table byte-identical to `main`'s; CPI's official tables unchanged |
 | 3 | Results here and in [`mvp-results.md`](../mvp-results.md) | Says, per pair and with and without COVID, whether the yield and the dollar track better against the consensus |
 
 **Step 1, checked 2026-10-09** (`expectations.fetch_calendars`, `match_consensus`; not yet a
@@ -72,6 +72,11 @@ source). On the stored releases: 220 core CPI, 219 headline CPI and 222 payroll 
 February 2008 to October 2026. Five releases get none, exactly those named above: the four whose
 row cannot be told, and core CPI 2014-11-20, 0.3pp off TradingView's. Nasdaq has no consensus
 before 2008, so earlier days are not asked; TradingView answers `no_data` before 2013.
+
+**Step 2, checked 2026-10-09.** `load-surprises` stores 661 consensus surprises (core 220,
+headline 219, payrolls 222) and names the five releases left out. Against `main`: every official
+verdict table, and NFP's trend-and-model tables, byte-identical; the context tables only widen
+their baseline column; `event_instances`, `observations` and `daily_bars` identical row for row.
 
 ## What this step does not do
 
