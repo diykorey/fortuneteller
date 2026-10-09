@@ -65,7 +65,7 @@ reports in all.
 | 1 | ~~Inputs: ADP's first-published monthly changes (both series) and the survey-week claims changes, from FRED~~ **done** | August 2022's gap is empty; a sample of ADP first prints matches ADP's releases |
 | 2 | ~~`stats.least_squares` and the `PayrollModel` source, refitted before each report~~ **done** | No forecast uses a report or input published at or after it (the shared check passes); a planted relationship is recovered |
 | 3 | ~~`payroll_model` in `EXPECTATION_SOURCES` and in NFP's rule as context; `surprise --event nfp` prints model and trend on the same reports~~ **done** | The comparison table printed; CPI's output unchanged |
-| 4 | Results here and in [`mvp-results.md`](../mvp-results.md) | Says whether the yield's and the dollar's links clear the bar against the forecast, with and without COVID |
+| 4 | ~~Results here and in [`mvp-results.md`](../mvp-results.md)~~ **done** | Says whether the yield's and the dollar's links clear the bar against the forecast, with and without COVID |
 
 ## How you know it is right
 
@@ -107,4 +107,30 @@ an intercept), no new dependency. Measure `payrolls`, unit thousands, baseline `
 
 ## Results
 
-*Filled in by step 4.*
+Measured 2026-10-09 on every jobs report from February 2014 to September 2026 that has a forecast
+(148; none for June–August 2022). The model was not tuned.
+
+**The answer: against the forecast, the 10-year yield and the dollar clear the bar, with and without
+COVID. But the 12-month trend clears it too on the same reports, so the forecast is not what lifts
+them: the years are.**
+
+| Same reports | 10-year yield, trend | 10-year yield, model | Dollar, trend | Dollar, model |
+| --- | --- | --- | --- | --- |
+| All 148 | tracks: 0.27, p 0.0006, 64% (87) | tracks: 0.32, p 0.0003, 66% (89) | tracks: 0.33, p 0.0001, 63% (87) | tracks: 0.35, p 0.0001, 65% (89) |
+| Without COVID, 134 | tracks: 0.25, p 0.0018, 60% (73) | tracks: 0.30, p 0.0002, 63% (75) | tracks: 0.42, p 0.0001, 66% (73) | tracks: 0.43, p 0.0001, 68% (75) |
+
+Each cell: rank correlation, p, hit rate on surprises of 50k or more (how many). The model is a
+little stronger everywhere: correlation up 0.01–0.05, hit rate up 2–3 points, and larger moves per
+50k of surprise. The S&P 500 and VIX do not follow either; gold follows both (p 0.0001
+for the model) but has no agreed direction, so stays unclear.
+
+- **The forecast is barely better than the trend in normal times.** Mean absolute error against the
+  first print: 76.6k for the model, 79.6k for the trend, without COVID. With COVID, 195.1k against
+  381.2k: ADP and the claims saw the 2020 collapse and rebound that the trend could not. The test
+  set in "How you know it is right", a clearly smaller error, is not met outside COVID.
+- **The full history is what misses the bar.** NFP's official verdict, the trend over 681 reports
+  since 1956, is unchanged: yield right 58% and dollar 56%, both unclear. Since 2014 both pass
+  against either expected value, so the earlier decades are where the link is weaker.
+- **What it means.** For the jobs report, a better free forecast is not the shortcut it looked
+  like: the expected value was not what held the link under the bar. The model stays as context
+  beside the trend; NFP's official verdict stays with the trend, as fixed above.

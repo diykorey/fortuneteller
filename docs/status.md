@@ -8,24 +8,26 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Jobs-report forecast, step 3 — `payroll_model` is an expectation source: `load-surprises` stores its
-148 payroll surprises, and `surprise --event nfp` shows it as context and judges it beside the trend
-on exactly the same reports, with and without March 2020 – April 2021. The trend keeps the official
-verdict; CPI's output is byte-identical to `main`. *(PR #116.)*
+Jobs-report forecast, step 4 — results: on the 148 reports since 2014 with a forecast, the 10-year
+yield and the dollar pass the bar against the forecast, with and without COVID, but against the
+12-month trend too; the forecast's typical miss is 77k against the trend's 80k outside COVID. NFP's
+official verdict, over 681 reports, stays unclear. The jobs-report forecast is complete.
+*(PR #117.)*
 
 ## In progress
 
-**A free forecast of each jobs report**: [nfp-forecast.md](steps/nfp-forecast.md).
+Nothing. The next roadmap step, paid consensus forecasts, needs a paid data source chosen first.
 
 ## Next
 
-Jobs-report forecast, step 4 — results in the spec and in `mvp-results.md`: whether the yield's and
-the dollar's links clear the bar against the forecast, with and without COVID.
+Paid consensus forecasts (roadmap step 2) — choose the data source: what each offers for CPI and
+payroll consensus history and intraday prices, and its cost; then a spec.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-09 | Jobs-report forecast step 4: results — both links pass since 2014, against the trend too | PR #117 |
 | 2026-10-09 | Jobs-report forecast step 3: the model beside the trend on the same reports | PR #116 |
 | 2026-10-08 | Jobs-report forecast step 2: least squares and the payroll model | PR #115 |
 | 2026-10-07 | Country-aware events step 2: trends and reports per flow, each market's zone — part 1 complete | PR #114 |
@@ -95,7 +97,7 @@ the dollar's links clear the bar against the forecast, with and without COVID.
 | Event | Step 3 (moves?) | Step 4 (follows the surprise?) |
 | --- | --- | --- |
 | CPI (clean baseline) | moves: UST 10Y, DXY, VIX; doesn't: S&P 500, gold | as the MVP |
-| NFP | moves: all five | unclear: UST 10Y, DXY, gold; doesn't: S&P 500, VIX |
+| NFP | moves: all five | unclear: UST 10Y, DXY, gold; doesn't: S&P 500, VIX. Since 2014: UST 10Y and DXY track, against the forecast and the trend alike |
 | Fed | moves: S&P 500, DXY (borderline), gold, VIX; unclear: UST 10Y | none: no free expected value |
 
 ## Known, not yet fixed
