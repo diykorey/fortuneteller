@@ -8,11 +8,10 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Jobs-report forecast, step 2 — `stats.least_squares` and the `PayrollModel` expectation source:
-payrolls on ADP's change, the claims change and the 12-month trend, refitted before every report
-on earlier reports only, COVID months not fitted on. On real data, 148 forecasts (2014-02 …
-2026-09), none in the 2022 ADP gap, all passing the shared check; mean absolute error 76.6k against
-the trend's 79.6k without COVID. Not yet registered. *(PR #115.)*
+Jobs-report forecast, step 3 — `payroll_model` is an expectation source: `load-surprises` stores its
+148 payroll surprises, and `surprise --event nfp` shows it as context and judges it beside the trend
+on exactly the same reports, with and without March 2020 – April 2021. The trend keeps the official
+verdict; CPI's output is byte-identical to `main`. *(PR #TBD.)*
 
 ## In progress
 
@@ -20,13 +19,14 @@ the trend's 79.6k without COVID. Not yet registered. *(PR #115.)*
 
 ## Next
 
-Jobs-report forecast, step 3 — `payroll_model` in `EXPECTATION_SOURCES` and in NFP's rule as
-context; `surprise --event nfp` prints model and trend on the same reports.
+Jobs-report forecast, step 4 — results in the spec and in `mvp-results.md`: whether the yield's and
+the dollar's links clear the bar against the forecast, with and without COVID.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-09 | Jobs-report forecast step 3: the model beside the trend on the same reports | PR #TBD |
 | 2026-10-08 | Jobs-report forecast step 2: least squares and the payroll model | PR #115 |
 | 2026-10-07 | Country-aware events step 2: trends and reports per flow, each market's zone — part 1 complete | PR #114 |
 | 2026-10-07 | Country-aware events spec and step 1: flow identity by type and country | PR #113 |
