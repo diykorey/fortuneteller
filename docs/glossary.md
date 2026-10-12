@@ -265,6 +265,9 @@ Terms are grouped by what they are about, alphabetical within each group.
   The classic way a backtest produces results that evaporate in live use.
 - **Magnitude band / prediction interval** — the range a move is expected to fall in, rather than a
   single number.
+- **Move band** — in rung 3, a call's 50% band: the slope times the surprise, plus the 25th to
+  75th percentile of earlier misses. Its **coverage** is the share of moves that land inside;
+  about half if the band is honest.
 - **Overfitting** — tuning to the quirks of past data so well that the result does not generalize.
 - **Platt scaling** — a simple calibration method mapping raw scores to probabilities with a
   logistic curve.
