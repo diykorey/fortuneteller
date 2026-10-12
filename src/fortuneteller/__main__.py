@@ -278,8 +278,9 @@ def _any_of(labels: Iterable[str]) -> str:
     return f"{', '.join(rest)} or {last}" if rest else last
 
 
-def _move_size(value: float, unit: str) -> str:
-    return f"{value:.1f} bp" if unit == "bps" else f"{value * 100:.2f}%"
+def _move_size(value: float, unit: str, signed: bool = False) -> str:
+    sign = "+" if signed else ""
+    return f"{value:{sign}.1f} bp" if unit == "bps" else f"{value * 100:{sign}.2f}%"
 
 
 def describe_raw_moves(results: dict[str, study.RawMove], label: str) -> list[str]:
@@ -415,6 +416,26 @@ def describe_confidence(
     return [line.rstrip() for line in lines]
 
 
+def _graded_confidence(
+    confident: dict[str, list[study.ConfidentCall]], rule: flows.SurpriseRule
+) -> list[tuple[str, dict[str, study.ConfidenceGrade]]]:
+    """Each link's stated confidence graded on all its calls, then without COVID's months."""
+    first, last = (f"{month:%Y-%m}" for month in expectations.COVID_MONTHS)
+    return [
+        (
+            scope,
+            {
+                instrument: study.grade_confidence(
+                    [c for c in calls if not (leave_out and first <= c.call.month <= last)],
+                    rule.noticeable,
+                )
+                for instrument, calls in confident.items()
+            },
+        )
+        for leave_out, scope in ((False, "all"), (True, f"without {first} … {last}"))
+    ]
+
+
 def _predict(args: argparse.Namespace) -> int:
     flow = flows.flow_named(args.event)
     rule = flow.surprise_rule
@@ -462,24 +483,16 @@ def _predict(args: argparse.Namespace) -> int:
         f"{study.MIN_PREDICTIONS} predictions, binomial p < {study.TRACK_P_BAR} against 50%; "
         f"{study.TOO_FEW} = under {study.MIN_PREDICTIONS} predictions"
     )
-    scoped: dict[str, list[study.ConfidenceGrade]] = {instrument: [] for instrument in confident}
-    for leave_out, scope in ((False, "all"), (True, f"without {first} … {last}")):
-        confidence = {
-            instrument: study.grade_confidence(
-                [c for c in calls if not (leave_out and first <= c.call.month <= last)],
-                rule.noticeable,
-            )
-            for instrument, calls in confident.items()
-        }
-        for instrument, g in confidence.items():
-            scoped[instrument].append(g)
+    graded = _graded_confidence(confident, rule)
+    for scope, confidence in graded:
         print()
         for line in describe_confidence(confidence, scope, rule.step):
             print(line)
     print()
     print("confidence verdict (honest only if honest with and without COVID)")
-    for instrument, both in scoped.items():
-        print(f"{instrument:<12} {study.overall_confidence(both)}")
+    for instrument in confident:
+        overall = study.overall_confidence([grades[instrument] for _, grades in graded])
+        print(f"{instrument:<12} {overall}")
     print()
     print(
         f"{study.HONEST} = on at least {study.MIN_STATED} calls with a probability (from call "
@@ -530,15 +543,41 @@ def _predict_release(
     if abs(surprise) < rule.noticeable:
         print(f"no prediction: the surprise is under {rule.step}")
         return 0
-    for instrument, is_open in study.open_links(flow, expectations.NASDAQ_CONSENSUS, con).items():
-        sign = rule.expected_sign[instrument]
-        if is_open:
-            call = _direction(sign if surprise > 0 else -sign)
-            print(f"{instrument:<12} {call:<6} closes {call} today")
-        else:
+    confident = study.confident_links(
+        flow, expectations.NASDAQ_CONSENSUS, con, next_surprise=surprise
+    )
+    replayed = {
+        instrument: [c for c in calls if c.call.event_id != study.NEXT_RELEASE]
+        for instrument, calls in confident.items()
+    }
+    graded = _graded_confidence(replayed, rule)
+    for instrument, calls in confident.items():
+        if not calls or calls[-1].call.event_id != study.NEXT_RELEASE:
             print(
                 f"{instrument:<12} {'—':<6} silent: the link does not pass on the releases so far"
             )
+            continue
+        latest = calls[-1]
+        call = _direction(latest.call.direction)
+        if latest.probability is None:
+            print(f"{instrument:<12} {call:<6} closes {call} today; too few calls so far")
+            continue
+        unit = study.MVP_PRICE_SERIES[instrument].unit
+        band = (
+            f"{_move_size(latest.band[0], unit, signed=True)} to "
+            f"{_move_size(latest.band[1], unit, signed=True)}"
+            if latest.band
+            else "no band"
+        )
+        overall = study.overall_confidence([grades[instrument] for _, grades in graded])
+        print(
+            f"{instrument:<12} {call:<6} closes {call} today: {latest.probability:.0%} "
+            f"({len(calls) - 1} calls before), {band}; its confidence: {overall}"
+        )
+    print(
+        "probability = the link's record on its calls so far; band = where half its moves land; "
+        f"confidence graded by `fortuneteller predict --event {flow.cli_name}`"
+    )
     return 0
 
 

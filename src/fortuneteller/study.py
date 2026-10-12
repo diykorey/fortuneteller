@@ -641,42 +641,34 @@ def grade(predictions: Sequence[Prediction], expected_sign: int) -> LinkGrade:
     )
 
 
+# The release ``predict --actual`` asks about: after every stored one, whose ids are positive.
+NEXT_RELEASE = -1
+
+
 def confident_links(
-    flow: EventFlow, baseline: str, con: duckdb.DuckDBPyConnection | None = None
+    flow: EventFlow,
+    baseline: str,
+    con: duckdb.DuckDBPyConnection | None = None,
+    next_surprise: float | None = None,
 ) -> dict[str, list[ConfidentCall]]:
     """Each instrument with an expected direction, replayed walk-forward against ``baseline``'s
-    surprises of the flow's verdict measure, each call with its probability and band."""
+    surprises of the flow's verdict measure, each call with its probability and band.
+
+    With ``next_surprise``, a release after every stored one is replayed too; its call, if the link
+    makes one, is the last and has ``event_id`` ``NEXT_RELEASE``."""
     connection = con if con is not None else db.get_connection()
     rule = flow.surprise_rule
     if rule is None:
         raise ValueError(f"{flow.event_type} in {flow.country} has no surprise rule")
     measure = rule.combinations[0][0]
-    return {
-        instrument: confident_calls(
-            _flow_pairs(flow, measure, baseline, instrument, connection), sign, rule.noticeable
-        )
-        for instrument, sign in rule.expected_sign.items()
-        if sign
-    }
-
-
-def open_links(
-    flow: EventFlow, baseline: str, con: duckdb.DuckDBPyConnection | None = None
-) -> dict[str, bool]:
-    """Each instrument with an expected direction: open on every stored release, or not."""
-    connection = con if con is not None else db.get_connection()
-    rule = flow.surprise_rule
-    if rule is None:
-        raise ValueError(f"{flow.event_type} in {flow.country} has no surprise rule")
-    measure = rule.combinations[0][0]
-    opened = {}
+    linked = {}
     for instrument, sign in rule.expected_sign.items():
         if sign:
             pairs = _flow_pairs(flow, measure, baseline, instrument, connection)
-            opened[instrument] = is_open(
-                [p[2] for p in pairs], [p[3] for p in pairs], sign, rule.noticeable
-            )
-    return opened
+            if next_surprise is not None:
+                pairs.append((NEXT_RELEASE, "next", next_surprise, 0.0))
+            linked[instrument] = confident_calls(pairs, sign, rule.noticeable)
+    return linked
 
 
 # Rung 3: a call states a probability and a move band only once its link has made this many calls.
