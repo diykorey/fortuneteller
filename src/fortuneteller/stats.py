@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import random
 from collections.abc import Callable, Sequence
-from math import sqrt
+from math import comb, sqrt
 from operator import mul
 from statistics import median
 
@@ -142,3 +142,11 @@ def least_squares(rows: Sequence[Sequence[float]], y: Sequence[float]) -> list[f
                 factor = system[r][col] / system[col][col]
                 system[r] = [a - factor * b for a, b in zip(system[r], system[col], strict=True)]
     return [system[i][columns] / system[i][i] for i in range(columns)]
+
+
+def binomial_p(right: int, n: int) -> float:
+    """The chance of at least ``right`` hits in ``n`` fair coin tosses: one-sided, against 50%."""
+    if n == 0:
+        return 1.0
+    hits = sum(comb(n, k) for k in range(right, n + 1))
+    return hits / (1 << n)

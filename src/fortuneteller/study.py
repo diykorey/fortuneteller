@@ -598,3 +598,63 @@ def walk_forward(
             direction = expected_sign if surprise > 0 else -expected_sign
             predictions.append(Prediction(event_id, month, surprise, direction, move))
     return predictions
+
+
+# Claim 3 holds for a link if it was right this often, on at least this many predictions, and a
+# coin could not have done it (binomial p under the step 4 bar).
+MIN_PREDICTIONS = 30
+HOLDS = "holds"
+DOESNT_HOLD = "doesn't hold"
+TOO_FEW = "too few"
+
+
+@dataclass(frozen=True)
+class LinkGrade:
+    """A link's walk-forward record; ``always_right`` is how often its expected direction alone,
+    whatever the surprise, would have been right on the same releases."""
+
+    predictions: int
+    right: int
+    p: float
+    always_right: int
+    first: str | None
+    verdict: str
+
+
+def grade(predictions: Sequence[Prediction], expected_sign: int) -> LinkGrade:
+    n = len(predictions)
+    right = sum(p.right for p in predictions)
+    p = stats.binomial_p(right, n)
+    if n < MIN_PREDICTIONS:
+        verdict = TOO_FEW
+    elif right / n >= HIT_RATE_BAR and p < TRACK_P_BAR:
+        verdict = HOLDS
+    else:
+        verdict = DOESNT_HOLD
+    return LinkGrade(
+        predictions=n,
+        right=right,
+        p=p,
+        always_right=sum(expected_sign * call.move > 0 for call in predictions),
+        first=predictions[0].month if predictions else None,
+        verdict=verdict,
+    )
+
+
+def predict_links(
+    flow: EventFlow, baseline: str, con: duckdb.DuckDBPyConnection | None = None
+) -> dict[str, list[Prediction]]:
+    """Each instrument with an expected direction, replayed walk-forward against ``baseline``'s
+    surprises of the flow's verdict measure."""
+    connection = con if con is not None else db.get_connection()
+    rule = flow.surprise_rule
+    if rule is None:
+        raise ValueError(f"{flow.event_type} in {flow.country} has no surprise rule")
+    measure = rule.combinations[0][0]
+    return {
+        instrument: walk_forward(
+            _flow_pairs(flow, measure, baseline, instrument, connection), sign, rule.noticeable
+        )
+        for instrument, sign in rule.expected_sign.items()
+        if sign
+    }

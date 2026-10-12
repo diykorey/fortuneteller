@@ -60,7 +60,7 @@ whether the link is stable enough to warn on.
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~`study.walk_forward`: per link, at each release, open or not on earlier releases; the prediction; graded~~ **done** | A planted link (moves follow 80% of surprises) opens and grades near 80%; a random one rarely opens and grades near 50%; changing every later release leaves a release's prediction unchanged |
-| 2 | `predict --event cpi\|nfp`: per link, predictions issued, right, hit rate, p, the baseline, the verdict, with and without COVID | The table printed on real data; no other command's output changes |
+| 2 | ~~`predict --event cpi\|nfp`: per link, predictions issued, right, hit rate, p, the baseline, the verdict, with and without COVID~~ **done** | The table printed on real data; no other command's output changes |
 | 3 | `predict --event cpi\|nfp --actual X`: the next release's consensus from the calendars, the surprise, a line per open link | Prints the prediction, or silence with the reason (no consensus yet, small surprise, link closed) |
 | 4 | Results here and in [`mvp-results.md`](../mvp-results.md) | Says, per link, whether claim 3 holds, with and without COVID |
 

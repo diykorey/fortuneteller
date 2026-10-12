@@ -339,6 +339,72 @@ def _raw_move(args: argparse.Namespace) -> int:
     return 0
 
 
+def describe_grades(
+    grades: dict[str, study.LinkGrade], expected_sign: dict[str, int], scope: str
+) -> list[str]:
+    """One walk-forward table: a row per link, its record and its verdict."""
+    lines = [
+        f"walk-forward ({scope})",
+        "instrument   expected  from     predicted  right  hit rate  p       always expected  verdict",
+    ]
+    for instrument, g in grades.items():
+        hit = f"{g.right / g.predictions:.0%}" if g.predictions else "—"
+        always = f"{g.always_right / g.predictions:.0%}" if g.predictions else "—"
+        p = f"{g.p:.4f}" if g.predictions else "—"
+        lines.append(
+            f"{instrument:<12} {_direction(expected_sign[instrument]):<9} {g.first or '—':<8} "
+            f"{g.predictions:<10} {g.right:<6} {hit:<9} {p:<7} {always:<16} {g.verdict}"
+        )
+    return [line.rstrip() for line in lines]
+
+
+def _predict(args: argparse.Namespace) -> int:
+    flow = flows.flow_named(args.event)
+    rule = flow.surprise_rule
+    if rule is None:
+        print(f"predict: {flow.event_type} has no expected value to predict from", file=sys.stderr)
+        return 1
+    con = db.get_connection()
+    db.init_db(con=con)
+    baseline = expectations.NASDAQ_CONSENSUS
+    stored = con.execute(
+        "SELECT count(*) FROM surprises s JOIN event_instances e ON e.event_id = s.event_id "
+        "WHERE e.event_type = ? AND e.country = ? AND s.baseline = ?",
+        [flow.event_type, flow.country, baseline],
+    ).fetchone()
+    if stored is None or stored[0] == 0 or db.count_rows("observations", con=con) == 0:
+        print(
+            f"predict: no {baseline} surprises or moves for {args.event} yet; run "
+            "`fortuneteller load-prices` and `fortuneteller load-surprises` first",
+            file=sys.stderr,
+        )
+        return 1
+    predictions = study.predict_links(flow, baseline, con=con)
+    first, last = (f"{month:%Y-%m}" for month in expectations.COVID_MONTHS)
+    print(
+        f"{rule.combinations[0][0]} against {_source_label(baseline)}: each release predicted "
+        "only from the ones before it"
+    )
+    for leave_out, scope in ((False, "all"), (True, f"without {first} … {last}")):
+        grades = {
+            instrument: study.grade(
+                [p for p in made if not (leave_out and first <= p.month <= last)],
+                rule.expected_sign[instrument],
+            )
+            for instrument, made in predictions.items()
+        }
+        print()
+        for line in describe_grades(grades, dict(rule.expected_sign), scope):
+            print(line)
+    print()
+    print(
+        f"{study.HOLDS} = right on at least {study.HIT_RATE_BAR:.0%} of at least "
+        f"{study.MIN_PREDICTIONS} predictions, binomial p < {study.TRACK_P_BAR} against 50%; "
+        f"{study.TOO_FEW} = under {study.MIN_PREDICTIONS} predictions"
+    )
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     # Each flow's short name on the command line, read when the parser is built.
     event_names = [flow.cli_name for flow in flows.EVENT_FLOWS]
@@ -384,6 +450,14 @@ def build_parser() -> argparse.ArgumentParser:
         "--event", choices=event_names, default="cpi", help="the event (default: cpi)"
     )
     p_raw.set_defaults(func=_raw_move)
+
+    p_predict = sub.add_parser(
+        "predict", help="replay every release, predicting each from the ones before it"
+    )
+    p_predict.add_argument(
+        "--event", choices=event_names, default="cpi", help="the event (default: cpi)"
+    )
+    p_predict.set_defaults(func=_predict)
 
     return parser
 
