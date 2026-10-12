@@ -8,24 +8,25 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Rung 3, step 3 — `predict --actual X`: each call with its probability, the calls before it, its band
-in percent or basis points, and its link's confidence verdict; "too few calls so far" before 20.
-*(PR #131.)*
+Rung 3, step 4 — results: the jobs-report links' bands are honest, their probabilities are not
+(the yield worse than drift, the dollar's calibration off; too close to tell without COVID); CPI's
+links too few. Rung 3 complete. *(PR #TBD.)*
 
 ## In progress
 
-**Rung 3, honest confidence**: [rung-3-confidence.md](steps/rung-3-confidence.md).
+Nothing.
 
 ## Next
 
-Rung 3, step 4 — results, in the spec and `mvp-results.md`: no link's stated confidence is honest;
-say which check failed per link, with and without COVID, and that the outcome was previewed in the
-spec's review (disclosed in the spec).
+A decision: roadmap step 4 (more events, more calls to calibrate on), ladder rung 4 (keep score:
+log live calls and grade them), or sharper measurement (paid consensus, intraday prices). Not yet
+made.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-12 | Rung 3 step 4: results — the bands are honest, the probabilities not; rung 3 complete | PR #TBD |
 | 2026-10-12 | Rung 3 step 3: `predict --actual` gives each call's probability and band | PR #131 |
 | 2026-10-12 | Rung 3 step 2: `predict` grades each link's stated confidence | PR #130 |
 | 2026-10-12 | Rung 3 step 1: `confident_calls`, a probability and a band per call | PR #129 |
