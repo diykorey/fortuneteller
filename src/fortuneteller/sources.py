@@ -631,7 +631,7 @@ def parse_tradingview(payload: bytes, names: Iterable[str]) -> list[CalendarRow]
                 calendar_number(row.get("actual")),
                 calendar_number(row.get("forecast")),
             )
-            for row in document["result"]
+            for row in document.get("result", [])
             if row.get("country") in UNITED_STATES_NAMES and row["title"] in wanted
         ]
     except MALFORMED_REPLY as exc:

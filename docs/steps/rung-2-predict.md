@@ -61,7 +61,7 @@ whether the link is stable enough to warn on.
 | --- | --- | --- |
 | 1 | ~~`study.walk_forward`: per link, at each release, open or not on earlier releases; the prediction; graded~~ **done** | A planted link (moves follow 80% of surprises) opens and grades near 80%; a random one rarely opens and grades near 50%; changing every later release leaves a release's prediction unchanged |
 | 2 | ~~`predict --event cpi\|nfp`: per link, predictions issued, right, hit rate, p, the baseline, the verdict, with and without COVID~~ **done** | The table printed on real data; no other command's output changes |
-| 3 | `predict --event cpi\|nfp --actual X`: the next release's consensus from the calendars, the surprise, a line per open link | Prints the prediction, or silence with the reason (no consensus yet, small surprise, link closed) |
+| 3 | ~~`predict --event cpi\|nfp --actual X`: the next release's consensus from the calendars, the surprise, a line per open link~~ **done** | Prints the prediction, or silence with the reason (no consensus yet, small surprise, link closed) |
 | 4 | Results here and in [`mvp-results.md`](../mvp-results.md) | Says, per link, whether claim 3 holds, with and without COVID |
 
 ## How you know it is right
@@ -86,7 +86,10 @@ expected value. No new expected values, markets or events; no intraday prices.
 `study.surprise_pairs` does, oldest first, and reuses `track_pairs` for the gate. The gate runs
 about 220 times per link, so it draws 2,000 permutations instead of 10,000 (p < 0.01 still
 resolves; fixed seed). `stats.binomial_p` for the grade, plain Python. The CLI command in
-`__main__.py`; the next release's consensus via `expectations.fetch_calendars`. No table.
+`__main__.py`; the next release's consensus via `expectations.next_consensus`: the first release
+from today that TradingView lists with a forecast, and Nasdaq's row for that day nearest it (CPI's
+month-on-month and year-on-year share a name, and there is no actual yet to tell them apart). The
+two must agree within the gap used for history. No table.
 
 ## Results
 

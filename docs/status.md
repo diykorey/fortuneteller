@@ -8,9 +8,9 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Rung 2, step 2 — `predict --event cpi|nfp`: each link's walk-forward record (predictions, right,
-hit rate, binomial p, how often its expected direction alone was right) and the verdict, with and
-without COVID. *(PR #125.)*
+Rung 2, step 3 — `predict --event cpi|nfp --actual X`: the next release's consensus from both
+calendars, its surprise, and a call per open link, or silence with the reason (no consensus yet,
+calendars disagree, small surprise, link closed). *(PR #TBD.)*
 
 ## In progress
 
@@ -18,8 +18,7 @@ without COVID. *(PR #125.)*
 
 ## Next
 
-Rung 2, step 3 — `predict --event cpi|nfp --actual X`: the next release's consensus from the
-calendars, its surprise, and a line per open link. Step 4's results must say how far each hit rate
+Rung 2, step 4 — results, in the spec and `mvp-results.md`. They must say how far each hit rate
 beats its always-expected-direction baseline (the jobs-report yield: 65% against 61%), and that the
 gate has no minimum history of its own (from the 2026-10-12 review).
 
@@ -27,6 +26,7 @@ gate has no minimum history of its own (from the 2026-10-12 review).
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-12 | Rung 2 step 3: `predict --actual`, the next release's call | PR #TBD |
 | 2026-10-12 | Rung 2 step 2: `predict`, each link's walk-forward record and verdict | PR #125 |
 | 2026-10-12 | Rung 2 step 1: the walk-forward replay | PR #124 |
 | 2026-10-12 | Rung 2 spec: predict the next release, tested walk-forward | PR #123 |

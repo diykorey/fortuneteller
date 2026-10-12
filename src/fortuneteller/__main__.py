@@ -14,7 +14,9 @@ from __future__ import annotations
 import argparse
 import sys
 from collections.abc import Callable, Iterable, Sequence
-from datetime import date
+from datetime import date, datetime
+
+import duckdb
 
 from . import db, expectations, flows, seed, sources, study
 from .config import settings
@@ -379,6 +381,8 @@ def _predict(args: argparse.Namespace) -> int:
             file=sys.stderr,
         )
         return 1
+    if args.actual is not None:
+        return _predict_release(flow, rule, args.actual, con)
     predictions = study.predict_links(flow, baseline, con=con)
     first, last = (f"{month:%Y-%m}" for month in expectations.COVID_MONTHS)
     print(
@@ -402,6 +406,56 @@ def _predict(args: argparse.Namespace) -> int:
         f"{study.MIN_PREDICTIONS} predictions, binomial p < {study.TRACK_P_BAR} against 50%; "
         f"{study.TOO_FEW} = under {study.MIN_PREDICTIONS} predictions"
     )
+    return 0
+
+
+def _predict_release(
+    flow: flows.EventFlow,
+    rule: flows.SurpriseRule,
+    actual: float,
+    con: duckdb.DuckDBPyConnection,
+) -> int:
+    """The prediction for the next release, from its typed-in actual and the calendars."""
+    measure = rule.combinations[0][0]
+    _nasdaq_name, _check_name, _decimals, gap = expectations.CONSENSUS_ROWS[measure]
+    today = datetime.now(sources.NEW_YORK).date()
+    try:
+        upcoming = expectations.next_consensus(measure, today, settings.cache_dir)
+    except sources.CalendarError as exc:
+        print(f"predict: {exc}", file=sys.stderr)
+        return 1
+    if upcoming is None:
+        print(f"predict: no {measure} release with a consensus from {today} on", file=sys.stderr)
+        return 1
+    if upcoming.nasdaq is None:
+        print(
+            f"predict: Nasdaq has no consensus yet for {measure} on {upcoming.day}", file=sys.stderr
+        )
+        return 1
+    if abs(upcoming.nasdaq - upcoming.tradingview) > gap + 1e-9:
+        print(
+            f"predict: the calendars disagree for {measure} on {upcoming.day}: Nasdaq "
+            f"{upcoming.nasdaq:g}, TradingView {upcoming.tradingview:g}; no prediction",
+            file=sys.stderr,
+        )
+        return 1
+    surprise = round(actual - upcoming.nasdaq, 9)
+    print(
+        f"{measure} on {upcoming.day}: actual {actual:g}, {_source_label(expectations.NASDAQ_CONSENSUS)} "
+        f"{upcoming.nasdaq:g}, surprise {surprise:+g}"
+    )
+    if abs(surprise) < rule.noticeable:
+        print(f"no prediction: the surprise is under {rule.step}")
+        return 0
+    for instrument, is_open in study.open_links(flow, expectations.NASDAQ_CONSENSUS, con).items():
+        sign = rule.expected_sign[instrument]
+        if is_open:
+            call = _direction(sign if surprise > 0 else -sign)
+            print(f"{instrument:<12} {call:<6} closes {call} today")
+        else:
+            print(
+                f"{instrument:<12} {'—':<6} silent: the link does not pass on the releases so far"
+            )
     return 0
 
 
@@ -456,6 +510,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_predict.add_argument(
         "--event", choices=event_names, default="cpi", help="the event (default: cpi)"
+    )
+    p_predict.add_argument(
+        "--actual",
+        type=float,
+        help="the next release's actual (percent for CPI, thousands for payrolls): predict its day",
     )
     p_predict.set_defaults(func=_predict)
 
