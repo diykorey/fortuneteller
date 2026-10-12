@@ -15,7 +15,7 @@ links too few. Rung 3 complete. *(PR #132.)*
 ## In progress
 
 Step 4 spec: more events — retail sales, core PCE and GDP as event flows, each with
-Nasdaq's consensus, run up rungs 1–3; shared days left out. *(PR #TBD.)*
+Nasdaq's consensus, run up rungs 1–3; shared days left out. *(PR #133.)*
 
 ## Next
 
