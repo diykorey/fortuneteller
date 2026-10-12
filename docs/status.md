@@ -16,12 +16,13 @@ complete. *(PR #122.)*
 
 ## In progress
 
-Nothing. Roadmap step 3, predict the next release (rung 2), is next; it needs a spec first.
+**Rung 2, predict the next release**: [rung-2-predict.md](steps/rung-2-predict.md). Spec under
+review.
 
 ## Next
 
-Rung 2 spec — predict each release's direction for the links that pass against the live
-consensus (yield and dollar on jobs reports, the yield and the dollar on CPI), and grade it.
+Rung 2, step 1 — `study.walk_forward`: per link, open or not on earlier releases, the prediction,
+graded against the day's move.
 
 ## Done
 

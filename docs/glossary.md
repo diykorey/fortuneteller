@@ -189,6 +189,11 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **Nasdaq consensus** — the `Consensus` column of Nasdaq's economic calendar, 2008 to today; the
   `nasdaq_consensus` expectation source, checked against TradingView's calendar. Compared with
   other free sources in [Data sources](data-sources.md#which-free-consensus-is-best).
+- **Walk-forward** — replaying history one release at a time, each decision made only from the
+  releases before it, so that what is graded was never seen when deciding
+  ([rung 2](steps/rung-2-predict.md)).
+- **Open link** — in rung 2, an event × market link allowed to predict at a release because it
+  passes the surprise test on earlier releases; a closed link stays silent.
 - **Payroll model** — the jobs report's free forecast, the `payroll_model` expectation source
   (`expectations.PayrollModel`, [nfp-forecast](steps/nfp-forecast.md)). It leaves out
   March 2020 – April 2021 when fitting, so COVID's prints cannot dominate the formula.
