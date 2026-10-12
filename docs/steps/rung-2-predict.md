@@ -62,7 +62,7 @@ whether the link is stable enough to warn on.
 | 1 | ~~`study.walk_forward`: per link, at each release, open or not on earlier releases; the prediction; graded~~ **done** | A planted link (moves follow 80% of surprises) opens and grades near 80%; a random one rarely opens and grades near 50%; changing every later release leaves a release's prediction unchanged |
 | 2 | ~~`predict --event cpi\|nfp`: per link, predictions issued, right, hit rate, p, the baseline, the verdict, with and without COVID~~ **done** | The table printed on real data; no other command's output changes |
 | 3 | ~~`predict --event cpi\|nfp --actual X`: the next release's consensus from the calendars, the surprise, a line per open link~~ **done** | Prints the prediction, or silence with the reason (no consensus yet, small surprise, link closed) |
-| 4 | Results here and in [`mvp-results.md`](../mvp-results.md) | Says, per link, whether claim 3 holds, with and without COVID |
+| 4 | ~~Results here and in [`mvp-results.md`](../mvp-results.md)~~ **done** | Says, per link, whether claim 3 holds, with and without COVID |
 
 ## How you know it is right
 
@@ -93,4 +93,36 @@ two must agree within the gap used for history. No table.
 
 ## Results
 
-*Filled in by step 4.*
+Measured 2026-10-12 on Nasdaq's consensus, 2008 to today (`predict --event cpi|nfp`).
+
+| Link | From | Predicted | Right | p | Always expected | Verdict |
+| --- | --- | --- | --- | --- | --- | --- |
+| Jobs report: yield up | 2010-09 | 100 (90) | 65% (67%) | 0.002 (0.001) | 61% (59%) | holds |
+| Jobs report: dollar up | 2014-06 | 81 (71) | 68% (69%) | 0.0008 (0.0009) | 47% (44%) | holds |
+| Core CPI: yield up | 2026-03 | 1 | 0 | — | — | too few |
+| Core CPI: dollar up | 2024-05 | 8 | 7 | — | — | too few |
+| Core CPI: S&P 500 down, VIX up | never open | 0 | — | — | — | too few |
+
+In brackets, without COVID (March 2020 – April 2021). "From" is the first release the link was
+open for.
+
+**Claim 3 holds for both jobs-report links, by the rule fixed beforehand.** Each opened on its own
+history, and stayed right on releases it had not seen: the yield on 65 of 100 calls, the dollar on
+55 of 81.
+
+**Only the dollar clearly beats its baseline.** Always calling the yield up would have been right
+61% of the time on the same releases; 65% against that has p 0.24 (0.08 without COVID), so most of
+the yield's record is the market's drift over these days, not the surprise. Always calling the
+dollar up would have been right 47% of the time; its 68% against that has p 0.0001.
+
+**CPI cannot be judged yet.** Its links pass on the whole of 2008–2026, but too weakly to open on
+the shorter history before most releases: the dollar first opens in 2024, the yield in 2026. Eight
+and one calls are far under the 30 the rule asks for. That is the walk-forward doing its job — the
+in-sample passes were not strong enough to predict with.
+
+**Caveat.** The gate has no minimum history of its own beyond the test's: the yield opened after
+about 30 releases. A stricter start would only remove early calls; it was not tuned here.
+
+**What it means.** One prediction is worth emitting today: the dollar's direction on a jobs-report
+surprise. The yield's is right as often as the rule asks, but barely more than "up" is. Every
+other link stays silent, as it should.
