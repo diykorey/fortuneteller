@@ -84,7 +84,7 @@ In order. Each rung is worth building only because the one below it worked.
 | --- | --- | --- |
 | 1 | **[More events](steps/rung-1-more-events.md)** — NFP, Fed decisions. **Done** 2026-10-06; results in [MVP results](mvp-results.md#rung-1--more-events) | Same code, more rows. Widen only once one event type is measured. |
 | 2 | **[Predict the next release](steps/rung-2-predict.md)**. **Done** 2026-10-12; results in [MVP results](mvp-results.md#predicting-the-next-release) | A prediction is only worth emitting once it comes from measured numbers. |
-| 3 | **[Honest confidence](steps/rung-3-confidence.md)** — hit rate → probability, magnitude bands, silence on low-`n` cells | "70%" must mean 70%. Needs enough measured history to calibrate against. |
+| 3 | **[Honest confidence](steps/rung-3-confidence.md)** — hit rate → probability, magnitude bands, silence on low-`n` cells. **Done** 2026-10-12; results in [MVP results](mvp-results.md#honest-confidence): the bands are honest, the probabilities not | "70%" must mean 70%. Needs enough measured history to calibrate against. |
 | 4 | **Keep score** — log predictions, grade them against outcomes | You cannot grade predictions you are not yet making. |
 | 5 | **Live path** — fetch the release when it lands, instead of by hand | Automating a manual step that must first be worth automating. |
 | 6 | **Delivery** — the warning actually reaches a person | Never deliver uncalibrated warnings; needs rung 3. |

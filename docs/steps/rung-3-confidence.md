@@ -74,7 +74,7 @@ levels are fixed here; nothing is tuned on the result.
 | 1 | ~~`study.confident_calls(pairs, expected_sign, step)`: pure, like `walk_forward`: each call with its probability, drift probability and band, or none before 20 earlier calls~~ **done** | On 400 planted releases (fixed seed) right on 80% of calls, the stated probability over the last 100 calls averages 0.75–0.85; planted moves land in their band on 40–60% of calls; changing any later release leaves a call's numbers unchanged |
 | 2 | ~~`predict --event cpi\|nfp`: per link, a confidence table (calls, mean probability, share right per group, Brier, coin and drift p, band coverage, verdict), with and without COVID, under rung 2's tables; and the hit rate on surprises under and over twice the step, as a measurement only~~ **done** | The "it can fail" planted links below fail their checks; the table printed on real data; rung 2's tables unchanged |
 | 3 | ~~`predict --actual X`: each call with its probability and band, e.g. `DXY up 67% (58 calls before), +0.34% to +1.05%`~~ **done**, with the link's confidence verdict beside it | Prints them, or "too few calls so far" |
-| 4 | Results here and in [`mvp-results.md`](../mvp-results.md) | Says, per link, whether its confidence is honest, and which check failed |
+| 4 | ~~Results here and in [`mvp-results.md`](../mvp-results.md)~~ **done** | Says, per link, whether its confidence is honest, and which check failed |
 
 ## How you know it is right
 
@@ -105,4 +105,40 @@ The 95% binomial interval needs a tail at any rate, not only a coin's: a small f
 
 ## Results
 
-*Filled in by step 4.*
+Measured 2026-10-12 on Nasdaq's consensus, 2008 to today (`predict --event cpi|nfp`).
+
+| Link | Scope | Calls | Stated | Right | Brier (drift) | Band | Verdict |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Jobs report: yield | all | 80 | 68% | 61% | 0.248 (0.240) | 39/80 | not honest: worse than drift |
+| | without COVID | 70 | 68% | 63% | 0.242 (0.244) | 36/70 | too close to tell |
+| Jobs report: dollar | all | 61 | 68% | 64% | 0.241 (0.256) | 33/61 | not honest: calibration |
+| | without COVID | 51 | 68% | 65% | 0.238 (0.257) | 29/51 | too close to tell |
+| Core CPI: all four | | 0 | — | — | — | — | too few |
+
+"Calls" are those from a link's 21st on, which carry a probability.
+
+**No link's stated confidence is honest.** Both jobs-report links say about 68% and are right 61–65%
+of the time: the record they quote runs ahead of what follows. The dollar's calls stated at 70% or
+more were right on 6 of 14, under the 7 the check allows. Neither link's Brier score beats a coin's
+or the drift's by more than chance (p 0.23–0.62); the yield's is worse than the drift's outright.
+
+**The bands are honest.** Both links' moves land inside their 50% band about half the time (39 of 80
+and 33 of 61), inside the allowed range with and without COVID. The bands are wide: on a 100k
+payroll surprise, the yield's runs from about −2 to +9 basis points, the dollar's from about −0.15%
+to +0.55%, both across zero.
+
+**Bigger surprises are not clearly surer.** The dollar was right on 17 of 28 calls under twice the
+step (100k) and 22 of 33 at or over it; the yield on 25 of 42 and 24 of 38. A measurement only.
+
+**Against what was written down first:** the dollar was expected to pass the drift and band checks;
+it passed the band check only. The yield failed against drift, and CPI's links were too few, as
+expected. The outcome was seen in the spec's review before the drift check got its significance
+test (disclosed above); that change made the rule stricter. The overall verdicts do not depend on it (the yield fails
+against drift outright, the dollar on calibration); the verdicts without COVID do: without the test,
+both links would be honest there.
+
+**What it means.** Rung 2's direction calls stand: the dollar's beats always calling up by a wide
+margin. But a probability built from the running record does not deserve to be printed as one: on
+60–80 calls it cannot be told from a coin or from the drift. The bands can be shown; the
+probability should be read as "the record so far", which is what `predict --actual` says, with
+its verdict beside it.

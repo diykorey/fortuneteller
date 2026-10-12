@@ -169,6 +169,25 @@ dollar on 55 of 81 (68%; 69%), both p < 0.01. But always calling the yield up wo
 `predict --actual` gives that call for the next release from its typed-in actual and the published
 consensus.
 
+## Honest confidence
+
+Measured 2026-10-12. Detail in [rung 3](steps/rung-3-confidence.md#results).
+
+Each jobs-report call from its link's 21st on was given a probability (the link's record on its
+earlier calls) and a 50% band for the move, from earlier releases only, and both were graded.
+
+**The probabilities are not honest.** Both links state about 68% and are right 61% (yield) and 64%
+(dollar) of the time. Neither beats a coin or the drift by more than chance; the yield is worse
+than the drift, and the dollar's calls stated at 70% or more were right on 6 of 14. Without COVID,
+both are too close to tell.
+
+**The bands are.** About half of each link's moves land inside its band. They are wide and cross
+zero: on a 100k surprise, the dollar's runs from about −0.15% to +0.55%.
+
+**What it means.** The dollar's direction on a jobs report is worth calling (rung 2); how sure to be
+of it is not yet measurable from about 60 graded calls. `predict --actual` prints the record and the
+band with that verdict beside them, rather than a number to trust.
+
 ## What comes next
 
 A decision, not yet made. The options:
@@ -179,6 +198,7 @@ A decision, not yet made. The options:
 | **Sharper measurement** | Economists' consensus forecasts for CPI and payrolls, and intraday prices around the release | Paid data | Whether the yield's and the dollar's jobs-report link passes the bar against a real forecast; for CPI, whether the weak link is the market or our daily window |
 | ~~**A better free forecast**~~ | ~~A model of each jobs report from what is published before it (weekly jobless claims, the ADP report)~~ **done**, above: both links pass since 2014, but against the trend too | — | — |
 | ~~**Predict the next release**~~ (rung 2) | ~~Forecast each link's direction, graded walk-forward~~ **done**, above: the jobs-report dollar holds clearly, the yield on drift, CPI too few | — | — |
+| ~~**Honest confidence**~~ (rung 3) | ~~A probability and a band per call, graded~~ **done**, above: the bands are honest, the probabilities not | — | — |
 
 Rung 1 strengthened the case for better expected values before predicting: two links (the yield
 and the dollar on jobs reports) are clearly real but sit just under the bar, and the expected value
