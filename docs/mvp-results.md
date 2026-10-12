@@ -151,6 +151,24 @@ our own did not fix it, the market's own consensus does. Three links now pass ag
 live expected value: the yield and the dollar on jobs reports, the yield on CPI (and the dollar on
 CPI against the consensus only). That is what a first prediction (rung 2) can be built on.
 
+## Predicting the next release
+
+Measured 2026-10-12. Detail in [rung 2](steps/rung-2-predict.md#results).
+
+Every link with an expected direction was replayed release by release, each predicting only once
+it passed the test on the releases before it, and graded on that day's move.
+
+**Both jobs-report links hold.** The yield was right on 65 of 100 calls (67% without COVID), the
+dollar on 55 of 81 (68%; 69%), both p < 0.01. But always calling the yield up would have been right
+61% of the time: its edge over drift is not significant. The dollar's is (68% against 47%).
+
+**CPI's links are too few to judge.** They pass on the whole history, but open only in 2024 (dollar,
+8 calls) and 2026 (yield, 1); stocks and VIX never open.
+
+**What it means.** Claim 3 is shown for one link beyond doubt: the dollar on a jobs-report surprise.
+`predict --actual` gives that call for the next release from its typed-in actual and the published
+consensus.
+
 ## What comes next
 
 A decision, not yet made. The options:
@@ -160,7 +178,7 @@ A decision, not yet made. The options:
 | ~~**More events**~~ (roadmap rung 1) | ~~Add the jobs report (NFP) and Fed decisions~~ **done**, above | — | — |
 | **Sharper measurement** | Economists' consensus forecasts for CPI and payrolls, and intraday prices around the release | Paid data | Whether the yield's and the dollar's jobs-report link passes the bar against a real forecast; for CPI, whether the weak link is the market or our daily window |
 | ~~**A better free forecast**~~ | ~~A model of each jobs report from what is published before it (weekly jobless claims, the ADP report)~~ **done**, above: both links pass since 2014, but against the trend too | — | — |
-| **Predict the next release** (rung 2) | Forecast the 10-year yield's direction before each CPI release, and grade it after | Free | Claim 3, for the one link that passes; but on a 62% signal |
+| ~~**Predict the next release**~~ (rung 2) | ~~Forecast each link's direction, graded walk-forward~~ **done**, above: the jobs-report dollar holds clearly, the yield on drift, CPI too few | — | — |
 
 Rung 1 strengthened the case for better expected values before predicting: two links (the yield
 and the dollar on jobs reports) are clearly real but sit just under the bar, and the expected value
