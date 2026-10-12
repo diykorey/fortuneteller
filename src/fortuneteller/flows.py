@@ -21,6 +21,7 @@ from .expectations import (
     EXPECTATION_SOURCES,
     MonthlyChange,
     first_published_payroll_changes,
+    first_published_percent_changes,
     NASDAQ_CONSENSUS,
     NOWCAST_BASELINE,
     PAYROLL_MODEL,
@@ -41,8 +42,11 @@ from .sources import NEW_YORK, PAYROLLS, FirstRelease
 CPI_EVENT_TYPE = "CPI / inflation surprise"
 NFP_EVENT_TYPE = "NFP / labor data"
 FOMC_EVENT_TYPE = "Central-bank decision"
+RETAIL_EVENT_TYPE = "Retail sales"
+PCE_EVENT_TYPE = "PCE inflation"
+GDP_EVENT_TYPE = "GDP growth"
 UNITED_STATES = "United States"
-# CPI and the jobs report both come out at 08:30 New York time.
+# CPI, the jobs report, retail sales, PCE and GDP all come out at 08:30 New York time.
 RELEASE_TIME = time(8, 30)
 FIRST_RELEASE = "first_release"
 
@@ -310,10 +314,10 @@ def first_published_changes(
     return changes
 
 
-def payroll_level_mismatches(
+def level_mismatches(
     vintages: Mapping[date, Mapping[date, float]], events: Iterable[EventInstance]
 ) -> list[date]:
-    """Stored jobs reports whose first-published level or day differs from FRED's revision history.
+    """Stored releases whose first-published level or day differs from FRED's revision history.
 
     The stored ``actual`` comes from FRED's first-release view, the vintages from its
     new-and-revised view; a release on which the two disagree would give a wrong change.
@@ -413,7 +417,7 @@ def payroll_actuals(api_key: str, jobs: Sequence[EventInstance]) -> list[Actual]
     vintages = sources.parse_vintages(
         sources.fetch_vintages(api_key, sources.NFP_SERIES_ID), sources.NFP_SERIES_ID
     )
-    if missed := payroll_level_mismatches(vintages, jobs):
+    if missed := level_mismatches(vintages, jobs):
         months = ", ".join(f"{month:%Y-%m}" for month in missed)
         raise ValueError(
             f"{PAYROLLS}: the stored first release differs from FRED's revision history in {months}"
@@ -600,8 +604,52 @@ class FedFlow:
         return []
 
 
+# Step 4's measures (docs/steps/step-4-more-events.md), each a change in percent.
+RETAIL_SALES = "retail_sales"
+CORE_PCE = "core_pce"
+GDP = "gdp"
+
+
+@dataclass(eq=False)
+class LevelFlow:
+    """A US release from FRED whose actual is the change in one level, as first published against
+    the previous period's level that same day (docs/steps/step-4-more-events.md)."""
+
+    event_type: str
+    type_code: int
+    cli_name: str
+    label: str
+    series_id: str
+    measure: str
+    power: int = 1
+    surprise_rule: SurpriseRule | None = None
+    country: str = UNITED_STATES
+    zone: ZoneInfo = NEW_YORK
+
+    def events(self, api_key: str) -> EventBatch:
+        return _release_batch(self, self.series_id, api_key)
+
+    def actuals(self, events: Sequence[EventInstance], api_key: str) -> list[Actual]:
+        vintages = sources.parse_vintages(
+            sources.fetch_vintages(api_key, self.series_id), self.series_id
+        )
+        if missed := level_mismatches(vintages, events):
+            raise ValueError(
+                f"{self.measure}: the stored first release differs from FRED's revision history "
+                f"in {_months(missed)}"
+            )
+        since = min(event_month(event) for event in events)
+        changes = first_published_percent_changes(vintages, since, self.power)
+        return to_actuals(changes, self, self.measure, PERCENT, events)
+
+
 CPI_FLOW, NFP_FLOW, FED_FLOW = CpiFlow(), NfpFlow(), FedFlow()
-EVENT_FLOWS: list[EventFlow] = [CPI_FLOW, NFP_FLOW, FED_FLOW]
+RETAIL_FLOW = LevelFlow(
+    RETAIL_EVENT_TYPE, 4, "retail", "RET", sources.RETAIL_SALES_SERIES_ID, RETAIL_SALES
+)
+PCE_FLOW = LevelFlow(PCE_EVENT_TYPE, 5, "pce", "PCE", sources.CORE_PCE_SERIES_ID, CORE_PCE)
+GDP_FLOW = LevelFlow(GDP_EVENT_TYPE, 6, "gdp", "GDP", sources.GDP_SERIES_ID, GDP, power=4)
+EVENT_FLOWS: list[EventFlow] = [CPI_FLOW, NFP_FLOW, FED_FLOW, RETAIL_FLOW, PCE_FLOW, GDP_FLOW]
 
 
 def check_flows(event_flows: Sequence[EventFlow]) -> None:

@@ -40,7 +40,7 @@ effect-size matrix.
 | 6 | Sovereign-debt crises and defaults | 1 | Negative | Risk-free benchmark repricing cascades; bearish for affected sovereign + EM/credit. |
 | 7 | CPI / inflation surprises | 3 | Both | Cooler-than-expected = +; hotter = −. Classic surprise event. |
 | 8 | Non-farm payrolls (NFP) & labor data | 3 | Both | Direction depends on surprise AND regime (strong jobs can be − if it removes cuts). |
-| 9 | Other macro data (GDP, PMI, retail, PCE, claims) | 3 | Both | Beat/miss vs consensus; regime-dependent. |
+| 9 | Other macro data (GDP, PMI, retail, PCE, claims) | 3 | Both | Beat/miss vs consensus; regime-dependent. Retail sales, PCE and GDP have their own rows in the seed since [step 4](../../steps/step-4-more-events.md). |
 | 10 | National elections | 4 | Both | Depends on which outcome wins vs. what was priced, and the winner's policy mix. |
 | 11 | Geopolitical escalations / terrorism | 4 | Negative | Reliable risk-off shock; oil/gold/defense rise but broad market falls. |
 | 12 | Coups, regime change, sanctions, capital controls | 4 | Both | − for the affected sovereign/EM; + for substitute producers / rival exporters. |

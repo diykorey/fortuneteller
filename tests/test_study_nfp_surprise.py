@@ -124,7 +124,7 @@ def test_a_stored_release_that_disagrees_with_the_revision_history_is_named() ->
     ]
 
     # when they are checked against the vintages
-    missed = flows.payroll_level_mismatches(vintages, events)
+    missed = flows.level_mismatches(vintages, events)
 
     # then only September is named
     assert missed == [date(2022, 9, 1)]

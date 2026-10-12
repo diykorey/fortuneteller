@@ -86,9 +86,26 @@ No move was looked at.
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | Seed rows; three flows from FRED with actuals from the release day's levels; `load-releases`, `load-prices`, `raw-move --event retail\|pce\|gdp` | A test per flow builds an actual against a revised previous level; release counts as above; raw-move printed. CPI's, the jobs report's and the Fed's raw move change (fewer ordinary days): old against new reported |
+| 1 | ~~Seed rows; three flows from FRED with actuals from the release day's levels; `load-releases`, `load-prices`, `raw-move --event retail\|pce\|gdp`~~ **done** | A test per flow builds an actual against a revised previous level; release counts as above; raw-move printed. CPI's, the jobs report's and the Fed's raw move change (fewer ordinary days): old against new reported |
 | 2 | Consensus rows, the three surprise rules, shared days left out; `load-surprises`, `surprise --event …` | Every release since 2008 has its Nasdaq row matched by our first print, or is named; CPI's and NFP's `surprise` and `predict` output byte-identical to `main`'s |
 | 3 | Results here and in [`mvp-results.md`](../mvp-results.md): `raw-move`, `surprise` and `predict` per flow | Says per flow and market whether it moves, tracks, holds walk-forward, and whether its confidence is honest, with and without COVID |
+
+**Step 1, checked 2026-10-12.** `load-releases` stores 303 retail sales releases (2001 on), 312
+core PCE (2000 on; February 2019 and October 2025 came out with the month after) and 139 GDP advance
+estimates (1992 on). Built from real levels, the actuals match the printed figures: retail sales
++0.2% and −0.6% for June and July 2026, GDP +1.5% for the second quarter. Raw move, on every
+release day, shared or not:
+
+| Market | Retail sales | Core PCE | GDP |
+| --- | --- | --- | --- |
+| S&P 500 | unclear: 1.11 | unclear: 1.15 | unclear: 1.24 |
+| 10-year yield | **moves: 1.33** | doesn't: 1.10 | **moves: 1.60** |
+| Dollar | **moves: 1.20** | unclear: 1.11 | **moves: 1.45** |
+| Gold | doesn't: 0.99 | unclear: 1.12 | doesn't: 1.10 |
+| VIX | doesn't: 1.08 | **moves: 1.25** | doesn't: 1.10 |
+
+With 754 more event days left out of the ordinary days, CPI's, the jobs report's and the Fed's
+ratios shift by up to 0.06 and their p values slightly; every verdict stays the same.
 
 ## How you know it is right
 

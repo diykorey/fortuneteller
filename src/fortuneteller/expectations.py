@@ -95,6 +95,29 @@ def first_published_payroll_changes(
     return changes
 
 
+def first_published_percent_changes(
+    vintages: Mapping[date, Mapping[date, float]], since: date, power: int = 1
+) -> list[MonthlyChange]:
+    """Each period's change in percent as first published, from ``since`` on, oldest first.
+
+    Census and BEA revise the period before in every release, so the change is against the previous
+    period's level as it stood that same day. ``power`` 4 annualizes a quarter, as GDP is printed.
+    """
+    periods = sorted(vintages)
+    changes: list[MonthlyChange] = []
+    for previous, period in zip(periods, periods[1:]):
+        levels, earlier = vintages[period], vintages[previous]
+        if period < since or not levels:
+            continue
+        released = min(levels)
+        known = [day for day in earlier if day <= released]
+        if not known:
+            continue
+        ratio = levels[released] / earlier[max(known)]
+        changes.append(MonthlyChange(period, released, (ratio**power - 1) * 100))
+    return changes
+
+
 # The jobs-report forecast's inputs (docs/steps/nfp-forecast.md), each as first published.
 
 # ADP's private payrolls on FRED, read in thousands of jobs: the old method to May 2022, the new one

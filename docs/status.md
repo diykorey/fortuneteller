@@ -8,24 +8,24 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Rung 3, step 4 — results: the jobs-report links' bands are honest, their probabilities are not
-(the yield worse than drift, the dollar's calibration off; too close to tell without COVID); CPI's
-links too few. Rung 3 complete. *(PR #132.)*
+Step 4, step 1 — retail sales, core PCE and GDP as event flows from FRED; raw move: GDP and retail
+sales move the yield and the dollar, core PCE the VIX. *(PR #134.)*
 
 ## In progress
 
-Step 4 spec: more events — retail sales, core PCE and GDP as event flows, each with
-Nasdaq's consensus, run up rungs 1–3; shared days left out. *(PR #133.)*
+Nothing.
 
 ## Next
 
-Step 4 step 1: the three flows from FRED, actuals from the release day's levels; `load-releases`,
-`load-prices` and `raw-move` on them.
+Step 4 step 2: Nasdaq's consensus for the three, their surprise rules, shared days left out;
+`load-surprises` and `surprise --event retail|pce|gdp`.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-12 | Step 4 step 1: retail sales, core PCE and GDP flows; GDP and retail sales move the yield and the dollar | PR #134 |
+| 2026-10-12 | Step 4 spec: more events — retail sales, core PCE, GDP | PR #133 |
 | 2026-10-12 | Rung 3 step 4: results — the bands are honest, the probabilities not; rung 3 complete | PR #132 |
 | 2026-10-12 | Rung 3 step 3: `predict --actual` gives each call's probability and band | PR #131 |
 | 2026-10-12 | Rung 3 step 2: `predict` grades each link's stated confidence | PR #130 |
