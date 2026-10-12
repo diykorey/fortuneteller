@@ -459,6 +459,41 @@ def fetch_calendars(
     return nasdaq, tradingview
 
 
+@dataclass(frozen=True)
+class NextConsensus:
+    """The consensus for a measure's next scheduled release, on both calendars."""
+
+    day: date
+    nasdaq: float | None
+    tradingview: float
+
+
+def next_consensus(measure: str, today: date, cache_dir: Path) -> NextConsensus | None:
+    """The first release from ``today`` on that TradingView lists with a forecast, and Nasdaq's
+    consensus for it; ``None`` if TradingView lists none this quarter or next.
+
+    Before the release there is no actual to pick Nasdaq's row by, so where two share a name (CPI's
+    month-on-month and year-on-year) the one nearer TradingView's forecast is taken.
+    """
+    nasdaq_name, check_name, _decimals, _gap = CONSENSUS_ROWS[measure]
+    this_quarter = sources.quarter_start(today)
+    upcoming = [
+        (row.day, row.consensus)
+        for quarter in (this_quarter, sources.quarter_start(this_quarter + timedelta(days=95)))
+        for row in sources.parse_tradingview(
+            sources.fetch_tradingview_quarter(quarter, cache_dir), [check_name]
+        )
+        if row.day >= today and row.consensus is not None
+    ]
+    if not upcoming:
+        return None
+    day, forecast = min(upcoming)
+    rows = sources.parse_nasdaq_day(sources.fetch_nasdaq_day(day, cache_dir), day, [nasdaq_name])
+    values = [row.consensus for row in rows if row.consensus is not None]
+    nearest = min(values, key=lambda v: abs(v - forecast), default=None)
+    return NextConsensus(day, nearest, forecast)
+
+
 NASDAQ_CONSENSUS = "nasdaq_consensus"
 
 

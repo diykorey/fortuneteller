@@ -658,3 +658,22 @@ def predict_links(
         for instrument, sign in rule.expected_sign.items()
         if sign
     }
+
+
+def open_links(
+    flow: EventFlow, baseline: str, con: duckdb.DuckDBPyConnection | None = None
+) -> dict[str, bool]:
+    """Each instrument with an expected direction: open on every stored release, or not."""
+    connection = con if con is not None else db.get_connection()
+    rule = flow.surprise_rule
+    if rule is None:
+        raise ValueError(f"{flow.event_type} in {flow.country} has no surprise rule")
+    measure = rule.combinations[0][0]
+    opened = {}
+    for instrument, sign in rule.expected_sign.items():
+        if sign:
+            pairs = _flow_pairs(flow, measure, baseline, instrument, connection)
+            opened[instrument] = is_open(
+                [p[2] for p in pairs], [p[3] for p in pairs], sign, rule.noticeable
+            )
+    return opened

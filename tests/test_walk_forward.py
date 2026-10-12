@@ -9,8 +9,7 @@ import pytest
 
 from fortuneteller import db, expectations, flows
 from fortuneteller.__main__ import main
-from fortuneteller.sources import CORE, FirstRelease
-
+from fortuneteller.sources import CORE, CalendarError, FirstRelease
 from fortuneteller.stats import binomial_p
 from fortuneteller.study import (
     DOESNT_HOLD,
@@ -237,3 +236,101 @@ def test_predict_asks_for_the_loads_it_needs(
     # then it names the loads to run
     assert code == 1
     assert "load-surprises" in capsys.readouterr().err
+
+
+def _next(monkeypatch: pytest.MonkeyPatch, upcoming: expectations.NextConsensus | None) -> None:
+    monkeypatch.setattr(expectations, "next_consensus", lambda measure, today, cache_dir: upcoming)
+
+
+def test_an_actual_predicts_each_open_link_s_close_and_a_closed_one_is_silent(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given the CPI history, but VIX's moves all the same, so its link cannot open; and a consensus
+    # of 0.2 on both calendars for the next release
+    con = db.get_connection()
+    _store_consensus_history(con)
+    con.execute("UPDATE observations SET ret_1d = 0.001 WHERE instrument = 'VIX'")
+    _next(monkeypatch, expectations.NextConsensus(date(2026, 11, 12), 0.2, 0.2))
+
+    # when the release comes in hot, at 0.3
+    code = main(["predict", "--event", "cpi", "--actual", "0.3"])
+
+    # then the surprise is noticeable; stocks are called down, the yield and dollar up, VIX silent
+    assert code == 0
+    assert capsys.readouterr().out.splitlines() == [
+        "core on 2026-11-12: actual 0.3, Nasdaq's consensus 0.2, surprise +0.1",
+        "SPY / ES     down   closes down today",
+        "UST10Y / ZN  up     closes up today",
+        "DXY          up     closes up today",
+        "VIX          —      silent: the link does not pass on the releases so far",
+    ]
+
+
+def test_a_small_surprise_predicts_nothing(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given the CPI history and a consensus of 0.2
+    _store_consensus_history(db.get_connection())
+    _next(monkeypatch, expectations.NextConsensus(date(2026, 11, 12), 0.2, 0.2))
+
+    # when the release comes in at 0.25
+    code = main(["predict", "--event", "cpi", "--actual", "0.25"])
+
+    # then it says why there is no prediction
+    out = capsys.readouterr().out.splitlines()
+    assert code == 0
+    assert out[1:] == ["no prediction: the surprise is under 0.1pp"]
+
+
+@pytest.mark.parametrize(
+    ("upcoming", "reason"),
+    [
+        (None, "no core release with a consensus from"),
+        (
+            expectations.NextConsensus(date(2026, 11, 12), None, 0.2),
+            "Nasdaq has no consensus yet for core on 2026-11-12",
+        ),
+        (
+            expectations.NextConsensus(date(2026, 11, 12), 0.2, 0.5),
+            "the calendars disagree for core on 2026-11-12: Nasdaq 0.2, TradingView 0.5",
+        ),
+    ],
+)
+def test_without_a_consensus_to_trust_there_is_no_prediction(
+    upcoming: expectations.NextConsensus | None,
+    reason: str,
+    tmp_db: Path,
+    capsys: pytest.CaptureFixture[str],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # given the CPI history, and no next release, no Nasdaq consensus, or calendars far apart
+    _store_consensus_history(db.get_connection())
+    _next(monkeypatch, upcoming)
+
+    # when an actual is typed in
+    code = main(["predict", "--event", "cpi", "--actual", "0.6"])
+
+    # then nothing is predicted, and the reason is given
+    captured = capsys.readouterr()
+    assert code == 1
+    assert captured.out == ""
+    assert reason in captured.err
+
+
+def test_a_calendar_that_cannot_be_read_is_reported(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given the CPI history, and TradingView failing
+    _store_consensus_history(db.get_connection())
+
+    def fail(measure: str, today: date, cache_dir: Path) -> None:
+        raise CalendarError("TradingView did not answer")
+
+    monkeypatch.setattr(expectations, "next_consensus", fail)
+
+    # when an actual is typed in
+    code = main(["predict", "--event", "cpi", "--actual", "0.6"])
+
+    # then the failure is reported
+    assert code == 1
+    assert "predict: TradingView did not answer" in capsys.readouterr().err

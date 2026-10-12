@@ -111,6 +111,7 @@ def test_tradingview_rows_are_on_their_new_york_day_and_an_empty_quarter_is_none
         (date(2026, 10, 2), None, 60.0),
     ]
     assert sources.parse_tradingview(b'{"status": "no_data"}', ["Non Farm Payrolls"]) == []
+    assert sources.parse_tradingview(b'{"status": "ok"}', ["Non Farm Payrolls"]) == []
 
 
 DAY = date(2026, 9, 11)
@@ -210,3 +211,68 @@ def test_the_source_gives_each_release_its_consensus_known_the_evening_before(
     # then it expects 0.2, known at the end of the New York day before, which the shared check takes
     assert [(e.value, e.known_at) for e in found] == [(0.2, datetime(2026, 9, 11, 3, 59, 59))]
     assert len(build_surprises([event], [actual], found, [flows.CPI_EVENT_TYPE])) == 1
+
+
+def _tradingview(*rows: tuple[str, str, float | None]) -> bytes:
+    return json.dumps(
+        {
+            "status": "ok",
+            "result": [
+                {"title": t, "country": "US", "date": f"{d}T12:30:00.000Z", "forecast": f}
+                for t, d, f in rows
+            ],
+        }
+    ).encode()
+
+
+def test_the_next_consensus_is_the_first_forecast_from_today_with_nasdaq_s_nearest_row(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given TradingView listing a past release, one with no forecast yet, and the next two with one,
+    # the later in next quarter; and Nasdaq's core CPI month-on-month and year-on-year that day
+    quarters = {
+        date(2026, 10, 1): _tradingview(
+            ("Core Inflation Rate MoM", "2026-10-01", 0.3),
+            ("Core Inflation Rate MoM", "2026-10-13", None),
+            ("Core Inflation Rate MoM", "2026-11-12", 0.2),
+        ),
+        date(2027, 1, 1): _tradingview(("Core Inflation Rate MoM", "2027-01-14", 0.4)),
+    }
+    asked: list[date] = []
+
+    def nasdaq(day: date, cache_dir: Path) -> bytes:
+        asked.append(day)
+        return _nasdaq(
+            ("United States", "Core CPI", "", "2.9%"), ("United States", "Core CPI", "", "0.3%")
+        )
+
+    monkeypatch.setattr(sources, "fetch_tradingview_quarter", lambda q, cache_dir: quarters[q])
+    monkeypatch.setattr(sources, "fetch_nasdaq_day", nasdaq)
+
+    # when the next consensus is read on 2026-10-12
+    upcoming = expectations.next_consensus(sources.CORE, date(2026, 10, 12), tmp_path)
+
+    # then it is November's, with Nasdaq's month-on-month row
+    assert upcoming == expectations.NextConsensus(date(2026, 11, 12), 0.3, 0.2)
+    assert asked == [date(2026, 11, 12)]
+
+
+def test_no_upcoming_forecast_is_none_and_a_blank_nasdaq_row_is_no_consensus(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given payrolls listed with a forecast on 2026-11-06, which Nasdaq has no consensus for yet
+    tradingview = _tradingview(("Non Farm Payrolls", "2026-11-06", 60.0))
+    monkeypatch.setattr(sources, "fetch_tradingview_quarter", lambda q, cache_dir: tradingview)
+    monkeypatch.setattr(
+        sources,
+        "fetch_nasdaq_day",
+        lambda day, cache_dir: _nasdaq(("United States", "Nonfarm Payrolls", "", "")),
+    )
+
+    # when the next consensus is read before it, and after it
+    before = expectations.next_consensus(expectations.PAYROLLS, date(2026, 10, 12), tmp_path)
+    after = expectations.next_consensus(expectations.PAYROLLS, date(2026, 11, 7), tmp_path)
+
+    # then the first has TradingView's forecast but no Nasdaq consensus; the second has nothing
+    assert before == expectations.NextConsensus(date(2026, 11, 6), None, 60.0)
+    assert after is None
