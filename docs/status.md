@@ -8,8 +8,8 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Step 4, step 1 — retail sales, core PCE and GDP as event flows from FRED; raw move: GDP and retail
-sales move the yield and the dollar, core PCE the VIX. *(PR #134.)*
+Step 4, step 2 — Nasdaq's consensus for retail sales, core PCE and GDP, shared days left out:
+retail sales' yield tracks the surprise; core PCE and GDP's markets do not. *(PR #135.)*
 
 ## In progress
 
@@ -17,13 +17,14 @@ Nothing.
 
 ## Next
 
-Step 4 step 2: Nasdaq's consensus for the three, their surprise rules, shared days left out;
-`load-surprises` and `surprise --event retail|pce|gdp`.
+Step 4 step 3: results — `raw-move`, `surprise` and `predict` per new event, here and in
+`mvp-results.md`.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-12 | Step 4 step 2: consensus surprises for the three; retail sales' yield tracks | PR #135 |
 | 2026-10-12 | Step 4 step 1: retail sales, core PCE and GDP flows; GDP and retail sales move the yield and the dollar | PR #134 |
 | 2026-10-12 | Step 4 spec: more events — retail sales, core PCE, GDP | PR #133 |
 | 2026-10-12 | Rung 3 step 4: results — the bands are honest, the probabilities not; rung 3 complete | PR #132 |

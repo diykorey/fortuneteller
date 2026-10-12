@@ -29,7 +29,7 @@ import duckdb
 
 from . import db, sources, stats
 from .models import DailyBar, EventInstance, Observation
-from .flows import EVENT_FLOWS, EventFlow, stored_events
+from .flows import EVENT_FLOWS, EventFlow, release_date, stored_events
 from .sources import NEW_YORK, DailyClosingPrice, YahooError
 
 
@@ -465,10 +465,26 @@ def surprise_pairs(
     return pairs
 
 
+def shared_days(flow: EventFlow, con: duckdb.DuckDBPyConnection | None = None) -> dict[int, date]:
+    """The flow's stored releases on a day that also holds another flow's, by event id."""
+    others = {
+        release_date(event)
+        for each in EVENT_FLOWS
+        if (each.event_type, each.country) != (flow.event_type, flow.country)
+        for event in stored_events(each, con=con)
+    }
+    return {
+        event.event_id: day
+        for event in stored_events(flow, con=con)
+        if (day := release_date(event)) in others
+    }
+
+
 def _flow_pairs(
     flow: EventFlow, measure: str, baseline: str, instrument: str, con: duckdb.DuckDBPyConnection
 ) -> list[tuple[int, str, float, float]]:
-    """One flow's (event id, month, surprise, release-day move) rows, oldest first."""
+    """One flow's (event id, month, surprise, release-day move) rows, oldest first; without its
+    shared days if its rule says so."""
     rows = con.execute(
         "SELECT s.event_id, e.detail, s.surprise, o.ret_1d FROM surprises s "
         "JOIN observations o ON o.event_id = s.event_id "
@@ -477,7 +493,9 @@ def _flow_pairs(
         "AND s.measure = ? AND s.baseline = ? AND o.instrument = ? ORDER BY s.event_id",
         [flow.event_type, flow.country, measure, baseline, instrument],
     ).fetchall()
-    return [(r[0], r[1], r[2], r[3]) for r in rows]
+    rule = flow.surprise_rule
+    shared = shared_days(flow, con=con) if rule is not None and rule.alone else {}
+    return [(r[0], r[1], r[2], r[3]) for r in rows if r[0] not in shared]
 
 
 def side_by_side(

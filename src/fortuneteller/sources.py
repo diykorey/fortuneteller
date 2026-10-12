@@ -285,6 +285,10 @@ CORE = "core"
 HEADLINE = "headline"
 # The jobs report's measure (rung 1): the monthly change in non-farm payrolls, in thousands.
 PAYROLLS = "payrolls"
+# Step 4's measures (docs/steps/step-4-more-events.md), each a change in percent.
+RETAIL_SALES = "retail_sales"
+CORE_PCE = "core_pce"
+GDP = "gdp"
 NOWCAST = "nowcast"
 ACTUAL = "actual"
 # The chart series step 4 reads, by name in the file; the PCE series are left out.
