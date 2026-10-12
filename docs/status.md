@@ -10,7 +10,7 @@ Where the work is and what comes next. Two rules keep it current:
 
 Rung 3, step 4 — results: the jobs-report links' bands are honest, their probabilities are not
 (the yield worse than drift, the dollar's calibration off; too close to tell without COVID); CPI's
-links too few. Rung 3 complete. *(PR #TBD.)*
+links too few. Rung 3 complete. *(PR #132.)*
 
 ## In progress
 
@@ -26,7 +26,7 @@ made.
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-12 | Rung 3 step 4: results — the bands are honest, the probabilities not; rung 3 complete | PR #TBD |
+| 2026-10-12 | Rung 3 step 4: results — the bands are honest, the probabilities not; rung 3 complete | PR #132 |
 | 2026-10-12 | Rung 3 step 3: `predict --actual` gives each call's probability and band | PR #131 |
 | 2026-10-12 | Rung 3 step 2: `predict` grades each link's stated confidence | PR #130 |
 | 2026-10-12 | Rung 3 step 1: `confident_calls`, a probability and a band per call | PR #129 |
