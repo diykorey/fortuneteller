@@ -26,7 +26,8 @@ baseline and the verdict, with and without COVID.
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-12 | Rung 2 spec and step 1: the walk-forward replay | PR #TBD |
+| 2026-10-12 | Rung 2 step 1: the walk-forward replay | PR #TBD |
+| 2026-10-12 | Rung 2 spec: predict the next release, tested walk-forward | PR #123 |
 | 2026-10-09 | Free consensus step 3: results — jobs-report links pass, stronger; CPI's dollar passes against the consensus | PR #122 |
 | 2026-10-09 | Free consensus step 2: Nasdaq's consensus as a source, judged beside the trend | PR #121 |
 | 2026-10-09 | Free consensus: spec revised to Nasdaq; step 1, the calendars fetched and matched | PR #120 |
