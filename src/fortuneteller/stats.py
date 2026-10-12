@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import random
 from collections.abc import Callable, Sequence
-from math import comb, sqrt
+from math import comb, exp, lgamma, log, sqrt
 from operator import mul
 from statistics import median
 
@@ -150,3 +150,40 @@ def binomial_p(right: int, n: int) -> float:
         return 1.0
     hits = sum(comb(n, k) for k in range(right, n + 1))
     return hits / (1 << n)
+
+
+def _binomial_chance(n: int, k: int, rate: float) -> float:
+    # In logs, so a long record neither overflows nor underflows.
+    if rate in (0.0, 1.0):
+        return float(k == round(rate * n))
+    return exp(
+        lgamma(n + 1) - lgamma(k + 1) - lgamma(n - k + 1) + k * log(rate) + (n - k) * log(1 - rate)
+    )
+
+
+def binomial_range(n: int, rate: float, level: float = 0.95) -> tuple[int, int]:
+    """The fewest and most hits in ``n`` tries at ``rate`` outside both tails of ``(1 - level) / 2``:
+    a count of hits inside it is consistent with ``rate``."""
+    tail = (1 - level) / 2
+    chances = [_binomial_chance(n, k, rate) for k in range(n + 1)]
+    low, below = 0, 0.0
+    while low < n and below + chances[low] <= tail:
+        below += chances[low]
+        low += 1
+    high, above = n, 0.0
+    while high > 0 and above + chances[high] <= tail:
+        above += chances[high]
+        high -= 1
+    return low, high
+
+
+def sign_flip_p(
+    differences: Sequence[float], permutations: int = PERMUTATIONS, seed: int = PERMUTATION_SEED
+) -> float:
+    """One-sided paired test: the share of random sign flips whose differences sum to at least as
+    much as these do."""
+
+    def draw(rng: random.Random) -> float:
+        return sum(d if rng.random() < 0.5 else -d for d in differences)
+
+    return permutation_p(sum(differences), draw, permutations, seed)

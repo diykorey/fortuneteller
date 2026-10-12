@@ -8,9 +8,10 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Rung 3, step 1 — `study.confident_calls`: each walk-forward call with its probability, drift
-probability and 50% move band, from what came before it; nothing before 20 earlier calls.
-*(PR #129.)*
+Rung 3, step 2 — `predict --event cpi|nfp`: each link's stated confidence graded (calibration
+groups, Brier against a coin and the drift with sign-flip p, band coverage) and its verdict, with
+and without COVID; the hit rate by surprise size. On real data no link's confidence is honest.
+*(PR #130.)*
 
 ## In progress
 
@@ -18,14 +19,14 @@ probability and 50% move band, from what came before it; nothing before 20 earli
 
 ## Next
 
-Rung 3, step 2 — `predict --event cpi|nfp`: each link's confidence table (calibration groups,
-Brier against a coin and drift with permutation p, band coverage) and verdict, with and without
-COVID; the binomial interval at any rate in `stats.py`.
+Rung 3, step 3 — `predict --actual X`: each call with its probability and band, or "too few calls
+so far".
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-12 | Rung 3 step 2: `predict` grades each link's stated confidence | PR #130 |
 | 2026-10-12 | Rung 3 step 1: `confident_calls`, a probability and a band per call | PR #129 |
 | 2026-10-12 | Rung 3 spec: honest confidence — a probability and a band per call, graded | PR #128 |
 | 2026-10-12 | Rung 2 step 4: results — jobs-report links hold, the dollar clearly; CPI too few; rung 2 complete | PR #127 |

@@ -641,18 +641,18 @@ def grade(predictions: Sequence[Prediction], expected_sign: int) -> LinkGrade:
     )
 
 
-def predict_links(
+def confident_links(
     flow: EventFlow, baseline: str, con: duckdb.DuckDBPyConnection | None = None
-) -> dict[str, list[Prediction]]:
+) -> dict[str, list[ConfidentCall]]:
     """Each instrument with an expected direction, replayed walk-forward against ``baseline``'s
-    surprises of the flow's verdict measure."""
+    surprises of the flow's verdict measure, each call with its probability and band."""
     connection = con if con is not None else db.get_connection()
     rule = flow.surprise_rule
     if rule is None:
         raise ValueError(f"{flow.event_type} in {flow.country} has no surprise rule")
     measure = rule.combinations[0][0]
     return {
-        instrument: walk_forward(
+        instrument: confident_calls(
             _flow_pairs(flow, measure, baseline, instrument, connection), sign, rule.noticeable
         )
         for instrument, sign in rule.expected_sign.items()
@@ -728,3 +728,140 @@ def confident_calls(
             ConfidentCall(call, (right + 1) / (n + 2), (with_call + 1) / (len(moves) + 2), band)
         )
     return confident
+
+
+# Rung 3's rule (docs/steps/rung-3-confidence.md): a link's stated confidence is honest if, on at
+# least MIN_STATED calls with a probability, each calibration group of at least MIN_GROUP calls is
+# right as often as it says, its Brier score beats a coin's and the drift's with p under
+# BRIER_P_BAR, and half of its moves land in their band.
+MIN_STATED = 30
+MIN_GROUP = 10
+BRIER_P_BAR = 0.05
+COIN_BRIER = 0.25
+CALIBRATION_GROUPS = (("under 60%", 0.0, 0.6), ("60–70%", 0.6, 0.7), ("70% and over", 0.7, 1.01))
+HONEST = "honest"
+NOT_HONEST = "not honest"
+TOO_CLOSE = "too close to tell"
+
+
+@dataclass(frozen=True)
+class CalibrationGroup:
+    """Calls whose probability falls in one group: how many were right, what they stated on
+    average, and the range of rights a binomial at that average allows (95%)."""
+
+    label: str
+    calls: int
+    right: int
+    stated: float
+    allowed: tuple[int, int]
+
+    @property
+    def passes(self) -> bool:
+        return self.calls < MIN_GROUP or self.allowed[0] <= self.right <= self.allowed[1]
+
+
+@dataclass(frozen=True)
+class ConfidenceGrade:
+    """A link's calls with a probability, graded: ``missed`` names the checks it failed outright,
+    ``unproven`` those it passed without p under ``BRIER_P_BAR``."""
+
+    calls: int
+    right: int
+    stated: float
+    brier: float
+    coin_p: float
+    drift_brier: float
+    drift_p: float
+    banded: int
+    inside: int
+    band_allowed: tuple[int, int]
+    groups: tuple[CalibrationGroup, ...]
+    by_size: tuple[tuple[int, int], tuple[int, int]]
+    verdict: str
+    missed: tuple[str, ...]
+    unproven: tuple[str, ...]
+
+
+def grade_confidence(calls: Sequence[ConfidentCall], step: float) -> ConfidenceGrade:
+    stated = [
+        (c.call, c.probability, c.drift, c.band)
+        for c in calls
+        if c.probability is not None and c.drift is not None
+    ]
+    n = len(stated)
+    link = [(p - call.right) ** 2 for call, p, _, _ in stated]
+    against_drift = [(d - call.right) ** 2 for call, _, d, _ in stated]
+    brier = sum(link) / n if n else 0.0
+    drift_brier = sum(against_drift) / n if n else 0.0
+    coin_p = stats.sign_flip_p([COIN_BRIER - b for b in link])
+    drift_p = stats.sign_flip_p([d - b for d, b in zip(against_drift, link, strict=True)])
+    banded = [(call, band) for call, _, _, band in stated if band is not None]
+    inside = sum(low <= call.move <= high for call, (low, high) in banded)
+    band_allowed = stats.binomial_range(len(banded), 0.5)
+    groups = []
+    for label, low, high in CALIBRATION_GROUPS:
+        members = [(call, p) for call, p, _, _ in stated if low <= p < high]
+        mean = sum(p for _, p in members) / len(members) if members else 0.0
+        groups.append(
+            CalibrationGroup(
+                label,
+                len(members),
+                sum(call.right for call, _ in members),
+                mean,
+                stats.binomial_range(len(members), mean),
+            )
+        )
+    small = [call for call, _, _, _ in stated if abs(call.surprise) < 2 * step]
+    large = [call for call, _, _, _ in stated if abs(call.surprise) >= 2 * step]
+    missed = tuple(
+        name
+        for name, fails in (
+            ("calibration", not all(g.passes for g in groups)),
+            ("coin", brier >= COIN_BRIER),
+            ("drift", brier >= drift_brier),
+            ("band", not banded or not band_allowed[0] <= inside <= band_allowed[1]),
+        )
+        if fails
+    )
+    unproven = tuple(
+        name
+        for name, p in (("coin", coin_p), ("drift", drift_p))
+        if p >= BRIER_P_BAR and name not in missed
+    )
+    if n < MIN_STATED:
+        verdict = TOO_FEW
+    elif missed:
+        verdict = NOT_HONEST
+    elif unproven:
+        verdict = TOO_CLOSE
+    else:
+        verdict = HONEST
+    return ConfidenceGrade(
+        calls=n,
+        right=sum(call.right for call, _, _, _ in stated),
+        stated=sum(p for _, p, _, _ in stated) / n if n else 0.0,
+        brier=brier,
+        coin_p=coin_p,
+        drift_brier=drift_brier,
+        drift_p=drift_p,
+        banded=len(banded),
+        inside=inside,
+        band_allowed=band_allowed,
+        groups=tuple(groups),
+        by_size=(
+            (sum(call.right for call in small), len(small)),
+            (sum(call.right for call in large), len(large)),
+        ),
+        verdict=verdict,
+        missed=missed if n >= MIN_STATED else (),
+        unproven=unproven if n >= MIN_STATED else (),
+    )
+
+
+def overall_confidence(grades: Sequence[ConfidenceGrade]) -> str:
+    """One verdict from a link's grades with and without COVID: honest only if every one is."""
+    verdicts = {g.verdict for g in grades}
+    for verdict in (NOT_HONEST, TOO_FEW, TOO_CLOSE):
+        if verdict in verdicts:
+            return verdict
+    return HONEST
