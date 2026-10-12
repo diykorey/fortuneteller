@@ -9,7 +9,7 @@ Where the work is and what comes next. Two rules keep it current:
 ## Last completed
 
 Rung 2, step 4 — results: both jobs-report links hold walk-forward (the dollar clearly, the yield
-barely above always-up); CPI's links are too few to judge. Rung 2 complete. *(PR #TBD.)*
+barely above always-up); CPI's links are too few to judge. Rung 2 complete. *(PR #127.)*
 
 ## In progress
 
@@ -23,7 +23,7 @@ A decision: roadmap step 4 (more events) or ladder rung 3 (honest confidence). N
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-12 | Rung 2 step 4: results — jobs-report links hold, the dollar clearly; CPI too few; rung 2 complete | PR #TBD |
+| 2026-10-12 | Rung 2 step 4: results — jobs-report links hold, the dollar clearly; CPI too few; rung 2 complete | PR #127 |
 | 2026-10-12 | Rung 2 step 3: `predict --actual`, the next release's call | PR #126 |
 | 2026-10-12 | Rung 2 step 2: `predict`, each link's walk-forward record and verdict | PR #125 |
 | 2026-10-12 | Rung 2 step 1: the walk-forward replay | PR #124 |
