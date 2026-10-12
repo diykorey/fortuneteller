@@ -278,8 +278,9 @@ def _any_of(labels: Iterable[str]) -> str:
     return f"{', '.join(rest)} or {last}" if rest else last
 
 
-def _move_size(value: float, unit: str) -> str:
-    return f"{value:.1f} bp" if unit == "bps" else f"{value * 100:.2f}%"
+def _move_size(value: float, unit: str, signed: bool = False) -> str:
+    sign = "+" if signed else ""
+    return f"{value:{sign}.1f} bp" if unit == "bps" else f"{value * 100:{sign}.2f}%"
 
 
 def describe_raw_moves(results: dict[str, study.RawMove], label: str) -> list[str]:
@@ -435,11 +436,6 @@ def _graded_confidence(
     ]
 
 
-def _move(value: float, unit: str) -> str:
-    """A move as printed: percent for prices, basis points for yields."""
-    return f"{value:+.1f}bp" if unit == "bps" else f"{value * 100:+.2f}%"
-
-
 def _predict(args: argparse.Namespace) -> int:
     flow = flows.flow_named(args.event)
     rule = flow.surprise_rule
@@ -566,12 +562,10 @@ def _predict_release(
         if latest.probability is None:
             print(f"{instrument:<12} {call:<6} closes {call} today; too few calls so far")
             continue
-        unit_row = con.execute(
-            "SELECT ret_unit FROM observations WHERE instrument = ? LIMIT 1", [instrument]
-        ).fetchone()
-        unit = unit_row[0] if unit_row else "pct"
+        unit = study.MVP_PRICE_SERIES[instrument].unit
         band = (
-            f"{_move(latest.band[0], unit)} to {_move(latest.band[1], unit)}"
+            f"{_move_size(latest.band[0], unit, signed=True)} to "
+            f"{_move_size(latest.band[1], unit, signed=True)}"
             if latest.band
             else "no band"
         )
@@ -580,6 +574,10 @@ def _predict_release(
             f"{instrument:<12} {call:<6} closes {call} today: {latest.probability:.0%} "
             f"({len(calls) - 1} calls before), {band}; its confidence: {overall}"
         )
+    print(
+        "probability = the link's record on its calls so far; band = where half its moves land; "
+        f"confidence graded by `fortuneteller predict --event {flow.cli_name}`"
+    )
     return 0
 
 

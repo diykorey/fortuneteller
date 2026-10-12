@@ -1,6 +1,7 @@
 """Rung 2's walk-forward: each release predicted only from the releases before it."""
 
 import random
+from dataclasses import replace
 from datetime import date
 from pathlib import Path
 
@@ -251,10 +252,7 @@ def test_an_actual_predicts_each_open_link_s_close_and_a_closed_one_is_silent(
     con = db.get_connection()
     _store_consensus_history(con)
     con.execute("UPDATE observations SET ret_1d = 0.001 WHERE instrument = 'VIX'")
-    con.execute(
-        "UPDATE observations SET ret_unit = 'bps', ret_1d = ret_1d * 10000 "
-        "WHERE instrument = 'UST10Y / ZN'"
-    )
+    con.execute("UPDATE observations SET ret_1d = ret_1d * 10000 WHERE instrument = 'UST10Y / ZN'")
     _next(monkeypatch, expectations.NextConsensus(date(2026, 11, 12), 0.2, 0.2))
 
     # when the release comes in hot, at 0.3
@@ -267,11 +265,13 @@ def test_an_actual_predicts_each_open_link_s_close_and_a_closed_one_is_silent(
         "core on 2026-11-12: actual 0.3, Nasdaq's consensus 0.2, surprise +0.1",
         "SPY / ES     down   closes down today: 88% (79 calls before), -0.11% to -0.08%; "
         "its confidence: honest",
-        "UST10Y / ZN  up     closes up today: 88% (79 calls before), +8.6bp to +11.2bp; "
+        "UST10Y / ZN  up     closes up today: 88% (79 calls before), +8.6 bp to +11.2 bp; "
         "its confidence: honest",
         "DXY          up     closes up today: 88% (79 calls before), +0.08% to +0.11%; "
         "its confidence: honest",
         "VIX          —      silent: the link does not pass on the releases so far",
+        "probability = the link's record on its calls so far; band = where half its moves land; "
+        "confidence graded by `fortuneteller predict --event cpi`",
     ]
 
 
@@ -402,4 +402,35 @@ def test_an_open_link_with_too_few_calls_so_far_calls_without_a_probability(
         "UST10Y / ZN  up     closes up today; too few calls so far",
         "DXY          up     closes up today; too few calls so far",
         "VIX          up     closes up today; too few calls so far",
+        "probability = the link's record on its calls so far; band = where half its moves land; "
+        "confidence graded by `fortuneteller predict --event cpi`",
     ]
+
+
+def test_an_actual_s_verdict_grades_only_past_calls_with_and_without_covid(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given the CPI history, and a grading that records what it is given and calls a link honest
+    # only on calls that include COVID's months
+    _store_consensus_history(db.get_connection())
+    _next(monkeypatch, expectations.NextConsensus(date(2026, 11, 12), 0.2, 0.2))
+    graded: list[list[study.ConfidentCall]] = []
+    real = study.grade_confidence
+
+    def grade(calls: list[study.ConfidentCall], step: float) -> study.ConfidenceGrade:
+        graded.append(list(calls))
+        g = real(calls, step)
+        covid = any("2020-03" <= c.call.month <= "2021-04" for c in calls)
+        return replace(g, verdict=study.HONEST if covid else study.NOT_HONEST)
+
+    monkeypatch.setattr(study, "grade_confidence", grade)
+
+    # when the release comes in hot
+    main(["predict", "--event", "cpi", "--actual", "0.3"])
+
+    # then the new release is never graded, and a link honest only with COVID is not honest
+    assert graded
+    assert not any(c.call.event_id == study.NEXT_RELEASE for calls in graded for c in calls)
+    out = capsys.readouterr().out
+    assert "its confidence: honest" not in out
+    assert out.count("its confidence: not honest") == 4

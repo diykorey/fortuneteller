@@ -641,6 +641,10 @@ def grade(predictions: Sequence[Prediction], expected_sign: int) -> LinkGrade:
     )
 
 
+# The release ``predict --actual`` asks about: after every stored one, whose ids are positive.
+NEXT_RELEASE = -1
+
+
 def confident_links(
     flow: EventFlow,
     baseline: str,
@@ -666,9 +670,6 @@ def confident_links(
             linked[instrument] = confident_calls(pairs, sign, rule.noticeable)
     return linked
 
-
-# The release ``predict --actual`` asks about: after every stored one, whose ids are positive.
-NEXT_RELEASE = -1
 
 # Rung 3: a call states a probability and a move band only once its link has made this many calls.
 MIN_CALLS = 20
