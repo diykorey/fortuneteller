@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import argparse
 import sys
+import textwrap
 from collections.abc import Callable, Iterable, Sequence
 from datetime import date, datetime
 
@@ -238,7 +239,22 @@ def _surprise(args: argparse.Namespace) -> int:
                 continue
             for line in describe_side_by_side(side_by_side, rule, scope):
                 print(line)
+    for line in describe_shared_days(flow, con):
+        print(line)
     return 0
+
+
+def describe_shared_days(flow: flows.EventFlow, con: duckdb.DuckDBPyConnection) -> list[str]:
+    """The releases a rule leaves out for sharing their day with another flow's release."""
+    rule = flow.surprise_rule
+    days = sorted(study.shared_days(flow, con=con).values()) if rule and rule.alone else []
+    if not days:
+        return []
+    return [
+        "",
+        f"left out: {len(days)} {flow.label} releases on a day with another event's release",
+        *textwrap.wrap(", ".join(f"{day}" for day in days), 100),
+    ]
 
 
 def _months_between(first: date, last: date) -> str:
@@ -502,6 +518,8 @@ def _predict(args: argparse.Namespace) -> int:
         "  the moves inside their band as often as a coin would put them there.\n"
         f"{study.TOO_CLOSE} = Brier below, but p not under {study.BRIER_P_BAR}"
     )
+    for line in describe_shared_days(flow, con):
+        print(line)
     return 0
 
 

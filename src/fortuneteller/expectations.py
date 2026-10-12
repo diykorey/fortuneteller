@@ -391,6 +391,9 @@ CONSENSUS_ROWS = {
     sources.CORE: ("Core CPI", "Core Inflation Rate MoM", 1, 0.2),
     sources.HEADLINE: ("CPI", "Inflation Rate MoM", 1, 0.2),
     PAYROLLS: ("Nonfarm Payrolls", "Non Farm Payrolls", 0, 25.0),
+    sources.RETAIL_SALES: ("Retail Sales", "Retail Sales MoM", 1, 0.3),
+    sources.CORE_PCE: ("Core PCE Price Index", "Core PCE Price Index MoM", 1, 0.2),
+    sources.GDP: ("GDP", "GDP Growth Rate QoQ Adv", 1, 0.5),
 }
 # Nasdaq's calendar carries no consensus before 2008 (checked 2026-10-09): earlier days are not asked.
 CONSENSUS_SINCE = date(2008, 1, 1)
@@ -521,7 +524,8 @@ NASDAQ_CONSENSUS = "nasdaq_consensus"
 
 
 class NasdaqConsensus:
-    """The consensus published on Nasdaq's calendar before each CPI and jobs report, 2008 on,
+    """The consensus published on Nasdaq's calendar before each release in ``CONSENSUS_ROWS``,
+    2008 on,
     checked against TradingView's; known by the end of the day before the release (assumed)."""
 
     name = NASDAQ_CONSENSUS

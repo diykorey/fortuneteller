@@ -32,7 +32,7 @@ from .expectations import (
     previous_month,
 )
 from .models import EventInstance, Surprise
-from .sources import NEW_YORK, PAYROLLS, FirstRelease
+from .sources import CORE_PCE, GDP, NEW_YORK, PAYROLLS, RETAIL_SALES, FirstRelease
 
 
 # Step 1 — the CPI release history from FRED (docs/steps/step-1-releases.md).
@@ -453,13 +453,15 @@ class SurpriseRule:
     """What step 4 measures for one event type. The first combination gives the verdict; the
     hit rate counts surprises of at least ``noticeable``, and the slope is per ``noticeable``,
     which the report names ``step``. Each pair of ``compared`` baselines of the verdict's measure is
-    also judged side by side, on the reports both cover."""
+    also judged side by side, on the reports both cover. With ``alone``, a release on a day holding
+    another flow's release is left out of every table (step 4's shared days)."""
 
     combinations: tuple[tuple[str, str], ...]
     expected_sign: Mapping[str, int]
     noticeable: float
     step: str
     compared: tuple[tuple[str, str], ...] = ()
+    alone: bool = False
 
 
 CPI_SURPRISE_RULE = SurpriseRule(
@@ -476,6 +478,25 @@ NFP_SURPRISE_RULE = SurpriseRule(
     "50k",
     compared=((TREND_12M, PAYROLL_MODEL), (TREND_12M, NASDAQ_CONSENSUS)),
 )
+
+
+def _consensus_rule(
+    measure: str, expected_sign: Mapping[str, int], noticeable: float
+) -> SurpriseRule:
+    """Step 4's rule: the consensus gives the verdict, the trend is context, shared days left out."""
+    return SurpriseRule(
+        ((measure, NASDAQ_CONSENSUS), (measure, TREND_12M)),
+        expected_sign,
+        noticeable,
+        f"{noticeable:g}pp",
+        alone=True,
+    )
+
+
+# Growth news takes the jobs report's signs, inflation news CPI's (docs/steps/step-4-more-events.md).
+RETAIL_SURPRISE_RULE = _consensus_rule(RETAIL_SALES, NFP_EXPECTED_SIGN, 0.3)
+PCE_SURPRISE_RULE = _consensus_rule(CORE_PCE, EXPECTED_SIGN, 0.1)
+GDP_SURPRISE_RULE = _consensus_rule(GDP, NFP_EXPECTED_SIGN, 0.5)
 
 
 # The flows.
@@ -604,12 +625,6 @@ class FedFlow:
         return []
 
 
-# Step 4's measures (docs/steps/step-4-more-events.md), each a change in percent.
-RETAIL_SALES = "retail_sales"
-CORE_PCE = "core_pce"
-GDP = "gdp"
-
-
 @dataclass(eq=False)
 class LevelFlow:
     """A US release from FRED whose actual is the change in one level, as first published against
@@ -645,10 +660,33 @@ class LevelFlow:
 
 CPI_FLOW, NFP_FLOW, FED_FLOW = CpiFlow(), NfpFlow(), FedFlow()
 RETAIL_FLOW = LevelFlow(
-    RETAIL_EVENT_TYPE, 4, "retail", "RET", sources.RETAIL_SALES_SERIES_ID, RETAIL_SALES
+    RETAIL_EVENT_TYPE,
+    4,
+    "retail",
+    "RET",
+    sources.RETAIL_SALES_SERIES_ID,
+    RETAIL_SALES,
+    surprise_rule=RETAIL_SURPRISE_RULE,
 )
-PCE_FLOW = LevelFlow(PCE_EVENT_TYPE, 5, "pce", "PCE", sources.CORE_PCE_SERIES_ID, CORE_PCE)
-GDP_FLOW = LevelFlow(GDP_EVENT_TYPE, 6, "gdp", "GDP", sources.GDP_SERIES_ID, GDP, power=4)
+PCE_FLOW = LevelFlow(
+    PCE_EVENT_TYPE,
+    5,
+    "pce",
+    "PCE",
+    sources.CORE_PCE_SERIES_ID,
+    CORE_PCE,
+    surprise_rule=PCE_SURPRISE_RULE,
+)
+GDP_FLOW = LevelFlow(
+    GDP_EVENT_TYPE,
+    6,
+    "gdp",
+    "GDP",
+    sources.GDP_SERIES_ID,
+    GDP,
+    power=4,
+    surprise_rule=GDP_SURPRISE_RULE,
+)
 EVENT_FLOWS: list[EventFlow] = [CPI_FLOW, NFP_FLOW, FED_FLOW, RETAIL_FLOW, PCE_FLOW, GDP_FLOW]
 
 
