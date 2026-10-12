@@ -11,7 +11,7 @@ Where the work is and what comes next. Two rules keep it current:
 Rung 2, step 1 — `study.walk_forward`: each link, at each release with a noticeable surprise,
 predicts the day's direction only if it passes the surprise test on the releases before it. Tested
 on planted links (80% followed: opens, ~80% right; unrelated: stays silent) and for look-ahead.
-About 20 seconds for all six links on real data. *(PR #TBD.)*
+About 20 seconds for all six links on real data. *(PR #124.)*
 
 ## In progress
 
@@ -26,7 +26,7 @@ baseline and the verdict, with and without COVID.
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-12 | Rung 2 step 1: the walk-forward replay | PR #TBD |
+| 2026-10-12 | Rung 2 step 1: the walk-forward replay | PR #124 |
 | 2026-10-12 | Rung 2 spec: predict the next release, tested walk-forward | PR #123 |
 | 2026-10-09 | Free consensus step 3: results — jobs-report links pass, stronger; CPI's dollar passes against the consensus | PR #122 |
 | 2026-10-09 | Free consensus step 2: Nasdaq's consensus as a source, judged beside the trend | PR #121 |
