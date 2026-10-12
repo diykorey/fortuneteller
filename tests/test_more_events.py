@@ -1,11 +1,14 @@
 """Step 4's flows: retail sales, core PCE and GDP, each a change in one FRED level."""
 
 import json
-from datetime import date
+from datetime import date, timedelta
+from pathlib import Path
 
+import duckdb
 import pytest
 
-from fortuneteller import flows, sources
+from fortuneteller import db, expectations, flows, sources, study
+from fortuneteller.__main__ import main
 from fortuneteller.flows import GDP_FLOW, PCE_FLOW, RETAIL_FLOW, LevelFlow
 from fortuneteller.sources import FirstRelease
 
@@ -97,3 +100,64 @@ def test_each_new_flow_has_its_own_event_type_and_command() -> None:
     assert all(flow in flows.EVENT_FLOWS for flow in added)
     assert [flow.cli_name for flow in added] == ["retail", "pce", "gdp"]
     assert len({flow.event_type for flow in flows.EVENT_FLOWS}) == len(flows.EVENT_FLOWS)
+
+
+def _store_with_surprise(
+    con: duckdb.DuckDBPyConnection, flow: LevelFlow | flows.CpiFlow, measure: str, days: list[date]
+) -> None:
+    releases = [FirstRelease(day.replace(day=1) - timedelta(days=20), day, 1.0) for day in days]
+    flows.store_releases(flow, releases, con=con)
+    for i, event in enumerate(flows.stored_events(flow, con=con)):
+        con.execute(
+            "INSERT INTO surprises VALUES (?, ?, ?, 0, 0, ?)",
+            [event.event_id, measure, expectations.NASDAQ_CONSENSUS, 0.5 + i],
+        )
+        for instrument in study.MVP_PRICE_SERIES:
+            con.execute(
+                "INSERT INTO observations (event_id, instrument, ret_unit, ret_1d) "
+                "VALUES (?, ?, 'pct', ?)",
+                [event.event_id, instrument, 0.1 + i],
+            )
+
+
+def test_a_new_flow_leaves_out_a_release_on_another_flow_s_day(tmp_db: Path) -> None:
+    # given retail sales on 2024-03-12, the day CPI came out, and on 2024-04-15 alone
+    con = db.get_connection()
+    _store_with_surprise(con, flows.CPI_FLOW, sources.CORE, [date(2024, 3, 12)])
+    _store_with_surprise(
+        con, RETAIL_FLOW, sources.RETAIL_SALES, [date(2024, 3, 12), date(2024, 4, 15)]
+    )
+
+    # when each flow's surprises and moves are read
+    retail = study.surprise_pairs(
+        RETAIL_FLOW, [(sources.RETAIL_SALES, expectations.NASDAQ_CONSENSUS)], con=con
+    )
+    cpi = study.surprise_pairs(
+        flows.CPI_FLOW, [(sources.CORE, expectations.NASDAQ_CONSENSUS)], con=con
+    )
+
+    # then retail sales keeps only its own day; CPI keeps the shared one
+    assert retail[(sources.RETAIL_SALES, expectations.NASDAQ_CONSENSUS)]["DXY"] == ([1.5], [1.1])
+    assert cpi[(sources.CORE, expectations.NASDAQ_CONSENSUS)]["DXY"] == ([0.5], [0.1])
+    assert list(study.shared_days(RETAIL_FLOW, con=con).values()) == [date(2024, 3, 12)]
+
+
+def test_surprise_lists_the_releases_left_out(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    # given a retail sales release on a CPI day, and three alone
+    con = db.get_connection()
+    _store_with_surprise(con, flows.CPI_FLOW, sources.CORE, [date(2024, 3, 12)])
+    alone = [date(2024, 4, 15), date(2024, 5, 15), date(2024, 6, 14)]
+    _store_with_surprise(con, RETAIL_FLOW, sources.RETAIL_SALES, [date(2024, 3, 12), *alone])
+
+    # when retail sales' report is printed
+    code = main(["surprise", "--event", "retail"])
+
+    # then it names the release left out
+    out = capsys.readouterr().out.splitlines()
+    assert code == 0
+    assert out[-2:] == [
+        "left out: 1 RET releases on a day with another event's release",
+        "2024-03-12",
+    ]

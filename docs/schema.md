@@ -409,7 +409,9 @@ Filled by `uv run fortuneteller load-surprises` (step 4, and rung 1 for payrolls
 342 (from 1998) and headline 635 (from 1973); against the nowcast, 155 each (from 2013). 844
 payroll rows on 2026-10-06 against the trend (from 1956): every stored jobs report but the first
 twelve; and, from 2026-10-09, 148 against the payroll model (from 2014). Against Nasdaq's consensus,
-from 2026-10-09: core 220, headline 219 and payrolls 222, all from 2008.
+from 2026-10-09: core 220, headline 219 and payrolls 222, all from 2008. From 2026-10-12
+([step 4](steps/step-4-more-events.md)): retail sales 291 against the trend (from 2002) and 214
+against the consensus, core PCE 300 and 216, GDP 135 (from 1993) and 70.
 
 Example row:
 
@@ -420,21 +422,24 @@ Example row:
 | Column | Type | Meaning |
 | --- | --- | --- |
 | `event_id` | BIGINT, **PK** | The release, an `event_instances.event_id`. Core and headline come out in the same BLS release, so they share it. |
-| `measure` | TEXT, **PK** | Which CPI number; see below. |
+| `measure` | TEXT, **PK** | Which number; see below. |
 | `baseline` | TEXT, **PK** | Where the expected value came from: the `name` of an expectation source in `expectations.EXPECTATION_SOURCES`; see below. |
-| `actual_mom` | DOUBLE | The month-over-month change **as first published**: for CPI in percent (`0.567` means +0.567%); for `payrolls` in thousands of jobs (`315` means +315,000). The number the market saw, not today's revised one. |
+| `actual_mom` | DOUBLE | The month-over-month change **as first published**: for CPI in percent (`0.567` means +0.567%); for `payrolls` in thousands of jobs (`315` means +315,000); for retail sales and core PCE in percent month on month, for GDP in percent quarter on quarter, annualized. The number the market saw, not today's revised one. |
 | `expected_mom` | DOUBLE | What `baseline` expected that change to be, in the same unit. |
-| `surprise` | DOUBLE | `actual_mom − expected_mom`: percentage points for CPI, thousands of jobs for payrolls. Positive means hotter or stronger than expected. |
+| `surprise` | DOUBLE | `actual_mom − expected_mom`: percentage points for CPI, retail sales, core PCE and GDP, thousands of jobs for payrolls. Positive means hotter or stronger than expected. |
 
 ### Values
 
-**`measure`** — which CPI number the row is about:
+**`measure`** — which number the row is about:
 
 | Value | Meaning |
 | --- | --- |
 | `core` | CPI without food and energy (FRED `CPILFESL`). Step 4's verdicts are about this one: markets have traded core since the 2000s. First-published history starts in 1997. |
 | `headline` | All items (FRED `CPIAUCSL`), the series `event_instances.actual` holds. Shown as context, without a verdict. |
 | `payrolls` | The jobs report's monthly change in total non-farm payrolls (FRED `PAYEMS`), in thousands: the month's first level minus the previous month's level as revised that same day. With `trend_12m`, `payroll_model` and `nasdaq_consensus`. |
+| `retail_sales` | Retail and food services sales (FRED `RSAFS`), advance estimate: the change against the previous month's level as revised that same day. With `trend_12m` and `nasdaq_consensus`. |
+| `core_pce` | PCE prices without food and energy (FRED `PCEPILFE`), the same way. With `trend_12m` and `nasdaq_consensus`. |
+| `gdp` | Real GDP (FRED `GDPC1`), advance estimate: the change against the previous quarter as revised that same day, annualized. Its `trend_12m` averages the previous four quarters. With `trend_12m` and `nasdaq_consensus`. |
 
 **`baseline`** — what "expected" means:
 
@@ -442,7 +447,7 @@ Example row:
 | --- | --- |
 | `trend_12m` | The average of the previous 12 months' first-published changes, counting only those published before the release day. Available for every release once a year of history exists, but it measures surprise against the trend, not against what the market expected. |
 | `nowcast` | The Cleveland Fed's model estimate, the last one published before the release day. Close to what the market saw, but only from 2013. |
-| `nasdaq_consensus` | The consensus published on Nasdaq's economic calendar before the release, checked against TradingView's; counted as known by the end of the day before. Core CPI, headline CPI and payrolls, from 2008 ([free consensus](steps/free-consensus.md)). |
+| `nasdaq_consensus` | The consensus published on Nasdaq's economic calendar before the release, checked against TradingView's; counted as known by the end of the day before. Core CPI, headline CPI and payrolls, from 2008 ([free consensus](steps/free-consensus.md)); retail sales, core PCE and GDP from 2008 too ([step 4](steps/step-4-more-events.md)). |
 | `payroll_model` | Payrolls only: a least-squares forecast from ADP's change, the jobless-claims change and the 12-month trend, each as first published, refitted before every report on earlier reports only ([nfp-forecast](steps/nfp-forecast.md)). From 2014; none for June–August 2022, when ADP paused. |
 
 ## effect_size_matrix

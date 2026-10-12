@@ -176,18 +176,20 @@ def describe_surprise_tracking(
             f"{_move_size(t.slope, unit):<10} {t.verdict}"
         )
     width = max(10, *(len(baseline) for _measure, baseline in rule.combinations))
+    named = max(9, *(len(measure) for measure, _baseline in rule.combinations))
     if len(rule.combinations) > 1:
         lines += [
             "",
             "context, no verdict",
-            f"instrument   measure   {'baseline':<{width}} n    rank corr  p       hit rate (n)",
+            f"instrument   {'measure':<{named}} {'baseline':<{width}} n    rank corr  p       "
+            "hit rate (n)",
         ]
     for (measure, baseline), by_instrument in results.items():
         if (measure, baseline) == verdict_combination:
             continue
         for instrument, t in by_instrument.items():
             lines.append(
-                f"{instrument:<12} {measure:<9} {baseline:<{width}} {t.n:<4} "
+                f"{instrument:<12} {measure:<{named}} {baseline:<{width}} {t.n:<4} "
                 f"{t.rank_corr:<10.2f} {t.p:<7.4f} {_hit_rate(t)}"
             )
     lines += [

@@ -87,7 +87,7 @@ No move was looked at.
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~Seed rows; three flows from FRED with actuals from the release day's levels; `load-releases`, `load-prices`, `raw-move --event retail\|pce\|gdp`~~ **done** | A test per flow builds an actual against a revised previous level; release counts as above; raw-move printed. CPI's, the jobs report's and the Fed's raw move change (fewer ordinary days): old against new reported |
-| 2 | Consensus rows, the three surprise rules, shared days left out; `load-surprises`, `surprise --event …` | Every release since 2008 has its Nasdaq row matched by our first print, or is named; CPI's and NFP's `surprise` and `predict` output byte-identical to `main`'s |
+| 2 | ~~Consensus rows, the three surprise rules, shared days left out; `load-surprises`, `surprise --event …`~~ **done** | Every release since 2008 has its Nasdaq row matched by our first print, or is named; CPI's and NFP's `surprise` and `predict` output byte-identical to `main`'s |
 | 3 | Results here and in [`mvp-results.md`](../mvp-results.md): `raw-move`, `surprise` and `predict` per flow | Says per flow and market whether it moves, tracks, holds walk-forward, and whether its confidence is honest, with and without COVID |
 
 **Step 1, checked 2026-10-12.** `load-releases` stores 303 retail sales releases (2001 on), 312
@@ -106,6 +106,29 @@ release day, shared or not:
 
 With 754 more event days left out of the ordinary days, CPI's, the jobs report's and the Fed's
 ratios shift by up to 0.06 and their p values slightly; every verdict stays the same.
+
+**Step 2, checked 2026-10-12.** `load-surprises` stores 214 retail sales, 216 core PCE and 70 GDP
+consensus surprises, 2008 on. Of the releases since 2008 without one:
+
+- **Named, no single row matches our first print:** retail sales 2008-02-13 and 2009-02-12
+  (Nasdaq's actual is 0.0 and −0.1, the prints +0.3 and +1.0); GDP 2011-04-28 and 2014-07-30 (our
+  rate from levels 1.75 and 3.95, BEA's printed 1.8 and 4.0). Now in `UNREADABLE_CONSENSUS`.
+- **Named, TradingView's gap:** GDP 2017-10-27, Nasdaq 2.5 against TradingView 3.3.
+- **No Nasdaq row that day:** retail sales 9 (2008-01-15, 2009-03-12, 2019-10-16, 2020-02-14,
+  2020-09-16, 2020-12-16, 2022-07-15, 2022-09-15, 2022-10-14), core PCE 7, GDP 2.
+
+Shared days left out: 37 retail sales releases, 14 core PCE and 19 GDP. CPI's and the jobs report's
+`surprise` and `predict` output is byte-identical to before.
+
+| Market | Retail sales (184) | Core PCE (207) | GDP (57) |
+| --- | --- | --- | --- |
+| S&P 500 | doesn't | unclear | doesn't |
+| 10-year yield | **tracks: 0.26, right 67% (97)** | unclear | doesn't: 29% (21) |
+| Dollar | doesn't: 0.14, 58% (97) | doesn't | unclear: 0.29, 71% (21) |
+| VIX | doesn't | unclear | doesn't |
+
+Against the consensus, in brackets how many releases; hit rate on noticeable surprises. Core PCE
+had 19 noticeable surprises in 207. Against the trend, nothing tracks.
 
 ## How you know it is right
 

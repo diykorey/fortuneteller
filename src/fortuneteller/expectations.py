@@ -404,6 +404,12 @@ UNREADABLE_CONSENSUS = {
     (PAYROLLS, date(2020, 5, 8)),
     (sources.HEADLINE, date(2015, 11, 17)),
     (sources.HEADLINE, date(2020, 7, 14)),
+    # Found 2026-10-12 (docs/steps/step-4-more-events.md): Nasdaq's retail sales actual is not the
+    # first print (0.0 for +0.3, -0.1 for +1.0); GDP rebuilt from levels is 0.05 under BEA's print.
+    (sources.RETAIL_SALES, date(2008, 2, 13)),
+    (sources.RETAIL_SALES, date(2009, 2, 12)),
+    (sources.GDP, date(2011, 4, 28)),
+    (sources.GDP, date(2014, 7, 30)),
 }
 
 
