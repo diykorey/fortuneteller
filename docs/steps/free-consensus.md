@@ -65,7 +65,7 @@ with D + 1; and the month-on-month and year-on-year rows share one name (`Core C
 | --- | --- | --- |
 | 1 | ~~Fetch with the cache, pick each release's row, check against TradingView, with the refusals above~~ **done** | No row, two rows, an unparseable value and a TradingView gap are each handled in a test; real data gives about 222 consensus values per measure |
 | 2 | ~~`NasdaqConsensus` source; `compared` as pairs; both rules gain it~~ **done** | NFP's (trend, model) table byte-identical to `main`'s; CPI's official tables unchanged |
-| 3 | Results here and in [`mvp-results.md`](../mvp-results.md) | Says, per pair and with and without COVID, whether the yield and the dollar track better against the consensus |
+| 3 | ~~Results here and in [`mvp-results.md`](../mvp-results.md)~~ **done** | Says, per pair and with and without COVID, whether the yield and the dollar track better against the consensus |
 
 **Step 1, checked 2026-10-09** (`expectations.fetch_calendars`, `match_consensus`; not yet a
 source). On the stored releases: 220 core CPI, 219 headline CPI and 222 payroll consensus values,
@@ -93,4 +93,44 @@ row choice, the check and the source in `expectations.py`; `SurpriseRule.compare
 
 ## Results
 
-*Filled in by step 3.*
+Measured 2026-10-09 on every release since 2008 with a consensus: 220 core CPI and 222 jobs
+reports. Context only; every official verdict is unchanged.
+
+**The answer: for the jobs report, yes, clearly. Against the consensus the 10-year yield and the
+dollar track, and more strongly than against the trend. For CPI, the yield tracks either way, and
+the dollar tracks only against the consensus.**
+
+**Jobs report** (same 222 reports; without COVID, 209):
+
+| Market | Against the trend | Against the consensus |
+| --- | --- | --- |
+| 10-year yield | tracks: 0.26, right 63% (132); without COVID unclear, 0.24, 60% (119) | **tracks: 0.39, right 67% (118); without COVID 0.41, 69% (108)** |
+| Dollar | tracks: 0.29, 61% (132); without COVID 0.34, 63% (119) | **tracks: 0.32, 68% (118); without COVID 0.33, 69% (108)** |
+
+Each cell: rank correlation, share of noticeable surprises (50k or more) the market followed, and
+how many. Markets also move more per surprise: the yield 1.5 bp per 50k against the trend's 0.4
+(2.1 against 0.8 without COVID). Gold follows the consensus surprise more closely too (0.31–0.33,
+p 0.0001) but has no agreed direction. The S&P 500 and VIX do not track either.
+
+**Core CPI** (same 220 releases against the trend, 154 against the nowcast, from 2013):
+
+| Market | Trend | Nowcast | Consensus |
+| --- | --- | --- | --- |
+| 10-year yield | tracks: 0.21, 66% | tracks: 0.35, 71% | tracks: 0.20–0.34, 60–62% |
+| Dollar | unclear: 0.24, 56% | unclear: 0.25, 53% | **tracks: 0.23–0.25, 62–67%** |
+
+Without COVID the picture holds: the yield tracks against all three, the dollar against the
+consensus only (66–70% against 51–55%). For CPI the consensus is no sharper than the trend or the
+nowcast: the correlations are the same, and the yield's hit rate is lower. What it adds is the
+dollar's direction on noticeable surprises. The S&P 500 and VIX do not track.
+
+- **Why the jobs report gains and CPI barely does.** The trend misses payrolls by 80k on average
+  against the consensus's 71k, and big misses are where the market reacts. CPI's consensus is
+  rounded to 0.1%, and the nowcast was already close to what the market expected.
+- **What it means.** For the jobs report, the expected value was what held the link back over the
+  full history: against the consensus, the yield and the dollar pass the bar from 2008 on, with
+  and without COVID. That contradicts the [jobs-report forecast](nfp-forecast.md#results)'s reading
+  that only the years mattered: a better forecast model did not help, the market's own consensus
+  does. Whether the consensus becomes NFP's official expected value is a separate decision.
+- **Caveats.** The consensus counts as known the evening before (assumed); its source is
+  undocumented; history starts in 2008, not 1956.

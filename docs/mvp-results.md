@@ -129,6 +129,28 @@ what kept it under the bar over the full history is the earlier decades, not the
 official verdict, over 681 reports since 1956, stays unclear. A better free forecast was not the
 shortcut; whether the market's own view, the paid consensus, would add more is the next question.
 
+## A free consensus
+
+Measured 2026-10-09. Detail in [free consensus](steps/free-consensus.md#results).
+
+The consensus published before each release (Nasdaq's calendar, checked against TradingView's)
+replaced our trend and model as the expected value, as context beside the official verdicts:
+220 CPI releases and 222 jobs reports since 2008.
+
+**The jobs report's links pass against the consensus, and are clearly stronger.** The 10-year
+yield follows the payroll surprise 67% of the time against the consensus (69% without COVID),
+against 63% (60%) for the trend; the dollar 68% (69%) against 61% (63%). The correlation for the
+yield rises from 0.26 to 0.39, and the yield moves about three times as much per 50k of surprise.
+
+**For CPI, the consensus adds the dollar.** The yield tracks against the trend, the nowcast and the
+consensus alike. The dollar, unclear against the trend and nowcast (53–56%), tracks against the
+consensus (62–70%), though its correlation is unchanged.
+
+**What it means.** The expected value was what held the jobs-report link under the bar: a model of
+our own did not fix it, the market's own consensus does. Three links now pass against a free,
+live expected value: the yield and the dollar on jobs reports, the yield on CPI (and the dollar on
+CPI against the consensus only). That is what a first prediction (rung 2) can be built on.
+
 ## What comes next
 
 A decision, not yet made. The options:
