@@ -72,7 +72,7 @@ levels are fixed here; nothing is tuned on the result.
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~`study.confident_calls(pairs, expected_sign, step)`: pure, like `walk_forward`: each call with its probability, drift probability and band, or none before 20 earlier calls~~ **done** | On 400 planted releases (fixed seed) right on 80% of calls, the stated probability over the last 100 calls averages 0.75–0.85; planted moves land in their band on 40–60% of calls; changing any later release leaves a call's numbers unchanged |
-| 2 | `predict --event cpi\|nfp`: per link, a confidence table (calls, mean probability, share right per group, Brier, coin and drift p, band coverage, verdict), with and without COVID, under rung 2's tables; and the hit rate on surprises under and over twice the step, as a measurement only | The "it can fail" planted links below fail their checks; the table printed on real data; rung 2's tables unchanged |
+| 2 | ~~`predict --event cpi\|nfp`: per link, a confidence table (calls, mean probability, share right per group, Brier, coin and drift p, band coverage, verdict), with and without COVID, under rung 2's tables; and the hit rate on surprises under and over twice the step, as a measurement only~~ **done** | The "it can fail" planted links below fail their checks; the table printed on real data; rung 2's tables unchanged |
 | 3 | `predict --actual X`: each call with its probability and band, e.g. `DXY up 67% (58 calls before), +0.34% to +1.05%` | Prints them, or "too few calls so far" |
 | 4 | Results here and in [`mvp-results.md`](../mvp-results.md) | Says, per link, whether its confidence is honest, and which check failed |
 

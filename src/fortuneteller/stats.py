@@ -150,3 +150,31 @@ def binomial_p(right: int, n: int) -> float:
         return 1.0
     hits = sum(comb(n, k) for k in range(right, n + 1))
     return hits / (1 << n)
+
+
+def binomial_range(n: int, rate: float, level: float = 0.95) -> tuple[int, int]:
+    """The fewest and most hits in ``n`` tries at ``rate`` outside both tails of ``(1 - level) / 2``:
+    a count of hits inside it is consistent with ``rate``."""
+    tail = (1 - level) / 2
+    chances = [comb(n, k) * rate**k * (1 - rate) ** (n - k) for k in range(n + 1)]
+    low, below = 0, 0.0
+    while low < n and below + chances[low] <= tail:
+        below += chances[low]
+        low += 1
+    high, above = n, 0.0
+    while high > 0 and above + chances[high] <= tail:
+        above += chances[high]
+        high -= 1
+    return low, high
+
+
+def sign_flip_p(
+    differences: Sequence[float], permutations: int = PERMUTATIONS, seed: int = PERMUTATION_SEED
+) -> float:
+    """One-sided paired test: the share of random sign flips whose differences sum to at least as
+    much as these do."""
+
+    def draw(rng: random.Random) -> float:
+        return sum(d if rng.random() < 0.5 else -d for d in differences)
+
+    return permutation_p(sum(differences), draw, permutations, seed)

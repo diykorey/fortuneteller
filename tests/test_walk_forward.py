@@ -208,6 +208,7 @@ def test_predict_prints_each_link_s_record_and_verdict(
 
     # then every link with a direction gets a row in both tables, and the yield holds
     out = capsys.readouterr().out.splitlines()
+    out = out[: next(i for i, line in enumerate(out) if line.startswith("holds = "))]
     assert code == 0
     assert (
         out[0]
@@ -334,3 +335,33 @@ def test_a_calendar_that_cannot_be_read_is_reported(
     # then the failure is reported
     assert code == 1
     assert "predict: TradingView did not answer" in capsys.readouterr().err
+
+
+def test_predict_grades_each_link_s_stated_confidence(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    # given a CPI history whose markets follow 85% of consensus surprises
+    _store_consensus_history(db.get_connection())
+
+    # when the walk-forward is printed
+    code = main(["predict", "--event", "cpi"])
+
+    # then after rung 2's tables come the confidence, calibration and size tables, with and without
+    # COVID; every link, right on 85% and stating about that, is honest; and the rule is printed
+    out = capsys.readouterr().out.splitlines()
+    assert code == 0
+    assert [
+        line for line in out if line.startswith(("confidence (", "calibration (", "hit rate"))
+    ] == [
+        "confidence (all)",
+        "calibration (all)",
+        "hit rate by surprise size (all)",
+        "confidence (without 2020-03 … 2021-04)",
+        "calibration (without 2020-03 … 2021-04)",
+        "hit rate by surprise size (without 2020-03 … 2021-04)",
+    ]
+    start = out.index("confidence (all)")
+    rows = out[start + 2 : start + 6]
+    assert [row.split()[0] for row in rows] == ["SPY", "UST10Y", "DXY", "VIX"]
+    assert all(row.endswith(" honest") for row in rows)
+    assert out[-1].startswith("honest = on at least 30 calls with a probability")

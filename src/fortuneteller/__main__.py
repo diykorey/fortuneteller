@@ -360,6 +360,55 @@ def describe_grades(
     return [line.rstrip() for line in lines]
 
 
+def describe_confidence(
+    grades: dict[str, study.ConfidenceGrade], scope: str, step: str
+) -> list[str]:
+    """Rung 3's tables: each link's stated confidence graded, its calibration groups, and its hit
+    rate by surprise size."""
+    lines = [
+        f"confidence ({scope})",
+        "instrument   calls  stated  right  Brier   coin p  drift Brier  drift p  in band  verdict",
+    ]
+    for instrument, g in grades.items():
+        if not g.calls:
+            lines.append(
+                f"{instrument:<12} {0:<6} {'—':<7} {'—':<6} {'—':<7} {'—':<7} "
+                f"{'—':<12} {'—':<8} {'—':<8} {g.verdict}"
+            )
+            continue
+        verdict = f"{g.verdict} ({', '.join(g.failed)})" if g.failed else g.verdict
+        lines.append(
+            f"{instrument:<12} {g.calls:<6} {g.stated:<7.0%} {g.right / g.calls:<6.0%} "
+            f"{g.brier:<7.4f} {g.coin_p:<7.4f} {g.drift_brier:<12.4f} {g.drift_p:<8.4f} "
+            f"{f'{g.inside}/{g.banded}':<8} {verdict}"
+        )
+    lines += [
+        "",
+        f"calibration ({scope})",
+        "instrument   group          calls  stated  right  allowed",
+    ]
+    for instrument, g in grades.items():
+        for group in g.groups:
+            if group.calls:
+                low, high = group.allowed
+                mark = "" if group.passes else "  outside"
+                if group.calls < study.MIN_GROUP:
+                    mark = "  too few to check"
+                lines.append(
+                    f"{instrument:<12} {group.label:<14} {group.calls:<6} {group.stated:<7.0%} "
+                    f"{group.right:<6} {low}–{high}{mark}"
+                )
+    lines += [
+        "",
+        f"hit rate by surprise size ({scope})",
+        f"instrument   {'under 2×' + step:<15} 2×{step} and over",
+    ]
+    for instrument, g in grades.items():
+        cells = [f"{right}/{calls}" if calls else "—" for right, calls in g.by_size]
+        lines.append(f"{instrument:<12} {cells[0]:<15} {cells[1]}")
+    return [line.rstrip() for line in lines]
+
+
 def _predict(args: argparse.Namespace) -> int:
     flow = flows.flow_named(args.event)
     rule = flow.surprise_rule
@@ -383,7 +432,8 @@ def _predict(args: argparse.Namespace) -> int:
         return 1
     if args.actual is not None:
         return _predict_release(flow, rule, args.actual, con)
-    predictions = study.predict_links(flow, baseline, con=con)
+    confident = study.confident_links(flow, baseline, con=con)
+    predictions = {instrument: [c.call for c in calls] for instrument, calls in confident.items()}
     first, last = (f"{month:%Y-%m}" for month in expectations.COVID_MONTHS)
     print(
         f"{rule.combinations[0][0]} against {_source_label(baseline)}: each release predicted "
@@ -405,6 +455,25 @@ def _predict(args: argparse.Namespace) -> int:
         f"{study.HOLDS} = right on at least {study.HIT_RATE_BAR:.0%} of at least "
         f"{study.MIN_PREDICTIONS} predictions, binomial p < {study.TRACK_P_BAR} against 50%; "
         f"{study.TOO_FEW} = under {study.MIN_PREDICTIONS} predictions"
+    )
+    for leave_out, scope in ((False, "all"), (True, f"without {first} … {last}")):
+        confidence = {
+            instrument: study.grade_confidence(
+                [c for c in calls if not (leave_out and first <= c.call.month <= last)],
+                rule.noticeable,
+            )
+            for instrument, calls in confident.items()
+        }
+        print()
+        for line in describe_confidence(confidence, scope, rule.step):
+            print(line)
+    print()
+    print(
+        f"{study.HONEST} = on at least {study.MIN_STATED} calls with a probability (from the "
+        f"{study.MIN_CALLS + 1}st call on): each group of at least {study.MIN_GROUP} right as "
+        f"often as it states, Brier below a coin's and the drift's with p < {study.BRIER_P_BAR}, "
+        f"and half the moves in their band; {study.TOO_CLOSE} = below, but p not under "
+        f"{study.BRIER_P_BAR}; with and without COVID, honest only if both are"
     )
     return 0
 
