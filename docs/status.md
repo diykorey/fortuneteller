@@ -14,13 +14,13 @@ links too few. Rung 3 complete. *(PR #132.)*
 
 ## In progress
 
-Nothing.
+Step 4 spec: more events — retail sales, core PCE and GDP as event flows, each with
+Nasdaq's consensus, run up rungs 1–3; shared days left out. *(PR #133.)*
 
 ## Next
 
-A decision: roadmap step 4 (more events, more calls to calibrate on), ladder rung 4 (keep score:
-log live calls and grade them), or sharper measurement (paid consensus, intraday prices). Not yet
-made.
+Step 4 step 1: the three flows from FRED, actuals from the release day's levels; `load-releases`,
+`load-prices` and `raw-move` on them.
 
 ## Done
 
@@ -125,3 +125,6 @@ each is fixed or dropped; it is not rewritten when a task finishes.
 - In 1990–2007 the 10-year yield and the dollar move more the day after a Fed decision than on the
   day; either their close then came before the statement, or the reaction ran on. See
   [Precision](precision.md), "Close times".
+- Since 2008, 19 CPI releases share their day with retail sales, and 7 jobs reports with retail
+  sales or core PCE; CPI's and the jobs report's tables keep those days. See
+  [step 4](steps/step-4-more-events.md#shared-days).
