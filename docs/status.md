@@ -10,7 +10,7 @@ Where the work is and what comes next. Two rules keep it current:
 
 Rung 3, step 1 — `study.confident_calls`: each walk-forward call with its probability, drift
 probability and 50% move band, from what came before it; nothing before 20 earlier calls.
-*(PR #TBD.)*
+*(PR #129.)*
 
 ## In progress
 
@@ -26,7 +26,7 @@ COVID; the binomial interval at any rate in `stats.py`.
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-12 | Rung 3 step 1: `confident_calls`, a probability and a band per call | PR #TBD |
+| 2026-10-12 | Rung 3 step 1: `confident_calls`, a probability and a band per call | PR #129 |
 | 2026-10-12 | Rung 3 spec: honest confidence — a probability and a band per call, graded | PR #128 |
 | 2026-10-12 | Rung 2 step 4: results — jobs-report links hold, the dollar clearly; CPI too few; rung 2 complete | PR #127 |
 | 2026-10-12 | Rung 2 step 3: `predict --actual`, the next release's call | PR #126 |
