@@ -12,7 +12,7 @@ Free consensus, step 3 — results: against Nasdaq's consensus, the jobs report'
 dollar links pass from 2008 on, with and without COVID, and are clearly stronger than against the
 trend (yield right 67–69% against 60–63%); for CPI the yield passes against every expected value
 and the dollar against the consensus only. Official verdicts unchanged. The free consensus is
-complete. *(PR #TBD.)*
+complete. *(PR #122.)*
 
 ## In progress
 
@@ -27,7 +27,7 @@ consensus (yield and dollar on jobs reports, the yield and the dollar on CPI), a
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-09 | Free consensus step 3: results — jobs-report links pass, stronger; CPI's dollar passes against the consensus | PR #TBD |
+| 2026-10-09 | Free consensus step 3: results — jobs-report links pass, stronger; CPI's dollar passes against the consensus | PR #122 |
 | 2026-10-09 | Free consensus step 2: Nasdaq's consensus as a source, judged beside the trend | PR #121 |
 | 2026-10-09 | Free consensus: spec revised to Nasdaq; step 1, the calendars fetched and matched | PR #120 |
 | 2026-10-09 | Data sources survey: ~250 free sources from FinceptTerminal graded; Nasdaq, TradingView and Forex Factory consensus compared | PR #119 |
