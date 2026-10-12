@@ -10,7 +10,7 @@ Where the work is and what comes next. Two rules keep it current:
 
 Rung 2, step 2 — `predict --event cpi|nfp`: each link's walk-forward record (predictions, right,
 hit rate, binomial p, how often its expected direction alone was right) and the verdict, with and
-without COVID. *(PR #TBD.)*
+without COVID. *(PR #125.)*
 
 ## In progress
 
@@ -25,7 +25,7 @@ calendars, its surprise, and a line per open link.
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-12 | Rung 2 step 2: `predict`, each link's walk-forward record and verdict | PR #TBD |
+| 2026-10-12 | Rung 2 step 2: `predict`, each link's walk-forward record and verdict | PR #125 |
 | 2026-10-12 | Rung 2 step 1: the walk-forward replay | PR #124 |
 | 2026-10-12 | Rung 2 spec: predict the next release, tested walk-forward | PR #123 |
 | 2026-10-09 | Free consensus step 3: results — jobs-report links pass, stronger; CPI's dollar passes against the consensus | PR #122 |
