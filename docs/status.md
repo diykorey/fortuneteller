@@ -10,7 +10,7 @@ Where the work is and what comes next. Two rules keep it current:
 
 Rung 2, step 3 — `predict --event cpi|nfp --actual X`: the next release's consensus from both
 calendars, its surprise, and a call per open link, or silence with the reason (no consensus yet,
-calendars disagree, small surprise, link closed). *(PR #TBD.)*
+calendars disagree, small surprise, link closed). *(PR #126.)*
 
 ## In progress
 
@@ -26,7 +26,7 @@ gate has no minimum history of its own (from the 2026-10-12 review).
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-12 | Rung 2 step 3: `predict --actual`, the next release's call | PR #TBD |
+| 2026-10-12 | Rung 2 step 3: `predict --actual`, the next release's call | PR #126 |
 | 2026-10-12 | Rung 2 step 2: `predict`, each link's walk-forward record and verdict | PR #125 |
 | 2026-10-12 | Rung 2 step 1: the walk-forward replay | PR #124 |
 | 2026-10-12 | Rung 2 spec: predict the next release, tested walk-forward | PR #123 |
