@@ -367,20 +367,26 @@ def describe_confidence(
     rate by surprise size."""
     lines = [
         f"confidence ({scope})",
-        "instrument   calls  stated  right  Brier   coin p  drift Brier  drift p  in band  verdict",
+        "instrument   calls  stated  right  Brier   coin p  drift Brier  drift p  in band (allowed)  "
+        "verdict",
     ]
     for instrument, g in grades.items():
         if not g.calls:
             lines.append(
                 f"{instrument:<12} {0:<6} {'—':<7} {'—':<6} {'—':<7} {'—':<7} "
-                f"{'—':<12} {'—':<8} {'—':<8} {g.verdict}"
+                f"{'—':<12} {'—':<8} {'—':<18} {g.verdict}"
             )
             continue
-        verdict = f"{g.verdict} ({', '.join(g.failed)})" if g.failed else g.verdict
+        reasons = [", ".join(g.missed)] if g.missed else []
+        if g.unproven:
+            reasons.append(f"{', '.join(g.unproven)} unproven")
+        verdict = f"{g.verdict} ({'; '.join(reasons)})" if reasons else g.verdict
+        low, high = g.band_allowed
+        band = f"{g.inside}/{g.banded} ({low}–{high})"
         lines.append(
             f"{instrument:<12} {g.calls:<6} {g.stated:<7.0%} {g.right / g.calls:<6.0%} "
             f"{g.brier:<7.4f} {g.coin_p:<7.4f} {g.drift_brier:<12.4f} {g.drift_p:<8.4f} "
-            f"{f'{g.inside}/{g.banded}':<8} {verdict}"
+            f"{band:<18} {verdict}"
         )
     lines += [
         "",
@@ -400,7 +406,7 @@ def describe_confidence(
                 )
     lines += [
         "",
-        f"hit rate by surprise size ({scope})",
+        f"hit rate by surprise size, calls with a probability ({scope})",
         f"instrument   {'under 2×' + step:<15} 2×{step} and over",
     ]
     for instrument, g in grades.items():
@@ -456,6 +462,7 @@ def _predict(args: argparse.Namespace) -> int:
         f"{study.MIN_PREDICTIONS} predictions, binomial p < {study.TRACK_P_BAR} against 50%; "
         f"{study.TOO_FEW} = under {study.MIN_PREDICTIONS} predictions"
     )
+    scoped: dict[str, list[study.ConfidenceGrade]] = {instrument: [] for instrument in confident}
     for leave_out, scope in ((False, "all"), (True, f"without {first} … {last}")):
         confidence = {
             instrument: study.grade_confidence(
@@ -464,16 +471,23 @@ def _predict(args: argparse.Namespace) -> int:
             )
             for instrument, calls in confident.items()
         }
+        for instrument, g in confidence.items():
+            scoped[instrument].append(g)
         print()
         for line in describe_confidence(confidence, scope, rule.step):
             print(line)
     print()
+    print("confidence verdict (honest only if honest with and without COVID)")
+    for instrument, both in scoped.items():
+        print(f"{instrument:<12} {study.overall_confidence(both)}")
+    print()
     print(
-        f"{study.HONEST} = on at least {study.MIN_STATED} calls with a probability (from the "
-        f"{study.MIN_CALLS + 1}st call on): each group of at least {study.MIN_GROUP} right as "
-        f"often as it states, Brier below a coin's and the drift's with p < {study.BRIER_P_BAR}, "
-        f"and half the moves in their band; {study.TOO_CLOSE} = below, but p not under "
-        f"{study.BRIER_P_BAR}; with and without COVID, honest only if both are"
+        f"{study.HONEST} = on at least {study.MIN_STATED} calls with a probability (from call "
+        f"{study.MIN_CALLS + 1} on):\n"
+        f"  each group of at least {study.MIN_GROUP} calls right as often as it states;\n"
+        f"  Brier below a coin's and the drift's, each with sign-flip p < {study.BRIER_P_BAR};\n"
+        "  the moves inside their band as often as a coin would put them there.\n"
+        f"{study.TOO_CLOSE} = Brier below, but p not under {study.BRIER_P_BAR}"
     )
     return 0
 

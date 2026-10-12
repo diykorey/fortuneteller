@@ -8,6 +8,7 @@ import pytest
 
 from fortuneteller.stats import binomial_range, sign_flip_p, theil_sen
 from fortuneteller.study import (
+    MIN_STATED,
     COIN_BRIER,
     HONEST,
     MIN_CALLS,
@@ -18,6 +19,7 @@ from fortuneteller.study import (
     Prediction,
     confident_calls,
     grade_confidence,
+    overall_confidence,
 )
 
 STEP = 0.1
@@ -158,7 +160,7 @@ def test_a_link_right_as_often_as_it_says_and_beating_drift_is_honest() -> None:
     g = grade_confidence(_graded(200, 0.7, 0.5, 7), STEP)
 
     # then every check passes
-    assert (g.verdict, g.failed) == (HONEST, ())
+    assert (g.verdict, g.missed, g.unproven) == (HONEST, (), ())
     assert (g.calls, g.right, g.inside, g.banded) == (200, 140, 100, 200)
 
 
@@ -170,7 +172,7 @@ def test_a_link_no_better_than_the_drift_is_not_honest() -> None:
 
     # then the link does not beat drift
     assert g.brier >= g.drift_brier
-    assert (g.verdict, g.failed) == (NOT_HONEST, ("drift",))
+    assert (g.verdict, g.missed) == (NOT_HONEST, ("drift",))
 
 
 def test_a_band_half_as_wide_as_it_should_be_is_not_honest() -> None:
@@ -179,7 +181,7 @@ def test_a_band_half_as_wide_as_it_should_be_is_not_honest() -> None:
     g = grade_confidence(_graded(200, 0.7, 0.5, 7, inside_in_4=1), STEP)
 
     # then the band check fails
-    assert (g.verdict, g.failed) == (NOT_HONEST, ("band",))
+    assert (g.verdict, g.missed) == (NOT_HONEST, ("band",))
 
 
 def test_a_link_stating_75_percent_but_right_half_the_time_is_not_calibrated() -> None:
@@ -191,8 +193,7 @@ def test_a_link_stating_75_percent_but_right_half_the_time_is_not_calibrated() -
     assert [(x.label, x.calls, x.passes) for x in g.groups if x.calls] == [
         ("70% and over", 100, False)
     ]
-    assert g.verdict == NOT_HONEST
-    assert "calibration" in g.failed
+    assert (g.verdict, g.missed) == (NOT_HONEST, ("calibration", "coin", "drift"))
 
 
 def test_a_slight_edge_on_few_calls_is_too_close_to_tell() -> None:
@@ -202,7 +203,7 @@ def test_a_slight_edge_on_few_calls_is_too_close_to_tell() -> None:
 
     # then it beats both, but not clearly
     assert g.brier < g.drift_brier < COIN_BRIER
-    assert g.verdict == TOO_CLOSE
+    assert (g.verdict, g.missed, g.unproven) == (TOO_CLOSE, (), ("coin", "drift"))
 
 
 def test_calls_without_a_probability_are_not_graded_and_too_few_is_said() -> None:
@@ -227,3 +228,44 @@ def test_hit_rate_by_size_splits_at_twice_the_step() -> None:
 
     # when / then
     assert grade_confidence(calls, STEP).by_size == ((1, 2), (1, 1))
+
+
+def test_a_link_without_any_band_cannot_be_honest() -> None:
+    # given an otherwise honest link whose calls carry no band
+    calls = [ConfidentCall(c.call, c.probability, c.drift, None) for c in _graded(200, 0.7, 0.5, 7)]
+
+    # when they are graded
+    g = grade_confidence(calls, STEP)
+
+    # then the band check is failed, not passed for want of moves to count
+    assert (g.verdict, g.missed, g.banded) == (NOT_HONEST, ("band",), 0)
+
+
+def test_a_long_record_does_not_overflow_the_binomial_range() -> None:
+    # given / when / then 2,000 tries at 30% allow 560 to 640 hits
+    assert binomial_range(2000, 0.3) == (560, 640)
+
+
+@pytest.mark.parametrize(
+    ("verdicts", "overall"),
+    [
+        ((HONEST, HONEST), HONEST),
+        ((HONEST, TOO_CLOSE), TOO_CLOSE),
+        ((TOO_CLOSE, NOT_HONEST), NOT_HONEST),
+        ((HONEST, TOO_FEW), TOO_FEW),
+    ],
+)
+def test_a_link_is_honest_only_if_it_is_with_and_without_covid(
+    verdicts: tuple[str, str], overall: str
+) -> None:
+    # given a link's two verdicts, with and without COVID
+    honest = grade_confidence(_graded(200, 0.7, 0.5, 7), STEP)
+    by_verdict = {
+        HONEST: honest,
+        TOO_CLOSE: grade_confidence(_graded(40, 0.6, 0.55, 6), STEP),
+        NOT_HONEST: grade_confidence(_graded(200, 0.55, 0.6, 6), STEP),
+        TOO_FEW: grade_confidence(_graded(MIN_STATED - 1, 0.7, 0.5, 7), STEP),
+    }
+
+    # when / then the overall verdict is the weaker one
+    assert overall_confidence([by_verdict[v] for v in verdicts]) == overall

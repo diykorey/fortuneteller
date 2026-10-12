@@ -355,13 +355,22 @@ def test_predict_grades_each_link_s_stated_confidence(
     ] == [
         "confidence (all)",
         "calibration (all)",
-        "hit rate by surprise size (all)",
+        "hit rate by surprise size, calls with a probability (all)",
         "confidence (without 2020-03 … 2021-04)",
         "calibration (without 2020-03 … 2021-04)",
-        "hit rate by surprise size (without 2020-03 … 2021-04)",
+        "hit rate by surprise size, calls with a probability (without 2020-03 … 2021-04)",
     ]
     start = out.index("confidence (all)")
     rows = out[start + 2 : start + 6]
     assert [row.split()[0] for row in rows] == ["SPY", "UST10Y", "DXY", "VIX"]
     assert all(row.endswith(" honest") for row in rows)
-    assert out[-1].startswith("honest = on at least 30 calls with a probability")
+    start = out.index("confidence (without 2020-03 … 2021-04)")
+    assert all(row.endswith(" honest") for row in out[start + 2 : start + 6])
+    start = out.index("confidence verdict (honest only if honest with and without COVID)")
+    assert out[start + 1 : start + 5] == [
+        "SPY / ES     honest",
+        "UST10Y / ZN  honest",
+        "DXY          honest",
+        "VIX          honest",
+    ]
+    assert out[start + 6].startswith("honest = on at least 30 calls with a probability")

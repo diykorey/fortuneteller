@@ -762,7 +762,8 @@ class CalibrationGroup:
 
 @dataclass(frozen=True)
 class ConfidenceGrade:
-    """A link's calls with a probability, graded: ``failed`` names the checks that missed."""
+    """A link's calls with a probability, graded: ``missed`` names the checks it failed outright,
+    ``unproven`` those it passed without p under ``BRIER_P_BAR``."""
 
     calls: int
     right: int
@@ -777,67 +778,68 @@ class ConfidenceGrade:
     groups: tuple[CalibrationGroup, ...]
     by_size: tuple[tuple[int, int], tuple[int, int]]
     verdict: str
-    failed: tuple[str, ...]
+    missed: tuple[str, ...]
+    unproven: tuple[str, ...]
 
 
 def grade_confidence(calls: Sequence[ConfidentCall], step: float) -> ConfidenceGrade:
-    stated = [c for c in calls if c.probability is not None and c.drift is not None]
+    stated = [
+        (c.call, c.probability, c.drift, c.band)
+        for c in calls
+        if c.probability is not None and c.drift is not None
+    ]
     n = len(stated)
-    right = [float(c.call.right) for c in stated]
-    said = [c.probability or 0.0 for c in stated]
-    drift = [c.drift or 0.0 for c in stated]
-    link = [(p - r) ** 2 for p, r in zip(said, right, strict=True)]
-    against_drift = [(d - r) ** 2 for d, r in zip(drift, right, strict=True)]
+    link = [(p - call.right) ** 2 for call, p, _, _ in stated]
+    against_drift = [(d - call.right) ** 2 for call, _, d, _ in stated]
     brier = sum(link) / n if n else 0.0
     drift_brier = sum(against_drift) / n if n else 0.0
     coin_p = stats.sign_flip_p([COIN_BRIER - b for b in link])
     drift_p = stats.sign_flip_p([d - b for d, b in zip(against_drift, link, strict=True)])
-    banded = [c for c in stated if c.band is not None]
-    inside = sum(c.band[0] <= c.call.move <= c.band[1] for c in banded if c.band)
+    banded = [(call, band) for call, _, _, band in stated if band is not None]
+    inside = sum(low <= call.move <= high for call, (low, high) in banded)
     band_allowed = stats.binomial_range(len(banded), 0.5)
     groups = []
     for label, low, high in CALIBRATION_GROUPS:
-        members = [c for c in stated if low <= (c.probability or 0.0) < high]
-        mean = sum(c.probability or 0.0 for c in members) / len(members) if members else 0.0
+        members = [(call, p) for call, p, _, _ in stated if low <= p < high]
+        mean = sum(p for _, p in members) / len(members) if members else 0.0
         groups.append(
             CalibrationGroup(
                 label,
                 len(members),
-                sum(c.call.right for c in members),
+                sum(call.right for call, _ in members),
                 mean,
                 stats.binomial_range(len(members), mean),
             )
         )
-    small = [c for c in stated if abs(c.call.surprise) < 2 * step]
-    large = [c for c in stated if abs(c.call.surprise) >= 2 * step]
-    missed = [
+    small = [call for call, _, _, _ in stated if abs(call.surprise) < 2 * step]
+    large = [call for call, _, _, _ in stated if abs(call.surprise) >= 2 * step]
+    missed = tuple(
         name
         for name, fails in (
             ("calibration", not all(g.passes for g in groups)),
             ("coin", brier >= COIN_BRIER),
             ("drift", brier >= drift_brier),
-            ("band", not band_allowed[0] <= inside <= band_allowed[1]),
+            ("band", not banded or not band_allowed[0] <= inside <= band_allowed[1]),
         )
         if fails
-    ]
-    unproven = [
+    )
+    unproven = tuple(
         name
         for name, p in (("coin", coin_p), ("drift", drift_p))
         if p >= BRIER_P_BAR and name not in missed
-    ]
-    failed: tuple[str, ...] = ()
+    )
     if n < MIN_STATED:
         verdict = TOO_FEW
     elif missed:
-        verdict, failed = NOT_HONEST, tuple(missed)
+        verdict = NOT_HONEST
     elif unproven:
-        verdict, failed = TOO_CLOSE, tuple(unproven)
+        verdict = TOO_CLOSE
     else:
         verdict = HONEST
     return ConfidenceGrade(
         calls=n,
-        right=int(sum(right)),
-        stated=sum(said) / n if n else 0.0,
+        right=sum(call.right for call, _, _, _ in stated),
+        stated=sum(p for _, p, _, _ in stated) / n if n else 0.0,
         brier=brier,
         coin_p=coin_p,
         drift_brier=drift_brier,
@@ -847,9 +849,19 @@ def grade_confidence(calls: Sequence[ConfidentCall], step: float) -> ConfidenceG
         band_allowed=band_allowed,
         groups=tuple(groups),
         by_size=(
-            (sum(c.call.right for c in small), len(small)),
-            (sum(c.call.right for c in large), len(large)),
+            (sum(call.right for call in small), len(small)),
+            (sum(call.right for call in large), len(large)),
         ),
         verdict=verdict,
-        failed=failed,
+        missed=missed if n >= MIN_STATED else (),
+        unproven=unproven if n >= MIN_STATED else (),
     )
+
+
+def overall_confidence(grades: Sequence[ConfidenceGrade]) -> str:
+    """One verdict from a link's grades with and without COVID: honest only if every one is."""
+    verdicts = {g.verdict for g in grades}
+    for verdict in (NOT_HONEST, TOO_FEW, TOO_CLOSE):
+        if verdict in verdicts:
+            return verdict
+    return HONEST
