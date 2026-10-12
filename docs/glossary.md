@@ -230,6 +230,9 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **p-value** — the share of those random relabellings that did at least as well as the real data.
   Small means chance rarely does it; `p < 0.01` means fewer than 1 in 100.
 - **Return** — the percentage price change over a period.
+- **Shared day** — a day holding releases of two event flows, so its close-to-close move carries
+  both. From [step 4](steps/step-4-more-events.md#shared-days), a new flow's release on one is
+  left out of its surprise and prediction tables.
 - **Spearman rank correlation** — how consistently one quantity rises with another, computed on
   their ranks instead of their values: +1 always together, 0 unrelated, −1 always opposite. One
   extreme day can shift it only by one rank.
