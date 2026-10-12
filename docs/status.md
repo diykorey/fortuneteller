@@ -10,7 +10,7 @@ Where the work is and what comes next. Two rules keep it current:
 
 Rung 3, step 3 — `predict --actual X`: each call with its probability, the calls before it, its band
 in percent or basis points, and its link's confidence verdict; "too few calls so far" before 20.
-*(PR #TBD.)*
+*(PR #131.)*
 
 ## In progress
 
@@ -26,7 +26,7 @@ spec's review (disclosed in the spec).
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-12 | Rung 3 step 3: `predict --actual` gives each call's probability and band | PR #TBD |
+| 2026-10-12 | Rung 3 step 3: `predict --actual` gives each call's probability and band | PR #131 |
 | 2026-10-12 | Rung 3 step 2: `predict` grades each link's stated confidence | PR #130 |
 | 2026-10-12 | Rung 3 step 1: `confident_calls`, a probability and a band per call | PR #129 |
 | 2026-10-12 | Rung 3 spec: honest confidence — a probability and a band per call, graded | PR #128 |
