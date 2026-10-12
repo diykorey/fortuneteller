@@ -8,10 +8,9 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Rung 3, step 2 — `predict --event cpi|nfp`: each link's stated confidence graded (calibration
-groups, Brier against a coin and the drift with sign-flip p, band coverage) and its verdict, with
-and without COVID; the hit rate by surprise size. On real data no link's confidence is honest.
-*(PR #130.)*
+Rung 3, step 3 — `predict --actual X`: each call with its probability, the calls before it, its band
+in percent or basis points, and its link's confidence verdict; "too few calls so far" before 20.
+*(PR #TBD.)*
 
 ## In progress
 
@@ -19,13 +18,15 @@ and without COVID; the hit rate by surprise size. On real data no link's confide
 
 ## Next
 
-Rung 3, step 3 — `predict --actual X`: each call with its probability and band, or "too few calls
-so far".
+Rung 3, step 4 — results, in the spec and `mvp-results.md`: no link's stated confidence is honest;
+say which check failed per link, with and without COVID, and that the outcome was previewed in the
+spec's review (disclosed in the spec).
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-12 | Rung 3 step 3: `predict --actual` gives each call's probability and band | PR #TBD |
 | 2026-10-12 | Rung 3 step 2: `predict` grades each link's stated confidence | PR #130 |
 | 2026-10-12 | Rung 3 step 1: `confident_calls`, a probability and a band per call | PR #129 |
 | 2026-10-12 | Rung 3 spec: honest confidence — a probability and a band per call, graded | PR #128 |
