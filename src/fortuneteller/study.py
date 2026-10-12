@@ -539,3 +539,62 @@ def track_surprises(
         if combination == verdict_combination
         or any(surprises for surprises, _moves in by_instrument.values())
     }
+
+
+# Rung 2 — predict the next release (docs/steps/rung-2-predict.md).
+
+# The gate runs at every release, so it draws fewer permutations than a one-off test; p < 0.01
+# still resolves.
+GATE_PERMUTATIONS = 2_000
+
+
+@dataclass(frozen=True)
+class Prediction:
+    """A link's call at one release: the day's close moves in ``direction`` (+1 up, -1 down)."""
+
+    event_id: int
+    month: str
+    surprise: float
+    direction: int
+    move: float
+
+    @property
+    def right(self) -> bool:
+        return self.direction * self.move > 0
+
+
+def is_open(
+    surprises: Sequence[float], moves: Sequence[float], expected_sign: int, step: float
+) -> bool:
+    """Whether a link passes the surprise test (``TRACKS``) on these releases.
+
+    The hit rate is checked first: when it misses the bar the permutation test cannot change the
+    answer, and it is the expensive part.
+    """
+    noticeable = [(s, m) for s, m in zip(surprises, moves, strict=True) if abs(s) >= step]
+    if not noticeable or len(set(surprises)) < 2 or len(set(moves)) < 2:
+        return False
+    hits = sum(expected_sign * s * m > 0 for s, m in noticeable)
+    if hits / len(noticeable) < HIT_RATE_BAR:
+        return False
+    p = stats.spearman_permutation_p(surprises, moves, expected_sign, GATE_PERMUTATIONS)
+    return p < TRACK_P_BAR
+
+
+def walk_forward(
+    pairs: Sequence[tuple[int, str, float, float]], expected_sign: int, step: float
+) -> list[Prediction]:
+    """Replay a link's releases, oldest first, as (event id, month, surprise, move).
+
+    At each release with a noticeable surprise the link predicts only if it is open on the releases
+    before it; the prediction is the expected sign times the surprise's sign.
+    """
+    predictions: list[Prediction] = []
+    for i, (event_id, month, surprise, move) in enumerate(pairs):
+        if abs(surprise) < step:
+            continue
+        earlier = pairs[:i]
+        if is_open([e[2] for e in earlier], [e[3] for e in earlier], expected_sign, step):
+            direction = expected_sign if surprise > 0 else -expected_sign
+            predictions.append(Prediction(event_id, month, surprise, direction, move))
+    return predictions

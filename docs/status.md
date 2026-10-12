@@ -8,26 +8,25 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Free consensus, step 3 — results: against Nasdaq's consensus, the jobs report's 10-year yield and
-dollar links pass from 2008 on, with and without COVID, and are clearly stronger than against the
-trend (yield right 67–69% against 60–63%); for CPI the yield passes against every expected value
-and the dollar against the consensus only. Official verdicts unchanged. The free consensus is
-complete. *(PR #122.)*
+Rung 2, step 1 — `study.walk_forward`: each link, at each release with a noticeable surprise,
+predicts the day's direction only if it passes the surprise test on the releases before it. Tested
+on planted links (80% followed: opens, ~80% right; unrelated: stays silent) and for look-ahead.
+About 20 seconds for all six links on real data. *(PR #TBD.)*
 
 ## In progress
 
-**Rung 2, predict the next release**: [rung-2-predict.md](steps/rung-2-predict.md). Spec under
-review.
+**Rung 2, predict the next release**: [rung-2-predict.md](steps/rung-2-predict.md).
 
 ## Next
 
-Rung 2, step 1 — `study.walk_forward`: per link, open or not on earlier releases, the prediction,
-graded against the day's move.
+Rung 2, step 2 — `predict --event cpi|nfp`: per link, predictions issued, right, hit rate, p, the
+baseline and the verdict, with and without COVID.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-12 | Rung 2 spec and step 1: the walk-forward replay | PR #TBD |
 | 2026-10-09 | Free consensus step 3: results — jobs-report links pass, stronger; CPI's dollar passes against the consensus | PR #122 |
 | 2026-10-09 | Free consensus step 2: Nasdaq's consensus as a source, judged beside the trend | PR #121 |
 | 2026-10-09 | Free consensus: spec revised to Nasdaq; step 1, the calendars fetched and matched | PR #120 |
