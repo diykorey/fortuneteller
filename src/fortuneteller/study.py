@@ -688,7 +688,8 @@ class ConfidentCall:
     """A walk-forward call with what was known before it: ``probability`` is the link's smoothed
     record on its earlier calls, ``drift`` how often earlier noticeable releases closed the called
     way, and ``band`` the 25th to 75th percentile of the expected move, in the market's unit. All
-    three are ``None`` before ``MIN_CALLS`` earlier calls."""
+    three are ``None`` before ``MIN_CALLS`` earlier calls; the band also when the earlier noticeable
+    surprises are all equal, as no slope can be fitted."""
 
     call: Prediction
     probability: float | None
@@ -713,17 +714,17 @@ def confident_calls(
         surprises = [p[2] for p in earlier]
         moves = [p[3] for p in earlier]
         with_call = sum(call.direction * m > 0 for m in moves)
-        slope = stats.theil_sen(surprises, moves)
-        low, _, high = quantiles(
-            [m - slope * s for s, m in zip(surprises, moves, strict=True)], n=4, method="inclusive"
-        )
-        middle = slope * call.surprise
-        confident.append(
-            ConfidentCall(
-                call,
-                (right + 1) / (n + 2),
-                (with_call + 1) / (len(moves) + 2),
-                (middle + low, middle + high),
+        band = None
+        if len(set(surprises)) > 1:
+            slope = stats.theil_sen(surprises, moves)
+            low, _, high = quantiles(
+                [m - slope * s for s, m in zip(surprises, moves, strict=True)],
+                n=4,
+                method="inclusive",
             )
+            middle = slope * call.surprise
+            band = (middle + low, middle + high)
+        confident.append(
+            ConfidentCall(call, (right + 1) / (n + 2), (with_call + 1) / (len(moves) + 2), band)
         )
     return confident

@@ -2,9 +2,11 @@
 band, from what came before it."""
 
 import random
+from statistics import quantiles
 
 import pytest
 
+from fortuneteller.stats import theil_sen
 from fortuneteller.study import MIN_CALLS, ConfidentCall, confident_calls
 
 STEP = 0.1
@@ -57,13 +59,18 @@ def test_the_first_calls_state_nothing_and_later_ones_their_record(
     first = planted[MIN_CALLS]
 
     # when / then the first MIN_CALLS calls carry nothing, and the next states the smoothed record
-    # of those before it and the share of earlier noticeable releases that closed its way
+    # of those before it, the share of earlier noticeable releases that closed its way, and the
+    # slope's move plus the quartiles of their misses
     assert all(c.probability is c.drift is c.band is None for c in planted[:MIN_CALLS])
     right = sum(c.call.right for c in planted[:MIN_CALLS])
     earlier = [r for r in releases[: first.call.event_id] if abs(r[2]) >= STEP]
     with_it = sum(first.call.direction * r[3] > 0 for r in earlier)
     assert first.probability == (right + 1) / (MIN_CALLS + 2)
     assert first.drift == (with_it + 1) / (len(earlier) + 2)
+    slope = theil_sen([r[2] for r in earlier], [r[3] for r in earlier])
+    low, _, high = quantiles([r[3] - slope * r[2] for r in earlier], n=4, method="inclusive")
+    middle = slope * first.call.surprise
+    assert first.band == (middle + low, middle + high)
 
 
 def test_nothing_at_or_after_a_call_changes_its_numbers() -> None:
@@ -92,3 +99,21 @@ def test_nothing_at_or_after_a_call_changes_its_numbers() -> None:
 
     # then no call's probability, drift or band depends on its own move or anything after it
     assert differing == []
+
+
+def test_a_call_whose_earlier_noticeable_surprises_are_all_equal_has_no_band() -> None:
+    # given a link whose noticeable surprises are all 0.2 and whose moves follow 85% of them; the
+    # small surprises vary, so the gate can still open
+    rng = random.Random(7)
+    releases = []
+    for i in range(160):
+        surprise = 0.2 if i % 2 else round(rng.uniform(-0.05, 0.05), 3)
+        way = 1 if rng.random() < 0.85 else -1
+        releases.append((i, f"r{i}", surprise, way * 0.01 * surprise + rng.gauss(0, 0.0002)))
+
+    # when it is replayed
+    stated = [c for c in confident_calls(releases, 1, STEP) if c.probability is not None]
+
+    # then its calls state a probability but no band
+    assert stated
+    assert all(c.band is None for c in stated)
