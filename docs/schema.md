@@ -14,14 +14,14 @@ through `db.insert_models` (`effect_size_matrix`, which nothing writes yet, has 
 
 | Table | Kind | One row per | Filled by | Rows once loaded |
 | --- | --- | --- | --- | --- |
-| [`event_types`](#event_types) | Reference | Kind of market-moving event | `seed` | 31 |
+| [`event_types`](#event_types) | Reference | Kind of market-moving event | `seed` | 34 |
 | [`instruments`](#instruments) | Reference | Tradable instrument | `seed` | 13 |
 | [`effect_size_seed`](#effect_size_seed) | Reference | Event type × instrument guess | `seed` | 15 |
 | [`news_sources`](#news_sources) | Reference | News or data feed | `seed` | 25 |
 | [`countries`](#countries) | Reference | Country | `seed` | 10 |
 | [`event_instances`](#event_instances) | Fact | Real event that happened | `load-releases` (MVP step 1, rung 1) | 649 CPI + 856 NFP releases + 275 Fed decisions |
 | [`daily_bars`](#daily_bars) | Fact | Instrument × trading day closing price | `load-prices` (MVP step 2) | about 58,500 |
-| [`observations`](#observations) | Fact | Event × instrument reaction | `load-prices` (MVP step 2, rung 1) | 2,698 CPI + 2,785 NFP + 1,316 Fed |
+| [`observations`](#observations) | Fact | Event × instrument reaction | `load-prices` (MVP step 2, rung 1) | 2,698 CPI + 2,785 NFP + 1,316 Fed + 1,515 retail sales + 1,559 PCE + 660 GDP |
 | [`surprises`](#surprises) | Fact | CPI or jobs-report release × measure × expected value | `load-surprises` (MVP step 4, rung 1) | 1,287 CPI + 844 NFP |
 | [`effect_size_matrix`](#effect_size_matrix) | Derived | Event type × instrument measurement | Nothing planned yet | 0 |
 
@@ -42,7 +42,9 @@ CSVs. No foreign key enforces this except `observations.event_id`; tests guard t
 
 ## event_types
 
-The taxonomy of market-moving events. Source: `data/seed/event_types.csv`, complete (31 rows). The
+The taxonomy of market-moving events. Source: `data/seed/event_types.csv`, 31 rows from Notion, complete, and
+three added in [step 4](steps/step-4-more-events.md): `Retail sales`, `PCE inflation` and `GDP
+growth`, split from `Other macro data`, since an event flow is its (type, country). The
 MVP uses exactly one row, `CPI / inflation surprise`.
 
 | Column | Type | Meaning |
@@ -70,7 +72,7 @@ MVP uses exactly one row, `CPI / inflation surprise`.
 
 | Value | Meaning |
 | --- | --- |
-| `positive` | Good for risk assets: they usually rise. None of the 31 seed rows uses it today. |
+| `positive` | Good for risk assets: they usually rise. None of the 34 seed rows uses it today. |
 | `negative` | Bad for risk assets: they usually fall, and safe havens (Treasuries, gold) rise. |
 | `both` | Depends on the details. For CPI, a hotter-than-expected print is usually bad and a cooler one good. |
 
@@ -235,11 +237,11 @@ change.
 
 | Column | Type | Meaning | Filled today |
 | --- | --- | --- | --- |
-| `event_id` | BIGINT, **PK** | Stable id: the event type's code, then the release day as `YYYYMMDD` — CPI on 2022-09-13 is `120220913` (`flows.event_id`; the code is the event flow's `type_code`). Codes: `1` CPI, `2` NFP, `3` US central-bank decision. Unique across event types, and sorted by date within one. | Yes |
-| `event_type` | TEXT | An `event_types.event_type`: `CPI / inflation surprise`, `NFP / labor data` or `Central-bank decision`. | Yes |
-| `event_ts` | TIMESTAMP | When the market learned of the event: for CPI and NFP, the release day at 08:30 New York time; for a Fed decision, the time its statement came out: 14:15 New York until 2013-03-20 and 14:00 since, with the exceptions listed in `study.FOMC_ANNOUNCED_AT` (unscheduled decisions, and 12:30 on the 2011–2012 press-conference days); sources in [rung 1](steps/rung-1-more-events.md). Stored as **naive UTC**, because DuckDB would shift a time-zone-aware value into the session's time zone. | Yes |
+| `event_id` | BIGINT, **PK** | Stable id: the event type's code, then the release day as `YYYYMMDD` — CPI on 2022-09-13 is `120220913` (`flows.event_id`; the code is the event flow's `type_code`). Codes: `1` CPI, `2` NFP, `3` US central-bank decision, `4` retail sales, `5` core PCE, `6` GDP. Unique across event types, and sorted by date within one. | Yes |
+| `event_type` | TEXT | An `event_types.event_type`: `CPI / inflation surprise`, `NFP / labor data`, `Central-bank decision`, `Retail sales`, `PCE inflation` or `GDP growth`. | Yes |
+| `event_ts` | TIMESTAMP | When the market learned of the event: for CPI, NFP, retail sales, PCE and GDP, the release day at 08:30 New York time; for a Fed decision, the time its statement came out: 14:15 New York until 2013-03-20 and 14:00 since, with the exceptions listed in `study.FOMC_ANNOUNCED_AT` (unscheduled decisions, and 12:30 on the 2011–2012 press-conference days); sources in [rung 1](steps/rung-1-more-events.md). Stored as **naive UTC**, because DuckDB would shift a time-zone-aware value into the session's time zone. | Yes |
 | `country` | TEXT | A `countries.country`: the event's origin, its flow's `country`. Events are read back by event type **and** country, so one type in two countries never mixes. Today always `United States`. | Yes |
-| `detail` | TEXT | What the event is about. For CPI and NFP, the reference month as `YYYY-MM`, i.e. the month measured: about six weeks before `event_ts` for CPI, about one for NFP. When a release day first publishes two months (NFP, October and November 2025), the row is the newer month. For a Fed decision, `scheduled meeting` or `unscheduled`. | Yes |
+| `detail` | TEXT | What the event is about. For CPI, NFP, retail sales and PCE, the reference month as `YYYY-MM`, i.e. the month measured: about six weeks before `event_ts` for CPI, about one for NFP; for GDP, the quarter's first month (`2026-04` is the second quarter). When a release day first publishes two months (NFP, October and November 2025; PCE, February and March 2019, and October and November 2025), the row is the newer month. For a Fed decision, `scheduled meeting` or `unscheduled`. | Yes |
 | `scheduled` | BOOLEAN | `true` if the date was known in advance (a data release, a scheduled Fed meeting), `false` if not (an emergency Fed cut, a war, a hack). | Yes |
 | `consensus` | DOUBLE | What forecasters expected before the release, from a survey. | No: no free survey history exists. Step 4's expected values are a trend and a model, so they go in [`surprises`](#surprises) instead |
 | `actual` | DOUBLE | The number released, as first published, before any revision. For CPI, the index level; for NFP, total non-farm payrolls in thousands. NULL for a Fed decision: this rung measures only that it happened. | Yes, except Fed decisions |
@@ -249,7 +251,7 @@ change.
 | `priced_in_prior` | DOUBLE | How much the market had priced in beforehand (e.g. from options or prediction markets). | No; nothing planned |
 | `vix_t0` | DOUBLE | VIX level at the event, as a measure of market nervousness. | No; nothing planned |
 | `rate_regime` | TEXT | Whether the Fed was hiking, cutting, or on hold. | No; nothing planned |
-| `quality` | TEXT | How trustworthy the row is. CPI and NFP rows are `first_release`: values as first printed, not revised. Fed decisions are `fed_calendar`. | Yes |
+| `quality` | TEXT | How trustworthy the row is. CPI, NFP, retail sales, PCE and GDP rows are `first_release`: values as first printed, not revised. Fed decisions are `fed_calendar`. | Yes |
 
 ### Values
 
@@ -261,7 +263,7 @@ warning: the 14 unscheduled Fed decisions since 1994 (e.g. 2001-09-17, 2020-03-1
 
 | Value | Meaning |
 | --- | --- |
-| `first_release` | `actual` is the number as first published on `event_ts`, before any later revision — the number the market actually reacted to. Every CPI and NFP row. |
+| `first_release` | `actual` is the number as first published on `event_ts`, before any later revision — the number the market actually reacted to. Every CPI, NFP, retail sales, PCE and GDP row. |
 | `fed_calendar` | The day comes from the Fed's own meeting calendar, cross-checked: every target-rate change since 1994 falls on a stored decision or up to 3 days after it. Every Fed row. |
 
 **`rate_regime`** (not filled yet): intended values `hiking`, `cutting`, `on-hold`, per the legacy
@@ -343,6 +345,9 @@ About 2,698 rows (checked 2026-09-28): 649 each for `SPY / ES` and `DXY`, 648 fo
 `VIX` (from 1990). On 2026-10-05, NFP adds 2,785 rows and Fed decisions 1,316: 274 for each
 instrument but gold (220, from 2000). The one Fed decision without a row is 2001-09-17, the cut
 announced as markets reopened after a week closed.
+
+On 2026-10-12, [step 4](steps/step-4-more-events.md) adds retail sales (1,515 rows), core PCE
+(1,559) and GDP (660); gold's history starts in 2000, so it has fewer.
 
 The horizon columns come from the pre-reset design, which planned intraday data; the MVP has only
 daily prices, so the intraday ones stay empty.
