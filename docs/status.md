@@ -9,7 +9,7 @@ Where the work is and what comes next. Two rules keep it current:
 ## Last completed
 
 Step 4, step 1 — retail sales, core PCE and GDP as event flows from FRED; raw move: GDP and retail
-sales move the yield and the dollar, core PCE the VIX. *(PR #TBD.)*
+sales move the yield and the dollar, core PCE the VIX. *(PR #134.)*
 
 ## In progress
 
@@ -24,7 +24,7 @@ Step 4 step 2: Nasdaq's consensus for the three, their surprise rules, shared da
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-12 | Step 4 step 1: retail sales, core PCE and GDP flows; GDP and retail sales move the yield and the dollar | PR #TBD |
+| 2026-10-12 | Step 4 step 1: retail sales, core PCE and GDP flows; GDP and retail sales move the yield and the dollar | PR #134 |
 | 2026-10-12 | Step 4 spec: more events — retail sales, core PCE, GDP | PR #133 |
 | 2026-10-12 | Rung 3 step 4: results — the bands are honest, the probabilities not; rung 3 complete | PR #132 |
 | 2026-10-12 | Rung 3 step 3: `predict --actual` gives each call's probability and band | PR #131 |
