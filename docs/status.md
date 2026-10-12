@@ -9,7 +9,7 @@ Where the work is and what comes next. Two rules keep it current:
 ## Last completed
 
 Step 4, step 3 — results: retail sales' yield holds walk-forward (not without COVID, narrowly), its
-confidence not honest; core PCE and GDP give no calls. Step 4 complete. *(PR #TBD.)*
+confidence not honest; core PCE and GDP give no calls. Step 4 complete. *(PR #136.)*
 
 ## In progress
 
@@ -25,7 +25,7 @@ made.
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-12 | Step 4 step 3: results — retail sales' yield holds; core PCE and GDP no calls; step 4 complete | PR #TBD |
+| 2026-10-12 | Step 4 step 3: results — retail sales' yield holds; core PCE and GDP no calls; step 4 complete | PR #136 |
 | 2026-10-12 | Step 4 step 2: consensus surprises for the three; retail sales' yield tracks | PR #135 |
 | 2026-10-12 | Step 4 step 1: retail sales, core PCE and GDP flows; GDP and retail sales move the yield and the dollar | PR #134 |
 | 2026-10-12 | Step 4 spec: more events — retail sales, core PCE, GDP | PR #133 |
