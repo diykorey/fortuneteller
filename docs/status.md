@@ -8,22 +8,25 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Rung 2, step 4 — results: both jobs-report links hold walk-forward (the dollar clearly, the yield
-barely above always-up); CPI's links are too few to judge. Rung 2 complete. *(PR #127.)*
+Rung 3, step 1 — `study.confident_calls`: each walk-forward call with its probability, drift
+probability and 50% move band, from what came before it; nothing before 20 earlier calls.
+*(PR #129.)*
 
 ## In progress
 
-**Rung 3, honest confidence**: [rung-3-confidence.md](steps/rung-3-confidence.md). Spec: PR #128.
+**Rung 3, honest confidence**: [rung-3-confidence.md](steps/rung-3-confidence.md).
 
 ## Next
 
-Rung 3, step 1 — `study.confident_calls`: each walk-forward call with its probability, drift
-probability and band, or silent with fewer than 20 earlier calls.
+Rung 3, step 2 — `predict --event cpi|nfp`: each link's confidence table (calibration groups,
+Brier against a coin and drift with permutation p, band coverage) and verdict, with and without
+COVID; the binomial interval at any rate in `stats.py`.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-12 | Rung 3 step 1: `confident_calls`, a probability and a band per call | PR #129 |
 | 2026-10-12 | Rung 3 spec: honest confidence — a probability and a band per call, graded | PR #128 |
 | 2026-10-12 | Rung 2 step 4: results — jobs-report links hold, the dollar clearly; CPI too few; rung 2 complete | PR #127 |
 | 2026-10-12 | Rung 2 step 3: `predict --actual`, the next release's call | PR #126 |

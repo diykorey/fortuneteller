@@ -21,7 +21,7 @@ from bisect import bisect_left
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 from datetime import UTC, date, time, timedelta
-from statistics import median
+from statistics import median, quantiles
 from typing import NamedTuple
 from zoneinfo import ZoneInfo
 
@@ -677,3 +677,54 @@ def open_links(
                 [p[2] for p in pairs], [p[3] for p in pairs], sign, rule.noticeable
             )
     return opened
+
+
+# Rung 3: a call states a probability and a move band only once its link has made this many calls.
+MIN_CALLS = 20
+
+
+@dataclass(frozen=True)
+class ConfidentCall:
+    """A walk-forward call with what was known before it: ``probability`` is the link's smoothed
+    record on its earlier calls, ``drift`` how often earlier noticeable releases closed the called
+    way, and ``band`` the 25th to 75th percentile of the expected move, in the market's unit. All
+    three are ``None`` before ``MIN_CALLS`` earlier calls; the band also when the earlier noticeable
+    surprises are all equal, as no slope can be fitted."""
+
+    call: Prediction
+    probability: float | None
+    drift: float | None
+    band: tuple[float, float] | None
+
+
+def confident_calls(
+    pairs: Sequence[tuple[int, str, float, float]], expected_sign: int, step: float
+) -> list[ConfidentCall]:
+    """``walk_forward``'s calls on ``pairs``, each with its probability, drift probability and band,
+    from the releases and calls before it."""
+    calls = walk_forward(pairs, expected_sign, step)
+    position = {pair[0]: i for i, pair in enumerate(pairs)}
+    confident = []
+    for n, call in enumerate(calls):
+        if n < MIN_CALLS:
+            confident.append(ConfidentCall(call, None, None, None))
+            continue
+        right = sum(c.right for c in calls[:n])
+        earlier = [p for p in pairs[: position[call.event_id]] if abs(p[2]) >= step]
+        surprises = [p[2] for p in earlier]
+        moves = [p[3] for p in earlier]
+        with_call = sum(call.direction * m > 0 for m in moves)
+        band = None
+        if len(set(surprises)) > 1:
+            slope = stats.theil_sen(surprises, moves)
+            low, _, high = quantiles(
+                [m - slope * s for s, m in zip(surprises, moves, strict=True)],
+                n=4,
+                method="inclusive",
+            )
+            middle = slope * call.surprise
+            band = (middle + low, middle + high)
+        confident.append(
+            ConfidentCall(call, (right + 1) / (n + 2), (with_call + 1) / (len(moves) + 2), band)
+        )
+    return confident
