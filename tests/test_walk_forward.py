@@ -80,23 +80,30 @@ def test_each_decision_uses_only_the_releases_before_it() -> None:
         assert (event_id in predicted) == expected, event_id
 
 
-def test_nothing_at_or_after_a_release_changes_the_calls_before_it() -> None:
-    # given releases that follow 80% of surprises, and the same with release 60's move and every
-    # later surprise and move replaced
-    releases = _releases(120, 0.8)
+def test_nothing_at_or_after_a_release_changes_its_call() -> None:
+    # given releases near the gate's bars (moves follow 70% of surprises); for each noticeable
+    # release, two versions: its own move with its surprise, or against it, and new releases after
+    releases = _releases(70, 0.7, seed=4)
     rng = random.Random(9)
-    changed = releases[:60] + [(60, "r60", releases[60][2], -releases[60][3])]
-    changed += [(i, f"r{i}", rng.gauss(0, 0.3), rng.gauss(0, 0.01)) for i in range(61, 120)]
+    tail = [(70 + i, f"r{70 + i}", rng.gauss(0, 0.3), rng.gauss(0, 0.01)) for i in range(5)]
 
-    # when both are replayed
-    before = walk_forward(releases, 1, STEP)
-    after = walk_forward(changed, 1, STEP)
+    def called(versions: list[tuple[int, str, float, float]], at: int) -> tuple[int, ...]:
+        return tuple(p.direction for p in walk_forward(versions, 1, STEP) if p.event_id == at)
 
-    # then the calls up to release 60 are the same
-    def calls(predictions: list[Prediction]) -> list[tuple[int, int]]:
-        return [(p.event_id, p.direction) for p in predictions if p.event_id <= 60]
+    # when each is replayed
+    differing = []
+    for event_id, month, surprise, move in releases:
+        if abs(surprise) < STEP:
+            continue
+        size = abs(move) + 0.01
+        before = releases[:event_id]
+        with_it = called([*before, (event_id, month, surprise, size * surprise), *tail], event_id)
+        against = called([*before, (event_id, month, surprise, -size * surprise), *tail], event_id)
+        if with_it != against:
+            differing.append(event_id)
 
-    assert calls(after) == calls(before)
+    # then no release's call depends on its own move or on anything after it
+    assert differing == []
 
 
 def test_a_link_with_too_little_history_is_closed() -> None:

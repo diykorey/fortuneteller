@@ -635,7 +635,7 @@ def grade(predictions: Sequence[Prediction], expected_sign: int) -> LinkGrade:
         predictions=n,
         right=right,
         p=p,
-        always_right=sum(expected_sign * p.move > 0 for p in predictions),
+        always_right=sum(expected_sign * call.move > 0 for call in predictions),
         first=predictions[0].month if predictions else None,
         verdict=verdict,
     )

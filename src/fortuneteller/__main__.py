@@ -350,9 +350,10 @@ def describe_grades(
     for instrument, g in grades.items():
         hit = f"{g.right / g.predictions:.0%}" if g.predictions else "—"
         always = f"{g.always_right / g.predictions:.0%}" if g.predictions else "—"
+        p = f"{g.p:.4f}" if g.predictions else "—"
         lines.append(
             f"{instrument:<12} {_direction(expected_sign[instrument]):<9} {g.first or '—':<8} "
-            f"{g.predictions:<10} {g.right:<6} {hit:<9} {g.p:<7.4f} {always:<16} {g.verdict}"
+            f"{g.predictions:<10} {g.right:<6} {hit:<9} {p:<7} {always:<16} {g.verdict}"
         )
     return [line.rstrip() for line in lines]
 

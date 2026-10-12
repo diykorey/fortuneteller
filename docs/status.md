@@ -19,7 +19,9 @@ without COVID. *(PR #125.)*
 ## Next
 
 Rung 2, step 3 — `predict --event cpi|nfp --actual X`: the next release's consensus from the
-calendars, its surprise, and a line per open link.
+calendars, its surprise, and a line per open link. Step 4's results must say how far each hit rate
+beats its always-expected-direction baseline (the jobs-report yield: 65% against 61%), and that the
+gate has no minimum history of its own (from the 2026-10-12 review).
 
 ## Done
 
