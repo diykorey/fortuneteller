@@ -40,6 +40,9 @@ FRED_OBSERVATIONS_URL = "https://api.stlouisfed.org/fred/series/observations"
 CPI_SERIES_ID = "CPIAUCSL"
 CORE_CPI_SERIES_ID = "CPILFESL"
 NFP_SERIES_ID = "PAYEMS"
+RETAIL_SALES_SERIES_ID = "RSAFS"
+CORE_PCE_SERIES_ID = "PCEPILFE"
+GDP_SERIES_ID = "GDPC1"
 MISSING_VALUE = "."
 
 # FRED release dates checked against BLS and found wrong, by series and reference month. CPI: every

@@ -34,8 +34,32 @@ FIXTURE = Path(__file__).parent / "data" / "fred_cpi_initial_release.json"
 NFP_FIXTURE = Path(__file__).parent / "data" / "fred_nfp_initial_release.json"
 
 
+# Two real first prints of each step 4 series: (reference month, release day, level).
+LEVEL_PRINTS = {
+    sources.RETAIL_SALES_SERIES_ID: [
+        ("2026-06-01", "2026-07-16", "768553"),
+        ("2026-07-01", "2026-08-14", "763602"),
+    ],
+    sources.CORE_PCE_SERIES_ID: [
+        ("2026-06-01", "2026-07-30", "130.266"),
+        ("2026-07-01", "2026-08-26", "130.658"),
+    ],
+    sources.GDP_SERIES_ID: [
+        ("2026-01-01", "2026-04-30", "24174.527"),
+        ("2026-04-01", "2026-07-30", "24270.599"),
+    ],
+}
+
+
+def _first_release_payload(prints: list[tuple[str, str, str]]) -> bytes:
+    rows = [{"date": m, "realtime_start": day, "value": value} for m, day, value in prints]
+    return json.dumps({"count": len(rows), "observations": rows}).encode()
+
+
 def _fred_answers(monkeypatch: pytest.MonkeyPatch) -> None:
     def fetch(_key: str, series_id: str) -> bytes:
+        if series_id in LEVEL_PRINTS:
+            return _first_release_payload(LEVEL_PRINTS[series_id])
         return (NFP_FIXTURE if series_id == sources.NFP_SERIES_ID else FIXTURE).read_bytes()
 
     monkeypatch.setattr(sources, "fetch_first_releases", fetch)
@@ -252,8 +276,11 @@ def test_load_releases_prints_count_range_and_skipped_months(
     report += "loaded 3 NFP releases, 2025-11-20 … 2026-01-09\n"
     report += "  1 first published with a later month: 2025-10\n"
     report += "loaded 2 Fed decisions, 2020-03-03 … 2020-03-18 (1 unscheduled)\n"
+    report += "loaded 2 RET releases, 2026-07-16 … 2026-08-14\n"
+    report += "loaded 2 PCE releases, 2026-07-30 … 2026-08-26\n"
+    report += "loaded 2 GDP releases, 2026-04-30 … 2026-07-30\n"
     assert capsys.readouterr().out == report * 2
-    assert db.count_rows("event_instances", con=db.get_connection()) == 11
+    assert db.count_rows("event_instances", con=db.get_connection()) == 17
 
 
 def test_load_releases_stores_nothing_when_any_flow_fails(
