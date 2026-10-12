@@ -8,8 +8,8 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Step 4, step 2 — Nasdaq's consensus for retail sales, core PCE and GDP, shared days left out:
-retail sales' yield tracks the surprise; core PCE and GDP's markets do not. *(PR #135.)*
+Step 4, step 3 — results: retail sales' yield holds walk-forward (not without COVID, narrowly), its
+confidence not honest; core PCE and GDP give no calls. Step 4 complete. *(PR #TBD.)*
 
 ## In progress
 
@@ -17,13 +17,15 @@ Nothing.
 
 ## Next
 
-Step 4 step 3: results — `raw-move`, `surprise` and `predict` per new event, here and in
-`mvp-results.md`.
+A decision: roadmap step 4a (cross-country: ECB and euro-area markets), ladder rung 4 (keep score:
+log live calls and grade them), or sharper measurement (paid consensus, intraday prices). Not yet
+made.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-12 | Step 4 step 3: results — retail sales' yield holds; core PCE and GDP no calls; step 4 complete | PR #TBD |
 | 2026-10-12 | Step 4 step 2: consensus surprises for the three; retail sales' yield tracks | PR #135 |
 | 2026-10-12 | Step 4 step 1: retail sales, core PCE and GDP flows; GDP and retail sales move the yield and the dollar | PR #134 |
 | 2026-10-12 | Step 4 spec: more events — retail sales, core PCE, GDP | PR #133 |
@@ -113,6 +115,9 @@ Step 4 step 3: results — `raw-move`, `surprise` and `predict` per new event, h
 | CPI (clean baseline) | moves: UST 10Y, DXY, VIX; doesn't: S&P 500, gold | as the MVP |
 | NFP | moves: all five | unclear: UST 10Y, DXY, gold; doesn't: S&P 500, VIX. Since 2014: UST 10Y and DXY track, against the forecast and the trend alike |
 | Fed | moves: S&P 500, DXY (borderline), gold, VIX; unclear: UST 10Y | none: no free expected value |
+| Retail sales (step 4) | moves: UST 10Y, DXY | against the consensus: UST 10Y tracks; DXY doesn't |
+| Core PCE (step 4) | moves: VIX | none track: too few noticeable surprises |
+| GDP (step 4) | moves: UST 10Y, DXY | none track; DXY unclear |
 
 ## Known, not yet fixed
 

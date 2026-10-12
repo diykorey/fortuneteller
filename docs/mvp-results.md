@@ -188,6 +188,25 @@ zero: on a 100k surprise, the dollar's runs from about −0.15% to +0.55%.
 of it is not yet measurable from about 60 graded calls. `predict --actual` prints the record and the
 band with that verdict beside them, rather than a number to trust.
 
+## More events: retail sales, core PCE, GDP
+
+Measured 2026-10-12. Detail in [step 4](steps/step-4-more-events.md#results).
+
+Three US releases added, each against Nasdaq's consensus, with days shared with another release
+left out (about 15% of retail sales').
+
+**Retail sales adds a second link worth calling: the 10-year yield.** It follows the surprise (right
+67%), and holds walk-forward: 50 of 78 calls right from 2011, where always calling it up would have
+been right 44% of the time. Without COVID it misses the bar narrowly (p 0.014). Its stated
+confidence is not honest: a coin's Brier score, on 58 calls.
+
+**Core PCE and GDP move markets but cannot be predicted.** Core PCE's consensus is nearly always right
+(19 surprises of 0.1pp in 207); GDP has too few releases. Neither link ever opens.
+
+**What it means.** Calls worth making: the dollar on a jobs report, the yield on retail sales. More
+events added links, not calls to existing links, so honest probabilities still wait for more history
+or a log of live calls.
+
 ## What comes next
 
 A decision, not yet made. The options:
@@ -199,6 +218,9 @@ A decision, not yet made. The options:
 | ~~**A better free forecast**~~ | ~~A model of each jobs report from what is published before it (weekly jobless claims, the ADP report)~~ **done**, above: both links pass since 2014, but against the trend too | — | — |
 | ~~**Predict the next release**~~ (rung 2) | ~~Forecast each link's direction, graded walk-forward~~ **done**, above: the jobs-report dollar holds clearly, the yield on drift, CPI too few | — | — |
 | ~~**Honest confidence**~~ (rung 3) | ~~A probability and a band per call, graded~~ **done**, above: the bands are honest, the probabilities not | — | — |
+| ~~**More events**~~ (roadmap step 4) | ~~Retail sales, core PCE, GDP~~ **done**, above: retail sales' yield holds; core PCE and GDP give no calls | — | — |
+| **Cross-country effects** (roadmap step 4a) | ECB decisions and euro-area releases, with markets abroad | Free sources, more work | Whether a US surprise moves foreign markets, and the reverse |
+| **Keep score** (rung 4) | Log each live call and grade it later | Small | Live calls, the only history that cannot have been fitted |
 
 Rung 1 strengthened the case for better expected values before predicting: two links (the yield
 and the dollar on jobs reports) are clearly real but sit just under the bar, and the expected value
