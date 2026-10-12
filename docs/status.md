@@ -13,16 +13,18 @@ barely above always-up); CPI's links are too few to judge. Rung 2 complete. *(PR
 
 ## In progress
 
-Nothing.
+**Rung 3, honest confidence**: [rung-3-confidence.md](steps/rung-3-confidence.md). Spec: PR #128.
 
 ## Next
 
-A decision: roadmap step 4 (more events) or ladder rung 3 (honest confidence). Not yet made.
+Rung 3, step 1 — `study.confident_calls`: each walk-forward call with its probability, drift
+probability and band, or silent with fewer than 20 earlier calls.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-12 | Rung 3 spec: honest confidence — a probability and a band per call, graded | PR #128 |
 | 2026-10-12 | Rung 2 step 4: results — jobs-report links hold, the dollar clearly; CPI too few; rung 2 complete | PR #127 |
 | 2026-10-12 | Rung 2 step 3: `predict --actual`, the next release's call | PR #126 |
 | 2026-10-12 | Rung 2 step 2: `predict`, each link's walk-forward record and verdict | PR #125 |

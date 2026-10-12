@@ -252,6 +252,9 @@ Terms are grouped by what they are about, alphabetical within each group.
   70% should actually occur. The project's central promise.
 - **Conformal prediction** — a method producing ranges with a guaranteed hit-rate ("this move will
   land in this band 90% of the time") without assuming a distribution shape.
+- **Drift probability** — in rung 3, how often a market moved a call's way on the earlier
+  noticeable releases, whatever the surprise. The baseline a stated probability must beat: a call
+  no better than it only rides the market's drift.
 - **ECE** (Expected Calibration Error) — a single number summarizing how far stated probabilities
   drift from observed frequencies.
 - **Gate** — the rule that keeps a cell silent until its numbers are good enough (enough
@@ -262,6 +265,9 @@ Terms are grouped by what they are about, alphabetical within each group.
   The classic way a backtest produces results that evaporate in live use.
 - **Magnitude band / prediction interval** — the range a move is expected to fall in, rather than a
   single number.
+- **Move band** — in rung 3, a call's 50% band: the slope times the surprise, plus the 25th to
+  75th percentile of earlier misses. Its **coverage** is the share of moves that land inside;
+  about half if the band is honest.
 - **Overfitting** — tuning to the quirks of past data so well that the result does not generalize.
 - **Platt scaling** — a simple calibration method mapping raw scores to probabilities with a
   logistic curve.
