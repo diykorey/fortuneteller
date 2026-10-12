@@ -1,8 +1,26 @@
 """Rung 2's walk-forward: each release predicted only from the releases before it."""
 
 import random
+from datetime import date
+from pathlib import Path
 
-from fortuneteller.study import Prediction, is_open, walk_forward
+import duckdb
+import pytest
+
+from fortuneteller import db, expectations, flows
+from fortuneteller.__main__ import main
+from fortuneteller.sources import CORE, FirstRelease
+
+from fortuneteller.stats import binomial_p
+from fortuneteller.study import (
+    DOESNT_HOLD,
+    HOLDS,
+    TOO_FEW,
+    Prediction,
+    grade,
+    is_open,
+    walk_forward,
+)
 
 STEP = 0.1
 
@@ -99,3 +117,116 @@ def test_a_link_expected_to_fall_predicts_against_the_surprise() -> None:
     assert predictions
     assert all(p.direction == (-1 if p.surprise > 0 else 1) for p in predictions)
     assert sum(p.right for p in predictions) / len(predictions) > 0.7
+
+
+def test_the_binomial_p_is_the_chance_a_coin_does_as_well() -> None:
+    # given a few records
+    # when / then the one-sided chance of doing at least as well with a fair coin
+    assert binomial_p(10, 10) == 1 / 1024
+    assert binomial_p(5, 10) == 638 / 1024
+    assert binomial_p(0, 0) == 1.0
+
+
+def _made(rights: int, wrongs: int) -> list[Prediction]:
+    # Every prediction says up; the right ones' moves are up, the wrong ones' down.
+    return [Prediction(i, "2020-01", 0.2, 1, 0.01) for i in range(rights)] + [
+        Prediction(rights + i, "2020-01", 0.2, 1, -0.01) for i in range(wrongs)
+    ]
+
+
+@pytest.mark.parametrize(
+    ("rights", "wrongs", "verdict"),
+    [(20, 5, TOO_FEW), (40, 10, HOLDS), (340, 260, DOESNT_HOLD), (33, 17, DOESNT_HOLD)],
+)
+def test_a_link_holds_only_on_enough_predictions_right_often_enough(
+    rights: int, wrongs: int, verdict: str
+) -> None:
+    # given a record: too short; 80% of 50; 57% of 600, significant but under 60%; 66% of 50,
+    # over 60% but not significant (p 0.016)
+    # when it is graded
+    g = grade(_made(rights, wrongs), expected_sign=1)
+
+    # then the verdict follows the rule
+    assert (g.predictions, g.right, g.verdict) == (rights + wrongs, rights, verdict)
+
+
+def test_the_baseline_is_the_expected_direction_whatever_the_surprise() -> None:
+    # given four calls of a link expected to rise: two say down on a falling day, two up on rising
+    made = [
+        Prediction(1, "m", -0.2, -1, -0.01),
+        Prediction(2, "m", -0.2, -1, -0.01),
+        Prediction(3, "m", 0.2, 1, 0.01),
+        Prediction(4, "m", 0.2, 1, 0.01),
+    ]
+
+    # when it is graded
+    g = grade(made, expected_sign=1)
+
+    # then the link was right on all four, always saying up only on two
+    assert (g.right, g.always_right, g.first) == (4, 2, "m")
+
+
+def _store_consensus_history(con: duckdb.DuckDBPyConnection) -> None:
+    # 156 monthly CPI releases, 2010 to 2022, with a consensus surprise; each market follows 85% of them
+    # in its expected direction.
+    rng = random.Random(3)
+    months = [date(2010 + i // 12, i % 12 + 1, 1) for i in range(156)]
+    releases = [
+        FirstRelease(m, date(m.year + m.month // 12, m.month % 12 + 1, 14), 1.0) for m in months
+    ]
+    flows.store_releases(flows.CPI_FLOW, releases, con=con)
+    for event in flows.stored_events(flows.CPI_FLOW, con=con):
+        surprise = round(rng.gauss(0, 0.15), 2)
+        con.execute(
+            "INSERT INTO surprises VALUES (?, ?, ?, 0, 0, ?)",
+            [event.event_id, CORE, expectations.NASDAQ_CONSENSUS, surprise],
+        )
+        way = 1 if rng.random() < 0.85 else -1
+        for instrument, sign in flows.EXPECTED_SIGN.items():
+            move = (sign or 1) * way * 0.01 * surprise + rng.gauss(0, 0.0002)
+            con.execute(
+                "INSERT INTO observations (event_id, instrument, ret_unit, ret_1d) "
+                "VALUES (?, ?, 'pct', ?)",
+                [event.event_id, instrument, move],
+            )
+
+
+def test_predict_prints_each_link_s_record_and_verdict(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    # given a CPI history whose markets follow 85% of consensus surprises
+    _store_consensus_history(db.get_connection())
+
+    # when the walk-forward is printed
+    code = main(["predict", "--event", "cpi"])
+
+    # then every link with a direction gets a row in both tables, and the yield holds
+    out = capsys.readouterr().out.splitlines()
+    assert code == 0
+    assert (
+        out[0]
+        == "core against Nasdaq's consensus: each release predicted only from the ones before it"
+    )
+    assert [line for line in out if line.startswith("walk-forward")] == [
+        "walk-forward (all)",
+        "walk-forward (without 2020-03 … 2021-04)",
+    ]
+    rows = [line for line in out if line.startswith("UST10Y / ZN")]
+    assert len(rows) == 2 and all(row.endswith(" holds") for row in rows)
+    predicted = [int(row.split()[5]) for row in rows]
+    assert predicted[0] > predicted[1]
+    assert sum(line.startswith(("SPY", "UST10Y", "DXY", "VIX")) for line in out) == 8
+    assert not any(line.startswith("GC / XAU") for line in out)
+
+
+def test_predict_asks_for_the_loads_it_needs(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    # given nothing stored
+
+    # when the walk-forward is asked for
+    code = main(["predict", "--event", "nfp"])
+
+    # then it names the loads to run
+    assert code == 1
+    assert "load-surprises" in capsys.readouterr().err

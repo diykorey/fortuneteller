@@ -8,10 +8,9 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Rung 2, step 1 — `study.walk_forward`: each link, at each release with a noticeable surprise,
-predicts the day's direction only if it passes the surprise test on the releases before it. Tested
-on planted links (80% followed: opens, ~80% right; unrelated: stays silent) and for look-ahead.
-About 20 seconds for all six links on real data. *(PR #124.)*
+Rung 2, step 2 — `predict --event cpi|nfp`: each link's walk-forward record (predictions, right,
+hit rate, binomial p, how often its expected direction alone was right) and the verdict, with and
+without COVID. *(PR #TBD.)*
 
 ## In progress
 
@@ -19,13 +18,14 @@ About 20 seconds for all six links on real data. *(PR #124.)*
 
 ## Next
 
-Rung 2, step 2 — `predict --event cpi|nfp`: per link, predictions issued, right, hit rate, p, the
-baseline and the verdict, with and without COVID.
+Rung 2, step 3 — `predict --event cpi|nfp --actual X`: the next release's consensus from the
+calendars, its surprise, and a line per open link.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-12 | Rung 2 step 2: `predict`, each link's walk-forward record and verdict | PR #TBD |
 | 2026-10-12 | Rung 2 step 1: the walk-forward replay | PR #124 |
 | 2026-10-12 | Rung 2 spec: predict the next release, tested walk-forward | PR #123 |
 | 2026-10-09 | Free consensus step 3: results — jobs-report links pass, stronger; CPI's dollar passes against the consensus | PR #122 |
