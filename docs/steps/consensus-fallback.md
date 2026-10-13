@@ -66,7 +66,30 @@ where the calendars differ past the gap.
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~The fallback in `expectations.match_consensus` and `next_consensus`; `predict` and `load-surprises` name it; schema doc updated~~ **done** | A planted release with a TradingView forecast and no Nasdaq row is called by `predict --actual`, stored by `load-surprises` and graded by `score`; an unreadable or gap-left-out release stays out |
-| 2 | Results: every link's verdict before and after | The before-and-after table here and in [`mvp-results.md`](../mvp-results.md) |
+| 2 | ~~Results: every link's verdict before and after~~ **done** | The before-and-after table here and in [`mvp-results.md`](../mvp-results.md) |
+
+## Results
+
+Measured 2026-10-13: `predict` and `surprise` for the three flows, on the stored history before
+the fallback and after it. Of the 14 releases, 5 of retail sales' enter its tables (2020-09-16 and
+2020-12-16 share a day with CPI and stay out), all 6 of core PCE's and GDP's one.
+
+| Flow | Link | Before | After |
+| --- | --- | --- | --- |
+| Retail sales | yield, walk-forward | 50 of 78, p 0.008, **holds**; without COVID 43 of 67, p 0.014 | 51 of 79, p 0.006, **holds**; without COVID 44 of 68, p 0.0103, still just over 0.01 |
+| Retail sales | yield, confidence | Brier 0.249 (p 0.48); without COVID 0.252, worse than a coin: **not honest** | 0.247 (p 0.44); without COVID 0.249 (p 0.48): **too close to tell** |
+| Retail sales | yield, surprise | 0.26, right 67% (97), tracks | 0.26, right 67% (98), tracks |
+| Retail sales | dollar | 3 calls, too few; surprise doesn't track | 4 calls, too few; doesn't track |
+| Core PCE | every link | no calls; no surprise verdict changes | the same |
+| GDP | every link | no calls; no surprise verdict changes | the same |
+
+Every walk-forward verdict and every surprise verdict with an expected sign stands. One context row
+moves: the S&P 500 on retail days (no expected sign) goes from doesn't to unclear (p 0.013 to 0.007).
+
+**Retail sales' yield confidence moves from "not honest" to "too close to tell".** One more call
+takes its Brier score without COVID from just over a coin's 0.25 to just under it; neither beats a
+coin with p under 0.05. The probabilities are no more trustworthy than before: the change is the
+width of one call, and it is reported as the rule fixed in advance requires.
 
 ## What this does not do
 
