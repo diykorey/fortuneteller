@@ -526,16 +526,22 @@ def next_consensus(measure: str, today: date, cache_dir: Path) -> NextConsensus 
     return NextConsensus(day, nearest, forecast)
 
 
-# The Fed's decision on Nasdaq's calendar; a flow without a consensus row of its own.
+# The Fed's decision on TradingView's calendar; a flow without a consensus row of its own.
 FED_DECISION_ROW = "Fed Interest Rate Decision"
 
 
 def other_releases(measures: Iterable[str], day: date, cache_dir: Path) -> list[str]:
-    """The other flows' rows on Nasdaq's calendar for ``day``: any there shares the day."""
-    own = {CONSENSUS_ROWS[measure][0] for measure in measures if measure in CONSENSUS_ROWS}
-    others = ({name for name, *_ in CONSENSUS_ROWS.values()} - own) | {FED_DECISION_ROW}
-    rows = sources.parse_nasdaq_day(sources.fetch_nasdaq_day(day, cache_dir), day, others)
-    return sorted({row.name for row in rows})
+    """The other flows' rows on TradingView's calendar for ``day``: any there shares the day.
+
+    TradingView's, not Nasdaq's: Nasdaq names all three GDP estimates "GDP", and only the advance
+    estimate is a flow's release (2014 to 2026-09, it gives the replay's shared days on all 355).
+    """
+    own = {CONSENSUS_ROWS[measure][1] for measure in measures if measure in CONSENSUS_ROWS}
+    others = ({names[1] for names in CONSENSUS_ROWS.values()} - own) | {FED_DECISION_ROW}
+    payload = sources.fetch_tradingview_quarter(sources.quarter_start(day), cache_dir)
+    return sorted(
+        {row.name for row in sources.parse_tradingview(payload, others) if row.day == day}
+    )
 
 
 NASDAQ_CONSENSUS = "nasdaq_consensus"

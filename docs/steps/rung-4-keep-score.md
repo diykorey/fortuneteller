@@ -61,9 +61,11 @@ edited after the close. The DuckDB file is local and ignored by git, so the log 
 
 The next release is not yet in `event_instances`, so `study.shared_days` cannot see it. For a flow
 whose surprise rule leaves shared days out (retail sales, core PCE, GDP), `predict --actual` reads
-that day's Nasdaq calendar, already fetched for the consensus, and if another flow's row is there
-logs every link as `silent` with the reason printed. Graded like the replay, a retail sales call on
-a CPI day would be graded on CPI.
+that day on TradingView's calendar and if another flow's row or the Fed's decision is there logs
+every link as `silent` with the reason printed. Graded like the replay, a retail sales call on a CPI
+day would be graded on CPI. TradingView's, not Nasdaq's: Nasdaq names all three GDP estimates `GDP`,
+and only the advance estimate is a flow's release. From 2014 to September 2026 TradingView gives
+the replay's shared days on all 355 of the three flows' release days, Nasdaq on 339.
 
 ## The rule, fixed before any live call is graded
 

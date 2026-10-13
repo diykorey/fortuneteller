@@ -946,28 +946,41 @@ def append_calls(path: Path, calls: Sequence[LoggedCall]) -> None:
         log.write(lines.getvalue())
 
 
+def _logged(r: dict[str, str]) -> LoggedCall:
+    logged_at = datetime.fromisoformat(r["logged_at"])
+    if logged_at.tzinfo is None:
+        raise ValueError(f"logged_at {r['logged_at']!r} has no zone")
+    if r["outcome"] not in (CALLED, TOO_FEW_CALLS, SILENT, SMALL):
+        raise ValueError(f"unknown outcome {r['outcome']!r}")
+    if r["direction"] not in ("", "up", "down"):
+        raise ValueError(f"unknown direction {r['direction']!r}")
+    if bool(r["band_low"]) != bool(r["band_high"]):
+        raise ValueError("half a band")
+    return LoggedCall(
+        logged_at,
+        r["flow"],
+        date.fromisoformat(r["day"]),
+        float(r["actual"]),
+        r["instrument"],
+        r["outcome"],
+        {"up": 1, "down": -1}.get(r["direction"]),
+        float(r["probability"]) if r["probability"] else None,
+        (float(r["band_low"]), float(r["band_high"])) if r["band_low"] else None,
+    )
+
+
 def read_calls(path: Path) -> list[LoggedCall]:
     """Every row of the log at ``path``, in order; none if there is no log yet."""
     if not path.exists():
         return []
-    with path.open(newline="") as log:
-        rows = list(csv.DictReader(log))
     calls = []
-    for line, r in enumerate(rows, start=2):
-        try:
-            calls.append(
-                LoggedCall(
-                    datetime.fromisoformat(r["logged_at"]),
-                    r["flow"],
-                    date.fromisoformat(r["day"]),
-                    float(r["actual"]),
-                    r["instrument"],
-                    r["outcome"],
-                    {"up": 1, "down": -1}.get(r["direction"]),
-                    float(r["probability"]) if r["probability"] else None,
-                    (float(r["band_low"]), float(r["band_high"])) if r["band_low"] else None,
-                )
-            )
-        except (KeyError, TypeError, ValueError) as exc:
-            raise ValueError(f"{path} line {line} cannot be read: {exc!r}") from None
+    with path.open(newline="") as log:
+        reader = csv.DictReader(log)
+        if reader.fieldnames is not None and tuple(reader.fieldnames) != LOG_COLUMNS:
+            raise ValueError(f"{path} line 1 is not the log's header: {reader.fieldnames}")
+        for r in reader:
+            try:
+                calls.append(_logged(r))
+            except (KeyError, TypeError, ValueError) as exc:
+                raise ValueError(f"{path} line {reader.line_num} cannot be read: {exc!r}") from None
     return calls

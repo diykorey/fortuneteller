@@ -481,7 +481,7 @@ def test_an_actual_logs_each_link_s_line_as_printed(
     assert yield_call.band is not None
     assert (round(yield_call.band[0], 1), round(yield_call.band[1], 1)) == (8.6, 11.2)
     assert calls[3].probability is None and calls[3].band is None
-    assert all(c.logged_at.utcoffset() == timedelta(0) for c in calls)
+    assert all(c.logged_at == datetime(2026, 11, 12, 14, 0, tzinfo=UTC) for c in calls)
 
 
 def test_a_small_surprise_logs_every_link_as_small(
@@ -544,6 +544,25 @@ def test_a_release_is_logged_once(
     refused = capsys.readouterr()
     assert "already in" in refused.err and refused.out == ""
     assert settings.calls_path.read_text() == before
+
+
+def test_another_flow_logged_that_day_leaves_the_release_its_entry(
+    tmp_db: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given the CPI history, and a jobs report already logged on CPI's day
+    _store_consensus_history(db.get_connection())
+    _next(monkeypatch, expectations.NextConsensus(date(2026, 11, 12), 0.2, 0.2))
+    when = datetime(2026, 11, 12, 13, 40, tzinfo=UTC)
+    nfp = study.LoggedCall(when, "nfp", date(2026, 11, 12), 151.0, "DXY", study.SILENT)
+    study.append_calls(settings.calls_path, [nfp])
+
+    # when CPI's actual is typed in
+    code = main(["predict", "--event", "cpi", "--actual", "0.3"])
+
+    # then CPI's rows are logged after the jobs report's
+    calls = study.read_calls(settings.calls_path)
+    assert code == 0
+    assert [c.flow for c in calls] == ["nfp", "cpi", "cpi", "cpi", "cpi"]
 
 
 def test_the_log_reads_back_what_was_written(tmp_path: Path) -> None:
@@ -623,3 +642,43 @@ def test_an_unreadable_log_row_is_named(
     # then it stops and names the line
     assert code == 1
     assert "line 2 cannot be read" in capsys.readouterr().err
+
+
+@pytest.mark.parametrize(
+    ("row", "line", "reason"),
+    [
+        ("2026-11-06T13:31:05,nfp,2026-11-06,151.0,DXY,silent,,,,", 2, "has no zone"),
+        ("2026-11-06T13:31:05+00:00,nfp,2026-11-06,151.0,DXY,called,,,,", 2, "unknown outcome"),
+        ("2026-11-06T13:31:05+00:00,nfp,2026-11-06,151.0,DXY,call,UP,,,", 2, "unknown direction"),
+        ("2026-11-06T13:31:05+00:00,nfp,2026-11-06,151.0,DXY,call,up,0.6,-0.1,", 2, "half a band"),
+        ("\n2026-11-06T13:31:05+00:00,nfp,not a day,151.0,DXY,silent,,,,", 3, "not a day"),
+    ],
+    ids=["naive time", "outcome", "direction", "half a band", "after a blank line"],
+)
+def test_a_row_the_log_cannot_hold_is_refused_by_its_line(
+    tmp_path: Path, row: str, line: int, reason: str
+) -> None:
+    # given a log with one row that step 2 could not grade
+    path = tmp_path / "calls.csv"
+    path.write_text(",".join(study.LOG_COLUMNS) + "\n" + row + "\n")
+
+    # when it is read
+    with pytest.raises(ValueError) as refused:
+        study.read_calls(path)
+
+    # then the row's line and the reason are named
+    assert f"line {line} cannot be read" in str(refused.value)
+    assert reason in str(refused.value)
+
+
+def test_a_log_under_another_header_is_refused(tmp_path: Path) -> None:
+    # given a log whose header lacks a column
+    path = tmp_path / "calls.csv"
+    path.write_text(",".join(study.LOG_COLUMNS[:-1]) + "\n")
+
+    # when it is read
+    with pytest.raises(ValueError) as refused:
+        study.read_calls(path)
+
+    # then its header is named
+    assert "line 1 is not the log's header" in str(refused.value)
