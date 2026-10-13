@@ -422,12 +422,14 @@ def match_consensus(
     released: Mapping[int, date],
     nasdaq: Iterable[sources.CalendarRow],
     tradingview: Iterable[sources.CalendarRow],
-) -> tuple[dict[tuple[int, str], float], list[str]]:
-    """Nasdaq's consensus for each actual, keyed by (event, measure), and the releases left out.
+) -> tuple[dict[tuple[int, str], float], list[str], list[str]]:
+    """Nasdaq's consensus for each actual, keyed by (event, measure), the releases left out, and
+    those filled in from TradingView.
 
     A release's row is the one whose actual is our first print as published; none or two refuses
     everything, naming the day, except the days in ``UNREADABLE_CONSENSUS``. A release whose
-    consensus differs from TradingView's by more than the measure's gap is left out.
+    consensus differs from TradingView's by more than the measure's gap is left out. Where Nasdaq
+    has no row with a consensus, TradingView's forecast is taken (docs/steps/consensus-fallback.md).
     ``released`` is each event's New York release day.
     """
     by_day: dict[tuple[str, date], list[sources.CalendarRow]] = {}
@@ -437,6 +439,7 @@ def match_consensus(
     checks = {(row.name, row.day): row.consensus for row in tradingview}
     consensus: dict[tuple[int, str], float] = {}
     left_out: list[str] = []
+    filled_in: list[str] = []
     problems: list[str] = []
     for actual in actuals:
         if actual.measure not in CONSENSUS_ROWS:
@@ -444,10 +447,14 @@ def match_consensus(
         nasdaq_name, check_name, decimals, gap = CONSENSUS_ROWS[actual.measure]
         day = released[actual.event_id]
         candidates = by_day.get((nasdaq_name, day), [])
+        where = f"{actual.measure} on {day}"
+        check = checks.get((check_name, day))
         if not candidates:
+            if check is not None and (actual.measure, day) not in UNREADABLE_CONSENSUS:
+                consensus[(actual.event_id, actual.measure)] = check
+                filled_in.append(f"{where}: TradingView {check:g}")
             continue
         rows = [r for r in candidates if published(actual.value, decimals, r.actual)]
-        where = f"{actual.measure} on {day}"
         if len(rows) != 1 or rows[0].consensus is None:
             if (actual.measure, day) in UNREADABLE_CONSENSUS:
                 left_out.append(f"{where}: no single Nasdaq row matches the first print")
@@ -455,14 +462,13 @@ def match_consensus(
                 problems.append(f"{where}: {len(rows)} Nasdaq rows match the first print")
             continue
         value = rows[0].consensus
-        check = checks.get((check_name, day))
         if check is not None and abs(value - check) > gap + 1e-9:
             left_out.append(f"{where}: Nasdaq {value:g}, TradingView {check:g}")
             continue
         consensus[(actual.event_id, actual.measure)] = value
     if problems:
         raise ValueError("Nasdaq consensus refused: " + "; ".join(problems))
-    return consensus, left_out
+    return consensus, left_out, filled_in
 
 
 def fetch_calendars(
@@ -549,8 +555,8 @@ NASDAQ_CONSENSUS = "nasdaq_consensus"
 
 class NasdaqConsensus:
     """The consensus published on Nasdaq's calendar before each release in ``CONSENSUS_ROWS``,
-    2008 on,
-    checked against TradingView's; known by the end of the day before the release (assumed)."""
+    2008 on, checked against TradingView's, or TradingView's forecast where Nasdaq has none; known
+    by the end of the day before the release (assumed)."""
 
     name = NASDAQ_CONSENSUS
     label = "Nasdaq's consensus"
@@ -558,6 +564,7 @@ class NasdaqConsensus:
 
     def __init__(self) -> None:
         self.left_out: list[str] = []
+        self.filled_in: list[str] = []
 
     def expectations(
         self, events: Sequence[EventInstance], actuals: Sequence[Actual], api_key: str
@@ -572,7 +579,9 @@ class NasdaqConsensus:
         nasdaq, tradingview = fetch_calendars(
             (released[a.event_id] for a in wanted), settings.cache_dir
         )
-        consensus, self.left_out = match_consensus(wanted, released, nasdaq, tradingview)
+        consensus, self.left_out, self.filled_in = match_consensus(
+            wanted, released, nasdaq, tradingview
+        )
         return [
             Expectation(
                 a.event_id,

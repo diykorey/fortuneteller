@@ -287,6 +287,26 @@ def test_an_actual_predicts_each_open_link_s_close_and_a_closed_one_is_silent(
     ]
 
 
+def test_without_nasdaq_s_consensus_tradingview_s_forecast_is_taken_and_named(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given the CPI history, and a next release Nasdaq has no consensus for, TradingView 0.2
+    _store_consensus_history(db.get_connection())
+    _next(monkeypatch, expectations.NextConsensus(date(2026, 11, 12), None, 0.2))
+
+    # when the release comes in at 0.3
+    code = main(["predict", "--event", "cpi", "--actual", "0.3"])
+
+    # then the surprise is against TradingView's forecast, named, and the rows are logged
+    out = capsys.readouterr().out.splitlines()
+    assert code == 0
+    assert out[0] == (
+        "core on 2026-11-12: actual 0.3, TradingView's forecast (Nasdaq has none) 0.2, "
+        "surprise +0.1"
+    )
+    assert out[-1] == f"logged 4 rows to {settings.calls_path}"
+
+
 def test_a_small_surprise_predicts_nothing(
     tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -311,10 +331,6 @@ def test_a_small_surprise_predicts_nothing(
     [
         (None, "no core release with a consensus from"),
         (
-            expectations.NextConsensus(date(2026, 11, 12), None, 0.2),
-            "Nasdaq has no consensus yet for core on 2026-11-12",
-        ),
-        (
             expectations.NextConsensus(date(2026, 11, 12), 0.2, 0.5),
             "the calendars disagree for core on 2026-11-12: Nasdaq 0.2, TradingView 0.5",
         ),
@@ -327,7 +343,7 @@ def test_without_a_consensus_to_trust_there_is_no_prediction(
     capsys: pytest.CaptureFixture[str],
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    # given the CPI history, and no next release, no Nasdaq consensus, or calendars far apart
+    # given the CPI history, and no next release, or calendars far apart
     _store_consensus_history(db.get_connection())
     _next(monkeypatch, upcoming)
 
@@ -767,6 +783,35 @@ def test_score_grades_the_calls_in_time_and_lists_the_void_missed_and_pending(
     ]
     assert out[out.index("pending: 1") + 1] == "  cpi 2027-01-13: the release is not loaded"
     assert out[-2:] == ["missed: 1 releases since 2026-10-13 with no rows", "  cpi 2026-12-10"]
+
+
+def test_a_call_on_tradingview_s_forecast_is_logged_and_graded(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given the CPI history, a release Nasdaq had no consensus for, called at 09:00 on TradingView's
+    # 0.2, and later loaded with that surprise and its moves
+    con = db.get_connection()
+    _store_consensus_history(con)
+    day = date(2026, 10, 14)
+    _next(monkeypatch, expectations.NextConsensus(day, None, 0.2))
+    assert main(["predict", "--event", "cpi", "--actual", "0.3"]) == 0
+    _live_release(con, day, {"SPY / ES": -0.004, "UST10Y / ZN": 5.0, "DXY": 0.002, "VIX": 0.01})
+    capsys.readouterr()
+
+    # when the log is scored
+    code = main(["score"])
+
+    # then each link's call is graded, and none is void, pending or missed
+    out = capsys.readouterr().out.splitlines()
+    assert code == 0
+    assert out[out.index("walk-forward (live)") + 2 :][:4] == [
+        "SPY / ES     down      2026-09  1          1      100%      0.5000  100%             too few",
+        "UST10Y / ZN  up        2026-09  1          1      100%      0.5000  100%             too few",
+        "DXY          up        2026-09  1          1      100%      0.5000  100%             too few",
+        "VIX          up        2026-09  1          1      100%      0.5000  100%             too few",
+    ]
+    assert not any(line.startswith(("void:", "pending:")) for line in out)
+    assert out[-1] == "missed: 0 releases since 2026-10-13 with no rows"
 
 
 @pytest.mark.parametrize(

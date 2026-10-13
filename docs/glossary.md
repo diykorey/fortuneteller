@@ -187,7 +187,8 @@ Terms are grouped by what they are about, alphabetical within each group.
   as possible (`stats.least_squares`). The payroll model fits payrolls on ADP's change, the claims
   change and the 12-month trend this way, refitted before every report on earlier reports only.
 - **Nasdaq consensus** — the `Consensus` column of Nasdaq's economic calendar, 2008 to today; the
-  `nasdaq_consensus` expectation source, checked against TradingView's calendar. Compared with
+  `nasdaq_consensus` expectation source, checked against TradingView's calendar, whose forecast
+  fills in where Nasdaq has no row ([consensus fallback](steps/consensus-fallback.md)). Compared with
   other free sources in [Data sources](data-sources.md#which-free-consensus-is-best).
 - **Walk-forward** — replaying history one release at a time, each decision made only from the
   releases before it, so that what is graded was never seen when deciding

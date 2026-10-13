@@ -119,7 +119,7 @@ DAY = date(2026, 9, 11)
 
 def _match(
     rows: list[CalendarRow], checks: list[CalendarRow] | None = None, value: float = 0.31
-) -> tuple[dict[tuple[int, str], float], list[str]]:
+) -> tuple[dict[tuple[int, str], float], list[str], list[str]]:
     actual = Actual(1, sources.CORE, date(2026, 8, 1), value, "percent")
     return match_consensus([actual], {1: DAY}, rows, checks or [])
 
@@ -129,7 +129,7 @@ def test_the_row_whose_actual_is_the_first_print_gives_the_consensus() -> None:
     rows = [CalendarRow("Core CPI", DAY, 0.3, 0.2), CalendarRow("Core CPI", DAY, 2.4, 2.4)]
 
     # when the consensus is matched
-    consensus, left_out = _match(rows)
+    consensus, left_out, _ = _match(rows)
 
     # then the month-on-month row's consensus is the release's
     assert consensus == {(1, sources.CORE): 0.2}
@@ -159,7 +159,7 @@ def test_a_named_unreadable_day_is_left_out_not_refused() -> None:
     rows = [CalendarRow("Core CPI", date(2008, 10, 16), 0.4, 0.2)]
 
     # when the consensus is matched
-    consensus, left_out = match_consensus([actual], {1: date(2008, 10, 16)}, rows, [])
+    consensus, left_out, _ = match_consensus([actual], {1: date(2008, 10, 16)}, rows, [])
 
     # then it has none, and says so
     assert consensus == {}
@@ -173,12 +173,13 @@ def test_a_consensus_far_from_tradingview_s_is_left_out() -> None:
     near = [CalendarRow("Core Inflation Rate MoM", DAY, 0.3, 0.0)]
 
     # when each is matched
-    left, left_out = _match(rows, far)
-    kept, _ = _match(rows, near)
+    left, left_out, filled_in = _match(rows, far)
+    kept, _, _ = _match(rows, near)
 
     # then the far one gets no consensus and is named; the one at the limit keeps it
     assert left == {}
     assert left_out == ["core on 2026-09-11: Nasdaq 0.2, TradingView -0.1"]
+    assert filled_in == []
     assert kept == {(1, sources.CORE): 0.2}
 
 
@@ -187,10 +188,46 @@ def test_a_day_without_any_consensus_is_simply_skipped() -> None:
     rows = [CalendarRow("Core CPI", DAY, 0.3, None)]
 
     # when the consensus is matched
-    consensus, left_out = _match(rows)
+    consensus, left_out, filled_in = _match(rows)
 
     # then there is nothing, and nothing to report
-    assert (consensus, left_out) == ({}, [])
+    assert (consensus, left_out, filled_in) == ({}, [], [])
+
+
+@pytest.mark.parametrize(
+    "rows",
+    [[], [CalendarRow("Core CPI", DAY, 0.3, None)], [CalendarRow("CPI", DAY, 0.3, 0.1)]],
+)
+def test_where_nasdaq_has_no_row_with_a_consensus_tradingview_s_forecast_is_taken(
+    rows: list[CalendarRow],
+) -> None:
+    # given no Nasdaq row, one with no consensus, or only another measure's; TradingView's at 0.2
+    checks = [CalendarRow("Core Inflation Rate MoM", DAY, None, 0.2)]
+
+    # when the consensus is matched
+    consensus, left_out, filled_in = _match(rows, checks)
+
+    # then TradingView's forecast is the release's, and it is named
+    assert consensus == {(1, sources.CORE): 0.2}
+    assert left_out == []
+    assert filled_in == ["core on 2026-09-11: TradingView 0.2"]
+
+
+@pytest.mark.parametrize("rows", [[CalendarRow("Core CPI", date(2008, 10, 16), 0.4, 0.2)], []])
+def test_an_unreadable_day_stays_out_though_tradingview_has_a_forecast(
+    rows: list[CalendarRow],
+) -> None:
+    # given core CPI on 2008-10-16, unreadable, with a Nasdaq row or none, and TradingView's 0.2
+    day = date(2008, 10, 16)
+    actual = Actual(1, sources.CORE, date(2008, 9, 1), 0.14, "percent")
+    checks = [CalendarRow("Core Inflation Rate MoM", day, None, 0.2)]
+
+    # when the consensus is matched
+    consensus, left_out, filled_in = match_consensus([actual], {1: day}, rows, checks)
+
+    # then it still has none
+    assert consensus == {}
+    assert filled_in == []
 
 
 def test_the_source_gives_each_release_its_consensus_known_the_evening_before(
@@ -211,6 +248,30 @@ def test_the_source_gives_each_release_its_consensus_known_the_evening_before(
     # then it expects 0.2, known at the end of the New York day before, which the shared check takes
     assert [(e.value, e.known_at) for e in found] == [(0.2, datetime(2026, 9, 11, 3, 59, 59))]
     assert len(build_surprises([event], [actual], found, [flows.CPI_EVENT_TYPE])) == 1
+
+
+def test_the_source_takes_tradingview_s_forecast_where_nasdaq_has_no_row(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # given CPI released 2026-09-11, no Nasdaq row that day, and TradingView's forecast of 0.2
+    event = flows.to_event_instance(
+        FirstRelease(date(2026, 8, 1), date(2026, 9, 11), 100.0), flows.CPI_FLOW
+    )
+    actual = Actual(event.event_id, sources.CORE, date(2026, 8, 1), 0.31, "percent")
+    checks = [CalendarRow("Core Inflation Rate MoM", DAY, None, 0.2)]
+    monkeypatch.setattr(expectations, "fetch_calendars", lambda days, cache_dir: ([], checks))
+    source = expectations.NasdaqConsensus()
+
+    # when the source is asked
+    found = source.expectations([event], [actual], "key")
+
+    # then it expects TradingView's 0.2, stored as the consensus surprise, and names it filled in
+    assert [e.value for e in found] == [0.2]
+    surprises = build_surprises([event], [actual], found, [flows.CPI_EVENT_TYPE])
+    assert [(s.baseline, round(s.surprise, 9)) for s in surprises] == [
+        (expectations.NASDAQ_CONSENSUS, 0.11)
+    ]
+    assert source.filled_in == ["core on 2026-09-11: TradingView 0.2"]
 
 
 def _tradingview(*rows: tuple[str, str, float | None]) -> bytes:
