@@ -2,16 +2,17 @@
 
 import random
 from dataclasses import replace
-from datetime import UTC, date, datetime, timedelta
+from datetime import UTC, date, datetime, time, timedelta
 from pathlib import Path
 
 import duckdb
 import pytest
 
 from fortuneteller import db, expectations, flows, study
+import fortuneteller.__main__ as cli
 from fortuneteller.__main__ import main
 from fortuneteller.config import settings
-from fortuneteller.sources import CORE, CalendarError, FirstRelease
+from fortuneteller.sources import CORE, NEW_YORK, CalendarError, FirstRelease
 from fortuneteller.stats import binomial_p
 from fortuneteller.study import (
     DOESNT_HOLD,
@@ -241,8 +242,17 @@ def test_predict_asks_for_the_loads_it_needs(
     assert "load-surprises" in capsys.readouterr().err
 
 
-def _next(monkeypatch: pytest.MonkeyPatch, upcoming: expectations.NextConsensus | None) -> None:
+def _next(
+    monkeypatch: pytest.MonkeyPatch,
+    upcoming: expectations.NextConsensus | None,
+    at: time = time(9, 0),
+    days_before: int = 0,
+) -> None:
+    # The next release, and the clock at ``at`` New York, ``days_before`` it (its day by default).
     monkeypatch.setattr(expectations, "next_consensus", lambda measure, today, cache_dir: upcoming)
+    if upcoming is not None:
+        now = datetime.combine(upcoming.day - timedelta(days=days_before), at, tzinfo=NEW_YORK)
+        monkeypatch.setattr(cli, "_now", lambda: now)
 
 
 def test_an_actual_predicts_each_open_link_s_close_and_a_closed_one_is_silent(
@@ -529,9 +539,10 @@ def test_a_release_is_logged_once(
     # when the same release is typed in again, with another actual
     code = main(["predict", "--event", "cpi", "--actual", "0.5"])
 
-    # then it refuses and the log is unchanged
+    # then it refuses before printing anything, and the log is unchanged
     assert code == 1
-    assert "already in" in capsys.readouterr().err
+    refused = capsys.readouterr()
+    assert "already in" in refused.err and refused.out == ""
     assert settings.calls_path.read_text() == before
 
 
@@ -553,3 +564,62 @@ def test_the_log_reads_back_what_was_written(tmp_path: Path) -> None:
     # then the rows come back as written, under one header
     assert study.read_calls(path) == calls
     assert path.read_text().count("logged_at") == 1
+
+
+@pytest.mark.parametrize(
+    ("at", "days_before"), [(time(9, 0), 1), (time(8, 29), 0)], ids=["day before", "too early"]
+)
+def test_a_what_if_before_the_release_prints_but_is_not_logged(
+    at: time,
+    days_before: int,
+    tmp_db: Path,
+    capsys: pytest.CaptureFixture[str],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # given the CPI history, and a clock before the release
+    _store_consensus_history(db.get_connection())
+    _next(monkeypatch, expectations.NextConsensus(date(2026, 11, 12), 0.2, 0.2), at, days_before)
+
+    # when an actual is tried out, twice
+    main(["predict", "--event", "cpi", "--actual", "0.3"])
+    code = main(["predict", "--event", "cpi", "--actual", "0.4"])
+
+    # then both print their calls, nothing is logged, and the release keeps its entry
+    out = capsys.readouterr().out.splitlines()
+    assert code == 0
+    assert out[-1] == "not logged: a release is logged on its day from 08:30 New York"
+    assert not settings.calls_path.exists()
+
+
+def test_an_empty_or_unterminated_log_keeps_its_rows_apart(tmp_path: Path) -> None:
+    # given an empty log, and a log whose last row lacks its line end
+    when = datetime(2026, 11, 6, 13, 31, 5, tzinfo=UTC)
+    call = study.LoggedCall(when, "nfp", date(2026, 11, 6), 151.0, "DXY", study.SILENT)
+    empty, unterminated = tmp_path / "empty.csv", tmp_path / "unterminated.csv"
+    empty.touch()
+    study.append_calls(unterminated, [call])
+    unterminated.write_text(unterminated.read_text().rstrip("\n"))
+
+    # when a row is added to each
+    study.append_calls(empty, [call])
+    study.append_calls(unterminated, [call])
+
+    # then each reads back whole
+    assert study.read_calls(empty) == [call]
+    assert study.read_calls(unterminated) == [call, call]
+
+
+def test_an_unreadable_log_row_is_named(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given the CPI history and a log with a damaged row
+    _store_consensus_history(db.get_connection())
+    _next(monkeypatch, expectations.NextConsensus(date(2026, 11, 12), 0.2, 0.2))
+    settings.calls_path.write_text(",".join(study.LOG_COLUMNS) + "\nnot a time,cpi\n")
+
+    # when an actual is typed in
+    code = main(["predict", "--event", "cpi", "--actual", "0.3"])
+
+    # then it stops and names the line
+    assert code == 1
+    assert "line 2 cannot be read" in capsys.readouterr().err

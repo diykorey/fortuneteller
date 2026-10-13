@@ -17,6 +17,7 @@ the event's surprise.
 from __future__ import annotations
 
 import csv
+import io
 import random
 from bisect import bisect_left
 from collections.abc import Iterable, Sequence
@@ -898,7 +899,8 @@ LOG_COLUMNS = (
 @dataclass(frozen=True)
 class LoggedCall:
     """A link's line at a live release, as stated then: ``direction`` +1 or -1 for a call (with or
-    without a probability), ``None`` otherwise; ``band`` in the market's unit."""
+    without a probability), ``None`` otherwise; ``band`` in the market's unit as in
+    ``observations`` (a fraction for prices, basis points for the yield)."""
 
     logged_at: datetime
     flow: str
@@ -917,27 +919,31 @@ def _blank(value: float | None) -> str:
 
 def append_calls(path: Path, calls: Sequence[LoggedCall]) -> None:
     """Adds ``calls`` to the log at ``path``, writing its header if the log is new."""
-    new = not path.exists()
+    before = path.read_text() if path.exists() else ""
+    lines = io.StringIO()
+    writer = csv.writer(lines, lineterminator="\n")
+    if not before:
+        writer.writerow(LOG_COLUMNS)
+    elif not before.endswith("\n"):
+        lines.write("\n")
+    for c in calls:
+        writer.writerow(
+            [
+                c.logged_at.astimezone(UTC).isoformat(timespec="seconds"),
+                c.flow,
+                c.day.isoformat(),
+                repr(c.actual),
+                c.instrument,
+                c.outcome,
+                "" if c.direction is None else ("up" if c.direction > 0 else "down"),
+                _blank(c.probability),
+                _blank(c.band[0] if c.band else None),
+                _blank(c.band[1] if c.band else None),
+            ]
+        )
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("a", newline="") as log:
-        writer = csv.writer(log, lineterminator="\n")
-        if new:
-            writer.writerow(LOG_COLUMNS)
-        for c in calls:
-            writer.writerow(
-                [
-                    c.logged_at.astimezone(UTC).isoformat(timespec="seconds"),
-                    c.flow,
-                    c.day.isoformat(),
-                    repr(c.actual),
-                    c.instrument,
-                    c.outcome,
-                    "" if c.direction is None else ("up" if c.direction > 0 else "down"),
-                    _blank(c.probability),
-                    _blank(c.band[0] if c.band else None),
-                    _blank(c.band[1] if c.band else None),
-                ]
-            )
+        log.write(lines.getvalue())
 
 
 def read_calls(path: Path) -> list[LoggedCall]:
@@ -946,17 +952,22 @@ def read_calls(path: Path) -> list[LoggedCall]:
         return []
     with path.open(newline="") as log:
         rows = list(csv.DictReader(log))
-    return [
-        LoggedCall(
-            datetime.fromisoformat(r["logged_at"]),
-            r["flow"],
-            date.fromisoformat(r["day"]),
-            float(r["actual"]),
-            r["instrument"],
-            r["outcome"],
-            {"up": 1, "down": -1}.get(r["direction"]),
-            float(r["probability"]) if r["probability"] else None,
-            (float(r["band_low"]), float(r["band_high"])) if r["band_low"] else None,
-        )
-        for r in rows
-    ]
+    calls = []
+    for line, r in enumerate(rows, start=2):
+        try:
+            calls.append(
+                LoggedCall(
+                    datetime.fromisoformat(r["logged_at"]),
+                    r["flow"],
+                    date.fromisoformat(r["day"]),
+                    float(r["actual"]),
+                    r["instrument"],
+                    r["outcome"],
+                    {"up": 1, "down": -1}.get(r["direction"]),
+                    float(r["probability"]) if r["probability"] else None,
+                    (float(r["band_low"]), float(r["band_high"])) if r["band_low"] else None,
+                )
+            )
+        except (KeyError, TypeError, ValueError) as exc:
+            raise ValueError(f"{path} line {line} cannot be read: {exc!r}") from None
+    return calls

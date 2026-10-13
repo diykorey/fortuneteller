@@ -35,10 +35,12 @@ would bring back the selection rung 2 designed out.
 | `instrument` | the link's market symbol |
 | `outcome` | `call`, `too_few`, `silent` or `small` |
 | `direction` | `up` or `down` for a call, else empty |
-| `probability`, `band_low`, `band_high` | as printed, empty when there is none |
+| `probability`, `band_low`, `band_high` | as stated, empty when there is none; the band in the market's unit as in `observations` (a fraction for prices, basis points for the yield) |
 
-No consensus is stored: the repo is public, and a row per release would grow into a copy of Nasdaq's
-calendar. The consensus is read back from the calendar cache when grading.
+Rows are written only on the release day from 08:30 New York; a run at any other time is a what-if,
+printed and not logged, so it cannot take the release's one entry. No consensus is stored: the repo
+is public, and a row per release would grow into a copy of Nasdaq's calendar. The consensus is read
+back from the calendar cache when grading.
 
 ## The way to reach it
 

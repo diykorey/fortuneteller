@@ -534,7 +534,8 @@ def _predict_release(
     """The prediction for the next release, from its typed-in actual and the calendars."""
     measure = rule.combinations[0][0]
     _nasdaq_name, _check_name, _decimals, gap = expectations.CONSENSUS_ROWS[measure]
-    today = datetime.now(sources.NEW_YORK).date()
+    now = _now()
+    today = now.astimezone(sources.NEW_YORK).date()
     try:
         upcoming = expectations.next_consensus(measure, today, settings.cache_dir)
     except sources.CalendarError as exc:
@@ -555,10 +556,14 @@ def _predict_release(
             file=sys.stderr,
         )
         return 1
-    if any(
-        c.flow == flow.cli_name and c.day == upcoming.day
-        for c in study.read_calls(settings.calls_path)
-    ):
+    released = datetime.combine(upcoming.day, flows.RELEASE_TIME, tzinfo=sources.NEW_YORK)
+    live = upcoming.day == today and now >= released
+    try:
+        logged_before = study.read_calls(settings.calls_path)
+    except ValueError as exc:
+        print(f"predict: {exc}", file=sys.stderr)
+        return 1
+    if live and any(c.flow == flow.cli_name and c.day == upcoming.day for c in logged_before):
         print(
             f"predict: {flow.cli_name} on {upcoming.day} is already in {settings.calls_path}; "
             "a release is logged once",
@@ -581,7 +586,6 @@ def _predict_release(
         f"{measure} on {upcoming.day}: actual {actual:g}, {_source_label(expectations.NASDAQ_CONSENSUS)} "
         f"{upcoming.nasdaq:g}, surprise {surprise:+g}"
     )
-    logged_at = datetime.now(UTC)
     links = [instrument for instrument, sign in rule.expected_sign.items() if sign]
 
     def logged(
@@ -592,7 +596,7 @@ def _predict_release(
         band: tuple[float, float] | None = None,
     ) -> study.LoggedCall:
         return study.LoggedCall(
-            logged_at,
+            now,
             flow.cli_name,
             upcoming.day,
             actual,
@@ -609,14 +613,14 @@ def _predict_release(
         else:
             print(f"no prediction: the surprise is under {rule.step}")
         outcome = study.SILENT if shared else study.SMALL
-        return _log_calls([logged(instrument, outcome) for instrument in links])
+        return _log_calls([logged(instrument, outcome) for instrument in links], live, released)
     calls = []
     confident = study.confident_links(
         flow, expectations.NASDAQ_CONSENSUS, con, next_surprise=surprise
     )
     replayed = {
-        instrument: [c for c in calls if c.call.event_id != study.NEXT_RELEASE]
-        for instrument, calls in confident.items()
+        instrument: [c for c in made if c.call.event_id != study.NEXT_RELEASE]
+        for instrument, made in confident.items()
     }
     graded = _graded_confidence(replayed, rule)
     for instrument, made in confident.items():
@@ -657,10 +661,19 @@ def _predict_release(
         "probability = the link's record on its calls so far; band = where half its moves land; "
         f"confidence graded by `fortuneteller predict --event {flow.cli_name}`"
     )
-    return _log_calls(calls)
+    return _log_calls(calls, live, released)
 
 
-def _log_calls(calls: Sequence[study.LoggedCall]) -> int:
+def _now() -> datetime:
+    return datetime.now(UTC)
+
+
+def _log_calls(calls: Sequence[study.LoggedCall], live: bool, released: datetime) -> int:
+    """Logs the calls only on the release's day, from its release time: any other run is a what-if
+    and must not take the release's one entry in the log."""
+    if not live:
+        print(f"not logged: a release is logged on its day from {released:%H:%M} New York")
+        return 0
     study.append_calls(settings.calls_path, calls)
     print(f"logged {len(calls)} rows to {settings.calls_path}")
     return 0

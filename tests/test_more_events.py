@@ -1,17 +1,18 @@
 """Step 4's flows: retail sales, core PCE and GDP, each a change in one FRED level."""
 
 import json
-from datetime import date, timedelta
+from datetime import date, datetime, time, timedelta
 from pathlib import Path
 
 import duckdb
 import pytest
 
 from fortuneteller import db, expectations, flows, sources, study
+import fortuneteller.__main__ as cli
 from fortuneteller.__main__ import main
 from fortuneteller.config import settings
 from fortuneteller.flows import GDP_FLOW, PCE_FLOW, RETAIL_FLOW, LevelFlow
-from fortuneteller.sources import FirstRelease
+from fortuneteller.sources import NEW_YORK, FirstRelease
 
 # Real levels as FRED's revision history holds them: {reference month: {release day: level}}.
 RETAIL_LEVELS = {
@@ -212,6 +213,7 @@ def test_a_live_release_on_a_shared_day_logs_every_link_silent(
         "next_consensus",
         lambda measure, today, cache_dir: expectations.NextConsensus(day, 0.4, 0.4),
     )
+    monkeypatch.setattr(cli, "_now", lambda: datetime.combine(day, time(9), tzinfo=NEW_YORK))
     _nasdaq_day(monkeypatch, [("Retail Sales", "United States"), ("Core CPI", "United States")])
 
     # when its actual is typed in, a big surprise
