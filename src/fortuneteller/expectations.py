@@ -450,7 +450,7 @@ def match_consensus(
         where = f"{actual.measure} on {day}"
         check = checks.get((check_name, day))
         if not candidates:
-            if check is not None:
+            if check is not None and (actual.measure, day) not in UNREADABLE_CONSENSUS:
                 consensus[(actual.event_id, actual.measure)] = check
                 filled_in.append(f"{where}: TradingView {check:g}")
             continue

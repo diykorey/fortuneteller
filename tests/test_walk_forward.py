@@ -785,6 +785,35 @@ def test_score_grades_the_calls_in_time_and_lists_the_void_missed_and_pending(
     assert out[-2:] == ["missed: 1 releases since 2026-10-13 with no rows", "  cpi 2026-12-10"]
 
 
+def test_a_call_on_tradingview_s_forecast_is_logged_and_graded(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given the CPI history, a release Nasdaq had no consensus for, called at 09:00 on TradingView's
+    # 0.2, and later loaded with that surprise and its moves
+    con = db.get_connection()
+    _store_consensus_history(con)
+    day = date(2026, 10, 14)
+    _next(monkeypatch, expectations.NextConsensus(day, None, 0.2))
+    assert main(["predict", "--event", "cpi", "--actual", "0.3"]) == 0
+    _live_release(con, day, {"SPY / ES": -0.004, "UST10Y / ZN": 5.0, "DXY": 0.002, "VIX": 0.01})
+    capsys.readouterr()
+
+    # when the log is scored
+    code = main(["score"])
+
+    # then each link's call is graded, and none is void, pending or missed
+    out = capsys.readouterr().out.splitlines()
+    assert code == 0
+    assert out[out.index("walk-forward (live)") + 2 :][:4] == [
+        "SPY / ES     down      2026-09  1          1      100%      0.5000  100%             too few",
+        "UST10Y / ZN  up        2026-09  1          1      100%      0.5000  100%             too few",
+        "DXY          up        2026-09  1          1      100%      0.5000  100%             too few",
+        "VIX          up        2026-09  1          1      100%      0.5000  100%             too few",
+    ]
+    assert not any(line.startswith(("void:", "pending:")) for line in out)
+    assert out[-1] == "missed: 0 releases since 2026-10-13 with no rows"
+
+
 @pytest.mark.parametrize(
     ("at", "graded"), [(time(8, 30), True), (time(8, 29, 59), False), (time(14, 59), True)]
 )

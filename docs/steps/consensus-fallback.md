@@ -48,11 +48,12 @@ where the calendars differ past the gap.
   unreadable, or because the two calendars differ past the gap, stays out: those were decided on a
   check, and a fallback would quietly undo it.
 - **The same in the replay and live.** The stored surprise and the live call use one rule, so
-  `score` grades a fallback call on the surprise it was made from, unless Nasdaq adds its row
-  before the release is loaded; then the stored surprise is Nasdaq's, as for any release. The 14 releases above join the
+  `score` grades a fallback call on the surprise it was made from. *Added in step 1, 2026-10-13,
+  without changing which releases count:* unless Nasdaq adds its row before the release is loaded;
+  then the stored surprise is Nasdaq's, as for any release. The 14 releases above join the
   replay; CPI's and the jobs report's do not change.
 - **Unchecked, and named.** A fallback value has no second calendar to check it. `predict` prints
-  "TradingView's forecast: Nasdaq has none", and `load-surprises` lists the releases filled in,
+  "TradingView's forecast (Nasdaq has none)", and `load-surprises` lists the releases filled in,
   beside those left out.
 - **Known the evening before**, as Nasdaq's: neither records when its forecast was final.
 - **From the merge on.** A release missed before this is merged stays missed.

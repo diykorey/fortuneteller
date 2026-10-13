@@ -213,11 +213,13 @@ def test_where_nasdaq_has_no_row_with_a_consensus_tradingview_s_forecast_is_take
     assert filled_in == ["core on 2026-09-11: TradingView 0.2"]
 
 
-def test_an_unreadable_day_stays_out_though_tradingview_has_a_forecast() -> None:
-    # given core CPI on 2008-10-16, whose Nasdaq row matches no first print, and TradingView's 0.2
+@pytest.mark.parametrize("rows", [[CalendarRow("Core CPI", date(2008, 10, 16), 0.4, 0.2)], []])
+def test_an_unreadable_day_stays_out_though_tradingview_has_a_forecast(
+    rows: list[CalendarRow],
+) -> None:
+    # given core CPI on 2008-10-16, unreadable, with a Nasdaq row or none, and TradingView's 0.2
     day = date(2008, 10, 16)
     actual = Actual(1, sources.CORE, date(2008, 9, 1), 0.14, "percent")
-    rows = [CalendarRow("Core CPI", day, 0.4, 0.2)]
     checks = [CalendarRow("Core Inflation Rate MoM", day, None, 0.2)]
 
     # when the consensus is matched
@@ -263,9 +265,12 @@ def test_the_source_takes_tradingview_s_forecast_where_nasdaq_has_no_row(
     # when the source is asked
     found = source.expectations([event], [actual], "key")
 
-    # then it expects TradingView's 0.2, gives a surprise, and names the release filled in
+    # then it expects TradingView's 0.2, stored as the consensus surprise, and names it filled in
     assert [e.value for e in found] == [0.2]
-    assert len(build_surprises([event], [actual], found, [flows.CPI_EVENT_TYPE])) == 1
+    surprises = build_surprises([event], [actual], found, [flows.CPI_EVENT_TYPE])
+    assert [(s.baseline, round(s.surprise, 9)) for s in surprises] == [
+        (expectations.NASDAQ_CONSENSUS, 0.11)
+    ]
     assert source.filled_in == ["core on 2026-09-11: TradingView 0.2"]
 
 

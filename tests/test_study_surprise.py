@@ -582,6 +582,27 @@ def test_load_surprises_prints_a_line_per_measure_and_baseline(
     ]
 
 
+def test_load_surprises_names_the_releases_filled_in_from_tradingview(
+    tmp_db: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    # given a load in which Nasdaq had no row for one release
+    monkeypatch.setattr(settings, "fred_api_key", SecretStr("key"))
+    monkeypatch.setattr(flows, "load_surprises", lambda api_key, con: [])
+    source = next(
+        s for s in expectations.EXPECTATION_SOURCES if isinstance(s, expectations.NasdaqConsensus)
+    )
+    monkeypatch.setattr(source, "filled_in", ["retail_sales on 2019-10-16: TradingView 0.3"])
+
+    # when the command runs
+    code = main(["load-surprises"])
+
+    # then it names the release and the forecast taken
+    assert code == 0
+    assert capsys.readouterr().out.splitlines() == [
+        "  Nasdaq has none, TradingView's forecast taken: retail_sales on 2019-10-16: TradingView 0.3"
+    ]
+
+
 def test_load_surprises_reports_a_refusal_on_one_line(
     tmp_db: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
