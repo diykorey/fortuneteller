@@ -267,7 +267,8 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **Live call** — in rung 4, a call written to `data/calls.csv` on the release day, before its
   market's close, and graded afterwards. Unlike a replayed call, it cannot have been fitted to the
   outcome. A logged call outside that window, or on a mistyped actual, is **void**; a release with
-  no logged rows is **missed**.
+  no logged rows is **missed**; a call whose release, surprise or move is not loaded yet is
+  **pending**.
 - **Look-ahead bias** — accidentally using information that was not available at prediction time.
   The classic way a backtest produces results that evaporate in live use.
 - **Magnitude band / prediction interval** — the range a move is expected to fall in, rather than a

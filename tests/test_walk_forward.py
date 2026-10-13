@@ -682,3 +682,144 @@ def test_a_log_under_another_header_is_refused(tmp_path: Path) -> None:
 
     # then its header is named
     assert "line 1 is not the log's header" in str(refused.value)
+
+
+def _live_release(
+    con: duckdb.DuckDBPyConnection,
+    released: date,
+    moves: dict[str, float] | None = None,
+    surprise: float = 0.1,
+) -> None:
+    # A CPI release after the history, its first print 0.3 against a consensus of 0.2, and its moves.
+    month = date(released.year, released.month, 1) - timedelta(days=1)
+    flows.store_releases(
+        flows.CPI_FLOW, [FirstRelease(month.replace(day=1), released, 0.3)], con=con
+    )
+    event = flows.stored_events(flows.CPI_FLOW, con=con)[-1]
+    con.execute(
+        "INSERT INTO surprises VALUES (?, ?, ?, 0.3, ?, ?)",
+        [event.event_id, CORE, expectations.NASDAQ_CONSENSUS, 0.3 - surprise, surprise],
+    )
+    for instrument, move in (moves or {}).items():
+        con.execute(
+            "INSERT INTO observations (event_id, instrument, ret_unit, ret_1d) "
+            "VALUES (?, ?, 'pct', ?)",
+            [event.event_id, instrument, move],
+        )
+
+
+def _row(
+    day: date,
+    instrument: str,
+    at: time = time(9, 0),
+    actual: float = 0.3,
+    outcome: str = study.CALLED,
+    direction: int | None = 1,
+    probability: float | None = 0.7,
+) -> study.LoggedCall:
+    when = datetime.combine(day, at, tzinfo=NEW_YORK)
+    band = (0.001, 0.003) if probability is not None else None
+    return study.LoggedCall(
+        when, "cpi", day, actual, instrument, outcome, direction, probability, band
+    )
+
+
+def test_score_grades_the_calls_in_time_and_lists_the_void_missed_and_pending(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    # given the CPI history and four live releases: one logged, with the dollar's row written after
+    # its 15:00 close; one logged with a mistyped actual; one never logged; one not loaded yet
+    con = db.get_connection()
+    _store_consensus_history(con)
+    first, mistyped, missed = date(2026, 10, 14), date(2026, 11, 12), date(2026, 12, 10)
+    _live_release(con, first, {"SPY / ES": -0.004, "UST10Y / ZN": 5.0, "DXY": 0.002})
+    _live_release(con, mistyped, {"SPY / ES": -0.004})
+    _live_release(con, missed)
+    study.append_calls(
+        settings.calls_path,
+        [
+            _row(first, "SPY / ES", direction=-1),
+            _row(first, "UST10Y / ZN", outcome=study.TOO_FEW_CALLS, probability=None),
+            _row(first, "DXY", at=time(15, 20)),
+            _row(first, "VIX", outcome=study.SILENT, direction=None, probability=None),
+            _row(mistyped, "SPY / ES", actual=0.4, direction=-1),
+            _row(date(2027, 1, 13), "SPY / ES", direction=-1),
+        ],
+    )
+
+    # when the log is scored
+    code = main(["score"])
+
+    # then the two calls in time are graded, the late one and the mistyped release are void and
+    # named, the unlogged release is missed, and the one not loaded waits
+    out = capsys.readouterr().out.splitlines()
+    assert code == 0
+    assert out[out.index("walk-forward (live)") + 2 :][:4] == [
+        "SPY / ES     down      2026-09  1          1      100%      0.5000  100%             too few",
+        "UST10Y / ZN  up        2026-09  1          1      100%      0.5000  100%             too few",
+        "DXY          up        —        0          0      —         —       —                too few",
+        "VIX          up        —        0          0      —         —       —                too few",
+    ]
+    assert out[out.index("void: 2") + 1 :][:2] == [
+        "  cpi 2026-10-14 DXY: logged 15:20 New York, not from the release at 08:30 until its "
+        "close at 15:00",
+        "  cpi 2026-11-12: actual 0.4 is not FRED's first print 0.3",
+    ]
+    assert out[out.index("pending: 1") + 1] == "  cpi 2027-01-13: the release is not loaded"
+    assert out[-2:] == ["missed: 1 releases since 2026-10-13 with no rows", "  cpi 2026-12-10"]
+
+
+@pytest.mark.parametrize(
+    ("at", "graded"), [(time(8, 30), True), (time(8, 29, 59), False), (time(14, 59), True)]
+)
+def test_a_call_counts_from_the_release_until_its_close(
+    tmp_db: Path, at: time, graded: bool
+) -> None:
+    # given the CPI history and a live release whose dollar call was logged at ``at``
+    con = db.get_connection()
+    _store_consensus_history(con)
+    day = date(2026, 10, 14)
+    _live_release(con, day, {"DXY": 0.002})
+
+    # when it is scored
+    score = study.score_calls(flows.CPI_FLOW, [_row(day, "DXY", at=at)], con=con)
+
+    # then it is graded only from 08:30 New York until the dollar's 15:00 close
+    assert len(score.calls["DXY"]) == int(graded)
+    assert len(score.void) == int(not graded)
+
+
+def test_a_live_call_is_graded_with_its_stated_numbers_and_the_replay_s_drift(
+    tmp_db: Path,
+) -> None:
+    # given the CPI history and a live release whose yield call stated 70% and a band
+    con = db.get_connection()
+    _store_consensus_history(con)
+    day = date(2026, 10, 14)
+    _live_release(con, day, {"UST10Y / ZN": 0.002}, surprise=0.15)
+
+    # when it is scored
+    score = study.score_calls(flows.CPI_FLOW, [_row(day, "UST10Y / ZN")], con=con)
+
+    # then the call carries what was logged, the stored surprise and move, and the drift of the
+    # noticeable releases before it
+    rule = flows.CPI_FLOW.surprise_rule
+    assert rule is not None
+    earlier = con.execute(
+        "SELECT o.ret_1d FROM surprises s JOIN observations o ON o.event_id = s.event_id "
+        "WHERE o.instrument = 'UST10Y / ZN' AND s.event_id < ? AND abs(s.surprise) >= ?",
+        [graded_event_id(con, day), rule.noticeable],
+    ).fetchall()
+    (graded,) = score.calls["UST10Y / ZN"]
+    assert (graded.call.direction, graded.call.surprise, graded.call.move) == (1, 0.15, 0.002)
+    assert (graded.probability, graded.band) == (0.7, (0.001, 0.003))
+    assert graded.drift == (sum(m > 0 for (m,) in earlier) + 1) / (len(earlier) + 2)
+    assert score.void == [] and score.pending == []
+
+
+def graded_event_id(con: duckdb.DuckDBPyConnection, day: date) -> int:
+    return next(
+        e.event_id
+        for e in flows.stored_events(flows.CPI_FLOW, con=con)
+        if flows.release_date(e) == day
+    )
