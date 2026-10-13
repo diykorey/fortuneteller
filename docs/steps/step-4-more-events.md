@@ -88,7 +88,7 @@ No move was looked at.
 | --- | --- | --- |
 | 1 | ~~Seed rows; three flows from FRED with actuals from the release day's levels; `load-releases`, `load-prices`, `raw-move --event retail\|pce\|gdp`~~ **done** | A test per flow builds an actual against a revised previous level; release counts as above; raw-move printed. CPI's, the jobs report's and the Fed's raw move change (fewer ordinary days): old against new reported |
 | 2 | ~~Consensus rows, the three surprise rules, shared days left out; `load-surprises`, `surprise --event …`~~ **done** | Every release since 2008 has its Nasdaq row matched by our first print, or is named; CPI's and NFP's `surprise` and `predict` output byte-identical to `main`'s |
-| 3 | Results here and in [`mvp-results.md`](../mvp-results.md): `raw-move`, `surprise` and `predict` per flow | Says per flow and market whether it moves, tracks, holds walk-forward, and whether its confidence is honest, with and without COVID |
+| 3 | ~~Results here and in [`mvp-results.md`](../mvp-results.md): `raw-move`, `surprise` and `predict` per flow~~ **done** | Says per flow and market whether it moves, tracks, holds walk-forward, and whether its confidence is honest, with and without COVID |
 
 **Step 1, checked 2026-10-12.** `load-releases` stores 303 retail sales releases (2001 on), 312
 core PCE (2000 on; February 2019 and October 2025 came out with the month after) and 139 GDP advance
@@ -150,3 +150,37 @@ Flows in `flows.py` reuse `_release_batch` and the payroll path's vintages
 `GDP`; type codes 4–6. Rows in `expectations.CONSENSUS_ROWS`. `SurpriseRule.alone` (true for the
 three) drops shared days where `study` reads a flow's surprise pairs. Seed rows documented in
 `docs/legacy/data/events.md` and `docs/schema.md`.
+
+## Results
+
+Measured 2026-10-12 on Nasdaq's consensus, 2008 to today, shared days left out.
+
+| Event | Moves (raw move) | Tracks the surprise | Holds walk-forward | Confidence |
+| --- | --- | --- | --- | --- |
+| Retail sales | yield, dollar | **yield**: 0.26, right 67% (97) | **yield, all history**: 50 of 78, p 0.008; without COVID 43 of 67, p 0.014 | yield: not honest |
+| Core PCE | VIX | none: 19 noticeable surprises in 207 | no link ever opens | too few |
+| GDP | yield, dollar | none; the dollar unclear, 71% (21) | no link ever opens | too few |
+
+**Retail sales adds one link: the yield.** A stronger-than-expected report sends the 10-year
+yield up on 67% of noticeable surprises. Replayed walk-forward, the link opened in May 2011 and was
+right on 50 of 78 calls (64%). It holds over all history; without COVID it misses the bar narrowly
+(p 0.014 against 0.01). Always calling the yield up would have been right on only 44% of those
+releases, so unlike the jobs report's yield it is not the market's drift. The dollar moves on
+retail days but does not follow the surprise (58%, p 0.03), and opened for only three calls.
+
+**Its confidence is not honest.** From its 21st call on, 58 calls state 62% and are right 60% of the
+time, a Brier score of 0.249 against a coin's 0.25 (p 0.48); without COVID, 0.252, worse than a
+coin. Calibration and the band pass (23 of 58 moves in the band, inside 22–36).
+
+**Core PCE and GDP give no calls.** Core PCE's consensus is almost always right: 19 of 207 surprises
+reach 0.1pp. GDP has 57 releases with a consensus once shared days are left out, too few for the
+test to open on. Both move markets on the day; neither surprise is predictable.
+
+**Against what was written down first:** retail was expected to be the one candidate, core PCE to
+give few calls, GDP to be too few. All three came out so. Rung 3's obstacle stands: retail adds 58
+graded calls on one more link, not on the jobs report's links, so no link yet has the 100 or more
+calls a stated probability would need to be told from a coin.
+
+**What it means.** Two calls are now worth acting on, each the direction of one market on the day of
+a release: the dollar after a jobs report, and the 10-year yield after retail sales. Neither comes
+with a probability worth stating; both come with a band.
