@@ -15,7 +15,7 @@ import argparse
 import sys
 import textwrap
 from collections.abc import Callable, Iterable, Sequence
-from datetime import date, datetime
+from datetime import UTC, date, datetime
 
 import duckdb
 
@@ -555,14 +555,62 @@ def _predict_release(
             file=sys.stderr,
         )
         return 1
+    if any(
+        c.flow == flow.cli_name and c.day == upcoming.day
+        for c in study.read_calls(settings.calls_path)
+    ):
+        print(
+            f"predict: {flow.cli_name} on {upcoming.day} is already in {settings.calls_path}; "
+            "a release is logged once",
+            file=sys.stderr,
+        )
+        return 1
+    try:
+        shared = (
+            expectations.other_releases(
+                [m for m, _ in rule.combinations], upcoming.day, settings.cache_dir
+            )
+            if rule.alone
+            else []
+        )
+    except sources.CalendarError as exc:
+        print(f"predict: {exc}", file=sys.stderr)
+        return 1
     surprise = round(actual - upcoming.nasdaq, 9)
     print(
         f"{measure} on {upcoming.day}: actual {actual:g}, {_source_label(expectations.NASDAQ_CONSENSUS)} "
         f"{upcoming.nasdaq:g}, surprise {surprise:+g}"
     )
-    if abs(surprise) < rule.noticeable:
-        print(f"no prediction: the surprise is under {rule.step}")
-        return 0
+    logged_at = datetime.now(UTC)
+    links = [instrument for instrument, sign in rule.expected_sign.items() if sign]
+
+    def logged(
+        instrument: str,
+        outcome: str,
+        direction: int | None = None,
+        probability: float | None = None,
+        band: tuple[float, float] | None = None,
+    ) -> study.LoggedCall:
+        return study.LoggedCall(
+            logged_at,
+            flow.cli_name,
+            upcoming.day,
+            actual,
+            instrument,
+            outcome,
+            direction,
+            probability,
+            band,
+        )
+
+    if shared or abs(surprise) < rule.noticeable:
+        if shared:
+            print(f"no prediction: {upcoming.day} also holds {', '.join(shared)}")
+        else:
+            print(f"no prediction: the surprise is under {rule.step}")
+        outcome = study.SILENT if shared else study.SMALL
+        return _log_calls([logged(instrument, outcome) for instrument in links])
+    calls = []
     confident = study.confident_links(
         flow, expectations.NASDAQ_CONSENSUS, con, next_surprise=surprise
     )
@@ -571,16 +619,18 @@ def _predict_release(
         for instrument, calls in confident.items()
     }
     graded = _graded_confidence(replayed, rule)
-    for instrument, calls in confident.items():
-        if not calls or calls[-1].call.event_id != study.NEXT_RELEASE:
+    for instrument, made in confident.items():
+        if not made or made[-1].call.event_id != study.NEXT_RELEASE:
             print(
                 f"{instrument:<12} {'—':<6} silent: the link does not pass on the releases so far"
             )
+            calls.append(logged(instrument, study.SILENT))
             continue
-        latest = calls[-1]
+        latest = made[-1]
         call = _direction(latest.call.direction)
         if latest.probability is None:
             print(f"{instrument:<12} {call:<6} closes {call} today; too few calls so far")
+            calls.append(logged(instrument, study.TOO_FEW_CALLS, direction=latest.call.direction))
             continue
         unit = study.MVP_PRICE_SERIES[instrument].unit
         band = (
@@ -592,12 +642,27 @@ def _predict_release(
         overall = study.overall_confidence([grades[instrument] for _, grades in graded])
         print(
             f"{instrument:<12} {call:<6} closes {call} today: {latest.probability:.0%} "
-            f"({len(calls) - 1} calls before), {band}; its confidence: {overall}"
+            f"({len(made) - 1} calls before), {band}; its confidence: {overall}"
+        )
+        calls.append(
+            logged(
+                instrument,
+                study.CALLED,
+                direction=latest.call.direction,
+                probability=latest.probability,
+                band=latest.band,
+            )
         )
     print(
         "probability = the link's record on its calls so far; band = where half its moves land; "
         f"confidence graded by `fortuneteller predict --event {flow.cli_name}`"
     )
+    return _log_calls(calls)
+
+
+def _log_calls(calls: Sequence[study.LoggedCall]) -> int:
+    study.append_calls(settings.calls_path, calls)
+    print(f"logged {len(calls)} rows to {settings.calls_path}")
     return 0
 
 
@@ -656,7 +721,8 @@ def build_parser() -> argparse.ArgumentParser:
     p_predict.add_argument(
         "--actual",
         type=float,
-        help="the next release's actual (percent for CPI, thousands for payrolls): predict its day",
+        help="the next release's actual (percent for CPI, thousands for payrolls): predict its "
+        "day and log each link's line to data/calls.csv",
     )
     p_predict.set_defaults(func=_predict)
 

@@ -17,6 +17,8 @@ class Settings(BaseSettings):
     schema_path: Path = Path("schema.sql")
     # Replies from slow outside sources that no longer change; ignored by git.
     cache_dir: Path = Path("data/cache")
+    # Rung 4's log of live calls; committed, unlike the store.
+    calls_path: Path = Path("data/calls.csv")
     # SecretStr so the value cannot print itself in a traceback or repr; read it with
     # .get_secret_value() at the call site.
     fred_api_key: SecretStr | None = None

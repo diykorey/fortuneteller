@@ -9,6 +9,7 @@ import pytest
 
 from fortuneteller import db, expectations, flows, sources, study
 from fortuneteller.__main__ import main
+from fortuneteller.config import settings
 from fortuneteller.flows import GDP_FLOW, PCE_FLOW, RETAIL_FLOW, LevelFlow
 from fortuneteller.sources import FirstRelease
 
@@ -160,4 +161,68 @@ def test_surprise_lists_the_releases_left_out(
     assert out[-2:] == [
         "left out: 1 RET releases on a day with another event's release",
         "2024-03-12",
+    ]
+
+
+def _nasdaq_day(monkeypatch: pytest.MonkeyPatch, rows: list[tuple[str, str]]) -> None:
+    payload = json.dumps(
+        {
+            "data": {
+                "rows": [
+                    {"eventName": name, "country": country, "actual": "", "consensus": "0.3%"}
+                    for name, country in rows
+                ]
+            }
+        }
+    ).encode()
+    monkeypatch.setattr(sources, "fetch_nasdaq_day", lambda day, cache_dir: payload)
+
+
+def test_another_flow_s_row_on_the_calendar_shares_the_day(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given a calendar day with retail sales, US core CPI, the Fed's decision and UK core CPI
+    _nasdaq_day(
+        monkeypatch,
+        [
+            ("Retail Sales", "United States"),
+            ("Core CPI", "United States"),
+            ("Fed Interest Rate Decision", "United States"),
+            ("Core CPI", "United Kingdom"),
+        ],
+    )
+
+    # when retail sales asks who else is out that day
+    others = expectations.other_releases([sources.RETAIL_SALES], date(2026, 11, 17), tmp_path)
+
+    # then the US CPI and the Fed are named, not retail sales itself or the UK
+    assert others == ["Core CPI", expectations.FED_DECISION_ROW]
+
+
+def test_a_live_release_on_a_shared_day_logs_every_link_silent(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given retail sales' history, and its next release on a day CPI also comes out
+    _store_with_surprise(
+        db.get_connection(), RETAIL_FLOW, sources.RETAIL_SALES, [date(2024, 4, 15)]
+    )
+    day = date(2026, 11, 17)
+    monkeypatch.setattr(
+        expectations,
+        "next_consensus",
+        lambda measure, today, cache_dir: expectations.NextConsensus(day, 0.4, 0.4),
+    )
+    _nasdaq_day(monkeypatch, [("Retail Sales", "United States"), ("Core CPI", "United States")])
+
+    # when its actual is typed in, a big surprise
+    code = main(["predict", "--event", "retail", "--actual", "1.4"])
+
+    # then no call is made, and both of its links are logged silent
+    out = capsys.readouterr().out.splitlines()
+    assert code == 0
+    assert out[1] == "no prediction: 2026-11-17 also holds Core CPI"
+    calls = study.read_calls(settings.calls_path)
+    assert [(c.flow, c.instrument, c.outcome) for c in calls] == [
+        ("retail", "UST10Y / ZN", study.SILENT),
+        ("retail", "DXY", study.SILENT),
     ]

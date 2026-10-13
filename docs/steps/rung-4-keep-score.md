@@ -84,7 +84,7 @@ for years, and that is the expected result, not a failure.
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | `predict --actual` appends its rows to `data/calls.csv`; shared days logged `silent`; the unused `models.Prediction` removed | A test types an actual and finds a row per link with the printed numbers; a planted shared day logs every link `silent`; a second run on the same day refuses rather than adding rows |
+| 1 | ~~`predict --actual` appends its rows to `data/calls.csv`; shared days logged `silent`; the unused `models.Prediction` removed~~ **done** | A test types an actual and finds a row per link with the printed numbers; a planted shared day logs every link `silent`; a second run on the same day refuses rather than adding rows |
 | 2 | `score`: each row graded or void, missed releases listed, per-link record and rung 3's checks beside the replay's | Planted rows: one logged after the close is void, one with a mistyped actual is void and named, a release with no rows is missed, the rest graded |
 | 3 | The first live releases logged and graded; Results here and in [`mvp-results.md`](../mvp-results.md) | At least one release's rows merged after a pull request opened before its close, and graded by `score` |
 
