@@ -13,13 +13,11 @@ confidence not honest; core PCE and GDP give no calls. Step 4 complete. *(PR #13
 
 ## In progress
 
-Nothing.
+Rung 4 spec: keep score — log every live call before the close, grade it afterwards. *(PR #TBD.)*
 
 ## Next
 
-A decision: roadmap step 4a (cross-country: ECB and euro-area markets), ladder rung 4 (keep score:
-log live calls and grade them), or sharper measurement (paid consensus, intraday prices). Not yet
-made.
+Rung 4 step 1: `predict --actual` writes its calls to `data/calls.csv`.
 
 ## Done
 

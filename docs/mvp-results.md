@@ -209,7 +209,7 @@ or a log of live calls.
 
 ## What comes next
 
-A decision, not yet made. The options:
+Chosen 2026-10-13: keep score ([rung 4](steps/rung-4-keep-score.md)). The options:
 
 | Option | What it is | Cost | What it would tell us |
 | --- | --- | --- | --- |
@@ -220,7 +220,7 @@ A decision, not yet made. The options:
 | ~~**Honest confidence**~~ (rung 3) | ~~A probability and a band per call, graded~~ **done**, above: the bands are honest, the probabilities not | — | — |
 | ~~**More events**~~ (roadmap step 4) | ~~Retail sales, core PCE, GDP~~ **done**, above: retail sales' yield holds; core PCE and GDP give no calls | — | — |
 | **Cross-country effects** (roadmap step 4a) | ECB decisions and euro-area releases, with markets abroad | Free sources, more work | Whether a US surprise moves foreign markets, and the reverse |
-| **Keep score** (rung 4) | Log each live call and grade it later | Small | Live calls, the only history that cannot have been fitted |
+| **Keep score** (rung 4), **in progress** | Log each live call and grade it later | Small | Live calls, the only history that cannot have been fitted |
 
 Rung 1 strengthened the case for better expected values before predicting: two links (the yield
 and the dollar on jobs reports) are clearly real but sit just under the bar, and the expected value
