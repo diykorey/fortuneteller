@@ -207,6 +207,16 @@ confidence is not honest: a coin's Brier score, on 58 calls.
 events added links, not calls to existing links, so honest probabilities still wait for more history
 or a log of live calls.
 
+## A fallback consensus
+
+Measured 2026-10-13. Detail in [consensus fallback](steps/consensus-fallback.md#results).
+
+Nasdaq's calendar had no CPI row the day before the first live CPI release. Where Nasdaq has no
+row, TradingView's forecast is now taken, in the replay and live; on 828 releases both list, the call
+never turns around. The fallback adds 14 past releases (retail sales 7, core PCE 6, GDP 1). Every
+walk-forward and surprise verdict stands; retail sales' yield still holds (51 of 79). Its stated
+confidence moves from "not honest" to "too close to tell", by one call across a coin's Brier score.
+
 ## What comes next
 
 Chosen 2026-10-13: keep score ([rung 4](steps/rung-4-keep-score.md)). The options:
