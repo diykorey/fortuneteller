@@ -307,6 +307,89 @@ def test_without_nasdaq_s_consensus_tradingview_s_forecast_is_taken_and_named(
     assert out[-1] == f"logged 4 rows to {settings.calls_path}"
 
 
+def _tradingview_reads(
+    monkeypatch: pytest.MonkeyPatch, actuals: list[float | None], at: time = time(8, 30)
+) -> list[float]:
+    # TradingView's actual on successive reads (the last one repeated), a clock from ``at`` on the
+    # release day that the waits advance, and the waits made.
+    clock = [datetime.combine(date(2026, 11, 12), at, tzinfo=NEW_YORK)]
+    waits: list[float] = []
+    reads = iter(actuals)
+
+    def read(measure: str, day: date, cache_dir: Path) -> float | None:
+        return next(reads, actuals[-1])
+
+    def wait(seconds: float) -> None:
+        waits.append(seconds)
+        clock[0] += timedelta(seconds=seconds)
+
+    monkeypatch.setattr(expectations, "published_actual", read)
+    monkeypatch.setattr(cli, "_now", lambda: clock[0])
+    monkeypatch.setattr(cli, "_sleep", wait)
+    return waits
+
+
+def test_fetch_waits_for_tradingview_s_actual_and_calls_on_it(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given the CPI history, a consensus of 0.2, and TradingView's actual empty twice, then 0.3
+    _store_consensus_history(db.get_connection())
+    _next(monkeypatch, expectations.NextConsensus(date(2026, 11, 12), 0.2, 0.2))
+    waits = _tradingview_reads(monkeypatch, [None, None, 0.3])
+
+    # when the release is fetched from 08:30
+    code = main(["predict", "--event", "cpi", "--fetch"])
+
+    # then it reads every 15 seconds, names where the actual came from, and calls and logs as typed
+    out = capsys.readouterr().out.splitlines()
+    assert code == 0
+    assert waits == [15, 15]
+    assert out[:2] == [
+        "actual 0.3 from TradingView at 08:30:30 New York",
+        "core on 2026-11-12: actual 0.3, Nasdaq's consensus 0.2, surprise +0.1",
+    ]
+    assert out[-1] == f"logged 4 rows to {settings.calls_path}"
+    assert [row.actual for row in study.read_calls(settings.calls_path)] == [0.3] * 4
+
+
+def test_fetch_gives_up_half_an_hour_after_the_release(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given the CPI history and TradingView never showing the actual
+    _store_consensus_history(db.get_connection())
+    _next(monkeypatch, expectations.NextConsensus(date(2026, 11, 12), 0.2, 0.2))
+    waits = _tradingview_reads(monkeypatch, [None])
+
+    # when the release is fetched from 08:30
+    code = main(["predict", "--event", "cpi", "--fetch"])
+
+    # then it stops at 09:00, says to type the actual, and logs nothing
+    captured = capsys.readouterr()
+    assert code == 1
+    assert sum(waits) == 30 * 60
+    assert "no actual for core on 2026-11-12 by 09:00 New York; type it with --actual" in (
+        captured.err
+    )
+    assert not settings.calls_path.exists()
+
+
+def test_fetch_before_the_release_refuses_without_reading(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given the CPI history, and the clock at 08:29 on the release day
+    _store_consensus_history(db.get_connection())
+    _next(monkeypatch, expectations.NextConsensus(date(2026, 11, 12), 0.2, 0.2))
+    waits = _tradingview_reads(monkeypatch, [0.3], at=time(8, 29))
+
+    # when the release is fetched
+    code = main(["predict", "--event", "cpi", "--fetch"])
+
+    # then it refuses, naming the release time, and waits for nothing
+    assert code == 1
+    assert waits == []
+    assert "--fetch reads core on 2026-11-12 from its release at 08:30" in capsys.readouterr().err
+
+
 def test_a_small_surprise_predicts_nothing(
     tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
 ) -> None:

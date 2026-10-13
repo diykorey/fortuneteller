@@ -337,3 +337,31 @@ def test_no_upcoming_forecast_is_none_and_a_blank_nasdaq_row_is_no_consensus(
     # then the first has TradingView's forecast but no Nasdaq consensus; the second has nothing
     assert before == expectations.NextConsensus(date(2026, 11, 6), None, 60.0)
     assert after is None
+
+
+def test_the_published_actual_is_tradingview_s_for_that_day_once_set(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given TradingView's core CPI rows: an earlier release with its actual, and the day's not yet
+    payload = json.dumps(
+        {
+            "status": "ok",
+            "result": [
+                {"title": t, "country": "US", "date": f"{d}T12:30:00.000Z", "actual": a}
+                for t, d, a in [
+                    ("Core Inflation Rate MoM", "2026-10-14", 0.3),
+                    ("Core Inflation Rate MoM", "2026-11-12", None),
+                    ("Inflation Rate MoM", "2026-11-12", 0.4),
+                ]
+            ],
+        }
+    ).encode()
+    monkeypatch.setattr(sources, "fetch_tradingview_quarter", lambda q, cache_dir: payload)
+
+    # when the day's actual is read, and an earlier day's
+    pending = expectations.published_actual(sources.CORE, date(2026, 11, 12), tmp_path)
+    earlier = expectations.published_actual(sources.CORE, date(2026, 10, 14), tmp_path)
+
+    # then the day's is not there yet, and another measure's does not count; the earlier one is
+    assert pending is None
+    assert earlier == 0.3
