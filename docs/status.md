@@ -23,6 +23,7 @@ Rung 4 step 3: the first live releases logged and graded; Results.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-13 | Rung 4 spec: the calls' pull request opens right after logging, before gold's close | PR #TBD |
 | 2026-10-13 | Rung 4 step 2: `score` grades the logged calls beside the replay | PR #139 |
 | 2026-10-13 | Rung 4 step 1: `predict --actual` logs every link's line to `data/calls.csv` | PR #138 |
 | 2026-10-13 | Rung 4 spec: keep score | PR #137 |
