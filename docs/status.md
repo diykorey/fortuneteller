@@ -8,8 +8,8 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Consensus fallback spec: TradingView's forecast where Nasdaq has none, in the replay and live.
-*(PR #141.)*
+Consensus fallback step 1: TradingView's forecast where Nasdaq has no row, in `load-surprises` and
+`predict --actual`, named in both. *(PR #TBD.)*
 
 ## In progress
 
@@ -17,13 +17,14 @@ Rung 4 step 3: the first live releases logged and graded; Results.
 
 ## Next
 
-[Consensus fallback](steps/consensus-fallback.md) step 1: the fallback in the replay and in
-`predict --actual`.
+[Consensus fallback](steps/consensus-fallback.md) step 2: every link's verdict before and after the
+14 releases it adds.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-13 | Consensus fallback step 1: TradingView's forecast where Nasdaq has no row | PR #TBD |
 | 2026-10-13 | Consensus fallback spec: TradingView's forecast where Nasdaq has none | PR #141 |
 | 2026-10-13 | Rung 4 spec: the calls' pull request opens right after logging, before gold's close | PR #140 |
 | 2026-10-13 | Rung 4 step 2: `score` grades the logged calls beside the replay | PR #139 |

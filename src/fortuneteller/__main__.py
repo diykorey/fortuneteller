@@ -145,6 +145,8 @@ def _load_surprises(_args: argparse.Namespace) -> int:
         if isinstance(source, expectations.NasdaqConsensus):
             for note in source.left_out:
                 print(f"  no consensus: {note}")
+            for note in source.filled_in:
+                print(f"  Nasdaq has none, TradingView's forecast taken: {note}")
     return 0
 
 
@@ -544,12 +546,7 @@ def _predict_release(
     if upcoming is None:
         print(f"predict: no {measure} release with a consensus from {today} on", file=sys.stderr)
         return 1
-    if upcoming.nasdaq is None:
-        print(
-            f"predict: Nasdaq has no consensus yet for {measure} on {upcoming.day}", file=sys.stderr
-        )
-        return 1
-    if abs(upcoming.nasdaq - upcoming.tradingview) > gap + 1e-9:
+    if upcoming.nasdaq is not None and abs(upcoming.nasdaq - upcoming.tradingview) > gap + 1e-9:
         print(
             f"predict: the calendars disagree for {measure} on {upcoming.day}: Nasdaq "
             f"{upcoming.nasdaq:g}, TradingView {upcoming.tradingview:g}; no prediction",
@@ -581,10 +578,14 @@ def _predict_release(
     except sources.CalendarError as exc:
         print(f"predict: {exc}", file=sys.stderr)
         return 1
-    surprise = round(actual - upcoming.nasdaq, 9)
+    if upcoming.nasdaq is None:
+        expected, label = upcoming.tradingview, "TradingView's forecast (Nasdaq has none)"
+    else:
+        expected, label = upcoming.nasdaq, _source_label(expectations.NASDAQ_CONSENSUS)
+    surprise = round(actual - expected, 9)
     print(
-        f"{measure} on {upcoming.day}: actual {actual:g}, {_source_label(expectations.NASDAQ_CONSENSUS)} "
-        f"{upcoming.nasdaq:g}, surprise {surprise:+g}"
+        f"{measure} on {upcoming.day}: actual {actual:g}, {label} {expected:g}, "
+        f"surprise {surprise:+g}"
     )
     links = [instrument for instrument, sign in rule.expected_sign.items() if sign]
 

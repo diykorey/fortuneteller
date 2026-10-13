@@ -447,7 +447,7 @@ Example row:
 | --- | --- |
 | `trend_12m` | The average of the previous 12 months' first-published changes, counting only those published before the release day. Available for every release once a year of history exists, but it measures surprise against the trend, not against what the market expected. |
 | `nowcast` | The Cleveland Fed's model estimate, the last one published before the release day. Close to what the market saw, but only from 2013. |
-| `nasdaq_consensus` | The consensus published on Nasdaq's economic calendar before the release, checked against TradingView's; counted as known by the end of the day before. Core CPI, headline CPI and payrolls, from 2008 ([free consensus](steps/free-consensus.md)); retail sales, core PCE and GDP from 2008 too ([step 4](steps/step-4-more-events.md)). |
+| `nasdaq_consensus` | The consensus published on Nasdaq's economic calendar before the release, checked against TradingView's, or TradingView's forecast where Nasdaq has no row ([consensus fallback](steps/consensus-fallback.md)); counted as known by the end of the day before. Core CPI, headline CPI and payrolls, from 2008 ([free consensus](steps/free-consensus.md)); retail sales, core PCE and GDP from 2008 too ([step 4](steps/step-4-more-events.md)). |
 | `payroll_model` | Payrolls only: a least-squares forecast from ADP's change, the jobless-claims change and the 12-month trend, each as first published, refitted before every report on earlier reports only ([nfp-forecast](steps/nfp-forecast.md)). From 2014; none for June–August 2022, when ADP paused. |
 
 ## effect_size_matrix

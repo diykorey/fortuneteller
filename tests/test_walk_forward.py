@@ -287,6 +287,26 @@ def test_an_actual_predicts_each_open_link_s_close_and_a_closed_one_is_silent(
     ]
 
 
+def test_without_nasdaq_s_consensus_tradingview_s_forecast_is_taken_and_named(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given the CPI history, and a next release Nasdaq has no consensus for, TradingView 0.2
+    _store_consensus_history(db.get_connection())
+    _next(monkeypatch, expectations.NextConsensus(date(2026, 11, 12), None, 0.2))
+
+    # when the release comes in at 0.3
+    code = main(["predict", "--event", "cpi", "--actual", "0.3"])
+
+    # then the surprise is against TradingView's forecast, named, and the rows are logged
+    out = capsys.readouterr().out.splitlines()
+    assert code == 0
+    assert out[0] == (
+        "core on 2026-11-12: actual 0.3, TradingView's forecast (Nasdaq has none) 0.2, "
+        "surprise +0.1"
+    )
+    assert out[-1] == f"logged 4 rows to {settings.calls_path}"
+
+
 def test_a_small_surprise_predicts_nothing(
     tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
 ) -> None:
@@ -311,10 +331,6 @@ def test_a_small_surprise_predicts_nothing(
     [
         (None, "no core release with a consensus from"),
         (
-            expectations.NextConsensus(date(2026, 11, 12), None, 0.2),
-            "Nasdaq has no consensus yet for core on 2026-11-12",
-        ),
-        (
             expectations.NextConsensus(date(2026, 11, 12), 0.2, 0.5),
             "the calendars disagree for core on 2026-11-12: Nasdaq 0.2, TradingView 0.5",
         ),
@@ -327,7 +343,7 @@ def test_without_a_consensus_to_trust_there_is_no_prediction(
     capsys: pytest.CaptureFixture[str],
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    # given the CPI history, and no next release, no Nasdaq consensus, or calendars far apart
+    # given the CPI history, and no next release, or calendars far apart
     _store_consensus_history(db.get_connection())
     _next(monkeypatch, upcoming)
 
