@@ -9,7 +9,7 @@ Where the work is and what comes next. Two rules keep it current:
 ## Last completed
 
 Rung 5 step 2: `predict --fetch` waits from 08:30 for TradingView's actual and calls on it; merged
-only after the first release logged by hand. *(PR #TBD.)*
+only after the first release logged by hand. *(PR #145.)*
 
 ## In progress
 
@@ -24,7 +24,7 @@ whether it equals the one typed.
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-13 | Rung 5 step 2: `predict --fetch` reads the actual from TradingView | PR #TBD |
+| 2026-10-13 | Rung 5 step 2: `predict --fetch` reads the actual from TradingView | PR #145 |
 | 2026-10-13 | Rung 5 spec: the live path, `predict --fetch` from TradingView | PR #144 |
 | 2026-10-13 | Consensus fallback step 2: results — every verdict stands; retail's yield confidence too close to tell | PR #143 |
 | 2026-10-13 | Consensus fallback step 1: TradingView's forecast where Nasdaq has no row | PR #142 |
