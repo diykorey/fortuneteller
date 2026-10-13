@@ -48,10 +48,10 @@ back from `surprises` when grading.
 edited after the close. The DuckDB file is local and ignored by git, so the log lives in the repo:
 
 - **The witness is GitHub.** On each release day the log's new rows go up as a pull request opened
-  before the earliest close they are graded on (15:00 New York for the yield and the dollar). The
-  pull request's time is GitHub's, not ours. It is merged after grading. Alternatives considered: a
-  long-lived `calls` branch pushed per release (less ceremony, no review), an issue comment per call
-  (no file to grade from), a local log only (no witness).
+  right after they are logged, before the earliest close they are graded on (gold's, 13:30 New
+  York). The pull request's time is GitHub's, not ours. It is merged after grading. Alternatives
+  considered: a long-lived `calls` branch pushed per release (less ceremony, no review), an issue
+  comment per call (no file to grade from), a local log only (no witness).
 - **No backfill.** A release with no rows is listed as missed by `score`. A missed release costs
   calls; a backfilled one would cost the log its point.
 - **The actual is typed by hand** on release morning; fetching it is rung 5. A typo would be graded
