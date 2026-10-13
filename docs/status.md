@@ -9,7 +9,7 @@ Where the work is and what comes next. Two rules keep it current:
 ## Last completed
 
 Rung 4 step 1: `predict --actual` writes each link's line to `data/calls.csv`; a live release on
-another flow's day is logged silent. *(PR #TBD.)*
+another flow's day is logged silent. *(PR #138.)*
 
 ## In progress
 
@@ -23,7 +23,7 @@ Rung 4 step 2: `score` grades the logged calls, lists void and missed ones.
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-13 | Rung 4 step 1: `predict --actual` logs every link's line to `data/calls.csv` | PR #TBD |
+| 2026-10-13 | Rung 4 step 1: `predict --actual` logs every link's line to `data/calls.csv` | PR #138 |
 | 2026-10-13 | Rung 4 spec: keep score | PR #137 |
 | 2026-10-12 | Step 4 step 3: results — retail sales' yield holds; core PCE and GDP no calls; step 4 complete | PR #136 |
 | 2026-10-12 | Step 4 step 2: consensus surprises for the three; retail sales' yield tracks | PR #135 |
