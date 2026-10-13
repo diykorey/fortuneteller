@@ -9,7 +9,7 @@ Where the work is and what comes next. Two rules keep it current:
 ## Last completed
 
 Rung 4 step 2: `score` grades the logged calls beside the replay, and lists void, pending and missed
-ones. *(PR #TBD.)*
+ones. *(PR #139.)*
 
 ## In progress
 
@@ -23,7 +23,7 @@ Rung 4 step 3: the first live releases logged and graded; Results.
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-13 | Rung 4 step 2: `score` grades the logged calls beside the replay | PR #TBD |
+| 2026-10-13 | Rung 4 step 2: `score` grades the logged calls beside the replay | PR #139 |
 | 2026-10-13 | Rung 4 step 1: `predict --actual` logs every link's line to `data/calls.csv` | PR #138 |
 | 2026-10-13 | Rung 4 spec: keep score | PR #137 |
 | 2026-10-12 | Step 4 step 3: results — retail sales' yield holds; core PCE and GDP no calls; step 4 complete | PR #136 |
