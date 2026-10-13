@@ -9,7 +9,7 @@ Where the work is and what comes next. Two rules keep it current:
 ## Last completed
 
 Consensus fallback step 2: results. Every verdict stands; retail sales' yield confidence moves from
-"not honest" to "too close to tell" by one call. *(PR #TBD.)*
+"not honest" to "too close to tell" by one call. *(PR #143.)*
 
 ## In progress
 
@@ -23,7 +23,7 @@ Rung 5: fetch the release when it lands, instead of typing it in.
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-13 | Consensus fallback step 2: results — every verdict stands; retail's yield confidence too close to tell | PR #TBD |
+| 2026-10-13 | Consensus fallback step 2: results — every verdict stands; retail's yield confidence too close to tell | PR #143 |
 | 2026-10-13 | Consensus fallback step 1: TradingView's forecast where Nasdaq has no row | PR #142 |
 | 2026-10-13 | Consensus fallback spec: TradingView's forecast where Nasdaq has none | PR #141 |
 | 2026-10-13 | Rung 4 spec: the calls' pull request opens right after logging, before gold's close | PR #140 |
