@@ -2,15 +2,17 @@
 
 import random
 from dataclasses import replace
-from datetime import date
+from datetime import UTC, date, datetime, time, timedelta
 from pathlib import Path
 
 import duckdb
 import pytest
 
 from fortuneteller import db, expectations, flows, study
+import fortuneteller.__main__ as cli
 from fortuneteller.__main__ import main
-from fortuneteller.sources import CORE, CalendarError, FirstRelease
+from fortuneteller.config import settings
+from fortuneteller.sources import CORE, NEW_YORK, CalendarError, FirstRelease
 from fortuneteller.stats import binomial_p
 from fortuneteller.study import (
     DOESNT_HOLD,
@@ -240,8 +242,17 @@ def test_predict_asks_for_the_loads_it_needs(
     assert "load-surprises" in capsys.readouterr().err
 
 
-def _next(monkeypatch: pytest.MonkeyPatch, upcoming: expectations.NextConsensus | None) -> None:
+def _next(
+    monkeypatch: pytest.MonkeyPatch,
+    upcoming: expectations.NextConsensus | None,
+    at: time = time(9, 0),
+    days_before: int = 0,
+) -> None:
+    # The next release, and the clock at ``at`` New York, ``days_before`` it (its day by default).
     monkeypatch.setattr(expectations, "next_consensus", lambda measure, today, cache_dir: upcoming)
+    if upcoming is not None:
+        now = datetime.combine(upcoming.day - timedelta(days=days_before), at, tzinfo=NEW_YORK)
+        monkeypatch.setattr(cli, "_now", lambda: now)
 
 
 def test_an_actual_predicts_each_open_link_s_close_and_a_closed_one_is_silent(
@@ -272,6 +283,7 @@ def test_an_actual_predicts_each_open_link_s_close_and_a_closed_one_is_silent(
         "VIX          —      silent: the link does not pass on the releases so far",
         "probability = the link's record on its calls so far; band = where half its moves land; "
         "confidence graded by `fortuneteller predict --event cpi`",
+        f"logged 4 rows to {settings.calls_path}",
     ]
 
 
@@ -288,7 +300,10 @@ def test_a_small_surprise_predicts_nothing(
     # then it says why there is no prediction
     out = capsys.readouterr().out.splitlines()
     assert code == 0
-    assert out[1:] == ["no prediction: the surprise is under 0.1pp"]
+    assert out[1:] == [
+        "no prediction: the surprise is under 0.1pp",
+        f"logged 4 rows to {settings.calls_path}",
+    ]
 
 
 @pytest.mark.parametrize(
@@ -404,6 +419,7 @@ def test_an_open_link_with_too_few_calls_so_far_calls_without_a_probability(
         "VIX          up     closes up today; too few calls so far",
         "probability = the link's record on its calls so far; band = where half its moves land; "
         "confidence graded by `fortuneteller predict --event cpi`",
+        f"logged 4 rows to {settings.calls_path}",
     ]
 
 
@@ -434,3 +450,235 @@ def test_an_actual_s_verdict_grades_only_past_calls_with_and_without_covid(
     out = capsys.readouterr().out
     assert "its confidence: honest" not in out
     assert out.count("its confidence: not honest") == 4
+
+
+def test_an_actual_logs_each_link_s_line_as_printed(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given the CPI history, the yield in basis points and VIX's link unable to open
+    con = db.get_connection()
+    _store_consensus_history(con)
+    con.execute("UPDATE observations SET ret_1d = 0.001 WHERE instrument = 'VIX'")
+    con.execute("UPDATE observations SET ret_1d = ret_1d * 10000 WHERE instrument = 'UST10Y / ZN'")
+    _next(monkeypatch, expectations.NextConsensus(date(2026, 11, 12), 0.2, 0.2))
+
+    # when the release comes in hot
+    code = main(["predict", "--event", "cpi", "--actual", "0.3"])
+
+    # then the log holds one row per link with what was printed, and says so
+    calls = study.read_calls(settings.calls_path)
+    assert code == 0
+    assert capsys.readouterr().out.splitlines()[-1] == f"logged 4 rows to {settings.calls_path}"
+    assert [(c.flow, c.day, c.actual) for c in calls] == [("cpi", date(2026, 11, 12), 0.3)] * 4
+    assert [(c.instrument, c.outcome, c.direction) for c in calls] == [
+        ("SPY / ES", study.CALLED, -1),
+        ("UST10Y / ZN", study.CALLED, 1),
+        ("DXY", study.CALLED, 1),
+        ("VIX", study.SILENT, None),
+    ]
+    yield_call = calls[1]
+    assert yield_call.probability is not None and round(yield_call.probability, 2) == 0.88
+    assert yield_call.band is not None
+    assert (round(yield_call.band[0], 1), round(yield_call.band[1], 1)) == (8.6, 11.2)
+    assert calls[3].probability is None and calls[3].band is None
+    assert all(c.logged_at == datetime(2026, 11, 12, 14, 0, tzinfo=UTC) for c in calls)
+
+
+def test_a_small_surprise_logs_every_link_as_small(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given the CPI history and a consensus of 0.2
+    _store_consensus_history(db.get_connection())
+    _next(monkeypatch, expectations.NextConsensus(date(2026, 11, 12), 0.2, 0.2))
+
+    # when the release comes in at 0.25
+    main(["predict", "--event", "cpi", "--actual", "0.25"])
+
+    # then each link with a direction is logged, with no call
+    calls = study.read_calls(settings.calls_path)
+    assert [(c.instrument, c.outcome, c.direction) for c in calls] == [
+        ("SPY / ES", study.SMALL, None),
+        ("UST10Y / ZN", study.SMALL, None),
+        ("DXY", study.SMALL, None),
+        ("VIX", study.SMALL, None),
+    ]
+
+
+def test_a_call_with_too_few_calls_before_is_logged_with_its_direction(
+    tmp_db: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given the CPI history, but a probability only after 1,000 earlier calls
+    _store_consensus_history(db.get_connection())
+    monkeypatch.setattr(study, "MIN_CALLS", 1000)
+    _next(monkeypatch, expectations.NextConsensus(date(2026, 11, 12), 0.2, 0.2))
+
+    # when the release comes in hot
+    main(["predict", "--event", "cpi", "--actual", "0.3"])
+
+    # then each link's call is logged without a probability or band
+    calls = study.read_calls(settings.calls_path)
+    assert [(c.outcome, c.direction) for c in calls] == [
+        (study.TOO_FEW_CALLS, -1),
+        (study.TOO_FEW_CALLS, 1),
+        (study.TOO_FEW_CALLS, 1),
+        (study.TOO_FEW_CALLS, 1),
+    ]
+    assert all(c.probability is None and c.band is None for c in calls)
+
+
+def test_a_release_is_logged_once(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given the CPI history and a release already logged
+    _store_consensus_history(db.get_connection())
+    _next(monkeypatch, expectations.NextConsensus(date(2026, 11, 12), 0.2, 0.2))
+    main(["predict", "--event", "cpi", "--actual", "0.3"])
+    before = settings.calls_path.read_text()
+    capsys.readouterr()
+
+    # when the same release is typed in again, with another actual
+    code = main(["predict", "--event", "cpi", "--actual", "0.5"])
+
+    # then it refuses before printing anything, and the log is unchanged
+    assert code == 1
+    refused = capsys.readouterr()
+    assert "already in" in refused.err and refused.out == ""
+    assert settings.calls_path.read_text() == before
+
+
+def test_another_flow_logged_that_day_leaves_the_release_its_entry(
+    tmp_db: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given the CPI history, and a jobs report already logged on CPI's day
+    _store_consensus_history(db.get_connection())
+    _next(monkeypatch, expectations.NextConsensus(date(2026, 11, 12), 0.2, 0.2))
+    when = datetime(2026, 11, 12, 13, 40, tzinfo=UTC)
+    nfp = study.LoggedCall(when, "nfp", date(2026, 11, 12), 151.0, "DXY", study.SILENT)
+    study.append_calls(settings.calls_path, [nfp])
+
+    # when CPI's actual is typed in
+    code = main(["predict", "--event", "cpi", "--actual", "0.3"])
+
+    # then CPI's rows are logged after the jobs report's
+    calls = study.read_calls(settings.calls_path)
+    assert code == 0
+    assert [c.flow for c in calls] == ["nfp", "cpi", "cpi", "cpi", "cpi"]
+
+
+def test_the_log_reads_back_what_was_written(tmp_path: Path) -> None:
+    # given a call with a probability and band, and a silent link
+    when = datetime(2026, 11, 6, 13, 31, 5, tzinfo=UTC)
+    calls = [
+        study.LoggedCall(
+            when, "nfp", date(2026, 11, 6), 151.0, "DXY", study.CALLED, 1, 0.64, (-0.0015, 0.0055)
+        ),
+        study.LoggedCall(when, "nfp", date(2026, 11, 6), 151.0, "SPY / ES", study.SILENT),
+    ]
+
+    # when written in two goes and read back
+    path = tmp_path / "calls.csv"
+    study.append_calls(path, calls[:1])
+    study.append_calls(path, calls[1:])
+
+    # then the rows come back as written, under one header
+    assert study.read_calls(path) == calls
+    assert path.read_text().count("logged_at") == 1
+
+
+@pytest.mark.parametrize(
+    ("at", "days_before"), [(time(9, 0), 1), (time(8, 29), 0)], ids=["day before", "too early"]
+)
+def test_a_what_if_before_the_release_prints_but_is_not_logged(
+    at: time,
+    days_before: int,
+    tmp_db: Path,
+    capsys: pytest.CaptureFixture[str],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # given the CPI history, and a clock before the release
+    _store_consensus_history(db.get_connection())
+    _next(monkeypatch, expectations.NextConsensus(date(2026, 11, 12), 0.2, 0.2), at, days_before)
+
+    # when an actual is tried out, twice
+    main(["predict", "--event", "cpi", "--actual", "0.3"])
+    code = main(["predict", "--event", "cpi", "--actual", "0.4"])
+
+    # then both print their calls, nothing is logged, and the release keeps its entry
+    out = capsys.readouterr().out.splitlines()
+    assert code == 0
+    assert out[-1] == "not logged: a release is logged on its day from 08:30 New York"
+    assert not settings.calls_path.exists()
+
+
+def test_an_empty_or_unterminated_log_keeps_its_rows_apart(tmp_path: Path) -> None:
+    # given an empty log, and a log whose last row lacks its line end
+    when = datetime(2026, 11, 6, 13, 31, 5, tzinfo=UTC)
+    call = study.LoggedCall(when, "nfp", date(2026, 11, 6), 151.0, "DXY", study.SILENT)
+    empty, unterminated = tmp_path / "empty.csv", tmp_path / "unterminated.csv"
+    empty.touch()
+    study.append_calls(unterminated, [call])
+    unterminated.write_text(unterminated.read_text().rstrip("\n"))
+
+    # when a row is added to each
+    study.append_calls(empty, [call])
+    study.append_calls(unterminated, [call])
+
+    # then each reads back whole
+    assert study.read_calls(empty) == [call]
+    assert study.read_calls(unterminated) == [call, call]
+
+
+def test_an_unreadable_log_row_is_named(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given the CPI history and a log with a damaged row
+    _store_consensus_history(db.get_connection())
+    _next(monkeypatch, expectations.NextConsensus(date(2026, 11, 12), 0.2, 0.2))
+    settings.calls_path.write_text(",".join(study.LOG_COLUMNS) + "\nnot a time,cpi\n")
+
+    # when an actual is typed in
+    code = main(["predict", "--event", "cpi", "--actual", "0.3"])
+
+    # then it stops and names the line
+    assert code == 1
+    assert "line 2 cannot be read" in capsys.readouterr().err
+
+
+@pytest.mark.parametrize(
+    ("row", "line", "reason"),
+    [
+        ("2026-11-06T13:31:05,nfp,2026-11-06,151.0,DXY,silent,,,,", 2, "has no zone"),
+        ("2026-11-06T13:31:05+00:00,nfp,2026-11-06,151.0,DXY,called,,,,", 2, "unknown outcome"),
+        ("2026-11-06T13:31:05+00:00,nfp,2026-11-06,151.0,DXY,call,UP,,,", 2, "unknown direction"),
+        ("2026-11-06T13:31:05+00:00,nfp,2026-11-06,151.0,DXY,call,up,0.6,-0.1,", 2, "half a band"),
+        ("\n2026-11-06T13:31:05+00:00,nfp,not a day,151.0,DXY,silent,,,,", 3, "not a day"),
+    ],
+    ids=["naive time", "outcome", "direction", "half a band", "after a blank line"],
+)
+def test_a_row_the_log_cannot_hold_is_refused_by_its_line(
+    tmp_path: Path, row: str, line: int, reason: str
+) -> None:
+    # given a log with one row that step 2 could not grade
+    path = tmp_path / "calls.csv"
+    path.write_text(",".join(study.LOG_COLUMNS) + "\n" + row + "\n")
+
+    # when it is read
+    with pytest.raises(ValueError) as refused:
+        study.read_calls(path)
+
+    # then the row's line and the reason are named
+    assert f"line {line} cannot be read" in str(refused.value)
+    assert reason in str(refused.value)
+
+
+def test_a_log_under_another_header_is_refused(tmp_path: Path) -> None:
+    # given a log whose header lacks a column
+    path = tmp_path / "calls.csv"
+    path.write_text(",".join(study.LOG_COLUMNS[:-1]) + "\n")
+
+    # when it is read
+    with pytest.raises(ValueError) as refused:
+        study.read_calls(path)
+
+    # then its header is named
+    assert "line 1 is not the log's header" in str(refused.value)

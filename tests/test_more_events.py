@@ -1,16 +1,18 @@
 """Step 4's flows: retail sales, core PCE and GDP, each a change in one FRED level."""
 
 import json
-from datetime import date, timedelta
+from datetime import date, datetime, time, timedelta
 from pathlib import Path
 
 import duckdb
 import pytest
 
 from fortuneteller import db, expectations, flows, sources, study
+import fortuneteller.__main__ as cli
 from fortuneteller.__main__ import main
+from fortuneteller.config import settings
 from fortuneteller.flows import GDP_FLOW, PCE_FLOW, RETAIL_FLOW, LevelFlow
-from fortuneteller.sources import FirstRelease
+from fortuneteller.sources import NEW_YORK, FirstRelease
 
 # Real levels as FRED's revision history holds them: {reference month: {release day: level}}.
 RETAIL_LEVELS = {
@@ -160,4 +162,99 @@ def test_surprise_lists_the_releases_left_out(
     assert out[-2:] == [
         "left out: 1 RET releases on a day with another event's release",
         "2024-03-12",
+    ]
+
+
+def _tradingview_quarter(
+    monkeypatch: pytest.MonkeyPatch, rows: list[tuple[str, date, str]]
+) -> None:
+    payload = json.dumps(
+        {
+            "status": "ok",
+            "result": [
+                {"title": title, "country": country, "date": f"{day}T12:30:00.000Z"}
+                for title, day, country in rows
+            ],
+        }
+    ).encode()
+    monkeypatch.setattr(sources, "fetch_tradingview_quarter", lambda quarter, cache_dir: payload)
+
+
+def test_another_flow_s_row_on_the_calendar_shares_the_day(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given a day with retail sales, US core CPI, the Fed's decision and a UK row of CPI's name,
+    # and the jobs report the day after
+    day = date(2026, 11, 17)
+    _tradingview_quarter(
+        monkeypatch,
+        [
+            ("Retail Sales MoM", day, "US"),
+            ("Core Inflation Rate MoM", day, "US"),
+            ("Fed Interest Rate Decision", day, "US"),
+            ("Core Inflation Rate MoM", day, "GB"),
+            ("Non Farm Payrolls", day + timedelta(days=1), "US"),
+        ],
+    )
+
+    # when retail sales asks who else is out that day
+    others = expectations.other_releases([sources.RETAIL_SALES], day, tmp_path)
+
+    # then the US CPI and the Fed are named, not retail sales itself, the UK or the next day
+    assert others == ["Core Inflation Rate MoM", expectations.FED_DECISION_ROW]
+
+
+@pytest.mark.parametrize(
+    ("estimate", "expected"),
+    [
+        ("GDP Growth Rate QoQ Adv", ["GDP Growth Rate QoQ Adv"]),
+        ("GDP Growth Rate QoQ 2nd Est", []),
+        ("GDP Growth Rate QoQ Final", []),
+    ],
+)
+def test_only_gdp_s_advance_estimate_shares_a_day(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, estimate: str, expected: list[str]
+) -> None:
+    # given a core PCE day that also holds one of GDP's three estimates
+    day = date(2026, 11, 25)
+    _tradingview_quarter(
+        monkeypatch, [("Core PCE Price Index MoM", day, "US"), (estimate, day, "US")]
+    )
+
+    # when core PCE asks who else is out that day
+    others = expectations.other_releases([sources.CORE_PCE], day, tmp_path)
+
+    # then only the advance estimate, GDP's flow, shares it
+    assert others == expected
+
+
+def test_a_live_release_on_a_shared_day_logs_every_link_silent(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given retail sales' history, and its next release on a day CPI also comes out
+    _store_with_surprise(
+        db.get_connection(), RETAIL_FLOW, sources.RETAIL_SALES, [date(2024, 4, 15)]
+    )
+    day = date(2026, 11, 17)
+    monkeypatch.setattr(
+        expectations,
+        "next_consensus",
+        lambda measure, today, cache_dir: expectations.NextConsensus(day, 0.4, 0.4),
+    )
+    monkeypatch.setattr(cli, "_now", lambda: datetime.combine(day, time(9), tzinfo=NEW_YORK))
+    _tradingview_quarter(
+        monkeypatch, [("Retail Sales MoM", day, "US"), ("Core Inflation Rate MoM", day, "US")]
+    )
+
+    # when its actual is typed in, a big surprise
+    code = main(["predict", "--event", "retail", "--actual", "1.4"])
+
+    # then no call is made, and both of its links are logged silent
+    out = capsys.readouterr().out.splitlines()
+    assert code == 0
+    assert out[1] == "no prediction: 2026-11-17 also holds Core Inflation Rate MoM"
+    calls = study.read_calls(settings.calls_path)
+    assert [(c.flow, c.instrument, c.outcome) for c in calls] == [
+        ("retail", "UST10Y / ZN", study.SILENT),
+        ("retail", "DXY", study.SILENT),
     ]

@@ -8,21 +8,23 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Step 4, step 3 — results: retail sales' yield holds walk-forward (not without COVID, narrowly), its
-confidence not honest; core PCE and GDP give no calls. Step 4 complete. *(PR #136.)*
+Rung 4 step 1: `predict --actual` writes each link's line to `data/calls.csv`; a live release on
+another flow's day is logged silent. *(PR #138.)*
 
 ## In progress
 
-Rung 4 spec: keep score — log every live call before the close, grade it afterwards. *(PR #137.)*
+Nothing.
 
 ## Next
 
-Rung 4 step 1: `predict --actual` writes its calls to `data/calls.csv`.
+Rung 4 step 2: `score` grades the logged calls, lists void and missed ones.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-13 | Rung 4 step 1: `predict --actual` logs every link's line to `data/calls.csv` | PR #138 |
+| 2026-10-13 | Rung 4 spec: keep score | PR #137 |
 | 2026-10-12 | Step 4 step 3: results — retail sales' yield holds; core PCE and GDP no calls; step 4 complete | PR #136 |
 | 2026-10-12 | Step 4 step 2: consensus surprises for the three; retail sales' yield tracks | PR #135 |
 | 2026-10-12 | Step 4 step 1: retail sales, core PCE and GDP flows; GDP and retail sales move the yield and the dollar | PR #134 |
@@ -123,7 +125,6 @@ Found by the 2026-09-28 codebase review and deliberately left for later. This se
 each is fixed or dropped; it is not rewritten when a task finishes.
 
 - Paths and `.env` resolve from the working directory, so running from elsewhere misses them.
-- The `Prediction` model has no table and no caller.
 - CPI release dates for 1972–1989, and NFP release dates before 1994, have not been checked against
   BLS. Later dates are checked; see step 1's spec and rung 1's.
 - In 1990–2007 the 10-year yield and the dollar move more the day after a Fed decision than on the

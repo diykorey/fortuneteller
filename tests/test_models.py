@@ -17,7 +17,6 @@ from fortuneteller.models import (
     NewsSource,
     Observation,
     Polarity,
-    Prediction,
 )
 
 
@@ -103,22 +102,9 @@ def test_fact_and_output_models_construct() -> None:
         data_source=None,
         quality=None,
     )
-    prediction = Prediction(
-        event_type="CPI / inflation surprise",
-        instrument="SPY / ES",
-        direction="up",
-        expected_magnitude="0.5-1.5%",
-        half_life="minutes_hours",
-        probability=0.62,
-        magnitude_low=None,
-        magnitude_high=None,
-        regime=None,
-        as_of=ts,
-    )
     # then they construct and keep their values
     assert event.scheduled is True
     assert observation.quality is None
-    assert prediction.direction is Direction.up
 
 
 def test_invalid_enum_raises() -> None:

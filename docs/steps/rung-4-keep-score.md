@@ -35,10 +35,12 @@ would bring back the selection rung 2 designed out.
 | `instrument` | the link's market symbol |
 | `outcome` | `call`, `too_few`, `silent` or `small` |
 | `direction` | `up` or `down` for a call, else empty |
-| `probability`, `band_low`, `band_high` | as printed, empty when there is none |
+| `probability`, `band_low`, `band_high` | as stated, empty when there is none; the band in the market's unit as in `observations` (a fraction for prices, basis points for the yield) |
 
-No consensus is stored: the repo is public, and a row per release would grow into a copy of Nasdaq's
-calendar. The consensus is read back from the calendar cache when grading.
+Rows are written only on the release day from 08:30 New York; a run at any other time is a what-if,
+printed and not logged, so it cannot take the release's one entry. No consensus is stored: the repo
+is public, and a row per release would grow into a copy of Nasdaq's calendar. The consensus is read
+back from the calendar cache when grading.
 
 ## The way to reach it
 
@@ -59,9 +61,11 @@ edited after the close. The DuckDB file is local and ignored by git, so the log 
 
 The next release is not yet in `event_instances`, so `study.shared_days` cannot see it. For a flow
 whose surprise rule leaves shared days out (retail sales, core PCE, GDP), `predict --actual` reads
-that day's Nasdaq calendar, already fetched for the consensus, and if another flow's row is there
-logs every link as `silent` with the reason printed. Graded like the replay, a retail sales call on
-a CPI day would be graded on CPI.
+that day on TradingView's calendar and if another flow's row or the Fed's decision is there logs
+every link as `silent` with the reason printed. Graded like the replay, a retail sales call on a CPI
+day would be graded on CPI. TradingView's, not Nasdaq's: Nasdaq names all three GDP estimates `GDP`,
+and only the advance estimate is a flow's release. From 2014 to September 2026 TradingView gives
+the replay's shared days on all 355 of the three flows' release days, Nasdaq on 339.
 
 ## The rule, fixed before any live call is graded
 
@@ -84,7 +88,7 @@ for years, and that is the expected result, not a failure.
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | `predict --actual` appends its rows to `data/calls.csv`; shared days logged `silent`; the unused `models.Prediction` removed | A test types an actual and finds a row per link with the printed numbers; a planted shared day logs every link `silent`; a second run on the same day refuses rather than adding rows |
+| 1 | ~~`predict --actual` appends its rows to `data/calls.csv`; shared days logged `silent`; the unused `models.Prediction` removed~~ **done** | A test types an actual and finds a row per link with the printed numbers; a planted shared day logs every link `silent`; a second run on the same day refuses rather than adding rows |
 | 2 | `score`: each row graded or void, missed releases listed, per-link record and rung 3's checks beside the replay's | Planted rows: one logged after the close is void, one with a mistyped actual is void and named, a release with no rows is missed, the rest graded |
 | 3 | The first live releases logged and graded; Results here and in [`mvp-results.md`](../mvp-results.md) | At least one release's rows merged after a pull request opened before its close, and graded by `score` |
 

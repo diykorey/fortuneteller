@@ -16,11 +16,14 @@ the event's surprise.
 
 from __future__ import annotations
 
+import csv
+import io
 import random
 from bisect import bisect_left
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
-from datetime import UTC, date, time, timedelta
+from datetime import UTC, date, datetime, time, timedelta
+from pathlib import Path
 from statistics import median, quantiles
 from typing import NamedTuple
 from zoneinfo import ZoneInfo
@@ -875,3 +878,109 @@ def overall_confidence(grades: Sequence[ConfidenceGrade]) -> str:
         if verdict in verdicts:
             return verdict
     return HONEST
+
+
+# Rung 4: what `predict --actual` said for each link, one row per link per release.
+CALLED, TOO_FEW_CALLS, SILENT, SMALL = "call", "too_few", "silent", "small"
+LOG_COLUMNS = (
+    "logged_at",
+    "flow",
+    "day",
+    "actual",
+    "instrument",
+    "outcome",
+    "direction",
+    "probability",
+    "band_low",
+    "band_high",
+)
+
+
+@dataclass(frozen=True)
+class LoggedCall:
+    """A link's line at a live release, as stated then: ``direction`` +1 or -1 for a call (with or
+    without a probability), ``None`` otherwise; ``band`` in the market's unit as in
+    ``observations`` (a fraction for prices, basis points for the yield)."""
+
+    logged_at: datetime
+    flow: str
+    day: date
+    actual: float
+    instrument: str
+    outcome: str
+    direction: int | None = None
+    probability: float | None = None
+    band: tuple[float, float] | None = None
+
+
+def _blank(value: float | None) -> str:
+    return "" if value is None else repr(value)
+
+
+def append_calls(path: Path, calls: Sequence[LoggedCall]) -> None:
+    """Adds ``calls`` to the log at ``path``, writing its header if the log is new."""
+    before = path.read_text() if path.exists() else ""
+    lines = io.StringIO()
+    writer = csv.writer(lines, lineterminator="\n")
+    if not before:
+        writer.writerow(LOG_COLUMNS)
+    elif not before.endswith("\n"):
+        lines.write("\n")
+    for c in calls:
+        writer.writerow(
+            [
+                c.logged_at.astimezone(UTC).isoformat(timespec="seconds"),
+                c.flow,
+                c.day.isoformat(),
+                repr(c.actual),
+                c.instrument,
+                c.outcome,
+                "" if c.direction is None else ("up" if c.direction > 0 else "down"),
+                _blank(c.probability),
+                _blank(c.band[0] if c.band else None),
+                _blank(c.band[1] if c.band else None),
+            ]
+        )
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a", newline="") as log:
+        log.write(lines.getvalue())
+
+
+def _logged(r: dict[str, str]) -> LoggedCall:
+    logged_at = datetime.fromisoformat(r["logged_at"])
+    if logged_at.tzinfo is None:
+        raise ValueError(f"logged_at {r['logged_at']!r} has no zone")
+    if r["outcome"] not in (CALLED, TOO_FEW_CALLS, SILENT, SMALL):
+        raise ValueError(f"unknown outcome {r['outcome']!r}")
+    if r["direction"] not in ("", "up", "down"):
+        raise ValueError(f"unknown direction {r['direction']!r}")
+    if bool(r["band_low"]) != bool(r["band_high"]):
+        raise ValueError("half a band")
+    return LoggedCall(
+        logged_at,
+        r["flow"],
+        date.fromisoformat(r["day"]),
+        float(r["actual"]),
+        r["instrument"],
+        r["outcome"],
+        {"up": 1, "down": -1}.get(r["direction"]),
+        float(r["probability"]) if r["probability"] else None,
+        (float(r["band_low"]), float(r["band_high"])) if r["band_low"] else None,
+    )
+
+
+def read_calls(path: Path) -> list[LoggedCall]:
+    """Every row of the log at ``path``, in order; none if there is no log yet."""
+    if not path.exists():
+        return []
+    calls = []
+    with path.open(newline="") as log:
+        reader = csv.DictReader(log)
+        if reader.fieldnames is not None and tuple(reader.fieldnames) != LOG_COLUMNS:
+            raise ValueError(f"{path} line 1 is not the log's header: {reader.fieldnames}")
+        for r in reader:
+            try:
+                calls.append(_logged(r))
+            except (KeyError, TypeError, ValueError) as exc:
+                raise ValueError(f"{path} line {reader.line_num} cannot be read: {exc!r}") from None
+    return calls
