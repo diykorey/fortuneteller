@@ -679,6 +679,57 @@ def _log_calls(calls: Sequence[study.LoggedCall], live: bool, released: datetime
     return 0
 
 
+def _score(_args: argparse.Namespace) -> int:
+    try:
+        rows = study.read_calls(settings.calls_path)
+    except ValueError as exc:
+        print(f"score: {exc}", file=sys.stderr)
+        return 1
+    con = db.get_connection()
+    db.init_db(con=con)
+    print(
+        f"{len(rows)} rows in {settings.calls_path}, each call graded on its market's close that "
+        "day beside the replay of every stored release"
+    )
+    baseline = expectations.NASDAQ_CONSENSUS
+    for flow in flows.EVENT_FLOWS:
+        rule = flow.surprise_rule
+        if rule is None or not any(r.flow == flow.cli_name for r in rows):
+            continue
+        live = study.score_calls(flow, rows, con=con)
+        replay = study.confident_links(flow, baseline, con=con)
+        signs = dict(rule.expected_sign)
+        print()
+        print(f"{flow.cli_name}: {rule.combinations[0][0]} against {_source_label(baseline)}")
+        for scope, linked in (("live", live.calls), ("replay", replay)):
+            print()
+            grades = {
+                instrument: study.grade([c.call for c in calls], signs[instrument])
+                for instrument, calls in linked.items()
+            }
+            for line in describe_grades(grades, signs, scope):
+                print(line)
+        print()
+        confidence = {
+            instrument: study.grade_confidence(calls, rule.noticeable)
+            for instrument, calls in live.calls.items()
+        }
+        for line in describe_confidence(confidence, "live", rule.step):
+            print(line)
+        for label, notes in (("void", live.void), ("pending", live.pending)):
+            if notes:
+                print()
+                print(f"{label}: {len(notes)}")
+                for note in notes:
+                    print(f"  {note}")
+    missed = study.missed_releases(rows, con=con)
+    print()
+    print(f"missed: {len(missed)} releases since {study.LOG_SINCE} with no rows")
+    for note in missed:
+        print(f"  {note}")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     # Each flow's short name on the command line, read when the parser is built.
     event_names = [flow.cli_name for flow in flows.EVENT_FLOWS]
@@ -738,6 +789,11 @@ def build_parser() -> argparse.ArgumentParser:
         "day and log each link's line to data/calls.csv",
     )
     p_predict.set_defaults(func=_predict)
+
+    p_score = sub.add_parser(
+        "score", help="grade the calls logged in data/calls.csv, beside the replay"
+    )
+    p_score.set_defaults(func=_score)
 
     return parser
 

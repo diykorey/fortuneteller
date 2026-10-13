@@ -17,8 +17,9 @@ design docs (mirrored from a Notion workspace), the seed reference data, a worki
 (MVP step 3), which compares each instrument's moves on CPI days with all other days, and, for MVP
 step 4, `load-surprises` (each release's CPI surprise into `surprises`) and `surprise` (does
 each move follow it?). Rung 2 (`docs/steps/rung-2-predict.md`) adds `predict`, a walk-forward
-replay: each release's direction predicted only from the releases before it, and graded. **Nothing
-forecasts a release before it lands or warns anyone yet.**
+replay: each release's direction predicted only from the releases before it, and graded. Rung 4
+(`docs/steps/rung-4-keep-score.md`) has `predict --actual` log each live call to `data/calls.csv`
+and `score` grade them. **Nothing forecasts a release before it lands or warns anyone yet.**
 
 ## The 2026-08-05 reset — read before planning any work
 
@@ -75,7 +76,7 @@ Toolchain is `uv` (Python 3.12). `just` recipes wrap these; if `just` isn't inst
 
 ```bash
 uv sync                              # install deps + dev group (ruff, mypy, pytest)
-uv run fortuneteller --help          # CLI: init | seed | query-demo | load-releases | load-prices | load-surprises | raw-move | surprise | predict
+uv run fortuneteller --help          # CLI: init | seed | query-demo | load-releases | load-prices | load-surprises | raw-move | surprise | predict | score
 uv run ruff check                    # lint (line length 100)
 uv run ruff format                   # format
 uv run mypy src                      # type check (strict)

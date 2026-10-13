@@ -30,9 +30,9 @@ from zoneinfo import ZoneInfo
 
 import duckdb
 
-from . import db, sources, stats
+from . import db, expectations, sources, stats
 from .models import DailyBar, EventInstance, Observation
-from .flows import EVENT_FLOWS, EventFlow, release_date, stored_events
+from .flows import EVENT_FLOWS, RELEASE_TIME, EventFlow, release_date, stored_events
 from .sources import NEW_YORK, DailyClosingPrice, YahooError
 
 
@@ -984,3 +984,128 @@ def read_calls(path: Path) -> list[LoggedCall]:
             except (KeyError, TypeError, ValueError) as exc:
                 raise ValueError(f"{path} line {reader.line_num} cannot be read: {exc!r}") from None
     return calls
+
+
+# Rung 4 step 2: the log graded. Every release from the day logging began is expected in it.
+LOG_SINCE = date(2026, 10, 13)
+
+
+@dataclass(frozen=True)
+class LiveScore:
+    """One flow's logged calls: each link's graded calls, and the rows left ungraded, with why.
+    A void row is never graded; a pending one is once its release, surprise and move are loaded."""
+
+    calls: dict[str, list[ConfidentCall]]
+    void: list[str]
+    pending: list[str]
+
+
+def score_calls(
+    flow: EventFlow, rows: Sequence[LoggedCall], con: duckdb.DuckDBPyConnection | None = None
+) -> LiveScore:
+    """The flow's logged calls (rows with a direction) graded on the day's close, as the replay
+    grades its own. A row counts if logged from the release until its market's close that day, with
+    the first print typed in; its drift, which the log does not hold, is reckoned as the replay's
+    from the releases before it."""
+    connection = con if con is not None else db.get_connection()
+    rule = flow.surprise_rule
+    if rule is None:
+        raise ValueError(f"{flow.event_type} in {flow.country} has no surprise rule")
+    measure = rule.combinations[0][0]
+    decimals = expectations.CONSENSUS_ROWS[measure][2]
+    baseline = expectations.NASDAQ_CONSENSUS
+    events = {release_date(event): event for event in stored_events(flow, con=connection)}
+    pairs = {
+        instrument: _flow_pairs(flow, measure, baseline, instrument, connection)
+        for instrument, sign in rule.expected_sign.items()
+        if sign
+    }
+    calls: dict[str, list[ConfidentCall]] = {instrument: [] for instrument in pairs}
+    void: list[str] = []
+    pending: list[str] = []
+    made = [r for r in rows if r.flow == flow.cli_name and r.direction is not None]
+    for day in sorted({r.day for r in made}):
+        where = f"{flow.cli_name} {day}"
+        released = datetime.combine(day, RELEASE_TIME, tzinfo=NEW_YORK)
+        in_time = []
+        for r in (r for r in made if r.day == day):
+            series = MVP_PRICE_SERIES[r.instrument]
+            close = datetime.combine(day, series.close, tzinfo=series.zone)
+            if released <= r.logged_at < close:
+                in_time.append(r)
+            else:
+                void.append(
+                    f"{where} {r.instrument}: logged {r.logged_at.astimezone(NEW_YORK):%H:%M} "
+                    f"New York, not from the release at {released:%H:%M} until its close at "
+                    f"{close:%H:%M}"
+                )
+        event = events.get(day)
+        if not in_time:
+            continue
+        if event is None:
+            pending.append(f"{where}: the release is not loaded")
+            continue
+        stored = {
+            name: (actual, surprise)
+            for name, actual, surprise in connection.execute(
+                "SELECT baseline, actual_mom, surprise FROM surprises "
+                "WHERE event_id = ? AND measure = ?",
+                [event.event_id, measure],
+            ).fetchall()
+        }
+        if not stored:
+            pending.append(f"{where}: its first print is not loaded")
+            continue
+        first = next(iter(stored.values()))[0]
+        typo = [r for r in in_time if not expectations.published(first, decimals, r.actual)]
+        if typo:
+            void.append(
+                f"{where}: actual {typo[0].actual:g} is not FRED's first print {first:.{decimals}f}"
+            )
+            in_time = [r for r in in_time if r not in typo]
+        if not in_time:
+            continue
+        if baseline not in stored:
+            pending.append(f"{where}: its consensus surprise is not loaded")
+            continue
+        surprise = stored[baseline][1]
+        moves = dict(
+            connection.execute(
+                "SELECT instrument, ret_1d FROM observations WHERE event_id = ?",
+                [event.event_id],
+            ).fetchall()
+        )
+        for r in in_time:
+            move = moves.get(r.instrument)
+            if move is None or r.direction is None:
+                pending.append(f"{where} {r.instrument}: its move is not loaded")
+                continue
+            earlier = [
+                p
+                for p in pairs[r.instrument]
+                if p[0] < event.event_id and abs(p[2]) >= rule.noticeable
+            ]
+            drift = (sum(r.direction * p[3] > 0 for p in earlier) + 1) / (len(earlier) + 2)
+            call = Prediction(event.event_id, event.detail or "", surprise, r.direction, move)
+            calls[r.instrument].append(
+                ConfidentCall(
+                    call, r.probability, drift if r.probability is not None else None, r.band
+                )
+            )
+    return LiveScore(calls, void, pending)
+
+
+def missed_releases(
+    rows: Sequence[LoggedCall], con: duckdb.DuckDBPyConnection | None = None
+) -> list[str]:
+    """Each stored release since ``LOG_SINCE`` of a flow with an expected value that has no row in
+    the log, oldest first."""
+    logged = {(r.flow, r.day) for r in rows}
+    missed = [
+        (day, flow.cli_name)
+        for flow in EVENT_FLOWS
+        if flow.surprise_rule is not None
+        for event in stored_events(flow, con=con)
+        if (day := release_date(event)) >= LOG_SINCE and (flow.cli_name, day) not in logged
+    ]
+    return [f"{name} {day}" for day, name in sorted(missed)]

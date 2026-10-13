@@ -39,8 +39,8 @@ would bring back the selection rung 2 designed out.
 
 Rows are written only on the release day from 08:30 New York; a run at any other time is a what-if,
 printed and not logged, so it cannot take the release's one entry. No consensus is stored: the repo
-is public, and a row per release would grow into a copy of Nasdaq's calendar. The consensus is read
-back from the calendar cache when grading.
+is public, and a row per release would grow into a copy of Nasdaq's calendar. The surprise is read
+back from `surprises` when grading.
 
 ## The way to reach it
 
@@ -75,9 +75,15 @@ the replay's shared days on all 355 of the three flows' release days, Nasdaq on 
   **void**: listed, not graded.
 - **Right or wrong** as in rung 2: the day's move closed strictly the called way. **In band** as in
   rung 3.
-- **Per link:** rung 2's verdict (at least 60% right on at least 30 calls, binomial p < 0.01) and
-  rung 3's confidence checks on the calls that carry a probability, with no change to either.
-- **Against the replay:** each link's live record beside its replayed record, a measurement only.
+- **Per link:** rung 2's verdict (at least 60% right on at least 30 calls, binomial p < 0.01) on
+  the calls and "too few calls so far" rows, and rung 3's confidence checks on the calls that carry
+  a probability, with no change to either. Rung 3 weighs each call against the drift, which the
+  log does not hold: it is reckoned as the replay's, from the noticeable releases before the call.
+- **Pending, not void:** a row whose release, surprise or move is not loaded yet waits.
+- **Missed:** a release of a flow with an expected value, stored and on or after 2026-10-13 (the day
+  logging began), with no row.
+- **Against the replay:** each link's live record beside its replayed record over every stored
+  release, the live ones included once loaded; a measurement only.
 
 **Expected outcome, written down first.** Since 2023 the replay made about 7 calls a year on each
 jobs-report link, 5 on retail sales' yield and 2 to 3 on CPI's dollar. At that rate no link reaches
@@ -89,7 +95,7 @@ for years, and that is the expected result, not a failure.
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~`predict --actual` appends its rows to `data/calls.csv`; shared days logged `silent`; the unused `models.Prediction` removed~~ **done** | A test types an actual and finds a row per link with the printed numbers; a planted shared day logs every link `silent`; a second run on the same day refuses rather than adding rows |
-| 2 | `score`: each row graded or void, missed releases listed, per-link record and rung 3's checks beside the replay's | Planted rows: one logged after the close is void, one with a mistyped actual is void and named, a release with no rows is missed, the rest graded |
+| 2 | ~~`score`: each row graded or void, missed releases listed, per-link record and rung 3's checks beside the replay's~~ **done** | Planted rows: one logged after the close is void, one with a mistyped actual is void and named, a release with no rows is missed, the rest graded |
 | 3 | The first live releases logged and graded; Results here and in [`mvp-results.md`](../mvp-results.md) | At least one release's rows merged after a pull request opened before its close, and graded by `score` |
 
 ## What this step does not do
@@ -101,5 +107,6 @@ No fetching of the actual (rung 5), no alerts (rung 6), no new links, rules or m
 
 The log is written and read with `csv` from the standard library, at `settings.calls_path`
 (`data/calls.csv`, like the other paths relative to the working directory: run from the main
-checkout). `score` lives in `__main__.py`; grading reuses `study.grade` and
-`study.grade_confidence` on `study.Prediction`s built from the rows and `observations`.
+checkout). `score` lives in `__main__.py`; `study.score_calls` and `study.missed_releases` grade the rows, and
+reuse `study.grade` and `study.grade_confidence` on `study.Prediction`s built from the rows,
+`surprises` and `observations`.

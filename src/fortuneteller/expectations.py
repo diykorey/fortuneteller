@@ -413,7 +413,7 @@ UNREADABLE_CONSENSUS = {
 }
 
 
-def _published(value: float, decimals: int, row: float | None) -> bool:
+def published(value: float, decimals: int, row: float | None) -> bool:
     return row is not None and abs(round(value, decimals) - row) < 0.5 * 10**-decimals
 
 
@@ -446,7 +446,7 @@ def match_consensus(
         candidates = by_day.get((nasdaq_name, day), [])
         if not candidates:
             continue
-        rows = [r for r in candidates if _published(actual.value, decimals, r.actual)]
+        rows = [r for r in candidates if published(actual.value, decimals, r.actual)]
         where = f"{actual.measure} on {day}"
         if len(rows) != 1 or rows[0].consensus is None:
             if (actual.measure, day) in UNREADABLE_CONSENSUS:
