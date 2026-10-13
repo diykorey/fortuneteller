@@ -13,7 +13,7 @@ confidence not honest; core PCE and GDP give no calls. Step 4 complete. *(PR #13
 
 ## In progress
 
-Rung 4 spec: keep score — log every live call before the close, grade it afterwards. *(PR #TBD.)*
+Rung 4 spec: keep score — log every live call before the close, grade it afterwards. *(PR #137.)*
 
 ## Next
 
