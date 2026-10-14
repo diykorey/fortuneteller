@@ -19,7 +19,8 @@ step 4, `load-surprises` (each release's CPI surprise into `surprises`) and `sur
 each move follow it?). Rung 2 (`docs/steps/rung-2-predict.md`) adds `predict`, a walk-forward
 replay: each release's direction predicted only from the releases before it, and graded. Rung 4
 (`docs/steps/rung-4-keep-score.md`) has `predict --actual` log each live call to `data/calls.csv`
-and `score` grade them. **Nothing forecasts a release before it lands or warns anyone yet.**
+and `score` grade them; rung 5 (`docs/steps/rung-5-live-path.md`) adds `predict --fetch`, which
+reads the actual from TradingView's calendar instead. **Nothing forecasts a release before it lands or warns anyone yet.**
 
 ## The 2026-08-05 reset — read before planning any work
 

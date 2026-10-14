@@ -14,8 +14,9 @@ from __future__ import annotations
 import argparse
 import sys
 import textwrap
+import time
 from collections.abc import Callable, Iterable, Sequence
-from datetime import UTC, date, datetime
+from datetime import UTC, date, datetime, timedelta
 
 import duckdb
 
@@ -477,7 +478,7 @@ def _predict(args: argparse.Namespace) -> int:
             file=sys.stderr,
         )
         return 1
-    if args.actual is not None:
+    if args.actual is not None or args.fetch:
         return _predict_release(flow, rule, args.actual, con)
     confident = study.confident_links(flow, baseline, con=con)
     predictions = {instrument: [c.call for c in calls] for instrument, calls in confident.items()}
@@ -530,10 +531,11 @@ def _predict(args: argparse.Namespace) -> int:
 def _predict_release(
     flow: flows.EventFlow,
     rule: flows.SurpriseRule,
-    actual: float,
+    typed: float | None,
     con: duckdb.DuckDBPyConnection,
 ) -> int:
-    """The prediction for the next release, from its typed-in actual and the calendars."""
+    """The prediction for the next release, from its actual, typed in or else fetched, and the
+    calendars."""
     measure = rule.combinations[0][0]
     _nasdaq_name, _check_name, _decimals, gap = expectations.CONSENSUS_ROWS[measure]
     now = _now()
@@ -578,6 +580,13 @@ def _predict_release(
     except sources.CalendarError as exc:
         print(f"predict: {exc}", file=sys.stderr)
         return 1
+    if typed is not None:
+        actual = typed
+    else:
+        fetched = _fetch_actual(measure, upcoming.day, live, released)
+        if fetched is None:
+            return 1
+        actual = fetched
     if upcoming.nasdaq is None:
         expected, label = upcoming.tradingview, "TradingView's forecast (Nasdaq has none)"
     else:
@@ -667,6 +676,46 @@ def _predict_release(
 
 def _now() -> datetime:
     return datetime.now(UTC)
+
+
+def _sleep(seconds: float) -> None:
+    time.sleep(seconds)
+
+
+# How often, and for how long from the release time, --fetch reads the calendar (rung 5's spec).
+FETCH_EVERY_S = 15
+FETCH_FOR = timedelta(minutes=30)
+
+
+def _fetch_actual(measure: str, day: date, live: bool, released: datetime) -> float | None:
+    """The release's actual from TradingView's calendar, read until it appears or ``FETCH_FOR``
+    after the release time has passed; ``None``, with the reason printed, if it does not."""
+    if not live:
+        print(
+            f"predict: --fetch reads {measure} on {day} from its release at "
+            f"{released:%H:%M} New York that day",
+            file=sys.stderr,
+        )
+        return None
+    until = released + FETCH_FOR
+    while True:
+        try:
+            actual = expectations.published_actual(measure, day, settings.cache_dir)
+        except sources.CalendarError as exc:
+            print(f"predict: {exc}; reading again", file=sys.stderr)
+            actual = None
+        now = _now().astimezone(sources.NEW_YORK)
+        if actual is not None:
+            print(f"actual {actual:g} from TradingView at {now:%H:%M:%S} New York")
+            return actual
+        if now >= until:
+            print(
+                f"predict: TradingView shows no actual for {measure} on {day} by "
+                f"{until:%H:%M} New York; type it with --actual",
+                file=sys.stderr,
+            )
+            return None
+        _sleep(FETCH_EVERY_S)
 
 
 def _log_calls(calls: Sequence[study.LoggedCall], live: bool, released: datetime) -> int:
@@ -783,11 +832,17 @@ def build_parser() -> argparse.ArgumentParser:
     p_predict.add_argument(
         "--event", choices=event_names, default="cpi", help="the event (default: cpi)"
     )
-    p_predict.add_argument(
+    given = p_predict.add_mutually_exclusive_group()
+    given.add_argument(
         "--actual",
         type=float,
         help="the next release's actual (percent for CPI, thousands for payrolls): predict its "
         "day and log each link's line to data/calls.csv",
+    )
+    given.add_argument(
+        "--fetch",
+        action="store_true",
+        help="as --actual, with the actual read from TradingView's calendar once it appears",
     )
     p_predict.set_defaults(func=_predict)
 

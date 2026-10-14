@@ -45,7 +45,7 @@ it shows at 08:31 on the day. Step 1 measures that.
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | Measure on the first live releases: how long after 08:30 TradingView's actual appears, and whether it equals the one typed | Both recorded here for at least one release |
-| 2 | `predict --fetch` | Tests: an actual appearing after two empty reads is called and logged with its source line; none in 30 minutes stops with the reason; before 08:30 it refuses |
+| 2 | ~~`predict --fetch`~~ **done**, built before step 1 and merged after the first release logged by hand | Tests: an actual appearing after two empty reads is called and logged with its source line; none in 30 minutes stops with the reason; before 08:30 it refuses |
 | 3 | Results: the first release logged with `--fetch` | Its rows merged after a pull request opened before its close, and graded by `score` |
 
 ## Open question for after step 1
@@ -54,6 +54,13 @@ Opening the release day's pull request without anyone there: a scheduled job tha
 `predict --fetch`, commits the rows and opens the pull request. It pushes from this machine
 unattended, which is the user's decision, not this rung's default; it is decided once step 1 shows
 the fetch is fast enough to be worth it.
+
+## Technical details
+
+`expectations.published_actual` reads the day's row from TradingView's current quarter, which is
+not cached until the quarter ends. `__main__._fetch_actual` reads it every `FETCH_EVERY_S` until
+`FETCH_FOR` after the release time; a calendar error is printed and read again. The rest of
+`_predict_release` is unchanged: the actual, fetched or typed, takes the same path.
 
 ## What this does not do
 

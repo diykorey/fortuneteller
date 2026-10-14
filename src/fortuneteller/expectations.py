@@ -532,6 +532,16 @@ def next_consensus(measure: str, today: date, cache_dir: Path) -> NextConsensus 
     return NextConsensus(day, nearest, forecast)
 
 
+def published_actual(measure: str, day: date, cache_dir: Path) -> float | None:
+    """The actual TradingView's calendar shows for the measure's release on ``day``, if any yet.
+
+    It matches FRED's first print on 804 of 806 stored releases since 2014 (rung 5's spec).
+    """
+    payload = sources.fetch_tradingview_quarter(sources.quarter_start(day), cache_dir)
+    rows = sources.parse_tradingview(payload, [CONSENSUS_ROWS[measure][1]])
+    return next((row.actual for row in rows if row.day == day and row.actual is not None), None)
+
+
 # The Fed's decision on TradingView's calendar; a flow without a consensus row of its own.
 FED_DECISION_ROW = "Fed Interest Rate Decision"
 
