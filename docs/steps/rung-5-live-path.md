@@ -44,9 +44,22 @@ it shows at 08:31 on the day. Step 1 measures that.
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | Measure on the first live releases: how long after 08:30 TradingView's actual appears, and whether it equals the one typed | Both recorded here for at least one release |
+| 1 | ~~Measure on the first live releases: how long after 08:30 TradingView's actual appears, and whether it equals the one typed~~ **done** | Both recorded here for at least one release |
 | 2 | ~~`predict --fetch`~~ **done**, built before step 1 and merged after the first release logged by hand | Tests: an actual appearing after two empty reads is called and logged with its source line; none in 30 minutes stops with the reason; before 08:30 it refuses |
 | 3 | Results: the first release logged with `--fetch` | Its rows merged after a pull request opened before its close, and graded by `score` |
+
+## Step 1: measured on CPI, 2026-10-14
+
+TradingView's calendar was read every 15 seconds from 08:24 New York.
+
+| Release | Last read without it | First read with it | Delay after 08:30 | TradingView | Typed (BLS) |
+| --- | --- | --- | --- | --- | --- |
+| Core CPI, 2026-10-14 | 08:29:52 | 08:30:08 | at most 8 s | 0.3 | 0.3 |
+
+The actual was there at the first read after 08:30, and equal to the one typed. The call typed by
+hand was logged at 08:32:43, so `--fetch` would have logged it about two and a half minutes sooner.
+Whether both equal FRED's first print is `score`'s to grade. One release is the least the step asks
+for; the next ones are recorded in step 3.
 
 ## Open question for after step 1
 
