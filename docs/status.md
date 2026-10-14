@@ -8,8 +8,8 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Rung 5 step 2: `predict --fetch` waits from 08:30 for TradingView's actual and calls on it; merged
-only after the first release logged by hand. *(PR #145.)*
+Rung 5 step 1: on CPI 2026-10-14, TradingView's actual appeared at most 8 seconds after 08:30
+and equalled the one typed. *(PR #TBD.)*
 
 ## In progress
 
@@ -17,13 +17,15 @@ Rung 4 step 3: the first live releases logged and graded; Results.
 
 ## Next
 
-Rung 5 step 1: on the first live releases, how long after 08:30 TradingView's actual appears, and
-whether it equals the one typed.
+Rung 5 step 3: retail sales 2026-10-15 logged with `predict --fetch`, its pull request opened
+before its close, graded by `score`.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-14 | Rung 5 step 1: TradingView's CPI actual at most 8 s after 08:30, equal to the typed one | PR #TBD |
+| 2026-10-14 | The first live call: CPI 2026-10-14, core 0.3 against 0.2 | PR #146 |
 | 2026-10-13 | Rung 5 step 2: `predict --fetch` reads the actual from TradingView | PR #145 |
 | 2026-10-13 | Rung 5 spec: the live path, `predict --fetch` from TradingView | PR #144 |
 | 2026-10-13 | Consensus fallback step 2: results — every verdict stands; retail's yield confidence too close to tell | PR #143 |
