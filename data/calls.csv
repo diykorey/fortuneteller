@@ -1,0 +1,5 @@
+logged_at,flow,day,actual,instrument,outcome,direction,probability,band_low,band_high
+2026-10-14T12:32:43+00:00,cpi,2026-10-14,0.3,SPY / ES,silent,,,,
+2026-10-14T12:32:43+00:00,cpi,2026-10-14,0.3,UST10Y / ZN,too_few,up,,,
+2026-10-14T12:32:43+00:00,cpi,2026-10-14,0.3,DXY,too_few,up,,,
+2026-10-14T12:32:43+00:00,cpi,2026-10-14,0.3,VIX,silent,,,,
