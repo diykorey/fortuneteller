@@ -678,6 +678,11 @@ def _live(_args: argparse.Namespace) -> int:
     """Each flow released today, fetched and logged as by ``predict --fetch``: 0 on a day without
     a release, 1 if any release today, or the check for one, fails (the release-day job's spec)."""
     today = _now().astimezone(sources.NEW_YORK).date()
+    try:
+        logged = {c.flow for c in study.read_calls(settings.calls_path) if c.day == today}
+    except ValueError as exc:
+        print(f"live: {exc}", file=sys.stderr)
+        return 1
     released, failed = [], False
     for flow in flows.EVENT_FLOWS:
         if flow.surprise_rule is None:
@@ -692,6 +697,9 @@ def _live(_args: argparse.Namespace) -> int:
         if upcoming is None or upcoming.day != today:
             continue
         released.append(flow.cli_name)
+        if flow.cli_name in logged:
+            print(f"live: {flow.cli_name} is already in {settings.calls_path}")
+            continue
         print(f"live: {flow.cli_name} is released today")
         args = argparse.Namespace(event=flow.cli_name, actual=None, fetch=True)
         failed = _predict(args) != 0 or failed

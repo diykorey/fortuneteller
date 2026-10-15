@@ -438,6 +438,29 @@ def test_live_on_a_day_without_a_release_does_nothing(
     assert not settings.calls_path.exists()
 
 
+def test_live_leaves_a_release_already_logged_alone(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given CPI released today and already logged by hand
+    _store_consensus_history(db.get_connection())
+    _core_released_on(monkeypatch, date(2026, 11, 12))
+    waits = _tradingview_reads(monkeypatch, [0.3])
+    at = datetime(2026, 11, 12, 13, 31, tzinfo=UTC)
+    study.append_calls(
+        settings.calls_path,
+        [study.LoggedCall(at, "cpi", date(2026, 11, 12), 0.3, "VIX", study.SILENT)],
+    )
+
+    # when the release-day job's command runs again
+    code = main(["live"])
+
+    # then it reads nothing, logs nothing more, and does not fail
+    assert code == 0
+    assert capsys.readouterr().out == f"live: cpi is already in {settings.calls_path}\n"
+    assert waits == []
+    assert len(study.read_calls(settings.calls_path)) == 1
+
+
 def test_live_fails_when_the_release_of_the_day_brings_no_actual(
     tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
 ) -> None:
