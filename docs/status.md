@@ -10,7 +10,7 @@ Where the work is and what comes next. Two rules keep it current:
 
 Release-day job step 2: `scripts/release-day.sh` and its systemd timer, installed on 2026-10-15;
 the check run exited 0 and opened nothing; the timer first fires Fri 2026-10-16 at 08:30:05 New
-York. *(PRs #151, #TBD.)*
+York. *(PRs #151, #152.)*
 
 ## In progress
 
@@ -25,7 +25,7 @@ Rung 5 step 3: retail sales 2026-10-15, logged with `predict --fetch` (PR #150),
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-15 | The release-day job installed: the timer on, one check run clean | PR #TBD |
+| 2026-10-15 | The release-day job installed: the timer on, one check run clean | PR #152 |
 | 2026-10-15 | Release-day job step 2: the script and its systemd timer | PR #151 |
 | 2026-10-15 | The first release logged with `--fetch`: retail sales, 0.8 against 0.3 | PR #150 |
 | 2026-10-15 | Release-day job step 1: `fortuneteller live` | PR #149 |
