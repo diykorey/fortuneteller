@@ -68,6 +68,8 @@ Opening the release day's pull request without anyone there: a scheduled job tha
 unattended, which is the user's decision, not this rung's default; it is decided once step 1 shows
 the fetch is fast enough to be worth it.
 
+*Decided 2026-10-14, after step 1:* yes; specified in [the release-day job](release-day-job.md).
+
 ## Technical details
 
 `expectations.published_actual` reads the day's row from TradingView's current quarter, which is

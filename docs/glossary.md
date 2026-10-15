@@ -350,11 +350,16 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **Pydantic** — the library that validates data against typed models, so malformed rows fail loudly
   at the edge instead of silently later.
 - **pytest** — the test runner. Tests use `# given` / `# when` / `# then` comments.
+- **Release-day job** — the timer on this machine that runs `fortuneteller live` at 08:30 New
+  York every weekday and opens the release's pull request, or an issue if it fails. See
+  [the release-day job](steps/release-day-job.md).
 - **ruff** — the linter and formatter (100-character lines).
 - **Schema** — the table definitions in `schema.sql`, executed by `init`.
 - **Seed data / seed CSV** — the committed reference tables in `data/seed/` that the pipeline reads
   as configuration: event types, instruments, starting effect-size guesses. Tuning happens by editing
   data, not code.
+- **systemd user timer** — Linux's scheduler for a user's own jobs: a `.timer` unit starts a
+  `.service` unit at set times, here in New York's time zone.
 - **uv** — the Python package and environment manager used for every command (`uv run …`).
 
 ## Project shorthand

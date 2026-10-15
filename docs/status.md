@@ -8,8 +8,8 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Rung 5 step 1: on CPI 2026-10-14, TradingView's actual appeared at most 8 seconds after 08:30
-and equalled the one typed. *(PR #147.)*
+Release-day job spec: `fortuneteller live` on a timer at 08:30 New York opens the release's pull
+request unattended, or an issue if it fails. *(PR #148.)*
 
 ## In progress
 
@@ -18,12 +18,13 @@ Rung 4 step 3: the first live releases logged and graded; Results.
 ## Next
 
 Rung 5 step 3: retail sales 2026-10-15 logged with `predict --fetch`, its pull request opened
-before its close, graded by `score`.
+before its close, graded by `score`. Then the release-day job's step 1, `fortuneteller live`.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-14 | Release-day job spec: the call logged and its pull request opened unattended | PR #148 |
 | 2026-10-14 | Rung 5 step 1: TradingView's CPI actual at most 8 s after 08:30, equal to the typed one | PR #147 |
 | 2026-10-14 | The first live call: CPI 2026-10-14, core 0.3 against 0.2 | PR #146 |
 | 2026-10-13 | Rung 5 step 2: `predict --fetch` reads the actual from TradingView | PR #145 |
