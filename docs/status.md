@@ -9,7 +9,7 @@ Where the work is and what comes next. Two rules keep it current:
 ## Last completed
 
 Release-day job step 2: `scripts/release-day.sh` and its systemd timer, built; a release already
-logged is left alone by `live`. Installing is asked for separately. *(PR #TBD.)*
+logged is left alone by `live`. Installing is asked for separately. *(PR #151.)*
 
 ## In progress
 
@@ -25,7 +25,7 @@ release it logs.
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-15 | Release-day job step 2: the script and its systemd timer | PR #TBD |
+| 2026-10-15 | Release-day job step 2: the script and its systemd timer | PR #151 |
 | 2026-10-15 | The first release logged with `--fetch`: retail sales, 0.8 against 0.3 | PR #150 |
 | 2026-10-15 | Release-day job step 1: `fortuneteller live` | PR #149 |
 | 2026-10-14 | Release-day job spec: the call logged and its pull request opened unattended | PR #148 |
