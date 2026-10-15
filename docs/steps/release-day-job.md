@@ -41,14 +41,28 @@ release day it opens the pull request, and on a failure it opens an issue.
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~`fortuneteller live`~~ **done** | Tests: a release day with an actual logs its rows and exits 0; a day with none exits 0 and logs nothing; no actual in 30 minutes exits 1 |
-| 2 | `scripts/release-day.sh` and a systemd user timer and service, committed; installing is asked for separately | A run started with `systemctl --user start` on a day without a release exits 0, opens nothing, and the timer lists its next start in New York's 08:30:05 |
+| 2 | ~~`scripts/release-day.sh` and a systemd user timer and service, committed~~ **built**; installing is asked for separately | A run started with `systemctl --user start` on a day without a release exits 0, opens nothing, and the timer lists its next start in New York's 08:30:05 |
 | 3 | Results: the first release logged by the job | Its pull request opened before the close, and its rows graded by `score` |
 
 ## Technical details
 
 `__main__._live` asks `expectations.next_consensus` for each flow with a surprise rule, the same
 call `predict` makes, and passes each released today to `_predict` with `--fetch`. A calendar error
-in that check fails the run: a release today cannot be ruled out.
+in that check fails the run: a release today cannot be ruled out. A release already in the log is
+left alone, so a second run the same day is not a failure.
+
+`scripts/release-day.sh` keeps its worktree at `~/.local/share/fortuneteller/release-day`, pushes
+over HTTPS with `gh`'s credentials (no SSH agent under systemd) and writes its whole output to the
+journal, and to the issue when it fails. `gh`'s token is in the desktop keyring, so the job runs
+only while the user is logged in; no linger. Installing, once its pull request is merged:
+
+```bash
+ln -s "$PWD"/scripts/systemd/fortuneteller-release-day.* ~/.config/systemd/user/
+systemctl --user daemon-reload
+systemctl --user enable --now fortuneteller-release-day.timer
+systemctl --user start fortuneteller-release-day.service   # the check: exit 0 without a release
+journalctl --user -u fortuneteller-release-day.service
+```
 
 ## What this does not do
 

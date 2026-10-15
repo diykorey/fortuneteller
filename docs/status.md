@@ -8,8 +8,8 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Release-day job step 1: `fortuneteller live` fetches and logs each release of the day; exits 0
-without one and 1 on any failure. *(PR #149.)*
+Release-day job step 2: `scripts/release-day.sh` and its systemd timer, built; a release already
+logged is left alone by `live`. Installing is asked for separately. *(PR #151.)*
 
 ## In progress
 
@@ -17,13 +17,16 @@ Rung 4 step 3: the first live releases logged and graded; Results.
 
 ## Next
 
-Rung 5 step 3: retail sales 2026-10-15 logged with `predict --fetch`, its pull request opened
-before its close, graded by `score`. Then the release-day job's step 2: `scripts/release-day.sh` and its systemd timer.
+Rung 5 step 3: retail sales 2026-10-15, logged with `predict --fetch` (PR #150), graded by
+`score`. Then the release-day job installed and checked with one run, and its step 3: the first
+release it logs.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-15 | Release-day job step 2: the script and its systemd timer | PR #151 |
+| 2026-10-15 | The first release logged with `--fetch`: retail sales, 0.8 against 0.3 | PR #150 |
 | 2026-10-15 | Release-day job step 1: `fortuneteller live` | PR #149 |
 | 2026-10-14 | Release-day job spec: the call logged and its pull request opened unattended | PR #148 |
 | 2026-10-14 | Rung 5 step 1: TradingView's CPI actual at most 8 s after 08:30, equal to the typed one | PR #147 |

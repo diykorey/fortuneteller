@@ -1,0 +1,9 @@
+[Unit]
+Description=FortuneTeller release-day job, every weekday at 08:30:05 New York
+
+[Timer]
+OnCalendar=Mon..Fri *-*-* 08:30:05 America/New_York
+AccuracySec=1s
+
+[Install]
+WantedBy=timers.target
