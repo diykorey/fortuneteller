@@ -20,7 +20,8 @@ each move follow it?). Rung 2 (`docs/steps/rung-2-predict.md`) adds `predict`, a
 replay: each release's direction predicted only from the releases before it, and graded. Rung 4
 (`docs/steps/rung-4-keep-score.md`) has `predict --actual` log each live call to `data/calls.csv`
 and `score` grade them; rung 5 (`docs/steps/rung-5-live-path.md`) adds `predict --fetch`, which
-reads the actual from TradingView's calendar instead. **Nothing forecasts a release before it lands or warns anyone yet.**
+reads the actual from TradingView's calendar instead; `live` runs it for each release of the day, the
+[release-day job](docs/steps/release-day-job.md)'s command. **Nothing forecasts a release before it lands or warns anyone yet.**
 
 ## The 2026-08-05 reset — read before planning any work
 
@@ -77,7 +78,7 @@ Toolchain is `uv` (Python 3.12). `just` recipes wrap these; if `just` isn't inst
 
 ```bash
 uv sync                              # install deps + dev group (ruff, mypy, pytest)
-uv run fortuneteller --help          # CLI: init | seed | query-demo | load-releases | load-prices | load-surprises | raw-move | surprise | predict | score
+uv run fortuneteller --help          # CLI: init | seed | query-demo | load-releases | load-prices | load-surprises | raw-move | surprise | predict | score | live
 uv run ruff check                    # lint (line length 100)
 uv run ruff format                   # format
 uv run mypy src                      # type check (strict)

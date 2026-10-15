@@ -674,6 +674,32 @@ def _predict_release(
     return _log_calls(calls, live, released)
 
 
+def _live(_args: argparse.Namespace) -> int:
+    """Each flow released today, fetched and logged as by ``predict --fetch``: 0 on a day without
+    a release, 1 if any release today, or the check for one, fails (the release-day job's spec)."""
+    today = _now().astimezone(sources.NEW_YORK).date()
+    released, failed = [], False
+    for flow in flows.EVENT_FLOWS:
+        if flow.surprise_rule is None:
+            continue
+        measure = flow.surprise_rule.combinations[0][0]
+        try:
+            upcoming = expectations.next_consensus(measure, today, settings.cache_dir)
+        except sources.CalendarError as exc:
+            print(f"live: {flow.cli_name}: {exc}", file=sys.stderr)
+            failed = True
+            continue
+        if upcoming is None or upcoming.day != today:
+            continue
+        released.append(flow.cli_name)
+        print(f"live: {flow.cli_name} is released today")
+        args = argparse.Namespace(event=flow.cli_name, actual=None, fetch=True)
+        failed = _predict(args) != 0 or failed
+    if not released and not failed:
+        print(f"live: no release today ({today})")
+    return 1 if failed else 0
+
+
 def _now() -> datetime:
     return datetime.now(UTC)
 
@@ -845,6 +871,11 @@ def build_parser() -> argparse.ArgumentParser:
         help="as --actual, with the actual read from TradingView's calendar once it appears",
     )
     p_predict.set_defaults(func=_predict)
+
+    p_live = sub.add_parser(
+        "live", help="predict --fetch for each event released today; the release-day job's command"
+    )
+    p_live.set_defaults(func=_live)
 
     p_score = sub.add_parser(
         "score", help="grade the calls logged in data/calls.csv, beside the replay"

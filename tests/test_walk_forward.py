@@ -390,6 +390,89 @@ def test_fetch_before_the_release_refuses_without_reading(
     assert "--fetch reads core on 2026-11-12 from its release at 08:30" in capsys.readouterr().err
 
 
+def _core_released_on(monkeypatch: pytest.MonkeyPatch, core_day: date) -> None:
+    # Core CPI's next release on ``core_day``; every other measure's a month after it.
+    def upcoming(measure: str, today: date, cache_dir: Path) -> expectations.NextConsensus:
+        day = core_day if measure == "core" else core_day + timedelta(days=30)
+        return expectations.NextConsensus(day, 0.2, 0.2)
+
+    monkeypatch.setattr(expectations, "next_consensus", upcoming)
+
+
+def test_live_fetches_and_logs_the_release_of_the_day(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given the CPI history, CPI released today and TradingView's actual empty once, then 0.3
+    _store_consensus_history(db.get_connection())
+    _core_released_on(monkeypatch, date(2026, 11, 12))
+    _tradingview_reads(monkeypatch, [None, 0.3])
+
+    # when the release-day job's command runs at 08:30
+    code = main(["live"])
+
+    # then CPI alone is fetched, called and logged
+    out = capsys.readouterr().out.splitlines()
+    assert code == 0
+    assert out[:2] == [
+        "live: cpi is released today",
+        "actual 0.3 from TradingView at 08:30:15 New York",
+    ]
+    assert {row.flow for row in study.read_calls(settings.calls_path)} == {"cpi"}
+
+
+def test_live_on_a_day_without_a_release_does_nothing(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given the CPI history and no release before tomorrow
+    _store_consensus_history(db.get_connection())
+    _core_released_on(monkeypatch, date(2026, 11, 13))
+    waits = _tradingview_reads(monkeypatch, [0.3])
+
+    # when the release-day job's command runs
+    code = main(["live"])
+
+    # then it says so, reads no actual and logs nothing
+    assert code == 0
+    assert capsys.readouterr().out == "live: no release today (2026-11-12)\n"
+    assert waits == []
+    assert not settings.calls_path.exists()
+
+
+def test_live_fails_when_the_release_of_the_day_brings_no_actual(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given the CPI history, CPI released today and TradingView never showing the actual
+    _store_consensus_history(db.get_connection())
+    _core_released_on(monkeypatch, date(2026, 11, 12))
+    _tradingview_reads(monkeypatch, [None])
+
+    # when the release-day job's command runs
+    code = main(["live"])
+
+    # then it fails, so the job reports it, and logs nothing
+    assert code == 1
+    assert "type it with --actual" in capsys.readouterr().err
+    assert not settings.calls_path.exists()
+
+
+def test_live_fails_when_a_calendar_cannot_be_read(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given a calendar that cannot be read
+    def unreadable(measure: str, today: date, cache_dir: Path) -> None:
+        raise CalendarError("TradingView's calendar answered 503")
+
+    monkeypatch.setattr(expectations, "next_consensus", unreadable)
+    _tradingview_reads(monkeypatch, [None])
+
+    # when the release-day job's command runs
+    code = main(["live"])
+
+    # then it fails, naming the calendar's error, since a release today cannot be ruled out
+    assert code == 1
+    assert "live: cpi: TradingView's calendar answered 503" in capsys.readouterr().err
+
+
 def test_a_small_surprise_predicts_nothing(
     tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
 ) -> None:
