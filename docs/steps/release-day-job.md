@@ -41,7 +41,7 @@ release day it opens the pull request, and on a failure it opens an issue.
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~`fortuneteller live`~~ **done** | Tests: a release day with an actual logs its rows and exits 0; a day with none exits 0 and logs nothing; no actual in 30 minutes exits 1 |
-| 2 | ~~`scripts/release-day.sh` and a systemd user timer and service, committed~~ **built**; installing is asked for separately | A run started with `systemctl --user start` on a day without a release exits 0, opens nothing, and the timer lists its next start in New York's 08:30:05 |
+| 2 | ~~`scripts/release-day.sh` and a systemd user timer and service, committed~~ **done**; installed 2026-10-15, the check run on a day already logged exited 0 and opened nothing; first start Fri 2026-10-16 08:30:05 New York | A run started with `systemctl --user start` on a day without a release exits 0, opens nothing, and the timer lists its next start in New York's 08:30:05 |
 | 3 | Results: the first release logged by the job | Its pull request opened before the close, and its rows graded by `score` |
 
 ## Technical details
@@ -61,7 +61,7 @@ ln -s "$PWD"/scripts/systemd/fortuneteller-release-day.* ~/.config/systemd/user/
 systemctl --user daemon-reload
 systemctl --user enable --now fortuneteller-release-day.timer
 systemctl --user start fortuneteller-release-day.service   # the check: exit 0 without a release
-journalctl --user -u fortuneteller-release-day.service
+systemctl --user status fortuneteller-release-day.service   # its output; journalctl --user shows none here
 ```
 
 ## What this does not do
