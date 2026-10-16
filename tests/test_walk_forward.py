@@ -461,6 +461,24 @@ def test_live_leaves_a_release_already_logged_alone(
     assert len(study.read_calls(settings.calls_path)) == 1
 
 
+def test_live_before_the_release_time_waits_for_the_timer(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given CPI released today and the clock at 03:00 New York, a run the timer caught up at login
+    _store_consensus_history(db.get_connection())
+    _core_released_on(monkeypatch, date(2026, 11, 12))
+    waits = _tradingview_reads(monkeypatch, [0.3], at=time(3, 0))
+
+    # when the release-day job's command runs
+    code = main(["live"])
+
+    # then it reads nothing, logs nothing, and does not fail
+    assert code == 0
+    assert capsys.readouterr().out == "live: before 08:30 New York; the timer runs it then\n"
+    assert waits == []
+    assert not settings.calls_path.exists()
+
+
 def test_live_fails_when_the_release_of_the_day_brings_no_actual(
     tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
 ) -> None:

@@ -677,7 +677,11 @@ def _predict_release(
 def _live(_args: argparse.Namespace) -> int:
     """Each flow released today, fetched and logged as by ``predict --fetch``: 0 on a day without
     a release, 1 if any release today, or the check for one, fails (the release-day job's spec)."""
-    today = _now().astimezone(sources.NEW_YORK).date()
+    now = _now().astimezone(sources.NEW_YORK)
+    if now.time() < flows.RELEASE_TIME:
+        print(f"live: before {flows.RELEASE_TIME:%H:%M} New York; the timer runs it then")
+        return 0
+    today = now.date()
     try:
         logged = {c.flow for c in study.read_calls(settings.calls_path) if c.day == today}
     except ValueError as exc:
