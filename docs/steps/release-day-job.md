@@ -31,8 +31,10 @@ release day it opens the pull request, and on a failure it opens an issue.
   to `main`, as by hand. Merging stays a person's.
 - **Every failure on a release day is reported**: no actual within 30 minutes, calendars that
   disagree, a locked database, a push or `gh` error. The job opens an issue with the run's output;
-  if it cannot reach GitHub at all, the output stays in the journal. A machine asleep or off misses
-  the release and reports nothing: this is a job on one laptop, not a service.
+  if it cannot reach GitHub at all, the output stays in the journal. A machine asleep or off at 08:30
+  runs the job when the user next logs in that day (`Persistent=true`, *added 2026-10-16*): the
+  call is logged late, from the actual already out; a later day's login misses it, and nothing is
+  reported: this is a job on one laptop, not a service.
 - **Typing stays possible.** A release the job missed or failed is still logged with
   `predict --actual` on its day, as now.
 
@@ -49,7 +51,8 @@ release day it opens the pull request, and on a failure it opens an issue.
 `__main__._live` asks `expectations.next_consensus` for each flow with a surprise rule, the same
 call `predict` makes, and passes each released today to `_predict` with `--fetch`. A calendar error
 in that check fails the run: a release today cannot be ruled out. A release already in the log is
-left alone, so a second run the same day is not a failure.
+left alone, so a second run the same day is not a failure; a run before 08:30 New York (the timer
+catching up at a login that morning) exits 0, since the timer's own run follows.
 
 `scripts/release-day.sh` keeps its worktree at `~/.local/share/fortuneteller/release-day`, pushes
 over HTTPS with `gh`'s credentials (no SSH agent under systemd) and writes its whole output to the
