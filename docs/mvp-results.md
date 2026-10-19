@@ -217,9 +217,22 @@ never turns around. The fallback adds 14 past releases (retail sales 7, core PCE
 walk-forward and surprise verdict stands; retail sales' yield still holds (51 of 79). Its stated
 confidence moves from "not honest" to "too close to tell", by one call across a coin's Brier score.
 
+## Live calls
+
+Graded 2026-10-16. Detail in [rung 4](steps/rung-4-keep-score.md#results) and
+[rung 5](steps/rung-5-live-path.md#results).
+
+The first two live releases were logged before their closes and graded: core CPI on 2026-10-14
+(typed) and retail sales on 2026-10-15 (fetched from TradingView, equal to FRED's first print).
+Three calls were graded: CPI's dollar right; CPI's yield wrong; retail sales' yield, called up at
+64%, wrong, 10.1 bp down and outside its band. Every live verdict reads "too few", as expected for
+years. Calls are now logged unattended each release morning by
+[the release-day job](steps/release-day-job.md).
+
 ## What comes next
 
-Chosen 2026-10-13: keep score ([rung 4](steps/rung-4-keep-score.md)). The options:
+Chosen 2026-10-13: keep score ([rung 4](steps/rung-4-keep-score.md)), done above with the live path
+([rung 5](steps/rung-5-live-path.md)). The next is not chosen yet. The options:
 
 | Option | What it is | Cost | What it would tell us |
 | --- | --- | --- | --- |
@@ -230,7 +243,7 @@ Chosen 2026-10-13: keep score ([rung 4](steps/rung-4-keep-score.md)). The option
 | ~~**Honest confidence**~~ (rung 3) | ~~A probability and a band per call, graded~~ **done**, above: the bands are honest, the probabilities not | — | — |
 | ~~**More events**~~ (roadmap step 4) | ~~Retail sales, core PCE, GDP~~ **done**, above: retail sales' yield holds; core PCE and GDP give no calls | — | — |
 | **Cross-country effects** (roadmap step 4a) | ECB decisions and euro-area releases, with markets abroad | Free sources, more work | Whether a US surprise moves foreign markets, and the reverse |
-| **Keep score** (rung 4), **in progress** | Log each live call and grade it later | Small | Live calls, the only history that cannot have been fitted |
+| ~~**Keep score**~~ (rung 4) | ~~Log each live call and grade it later~~ **done**, above: logged and graded, unattended from 2026-10-16; verdicts "too few" | — | — |
 
 Rung 1 strengthened the case for better expected values before predicting: two links (the yield
 and the dollar on jobs reports) are clearly real but sit just under the bar, and the expected value
