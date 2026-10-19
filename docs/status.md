@@ -8,22 +8,24 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-The release-day job catches up: a start missed while the laptop was off runs at the next login
-(`Persistent=true`), and `live` before 08:30 New York exits 0. *(PR #153.)*
+Rungs 4 and 5 step 3: the first live releases graded. CPI 2026-10-14 (typed) and retail sales
+2026-10-15 (fetched) counted; of three graded calls one is right; every verdict "too few", as
+expected. Results in both specs and `mvp-results.md`; both rungs done. *(PR #154.)*
 
 ## In progress
 
-Rung 4 step 3: the first live releases logged and graded; Results.
+Release-day job step 3: the first release it logs, waiting for the next CPI or retail sales
+release.
 
 ## Next
 
-Rung 5 step 3: retail sales 2026-10-15, logged with `predict --fetch` (PR #150), graded by
-`score`. Then the release-day job's step 3: the first release it logs.
+The next rung or step, not chosen yet; the options are in `mvp-results.md`'s *What comes next*.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-19 | Rungs 4 and 5 results: the first live calls graded, verdicts "too few"; both rungs done | PR #154 |
 | 2026-10-16 | The release-day job catches up a start missed while the laptop was off | PR #153 |
 | 2026-10-15 | The release-day job installed: the timer on, one check run clean | PR #152 |
 | 2026-10-15 | Release-day job step 2: the script and its systemd timer | PR #151 |

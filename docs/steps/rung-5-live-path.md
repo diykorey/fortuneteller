@@ -46,7 +46,7 @@ it shows at 08:31 on the day. Step 1 measures that.
 | --- | --- | --- |
 | 1 | ~~Measure on the first live releases: how long after 08:30 TradingView's actual appears, and whether it equals the one typed~~ **done** | Both recorded here for at least one release |
 | 2 | ~~`predict --fetch`~~ **done**, built before step 1 and merged after the first release logged by hand | Tests: an actual appearing after two empty reads is called and logged with its source line; none in 30 minutes stops with the reason; before 08:30 it refuses |
-| 3 | Results: the first release logged with `--fetch` | Its rows merged after a pull request opened before its close, and graded by `score` |
+| 3 | ~~Results: the first release logged with `--fetch`~~ **done** | Its rows merged after a pull request opened before its close, and graded by `score` |
 
 ## Step 1: measured on CPI, 2026-10-14
 
@@ -81,3 +81,20 @@ not cached until the quarter ends. `__main__._fetch_actual` reads it every `FETC
 
 No delivery to anyone (rung 6), no second source for the actual, no change to how calls are made
 or graded.
+
+## Results
+
+Graded 2026-10-16. The first release logged with `--fetch` was retail sales on 2026-10-15, started
+by hand at 08:46 New York, sixteen minutes late.
+
+| Release | First read | Delay after 08:30 | TradingView | FRED's first print |
+| --- | --- | --- | --- | --- |
+| Retail sales, 2026-10-15 | 08:46:14, with the actual | not measured: the run began at 08:46 | 0.8 | 0.8 |
+
+The fetched actual equals FRED's first print, so `score` graded the rows rather than voiding them:
+the 10-year yield called up at 64% and closed 10.1 bp down, wrong ([rung 4](rung-4-keep-score.md#results));
+the dollar was silent. The delay stays measured on CPI alone (at most 8 s, step 1).
+
+**What it means.** The fetched actual stands in for the typed one with no change to grading. What
+the late start shows is that the run still needs someone to start it, which
+[the release-day job](release-day-job.md) removes.

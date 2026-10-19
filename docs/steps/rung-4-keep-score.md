@@ -96,7 +96,7 @@ for years, and that is the expected result, not a failure.
 | --- | --- | --- |
 | 1 | ~~`predict --actual` appends its rows to `data/calls.csv`; shared days logged `silent`; the unused `models.Prediction` removed~~ **done** | A test types an actual and finds a row per link with the printed numbers; a planted shared day logs every link `silent`; a second run on the same day refuses rather than adding rows |
 | 2 | ~~`score`: each row graded or void, missed releases listed, per-link record and rung 3's checks beside the replay's~~ **done** | Planted rows: one logged after the close is void, one with a mistyped actual is void and named, a release with no rows is missed, the rest graded |
-| 3 | The first live releases logged and graded; Results here and in [`mvp-results.md`](../mvp-results.md) | At least one release's rows merged after a pull request opened before its close, and graded by `score` |
+| 3 | ~~The first live releases logged and graded; Results here and in [`mvp-results.md`](../mvp-results.md)~~ **done** | At least one release's rows merged after a pull request opened before its close, and graded by `score` |
 
 ## What this step does not do
 
@@ -110,3 +110,30 @@ The log is written and read with `csv` from the standard library, at `settings.c
 checkout). `score` lives in `__main__.py`; `study.score_calls` and `study.missed_releases` grade the rows, and
 reuse `study.grade` and `study.grade_confidence` on `study.Prediction`s built from the rows,
 `surprises` and `observations`.
+
+## Results
+
+Graded 2026-10-16, on the first two live releases.
+
+| Release | Actual, consensus | Logged (New York) | Pull request opened | Rows |
+| --- | --- | --- | --- | --- |
+| Core CPI, 2026-10-14 | 0.3, 0.2 | 08:32:43, typed | 08:33 (#146) | 4 |
+| Retail sales, 2026-10-15 | 0.8, 0.3 | 08:46, fetched ([rung 5](rung-5-live-path.md#results)) | 08:47 (#150) | 2 |
+
+Every row counts: each was logged after 08:30 and before its close, and both actuals equal FRED's
+first print. None is void, no release since 2026-10-13 is missed.
+
+| Link | Call | Move that day | Graded |
+| --- | --- | --- | --- |
+| CPI → 10-year yield | up; too few calls so far | −2.7 bp | wrong |
+| CPI → dollar | up; too few calls so far | +0.36% | right |
+| Retail sales → 10-year yield | up, 64%, band −3.4 to +4.0 bp | −10.1 bp | wrong, outside the band |
+
+CPI's S&P 500 and VIX and retail sales' dollar were silent, so not graded. Every live verdict reads
+"too few", as written down first. Beside them the replay is unchanged in substance: retail sales'
+yield holds (51 of 80 right, p 0.009), CPI's dollar is 8 of 9.
+
+**What it means.** The log and its grading work end to end on real releases, typed and fetched,
+with the pull request open within a minute of the call. Three graded calls say nothing about the
+links; the verdicts stay "too few" for years. From 2026-10-16 calls are logged unattended by
+[the release-day job](release-day-job.md).
