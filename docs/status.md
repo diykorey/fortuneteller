@@ -9,7 +9,7 @@ Where the work is and what comes next. Two rules keep it current:
 ## Last completed
 
 The evening score spec: after the closes the day is loaded and `score` run unattended; a changed
-result opens a pull request. *(PR #TBD.)*
+result opens a pull request. *(PR #155.)*
 
 ## In progress
 
@@ -24,7 +24,7 @@ The evening score step 1: `scripts/release-day.sh score` and its timer.
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-19 | The evening score spec: the day loaded and scored unattended | PR #TBD |
+| 2026-10-19 | The evening score spec: the day loaded and scored unattended | PR #155 |
 | 2026-10-19 | Rungs 4 and 5 results: the first live calls graded, verdicts "too few"; both rungs done | PR #154 |
 | 2026-10-16 | The release-day job catches up a start missed while the laptop was off | PR #153 |
 | 2026-10-15 | The release-day job installed: the timer on, one check run clean | PR #152 |
