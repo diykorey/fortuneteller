@@ -1,0 +1,62 @@
+6 rows in data/calls.csv, each call graded on its market's close that day beside the replay of every stored release
+
+cpi: core against Nasdaq's consensus
+
+walk-forward (live)
+instrument   expected  from     predicted  right  hit rate  p       always expected  verdict
+SPY / ES     down      —        0          0      —         —       —                too few
+UST10Y / ZN  up        2026-09  1          0      0%        1.0000  0%               too few
+DXY          up        2026-09  1          1      100%      0.5000  100%             too few
+VIX          up        —        0          0      —         —       —                too few
+
+walk-forward (replay)
+instrument   expected  from     predicted  right  hit rate  p       always expected  verdict
+SPY / ES     down      —        0          0      —         —       —                too few
+UST10Y / ZN  up        2026-03  2          0      0%        1.0000  50%              too few
+DXY          up        2024-05  9          8      89%       0.0195  22%              too few
+VIX          up        —        0          0      —         —       —                too few
+
+confidence (live)
+instrument   calls  stated  right  Brier   coin p  drift Brier  drift p  in band (allowed)  verdict
+SPY / ES     0      —       —      —       —       —            —        —                  too few
+UST10Y / ZN  0      —       —      —       —       —            —        —                  too few
+DXY          0      —       —      —       —       —            —        —                  too few
+VIX          0      —       —      —       —       —            —        —                  too few
+
+calibration (live)
+instrument   group          calls  stated  right  allowed
+
+hit rate by surprise size, calls with a probability (live)
+instrument   under 2×0.1pp   2×0.1pp and over
+SPY / ES     —               —
+UST10Y / ZN  —               —
+DXY          —               —
+VIX          —               —
+
+retail: retail_sales against Nasdaq's consensus
+
+walk-forward (live)
+instrument   expected  from     predicted  right  hit rate  p       always expected  verdict
+UST10Y / ZN  up        2026-09  1          0      0%        1.0000  0%               too few
+DXY          up        —        0          0      —         —       —                too few
+
+walk-forward (replay)
+instrument   expected  from     predicted  right  hit rate  p       always expected  verdict
+UST10Y / ZN  up        2011-05  80         51     64%       0.0092  42%              holds
+DXY          up        2008-08  4          2      50%       0.6875  50%              too few
+
+confidence (live)
+instrument   calls  stated  right  Brier   coin p  drift Brier  drift p  in band (allowed)  verdict
+UST10Y / ZN  1      64%     0%     0.4121  1.0000  0.1764       1.0000   0/1 (0–1)          too few
+DXY          0      —       —      —       —       —            —        —                  too few
+
+calibration (live)
+instrument   group          calls  stated  right  allowed
+UST10Y / ZN  60–70%         1      64%     0      0–1  too few to check
+
+hit rate by surprise size, calls with a probability (live)
+instrument   under 2×0.3pp   2×0.3pp and over
+UST10Y / ZN  0/1             —
+DXY          —               —
+
+missed: 0 releases since 2026-10-13 with no rows

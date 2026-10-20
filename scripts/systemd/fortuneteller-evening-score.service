@@ -1,0 +1,11 @@
+[Unit]
+Description=FortuneTeller evening score: load the day, grade the calls and open their pull request
+
+[Service]
+Type=oneshot
+Environment=PATH=%h/.local/bin:/snap/bin:/usr/local/bin:/usr/bin:/bin
+Environment=FT_MAIN_CHECKOUT=%h/WorkVolume/work/projects/pet/fortuneteller
+Environment=FT_JOB_TREE=%h/.local/share/fortuneteller/release-day
+EnvironmentFile=%h/WorkVolume/work/projects/pet/fortuneteller/.env
+ExecStart=%h/WorkVolume/work/projects/pet/fortuneteller/scripts/release-day.sh score
+TimeoutStartSec=20min

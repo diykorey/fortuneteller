@@ -54,7 +54,7 @@ in that check fails the run: a release today cannot be ruled out. A release alre
 left alone, so a second run the same day is not a failure; a run before 08:30 New York (the timer
 catching up at a login that morning) exits 0, since the timer's own run follows.
 
-`scripts/release-day.sh` keeps its worktree at `~/.local/share/fortuneteller/release-day`, pushes
+`scripts/release-day.sh live` keeps its worktree at `~/.local/share/fortuneteller/release-day`, pushes
 over HTTPS with `gh`'s credentials (no SSH agent under systemd) and writes its whole output to the
 journal, and to the issue when it fails. `gh`'s token is in the desktop keyring, so the job runs
 only while the user is logged in; no linger. Installing, once its pull request is merged:
