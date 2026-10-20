@@ -232,7 +232,8 @@ years. Calls are now logged unattended each release morning by
 ## What comes next
 
 Chosen 2026-10-13: keep score ([rung 4](steps/rung-4-keep-score.md)), done above with the live path
-([rung 5](steps/rung-5-live-path.md)). The next is not chosen yet. The options:
+([rung 5](steps/rung-5-live-path.md)). Chosen 2026-10-19: [the evening score](steps/evening-score.md), grading
+the live calls unattended. The options after it:
 
 | Option | What it is | Cost | What it would tell us |
 | --- | --- | --- | --- |
