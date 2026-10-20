@@ -40,7 +40,7 @@ shows it, and on a failure an issue.
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | ~~`scripts/release-day.sh score`, the evening timer and service, a lock shared with the morning, `data/score.txt` committed~~ **done**; a run by hand against a scratch worktree loaded the day in 73 s, exited 0 and wrote `data/score.txt` byte for byte; installing is asked for separately | A run started by hand with nothing new exits 0 and opens nothing; the morning job still passes its check run |
+| 1 | ~~`scripts/release-day.sh score`, the evening timer and service, a lock shared with the morning, `data/score.txt` committed~~ **done**; a run by hand against a scratch worktree loaded the day in 73 s, exited 0 and wrote `data/score.txt` byte for byte; installed 2026-10-20, the check run took 78 s, exited 0 and opened nothing; first timed start Tue 2026-10-20 18:00 New York | A run started by hand with nothing new exits 0 and opens nothing; the morning job still passes its check run |
 | 2 | Results: the first release graded by the job | Its score's pull request opened with no one there, and its rows graded |
 
 ## Technical details
