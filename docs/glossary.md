@@ -277,6 +277,9 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **Sign-flip test** — a paired permutation test: each pair's difference keeps its size but gets a
   random sign, many times over; p is the share of draws that sum to at least the real total. Rung
   3 uses it to ask whether a link's Brier score beats a coin's or the drift's by more than chance.
+- **Power** — how often a test detects an effect that is really there. Rung 3's Brier check has
+  little at today's call counts: a perfectly honest 68% probability on 80 calls passes it about one
+  time in five ([the record, not a probability](steps/record-not-probability.md)).
 - **Too close to tell** — rung 3's verdict for a link whose Brier score is below a coin's and the
   drift's, but not by enough to rule out chance (sign-flip p not under 0.05). Not honest.
 - **Move band** — in rung 3, a call's 50% band: the slope times the surprise, plus the 25th to
