@@ -5,7 +5,7 @@
 set -uo pipefail
 
 repo=diykorey/fortuneteller
-step=${1:?live or score}
+step=${1:-live}
 main_checkout=${FT_MAIN_CHECKOUT:?the checkout whose database and cache the job reads}
 job_tree=${FT_JOB_TREE:?the job's own worktree}
 day=$(TZ=America/New_York date +%F)
