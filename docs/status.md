@@ -8,7 +8,7 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-The evening score installed: the timer on, one check run clean, opening nothing. *(PR pending.)*
+The evening score installed: the timer on, one check run clean, opening nothing. *(PR #157.)*
 
 ## In progress
 
@@ -23,7 +23,7 @@ To be chosen from the roadmap once those results are in.
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-20 | The evening score installed: the timer on, one check run clean | PR pending |
+| 2026-10-20 | The evening score installed: the timer on, one check run clean | PR #157 |
 | 2026-10-20 | The evening score step 1: `release-day.sh score`, its timer, one lock for both jobs | PR #156 |
 | 2026-10-19 | The evening score spec: the day loaded and scored unattended | PR #155 |
 | 2026-10-19 | Rungs 4 and 5 results: the first live calls graded, verdicts "too few"; both rungs done | PR #154 |
