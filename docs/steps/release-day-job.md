@@ -69,6 +69,6 @@ systemctl --user status fortuneteller-release-day.service   # its output; journa
 
 ## What this does not do
 
-Load the day's releases and prices or run `score` after the closes; that stays by hand until a
-later spec. No delivery to anyone (rung 6), no change to how calls are made or graded, no job on any
-other machine.
+Load the day's releases and prices or run `score` after the closes; that is
+[the evening score](evening-score.md). No delivery to anyone (rung 6), no change to how calls are
+made or graded, no job on any other machine.

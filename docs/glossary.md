@@ -350,6 +350,9 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **Pydantic** — the library that validates data against typed models, so malformed rows fail loudly
   at the edge instead of silently later.
 - **pytest** — the test runner. Tests use `# given` / `# when` / `# then` comments.
+- **Evening score** — the second timer on this machine: weekdays at 18:00 New York it loads the
+  day's data, runs `score`, and opens a pull request when the result changes. See
+  [the evening score](steps/evening-score.md).
 - **Release-day job** — the timer on this machine that runs `fortuneteller live` at 08:30 New
   York every weekday and opens the release's pull request, or an issue if it fails. See
   [the release-day job](steps/release-day-job.md).
