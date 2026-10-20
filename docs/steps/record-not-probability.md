@@ -51,8 +51,8 @@ not independent.
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | This spec, the power table, and rung 6's gate in the roadmap | Merged |
-| 2 | `predict --actual`/`--fetch` print the record and band, no percentage | Tests: a call with 20 or more calls before prints counts and band and no `%` before them; the logged row still holds the probability |
+| 1 | ~~This spec, the power table, and rung 6's gate in the roadmap~~ **done** | Merged |
+| 2 | ~~`predict --actual`/`--fetch` print the record and band, no percentage~~ **done**; the line no longer carries the confidence verdict either, which graded the percentage | Tests: a call with 20 or more calls before prints counts and band and no `%` before them; the logged row still holds the probability |
 
 ## What this does not do
 

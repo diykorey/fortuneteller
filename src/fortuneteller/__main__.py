@@ -628,11 +628,6 @@ def _predict_release(
     confident = study.confident_links(
         flow, expectations.NASDAQ_CONSENSUS, con, next_surprise=surprise
     )
-    replayed = {
-        instrument: [c for c in made if c.call.event_id != study.NEXT_RELEASE]
-        for instrument, made in confident.items()
-    }
-    graded = _graded_confidence(replayed, rule)
     for instrument, made in confident.items():
         if not made or made[-1].call.event_id != study.NEXT_RELEASE:
             print(
@@ -653,10 +648,10 @@ def _predict_release(
             if latest.band
             else "no band"
         )
-        overall = study.overall_confidence([grades[instrument] for _, grades in graded])
+        right = sum(c.call.right for c in made[:-1])
         print(
-            f"{instrument:<12} {call:<6} closes {call} today: {latest.probability:.0%} "
-            f"({len(made) - 1} calls before), {band}; its confidence: {overall}"
+            f"{instrument:<12} {call:<6} closes {call} today: right on {right} of {len(made) - 1} "
+            f"calls before, {band}"
         )
         calls.append(
             logged(
@@ -668,8 +663,8 @@ def _predict_release(
             )
         )
     print(
-        "probability = the link's record on its calls so far; band = where half its moves land; "
-        f"confidence graded by `fortuneteller predict --event {flow.cli_name}`"
+        "record = the link's calls so far, walk-forward; band = where half its moves land; "
+        f"both graded by `fortuneteller predict --event {flow.cli_name}`"
     )
     return _log_calls(calls, live, released)
 
