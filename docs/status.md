@@ -16,9 +16,11 @@ result opens a pull request. *(PR #155.)*
 Release-day job step 3: the first release it logs, waiting for the next CPI or retail sales
 release.
 
+The evening score step 1: `scripts/release-day.sh score` and its timer. *(PR pending.)*
+
 ## Next
 
-The evening score step 1: `scripts/release-day.sh score` and its timer.
+Install the evening score timer, once asked for; then its step 2, the first release it grades.
 
 ## Done
 

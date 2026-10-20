@@ -6,5 +6,5 @@ Type=oneshot
 Environment=PATH=%h/.local/bin:/snap/bin:/usr/local/bin:/usr/bin:/bin
 Environment=FT_MAIN_CHECKOUT=%h/WorkVolume/work/projects/pet/fortuneteller
 Environment=FT_JOB_TREE=%h/.local/share/fortuneteller/release-day
-ExecStart=%h/WorkVolume/work/projects/pet/fortuneteller/scripts/release-day.sh
+ExecStart=%h/WorkVolume/work/projects/pet/fortuneteller/scripts/release-day.sh live
 TimeoutStartSec=45min

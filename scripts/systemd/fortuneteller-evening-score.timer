@@ -1,0 +1,9 @@
+[Unit]
+Description=FortuneTeller evening score, every weekday at 18:00 New York
+
+[Timer]
+OnCalendar=Mon..Fri *-*-* 18:00:00 America/New_York
+Persistent=true
+
+[Install]
+WantedBy=timers.target
