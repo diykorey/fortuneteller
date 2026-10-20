@@ -9,7 +9,7 @@ Where the work is and what comes next. Two rules keep it current:
 ## Last completed
 
 The evening score step 1: `scripts/release-day.sh score`, its timer and a lock shared with the
-morning; a run by hand loaded the day and wrote `data/score.txt` unchanged. *(PR pending.)*
+morning; a run by hand loaded the day and wrote `data/score.txt` unchanged. *(PR #156.)*
 
 ## In progress
 
@@ -24,7 +24,7 @@ Install the evening score timer, once asked for; then its step 2, the first rele
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-20 | The evening score step 1: `release-day.sh score`, its timer, one lock for both jobs | PR pending |
+| 2026-10-20 | The evening score step 1: `release-day.sh score`, its timer, one lock for both jobs | PR #156 |
 | 2026-10-19 | The evening score spec: the day loaded and scored unattended | PR #155 |
 | 2026-10-19 | Rungs 4 and 5 results: the first live calls graded, verdicts "too few"; both rungs done | PR #154 |
 | 2026-10-16 | The release-day job catches up a start missed while the laptop was off | PR #153 |
