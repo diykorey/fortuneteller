@@ -353,6 +353,8 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **Pydantic** — the library that validates data against typed models, so malformed rows fail loudly
   at the edge instead of silently later.
 - **pytest** — the test runner. Tests use `# given` / `# when` / `# then` comments.
+- **Delivery** — rung 6: a logged call reaching a person unasked. Here, a desktop popup on this
+  laptop for each logged call and each failed job run ([rung 6](steps/rung-6-delivery.md)).
 - **Evening score** — the second timer on this machine: weekdays at 18:00 New York it loads the
   day's data, runs `score`, and opens a pull request when the result changes. See
   [the evening score](steps/evening-score.md).
