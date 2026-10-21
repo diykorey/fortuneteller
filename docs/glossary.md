@@ -109,6 +109,9 @@ Terms are grouped by what they are about, alphabetical within each group.
   read on perceived default risk.
 - **Contagion** — a shock spreading from where it started to firms or markets exposed to it: one
   bank's failure raising doubts about similar banks.
+- **DAX** — Germany's index of its 40 largest listed companies, closing 17:30 Frankfurt time. One
+  of the two European markets in [cross-country effects](steps/cross-country.md), with the
+  **Euro Stoxx 50** (`SX5E`), the euro area's 50 largest.
 - **DXY** (US Dollar Index) — the dollar measured against a basket of major currencies (mostly the
   euro). Rises on risk-off and on hawkish Fed expectations.
 - **ES** (E-mini S&P 500 future) — the futures contract on the S&P 500, which trades nearly around
