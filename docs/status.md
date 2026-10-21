@@ -8,8 +8,8 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Rung 6 step 1: each logged call and each failed run pops up on the desktop; the script's failure
-reports work again. *(PR #161.)*
+Cross-country effects, part 1, the spec: US releases against the DAX and Euro Stoxx 50. *(PR
+pending.)*
 
 ## In progress
 
@@ -18,12 +18,13 @@ logs, pops up and the evening grades, waiting for the next CPI or retail sales r
 
 ## Next
 
-To be chosen from the roadmap: sharper measurement or cross-country effects.
+Cross-country effects, part 1, step 1: the DAX and Euro Stoxx 50 loaded, with their close and signs.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-21 | Cross-country effects, part 1, spec: US releases against Europe's stocks | PR pending |
 | 2026-10-21 | Rung 6 step 1: the desktop popup; failure reports fixed (broken since #151) | PR #161 |
 | 2026-10-21 | Rung 6 spec: delivery as a desktop popup | PR #160 |
 | 2026-10-20 | The record, not a probability, step 2: the call line without a percentage | PR #159 |
