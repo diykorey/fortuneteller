@@ -23,7 +23,7 @@ from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo
 
-# Every release time and market close in this project is New York's.
+# Every release time in this project is New York's, and most market closes.
 NEW_YORK = ZoneInfo("America/New_York")
 
 

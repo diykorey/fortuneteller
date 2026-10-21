@@ -79,7 +79,8 @@ MVP uses exactly one row, `CPI / inflation surprise`.
 ## instruments
 
 The instruments whose prices can be measured. Source: `data/seed/instruments.csv`, a representative
-13-row subset of 55. The MVP uses five: `SPY / ES`, `UST10Y / ZN`, `DXY`, `GC / XAU`, `VIX`.
+15-row subset of 55. The MVP uses five: `SPY / ES`, `UST10Y / ZN`, `DXY`, `GC / XAU`, `VIX`;
+[cross-country effects](steps/cross-country.md) adds `DAX` and `SX5E` (2026-10-21).
 
 | Column | Type | Meaning |
 | --- | --- | --- |
@@ -304,6 +305,8 @@ dropped. It grows by about five rows per trading day, one per instrument.
 | `GC / XAU` | 6,544 | 2000-08-30 |
 | `VIX` | 9,254 | 1990-01-02 |
 | **Total** | **58,458** | |
+| `DAX` | 9,814 | 1987-12-30 (counted 2026-10-21) |
+| `SX5E` | 4,903 | 2007-03-30 (counted 2026-10-21) |
 
 A few megabytes in all. `observations` is these same days thinned down to the CPI release days —
 about 2,700 rows.
@@ -326,6 +329,8 @@ about 2,700 rows.
 | `yahoo:DX-Y.NYB` | `DXY` | The US Dollar Index |
 | `yahoo:GC=F` | `GC / XAU` | Gold futures, the contract nearest expiry. When one contract expires and the next takes over, the price can jump for reasons unrelated to any event |
 | `yahoo:^VIX` | `VIX` | The Cboe Volatility Index |
+| `yahoo:^GDAXI` | `DAX` | The DAX index, Frankfurt; its day is Frankfurt's |
+| `yahoo:^STOXX50E` | `SX5E` | The Euro Stoxx 50 index; its day is Frankfurt's |
 
 ## observations
 
@@ -348,6 +353,10 @@ announced as markets reopened after a week closed.
 
 On 2026-10-12, [step 4](steps/step-4-more-events.md) adds retail sales (1,515 rows), core PCE
 (1,559) and GDP (660); gold's history starts in 2000, so it has fewer.
+
+On 2026-10-21, [cross-country effects](steps/cross-country.md) adds the DAX and Euro Stoxx 50,
+closing 17:30 Frankfurt: 1,954 and 1,176 rows over the six event types, every US row unchanged. A
+Fed decision at 14:00 New York reacts in Europe the next day.
 
 The horizon columns come from the pre-reset design, which planned intraday data; the MVP has only
 daily prices, so the intraday ones stay empty.

@@ -46,16 +46,21 @@ class PriceSeries(NamedTuple):
     zone: ZoneInfo
 
 
-# The five MVP instruments, keyed by the exact symbol in data/seed/instruments.csv, with the Yahoo
-# ticker each is read from, the unit its move is measured in (pct for prices, bps for the yield)
-# and the local time and zone of its daily close: the intraday price Yahoo's close matches, measured
-# on 2026-09 data. Gold's is the COMEX settlement.
+FRANKFURT = ZoneInfo("Europe/Berlin")
+
+# The five MVP instruments and Europe's two stock indices (docs/steps/cross-country.md), keyed by
+# the exact symbol in data/seed/instruments.csv, with the Yahoo ticker each is read from, the unit
+# its move is measured in (pct for prices, bps for the yield) and the local time and zone of its
+# daily close: the intraday price Yahoo's close matches, measured on 2026-09 data. Gold's is the
+# COMEX settlement; Europe's is the closing auction after the last 5-minute bar, 17:25 (2026-10).
 MVP_PRICE_SERIES = {
     "SPY / ES": PriceSeries("^GSPC", "pct", time(16, 0), NEW_YORK),
     "UST10Y / ZN": PriceSeries("^TNX", "bps", time(15, 0), NEW_YORK),
     "DXY": PriceSeries("DX-Y.NYB", "pct", time(15, 0), NEW_YORK),
     "GC / XAU": PriceSeries("GC=F", "pct", time(13, 30), NEW_YORK),
     "VIX": PriceSeries("^VIX", "pct", time(16, 15), NEW_YORK),
+    "DAX": PriceSeries("^GDAXI", "pct", time(17, 30), FRANKFURT),
+    "SX5E": PriceSeries("^STOXX50E", "pct", time(17, 30), FRANKFURT),
 }
 
 

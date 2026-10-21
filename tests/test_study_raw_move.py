@@ -275,7 +275,7 @@ def test_raw_move_prints_a_verdict_per_instrument_and_the_rule(
     # then every instrument has a verdict line, and the rule is printed with them
     out = capsys.readouterr().out
     assert code == 0
-    assert sum(line.endswith(" moves") for line in out.splitlines()) == 5
+    assert sum(line.endswith(" moves") for line in out.splitlines()) == 7
     assert "moves = ratio >= 1.10 and p < 0.01" in out
 
 
@@ -325,7 +325,7 @@ def test_raw_move_takes_the_event_to_measure(
 
     # then the jobs report gets its verdicts, and CPI says what to load first
     assert nfp == 0
-    assert sum(line.endswith(" moves") for line in nfp_out.splitlines()) == 5
+    assert sum(line.endswith(" moves") for line in nfp_out.splitlines()) == 7
     assert cpi == 1
     assert "no CPI / inflation surprise releases stored" in capsys.readouterr().err
 

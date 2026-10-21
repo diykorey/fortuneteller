@@ -430,7 +430,16 @@ def payroll_actuals(api_key: str, jobs: Sequence[EventInstance]) -> list[Actual]
 # CPI surprises smaller than this are noise for the hit rate, in percentage points.
 NOTICEABLE_SURPRISE_PP = 0.1
 # The direction a hotter-than-expected CPI should move each instrument; gold has no agreed one.
-EXPECTED_SIGN = {"SPY / ES": -1, "UST10Y / ZN": 1, "DXY": 1, "GC / XAU": 0, "VIX": 1}
+# Europe's stock indices take the S&P 500's sign, here and below (docs/steps/cross-country.md).
+EXPECTED_SIGN = {
+    "SPY / ES": -1,
+    "UST10Y / ZN": 1,
+    "DXY": 1,
+    "GC / XAU": 0,
+    "VIX": 1,
+    "DAX": -1,
+    "SX5E": -1,
+}
 # Core against the trend gives the verdict; the other three are context (decided 2026-10-05).
 VERDICT_COMBINATION = (sources.CORE, TREND_12M)
 COMBINATIONS = (
@@ -443,7 +452,15 @@ COMBINATIONS = (
 )
 # The direction a stronger-than-expected jobs report should move each instrument: rates and the
 # dollar up; equities, VIX and gold have no agreed sign ("good news is bad news"). Rung 1 decision.
-NFP_EXPECTED_SIGN = {"SPY / ES": 0, "UST10Y / ZN": 1, "DXY": 1, "GC / XAU": 0, "VIX": 0}
+NFP_EXPECTED_SIGN = {
+    "SPY / ES": 0,
+    "UST10Y / ZN": 1,
+    "DXY": 1,
+    "GC / XAU": 0,
+    "VIX": 0,
+    "DAX": 0,
+    "SX5E": 0,
+}
 # Payroll surprises smaller than this are noise for the hit rate, in thousands of jobs.
 NOTICEABLE_PAYROLLS_K = 50.0
 

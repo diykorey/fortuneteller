@@ -268,7 +268,9 @@ def test_day_round_trips_unchanged_under_a_non_utc_session() -> None:
     assert days == [c.day for c in closes]
 
 
-def test_loading_all_five_twice_changes_no_row_count(monkeypatch: pytest.MonkeyPatch) -> None:
+def test_loading_every_instrument_twice_changes_no_row_count(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
     # given Yahoo answering from the saved responses
     _answer_from_fixtures(monkeypatch)
     con = _store()
@@ -287,9 +289,11 @@ def test_loading_all_five_twice_changes_no_row_count(monkeypatch: pytest.MonkeyP
             "DXY": 6,
             "GC / XAU": 4,
             "VIX": 4,
+            "DAX": 4,
+            "SX5E": 4,
         }
     )
-    assert db.count_rows("daily_bars", con=con) == 22
+    assert db.count_rows("daily_bars", con=con) == 30
 
 
 def test_tickers_cover_the_mvp_instruments_by_exact_symbol() -> None:
@@ -298,8 +302,16 @@ def test_tickers_cover_the_mvp_instruments_by_exact_symbol() -> None:
         symbols = {row["symbol"] for row in csv.DictReader(handle)}
 
     # when the MVP ticker table is compared with it
-    # then all five instruments are there, each spelled exactly as the join key
-    assert list(MVP_PRICE_SERIES) == ["SPY / ES", "UST10Y / ZN", "DXY", "GC / XAU", "VIX"]
+    # then all seven instruments are there, each spelled exactly as the join key
+    assert list(MVP_PRICE_SERIES) == [
+        "SPY / ES",
+        "UST10Y / ZN",
+        "DXY",
+        "GC / XAU",
+        "VIX",
+        "DAX",
+        "SX5E",
+    ]
     assert set(MVP_PRICE_SERIES) <= symbols
 
 

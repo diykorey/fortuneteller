@@ -821,16 +821,16 @@ def test_surprise_prints_a_verdict_per_instrument_and_the_context(
     # when the command runs
     code = main(["surprise"])
 
-    # then four instruments track, gold is unclear at most, every context row is printed, and each
+    # then six instruments track, gold is unclear at most, every context row is printed, and each
     # compared pair is judged side by side, with and without COVID
     out = capsys.readouterr().out.splitlines()
     official = out[: out.index("")]
     context = out[out.index("context, no verdict") + 2 :]
     context = context[: context.index("")]
     assert code == 0
-    assert sum(line.endswith(" tracks") for line in official) == 4
-    assert sum(" nowcast " in line or " trend_12m " in line for line in context) == 15
-    assert sum(" nasdaq_consensus " in line for line in context) == 10
+    assert sum(line.endswith(" tracks") for line in official) == 6
+    assert sum(" nowcast " in line or " trend_12m " in line for line in context) == 21
+    assert sum(" nasdaq_consensus " in line for line in context) == 14
     assert sum("on the same reports" in line for line in out) == 4
 
 
