@@ -8,15 +8,13 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-The record, not a probability: the spec. No probability can prove honest at today's call counts;
-the call line drops its percentage, and rung 6's gate is restated. *(PR #158.)*
+The record, not a probability, step 2: the call line prints the record as counts and the band, no
+percentage. *(PR #159.)*
 
 ## In progress
 
 Release-day job step 3 and evening score step 2: the first release the morning job logs and the
 evening grades, waiting for the next CPI or retail sales release.
-
-The record, not a probability, step 2: the call line prints the record and band.
 
 ## Next
 
@@ -26,6 +24,7 @@ To be chosen from the roadmap: delivery (rung 6), sharper measurement, or cross-
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-20 | The record, not a probability, step 2: the call line without a percentage | PR #159 |
 | 2026-10-20 | The record, not a probability: spec; an honest probability passes rung 3 one time in five at 80 calls | PR #158 |
 | 2026-10-20 | The evening score installed: the timer on, one check run clean | PR #157 |
 | 2026-10-20 | The evening score step 1: `release-day.sh score`, its timer, one lock for both jobs | PR #156 |

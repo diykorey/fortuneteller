@@ -186,7 +186,9 @@ zero: on a 100k surprise, the dollar's runs from about −0.15% to +0.55%.
 
 **What it means.** The dollar's direction on a jobs report is worth calling (rung 2); how sure to be
 of it is not yet measurable from about 60 graded calls. `predict --actual` prints the record and the
-band with that verdict beside them, rather than a number to trust.
+band with that verdict beside them, rather than a number to trust. Since 2026-10-20 the record is
+printed as counts, without the percentage or the verdict ([the record, not a
+probability](steps/record-not-probability.md)).
 
 ## More events: retail sales, core PCE, GDP
 
