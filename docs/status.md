@@ -8,8 +8,7 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-The record, not a probability, step 2: the call line prints the record as counts and the band, no
-percentage. *(PR #159.)*
+Rung 6 spec: delivery, each logged call and each failed run as a desktop popup. *(PR #160.)*
 
 ## In progress
 
@@ -18,12 +17,13 @@ evening grades, waiting for the next CPI or retail sales release.
 
 ## Next
 
-To be chosen from the roadmap: delivery (rung 6), sharper measurement, or cross-country effects.
+Rung 6 step 1: `notify-send` in `scripts/release-day.sh`.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-21 | Rung 6 spec: delivery as a desktop popup | PR #160 |
 | 2026-10-20 | The record, not a probability, step 2: the call line without a percentage | PR #159 |
 | 2026-10-20 | The record, not a probability: spec; an honest probability passes rung 3 one time in five at 80 calls | PR #158 |
 | 2026-10-20 | The evening score installed: the timer on, one check run clean | PR #157 |

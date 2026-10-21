@@ -237,7 +237,8 @@ Chosen 2026-10-13: keep score ([rung 4](steps/rung-4-keep-score.md)), done above
 ([rung 5](steps/rung-5-live-path.md)). Chosen 2026-10-19: [the evening score](steps/evening-score.md),
 grading the live calls unattended. Chosen 2026-10-20: [the record, not a
 probability](steps/record-not-probability.md), the call printed without a percentage no test can
-check yet. The options after it:
+check yet. Chosen 2026-10-21: [delivery](steps/rung-6-delivery.md) (rung 6), each call
+as a desktop popup. The options after it:
 
 | Option | What it is | Cost | What it would tell us |
 | --- | --- | --- | --- |
