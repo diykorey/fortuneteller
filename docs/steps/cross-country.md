@@ -50,7 +50,7 @@ dollar index.
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | `DAX` and `SX5E`: seed rows, Yahoo series with their close and zone, signs in each flow's rule | `load-prices` stores both; a test's 08:30 New York release falls on the same day's Frankfurt close, through both clock changes; every US output unchanged |
+| 1 | ~~`DAX` and `SX5E`: seed rows, Yahoo series with their close and zone, signs in each flow's rule~~ **done**; Yahoo's close falls after the last 5-minute bar, 17:25, on 2026-10-15 to 20; `load-prices` stored 1,954 and 1,176 rows, every US count unchanged | `load-prices` stores both; a test's 08:30 New York release falls on the same day's Frankfurt close, through both clock changes; every US output unchanged |
 | 2 | Results: `raw-move` and `surprise` per flow, here and in [`mvp-results.md`](../mvp-results.md) | Both markets' verdicts and slopes beside the S&P 500's, against the expected outcome |
 
 ## What this does not do

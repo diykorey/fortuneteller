@@ -325,6 +325,26 @@ def test_a_markets_close_is_read_in_its_own_zone() -> None:
     assert study.first_reaction_day(decision, in_new_york) == date(2022, 9, 21)
 
 
+@pytest.mark.parametrize(
+    "released",
+    # Europe and the US on the same time, then the weeks in March and October when New York has
+    # changed its clocks and Frankfurt not yet, or the other way round.
+    [date(2026, 6, 10), date(2026, 3, 11), date(2026, 10, 28)],
+)
+@pytest.mark.parametrize("instrument", ["DAX", "SX5E"])
+def test_an_08_30_release_in_new_york_reacts_in_frankfurt_the_same_day(
+    released: date, instrument: str
+) -> None:
+    # given a CPI release at 08:30 New York
+    event = flows.to_event_instance(FirstRelease(date(2026, 1, 1), released, 100.0), flows.CPI_FLOW)
+
+    # when its first reaction day on a European market is found
+    day = study.first_reaction_day(event, study.MVP_PRICE_SERIES[instrument])
+
+    # then it is the release's own day: 13:30 or 14:30 in Frankfurt, before its 17:30 close
+    assert day == released
+
+
 def test_a_day_only_value_is_known_at_the_end_of_its_own_zones_day() -> None:
     # given a value dated 2022-09-12 in Tokyo
     # when its end of day is found

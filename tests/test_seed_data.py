@@ -13,6 +13,7 @@ import pytest
 from pydantic import BaseModel
 
 from fortuneteller.config import settings
+from fortuneteller.study import MVP_PRICE_SERIES
 from fortuneteller.models import (
     Country,
     EffectSizeSeed,
@@ -98,12 +99,9 @@ def test_seed_dir_path_is_data_seed() -> None:
     assert settings.seed_dir == Path("data/seed")
 
 
-# The five instruments the MVP measures (docs/roadmap.md). These symbols are join keys: step 2
-# looks each one up by exact string, so a rename or a typo silently breaks the measurement.
-MVP_INSTRUMENTS = ["SPY / ES", "UST10Y / ZN", "DXY", "GC / XAU", "VIX"]
-
-
-@pytest.mark.parametrize("symbol", MVP_INSTRUMENTS)
+# Every instrument measured (study.MVP_PRICE_SERIES). These symbols are join keys: step 2 looks
+# each one up by exact string, so a rename or a typo silently breaks the measurement.
+@pytest.mark.parametrize("symbol", list(MVP_PRICE_SERIES))
 def test_mvp_instrument_resolves_by_exact_symbol(symbol: str) -> None:
     # given the committed instruments CSV
     with (settings.seed_dir / "instruments.csv").open(newline="", encoding="utf-8") as handle:
