@@ -8,21 +8,23 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Rung 6 spec: delivery, each logged call and each failed run as a desktop popup. *(PR #160.)*
+Rung 6 step 1: each logged call and each failed run pops up on the desktop; the script's failure
+reports work again. *(PR #161.)*
 
 ## In progress
 
-Release-day job step 3 and evening score step 2: the first release the morning job logs and the
-evening grades, waiting for the next CPI or retail sales release.
+Release-day job step 3, evening score step 2 and rung 6 step 2: the first release the morning job
+logs, pops up and the evening grades, waiting for the next CPI or retail sales release.
 
 ## Next
 
-Rung 6 step 1: `notify-send` in `scripts/release-day.sh`.
+To be chosen from the roadmap: sharper measurement or cross-country effects.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-21 | Rung 6 step 1: the desktop popup; failure reports fixed (broken since #151) | PR #161 |
 | 2026-10-21 | Rung 6 spec: delivery as a desktop popup | PR #160 |
 | 2026-10-20 | The record, not a probability, step 2: the call line without a percentage | PR #159 |
 | 2026-10-20 | The record, not a probability: spec; an honest probability passes rung 3 one time in five at 80 calls | PR #158 |

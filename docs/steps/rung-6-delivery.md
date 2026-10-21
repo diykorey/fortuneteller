@@ -32,7 +32,7 @@ At the end: a desktop popup on this laptop for every logged call, and for every 
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | `scripts/release-day.sh`: `notify-send` after a calls pull request opens and on every report | Started by hand with a planted log line, a popup shows the release and link lines; a failing run pops up its title; with `notify-send` missing the run exits as before |
+| 1 | ~~`scripts/release-day.sh`: `notify-send` after a calls pull request opens and on every report~~ **done**; started through `systemd-run --user`, a planted failure and a planted call each popped up and stayed; with `notify-send` failing the run exited 1 as before. Testing it found that since PR #151 an apostrophe in the script's `FT_JOB_TREE` message had swallowed the lines that capture the output and name the failure, so no failure could have opened its issue; fixed | Started by hand with a planted log line, a popup shows the release and link lines; a failing run pops up its title; with `notify-send` missing the run exits as before |
 | 2 | Results: the first release delivered | Its popup seen on the release day, its lines equal to the logged rows |
 
 ## Technical details
