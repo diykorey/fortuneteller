@@ -9,7 +9,7 @@ Where the work is and what comes next. Two rules keep it current:
 ## Last completed
 
 The record, not a probability, step 2: the call line prints the record as counts and the band, no
-percentage. *(PR pending.)*
+percentage. *(PR #159.)*
 
 ## In progress
 
@@ -24,7 +24,7 @@ To be chosen from the roadmap: delivery (rung 6), sharper measurement, or cross-
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-20 | The record, not a probability, step 2: the call line without a percentage | PR pending |
+| 2026-10-20 | The record, not a probability, step 2: the call line without a percentage | PR #159 |
 | 2026-10-20 | The record, not a probability: spec; an honest probability passes rung 3 one time in five at 80 calls | PR #158 |
 | 2026-10-20 | The evening score installed: the timer on, one check run clean | PR #157 |
 | 2026-10-20 | The evening score step 1: `release-day.sh score`, its timer, one lock for both jobs | PR #156 |
