@@ -9,7 +9,7 @@ Where the work is and what comes next. Two rules keep it current:
 ## Last completed
 
 Cross-country effects, part 1, step 1: the DAX and Euro Stoxx 50 loaded, with their 17:30
-Frankfurt close and the S&P 500's signs. *(PR pending.)*
+Frankfurt close and the S&P 500's signs. *(PR #163.)*
 
 ## In progress
 
@@ -24,7 +24,7 @@ Cross-country effects, part 1, step 2: results, `raw-move` and `surprise` per fl
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-21 | Cross-country effects, part 1, step 1: the DAX and Euro Stoxx 50 loaded | PR pending |
+| 2026-10-21 | Cross-country effects, part 1, step 1: the DAX and Euro Stoxx 50 loaded | PR #163 |
 | 2026-10-21 | Cross-country effects, part 1, spec: US releases against Europe's stocks | PR #162 |
 | 2026-10-21 | Rung 6 step 1: the desktop popup; failure reports fixed (broken since #151) | PR #161 |
 | 2026-10-21 | Rung 6 spec: delivery as a desktop popup | PR #160 |
