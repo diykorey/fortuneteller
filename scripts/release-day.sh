@@ -7,7 +7,7 @@ set -uo pipefail
 repo=diykorey/fortuneteller
 step=${1:-live}
 main_checkout=${FT_MAIN_CHECKOUT:?the checkout whose database and cache the job reads}
-job_tree=${FT_JOB_TREE:?the job's own worktree}
+job_tree=${FT_JOB_TREE:?the worktree the job works in}
 day=$(TZ=America/New_York date +%F)
 out=$(mktemp)
 # Everything goes to $out, the issue's body if the run fails; the journal gets it at the end.
@@ -20,8 +20,14 @@ case $step in
     *) printf 'unknown step: %s\n' "$step"; exit 2 ;;
 esac
 
+# A desktop popup (docs/steps/rung-6-delivery.md); one that fails never fails the run.
+popup() {
+    notify-send -u critical -a FortuneTeller "$1" "$2" || true
+}
+
 report() {
     printf '%s: %s\n' "$title" "$1"
+    popup "$title" "$1"
     gh issue create -R "$repo" --title "$title" --body-file "$out"
     exit 1
 }
@@ -61,6 +67,8 @@ if [ "$step" = live ]; then
         at=$(date -u +%H:%M:%SZ)
         open_pr "Log the live $flows call of $day" "calls-$flows-$day" \
             "Logged by the release-day job at $at; graded by \`score\` after the closes."
+        popup "Log the live $flows call of $day" \
+            "$(grep -E ': actual |^.{12} (up|down|—) |^no prediction: ' "$out")"
     fi
     [ "$live" -eq 0 ] || report "fortuneteller live exited $live"
     exit 0
