@@ -27,6 +27,7 @@ from .expectations import (
     NASDAQ_CONSENSUS,
     NOWCAST_BASELINE,
     PAYROLL_MODEL,
+    TRADINGVIEW_FORECAST,
     TREND_12M,
     Actual,
     build_surprises,
@@ -473,7 +474,8 @@ class SurpriseRule:
     hit rate counts surprises of at least ``noticeable``, and the slope is per ``noticeable``,
     which the report names ``step``. Each pair of ``compared`` baselines of the verdict's measure is
     also judged side by side, on the reports both cover. With ``alone``, a release on a day holding
-    another flow's release is left out of every table (step 4's shared days)."""
+    another flow's release is left out of every table (step 4's shared days). ``predict`` calls
+    each release from its surprise against ``predicted_from``."""
 
     combinations: tuple[tuple[str, str], ...]
     expected_sign: Mapping[str, int]
@@ -481,6 +483,7 @@ class SurpriseRule:
     step: str
     compared: tuple[tuple[str, str], ...] = ()
     alone: bool = False
+    predicted_from: str = NASDAQ_CONSENSUS
 
 
 CPI_SURPRISE_RULE = SurpriseRule(
@@ -516,6 +519,28 @@ def _consensus_rule(
 RETAIL_SURPRISE_RULE = _consensus_rule(RETAIL_SALES, NFP_EXPECTED_SIGN, 0.3)
 PCE_SURPRISE_RULE = _consensus_rule(CORE_PCE, EXPECTED_SIGN, 0.1)
 GDP_SURPRISE_RULE = _consensus_rule(GDP, NFP_EXPECTED_SIGN, 0.5)
+# A hotter euro area: Europe's stocks down, and the euro up, so the dollar index down
+# (docs/steps/euro-inflation.md).
+EURO_EXPECTED_SIGN = {
+    "SPY / ES": 0,
+    "UST10Y / ZN": 0,
+    "DXY": -1,
+    "GC / XAU": 0,
+    "VIX": 0,
+    "DAX": -1,
+    "SX5E": -1,
+}
+HICP_SURPRISE_RULE = SurpriseRule(
+    (
+        (sources.EURO_CORE, TRADINGVIEW_FORECAST),
+        (sources.EURO_HEADLINE, TRADINGVIEW_FORECAST),
+    ),
+    EURO_EXPECTED_SIGN,
+    0.1,
+    "0.1pp",
+    alone=True,
+    predicted_from=TRADINGVIEW_FORECAST,
+)
 
 
 # The flows.
@@ -653,13 +678,8 @@ TRADINGVIEW_CALENDAR = "tradingview_calendar"
 def load_ecb_decisions(cache_dir: Path, today: date | None = None) -> list[datetime]:
     """Every ECB rate decision announced from ``ECB_FROM`` to ``today``, in UTC and in order."""
     today = today if today is not None else datetime.now(FRANKFURT).date()
-    decisions: set[datetime] = set()
-    start = ECB_FROM
-    while start <= today:
-        payload = sources.fetch_tradingview_quarter(start, cache_dir, today, country="EU")
-        decisions.update(sources.parse_ecb_decisions(payload))
-        start = date(start.year + start.month // 10, (start.month + 2) % 12 + 1, 1)
-    return sorted(decisions)
+    payloads = sources.fetch_tradingview_since(ECB_FROM, cache_dir, today, "EU")
+    return sorted({d for payload in payloads for d in sources.parse_ecb_decisions(payload)})
 
 
 class EcbFlow:
@@ -707,6 +727,66 @@ def ecb_event_instance(announced: datetime) -> EventInstance:
     )
 
 
+class HicpFlow:
+    """The euro area's flash inflation from TradingView's calendar, at the time it was announced,
+    core and headline year on year (docs/steps/euro-inflation.md)."""
+
+    event_type = CPI_EVENT_TYPE
+    country = EURO_AREA
+    zone = FRANKFURT
+    type_code = 8
+    cli_name = "hicp"
+    label = "HICP"
+    surprise_rule: SurpriseRule | None = HICP_SURPRISE_RULE
+
+    def events(self, api_key: str) -> EventBatch:
+        flashes = sources.euro_flashes(settings.cache_dir)
+        if not flashes:
+            raise sources.CalendarError("TradingView listed no euro-area flash estimates")
+        by_day: dict[date, set[tuple[datetime, date]]] = {}
+        for flash in flashes:
+            day = flash.announced.astimezone(FRANKFURT).date()
+            by_day.setdefault(day, set()).add((flash.announced, flash.period))
+        if split := [f"{day}" for day, times in by_day.items() if len(times) != 1]:
+            raise ValueError(
+                f"flash estimates at two times or for two months on {', '.join(split)}"
+            )
+        events = [hicp_event_instance(*times.pop()) for times in by_day.values()]
+        first, last = min(by_day), max(by_day)
+        return EventBatch(
+            events, [f"loaded {len(events)} euro-area flash estimates, {first} … {last}"]
+        )
+
+    def actuals(self, events: Sequence[EventInstance], api_key: str) -> list[Actual]:
+        ids = {release_date(event): event.event_id for event in events}
+        return [
+            Actual(event_id, flash.measure, flash.period, flash.actual, PERCENT)
+            for flash in sources.euro_flashes(settings.cache_dir)
+            if (event_id := ids.get(flash.announced.astimezone(FRANKFURT).date())) is not None
+        ]
+
+
+def hicp_event_instance(announced: datetime, period: date) -> EventInstance:
+    """Map one flash estimate of ``period``, announced at ``announced`` (aware), to its row."""
+    return EventInstance(
+        event_id=event_id(HICP_FLOW, announced.astimezone(FRANKFURT).date()),
+        event_type=HICP_FLOW.event_type,
+        event_ts=announced.astimezone(UTC).replace(tzinfo=None),
+        country=HICP_FLOW.country,
+        detail=period.strftime("%Y-%m"),
+        scheduled=True,
+        consensus=None,
+        actual=None,
+        surprise=None,
+        surprise_sd=None,
+        surprise_source=None,
+        priced_in_prior=None,
+        vix_t0=None,
+        rate_regime=None,
+        quality=TRADINGVIEW_CALENDAR,
+    )
+
+
 @dataclass(eq=False)
 class LevelFlow:
     """A US release from FRED whose actual is the change in one level, as first published against
@@ -740,7 +820,13 @@ class LevelFlow:
         return to_actuals(changes, self, self.measure, PERCENT, events)
 
 
-CPI_FLOW, NFP_FLOW, FED_FLOW, ECB_FLOW = CpiFlow(), NfpFlow(), FedFlow(), EcbFlow()
+CPI_FLOW, NFP_FLOW, FED_FLOW, ECB_FLOW, HICP_FLOW = (
+    CpiFlow(),
+    NfpFlow(),
+    FedFlow(),
+    EcbFlow(),
+    HicpFlow(),
+)
 RETAIL_FLOW = LevelFlow(
     RETAIL_EVENT_TYPE,
     4,
@@ -777,6 +863,7 @@ EVENT_FLOWS: list[EventFlow] = [
     PCE_FLOW,
     GDP_FLOW,
     ECB_FLOW,
+    HICP_FLOW,
 ]
 
 

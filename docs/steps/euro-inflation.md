@@ -51,8 +51,16 @@ move?) and step 4 (does it follow the surprise?) for all seven markets.
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | The flash flow: events and actuals from TradingView, the forecast as an expectation source, the rule above; `live` skips it | A test's calendar quarter stores a flash at its Frankfurt time with its core and headline surprises; `raw-move` and `surprise --event hicp` print seven verdicts; `live` and every US output unchanged |
+| 1 | ~~The flash flow: events and actuals from TradingView, the forecast as an expectation source, the rule above; `live` skips it~~ **done**; `load-releases` stored 143 flashes, 2014-11-28 to 2026-10-02, and `load-surprises` 124 core and 143 headline surprises. US outputs changed, by the rule above (*amended 2026-10-22*): see below | A test's calendar quarter stores a flash at its Frankfurt time with its core and headline surprises; `raw-move` and `surprise --event hicp` print seven verdicts; `live` and every US output unchanged |
 | 2 | Results here and in [`mvp-results.md`](../mvp-results.md) | Seven verdicts on both tests, US verdicts before and after, against the expected outcome |
+
+**US outputs after step 1** (*added 2026-10-22*). Unchanged was wrong: a flash day is now another
+flow's release day for the US consensus flows too, as the shared-days rule says, and no longer an
+ordinary day. CPI, jobs-report and Fed surprises and calls are unchanged. Left out as shared:
+retail sales 47 (was 46), core PCE 55 (was 15: the flash often lands on its day), GDP 31 (was 27).
+Two verdicts changed: GDP's dollar index against the surprise, unclear to *doesn't*; GDP's VIX on
+release days, *doesn't* to unclear (ratio 1.10, p 0.19). Retail sales' yield still holds
+walk-forward. Step 2 reports both beside the flash's own results.
 
 ## Technical details
 

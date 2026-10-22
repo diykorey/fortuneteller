@@ -465,7 +465,7 @@ def _predict(args: argparse.Namespace) -> int:
         return 1
     con = db.get_connection()
     db.init_db(con=con)
-    baseline = expectations.NASDAQ_CONSENSUS
+    baseline = rule.predicted_from
     stored = con.execute(
         "SELECT count(*) FROM surprises s JOIN event_instances e ON e.event_id = s.event_id "
         "WHERE e.event_type = ? AND e.country = ? AND s.baseline = ?",
@@ -537,6 +537,9 @@ def _predict_release(
     """The prediction for the next release, from its actual, typed in or else fetched, and the
     calendars."""
     measure = rule.combinations[0][0]
+    if measure not in expectations.CONSENSUS_ROWS:
+        print(f"predict: {flow.cli_name} has no live path, only the replay", file=sys.stderr)
+        return 1
     _nasdaq_name, _check_name, _decimals, gap = expectations.CONSENSUS_ROWS[measure]
     now = _now()
     today = now.astimezone(sources.NEW_YORK).date()
@@ -687,6 +690,8 @@ def _live(_args: argparse.Namespace) -> int:
         if flow.surprise_rule is None:
             continue
         measure = flow.surprise_rule.combinations[0][0]
+        if measure not in expectations.CONSENSUS_ROWS:
+            continue
         try:
             upcoming = expectations.next_consensus(measure, today, settings.cache_dir)
         except sources.CalendarError as exc:

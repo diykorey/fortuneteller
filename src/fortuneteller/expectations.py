@@ -193,8 +193,9 @@ TREND_MONTHS = 12
 
 
 class Trend12m:
-    """The average of the previous 12 months' first-published values, for any measure, within one
-    event type from one country: UK CPI's core never enters US CPI's trend.
+    """The average of the previous 12 months' first-published values, for any measure but a
+    year-on-year rate, within one event type from one country: UK CPI's core never enters US CPI's
+    trend.
 
     Only months announced before the event count, so the trend uses only what was known then:
     October 2025 payrolls, published with November, are not in November's. A month gets a trend
@@ -211,6 +212,7 @@ class Trend12m:
         announced = {event.event_id: event.event_ts for event in events}
         origin = {event.event_id: (event.event_type, event.country) for event in events}
         expected: list[Expectation] = []
+        actuals = [a for a in actuals if a.measure not in sources.EURO_FLASH_ROWS]
         for group in dict.fromkeys((origin[a.event_id], a.measure) for a in actuals):
             _origin, measure = group
             by_period = {a.period: a for a in actuals if (origin[a.event_id], a.measure) == group}
@@ -606,11 +608,52 @@ class NasdaqConsensus:
         ]
 
 
+TRADINGVIEW_FORECAST = "tradingview_forecast"
+
+
+class TradingViewForecast:
+    """TradingView's forecast for each euro-area flash estimate (docs/steps/euro-inflation.md);
+    known by the end of the day before the release (assumed)."""
+
+    name = TRADINGVIEW_FORECAST
+    label = "TradingView's forecast"
+    zone = sources.FRANKFURT
+
+    def expectations(
+        self, events: Sequence[EventInstance], actuals: Sequence[Actual], api_key: str
+    ) -> list[Expectation]:
+        wanted = [a for a in own_actuals(events, actuals) if a.measure in sources.EURO_FLASH_ROWS]
+        if not wanted:
+            return []
+        released = {
+            event.event_id: event.event_ts.replace(tzinfo=UTC).astimezone(self.zone).date()
+            for event in events
+        }
+        forecasts = {
+            (flash.announced.astimezone(self.zone).date(), flash.measure): flash.forecast
+            for flash in sources.euro_flashes(settings.cache_dir)
+            if flash.forecast is not None
+        }
+        return [
+            Expectation(
+                a.event_id,
+                a.measure,
+                self.name,
+                forecast,
+                a.unit,
+                end_of_day(released[a.event_id] - timedelta(days=1), self.zone),
+            )
+            for a in wanted
+            if (forecast := forecasts.get((released[a.event_id], a.measure))) is not None
+        ]
+
+
 EXPECTATION_SOURCES: list[ExpectationSource] = [
     Trend12m(),
     ClevelandNowcast(),
     PayrollModel(),
     NasdaqConsensus(),
+    TradingViewForecast(),
 ]
 
 
