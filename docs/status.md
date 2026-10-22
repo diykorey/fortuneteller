@@ -13,7 +13,7 @@ stocks; no US verdict changed. *(PR #168.)*
 
 ## In progress
 
-Cross-country effects, part 3: euro-area inflation, spec (this change). The euro area's flash HICP
+Cross-country effects, part 3: euro-area inflation, spec *(PR #169)*. The euro area's flash HICP
 as an event flow with its surprise against TradingView's forecast, run through rung 1 and step 4.
 [Spec](steps/euro-inflation.md).
 
