@@ -11,12 +11,14 @@ from __future__ import annotations
 from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from datetime import UTC, date, datetime, time, timedelta
+from pathlib import Path
 from typing import Protocol
 from zoneinfo import ZoneInfo
 
 import duckdb
 
 from . import db, sources
+from .config import settings
 from .expectations import (
     EXPECTATION_SOURCES,
     MonthlyChange,
@@ -32,7 +34,7 @@ from .expectations import (
     previous_month,
 )
 from .models import EventInstance, Surprise
-from .sources import CORE_PCE, GDP, NEW_YORK, PAYROLLS, RETAIL_SALES, FirstRelease
+from .sources import CORE_PCE, FRANKFURT, GDP, NEW_YORK, PAYROLLS, RETAIL_SALES, FirstRelease
 
 
 # Step 1 — the CPI release history from FRED (docs/steps/step-1-releases.md).
@@ -642,6 +644,69 @@ class FedFlow:
         return []
 
 
+# The ECB's decisions (docs/steps/ecb-decisions.md): TradingView lists them from 2013-04-04.
+EURO_AREA = "Euro area"
+ECB_FROM = date(2013, 4, 1)
+TRADINGVIEW_CALENDAR = "tradingview_calendar"
+
+
+def load_ecb_decisions(cache_dir: Path, today: date | None = None) -> list[datetime]:
+    """Every ECB rate decision announced from ``ECB_FROM`` to ``today``, in UTC and in order."""
+    today = today if today is not None else datetime.now(FRANKFURT).date()
+    decisions: set[datetime] = set()
+    start = ECB_FROM
+    while start <= today:
+        payload = sources.fetch_tradingview_quarter(start, cache_dir, today, country="EU")
+        decisions.update(sources.parse_ecb_decisions(payload))
+        start = date(start.year + start.month // 10, (start.month + 2) % 12 + 1, 1)
+    return sorted(decisions)
+
+
+class EcbFlow:
+    """The ECB's rate decisions from TradingView's calendar, at the time each was announced. No
+    surprise: the calendar's forecast equals the decision at almost every meeting."""
+
+    event_type = FOMC_EVENT_TYPE
+    country = EURO_AREA
+    zone = FRANKFURT
+    type_code = 7
+    cli_name = "ecb"
+    label = "ECB"
+    surprise_rule: SurpriseRule | None = None
+
+    def events(self, api_key: str) -> EventBatch:
+        decisions = load_ecb_decisions(settings.cache_dir)
+        if not decisions:
+            raise sources.CalendarError("TradingView listed no ECB decisions")
+        first, last = (d.astimezone(FRANKFURT).date() for d in (decisions[0], decisions[-1]))
+        report = [f"loaded {len(decisions)} ECB decisions, {first} … {last}"]
+        return EventBatch([ecb_event_instance(d) for d in decisions], report)
+
+    def actuals(self, events: Sequence[EventInstance], api_key: str) -> list[Actual]:
+        return []
+
+
+def ecb_event_instance(announced: datetime) -> EventInstance:
+    """Map one ECB decision, announced at ``announced`` (aware), to its ``event_instances`` row."""
+    return EventInstance(
+        event_id=event_id(ECB_FLOW, announced.astimezone(FRANKFURT).date()),
+        event_type=ECB_FLOW.event_type,
+        event_ts=announced.astimezone(UTC).replace(tzinfo=None),
+        country=ECB_FLOW.country,
+        detail="scheduled meeting",
+        scheduled=True,
+        consensus=None,
+        actual=None,
+        surprise=None,
+        surprise_sd=None,
+        surprise_source=None,
+        priced_in_prior=None,
+        vix_t0=None,
+        rate_regime=None,
+        quality=TRADINGVIEW_CALENDAR,
+    )
+
+
 @dataclass(eq=False)
 class LevelFlow:
     """A US release from FRED whose actual is the change in one level, as first published against
@@ -675,7 +740,7 @@ class LevelFlow:
         return to_actuals(changes, self, self.measure, PERCENT, events)
 
 
-CPI_FLOW, NFP_FLOW, FED_FLOW = CpiFlow(), NfpFlow(), FedFlow()
+CPI_FLOW, NFP_FLOW, FED_FLOW, ECB_FLOW = CpiFlow(), NfpFlow(), FedFlow(), EcbFlow()
 RETAIL_FLOW = LevelFlow(
     RETAIL_EVENT_TYPE,
     4,
@@ -704,7 +769,15 @@ GDP_FLOW = LevelFlow(
     power=4,
     surprise_rule=GDP_SURPRISE_RULE,
 )
-EVENT_FLOWS: list[EventFlow] = [CPI_FLOW, NFP_FLOW, FED_FLOW, RETAIL_FLOW, PCE_FLOW, GDP_FLOW]
+EVENT_FLOWS: list[EventFlow] = [
+    CPI_FLOW,
+    NFP_FLOW,
+    FED_FLOW,
+    RETAIL_FLOW,
+    PCE_FLOW,
+    GDP_FLOW,
+    ECB_FLOW,
+]
 
 
 def check_flows(event_flows: Sequence[EventFlow]) -> None:

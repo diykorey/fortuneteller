@@ -33,7 +33,7 @@ import duckdb
 from . import db, expectations, sources, stats
 from .models import DailyBar, EventInstance, Observation
 from .flows import EVENT_FLOWS, RELEASE_TIME, EventFlow, release_date, stored_events
-from .sources import NEW_YORK, DailyClosingPrice, YahooError
+from .sources import FRANKFURT, NEW_YORK, DailyClosingPrice, YahooError
 
 
 # Step 2 — each instrument's daily closes from Yahoo (docs/steps/step-2-prices.md).
@@ -45,8 +45,6 @@ class PriceSeries(NamedTuple):
     close: time
     zone: ZoneInfo
 
-
-FRANKFURT = ZoneInfo("Europe/Berlin")
 
 # The five MVP instruments and Europe's two stock indices (docs/steps/cross-country.md), keyed by
 # the exact symbol in data/seed/instruments.csv, with the Yahoo ticker each is read from, the unit

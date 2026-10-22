@@ -1,27 +1,14 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-
 ## What this is
 
 FortuneTeller — an event-driven market-impact prediction & warning system: ingest social / political
 / climate / macro events, predict which instruments move (direction + magnitude + horizon) with
 **calibrated** confidence. A warning product, not HFT (latency budget is seconds-to-minutes).
 
-The repo is **bootstrapping**. What exists today is M0 — the data spine — plus the four MVP steps (complete; see `docs/mvp-results.md`): the
-design docs (mirrored from a Notion workspace), the seed reference data, a working
-`init | seed | query-demo` CLI over DuckDB (M0-01…09; ruff + mypy --strict + pytest green), and
-`load-releases`, which loads the real CPI release history from FRED into `event_instances`
-(`src/fortuneteller/study.py`; requests and parsing of FRED and Yahoo live in `sources.py`), and `load-prices`, which stores daily closes from Yahoo in
-`daily_bars` and each instrument's move around every release in `observations`, `raw-move`
-(MVP step 3), which compares each instrument's moves on CPI days with all other days, and, for MVP
-step 4, `load-surprises` (each release's CPI surprise into `surprises`) and `surprise` (does
-each move follow it?). Rung 2 (`docs/steps/rung-2-predict.md`) adds `predict`, a walk-forward
-replay: each release's direction predicted only from the releases before it, and graded. Rung 4
-(`docs/steps/rung-4-keep-score.md`) has `predict --actual` log each live call to `data/calls.csv`
-and `score` grade them; rung 5 (`docs/steps/rung-5-live-path.md`) adds `predict --fetch`, which
-reads the actual from TradingView's calendar instead; `live` runs it for each release of the day, the
-[release-day job](docs/steps/release-day-job.md)'s command. **Nothing forecasts a release before it lands or warns anyone yet.**
+The repo is **bootstrapping**: M0 (the data spine) plus the MVP and the feature-ladder rungs in
+`docs/status.md`; what each CLI command does is in `uv run fortuneteller --help`. **Nothing forecasts
+a release before it lands yet.**
 
 ## The 2026-08-05 reset — read before planning any work
 
@@ -78,18 +65,8 @@ Toolchain is `uv` (Python 3.12). `just` recipes wrap these; if `just` isn't inst
 
 ```bash
 uv sync                              # install deps + dev group (ruff, mypy, pytest)
-uv run fortuneteller --help          # CLI: init | seed | query-demo | load-releases | load-prices | load-surprises | raw-move | surprise | predict | score | live
-uv run ruff check                    # lint (line length 100)
-uv run ruff format                   # format
-uv run mypy src                      # type check (strict)
-uv run pytest                        # tests
-uv run pytest tests/test_skeleton.py::test_version   # a single test
-uv run pytest -k version             # tests matching a keyword
 just check                           # the full local gate = lint + typecheck + test (mirrors CI)
 ```
-
-CI (`.github/workflows/ci.yml`) runs ruff + mypy + pytest on every push and pull request,
-unconditionally — the old docs-only guard was dropped in M0-09.
 
 ## Where things live
 

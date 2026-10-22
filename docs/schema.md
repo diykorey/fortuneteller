@@ -214,7 +214,8 @@ explained rather than every variant.
 ## countries
 
 Countries by GDP, with news coverage notes. Source: `data/seed/countries.csv`, a representative
-10-row subset of 50. The MVP uses one row, `United States`, as the `event_instances.country` key.
+10-row subset of 50, plus `Euro area` (rank `0`: a monetary union, not a country), the origin of ECB
+decisions. `United States` and `Euro area` are the `event_instances.country` keys in use.
 
 | Column | Type | Meaning |
 | --- | --- | --- |
@@ -238,10 +239,10 @@ change.
 
 | Column | Type | Meaning | Filled today |
 | --- | --- | --- | --- |
-| `event_id` | BIGINT, **PK** | Stable id: the event type's code, then the release day as `YYYYMMDD` — CPI on 2022-09-13 is `120220913` (`flows.event_id`; the code is the event flow's `type_code`). Codes: `1` CPI, `2` NFP, `3` US central-bank decision, `4` retail sales, `5` core PCE, `6` GDP. Unique across event types, and sorted by date within one. | Yes |
+| `event_id` | BIGINT, **PK** | Stable id: the event type's code, then the release day as `YYYYMMDD` — CPI on 2022-09-13 is `120220913` (`flows.event_id`; the code is the event flow's `type_code`). Codes: `1` CPI, `2` NFP, `3` US central-bank decision, `4` retail sales, `5` core PCE, `6` GDP, `7` ECB decision (its day is Frankfurt's). Unique across event types, and sorted by date within one. | Yes |
 | `event_type` | TEXT | An `event_types.event_type`: `CPI / inflation surprise`, `NFP / labor data`, `Central-bank decision`, `Retail sales`, `PCE inflation` or `GDP growth`. | Yes |
 | `event_ts` | TIMESTAMP | When the market learned of the event: for CPI, NFP, retail sales, PCE and GDP, the release day at 08:30 New York time; for a Fed decision, the time its statement came out: 14:15 New York until 2013-03-20 and 14:00 since, with the exceptions listed in `study.FOMC_ANNOUNCED_AT` (unscheduled decisions, and 12:30 on the 2011–2012 press-conference days); sources in [rung 1](steps/rung-1-more-events.md). Stored as **naive UTC**, because DuckDB would shift a time-zone-aware value into the session's time zone. | Yes |
-| `country` | TEXT | A `countries.country`: the event's origin, its flow's `country`. Events are read back by event type **and** country, so one type in two countries never mixes. Today always `United States`. | Yes |
+| `country` | TEXT | A `countries.country`: the event's origin, its flow's `country`. Events are read back by event type **and** country, so one type in two countries never mixes. `United States`, or `Euro area` for ECB decisions. | Yes |
 | `detail` | TEXT | What the event is about. For CPI, NFP, retail sales and PCE, the reference month as `YYYY-MM`, i.e. the month measured: about six weeks before `event_ts` for CPI, about one for NFP; for GDP, the quarter's first month (`2026-04` is the second quarter). When a release day first publishes two months (NFP, October and November 2025; PCE, February and March 2019, and October and November 2025), the row is the newer month. For a Fed decision, `scheduled meeting` or `unscheduled`. | Yes |
 | `scheduled` | BOOLEAN | `true` if the date was known in advance (a data release, a scheduled Fed meeting), `false` if not (an emergency Fed cut, a war, a hack). | Yes |
 | `consensus` | DOUBLE | What forecasters expected before the release, from a survey. | No: no free survey history exists. Step 4's expected values are a trend and a model, so they go in [`surprises`](#surprises) instead |
@@ -266,6 +267,7 @@ warning: the 14 unscheduled Fed decisions since 1994 (e.g. 2001-09-17, 2020-03-1
 | --- | --- |
 | `first_release` | `actual` is the number as first published on `event_ts`, before any later revision — the number the market actually reacted to. Every CPI, NFP, retail sales, PCE and GDP row. |
 | `fed_calendar` | The day comes from the Fed's own meeting calendar, cross-checked: every target-rate change since 1994 falls on a stored decision or up to 3 days after it. Every Fed row. |
+| `tradingview_calendar` | The decision and its announcement time come from TradingView's calendar, from 2013-04 on; not cross-checked against another source. Every ECB row. |
 
 **`rate_regime`** (not filled yet): intended values `hiking`, `cutting`, `on-hold`, per the legacy
 design.

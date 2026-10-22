@@ -330,6 +330,18 @@ def test_raw_move_takes_the_event_to_measure(
     assert "no CPI / inflation surprise releases stored" in capsys.readouterr().err
 
 
+def test_raw_move_measures_ecb_decisions(tmp_db: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    # given ECB decisions and prices stored
+    _synthetic_store(db.get_connection(), flow=flows.ECB_FLOW)
+
+    # when the command runs for the ECB
+    code = main(["raw-move", "--event", "ecb"])
+
+    # then each of the seven markets gets its verdict
+    assert code == 0
+    assert sum(line.endswith(" moves") for line in capsys.readouterr().out.splitlines()) == 7
+
+
 def test_another_events_days_are_not_ordinary_days() -> None:
     # given the 36 CPI releases, then 36 jobs reports on other days
     con = duckdb.connect(":memory:")

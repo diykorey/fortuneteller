@@ -42,7 +42,7 @@ seven markets, beside the Fed's verdicts.
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | `Euro area` seed row; the ECB flow: decisions from TradingView with their time, `load-releases` stores them | A test's calendar quarter stores its decisions at their Frankfurt time; a quarter without one stores none; `raw-move --event ecb` prints seven verdicts |
+| 1 | ~~`Euro area` seed row; the ECB flow: decisions from TradingView with their time, `load-releases` stores them~~ **done**; `load-releases` stored 115 decisions, 2013-04-04 to 2026-09-10 | A test's calendar quarter stores its decisions at their Frankfurt time; a quarter without one stores none; `raw-move --event ecb` prints seven verdicts |
 | 2 | Results here and in [`mvp-results.md`](../mvp-results.md) | Seven verdicts beside the Fed's, US verdicts before and after, against the expected outcome |
 
 ## What this does not do

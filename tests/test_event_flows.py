@@ -1,5 +1,6 @@
 """Plugging in: a new event flow and a new expectation source need only one line in a list each."""
 
+import json
 from collections.abc import Iterator, Sequence
 from datetime import UTC, date, datetime, time, timedelta
 from pathlib import Path
@@ -178,8 +179,8 @@ class ForeignCpiFlow:
         return []
 
 
-UK_CPI = ForeignCpiFlow("United Kingdom", "Europe/London", 7, "uk-cpi")
-JAPAN_CPI = ForeignCpiFlow("Japan", "Asia/Tokyo", 8, "jp-cpi")
+UK_CPI = ForeignCpiFlow("United Kingdom", "Europe/London", 8, "uk-cpi")
+JAPAN_CPI = ForeignCpiFlow("Japan", "Asia/Tokyo", 9, "jp-cpi")
 
 
 @pytest.fixture
@@ -228,9 +229,9 @@ def test_the_release_date_is_the_day_in_the_events_own_country(abroad: None) -> 
 @pytest.mark.parametrize(
     "duplicate",
     [
-        ForeignCpiFlow("United States", "America/New_York", 7, "uk-cpi"),
+        ForeignCpiFlow("United States", "America/New_York", 8, "uk-cpi"),
         ForeignCpiFlow("United Kingdom", "Europe/London", flows.CpiFlow.type_code, "uk-cpi"),
-        ForeignCpiFlow("United Kingdom", "Europe/London", 7, flows.CpiFlow.cli_name),
+        ForeignCpiFlow("United Kingdom", "Europe/London", 8, flows.CpiFlow.cli_name),
     ],
 )
 def test_two_flows_with_one_identity_are_refused(duplicate: ForeignCpiFlow) -> None:
@@ -247,7 +248,7 @@ class UkHousingFlow(HousingFlow):
     # The same release from the UK: same event type and measure, ten times the numbers.
     country = "United Kingdom"
     zone = ZoneInfo("Europe/London")
-    type_code = 7
+    type_code = 10
     cli_name = "uk-housing"
     label = "UKH"
     per_month = 100.0
@@ -352,3 +353,70 @@ def test_a_day_only_value_is_known_at_the_end_of_its_own_zones_day() -> None:
 
     # then it is Tokyo's midnight, in naive UTC
     assert known == datetime(2022, 9, 12, 14, 59, 59)
+
+
+def _euro_quarter(*rows: tuple[str, str, float | None]) -> bytes:
+    # A TradingView euro-area calendar reply holding ``rows`` of (title, UTC time, actual).
+    return json.dumps(
+        {
+            "status": "ok",
+            "result": [
+                {"title": t, "country": "EU", "date": when, "actual": a, "forecast": a}
+                for t, when, a in rows
+            ],
+        }
+    ).encode()
+
+
+def test_ecb_decisions_are_read_quarter_by_quarter_at_their_time(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # given two quarters of the euro-area calendar: one with a decision, other news and a meeting
+    # not yet held, and one with no decision at all
+    replies = {
+        date(2025, 1, 1): _euro_quarter(
+            (sources.ECB_DECISION, "2025-01-30T13:15:00.000Z", 2.9),
+            ("Deposit Facility Rate", "2025-01-30T13:15:00.000Z", 2.75),
+            ("CPI", "2025-02-03T10:00:00.000Z", 2.5),
+        ),
+        date(2025, 4, 1): _euro_quarter((sources.ECB_DECISION, "2025-06-05T12:15:00.000Z", None)),
+    }
+    asked: list[str] = []
+
+    def fetch(
+        start: date, cache_dir: Path, today: date | None = None, country: str = "US"
+    ) -> bytes:
+        asked.append(country)
+        return replies.get(start, b'{"status": "no_data"}')
+
+    monkeypatch.setattr(sources, "fetch_tradingview_quarter", fetch)
+    monkeypatch.setattr(flows, "ECB_FROM", date(2025, 1, 1))
+
+    # when the decisions up to a day in the second quarter are loaded and mapped to events
+    decisions = flows.load_ecb_decisions(tmp_path, today=date(2025, 6, 4))
+    events = [flows.ecb_event_instance(d) for d in decisions]
+
+    # then only the one held decision is an event, at 14:15 Frankfurt, from the euro-area calendar
+    assert asked == ["EU", "EU"]
+    assert [(e.event_id, e.country) for e in events] == [(720250130, "Euro area")]
+    assert events[0].event_ts == datetime(2025, 1, 30, 13, 15)
+    assert events[0].event_ts.replace(tzinfo=UTC).astimezone(sources.FRANKFURT).time() == time(
+        14, 15
+    )
+
+
+def test_load_releases_reports_a_calendar_failure(
+    tmp_db: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    # given every flow but the ECB's answering, and TradingView listing no ECB decision
+    monkeypatch.setattr(settings, "fred_api_key", SecretStr("test-key"))
+    monkeypatch.setattr(flows, "EVENT_FLOWS", [flows.ECB_FLOW])
+    monkeypatch.setattr(flows, "load_ecb_decisions", lambda _cache_dir: [])
+
+    # when the command runs
+    code = main(["load-releases"])
+
+    # then it fails with one line and stores nothing
+    assert code == 1
+    assert capsys.readouterr().err == "load-releases: TradingView listed no ECB decisions\n"
+    assert db.count_rows("event_instances", con=db.get_connection()) == 0
