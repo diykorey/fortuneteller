@@ -62,6 +62,11 @@ Terms are grouped by what they are about, alphabetical within each group.
   ([ECB decisions](steps/ecb-decisions.md)). **Euro area** — the countries that use the euro.
 - **Fed / FOMC** (Federal Open Market Committee) — the committee that sets the US policy interest
   rate, meeting eight times a year with a decision at 2:00 p.m. New York time.
+- **Flash estimate** — Eurostat's first print of the month's euro-area inflation, around the first
+  working day of the next month at 11:00 Frankfurt; the final follows two weeks later
+  ([euro-area inflation](steps/euro-inflation.md)).
+- **HICP** (Harmonised Index of Consumer Prices) — the euro area's inflation measure, the
+  counterpart of US CPI, published by **Eurostat**.
 - **Inter-meeting (unscheduled) decision** — a Fed rate change made outside the published meeting
   calendar, usually in a crisis (2001, 2008, March 2020). Stored with `scheduled = false`.
 - **Jobless claims (initial claims)** — the weekly count of new unemployment-insurance filings,

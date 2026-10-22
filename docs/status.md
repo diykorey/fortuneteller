@@ -13,13 +13,16 @@ stocks; no US verdict changed. *(PR #168.)*
 
 ## In progress
 
-Release-day job step 3, evening score step 2 and rung 6 step 2: the first release the morning job
+Cross-country effects, part 3: euro-area inflation, spec *(PR #169)*. The euro area's flash HICP
+as an event flow with its surprise against TradingView's forecast, run through rung 1 and step 4.
+[Spec](steps/euro-inflation.md).
+
+Also waiting: release-day job step 3, evening score step 2 and rung 6 step 2: the first release the morning job
 logs, pops up and the evening grades, waiting for the next CPI or retail sales release.
 
 ## Next
 
-To be chosen: sharper measurement (paid data), more of step 4a (euro-area releases), or a pause
-until the November releases.
+Cross-country effects, part 3, step 1: the flash flow, its forecast as an expectation source.
 
 ## Done
 
