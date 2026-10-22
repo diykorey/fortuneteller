@@ -215,7 +215,7 @@ explained rather than every variant.
 
 Countries by GDP, with news coverage notes. Source: `data/seed/countries.csv`, a representative
 10-row subset of 50, plus `Euro area` (rank `0`: a monetary union, not a country), the origin of ECB
-decisions. `United States` and `Euro area` are the `event_instances.country` keys in use.
+decisions and flash HICP. `United States` and `Euro area` are the `event_instances.country` keys in use.
 
 | Column | Type | Meaning |
 | --- | --- | --- |
@@ -239,14 +239,14 @@ change.
 
 | Column | Type | Meaning | Filled today |
 | --- | --- | --- | --- |
-| `event_id` | BIGINT, **PK** | Stable id: the event type's code, then the release day as `YYYYMMDD` — CPI on 2022-09-13 is `120220913` (`flows.event_id`; the code is the event flow's `type_code`). Codes: `1` CPI, `2` NFP, `3` US central-bank decision, `4` retail sales, `5` core PCE, `6` GDP, `7` ECB decision (its day is Frankfurt's). Unique across event types, and sorted by date within one. | Yes |
+| `event_id` | BIGINT, **PK** | Stable id: the event type's code, then the release day as `YYYYMMDD` — CPI on 2022-09-13 is `120220913` (`flows.event_id`; the code is the event flow's `type_code`). Codes: `1` CPI, `2` NFP, `3` US central-bank decision, `4` retail sales, `5` core PCE, `6` GDP, `7` ECB decision, `8` euro-area flash HICP (their day is Frankfurt's). Unique across event types, and sorted by date within one. | Yes |
 | `event_type` | TEXT | An `event_types.event_type`: `CPI / inflation surprise`, `NFP / labor data`, `Central-bank decision`, `Retail sales`, `PCE inflation` or `GDP growth`. | Yes |
-| `event_ts` | TIMESTAMP | When the market learned of the event: for CPI, NFP, retail sales, PCE and GDP, the release day at 08:30 New York time; for a Fed decision, the time its statement came out: 14:15 New York until 2013-03-20 and 14:00 since, with the exceptions listed in `study.FOMC_ANNOUNCED_AT` (unscheduled decisions, and 12:30 on the 2011–2012 press-conference days); sources in [rung 1](steps/rung-1-more-events.md). Stored as **naive UTC**, because DuckDB would shift a time-zone-aware value into the session's time zone. | Yes |
-| `country` | TEXT | A `countries.country`: the event's origin, its flow's `country`. Events are read back by event type **and** country, so one type in two countries never mixes. `United States`, or `Euro area` for ECB decisions. | Yes |
-| `detail` | TEXT | What the event is about. For CPI, NFP, retail sales and PCE, the reference month as `YYYY-MM`, i.e. the month measured: about six weeks before `event_ts` for CPI, about one for NFP; for GDP, the quarter's first month (`2026-04` is the second quarter). When a release day first publishes two months (NFP, October and November 2025; PCE, February and March 2019, and October and November 2025), the row is the newer month. For a Fed decision, `scheduled meeting` or `unscheduled`. | Yes |
+| `event_ts` | TIMESTAMP | When the market learned of the event: for CPI, NFP, retail sales, PCE and GDP, the release day at 08:30 New York time; for a flash HICP, the calendar's time (11:00 Frankfurt); for a Fed decision, the time its statement came out: 14:15 New York until 2013-03-20 and 14:00 since, with the exceptions listed in `study.FOMC_ANNOUNCED_AT` (unscheduled decisions, and 12:30 on the 2011–2012 press-conference days); sources in [rung 1](steps/rung-1-more-events.md). Stored as **naive UTC**, because DuckDB would shift a time-zone-aware value into the session's time zone. | Yes |
+| `country` | TEXT | A `countries.country`: the event's origin, its flow's `country`. Events are read back by event type **and** country, so one type in two countries never mixes. `United States`, or `Euro area` for ECB decisions and flash HICP. | Yes |
+| `detail` | TEXT | What the event is about. For CPI, NFP, retail sales and PCE, the reference month as `YYYY-MM`, i.e. the month measured: about six weeks before `event_ts` for CPI, about one for NFP; for GDP, the quarter's first month (`2026-04` is the second quarter). When a release day first publishes two months (NFP, October and November 2025; PCE, February and March 2019, and October and November 2025), the row is the newer month. For a Fed decision, `scheduled meeting` or `unscheduled`. For a flash HICP, the month measured. | Yes |
 | `scheduled` | BOOLEAN | `true` if the date was known in advance (a data release, a scheduled Fed meeting), `false` if not (an emergency Fed cut, a war, a hack). | Yes |
 | `consensus` | DOUBLE | What forecasters expected before the release, from a survey. | No: no free survey history exists. Step 4's expected values are a trend and a model, so they go in [`surprises`](#surprises) instead |
-| `actual` | DOUBLE | The number released, as first published, before any revision. For CPI, the index level; for NFP, total non-farm payrolls in thousands. NULL for a Fed decision: this rung measures only that it happened. | Yes, except Fed decisions |
+| `actual` | DOUBLE | The number released, as first published, before any revision. For CPI, the index level; for NFP, total non-farm payrolls in thousands. NULL for a Fed or ECB decision, which this measures only as happening, and for a flash HICP, whose rates are in [`surprises`](#surprises). | Yes, except decisions and flash HICP |
 | `surprise` | DOUBLE | `actual − consensus`: the part the market did not expect. | No; see `consensus` |
 | `surprise_sd` | DOUBLE | `surprise` divided by the typical size of past surprises, so surprises of different events compare. | No; nothing planned before a second event type |
 | `surprise_source` | TEXT | Where `consensus` came from. | No; see `consensus` |
@@ -267,7 +267,7 @@ warning: the 14 unscheduled Fed decisions since 1994 (e.g. 2001-09-17, 2020-03-1
 | --- | --- |
 | `first_release` | `actual` is the number as first published on `event_ts`, before any later revision — the number the market actually reacted to. Every CPI, NFP, retail sales, PCE and GDP row. |
 | `fed_calendar` | The day comes from the Fed's own meeting calendar, cross-checked: every target-rate change since 1994 falls on a stored decision or up to 3 days after it. Every Fed row. |
-| `tradingview_calendar` | The decision and its announcement time come from TradingView's calendar, from 2013-04 on; not cross-checked against another source. Every ECB row. |
+| `tradingview_calendar` | The decision and its announcement time come from TradingView's calendar, from 2013-04 on; not cross-checked against another source. Every ECB row, and every flash HICP row from 2014-11 on, its actual too. |
 
 **`rate_regime`** (not filled yet): intended values `hiking`, `cutting`, `on-hold`, per the legacy
 design.
@@ -435,9 +435,9 @@ Example row:
 | `event_id` | BIGINT, **PK** | The release, an `event_instances.event_id`. Core and headline come out in the same BLS release, so they share it. |
 | `measure` | TEXT, **PK** | Which number; see below. |
 | `baseline` | TEXT, **PK** | Where the expected value came from: the `name` of an expectation source in `expectations.EXPECTATION_SOURCES`; see below. |
-| `actual_mom` | DOUBLE | The month-over-month change **as first published**: for CPI in percent (`0.567` means +0.567%); for `payrolls` in thousands of jobs (`315` means +315,000); for retail sales and core PCE in percent month on month, for GDP in percent quarter on quarter, annualized. The number the market saw, not today's revised one. |
+| `actual_mom` | DOUBLE | The month-over-month change **as first published**: for CPI in percent (`0.567` means +0.567%); for `payrolls` in thousands of jobs (`315` means +315,000); for retail sales and core PCE in percent month on month, for GDP in percent quarter on quarter, annualized; for the euro-area measures the year-on-year rate in percent. The number the market saw, not today's revised one. |
 | `expected_mom` | DOUBLE | What `baseline` expected that change to be, in the same unit. |
-| `surprise` | DOUBLE | `actual_mom − expected_mom`: percentage points for CPI, retail sales, core PCE and GDP, thousands of jobs for payrolls. Positive means hotter or stronger than expected. |
+| `surprise` | DOUBLE | `actual_mom − expected_mom`: percentage points for CPI, retail sales, core PCE, GDP and flash HICP, thousands of jobs for payrolls. Positive means hotter or stronger than expected. |
 
 ### Values
 
@@ -451,6 +451,8 @@ Example row:
 | `retail_sales` | Retail and food services sales (FRED `RSAFS`), advance estimate: the change against the previous month's level as revised that same day. With `trend_12m` and `nasdaq_consensus`. |
 | `core_pce` | PCE prices without food and energy (FRED `PCEPILFE`), the same way. With `trend_12m` and `nasdaq_consensus`. |
 | `gdp` | Real GDP (FRED `GDPC1`), advance estimate: the change against the previous quarter as revised that same day, annualized. Its `trend_12m` averages the previous four quarters. With `trend_12m` and `nasdaq_consensus`. |
+| `euro_core` | The euro area's flash HICP without energy, food, alcohol and tobacco, year on year, in percent, as TradingView's calendar shows it ([euro-area inflation](steps/euro-inflation.md)). With `tradingview_forecast` only. |
+| `euro_headline` | The euro area's flash HICP, all items, the same way. With `tradingview_forecast` only. |
 
 **`baseline`** — what "expected" means:
 
@@ -459,6 +461,7 @@ Example row:
 | `trend_12m` | The average of the previous 12 months' first-published changes, counting only those published before the release day. Available for every release once a year of history exists, but it measures surprise against the trend, not against what the market expected. |
 | `nowcast` | The Cleveland Fed's model estimate, the last one published before the release day. Close to what the market saw, but only from 2013. |
 | `nasdaq_consensus` | The consensus published on Nasdaq's economic calendar before the release, checked against TradingView's, or TradingView's forecast where Nasdaq has no row ([consensus fallback](steps/consensus-fallback.md)); counted as known by the end of the day before. Core CPI, headline CPI and payrolls, from 2008 ([free consensus](steps/free-consensus.md)); retail sales, core PCE and GDP from 2008 too ([step 4](steps/step-4-more-events.md)). |
+| `tradingview_forecast` | The euro-area measures only: TradingView's forecast on its calendar, counted as known by the end of the day before; Nasdaq's calendar lists no euro-area flash, so it is unchecked. From 2014-11. |
 | `payroll_model` | Payrolls only: a least-squares forecast from ADP's change, the jobless-claims change and the 12-month trend, each as first published, refitted before every report on earlier reports only ([nfp-forecast](steps/nfp-forecast.md)). From 2014; none for June–August 2022, when ADP paused. |
 
 ## effect_size_matrix

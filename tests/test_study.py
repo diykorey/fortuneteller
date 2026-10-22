@@ -266,6 +266,12 @@ def test_load_releases_prints_count_range_and_skipped_months(
     monkeypatch.setattr(flows, "load_fomc_decisions", lambda _key: decisions)
     ecb = [datetime(2025, 1, 30, 13, 15, tzinfo=UTC), datetime(2025, 3, 6, 13, 15, tzinfo=UTC)]
     monkeypatch.setattr(flows, "load_ecb_decisions", lambda _cache_dir: ecb)
+    flash = datetime(2025, 2, 3, 10, 0, tzinfo=UTC)
+    flashes = [
+        sources.EuroFlash(measure, flash, date(2025, 1, 1), 2.5, 2.4)
+        for measure in (sources.EURO_CORE, sources.EURO_HEADLINE)
+    ]
+    monkeypatch.setattr(sources, "euro_flashes", lambda _cache_dir: flashes)
 
     # when the command runs twice
     first = main(["load-releases"])
@@ -282,8 +288,9 @@ def test_load_releases_prints_count_range_and_skipped_months(
     report += "loaded 2 PCE releases, 2026-07-30 … 2026-08-26\n"
     report += "loaded 2 GDP releases, 2026-04-30 … 2026-07-30\n"
     report += "loaded 2 ECB decisions, 2025-01-30 … 2025-03-06\n"
+    report += "loaded 1 euro-area flash estimates, 2025-02-03 … 2025-02-03\n"
     assert capsys.readouterr().out == report * 2
-    assert db.count_rows("event_instances", con=db.get_connection()) == 19
+    assert db.count_rows("event_instances", con=db.get_connection()) == 20
 
 
 def test_load_releases_stores_nothing_when_any_flow_fails(

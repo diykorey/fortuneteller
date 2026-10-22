@@ -26,7 +26,7 @@ class HousingFlow:
     event_type = "Real-estate / housing data"
     country = "United States"
     zone = NEW_YORK
-    type_code = 9
+    type_code = 98
     cli_name = "housing"
     label = "Hou"
     per_month = 10.0
@@ -179,8 +179,8 @@ class ForeignCpiFlow:
         return []
 
 
-UK_CPI = ForeignCpiFlow("United Kingdom", "Europe/London", 8, "uk-cpi")
-JAPAN_CPI = ForeignCpiFlow("Japan", "Asia/Tokyo", 9, "jp-cpi")
+UK_CPI = ForeignCpiFlow("United Kingdom", "Europe/London", 96, "uk-cpi")
+JAPAN_CPI = ForeignCpiFlow("Japan", "Asia/Tokyo", 97, "jp-cpi")
 
 
 @pytest.fixture
@@ -229,9 +229,9 @@ def test_the_release_date_is_the_day_in_the_events_own_country(abroad: None) -> 
 @pytest.mark.parametrize(
     "duplicate",
     [
-        ForeignCpiFlow("United States", "America/New_York", 8, "uk-cpi"),
+        ForeignCpiFlow("United States", "America/New_York", 96, "uk-cpi"),
         ForeignCpiFlow("United Kingdom", "Europe/London", flows.CpiFlow.type_code, "uk-cpi"),
-        ForeignCpiFlow("United Kingdom", "Europe/London", 8, flows.CpiFlow.cli_name),
+        ForeignCpiFlow("United Kingdom", "Europe/London", 96, flows.CpiFlow.cli_name),
     ],
 )
 def test_two_flows_with_one_identity_are_refused(duplicate: ForeignCpiFlow) -> None:
@@ -248,7 +248,7 @@ class UkHousingFlow(HousingFlow):
     # The same release from the UK: same event type and measure, ten times the numbers.
     country = "United Kingdom"
     zone = ZoneInfo("Europe/London")
-    type_code = 10
+    type_code = 99
     cli_name = "uk-housing"
     label = "UKH"
     per_month = 100.0
@@ -420,3 +420,64 @@ def test_load_releases_reports_a_calendar_failure(
     assert code == 1
     assert capsys.readouterr().err == "load-releases: TradingView listed no ECB decisions\n"
     assert db.count_rows("event_instances", con=db.get_connection()) == 0
+
+
+def _flash_row(
+    title: str, when: str, actual: float | None, forecast: float | None
+) -> dict[str, object]:
+    return {
+        "title": title,
+        "country": "EU",
+        "date": when,
+        "referenceDate": "2025-01-31T00:00:00Z",
+        "actual": actual,
+        "forecast": forecast,
+    }
+
+
+def test_a_flash_estimate_is_stored_at_its_time_with_both_surprises(
+    tmp_db: Path, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # given a quarter of the euro-area calendar with one flash, its month-on-month row, Germany's
+    # row of the same name and a flash not yet out
+    core, headline = (
+        sources.EURO_FLASH_ROWS[sources.EURO_CORE],
+        sources.EURO_FLASH_ROWS[sources.EURO_HEADLINE],
+    )
+    rows = [
+        _flash_row(core, "2025-02-03T10:00:00.000Z", 2.7, 2.6),
+        _flash_row(headline, "2025-02-03T10:00:00.000Z", 2.5, 2.4),
+        _flash_row("Inflation Rate MoM Flash", "2025-02-03T10:00:00.000Z", -0.3, None),
+        {**_flash_row(headline, "2025-02-03T13:00:00.000Z", 2.3, 2.6), "country": "DE"},
+        _flash_row(core, "2025-03-03T10:00:00.000Z", None, 2.6),
+    ]
+    reply = json.dumps({"status": "ok", "result": rows}).encode()
+
+    def fetch(
+        start: date, cache_dir: Path, today: date | None = None, country: str = "US"
+    ) -> bytes:
+        return reply if (start, country) == (date(2025, 1, 1), "EU") else b'{"status": "no_data"}'
+
+    monkeypatch.setattr(sources, "fetch_tradingview_quarter", fetch)
+    monkeypatch.setattr(sources, "EURO_FLASH_FROM", date(2025, 1, 1))
+    monkeypatch.setattr(settings, "cache_dir", tmp_path)
+
+    # when the flow's events are stored and its actuals paired with TradingView's forecast
+    events = flows.HICP_FLOW.events("unused").events
+    flows.store_events(events)
+    stored = flows.stored_events(flows.HICP_FLOW)
+    actuals = flows.HICP_FLOW.actuals(stored, "unused")
+    expected = expectations.TradingViewForecast().expectations(stored, actuals, "unused")
+    rows_out = expectations.build_surprises(stored, actuals, expected, [flows.HICP_FLOW.event_type])
+
+    # then the one flash is an event at 11:00 Frankfurt, with a core and a headline surprise
+    assert [(e.event_id, e.country, e.detail) for e in stored] == [
+        (820250203, "Euro area", "2025-01")
+    ]
+    at = stored[0].event_ts.replace(tzinfo=UTC).astimezone(sources.FRANKFURT)
+    assert at.time() == time(11, 0)
+    assert {(r.measure, r.baseline, round(r.surprise, 2)) for r in rows_out} == {
+        (sources.EURO_CORE, expectations.TRADINGVIEW_FORECAST, 0.1),
+        (sources.EURO_HEADLINE, expectations.TRADINGVIEW_FORECAST, 0.1),
+    }
+    assert expectations.Trend12m().expectations(stored, actuals, "unused") == []

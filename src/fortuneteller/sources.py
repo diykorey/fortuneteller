@@ -291,6 +291,10 @@ PAYROLLS = "payrolls"
 RETAIL_SALES = "retail_sales"
 CORE_PCE = "core_pce"
 GDP = "gdp"
+# The euro area's flash inflation, year on year (docs/steps/euro-inflation.md): names of their own,
+# so no US source reads them.
+EURO_CORE = "euro_core"
+EURO_HEADLINE = "euro_headline"
 NOWCAST = "nowcast"
 ACTUAL = "actual"
 # The chart series step 4 reads, by name in the file; the PCE series are left out.
@@ -627,6 +631,28 @@ def fetch_tradingview_quarter(
     )
 
 
+def fetch_tradingview_since(start: date, cache_dir: Path, today: date, country: str) -> list[bytes]:
+    """TradingView's calendar of ``country``, a quarter at a time from ``start`` to ``today``."""
+    payloads = []
+    while start <= today:
+        payloads.append(fetch_tradingview_quarter(start, cache_dir, today, country=country))
+        start = date(start.year + start.month // 10, (start.month + 2) % 12 + 1, 1)
+    return payloads
+
+
+def _tradingview_rows(payload: bytes) -> list[Any]:
+    document: Any = json.loads(payload)
+    if document.get("status") == "no_data":
+        return []
+    if document.get("status") != "ok":
+        raise CalendarError(f"TradingView answered {document.get('status')!r}")
+    return list(document.get("result", []))
+
+
+def _utc(stamp: str) -> datetime:
+    return datetime.fromisoformat(stamp.replace("Z", "+00:00"))
+
+
 ECB_DECISION = "ECB Interest Rate Decision"
 
 
@@ -634,39 +660,78 @@ def parse_ecb_decisions(payload: bytes) -> list[datetime]:
     """When each ECB rate decision in a TradingView euro-area calendar reply was announced, in UTC;
     a meeting not yet held (no actual) is left out."""
     try:
-        document: Any = json.loads(payload)
-        if document.get("status") == "no_data":
-            return []
-        if document.get("status") != "ok":
-            raise CalendarError(f"TradingView answered {document.get('status')!r}")
         return [
-            datetime.fromisoformat(row["date"].replace("Z", "+00:00"))
-            for row in document.get("result", [])
+            _utc(row["date"])
+            for row in _tradingview_rows(payload)
             if row["title"] == ECB_DECISION and row.get("actual") is not None
         ]
     except MALFORMED_REPLY as exc:
         raise CalendarError(f"TradingView sent an unexpected reply: {exc!r}") from None
 
 
+EURO_FLASH_ROWS = {
+    EURO_CORE: "Core Inflation Rate YoY Flash",
+    EURO_HEADLINE: "Inflation Rate YoY Flash",
+}
+
+
+@dataclass(frozen=True)
+class EuroFlash:
+    """One measure of a euro-area flash estimate: when it was announced (UTC), the month it
+    measures, the printed rate and TradingView's forecast, in percent."""
+
+    measure: str
+    announced: datetime
+    period: date
+    actual: float
+    forecast: float | None
+
+
+def parse_euro_flashes(payload: bytes) -> list[EuroFlash]:
+    """The flash estimates in a TradingView euro-area calendar reply; one not yet out is left out."""
+    measures = {name: measure for measure, name in EURO_FLASH_ROWS.items()}
+    try:
+        return [
+            EuroFlash(
+                measures[row["title"]],
+                _utc(row["date"]),
+                _utc(row["referenceDate"]).date().replace(day=1),
+                float(row["actual"]),
+                None if row.get("forecast") is None else float(row["forecast"]),
+            )
+            for row in _tradingview_rows(payload)
+            if row.get("country") == "EU"
+            and row["title"] in measures
+            and row.get("actual") is not None
+        ]
+    except MALFORMED_REPLY as exc:
+        raise CalendarError(f"TradingView sent an unexpected reply: {exc!r}") from None
+
+
+# The first quarter TradingView lists a flash in (checked 2026-10-22: from 2014-11-28).
+EURO_FLASH_FROM = date(2014, 10, 1)
+
+
+def euro_flashes(cache_dir: Path, today: date | None = None) -> list[EuroFlash]:
+    """Every euro-area flash estimate from ``EURO_FLASH_FROM`` to ``today``, oldest first."""
+    today = today if today is not None else datetime.now(FRANKFURT).date()
+    payloads = fetch_tradingview_since(EURO_FLASH_FROM, cache_dir, today, "EU")
+    flashes = {f for payload in payloads for f in parse_euro_flashes(payload)}
+    return sorted(flashes, key=lambda f: (f.announced, f.measure))
+
+
 def parse_tradingview(payload: bytes, names: Iterable[str]) -> list[CalendarRow]:
     """The US rows named in ``names`` from a TradingView calendar reply, on their New York day."""
     wanted = set(names)
     try:
-        document: Any = json.loads(payload)
-        if document.get("status") == "no_data":
-            return []
-        if document.get("status") != "ok":
-            raise CalendarError(f"TradingView answered {document.get('status')!r}")
         return [
             CalendarRow(
                 row["title"],
-                datetime.fromisoformat(row["date"].replace("Z", "+00:00"))
-                .astimezone(NEW_YORK)
-                .date(),
+                _utc(row["date"]).astimezone(NEW_YORK).date(),
                 calendar_number(row.get("actual")),
                 calendar_number(row.get("forecast")),
             )
-            for row in document.get("result", [])
+            for row in _tradingview_rows(payload)
             if row.get("country") in UNITED_STATES_NAMES and row["title"] in wanted
         ]
     except MALFORMED_REPLY as exc:

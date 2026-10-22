@@ -7,7 +7,7 @@ from pathlib import Path
 import duckdb
 import pytest
 
-from fortuneteller import db, expectations, flows, study
+from fortuneteller import db, expectations, flows, sources, study
 import fortuneteller.__main__ as cli
 from fortuneteller.__main__ import main
 from fortuneteller.config import settings
@@ -1060,3 +1060,26 @@ def graded_event_id(con: duckdb.DuckDBPyConnection, day: date) -> int:
         for e in flows.stored_events(flows.CPI_FLOW, con=con)
         if flows.release_date(e) == day
     )
+
+
+def test_live_never_asks_for_the_euro_flash(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given the CPI history and calendars that record each measure asked for
+    _store_consensus_history(db.get_connection())
+    asked: list[str] = []
+
+    def upcoming(measure: str, today: date, cache_dir: Path) -> expectations.NextConsensus:
+        asked.append(measure)
+        return expectations.NextConsensus(today + timedelta(days=1), 0.2, 0.2)
+
+    monkeypatch.setattr(expectations, "next_consensus", upcoming)
+    _tradingview_reads(monkeypatch, [0.3])
+
+    # when the release-day job's command runs
+    code = main(["live"])
+
+    # then it asks for every US measure but neither euro-area one
+    assert code == 0
+    assert "core" in asked
+    assert not {sources.EURO_CORE, sources.EURO_HEADLINE} & set(asked)
