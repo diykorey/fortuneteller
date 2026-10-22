@@ -12,7 +12,7 @@ Cross-country effects, part 3, spec: euro-area inflation. *(PR #169.)*
 
 ## In progress
 
-Cross-country effects, part 3, step 1: the flash flow (this change). The euro area's flash HICP
+Cross-country effects, part 3, step 1: the flash flow *(PR #170)*. The euro area's flash HICP
 as an event flow with its surprise against TradingView's forecast. [Spec](steps/euro-inflation.md).
 
 Also waiting: release-day job step 3, evening score step 2 and rung 6 step 2: the first release the morning job
