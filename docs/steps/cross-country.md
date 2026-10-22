@@ -51,7 +51,42 @@ dollar index.
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~`DAX` and `SX5E`: seed rows, Yahoo series with their close and zone, signs in each flow's rule~~ **done**; Yahoo's close falls after the last 5-minute bar, 17:25, on 2026-10-15 to 20; `load-prices` stored 1,954 and 1,176 rows, every US count unchanged | `load-prices` stores both; a test's 08:30 New York release falls on the same day's Frankfurt close, through both clock changes; every US output unchanged |
-| 2 | Results: `raw-move` and `surprise` per flow, here and in [`mvp-results.md`](../mvp-results.md) | Both markets' verdicts and slopes beside the S&P 500's, against the expected outcome |
+| 2 | ~~Results: `raw-move` and `surprise` per flow, here and in [`mvp-results.md`](../mvp-results.md)~~ **done** | Both markets' verdicts and slopes beside the S&P 500's, against the expected outcome |
+
+## Results
+
+Measured 2026-10-21 (`raw-move` and `surprise` per flow). Every US row is identical to the code
+before step 1 on the same database.
+
+**Does it move?** (ratio of median moves, release days against ordinary days; verdict)
+
+| Flow | S&P 500 | DAX | Euro Stoxx 50 |
+| --- | --- | --- | --- |
+| CPI | 1.10, doesn't | 0.95, doesn't | 0.98, doesn't |
+| Jobs report | 1.20, moves | 1.10, unclear (p 0.06) | 1.40, moves |
+| Fed decision | 1.31, moves | 1.38, moves | 1.63, moves |
+| Retail sales | 1.11, unclear | 0.94, doesn't | 1.01, doesn't |
+| Core PCE | 1.15, unclear | 1.09, doesn't | 1.14, unclear |
+| GDP | 1.24, unclear | 0.95, doesn't | 0.94, doesn't |
+
+**Does it follow the surprise?** On CPI (core against the trend, the verdict's surprise), both
+are *unclear*, as the S&P 500 is, but follow it more closely: rank correlation 0.18 (DAX, p 0.0009)
+and 0.18 (Euro Stoxx 50, p 0.002) against the S&P 500's 0.13; hit rate 59% and 56% against 54%. Against
+Nasdaq's consensus the gap is wider: 0.17 (p 0.004) and 0.14 against the S&P 500's 0.02. Per 0.1 pp
+of surprise, −0.19% and −0.17% against −0.12%. On core PCE neither follows it (the S&P 500 neither);
+growth news has no expected sign, and neither index tracks it.
+
+**Against what was written down first.** *Both move on CPI and jobs-report days:* wrong on CPI,
+where neither moves, but neither does the S&P 500 on this measure; half right on jobs reports (the
+Euro Stoxx 50 moves, the DAX is unclear). *Neither follows the CPI surprise:* right by verdict, but
+both follow it more than the S&P 500 does, the opposite of a weaker echo.
+
+**What it means.** A US surprise reaches Europe: Fed decisions move it more than New York (the
+next day, as they come after its close), and CPI's surprise shows in the DAX at least as clearly
+as in the S&P 500, with a larger move per point. Since 2020, Europe's CPI days have been calmer
+than its ordinary days (ratios 0.72–0.74), unlike New York's. Walk-forward, the DAX's CPI link
+opens from 2014-07 and is right on 5 of 13 calls ("too few"): live CPI releases will log a DAX
+call, graded like the others.
 
 ## What this does not do
 

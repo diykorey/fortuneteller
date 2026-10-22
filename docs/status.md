@@ -8,8 +8,8 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Cross-country effects, part 1, step 1: the DAX and Euro Stoxx 50 loaded, with their 17:30
-Frankfurt close and the S&P 500's signs. *(PR #163.)*
+Cross-country effects, part 1, step 2: results. Europe moves on Fed decisions more than New York,
+and follows CPI's surprise more closely than the S&P 500, without reaching *tracks*. *(PR pending.)*
 
 ## In progress
 
@@ -18,12 +18,14 @@ logs, pops up and the evening grades, waiting for the next CPI or retail sales r
 
 ## Next
 
-Cross-country effects, part 1, step 2: results, `raw-move` and `surprise` per flow beside the S&P 500.
+To be chosen: ECB decisions (cross-country part 2), sharper measurement, or a pause until the
+November releases.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-21 | Cross-country effects, part 1, step 2: results — Europe follows CPI's surprise more than New York | PR pending |
 | 2026-10-21 | Cross-country effects, part 1, step 1: the DAX and Euro Stoxx 50 loaded | PR #163 |
 | 2026-10-21 | Cross-country effects, part 1, spec: US releases against Europe's stocks | PR #162 |
 | 2026-10-21 | Rung 6 step 1: the desktop popup; failure reports fixed (broken since #151) | PR #161 |
