@@ -231,6 +231,16 @@ Three calls were graded: CPI's dollar right; CPI's yield wrong; retail sales' yi
 years. Calls are now logged unattended each release morning by
 [the release-day job](steps/release-day-job.md).
 
+## Cross-country effects: Europe's stocks
+
+Measured 2026-10-21. Detail in [cross-country effects](steps/cross-country.md#results).
+
+The DAX and Euro Stoxx 50 move on Fed decisions (more than the S&P 500), the Euro Stoxx 50 on
+jobs reports; neither on CPI, retail sales or GDP days. Both follow CPI's surprise more closely than
+the S&P 500 (rank correlation 0.18 against 0.13; against the consensus 0.17 against 0.02), with a
+larger move per point, but neither reaches *tracks*. The DAX's CPI link is open walk-forward, so
+live CPI releases now log a DAX call.
+
 ## What comes next
 
 Chosen 2026-10-13: keep score ([rung 4](steps/rung-4-keep-score.md)), done above with the live path
