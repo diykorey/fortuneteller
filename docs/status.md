@@ -9,7 +9,7 @@ Where the work is and what comes next. Two rules keep it current:
 ## Last completed
 
 Cross-country effects, part 3, step 2: results. Euro-area flash inflation moves the S&P 500 and
-VIX, not Europe's stocks; nothing follows its surprise; two GDP verdicts changed. *(This change.)*
+VIX, not Europe's stocks; nothing follows its surprise; two GDP verdicts changed. *(PR #171.)*
 
 ## In progress
 
@@ -25,7 +25,7 @@ or a pause until the November releases.
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-22 | Cross-country effects, part 3, step 2: results — the flash moves New York, not Europe; nothing follows its surprise | this change |
+| 2026-10-22 | Cross-country effects, part 3, step 2: results — the flash moves New York, not Europe; nothing follows its surprise | PR #171 |
 | 2026-10-22 | Cross-country effects, part 3, step 1: the flash HICP flow; two GDP verdicts changed by shared days | PR #170 |
 | 2026-10-22 | Cross-country effects, part 3, spec: euro-area inflation, the flash HICP and its surprise | PR #169 |
 | 2026-10-22 | Cross-country effects, part 2, step 2: results — the ECB moves the dollar, not Europe's stocks | PR #168 |
