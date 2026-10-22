@@ -9,7 +9,7 @@ Where the work is and what comes next. Two rules keep it current:
 ## Last completed
 
 Cross-country effects, part 1, step 2: results. Europe moves on Fed decisions more than New York,
-and follows CPI's surprise more closely than the S&P 500, without reaching *tracks*. *(PR pending.)*
+and follows CPI's surprise more closely than the S&P 500, without reaching *tracks*. *(PR #165.)*
 
 ## In progress
 
@@ -25,7 +25,7 @@ November releases.
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-21 | Cross-country effects, part 1, step 2: results — Europe follows CPI's surprise more than New York | PR pending |
+| 2026-10-21 | Cross-country effects, part 1, step 2: results — Europe follows CPI's surprise more than New York | PR #165 |
 | 2026-10-21 | Cross-country effects, part 1, step 1: the DAX and Euro Stoxx 50 loaded | PR #163 |
 | 2026-10-21 | Cross-country effects, part 1, spec: US releases against Europe's stocks | PR #162 |
 | 2026-10-21 | Rung 6 step 1: the desktop popup; failure reports fixed (broken since #151) | PR #161 |
