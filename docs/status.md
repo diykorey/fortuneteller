@@ -8,8 +8,8 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Cross-country effects, part 2, step 1: the ECB flow, 115 decisions from TradingView since 2013-04.
-*(PR #167.)*
+Cross-country effects, part 2, step 2: results. ECB decisions move the dollar index, not Europe's
+stocks; no US verdict changed. *(PR #168.)*
 
 ## In progress
 
@@ -18,12 +18,14 @@ logs, pops up and the evening grades, waiting for the next CPI or retail sales r
 
 ## Next
 
-Cross-country effects, part 2, step 2: results, the ECB's verdicts beside the Fed's.
+To be chosen: sharper measurement (paid data), more of step 4a (euro-area releases), or a pause
+until the November releases.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-22 | Cross-country effects, part 2, step 2: results — the ECB moves the dollar, not Europe's stocks | PR #168 |
 | 2026-10-22 | Cross-country effects, part 2, step 1: the ECB flow | PR #167 |
 | 2026-10-22 | Cross-country effects, part 2, spec: ECB decisions | PR #166 |
 | 2026-10-21 | Cross-country effects, part 1, step 2: results — Europe follows CPI's surprise more than New York | PR #165 |

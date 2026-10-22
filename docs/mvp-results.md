@@ -241,6 +241,14 @@ the S&P 500 (rank correlation 0.18 against 0.13; against the consensus 0.17 agai
 larger move per point, but neither reaches *tracks*. The DAX's CPI link is open walk-forward, so
 live CPI releases now log a DAX call.
 
+## Cross-country effects: ECB decisions
+
+Measured 2026-10-22. Detail in [ECB decisions](steps/ecb-decisions.md#results).
+
+115 ECB decisions since 2013 move the dollar index (ratio 1.41) and no other market: not the DAX
+or Euro Stoxx 50, not the S&P 500, the yield or gold; VIX is unclear. The Fed moves six of seven.
+Taking ECB days out of the ordinary days changed no US verdict.
+
 ## What comes next
 
 Chosen 2026-10-13: keep score ([rung 4](steps/rung-4-keep-score.md)), done above with the live path
