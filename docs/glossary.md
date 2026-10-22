@@ -57,6 +57,9 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **CPI** (Consumer Price Index) — the main US inflation measure, published monthly by the
   **BLS**, usually 8:30 a.m. New York time. The MVP's single event type: frequent, scheduled,
   heavily forecast, and reliably market-moving.
+- **ECB** (European Central Bank) — sets the euro area's interest rates; its Governing Council
+  decides eight times a year (monthly until 2015). Its decisions are the first non-US event
+  ([ECB decisions](steps/ecb-decisions.md)). **Euro area** — the countries that use the euro.
 - **Fed / FOMC** (Federal Open Market Committee) — the committee that sets the US policy interest
   rate, meeting eight times a year with a decision at 2:00 p.m. New York time.
 - **Inter-meeting (unscheduled) decision** — a Fed rate change made outside the published meeting

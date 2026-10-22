@@ -8,8 +8,7 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Cross-country effects, part 1, step 2: results. Europe moves on Fed decisions more than New York,
-and follows CPI's surprise more closely than the S&P 500, without reaching *tracks*. *(PR #165.)*
+Cross-country effects, part 2, the spec: ECB decisions against all seven markets. *(PR pending.)*
 
 ## In progress
 
@@ -18,13 +17,13 @@ logs, pops up and the evening grades, waiting for the next CPI or retail sales r
 
 ## Next
 
-To be chosen: ECB decisions (cross-country part 2), sharper measurement, or a pause until the
-November releases.
+Cross-country effects, part 2, step 1: the ECB flow, decisions from TradingView.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-22 | Cross-country effects, part 2, spec: ECB decisions | PR pending |
 | 2026-10-21 | Cross-country effects, part 1, step 2: results — Europe follows CPI's surprise more than New York | PR #165 |
 | 2026-10-21 | Cross-country effects, part 1, step 1: the DAX and Euro Stoxx 50 loaded | PR #163 |
 | 2026-10-21 | Cross-country effects, part 1, spec: US releases against Europe's stocks | PR #162 |

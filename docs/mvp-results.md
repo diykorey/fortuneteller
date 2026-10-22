@@ -249,7 +249,8 @@ grading the live calls unattended. Chosen 2026-10-20: [the record, not a
 probability](steps/record-not-probability.md), the call printed without a percentage no test can
 check yet. Chosen 2026-10-21: [delivery](steps/rung-6-delivery.md) (rung 6), each call
 as a desktop popup. Chosen 2026-10-21: [cross-country effects, part 1](steps/cross-country.md),
-US releases against Europe's stocks. The options after it:
+US releases against Europe's stocks. Chosen 2026-10-22: [ECB decisions](steps/ecb-decisions.md),
+the first event from outside the US. The options after it:
 
 | Option | What it is | Cost | What it would tell us |
 | --- | --- | --- | --- |
