@@ -101,7 +101,8 @@ def test_each_new_flow_has_its_own_event_type_and_command() -> None:
     # when / then they are among the event flows, each its own type, code and name
     assert all(flow in flows.EVENT_FLOWS for flow in added)
     assert [flow.cli_name for flow in added] == ["retail", "pce", "gdp"]
-    assert len({flow.event_type for flow in flows.EVENT_FLOWS}) == len(flows.EVENT_FLOWS)
+    identities = {(flow.event_type, flow.country) for flow in flows.EVENT_FLOWS}
+    assert len(identities) == len(flows.EVENT_FLOWS)
 
 
 def _store_with_surprise(

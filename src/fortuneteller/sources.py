@@ -23,8 +23,10 @@ from pathlib import Path
 from typing import Any
 from zoneinfo import ZoneInfo
 
-# Every release time in this project is New York's, and most market closes.
+# Every US release time in this project is New York's, and most market closes.
 NEW_YORK = ZoneInfo("America/New_York")
+# The ECB's decisions and Europe's market closes.
+FRANKFURT = ZoneInfo("Europe/Berlin")
 
 
 # A reply that is not the expected JSON shape raises one of these while it is read.
@@ -601,23 +603,49 @@ def quarter_start(day: date) -> date:
 
 
 def fetch_tradingview_quarter(
-    start: date, cache_dir: Path, today: date | None = None, timeout: float = 60.0
+    start: date,
+    cache_dir: Path,
+    today: date | None = None,
+    timeout: float = 60.0,
+    country: str = "US",
 ) -> bytes:
-    """TradingView's US calendar for the quarter starting ``start``; kept under
-    ``cache_dir/tradingview`` once the quarter is over."""
+    """TradingView's calendar of ``country`` (US or EU) for the quarter starting ``start``; kept
+    under ``cache_dir/tradingview`` once the quarter is over."""
     end = date(start.year + start.month // 10, (start.month + 2) % 12 + 1, 1) - timedelta(days=1)
     today = today if today is not None else datetime.now(NEW_YORK).date()
     params = {
         "from": f"{start}T00:00:00.000Z",
         "to": f"{end}T23:59:59.000Z",
-        "countries": "US",
+        "countries": country,
     }
     url = f"{TRADINGVIEW_CALENDAR_URL}?{urllib.parse.urlencode(params)}"
+    name = f"{start}.json" if country == "US" else f"{country}-{start}.json"
     return _cached(
-        cache_dir / "tradingview" / f"{start}.json",
+        cache_dir / "tradingview" / name,
         end < today,
         lambda: _calendar_get(url, f"TradingView {start}", timeout),
     )
+
+
+ECB_DECISION = "ECB Interest Rate Decision"
+
+
+def parse_ecb_decisions(payload: bytes) -> list[datetime]:
+    """When each ECB rate decision in a TradingView euro-area calendar reply was announced, in UTC;
+    a meeting not yet held (no actual) is left out."""
+    try:
+        document: Any = json.loads(payload)
+        if document.get("status") == "no_data":
+            return []
+        if document.get("status") != "ok":
+            raise CalendarError(f"TradingView answered {document.get('status')!r}")
+        return [
+            datetime.fromisoformat(row["date"].replace("Z", "+00:00"))
+            for row in document.get("result", [])
+            if row["title"] == ECB_DECISION and row.get("actual") is not None
+        ]
+    except MALFORMED_REPLY as exc:
+        raise CalendarError(f"TradingView sent an unexpected reply: {exc!r}") from None
 
 
 def parse_tradingview(payload: bytes, names: Iterable[str]) -> list[CalendarRow]:

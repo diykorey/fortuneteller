@@ -71,7 +71,7 @@ def _load_releases(_args: argparse.Namespace) -> int:
     db.init_db(con=con)
     try:
         report = flows.load_releases(api_key, con=con)
-    except (sources.FredError, sources.FedError, ValueError) as exc:
+    except (sources.FredError, sources.FedError, sources.CalendarError, ValueError) as exc:
         print(f"load-releases: {exc}", file=sys.stderr)
         return 1
     for line in report:

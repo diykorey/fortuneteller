@@ -8,7 +8,8 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Cross-country effects, part 2, the spec: ECB decisions against all seven markets. *(PR #166.)*
+Cross-country effects, part 2, step 1: the ECB flow, 115 decisions from TradingView since 2013-04.
+*(PR pending.)*
 
 ## In progress
 
@@ -17,12 +18,13 @@ logs, pops up and the evening grades, waiting for the next CPI or retail sales r
 
 ## Next
 
-Cross-country effects, part 2, step 1: the ECB flow, decisions from TradingView.
+Cross-country effects, part 2, step 2: results, the ECB's verdicts beside the Fed's.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-22 | Cross-country effects, part 2, step 1: the ECB flow | PR pending |
 | 2026-10-22 | Cross-country effects, part 2, spec: ECB decisions | PR #166 |
 | 2026-10-21 | Cross-country effects, part 1, step 2: results — Europe follows CPI's surprise more than New York | PR #165 |
 | 2026-10-21 | Cross-country effects, part 1, step 1: the DAX and Euro Stoxx 50 loaded | PR #163 |

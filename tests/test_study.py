@@ -4,7 +4,7 @@ import csv
 import io
 import json
 import urllib.error
-from datetime import date, datetime
+from datetime import UTC, date, datetime
 from email.message import Message
 from pathlib import Path
 from typing import Any, NoReturn
@@ -264,6 +264,8 @@ def test_load_releases_prints_count_range_and_skipped_months(
     _fred_answers(monkeypatch)
     decisions = [FomcDecision(date(2020, 3, 3), False), FomcDecision(date(2020, 3, 18), True)]
     monkeypatch.setattr(flows, "load_fomc_decisions", lambda _key: decisions)
+    ecb = [datetime(2025, 1, 30, 13, 15, tzinfo=UTC), datetime(2025, 3, 6, 13, 15, tzinfo=UTC)]
+    monkeypatch.setattr(flows, "load_ecb_decisions", lambda _cache_dir: ecb)
 
     # when the command runs twice
     first = main(["load-releases"])
@@ -279,8 +281,9 @@ def test_load_releases_prints_count_range_and_skipped_months(
     report += "loaded 2 RET releases, 2026-07-16 … 2026-08-14\n"
     report += "loaded 2 PCE releases, 2026-07-30 … 2026-08-26\n"
     report += "loaded 2 GDP releases, 2026-04-30 … 2026-07-30\n"
+    report += "loaded 2 ECB decisions, 2025-01-30 … 2025-03-06\n"
     assert capsys.readouterr().out == report * 2
-    assert db.count_rows("event_instances", con=db.get_connection()) == 17
+    assert db.count_rows("event_instances", con=db.get_connection()) == 19
 
 
 def test_load_releases_stores_nothing_when_any_flow_fails(
