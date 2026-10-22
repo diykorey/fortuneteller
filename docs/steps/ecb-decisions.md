@@ -43,7 +43,37 @@ seven markets, beside the Fed's verdicts.
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~`Euro area` seed row; the ECB flow: decisions from TradingView with their time, `load-releases` stores them~~ **done**; `load-releases` stored 115 decisions, 2013-04-04 to 2026-09-10 | A test's calendar quarter stores its decisions at their Frankfurt time; a quarter without one stores none; `raw-move --event ecb` prints seven verdicts |
-| 2 | Results here and in [`mvp-results.md`](../mvp-results.md) | Seven verdicts beside the Fed's, US verdicts before and after, against the expected outcome |
+| 2 | ~~Results here and in [`mvp-results.md`](../mvp-results.md)~~ **done** | Seven verdicts beside the Fed's, US verdicts before and after, against the expected outcome |
+
+## Results
+
+Measured 2026-10-22 (`raw-move --event ecb` and `--event fomc`): 115 decisions, 2013-04 to
+2026-09.
+
+| Market | ECB: ratio, p, verdict | Fed: verdict |
+| --- | --- | --- |
+| S&P 500 | 1.05, 0.35, doesn't | moves |
+| 10-year yield | 1.10, 0.34, doesn't | unclear |
+| Dollar index | 1.41, 0.005, **moves** | moves |
+| Gold | 0.92, 0.71, doesn't | moves |
+| VIX | 1.19, 0.06, unclear | moves |
+| DAX | 0.95, 0.67, doesn't | moves |
+| Euro Stoxx 50 | 1.06, 0.32, doesn't | moves |
+
+**The ECB moves the dollar, not Europe's stocks.** The dollar index moves 41% more on ECB days than
+on ordinary ones, in both eras (1.48 in 2008–2019, 1.30 since). Neither European index does; the
+DAX moves slightly less than usual. The Fed moves six of seven markets; the ECB one.
+
+**US verdicts unchanged.** With ECB days out of every market's ordinary days, no verdict of any flow
+changed; ratios moved by at most 0.01 and p in the third decimal.
+
+**Against what was written down first.** The dollar index: right. The DAX and Euro Stoxx 50:
+wrong, they do not move. The S&P 500, the yield, gold and VIX: right (VIX unclear, short of moves).
+
+**What it means.** Decided rates are priced in (the calendar's forecast matched almost every one),
+so an ECB day moves Europe's stocks no more than any other; what moves is the currency, read here
+through the dollar index, which is over half euro. Whether the press conference or a surprise in
+the decision moves stocks is not measured: there is no free record of either.
 
 ## What this does not do
 
