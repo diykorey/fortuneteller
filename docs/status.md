@@ -8,26 +8,26 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Cross-country effects, part 3, step 2: results. Euro-area flash inflation moves the S&P 500 and
-VIX, not Europe's stocks; nothing follows its surprise; two GDP verdicts changed. *(PR #171.)*
+The US manufacturing survey (ISM), spec: ISM's index as an event flow with its surprise against
+TradingView's forecast, and the flash-day check repeated without ISM days. *(PR #173.)*
 
 ## In progress
 
-The US manufacturing survey (ISM), spec *(PR #173)*. ISM's index as an event flow with its
-surprise against TradingView's forecast, run through rung 1 and step 4, and the euro-area
-flash-day check repeated without ISM days. [Spec](steps/ism-manufacturing.md).
+The US manufacturing survey (ISM), step 1 *(PR #174)*: the flow, read from TradingView's
+calendar through one flow shared with the euro-area flash. [Spec](steps/ism-manufacturing.md).
 
 Also waiting: release-day job step 3, evening score step 2 and rung 6 step 2: the first release the morning job
 logs, pops up and the evening grades, waiting for the next CPI or retail sales release.
 
 ## Next
 
-The US manufacturing survey (ISM), step 1: the flow, its events and surprise from TradingView.
+The US manufacturing survey (ISM), step 2: results, and the flash-day check without ISM days.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-23 | The US manufacturing survey (ISM), spec | PR #173 |
 | 2026-10-22 | Cross-country effects, part 3, step 2: results — the flash moves New York, not Europe; nothing follows its surprise | PR #171 |
 | 2026-10-22 | Cross-country effects, part 3, step 1: the flash HICP flow; two GDP verdicts changed by shared days | PR #170 |
 | 2026-10-22 | Cross-country effects, part 3, spec: euro-area inflation, the flash HICP and its surprise | PR #169 |

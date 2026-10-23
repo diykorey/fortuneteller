@@ -2,6 +2,7 @@
 
 import json
 from collections.abc import Iterator, Sequence
+from dataclasses import replace
 from datetime import UTC, date, datetime, time, timedelta
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -423,16 +424,51 @@ def test_load_releases_reports_a_calendar_failure(
 
 
 def _flash_row(
-    title: str, when: str, actual: float | None, forecast: float | None
+    title: str, when: str, actual: float | None, forecast: float | None, country: str = "EU"
 ) -> dict[str, object]:
     return {
         "title": title,
-        "country": "EU",
+        "country": country,
         "date": when,
         "referenceDate": "2025-01-31T00:00:00Z",
         "actual": actual,
         "forecast": forecast,
     }
+
+
+def _tradingview_quarter(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path, calendar: str, rows: list[dict[str, object]]
+) -> None:
+    """TradingView answering ``rows`` for ``calendar``'s 2025 first quarter, and listing every
+    TradingView-only measure from then on."""
+    reply = json.dumps({"status": "ok", "result": rows}).encode()
+
+    def fetch(
+        start: date, cache_dir: Path, today: date | None = None, country: str = "US"
+    ) -> bytes:
+        return (
+            reply if (start, country) == (date(2025, 1, 1), calendar) else b'{"status": "no_data"}'
+        )
+
+    monkeypatch.setattr(sources, "fetch_tradingview_quarter", fetch)
+    for measure, row in sources.TRADINGVIEW_ROWS.items():
+        monkeypatch.setitem(sources.TRADINGVIEW_ROWS, measure, replace(row, since=date(2025, 1, 1)))
+    monkeypatch.setattr(settings, "cache_dir", tmp_path)
+
+
+def _stored_with_surprises(
+    flow: flows.TradingViewFlow,
+) -> tuple[list[EventInstance], list[Actual], list[expectations.Surprise]]:
+    events = flow.events("unused").events
+    flows.store_events(events)
+    stored = flows.stored_events(flow)
+    actuals = flow.actuals(stored, "unused")
+    expected = expectations.TradingViewForecast().expectations(stored, actuals, "unused")
+    return (
+        stored,
+        actuals,
+        expectations.build_surprises(stored, actuals, expected, [flow.event_type]),
+    )
 
 
 def test_a_flash_estimate_is_stored_at_its_time_with_both_surprises(
@@ -441,34 +477,20 @@ def test_a_flash_estimate_is_stored_at_its_time_with_both_surprises(
     # given a quarter of the euro-area calendar with one flash, its month-on-month row, Germany's
     # row of the same name and a flash not yet out
     core, headline = (
-        sources.EURO_FLASH_ROWS[sources.EURO_CORE],
-        sources.EURO_FLASH_ROWS[sources.EURO_HEADLINE],
+        sources.TRADINGVIEW_ROWS[sources.EURO_CORE].title,
+        sources.TRADINGVIEW_ROWS[sources.EURO_HEADLINE].title,
     )
     rows = [
         _flash_row(core, "2025-02-03T10:00:00.000Z", 2.7, 2.6),
         _flash_row(headline, "2025-02-03T10:00:00.000Z", 2.5, 2.4),
         _flash_row("Inflation Rate MoM Flash", "2025-02-03T10:00:00.000Z", -0.3, None),
-        {**_flash_row(headline, "2025-02-03T13:00:00.000Z", 2.3, 2.6), "country": "DE"},
+        _flash_row(headline, "2025-02-03T13:00:00.000Z", 2.3, 2.6, country="DE"),
         _flash_row(core, "2025-03-03T10:00:00.000Z", None, 2.6),
     ]
-    reply = json.dumps({"status": "ok", "result": rows}).encode()
-
-    def fetch(
-        start: date, cache_dir: Path, today: date | None = None, country: str = "US"
-    ) -> bytes:
-        return reply if (start, country) == (date(2025, 1, 1), "EU") else b'{"status": "no_data"}'
-
-    monkeypatch.setattr(sources, "fetch_tradingview_quarter", fetch)
-    monkeypatch.setattr(sources, "EURO_FLASH_FROM", date(2025, 1, 1))
-    monkeypatch.setattr(settings, "cache_dir", tmp_path)
+    _tradingview_quarter(monkeypatch, tmp_path, "EU", rows)
 
     # when the flow's events are stored and its actuals paired with TradingView's forecast
-    events = flows.HICP_FLOW.events("unused").events
-    flows.store_events(events)
-    stored = flows.stored_events(flows.HICP_FLOW)
-    actuals = flows.HICP_FLOW.actuals(stored, "unused")
-    expected = expectations.TradingViewForecast().expectations(stored, actuals, "unused")
-    rows_out = expectations.build_surprises(stored, actuals, expected, [flows.HICP_FLOW.event_type])
+    stored, actuals, rows_out = _stored_with_surprises(flows.HICP_FLOW)
 
     # then the one flash is an event at 11:00 Frankfurt, with a core and a headline surprise
     assert [(e.event_id, e.country, e.detail) for e in stored] == [
@@ -480,4 +502,33 @@ def test_a_flash_estimate_is_stored_at_its_time_with_both_surprises(
         (sources.EURO_CORE, expectations.TRADINGVIEW_FORECAST, 0.1),
         (sources.EURO_HEADLINE, expectations.TRADINGVIEW_FORECAST, 0.1),
     }
+    assert expectations.Trend12m().expectations(stored, actuals, "unused") == []
+
+
+def test_an_ism_release_is_stored_at_its_new_york_time_with_its_surprise(
+    tmp_db: Path, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # given a quarter of the US calendar with one ISM release, a row of the same name abroad, the
+    # services survey and a release not yet out
+    title = sources.TRADINGVIEW_ROWS[sources.ISM_PMI].title
+    rows = [
+        _flash_row(title, "2025-02-03T15:00:00.000Z", 50.9, 49.8, country="US"),
+        _flash_row(title, "2025-02-03T09:00:00.000Z", 46.6, 46.1, country="EU"),
+        _flash_row("ISM Services PMI", "2025-02-05T15:00:00.000Z", 52.8, 54.3, country="US"),
+        _flash_row(title, "2025-03-03T15:00:00.000Z", None, 50.5, country="US"),
+    ]
+    _tradingview_quarter(monkeypatch, tmp_path, "US", rows)
+
+    # when the flow's events are stored and its actual paired with TradingView's forecast
+    stored, actuals, rows_out = _stored_with_surprises(flows.ISM_FLOW)
+
+    # then the one release is an event at 10:00 New York, a point and a tenth stronger than expected
+    assert [(e.event_id, e.country, e.detail) for e in stored] == [
+        (920250203, "United States", "2025-01")
+    ]
+    assert stored[0].event_ts.replace(tzinfo=UTC).astimezone(NEW_YORK).time() == time(10, 0)
+    assert [(a.value, a.unit) for a in actuals] == [(50.9, flows.POINTS)]
+    assert [(r.measure, r.baseline, round(r.surprise, 2)) for r in rows_out] == [
+        (sources.ISM_PMI, expectations.TRADINGVIEW_FORECAST, 1.1)
+    ]
     assert expectations.Trend12m().expectations(stored, actuals, "unused") == []

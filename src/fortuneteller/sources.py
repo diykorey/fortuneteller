@@ -295,6 +295,8 @@ GDP = "gdp"
 # so no US source reads them.
 EURO_CORE = "euro_core"
 EURO_HEADLINE = "euro_headline"
+# The US manufacturing survey's index (docs/steps/ism-manufacturing.md), in index points.
+ISM_PMI = "ism_pmi"
 NOWCAST = "nowcast"
 ACTUAL = "actual"
 # The chart series step 4 reads, by name in the file; the PCE series are left out.
@@ -669,16 +671,31 @@ def parse_ecb_decisions(payload: bytes) -> list[datetime]:
         raise CalendarError(f"TradingView sent an unexpected reply: {exc!r}") from None
 
 
-EURO_FLASH_ROWS = {
-    EURO_CORE: "Core Inflation Rate YoY Flash",
-    EURO_HEADLINE: "Inflation Rate YoY Flash",
+@dataclass(frozen=True)
+class TradingViewRow:
+    """A release read from TradingView's calendar alone: the calendar's country, the row's title,
+    the first quarter it is listed in, and the zone its day is told in."""
+
+    country: str
+    title: str
+    since: date
+    zone: ZoneInfo
+
+
+# Checked 2026-10-22: flashes from 2014-11-28; 2026-10-23: ISM from 2013-04-01.
+EURO_FLASH_FROM = date(2014, 10, 1)
+ISM_FROM = date(2013, 4, 1)
+TRADINGVIEW_ROWS = {
+    EURO_CORE: TradingViewRow("EU", "Core Inflation Rate YoY Flash", EURO_FLASH_FROM, FRANKFURT),
+    EURO_HEADLINE: TradingViewRow("EU", "Inflation Rate YoY Flash", EURO_FLASH_FROM, FRANKFURT),
+    ISM_PMI: TradingViewRow("US", "ISM Manufacturing PMI", ISM_FROM, NEW_YORK),
 }
 
 
 @dataclass(frozen=True)
-class EuroFlash:
-    """One measure of a euro-area flash estimate: when it was announced (UTC), the month it
-    measures, the printed rate and TradingView's forecast, in percent."""
+class TradingViewRelease:
+    """One measure of a release on TradingView's calendar: when it was announced (UTC), the month
+    it measures, the printed value and TradingView's forecast."""
 
     measure: str
     announced: datetime
@@ -687,37 +704,41 @@ class EuroFlash:
     forecast: float | None
 
 
-def parse_euro_flashes(payload: bytes) -> list[EuroFlash]:
-    """The flash estimates in a TradingView euro-area calendar reply; one not yet out is left out."""
-    measures = {name: measure for measure, name in EURO_FLASH_ROWS.items()}
+def parse_tradingview_releases(payload: bytes, measures: Iterable[str]) -> list[TradingViewRelease]:
+    """The releases of ``measures`` in a TradingView calendar reply; one not yet out is left out."""
+    rows = {(TRADINGVIEW_ROWS[m].country, TRADINGVIEW_ROWS[m].title): m for m in measures}
     try:
         return [
-            EuroFlash(
-                measures[row["title"]],
+            TradingViewRelease(
+                rows[(row.get("country"), row["title"])],
                 _utc(row["date"]),
                 _utc(row["referenceDate"]).date().replace(day=1),
                 float(row["actual"]),
                 None if row.get("forecast") is None else float(row["forecast"]),
             )
             for row in _tradingview_rows(payload)
-            if row.get("country") == "EU"
-            and row["title"] in measures
-            and row.get("actual") is not None
+            if (row.get("country"), row["title"]) in rows and row.get("actual") is not None
         ]
     except MALFORMED_REPLY as exc:
         raise CalendarError(f"TradingView sent an unexpected reply: {exc!r}") from None
 
 
-# The first quarter TradingView lists a flash in (checked 2026-10-22: from 2014-11-28).
-EURO_FLASH_FROM = date(2014, 10, 1)
-
-
-def euro_flashes(cache_dir: Path, today: date | None = None) -> list[EuroFlash]:
-    """Every euro-area flash estimate from ``EURO_FLASH_FROM`` to ``today``, oldest first."""
-    today = today if today is not None else datetime.now(FRANKFURT).date()
-    payloads = fetch_tradingview_since(EURO_FLASH_FROM, cache_dir, today, "EU")
-    flashes = {f for payload in payloads for f in parse_euro_flashes(payload)}
-    return sorted(flashes, key=lambda f: (f.announced, f.measure))
+def tradingview_releases(
+    cache_dir: Path, measures: Iterable[str], today: date | None = None
+) -> list[TradingViewRelease]:
+    """Every release of ``measures``, all from one calendar, from the first quarter listing them to
+    ``today``, oldest first."""
+    measures = list(measures)
+    (country, zone), *others = {
+        (TRADINGVIEW_ROWS[m].country, TRADINGVIEW_ROWS[m].zone) for m in measures
+    }
+    if others:
+        raise ValueError(f"{', '.join(measures)}: not one calendar")
+    today = today if today is not None else datetime.now(zone).date()
+    since = min(TRADINGVIEW_ROWS[m].since for m in measures)
+    payloads = fetch_tradingview_since(since, cache_dir, today, country)
+    releases = {r for payload in payloads for r in parse_tradingview_releases(payload, measures)}
+    return sorted(releases, key=lambda r: (r.announced, r.measure))
 
 
 def parse_tradingview(payload: bytes, names: Iterable[str]) -> list[CalendarRow]:

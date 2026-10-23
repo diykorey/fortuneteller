@@ -48,6 +48,7 @@ FOMC_EVENT_TYPE = "Central-bank decision"
 RETAIL_EVENT_TYPE = "Retail sales"
 PCE_EVENT_TYPE = "PCE inflation"
 GDP_EVENT_TYPE = "GDP growth"
+MANUFACTURING_EVENT_TYPE = "Manufacturing survey"
 UNITED_STATES = "United States"
 # CPI, the jobs report, retail sales, PCE and GDP all come out at 08:30 New York time.
 RELEASE_TIME = time(8, 30)
@@ -381,6 +382,7 @@ def actual_mismatches(
 # The unit each measure's actual and expected values are in.
 PERCENT = "percent"
 THOUSANDS = "thousands"
+POINTS = "points"
 
 
 def to_actuals(
@@ -538,6 +540,15 @@ HICP_SURPRISE_RULE = SurpriseRule(
     EURO_EXPECTED_SIGN,
     0.1,
     "0.1pp",
+    alone=True,
+    predicted_from=TRADINGVIEW_FORECAST,
+)
+# Growth news, so the jobs report's signs (docs/steps/ism-manufacturing.md).
+ISM_SURPRISE_RULE = SurpriseRule(
+    ((sources.ISM_PMI, TRADINGVIEW_FORECAST),),
+    NFP_EXPECTED_SIGN,
+    1.0,
+    "1 point",
     alone=True,
     predicted_from=TRADINGVIEW_FORECAST,
 )
@@ -727,64 +738,63 @@ def ecb_event_instance(announced: datetime) -> EventInstance:
     )
 
 
-class HicpFlow:
-    """The euro area's flash inflation from TradingView's calendar, at the time it was announced,
-    core and headline year on year (docs/steps/euro-inflation.md)."""
+@dataclass(eq=False)
+class TradingViewFlow:
+    """A release read from TradingView's calendar alone, at the time it was announced, with one
+    actual per measure (docs/steps/euro-inflation.md, ism-manufacturing.md)."""
 
-    event_type = CPI_EVENT_TYPE
-    country = EURO_AREA
-    zone = FRANKFURT
-    type_code = 8
-    cli_name = "hicp"
-    label = "HICP"
-    surprise_rule: SurpriseRule | None = HICP_SURPRISE_RULE
+    event_type: str
+    country: str
+    zone: ZoneInfo
+    type_code: int
+    cli_name: str
+    label: str
+    measures: tuple[str, ...]
+    unit: str
+    noun: str
+    surprise_rule: SurpriseRule | None = None
 
     def events(self, api_key: str) -> EventBatch:
-        flashes = sources.euro_flashes(settings.cache_dir)
-        if not flashes:
-            raise sources.CalendarError("TradingView listed no euro-area flash estimates")
+        releases = sources.tradingview_releases(settings.cache_dir, self.measures)
+        if not releases:
+            raise sources.CalendarError(f"TradingView listed no {self.noun}")
         by_day: dict[date, set[tuple[datetime, date]]] = {}
-        for flash in flashes:
-            day = flash.announced.astimezone(FRANKFURT).date()
-            by_day.setdefault(day, set()).add((flash.announced, flash.period))
+        for release in releases:
+            day = release.announced.astimezone(self.zone).date()
+            by_day.setdefault(day, set()).add((release.announced, release.period))
         if split := [f"{day}" for day, times in by_day.items() if len(times) != 1]:
-            raise ValueError(
-                f"flash estimates at two times or for two months on {', '.join(split)}"
-            )
-        events = [hicp_event_instance(*times.pop()) for times in by_day.values()]
+            raise ValueError(f"{self.noun} at two times or for two months on {', '.join(split)}")
+        events = [self.event_instance(*times.pop()) for times in by_day.values()]
         first, last = min(by_day), max(by_day)
-        return EventBatch(
-            events, [f"loaded {len(events)} euro-area flash estimates, {first} … {last}"]
-        )
+        return EventBatch(events, [f"loaded {len(events)} {self.noun}, {first} … {last}"])
 
     def actuals(self, events: Sequence[EventInstance], api_key: str) -> list[Actual]:
         ids = {release_date(event): event.event_id for event in events}
         return [
-            Actual(event_id, flash.measure, flash.period, flash.actual, PERCENT)
-            for flash in sources.euro_flashes(settings.cache_dir)
-            if (event_id := ids.get(flash.announced.astimezone(FRANKFURT).date())) is not None
+            Actual(event_id, release.measure, release.period, release.actual, self.unit)
+            for release in sources.tradingview_releases(settings.cache_dir, self.measures)
+            if (event_id := ids.get(release.announced.astimezone(self.zone).date())) is not None
         ]
 
-
-def hicp_event_instance(announced: datetime, period: date) -> EventInstance:
-    """Map one flash estimate of ``period``, announced at ``announced`` (aware), to its row."""
-    return EventInstance(
-        event_id=event_id(HICP_FLOW, announced.astimezone(FRANKFURT).date()),
-        event_type=HICP_FLOW.event_type,
-        event_ts=announced.astimezone(UTC).replace(tzinfo=None),
-        country=HICP_FLOW.country,
-        detail=period.strftime("%Y-%m"),
-        scheduled=True,
-        consensus=None,
-        actual=None,
-        surprise=None,
-        surprise_sd=None,
-        surprise_source=None,
-        priced_in_prior=None,
-        vix_t0=None,
-        rate_regime=None,
-        quality=TRADINGVIEW_CALENDAR,
-    )
+    def event_instance(self, announced: datetime, period: date) -> EventInstance:
+        """Map one release of ``period``, announced at ``announced`` (aware), to its row."""
+        return EventInstance(
+            event_id=event_id(self, announced.astimezone(self.zone).date()),
+            event_type=self.event_type,
+            event_ts=announced.astimezone(UTC).replace(tzinfo=None),
+            country=self.country,
+            detail=period.strftime("%Y-%m"),
+            scheduled=True,
+            consensus=None,
+            actual=None,
+            surprise=None,
+            surprise_sd=None,
+            surprise_source=None,
+            priced_in_prior=None,
+            vix_t0=None,
+            rate_regime=None,
+            quality=TRADINGVIEW_CALENDAR,
+        )
 
 
 @dataclass(eq=False)
@@ -820,12 +830,30 @@ class LevelFlow:
         return to_actuals(changes, self, self.measure, PERCENT, events)
 
 
-CPI_FLOW, NFP_FLOW, FED_FLOW, ECB_FLOW, HICP_FLOW = (
-    CpiFlow(),
-    NfpFlow(),
-    FedFlow(),
-    EcbFlow(),
-    HicpFlow(),
+CPI_FLOW, NFP_FLOW, FED_FLOW, ECB_FLOW = CpiFlow(), NfpFlow(), FedFlow(), EcbFlow()
+HICP_FLOW = TradingViewFlow(
+    CPI_EVENT_TYPE,
+    EURO_AREA,
+    FRANKFURT,
+    8,
+    "hicp",
+    "HICP",
+    (sources.EURO_CORE, sources.EURO_HEADLINE),
+    PERCENT,
+    "euro-area flash estimates",
+    surprise_rule=HICP_SURPRISE_RULE,
+)
+ISM_FLOW = TradingViewFlow(
+    MANUFACTURING_EVENT_TYPE,
+    UNITED_STATES,
+    NEW_YORK,
+    9,
+    "ism",
+    "ISM",
+    (sources.ISM_PMI,),
+    POINTS,
+    "ISM manufacturing surveys",
+    surprise_rule=ISM_SURPRISE_RULE,
 )
 RETAIL_FLOW = LevelFlow(
     RETAIL_EVENT_TYPE,
@@ -864,6 +892,7 @@ EVENT_FLOWS: list[EventFlow] = [
     GDP_FLOW,
     ECB_FLOW,
     HICP_FLOW,
+    ISM_FLOW,
 ]
 
 

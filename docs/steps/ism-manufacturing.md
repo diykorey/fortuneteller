@@ -58,7 +58,7 @@ At the end: ISM releases loaded as an event flow with their surprise, run throug
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | The ISM flow: events and actuals from TradingView, the forecast as its expectation, the rule above | A test's calendar quarter stores a release at its New York time with its surprise; `raw-move` and `surprise --event ism` print seven verdicts; `live` unchanged; HICP's stored rows identical through the shared flow (143 events, 124 core and 143 headline surprises), though its verdicts may move by shared days |
+| 1 | ~~The ISM flow: events and actuals from TradingView, the forecast as its expectation, the rule above~~ **done**; `load-releases` stored 163 releases, 2013-04-01 to 2026-10-01, and `load-surprises` 163 surprises; HICP's and every US flow's stored rows identical. Other flows' outputs moved by the rule: shared releases left out, retail 48 (was 47), core PCE 67 (55), HICP 81 (64); three verdicts, reported in step 2 | A test's calendar quarter stores a release at its New York time with its surprise; `raw-move` and `surprise --event ism` print seven verdicts; `live` unchanged; HICP's stored rows identical through the shared flow (143 events, 124 core and 143 headline surprises), though its verdicts may move by shared days |
 | 2 | Results here and in [`mvp-results.md`](../mvp-results.md) | Seven verdicts on both tests, the flash-day check, other flows' verdicts before and after, against the expected outcome |
 
 ## Technical details

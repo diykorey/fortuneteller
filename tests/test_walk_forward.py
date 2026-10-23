@@ -1062,7 +1062,7 @@ def graded_event_id(con: duckdb.DuckDBPyConnection, day: date) -> int:
     )
 
 
-def test_live_never_asks_for_the_euro_flash(
+def test_live_never_asks_for_a_release_after_its_run(
     tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
 ) -> None:
     # given the CPI history and calendars that record each measure asked for
@@ -1079,7 +1079,7 @@ def test_live_never_asks_for_the_euro_flash(
     # when the release-day job's command runs
     code = main(["live"])
 
-    # then it asks for every US measure but neither euro-area one
+    # then it asks for every 08:30 US measure, but neither euro-area one nor ISM's
     assert code == 0
     assert "core" in asked
-    assert not {sources.EURO_CORE, sources.EURO_HEADLINE} & set(asked)
+    assert not set(sources.TRADINGVIEW_ROWS) & set(asked)
