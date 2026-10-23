@@ -13,7 +13,7 @@ TradingView's forecast, and the flash-day check repeated without ISM days. *(PR 
 
 ## In progress
 
-The US manufacturing survey (ISM), step 1 (this change): the flow, read from TradingView's
+The US manufacturing survey (ISM), step 1 *(PR #174)*: the flow, read from TradingView's
 calendar through one flow shared with the euro-area flash. [Spec](steps/ism-manufacturing.md).
 
 Also waiting: release-day job step 3, evening score step 2 and rung 6 step 2: the first release the morning job
