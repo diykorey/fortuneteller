@@ -1,0 +1,1312 @@
+{
+ "written": "2026-10-23",
+ "data_until": "2026-10-21",
+ "markets": [
+  "SPY / ES",
+  "UST10Y / ZN",
+  "DXY",
+  "GC / XAU",
+  "VIX",
+  "DAX",
+  "SX5E"
+ ],
+ "rules": {
+  "raw_move": "moves = ratio >= 1.10 and p < 0.01; unclear = one of the two; doesn't = neither; other = days with no CPI, NFP, Fed, RET, PCE, GDP, ECB, HICP or ISM reaction",
+  "surprise": "tracks = corr as expected, p < 0.01, hit rate >= 60%; unclear = one of the two; doesn't = neither",
+  "walk_forward": "holds = right on at least 60% of at least 30 predictions, binomial p < 0.01 against 50%; too few = under 30 predictions"
+ },
+ "chance": {
+  "raw_move": {
+   "cells": 56,
+   "p": 0.01,
+   "by_chance": 0.56
+  },
+  "surprise": {
+   "cells": 42,
+   "p": 0.01,
+   "by_chance": 0.42
+  },
+  "walk_forward": {
+   "cells": 21,
+   "p": 0.01,
+   "by_chance": 0.21
+  }
+ },
+ "events": [
+  {
+   "name": "cpi",
+   "label": "CPI",
+   "event_type": "CPI / inflation surprise",
+   "country": "United States",
+   "releases": 650,
+   "first": "1972-08-22",
+   "last": "2026-10-14",
+   "raw_move": {
+    "SPY / ES": {
+     "days": 650,
+     "median_event": "0.55%",
+     "median_other": "0.50%",
+     "ratio": 1.1,
+     "p": 0.0391,
+     "verdict": "doesn't"
+    },
+    "UST10Y / ZN": {
+     "days": 649,
+     "median_event": "4.0 bp",
+     "median_other": "3.0 bp",
+     "ratio": 1.33,
+     "p": 0.0001,
+     "verdict": "moves"
+    },
+    "DXY": {
+     "days": 650,
+     "median_event": "0.29%",
+     "median_other": "0.24%",
+     "ratio": 1.19,
+     "p": 0.0009,
+     "verdict": "moves"
+    },
+    "GC / XAU": {
+     "days": 313,
+     "median_event": "0.57%",
+     "median_other": "0.54%",
+     "ratio": 1.05,
+     "p": 0.2393,
+     "verdict": "doesn't"
+    },
+    "VIX": {
+     "days": 441,
+     "median_event": "4.21%",
+     "median_other": "3.41%",
+     "ratio": 1.23,
+     "p": 0.0003,
+     "verdict": "moves"
+    },
+    "DAX": {
+     "days": 459,
+     "median_event": "0.63%",
+     "median_other": "0.66%",
+     "ratio": 0.95,
+     "p": 0.7936,
+     "verdict": "doesn't"
+    },
+    "SX5E": {
+     "days": 232,
+     "median_event": "0.61%",
+     "median_other": "0.62%",
+     "ratio": 0.98,
+     "p": 0.5742,
+     "verdict": "doesn't"
+    }
+   },
+   "surprise": {
+    "measure": "core",
+    "against": "the 12-month trend",
+    "left_out": 0,
+    "links": {
+     "SPY / ES": {
+      "expected": "down",
+      "n": 343,
+      "rank_corr": 0.13,
+      "p": 0.0075,
+      "hit_rate": 0.54,
+      "hit_n": 107,
+      "verdict": "unclear"
+     },
+     "UST10Y / ZN": {
+      "expected": "up",
+      "n": 343,
+      "rank_corr": 0.17,
+      "p": 0.0009,
+      "hit_rate": 0.62,
+      "hit_n": 107,
+      "verdict": "tracks"
+     },
+     "DXY": {
+      "expected": "up",
+      "n": 343,
+      "rank_corr": 0.14,
+      "p": 0.0031,
+      "hit_rate": 0.53,
+      "hit_n": 107,
+      "verdict": "unclear"
+     },
+     "GC / XAU": {
+      "expected": "either",
+      "n": 312,
+      "rank_corr": 0.09,
+      "p": 0.1072,
+      "hit_rate": null,
+      "hit_n": 0,
+      "verdict": "doesn't"
+     },
+     "VIX": {
+      "expected": "up",
+      "n": 343,
+      "rank_corr": 0.12,
+      "p": 0.01,
+      "hit_rate": 0.5,
+      "hit_n": 107,
+      "verdict": "unclear"
+     },
+     "DAX": {
+      "expected": "down",
+      "n": 341,
+      "rank_corr": 0.18,
+      "p": 0.0009,
+      "hit_rate": 0.59,
+      "hit_n": 107,
+      "verdict": "unclear"
+     },
+     "SX5E": {
+      "expected": "down",
+      "n": 233,
+      "rank_corr": 0.18,
+      "p": 0.0023,
+      "hit_rate": 0.56,
+      "hit_n": 70,
+      "verdict": "unclear"
+     }
+    }
+   },
+   "walk_forward": {
+    "measure": "core",
+    "against": "Nasdaq's consensus",
+    "links": {
+     "SPY / ES": {
+      "expected": "down",
+      "first": null,
+      "predictions": 0,
+      "right": 0,
+      "p": 1.0,
+      "always_right": 0,
+      "verdict": "too few"
+     },
+     "UST10Y / ZN": {
+      "expected": "up",
+      "first": "2026-03",
+      "predictions": 2,
+      "right": 0,
+      "p": 1.0,
+      "always_right": 1,
+      "verdict": "too few"
+     },
+     "DXY": {
+      "expected": "up",
+      "first": "2024-05",
+      "predictions": 9,
+      "right": 8,
+      "p": 0.0195,
+      "always_right": 2,
+      "verdict": "too few"
+     },
+     "VIX": {
+      "expected": "up",
+      "first": null,
+      "predictions": 0,
+      "right": 0,
+      "p": 1.0,
+      "always_right": 0,
+      "verdict": "too few"
+     },
+     "DAX": {
+      "expected": "down",
+      "first": "2014-07",
+      "predictions": 13,
+      "right": 5,
+      "p": 0.8666,
+      "always_right": 4,
+      "verdict": "too few"
+     },
+     "SX5E": {
+      "expected": "down",
+      "first": null,
+      "predictions": 0,
+      "right": 0,
+      "p": 1.0,
+      "always_right": 0,
+      "verdict": "too few"
+     }
+    }
+   }
+  },
+  {
+   "name": "nfp",
+   "label": "NFP",
+   "event_type": "NFP / labor data",
+   "country": "United States",
+   "releases": 856,
+   "first": "1955-06-07",
+   "last": "2026-10-02",
+   "raw_move": {
+    "SPY / ES": {
+     "days": 681,
+     "median_event": "0.60%",
+     "median_other": "0.50%",
+     "ratio": 1.2,
+     "p": 0.0004,
+     "verdict": "moves"
+    },
+    "UST10Y / ZN": {
+     "days": 681,
+     "median_event": "5.0 bp",
+     "median_other": "3.0 bp",
+     "ratio": 1.67,
+     "p": 0.0001,
+     "verdict": "moves"
+    },
+    "DXY": {
+     "days": 669,
+     "median_event": "0.31%",
+     "median_other": "0.24%",
+     "ratio": 1.27,
+     "p": 0.0003,
+     "verdict": "moves"
+    },
+    "GC / XAU": {
+     "days": 312,
+     "median_event": "0.69%",
+     "median_other": "0.54%",
+     "ratio": 1.28,
+     "p": 0.0012,
+     "verdict": "moves"
+    },
+    "VIX": {
+     "days": 441,
+     "median_event": "4.54%",
+     "median_other": "3.41%",
+     "ratio": 1.33,
+     "p": 0.0001,
+     "verdict": "moves"
+    },
+    "DAX": {
+     "days": 454,
+     "median_event": "0.73%",
+     "median_other": "0.66%",
+     "ratio": 1.1,
+     "p": 0.0606,
+     "verdict": "unclear"
+    },
+    "SX5E": {
+     "days": 227,
+     "median_event": "0.87%",
+     "median_other": "0.62%",
+     "ratio": 1.4,
+     "p": 0.0002,
+     "verdict": "moves"
+    }
+   },
+   "surprise": {
+    "measure": "payrolls",
+    "against": "the 12-month trend",
+    "left_out": 0,
+    "links": {
+     "SPY / ES": {
+      "expected": "either",
+      "n": 681,
+      "rank_corr": 0.01,
+      "p": 0.7095,
+      "hit_rate": null,
+      "hit_n": 0,
+      "verdict": "doesn't"
+     },
+     "UST10Y / ZN": {
+      "expected": "up",
+      "n": 681,
+      "rank_corr": 0.26,
+      "p": 0.0001,
+      "hit_rate": 0.58,
+      "hit_n": 466,
+      "verdict": "unclear"
+     },
+     "DXY": {
+      "expected": "up",
+      "n": 669,
+      "rank_corr": 0.16,
+      "p": 0.0001,
+      "hit_rate": 0.56,
+      "hit_n": 457,
+      "verdict": "unclear"
+     },
+     "GC / XAU": {
+      "expected": "either",
+      "n": 313,
+      "rank_corr": 0.16,
+      "p": 0.0036,
+      "hit_rate": null,
+      "hit_n": 0,
+      "verdict": "unclear"
+     },
+     "VIX": {
+      "expected": "either",
+      "n": 441,
+      "rank_corr": 0.05,
+      "p": 0.283,
+      "hit_rate": null,
+      "hit_n": 0,
+      "verdict": "doesn't"
+     },
+     "DAX": {
+      "expected": "either",
+      "n": 465,
+      "rank_corr": 0.09,
+      "p": 0.0639,
+      "hit_rate": null,
+      "hit_n": 0,
+      "verdict": "doesn't"
+     },
+     "SX5E": {
+      "expected": "either",
+      "n": 234,
+      "rank_corr": 0.11,
+      "p": 0.0914,
+      "hit_rate": null,
+      "hit_n": 0,
+      "verdict": "doesn't"
+     }
+    }
+   },
+   "walk_forward": {
+    "measure": "payrolls",
+    "against": "Nasdaq's consensus",
+    "links": {
+     "UST10Y / ZN": {
+      "expected": "up",
+      "first": "2010-09",
+      "predictions": 100,
+      "right": 65,
+      "p": 0.0018,
+      "always_right": 61,
+      "verdict": "holds"
+     },
+     "DXY": {
+      "expected": "up",
+      "first": "2014-06",
+      "predictions": 81,
+      "right": 55,
+      "p": 0.0008,
+      "always_right": 38,
+      "verdict": "holds"
+     }
+    }
+   }
+  },
+  {
+   "name": "fomc",
+   "label": "Fed",
+   "event_type": "Central-bank decision",
+   "country": "United States",
+   "releases": 275,
+   "first": "1994-02-04",
+   "last": "2026-09-16",
+   "raw_move": {
+    "SPY / ES": {
+     "days": 274,
+     "median_event": "0.66%",
+     "median_other": "0.50%",
+     "ratio": 1.31,
+     "p": 0.0005,
+     "verdict": "moves"
+    },
+    "UST10Y / ZN": {
+     "days": 274,
+     "median_event": "3.7 bp",
+     "median_other": "3.0 bp",
+     "ratio": 1.23,
+     "p": 0.0443,
+     "verdict": "unclear"
+    },
+    "DXY": {
+     "days": 274,
+     "median_event": "0.30%",
+     "median_other": "0.24%",
+     "ratio": 1.23,
+     "p": 0.0077,
+     "verdict": "moves"
+    },
+    "GC / XAU": {
+     "days": 220,
+     "median_event": "0.99%",
+     "median_other": "0.54%",
+     "ratio": 1.82,
+     "p": 0.0001,
+     "verdict": "moves"
+    },
+    "VIX": {
+     "days": 274,
+     "median_event": "4.31%",
+     "median_other": "3.41%",
+     "ratio": 1.26,
+     "p": 0.0009,
+     "verdict": "moves"
+    },
+    "DAX": {
+     "days": 275,
+     "median_event": "0.92%",
+     "median_other": "0.66%",
+     "ratio": 1.38,
+     "p": 0.0001,
+     "verdict": "moves"
+    },
+    "SX5E": {
+     "days": 164,
+     "median_event": "1.01%",
+     "median_other": "0.62%",
+     "ratio": 1.63,
+     "p": 0.0001,
+     "verdict": "moves"
+    }
+   },
+   "surprise": null,
+   "walk_forward": null
+  },
+  {
+   "name": "retail",
+   "label": "RET",
+   "event_type": "Retail sales",
+   "country": "United States",
+   "releases": 304,
+   "first": "2001-07-13",
+   "last": "2026-10-15",
+   "raw_move": {
+    "SPY / ES": {
+     "days": 303,
+     "median_event": "0.56%",
+     "median_other": "0.50%",
+     "ratio": 1.11,
+     "p": 0.0889,
+     "verdict": "unclear"
+    },
+    "UST10Y / ZN": {
+     "days": 303,
+     "median_event": "4.0 bp",
+     "median_other": "3.0 bp",
+     "ratio": 1.33,
+     "p": 0.0001,
+     "verdict": "moves"
+    },
+    "DXY": {
+     "days": 303,
+     "median_event": "0.30%",
+     "median_other": "0.24%",
+     "ratio": 1.23,
+     "p": 0.0051,
+     "verdict": "moves"
+    },
+    "GC / XAU": {
+     "days": 304,
+     "median_event": "0.54%",
+     "median_other": "0.54%",
+     "ratio": 0.99,
+     "p": 0.5529,
+     "verdict": "doesn't"
+    },
+    "VIX": {
+     "days": 303,
+     "median_event": "3.69%",
+     "median_other": "3.41%",
+     "ratio": 1.08,
+     "p": 0.1436,
+     "verdict": "doesn't"
+    },
+    "DAX": {
+     "days": 301,
+     "median_event": "0.62%",
+     "median_other": "0.66%",
+     "ratio": 0.94,
+     "p": 0.7929,
+     "verdict": "doesn't"
+    },
+    "SX5E": {
+     "days": 233,
+     "median_event": "0.63%",
+     "median_other": "0.62%",
+     "ratio": 1.01,
+     "p": 0.4282,
+     "verdict": "doesn't"
+    }
+   },
+   "surprise": {
+    "measure": "retail_sales",
+    "against": "Nasdaq's consensus",
+    "left_out": 47,
+    "links": {
+     "SPY / ES": {
+      "expected": "either",
+      "n": 180,
+      "rank_corr": 0.2,
+      "p": 0.0103,
+      "hit_rate": null,
+      "hit_n": 0,
+      "verdict": "doesn't"
+     },
+     "UST10Y / ZN": {
+      "expected": "up",
+      "n": 180,
+      "rank_corr": 0.28,
+      "p": 0.0002,
+      "hit_rate": 0.7,
+      "hit_n": 91,
+      "verdict": "tracks"
+     },
+     "DXY": {
+      "expected": "up",
+      "n": 180,
+      "rank_corr": 0.13,
+      "p": 0.0405,
+      "hit_rate": 0.57,
+      "hit_n": 91,
+      "verdict": "doesn't"
+     },
+     "GC / XAU": {
+      "expected": "either",
+      "n": 180,
+      "rank_corr": 0.08,
+      "p": 0.3043,
+      "hit_rate": null,
+      "hit_n": 0,
+      "verdict": "doesn't"
+     },
+     "VIX": {
+      "expected": "either",
+      "n": 180,
+      "rank_corr": 0.09,
+      "p": 0.2451,
+      "hit_rate": null,
+      "hit_n": 0,
+      "verdict": "doesn't"
+     },
+     "DAX": {
+      "expected": "either",
+      "n": 179,
+      "rank_corr": 0.14,
+      "p": 0.0478,
+      "hit_rate": null,
+      "hit_n": 0,
+      "verdict": "doesn't"
+     },
+     "SX5E": {
+      "expected": "either",
+      "n": 179,
+      "rank_corr": 0.14,
+      "p": 0.0547,
+      "hit_rate": null,
+      "hit_n": 0,
+      "verdict": "doesn't"
+     }
+    }
+   },
+   "walk_forward": {
+    "measure": "retail_sales",
+    "against": "Nasdaq's consensus",
+    "links": {
+     "UST10Y / ZN": {
+      "expected": "up",
+      "first": "2011-05",
+      "predictions": 72,
+      "right": 49,
+      "p": 0.0015,
+      "always_right": 32,
+      "verdict": "holds"
+     },
+     "DXY": {
+      "expected": "up",
+      "first": "2008-08",
+      "predictions": 2,
+      "right": 1,
+      "p": 0.75,
+      "always_right": 1,
+      "verdict": "too few"
+     }
+    }
+   }
+  },
+  {
+   "name": "pce",
+   "label": "PCE",
+   "event_type": "PCE inflation",
+   "country": "United States",
+   "releases": 312,
+   "first": "2000-08-28",
+   "last": "2026-09-30",
+   "raw_move": {
+    "SPY / ES": {
+     "days": 311,
+     "median_event": "0.58%",
+     "median_other": "0.50%",
+     "ratio": 1.15,
+     "p": 0.0268,
+     "verdict": "unclear"
+    },
+    "UST10Y / ZN": {
+     "days": 311,
+     "median_event": "3.3 bp",
+     "median_other": "3.0 bp",
+     "ratio": 1.1,
+     "p": 0.2032,
+     "verdict": "doesn't"
+    },
+    "DXY": {
+     "days": 311,
+     "median_event": "0.27%",
+     "median_other": "0.24%",
+     "ratio": 1.11,
+     "p": 0.1036,
+     "verdict": "unclear"
+    },
+    "GC / XAU": {
+     "days": 310,
+     "median_event": "0.61%",
+     "median_other": "0.54%",
+     "ratio": 1.12,
+     "p": 0.0617,
+     "verdict": "unclear"
+    },
+    "VIX": {
+     "days": 311,
+     "median_event": "4.29%",
+     "median_other": "3.41%",
+     "ratio": 1.26,
+     "p": 0.0009,
+     "verdict": "moves"
+    },
+    "DAX": {
+     "days": 307,
+     "median_event": "0.73%",
+     "median_other": "0.66%",
+     "ratio": 1.09,
+     "p": 0.1287,
+     "verdict": "doesn't"
+    },
+    "SX5E": {
+     "days": 229,
+     "median_event": "0.71%",
+     "median_other": "0.62%",
+     "ratio": 1.14,
+     "p": 0.0815,
+     "verdict": "unclear"
+    }
+   },
+   "surprise": {
+    "measure": "core_pce",
+    "against": "Nasdaq's consensus",
+    "left_out": 55,
+    "links": {
+     "SPY / ES": {
+      "expected": "down",
+      "n": 172,
+      "rank_corr": -0.09,
+      "p": 0.8927,
+      "hit_rate": 0.67,
+      "hit_n": 15,
+      "verdict": "unclear"
+     },
+     "UST10Y / ZN": {
+      "expected": "up",
+      "n": 172,
+      "rank_corr": 0.01,
+      "p": 0.4432,
+      "hit_rate": 0.67,
+      "hit_n": 15,
+      "verdict": "unclear"
+     },
+     "DXY": {
+      "expected": "up",
+      "n": 172,
+      "rank_corr": 0.06,
+      "p": 0.208,
+      "hit_rate": 0.47,
+      "hit_n": 15,
+      "verdict": "doesn't"
+     },
+     "GC / XAU": {
+      "expected": "either",
+      "n": 172,
+      "rank_corr": 0.06,
+      "p": 0.45,
+      "hit_rate": null,
+      "hit_n": 0,
+      "verdict": "doesn't"
+     },
+     "VIX": {
+      "expected": "up",
+      "n": 172,
+      "rank_corr": -0.01,
+      "p": 0.5488,
+      "hit_rate": 0.67,
+      "hit_n": 15,
+      "verdict": "unclear"
+     },
+     "DAX": {
+      "expected": "down",
+      "n": 171,
+      "rank_corr": -0.15,
+      "p": 0.9775,
+      "hit_rate": 0.6,
+      "hit_n": 15,
+      "verdict": "unclear"
+     },
+     "SX5E": {
+      "expected": "down",
+      "n": 172,
+      "rank_corr": -0.15,
+      "p": 0.9754,
+      "hit_rate": 0.4,
+      "hit_n": 15,
+      "verdict": "doesn't"
+     }
+    }
+   },
+   "walk_forward": {
+    "measure": "core_pce",
+    "against": "Nasdaq's consensus",
+    "links": {
+     "SPY / ES": {
+      "expected": "down",
+      "first": null,
+      "predictions": 0,
+      "right": 0,
+      "p": 1.0,
+      "always_right": 0,
+      "verdict": "too few"
+     },
+     "UST10Y / ZN": {
+      "expected": "up",
+      "first": null,
+      "predictions": 0,
+      "right": 0,
+      "p": 1.0,
+      "always_right": 0,
+      "verdict": "too few"
+     },
+     "DXY": {
+      "expected": "up",
+      "first": null,
+      "predictions": 0,
+      "right": 0,
+      "p": 1.0,
+      "always_right": 0,
+      "verdict": "too few"
+     },
+     "VIX": {
+      "expected": "up",
+      "first": null,
+      "predictions": 0,
+      "right": 0,
+      "p": 1.0,
+      "always_right": 0,
+      "verdict": "too few"
+     },
+     "DAX": {
+      "expected": "down",
+      "first": null,
+      "predictions": 0,
+      "right": 0,
+      "p": 1.0,
+      "always_right": 0,
+      "verdict": "too few"
+     },
+     "SX5E": {
+      "expected": "down",
+      "first": null,
+      "predictions": 0,
+      "right": 0,
+      "p": 1.0,
+      "always_right": 0,
+      "verdict": "too few"
+     }
+    }
+   }
+  },
+  {
+   "name": "gdp",
+   "label": "GDP",
+   "event_type": "GDP growth",
+   "country": "United States",
+   "releases": 139,
+   "first": "1992-01-29",
+   "last": "2026-07-30",
+   "raw_move": {
+    "SPY / ES": {
+     "days": 139,
+     "median_event": "0.62%",
+     "median_other": "0.50%",
+     "ratio": 1.25,
+     "p": 0.0236,
+     "verdict": "unclear"
+    },
+    "UST10Y / ZN": {
+     "days": 139,
+     "median_event": "4.8 bp",
+     "median_other": "3.0 bp",
+     "ratio": 1.6,
+     "p": 0.0002,
+     "verdict": "moves"
+    },
+    "DXY": {
+     "days": 139,
+     "median_event": "0.36%",
+     "median_other": "0.24%",
+     "ratio": 1.45,
+     "p": 0.0008,
+     "verdict": "moves"
+    },
+    "GC / XAU": {
+     "days": 104,
+     "median_event": "0.60%",
+     "median_other": "0.54%",
+     "ratio": 1.1,
+     "p": 0.2357,
+     "verdict": "doesn't"
+    },
+    "VIX": {
+     "days": 139,
+     "median_event": "3.76%",
+     "median_other": "3.41%",
+     "ratio": 1.1,
+     "p": 0.189,
+     "verdict": "unclear"
+    },
+    "DAX": {
+     "days": 139,
+     "median_event": "0.63%",
+     "median_other": "0.66%",
+     "ratio": 0.95,
+     "p": 0.6704,
+     "verdict": "doesn't"
+    },
+    "SX5E": {
+     "days": 78,
+     "median_event": "0.59%",
+     "median_other": "0.62%",
+     "ratio": 0.94,
+     "p": 0.654,
+     "verdict": "doesn't"
+    }
+   },
+   "surprise": {
+    "measure": "gdp",
+    "against": "Nasdaq's consensus",
+    "left_out": 31,
+    "links": {
+     "SPY / ES": {
+      "expected": "either",
+      "n": 46,
+      "rank_corr": 0.06,
+      "p": 0.7227,
+      "hit_rate": null,
+      "hit_n": 0,
+      "verdict": "doesn't"
+     },
+     "UST10Y / ZN": {
+      "expected": "up",
+      "n": 46,
+      "rank_corr": -0.0,
+      "p": 0.5122,
+      "hit_rate": 0.15,
+      "hit_n": 13,
+      "verdict": "doesn't"
+     },
+     "DXY": {
+      "expected": "up",
+      "n": 46,
+      "rank_corr": 0.15,
+      "p": 0.1631,
+      "hit_rate": 0.54,
+      "hit_n": 13,
+      "verdict": "doesn't"
+     },
+     "GC / XAU": {
+      "expected": "either",
+      "n": 46,
+      "rank_corr": 0.15,
+      "p": 0.3194,
+      "hit_rate": null,
+      "hit_n": 0,
+      "verdict": "doesn't"
+     },
+     "VIX": {
+      "expected": "either",
+      "n": 46,
+      "rank_corr": 0.02,
+      "p": 0.912,
+      "hit_rate": null,
+      "hit_n": 0,
+      "verdict": "doesn't"
+     },
+     "DAX": {
+      "expected": "either",
+      "n": 46,
+      "rank_corr": 0.03,
+      "p": 0.8387,
+      "hit_rate": null,
+      "hit_n": 0,
+      "verdict": "doesn't"
+     },
+     "SX5E": {
+      "expected": "either",
+      "n": 46,
+      "rank_corr": 0.07,
+      "p": 0.6439,
+      "hit_rate": null,
+      "hit_n": 0,
+      "verdict": "doesn't"
+     }
+    }
+   },
+   "walk_forward": {
+    "measure": "gdp",
+    "against": "Nasdaq's consensus",
+    "links": {
+     "UST10Y / ZN": {
+      "expected": "up",
+      "first": null,
+      "predictions": 0,
+      "right": 0,
+      "p": 1.0,
+      "always_right": 0,
+      "verdict": "too few"
+     },
+     "DXY": {
+      "expected": "up",
+      "first": null,
+      "predictions": 0,
+      "right": 0,
+      "p": 1.0,
+      "always_right": 0,
+      "verdict": "too few"
+     }
+    }
+   }
+  },
+  {
+   "name": "ecb",
+   "label": "ECB",
+   "event_type": "Central-bank decision",
+   "country": "Euro area",
+   "releases": 115,
+   "first": "2013-04-04",
+   "last": "2026-09-10",
+   "raw_move": {
+    "SPY / ES": {
+     "days": 115,
+     "median_event": "0.53%",
+     "median_other": "0.50%",
+     "ratio": 1.05,
+     "p": 0.3395,
+     "verdict": "doesn't"
+    },
+    "UST10Y / ZN": {
+     "days": 115,
+     "median_event": "3.3 bp",
+     "median_other": "3.0 bp",
+     "ratio": 1.1,
+     "p": 0.3475,
+     "verdict": "doesn't"
+    },
+    "DXY": {
+     "days": 115,
+     "median_event": "0.34%",
+     "median_other": "0.24%",
+     "ratio": 1.41,
+     "p": 0.0045,
+     "verdict": "moves"
+    },
+    "GC / XAU": {
+     "days": 115,
+     "median_event": "0.50%",
+     "median_other": "0.54%",
+     "ratio": 0.93,
+     "p": 0.708,
+     "verdict": "doesn't"
+    },
+    "VIX": {
+     "days": 115,
+     "median_event": "4.07%",
+     "median_other": "3.41%",
+     "ratio": 1.19,
+     "p": 0.0626,
+     "verdict": "unclear"
+    },
+    "DAX": {
+     "days": 115,
+     "median_event": "0.63%",
+     "median_other": "0.66%",
+     "ratio": 0.95,
+     "p": 0.6685,
+     "verdict": "doesn't"
+    },
+    "SX5E": {
+     "days": 115,
+     "median_event": "0.66%",
+     "median_other": "0.62%",
+     "ratio": 1.05,
+     "p": 0.3247,
+     "verdict": "doesn't"
+    }
+   },
+   "surprise": null,
+   "walk_forward": null
+  },
+  {
+   "name": "hicp",
+   "label": "HICP",
+   "event_type": "CPI / inflation surprise",
+   "country": "Euro area",
+   "releases": 143,
+   "first": "2014-11-28",
+   "last": "2026-10-02",
+   "raw_move": {
+    "SPY / ES": {
+     "days": 143,
+     "median_event": "0.70%",
+     "median_other": "0.50%",
+     "ratio": 1.41,
+     "p": 0.0007,
+     "verdict": "moves"
+    },
+    "UST10Y / ZN": {
+     "days": 143,
+     "median_event": "3.1 bp",
+     "median_other": "3.0 bp",
+     "ratio": 1.03,
+     "p": 0.43,
+     "verdict": "doesn't"
+    },
+    "DXY": {
+     "days": 143,
+     "median_event": "0.28%",
+     "median_other": "0.24%",
+     "ratio": 1.13,
+     "p": 0.1547,
+     "verdict": "unclear"
+    },
+    "GC / XAU": {
+     "days": 143,
+     "median_event": "0.62%",
+     "median_other": "0.54%",
+     "ratio": 1.14,
+     "p": 0.1192,
+     "verdict": "unclear"
+    },
+    "VIX": {
+     "days": 143,
+     "median_event": "4.93%",
+     "median_other": "3.41%",
+     "ratio": 1.44,
+     "p": 0.0003,
+     "verdict": "moves"
+    },
+    "DAX": {
+     "days": 143,
+     "median_event": "0.65%",
+     "median_other": "0.66%",
+     "ratio": 0.98,
+     "p": 0.5816,
+     "verdict": "doesn't"
+    },
+    "SX5E": {
+     "days": 143,
+     "median_event": "0.56%",
+     "median_other": "0.62%",
+     "ratio": 0.9,
+     "p": 0.8346,
+     "verdict": "doesn't"
+    }
+   },
+   "surprise": {
+    "measure": "euro_core",
+    "against": "TradingView's forecast",
+    "left_out": 64,
+    "links": {
+     "SPY / ES": {
+      "expected": "either",
+      "n": 70,
+      "rank_corr": 0.04,
+      "p": 0.7365,
+      "hit_rate": null,
+      "hit_n": 0,
+      "verdict": "doesn't"
+     },
+     "UST10Y / ZN": {
+      "expected": "either",
+      "n": 70,
+      "rank_corr": 0.18,
+      "p": 0.1292,
+      "hit_rate": null,
+      "hit_n": 0,
+      "verdict": "doesn't"
+     },
+     "DXY": {
+      "expected": "down",
+      "n": 70,
+      "rank_corr": 0.07,
+      "p": 0.2905,
+      "hit_rate": 0.57,
+      "hit_n": 37,
+      "verdict": "doesn't"
+     },
+     "GC / XAU": {
+      "expected": "either",
+      "n": 70,
+      "rank_corr": 0.14,
+      "p": 0.2629,
+      "hit_rate": null,
+      "hit_n": 0,
+      "verdict": "doesn't"
+     },
+     "VIX": {
+      "expected": "either",
+      "n": 70,
+      "rank_corr": 0.1,
+      "p": 0.4217,
+      "hit_rate": null,
+      "hit_n": 0,
+      "verdict": "doesn't"
+     },
+     "DAX": {
+      "expected": "down",
+      "n": 70,
+      "rank_corr": 0.21,
+      "p": 0.0398,
+      "hit_rate": 0.62,
+      "hit_n": 37,
+      "verdict": "unclear"
+     },
+     "SX5E": {
+      "expected": "down",
+      "n": 70,
+      "rank_corr": 0.1,
+      "p": 0.2143,
+      "hit_rate": 0.57,
+      "hit_n": 37,
+      "verdict": "doesn't"
+     }
+    }
+   },
+   "walk_forward": {
+    "measure": "euro_core",
+    "against": "TradingView's forecast",
+    "links": {
+     "DXY": {
+      "expected": "down",
+      "first": null,
+      "predictions": 0,
+      "right": 0,
+      "p": 1.0,
+      "always_right": 0,
+      "verdict": "too few"
+     },
+     "DAX": {
+      "expected": "down",
+      "first": null,
+      "predictions": 0,
+      "right": 0,
+      "p": 1.0,
+      "always_right": 0,
+      "verdict": "too few"
+     },
+     "SX5E": {
+      "expected": "down",
+      "first": null,
+      "predictions": 0,
+      "right": 0,
+      "p": 1.0,
+      "always_right": 0,
+      "verdict": "too few"
+     }
+    }
+   }
+  }
+ ],
+ "calls": [
+  {
+   "day": "2026-10-14",
+   "event": "cpi",
+   "label": "CPI",
+   "actual": 0.3,
+   "market": "SPY / ES",
+   "outcome": "silent",
+   "direction": null,
+   "record": null,
+   "band": null,
+   "grade": null,
+   "note": null
+  },
+  {
+   "day": "2026-10-14",
+   "event": "cpi",
+   "label": "CPI",
+   "actual": 0.3,
+   "market": "UST10Y / ZN",
+   "outcome": "too_few",
+   "direction": "up",
+   "record": {
+    "right": 0,
+    "calls": 1
+   },
+   "band": null,
+   "grade": "wrong",
+   "note": null
+  },
+  {
+   "day": "2026-10-14",
+   "event": "cpi",
+   "label": "CPI",
+   "actual": 0.3,
+   "market": "DXY",
+   "outcome": "too_few",
+   "direction": "up",
+   "record": {
+    "right": 7,
+    "calls": 8
+   },
+   "band": null,
+   "grade": "right",
+   "note": null
+  },
+  {
+   "day": "2026-10-14",
+   "event": "cpi",
+   "label": "CPI",
+   "actual": 0.3,
+   "market": "VIX",
+   "outcome": "silent",
+   "direction": null,
+   "record": null,
+   "band": null,
+   "grade": null,
+   "note": null
+  },
+  {
+   "day": "2026-10-15",
+   "event": "retail",
+   "label": "RET",
+   "actual": 0.8,
+   "market": "UST10Y / ZN",
+   "outcome": "call",
+   "direction": "up",
+   "record": {
+    "right": 49,
+    "calls": 71
+   },
+   "band": "-3.4 bp to +4.0 bp",
+   "grade": "wrong",
+   "note": null
+  },
+  {
+   "day": "2026-10-15",
+   "event": "retail",
+   "label": "RET",
+   "actual": 0.8,
+   "market": "DXY",
+   "outcome": "silent",
+   "direction": null,
+   "record": null,
+   "band": null,
+   "grade": null,
+   "note": null
+  }
+ ],
+ "missed": []
+}

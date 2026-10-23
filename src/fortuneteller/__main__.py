@@ -6,17 +6,20 @@ histories from FRED (MVP step 1 ``study``) and the Fed's decisions (rung 1); ``l
 the five instruments' daily closes and measures their move around each release (MVP step 2);
 ``raw-move`` compares each instrument's moves on an event's days with ordinary days, which no
 stored event touched (MVP step 3); ``load-surprises`` stores each release's CPI and payroll surprise
-and ``surprise`` measures how the moves follow it (MVP step 4, rung 1).
+and ``surprise`` measures how the moves follow it (MVP step 4, rung 1); ``scoreboard`` writes what
+they print, and the graded calls, as the page's data (roadmap step 5).
 """
 
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 import textwrap
 import time
 from collections.abc import Callable, Iterable, Sequence
 from datetime import UTC, date, datetime, timedelta
+from importlib.resources import files
 
 import duckdb
 
@@ -195,13 +198,44 @@ def describe_surprise_tracking(
                 f"{instrument:<12} {measure:<{named}} {baseline:<{width}} {t.n:<4} "
                 f"{t.rank_corr:<10.2f} {t.p:<7.4f} {_hit_rate(t)}"
             )
-    lines += [
-        "",
+    lines += ["", _track_rule()]
+    return [line.rstrip() for line in lines]
+
+
+def _move_rule() -> str:
+    return (
+        f"{study.MOVES} = ratio >= {study.MOVE_RATIO_BAR:.2f} and p < {study.MOVE_P_BAR}; "
+        f"{study.UNCLEAR} = one of the two; {study.DOESNT_MOVE} = neither; "
+        f"other = days with no {_any_of(flow.label for flow in flows.EVENT_FLOWS)} reaction"
+    )
+
+
+def _track_rule() -> str:
+    return (
         f"{study.TRACKS} = corr as expected, p < {study.TRACK_P_BAR}, hit rate >= "
         f"{study.HIT_RATE_BAR:.0%}; {study.UNCLEAR} = one of the two; "
-        f"{study.DOESNT_TRACK} = neither",
-    ]
-    return [line.rstrip() for line in lines]
+        f"{study.DOESNT_TRACK} = neither"
+    )
+
+
+def _hold_rule() -> str:
+    return (
+        f"{study.HOLDS} = right on at least {study.HIT_RATE_BAR:.0%} of at least "
+        f"{study.MIN_PREDICTIONS} predictions, binomial p < {study.TRACK_P_BAR} against 50%; "
+        f"{study.TOO_FEW} = under {study.MIN_PREDICTIONS} predictions"
+    )
+
+
+def _surprises_stored(
+    flow: flows.EventFlow, measure: str, baseline: str, con: duckdb.DuckDBPyConnection
+) -> bool:
+    """Whether any of the flow's releases has its surprise of ``measure`` against ``baseline``."""
+    stored = con.execute(
+        "SELECT count(*) FROM surprises s JOIN event_instances e ON e.event_id = s.event_id "
+        "WHERE e.event_type = ? AND e.country = ? AND s.measure = ? AND s.baseline = ?",
+        [flow.event_type, flow.country, measure, baseline],
+    ).fetchone()
+    return stored is not None and stored[0] > 0
 
 
 def _surprise(args: argparse.Namespace) -> int:
@@ -217,15 +251,10 @@ def _surprise(args: argparse.Namespace) -> int:
     con = db.get_connection()
     db.init_db(con=con)
     measure, baseline = rule.combinations[0]
-    stored = con.execute(
-        "SELECT count(*) FROM surprises s JOIN event_instances e ON e.event_id = s.event_id "
-        "WHERE e.event_type = ? AND e.country = ? AND s.measure = ? AND s.baseline = ?",
-        [flow.event_type, flow.country, measure, baseline],
-    ).fetchone()
     for missing, command in (
         (not flows.stored_events(flow, con=con), "load-releases"),
         (db.count_rows("observations", con=con) == 0, "load-prices"),
-        (stored is None or stored[0] == 0, "load-surprises"),
+        (not _surprises_stored(flow, measure, baseline, con), "load-surprises"),
     ):
         if missing:
             print(
@@ -328,12 +357,7 @@ def describe_raw_moves(results: dict[str, study.RawMove], label: str) -> list[st
             for era in raw.eras.values()
         ]
         lines.append(" ".join([f"{instrument:<12}", *(f"{cell:<12}" for cell in cells)]).rstrip())
-    lines += [
-        "",
-        f"{study.MOVES} = ratio >= {study.MOVE_RATIO_BAR:.2f} and p < {study.MOVE_P_BAR}; "
-        f"{study.UNCLEAR} = one of the two; {study.DOESNT_MOVE} = neither; "
-        f"other = days with no {_any_of(flow.label for flow in flows.EVENT_FLOWS)} reaction",
-    ]
+    lines += ["", _move_rule()]
     return [line.rstrip() for line in lines]
 
 
@@ -466,12 +490,10 @@ def _predict(args: argparse.Namespace) -> int:
     con = db.get_connection()
     db.init_db(con=con)
     baseline = rule.predicted_from
-    stored = con.execute(
-        "SELECT count(*) FROM surprises s JOIN event_instances e ON e.event_id = s.event_id "
-        "WHERE e.event_type = ? AND e.country = ? AND s.baseline = ?",
-        [flow.event_type, flow.country, baseline],
-    ).fetchone()
-    if stored is None or stored[0] == 0 or db.count_rows("observations", con=con) == 0:
+    if (
+        not _surprises_stored(flow, rule.combinations[0][0], baseline, con)
+        or db.count_rows("observations", con=con) == 0
+    ):
         print(
             f"predict: no {baseline} surprises or moves for {args.event} yet; run "
             "`fortuneteller load-prices` and `fortuneteller load-surprises` first",
@@ -499,11 +521,7 @@ def _predict(args: argparse.Namespace) -> int:
         for line in describe_grades(grades, dict(rule.expected_sign), scope):
             print(line)
     print()
-    print(
-        f"{study.HOLDS} = right on at least {study.HIT_RATE_BAR:.0%} of at least "
-        f"{study.MIN_PREDICTIONS} predictions, binomial p < {study.TRACK_P_BAR} against 50%; "
-        f"{study.TOO_FEW} = under {study.MIN_PREDICTIONS} predictions"
-    )
+    print(_hold_rule())
     graded = _graded_confidence(confident, rule)
     for scope, confidence in graded:
         print()
@@ -644,13 +662,7 @@ def _predict_release(
             print(f"{instrument:<12} {call:<6} closes {call} today; too few calls so far")
             calls.append(logged(instrument, study.TOO_FEW_CALLS, direction=latest.call.direction))
             continue
-        unit = study.MVP_PRICE_SERIES[instrument].unit
-        band = (
-            f"{_move_size(latest.band[0], unit, signed=True)} to "
-            f"{_move_size(latest.band[1], unit, signed=True)}"
-            if latest.band
-            else "no band"
-        )
+        band = _band(latest.band, study.MVP_PRICE_SERIES[instrument].unit) or "no band"
         right = sum(c.call.right for c in made[:-1])
         print(
             f"{instrument:<12} {call:<6} closes {call} today: right on {right} of {len(made) - 1} "
@@ -818,6 +830,210 @@ def _score(_args: argparse.Namespace) -> int:
     return 0
 
 
+def _band(band: tuple[float, float] | None, unit: str) -> str | None:
+    if band is None:
+        return None
+    low, high = (_move_size(edge, unit, signed=True) for edge in band)
+    return f"{low} to {high}"
+
+
+def _record(replay: Sequence[study.ConfidentCall], before: date) -> dict[str, int]:
+    """A link's record as counts on the replay's calls before ``before``: what the popup said."""
+    earlier = [c for c in replay if flows.event_date(c.call.event_id) < before]
+    return {"right": sum(c.call.right for c in earlier), "calls": len(earlier)}
+
+
+def _grade(row: study.LoggedCall, live: study.LiveScore) -> tuple[str, str | None]:
+    """A logged row with a direction: right or wrong on its close, else void or pending with
+    ``score``'s note on it."""
+    for c in live.calls.get(row.instrument, []):
+        if flows.event_date(c.call.event_id) == row.day:
+            return ("right" if c.call.right else "wrong"), None
+    where = f"{row.flow} {row.day}"
+    for grade, notes in (("void", live.void), ("pending", live.pending)):
+        prefixes = (f"{where}:", f"{where} {row.instrument}:")
+        note = next((n for n in notes if n.startswith(prefixes)), None)
+        if note is not None:
+            return grade, note
+    return "pending", None
+
+
+def scoreboard_data(
+    rows: Sequence[study.LoggedCall], con: duckdb.DuckDBPyConnection, today: date
+) -> dict[str, object]:
+    """The page's numbers: what ``raw-move``, ``surprise`` and ``predict`` print for every flow
+    with releases stored, the calls as ``score`` grades them, and the chance count by each grid."""
+    events: list[dict[str, object]] = []
+    replays: dict[str, dict[str, list[study.ConfidentCall]]] = {}
+    cells = {"raw_move": 0, "surprise": 0, "walk_forward": 0}
+    for flow in flows.EVENT_FLOWS:
+        stored = flows.stored_events(flow, con=con)
+        if not stored:
+            continue
+        raw = study.measure_raw_moves(flow, con=con)
+        cells["raw_move"] += len(raw)
+        entry: dict[str, object] = {
+            "name": flow.cli_name,
+            "label": flow.label,
+            "event_type": flow.event_type,
+            "country": flow.country,
+            "releases": len(stored),
+            "first": flows.release_date(stored[0]).isoformat(),
+            "last": flows.release_date(stored[-1]).isoformat(),
+            "raw_move": {
+                instrument: {
+                    "days": r.overall.event_days,
+                    "median_event": _move_size(r.overall.median_event, r.unit),
+                    "median_other": _move_size(r.overall.median_other, r.unit),
+                    "ratio": round(r.overall.ratio, 2),
+                    "p": round(r.overall.p, 4),
+                    "verdict": r.overall.verdict,
+                }
+                for instrument, r in raw.items()
+            },
+            "surprise": None,
+            "walk_forward": None,
+        }
+        rule = flow.surprise_rule
+        if rule is not None:
+            measure, baseline = rule.combinations[0]
+            if _surprises_stored(flow, measure, baseline, con):
+                tracking = study.track_surprises(flow, con=con)[(measure, baseline)]
+                cells["surprise"] += len(tracking)
+                entry["surprise"] = {
+                    "measure": measure,
+                    "against": _source_label(baseline),
+                    "left_out": len(study.shared_days(flow, con=con)) if rule.alone else 0,
+                    "links": {
+                        instrument: {
+                            "expected": _direction(rule.expected_sign[instrument]),
+                            "n": t.n,
+                            "rank_corr": round(t.rank_corr, 2),
+                            "p": round(t.p, 4),
+                            "hit_rate": None if t.hit_rate is None else round(t.hit_rate, 2),
+                            "hit_n": t.hit_n,
+                            "verdict": t.verdict,
+                        }
+                        for instrument, t in tracking.items()
+                    },
+                }
+            if _surprises_stored(flow, measure, rule.predicted_from, con):
+                replay = study.confident_links(flow, rule.predicted_from, con=con)
+                replays[flow.cli_name] = replay
+                cells["walk_forward"] += len(replay)
+                grades = {
+                    instrument: study.grade([c.call for c in calls], rule.expected_sign[instrument])
+                    for instrument, calls in replay.items()
+                }
+                entry["walk_forward"] = {
+                    "measure": measure,
+                    "against": _source_label(rule.predicted_from),
+                    "links": {
+                        instrument: {
+                            "expected": _direction(rule.expected_sign[instrument]),
+                            "first": g.first,
+                            "predictions": g.predictions,
+                            "right": g.right,
+                            "p": round(g.p, 4),
+                            "always_right": g.always_right,
+                            "verdict": g.verdict,
+                        }
+                        for instrument, g in grades.items()
+                    },
+                }
+        events.append(entry)
+    scores = {
+        flow.cli_name: study.score_calls(flow, rows, con=con)
+        for flow in flows.EVENT_FLOWS
+        if flow.surprise_rule is not None and any(r.flow == flow.cli_name for r in rows)
+    }
+    calls: list[dict[str, object]] = []
+    for r in rows:
+        flow = flows.flow_named(r.flow)
+        call: dict[str, object] = {
+            "day": r.day.isoformat(),
+            "event": flow.cli_name,
+            "label": flow.label,
+            "actual": r.actual,
+            "market": r.instrument,
+            "outcome": r.outcome,
+            "direction": None if r.direction is None else _direction(r.direction),
+            "record": None,
+            "band": _band(r.band, study.MVP_PRICE_SERIES[r.instrument].unit),
+            "grade": None,
+            "note": None,
+        }
+        if r.direction is not None:
+            call["record"] = _record(replays.get(r.flow, {}).get(r.instrument, []), r.day)
+            call["grade"], call["note"] = _grade(r, scores[r.flow])
+        calls.append(call)
+    missed = [note.split() for note in study.missed_releases(rows, con=con)]
+    (last_close,) = con.execute("SELECT max(day) FROM daily_bars").fetchone() or (None,)
+    bars = {
+        "raw_move": study.MOVE_P_BAR,
+        "surprise": study.TRACK_P_BAR,
+        "walk_forward": study.TRACK_P_BAR,
+    }
+    return {
+        "written": today.isoformat(),
+        "data_until": None if last_close is None else last_close.isoformat(),
+        "markets": list(study.MVP_PRICE_SERIES),
+        "rules": {
+            "raw_move": _move_rule(),
+            "surprise": _track_rule(),
+            "walk_forward": _hold_rule(),
+        },
+        "chance": {
+            grid: {"cells": n, "p": bars[grid], "by_chance": round(n * bars[grid], 2)}
+            for grid, n in cells.items()
+        },
+        "events": events,
+        "calls": calls,
+        "missed": [{"event": name, "day": day} for name, day in missed],
+    }
+
+
+SCOREBOARD_DATA_MARK = "__SCOREBOARD_DATA__"
+
+
+def _scoreboard(_args: argparse.Namespace) -> int:
+    try:
+        rows = study.read_calls(settings.calls_path)
+    except ValueError as exc:
+        print(f"scoreboard: {exc}", file=sys.stderr)
+        return 1
+    con = db.get_connection()
+    db.init_db(con=con)
+    if db.count_rows("event_instances", con=con) == 0 or db.count_rows("daily_bars", con=con) == 0:
+        print(
+            "scoreboard: no releases or prices stored; run `fortuneteller load-releases`, "
+            "`load-prices` and `load-surprises` first",
+            file=sys.stderr,
+        )
+        return 1
+    today = _now().astimezone(sources.NEW_YORK).date()
+    try:
+        data = scoreboard_data(rows, con, today)
+    except ValueError as exc:
+        print(f"scoreboard: {exc}", file=sys.stderr)
+        return 1
+    text = json.dumps(data, indent=1, ensure_ascii=False) + "\n"
+    page = files("fortuneteller").joinpath("scoreboard.html").read_text()
+    out = settings.scoreboard_dir
+    out.mkdir(parents=True, exist_ok=True)
+    (out / "data.json").write_text(text)
+    # Inside <script>, a "<" in the data could end the element; JSON reads < as the same "<".
+    embedded = text.replace("<", "\\u003c")
+    (out / "index.html").write_text(page.replace(SCOREBOARD_DATA_MARK, embedded))
+    events = data["events"]
+    assert isinstance(events, list)
+    print(
+        f"scoreboard: {len(events)} events, {len(rows)} call rows, data to {data['data_until']}; "
+        f"written to {out}"
+    )
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     # Each flow's short name on the command line, read when the parser is built.
     event_names = [flow.cli_name for flow in flows.EVENT_FLOWS]
@@ -893,6 +1109,12 @@ def build_parser() -> argparse.ArgumentParser:
         "score", help="grade the calls logged in data/calls.csv, beside the replay"
     )
     p_score.set_defaults(func=_score)
+
+    p_scoreboard = sub.add_parser(
+        "scoreboard",
+        help="write the scoreboard page and its data: every call graded, every verdict and record",
+    )
+    p_scoreboard.set_defaults(func=_scoreboard)
 
     return parser
 
