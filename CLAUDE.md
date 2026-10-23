@@ -4,9 +4,9 @@
 
 FortuneTeller — an event-driven market-impact prediction & warning system: ingest social / political
 / climate / macro events, predict which instruments move (direction + magnitude + horizon) with
-**calibrated** confidence. A warning product, not HFT (latency budget is seconds-to-minutes). *Amended 2026-10-23:* an
-entertainment tool with a realistic approach, not a financial one (`docs/legend.md`, the target):
-the bars stay, the surface widens.
+**calibrated** confidence. A warning product, not HFT (latency budget is seconds-to-minutes).
+*Amended 2026-10-23:* an entertainment tool with a realistic approach, not a financial one
+(`docs/legend.md`, the target): the bars stay, the surface widens.
 
 The repo holds M0 (the data spine), the MVP, ladder rungs 1–6 and roadmap steps 1–4b;
 `docs/status.md` has the task in hand, and `uv run fortuneteller --help` what each command does.
