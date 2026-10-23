@@ -14,7 +14,7 @@ verdicts of other flows turned unclear. *(PR #175.)*
 
 ## In progress
 
-The plan update of 2026-10-23 (this change): the target amended to an entertainment tool with a
+The plan update of 2026-10-23 *(PR #176)*: the target amended to an entertainment tool with a
 realistic approach; roadmap steps 5–11 added, the scoreboard first; the README's status brought
 up to date.
 
@@ -29,7 +29,7 @@ The scoreboard, spec (roadmap step 5): a static page from the calls log and the 
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-23 | The plan update: the target amended, roadmap steps 5–11, README status | this change |
+| 2026-10-23 | The plan update: the target amended, roadmap steps 5–11, README status | PR #176 |
 | 2026-10-23 | The US manufacturing survey (ISM), step 2: results — the yield and the dollar track it; no call | PR #175 |
 | 2026-10-23 | The US manufacturing survey (ISM), step 1: the flow, shared with the flash | PR #174 |
 | 2026-10-23 | The US manufacturing survey (ISM), spec | PR #173 |
