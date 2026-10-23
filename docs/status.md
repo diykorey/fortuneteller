@@ -14,7 +14,7 @@ approach; roadmap steps 5–11, the scoreboard first; CLAUDE.md and the README b
 
 ## In progress
 
-The scoreboard, spec (this change): a static page, written by the evening job and served by GitHub
+The scoreboard, spec *(PR #177)*: a static page, written by the evening job and served by GitHub
 Pages, with every call graded, every link's record and every event's verdicts for every market.
 [Spec](steps/scoreboard.md).
 
@@ -29,7 +29,7 @@ The scoreboard, step 1: `fortuneteller scoreboard` writes the page's data and th
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-23 | The scoreboard, spec | this change |
+| 2026-10-23 | The scoreboard, spec | PR #177 |
 | 2026-10-23 | The plan update: the target amended, roadmap steps 5–11, README status | PR #176 |
 | 2026-10-23 | The US manufacturing survey (ISM), step 2: results — the yield and the dollar track it; no call | PR #175 |
 | 2026-10-23 | The US manufacturing survey (ISM), step 1: the flow, shared with the flash | PR #174 |
