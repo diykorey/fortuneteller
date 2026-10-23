@@ -78,7 +78,9 @@ about 40% more on a flash day than on an ordinary one, mostly since 2020 (S&P 50
 against 1.07 before). On the 79 flash days with no other stored release they still move more (1.40
 and 1.25) but fall short of the bar (p 0.012 and 0.048). The likely cause is not the flash: it often
 falls on the month's first working day, the day of the US manufacturing survey (ISM), which is not a
-stored event; untested.
+stored event; untested. (*Amended 2026-10-23*, [the ISM survey](ism-manufacturing.md#results): not
+often, 25 of 142 flash days and 17 of the 79; with ISM stored, the 62 left move 1.25 and 1.25: ISM
+explains part.)
 
 **Nothing follows the surprise.** The DAX comes nearest, the right way (a hotter print, a lower
 DAX, 62% of noticeable surprises), short of p < 0.01; headline gives the same picture for both

@@ -260,6 +260,17 @@ the core surprise; the DAX comes nearest (unclear). No call. Flash days, shared 
 changed two GDP verdicts: the dollar index against the surprise to *doesn't*, VIX on release days to
 unclear.
 
+## The US manufacturing survey (ISM)
+
+Measured 2026-10-23. Detail in [the ISM survey](steps/ism-manufacturing.md#results).
+
+163 ISM releases since 2013 move the yield (ratio 1.47) and the DAX (1.37); the yield and the dollar
+index track its surprise against TradingView's forecast (rank corr 0.33 and 0.26, both 67% of
+noticeable surprises). Walk-forward the yield is right on 31 of 49, short of *holds*: no call. On
+flash days without ISM, New York's move shrinks (S&P 500 1.40 to 1.25) but does not vanish. With
+ISM days out of ordinary days, CPI's S&P 500 and GDP's gold turn unclear on release days, and the
+flash's Euro Stoxx 50 against its surprise; every call is unchanged.
+
 ## What comes next
 
 Chosen 2026-10-13: keep score ([rung 4](steps/rung-4-keep-score.md)), done above with the live path
@@ -270,7 +281,8 @@ check yet. Chosen 2026-10-21: [delivery](steps/rung-6-delivery.md) (rung 6), eac
 as a desktop popup. Chosen 2026-10-21: [cross-country effects, part 1](steps/cross-country.md),
 US releases against Europe's stocks. Chosen 2026-10-22: [ECB decisions](steps/ecb-decisions.md),
 the first event from outside the US, and [euro-area inflation](steps/euro-inflation.md), the first
-with a surprise. The options after it:
+with a surprise. Chosen 2026-10-23: [the ISM survey](steps/ism-manufacturing.md), tested as the
+flash day's other release. The options after it:
 
 | Option | What it is | Cost | What it would tell us |
 | --- | --- | --- | --- |
