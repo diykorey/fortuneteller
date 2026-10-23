@@ -83,6 +83,7 @@ uv run fortuneteller raw-move --event cpi   # do release days move more than ord
 uv run fortuneteller surprise --event nfp   # does the move follow the surprise?
 uv run fortuneteller predict --event nfp    # the walk-forward replay, and a call for the next release
 uv run fortuneteller score                  # the live calls, graded
+uv run fortuneteller scoreboard             # the page: every call graded, every verdict and record
 ```
 
 **What it predicts:** the direction of the 10-year yield and the dollar index on the three links

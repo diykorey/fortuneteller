@@ -88,6 +88,7 @@ before it as counts, the band half its moves land in, and the grade on the close
     return td;
   };
   const pct = (rate) => Math.round(rate * 100) + '%';
+  const p4 = (p) => p.toFixed(4);
   const labels = Object.fromEntries(data.events.map((e) => [e.name, e.label]));
 
   byId('when').textContent = data.data_until
@@ -125,17 +126,21 @@ before it as counts, the band half its moves land in, and the grade on the close
       + c.by_chance + ' of them. ' + data.rules[key];
   };
 
-  // The grids: one row per event, one column per market.
+  // The grids: one row per event, one column per market; the replay's only for markets some
+  // event has an expected direction for.
   const walk = byId('walk');
-  walk.appendChild(head(['Event', 'Against'].concat(data.markets)));
-  data.events.filter((e) => e.walk_forward).forEach((e) => {
+  const replayed = data.events.filter((e) => e.walk_forward);
+  const linked = data.markets.filter((m) => replayed.some((e) => e.walk_forward.links[m]));
+  walk.appendChild(head(['Event', 'Against'].concat(linked)));
+  replayed.forEach((e) => {
     const w = e.walk_forward;
     walk.appendChild(row([el('td', e.label), el('td', w.measure + ' against ' + w.against)]
-      .concat(data.markets.map((m) => {
+      .concat(linked.map((m) => {
         const l = w.links[m];
         if (!l) return dash();
-        return cell(l.verdict, l.right + ' of ' + l.predictions + ' right, p ' + l.p,
-          'expected ' + l.expected + (l.first ? ', from ' + l.first : ''));
+        return cell(l.verdict,
+          l.right + ' of ' + l.predictions + ' right' + (l.predictions ? ', p ' + p4(l.p) : ''),
+          l.expected + (l.first ? ' since ' + l.first : ''));
       }))));
   });
   chance('walk-chance', 'walk_forward');
@@ -148,8 +153,10 @@ before it as counts, the band half its moves land in, and the grade on the close
       .concat(data.markets.map((m) => {
         const l = s.links[m];
         if (!l) return dash();
-        const hit = l.hit_rate === null ? 'no expected direction' : 'hit ' + pct(l.hit_rate) + ' of ' + l.hit_n + ', expected ' + l.expected;
-        return cell(l.verdict, 'corr ' + l.rank_corr + ', p ' + l.p + ', n ' + l.n, hit);
+        const hit = l.hit_rate === null
+          ? 'no expected direction'
+          : 'hit ' + pct(l.hit_rate) + ' of ' + l.hit_n + ', ' + l.expected;
+        return cell(l.verdict, 'corr ' + l.rank_corr.toFixed(2) + ', p ' + p4(l.p) + ', n ' + l.n, hit);
       }))));
   });
   chance('surprise-chance', 'surprise');
@@ -163,7 +170,8 @@ before it as counts, the band half its moves land in, and the grade on the close
       .concat(data.markets.map((m) => {
         const r = e.raw_move[m];
         if (!r) return dash();
-        return cell(r.verdict, 'ratio ' + r.ratio + ', p ' + r.p, r.median_event + ' on ' + r.days + ' days, ' + r.median_other + ' otherwise');
+        return cell(r.verdict, 'ratio ' + r.ratio.toFixed(2) + ', p ' + p4(r.p),
+          r.median_event + ' on ' + r.days + ' days vs ' + r.median_other);
       }))));
   });
   chance('raw-chance', 'raw_move');

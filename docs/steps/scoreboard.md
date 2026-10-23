@@ -28,7 +28,9 @@ evening job. The first thing delivered beyond this laptop.
   on `main`, so the roadmap's script → web-service trigger stays unfired.
 - **Written by the evening job**, after `score`, in the same pull request and only when `score` has
   something to commit: the page changes on the days the calls do. Measured 2026-10-23 on one flow:
-  `raw-move` 18 s, `surprise` 44 s, `predict` 17 s; about ten minutes for every flow.
+  `raw-move` 18 s, `surprise` 44 s, `predict` 17 s; about ten minutes for every flow (*amended
+  2026-10-23:* the whole command took 193 s for eight events, the ordinary days being counted once
+  per flow rather than once per command).
 - **Our numbers only.** The JSON holds verdicts, records and the calls already committed in
   `data/calls.csv`; no price or release series, the repository being public.
 
@@ -36,7 +38,7 @@ evening job. The first thing delivered beyond this laptop.
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | `fortuneteller scoreboard` writes `docs/scoreboard/data.json` (each flow's raw-move and surprise verdicts for every market, each link's walk-forward record, the live calls with their grades, the chance counts, the data's last day); `docs/scoreboard/index.html` renders it; `docs/.nojekyll` | On a test database the JSON's verdicts and records equal the lines `raw-move`, `surprise` and `predict` print; the page opened from a file shows every grid and call; a call row shows direction, counts, band and grade, and no `%` |
+| 1 | ~~`fortuneteller scoreboard` writes `docs/scoreboard/data.json` (each flow's raw-move and surprise verdicts for every market, each link's walk-forward record, the live calls with their grades, the chance counts, the data's last day); `docs/scoreboard/index.html` renders it; `docs/.nojekyll`~~ **done** 2026-10-23: on a copy of the real store, eight events (ISM not loaded yet) and six call rows in 193 s; the page checked in a browser, every grid and call shown; the first page committed from that run | On a test database the JSON's verdicts and records equal the lines `raw-move`, `surprise` and `predict` print; the page opened from a file shows every grid and call; a call row shows direction, counts, band and grade, and no `%` (*amended 2026-10-23:* no probability; a price market's band keeps its percent unit, as the popup prints it) |
 | 2 | The evening job runs it after `score`, in the score pull request; GitHub Pages enabled on `main`, `/docs` (a repository setting, by hand: not enabled as of 2026-10-23) | The published page shows the latest score pull request's numbers; the [Legend](../legend.md)'s *Release* entry rewritten |
 | 3 | Results: the first release day on the page, the jobs report of 2026-11-06 | Its call rows equal `data/calls.csv` and `score`'s grades |
 
@@ -44,9 +46,15 @@ evening job. The first thing delivered beyond this laptop.
 
 `scoreboard` in `__main__.py` calls what the reports call (`study.measure_raw_moves`, the surprise
 verdicts, the walk-forward replay, `study.read_calls` and `study.score_calls`) and writes plain
-dicts with `json.dumps`. The page is one file, plain JavaScript, that fetches `data.json` and
-builds the tables: the calls, the links that hold, the event × market grids. `scripts/release-day.sh`
-gets one line after `score`. No new unit, no daemon-reload.
+dicts with `json.dumps`. The page is one file, plain JavaScript, that builds the tables from the
+data: the calls, newest day first, with the missed releases among them; then the walk-forward,
+surprise and raw-move grids, one row per event and one column per market, the chance count and
+the rule under each. *Amended 2026-10-23:* a browser will not fetch a file beside a page opened
+from disk, so the command writes the page too, from the template `scoreboard.html` in the package
+with the JSON embedded; `data.json` beside it is the same data for anyone else. A call's record is
+the replay's calls before its day, which is what the popup counted. `FT_SCOREBOARD_DIR` moves the
+output, for tests. `scripts/release-day.sh` gets one line after `score`. No new unit, no
+daemon-reload.
 
 ## What this does not do
 
