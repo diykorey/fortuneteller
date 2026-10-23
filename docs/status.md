@@ -13,7 +13,7 @@ VIX, not Europe's stocks; nothing follows its surprise; two GDP verdicts changed
 
 ## In progress
 
-The US manufacturing survey (ISM), spec (this change). ISM's index as an event flow with its
+The US manufacturing survey (ISM), spec *(PR #173)*. ISM's index as an event flow with its
 surprise against TradingView's forecast, run through rung 1 and step 4, and the euro-area
 flash-day check repeated without ISM days. [Spec](steps/ism-manufacturing.md).
 
