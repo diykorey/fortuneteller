@@ -14,7 +14,7 @@ Pages, with every call graded, every link's record and every event's verdicts fo
 
 ## In progress
 
-The scoreboard, step 1: `fortuneteller scoreboard` writes `docs/scoreboard/data.json`
+The scoreboard, step 1 *(PR #178)*: `fortuneteller scoreboard` writes `docs/scoreboard/data.json`
 and the page that renders it, from the same functions as the commands; the calls with the popup's
 record and band, graded.
 
@@ -30,6 +30,7 @@ The scoreboard, step 2: the evening job writes the page after `score`; GitHub Pa
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-23 | The scoreboard, step 1: `fortuneteller scoreboard` writes the page's data and the page; the first page committed | PR #178 |
 | 2026-10-23 | The scoreboard, spec | PR #177 |
 | 2026-10-23 | The plan update: the target amended, roadmap steps 5–11, README status | PR #176 |
 | 2026-10-23 | The US manufacturing survey (ISM), step 2: results — the yield and the dollar track it; no call | PR #175 |
