@@ -9,7 +9,9 @@ happening now, it forecasts — across **short / mid / long horizons**:
 
 Each forecast is *explained*, not just emitted — but every claim is anchored to a **measurable
 backbone** (realized market moves), so confidence stays **calibrated** rather than asserted. A
-forecasting/warning product, not HFT (the latency budget is seconds-to-minutes).
+forecasting/warning product, not HFT (the latency budget is seconds-to-minutes). *Amended
+2026-10-23:* an entertainment tool with a realistic approach, not a financial one: a fortune teller
+who shows their record ([Legend](docs/legend.md#the-target)).
 
 Design principles that run through everything:
 
@@ -64,34 +66,34 @@ tests/           # pytest suite (ruff + mypy --strict + pytest is the gate)
 
 ## Status
 
-Bootstrapping, **measurable-spine first**. **M0 — the data spine — the MVP and rung 1 are
-complete.** Today the repo gives you typed Pydantic models, a DuckDB schema, the committed seed
-tables, a CLI that loads and queries them, the real CPI and jobs-report release histories and the
-Fed's decisions, each instrument's measured move around every event, and how that move relates to
-the CPI and payroll surprises:
+Bootstrapping, **measurable-spine first**. M0 (the data spine), the MVP, ladder rungs 1–6 and the
+roadmap's steps 1–4b are complete. The repo holds nine events (US CPI, the jobs report, Fed
+decisions, retail sales, core PCE, GDP and the ISM survey; ECB decisions and the euro area's flash
+inflation) and seven markets (the S&P 500, the 10-year yield, the dollar index, gold, VIX, the DAX
+and the Euro Stoxx 50), 1972 to today, from free sources: each market's measured move around every
+release, how it relates to each surprise, and a walk-forward replay of every link.
 
 ```bash
 uv sync
-uv run fortuneteller init        # create the DuckDB file
-uv run fortuneteller seed        # load the seed CSVs
-uv run fortuneteller query-demo  # a sample effect-size lookup
-uv run fortuneteller load-releases  # CPI and NFP from FRED, Fed decisions from the Fed (needs FT_FRED_API_KEY)
-uv run fortuneteller load-prices    # daily closes from Yahoo + the move around each release
-uv run fortuneteller load-surprises # each CPI and jobs-report surprise, FRED + Cleveland Fed (about 45 s)
-uv run fortuneteller raw-move       # do CPI days move more than other days? --event nfp | fomc (about 15 s)
-uv run fortuneteller surprise       # does each move follow the CPI surprise? --event nfp for jobs (about 20 s)
+uv run fortuneteller --help                 # every command and what it prints
+uv run fortuneteller load-releases          # every event, from FRED, the Fed and TradingView (needs FT_FRED_API_KEY)
+uv run fortuneteller load-prices            # daily closes from Yahoo and the move around each release
+uv run fortuneteller load-surprises         # each surprise against its expected values
+uv run fortuneteller raw-move --event cpi   # do release days move more than ordinary days?
+uv run fortuneteller surprise --event nfp   # does the move follow the surprise?
+uv run fortuneteller predict --event nfp    # the walk-forward replay, and a call for the next release
+uv run fortuneteller score                  # the live calls, graded
 ```
 
-There is **no prediction code yet**: the MVP measures the past; nothing forecasts a release or warns.
-An earlier attempt at that layer was reset on 2026-08-05 for being over-engineered for the stage; it
-is preserved on the `main_05082026` branch.
-
-The MVP answered **does the edge exist** for one event type (CPI) × five liquid instruments, from
-real historical data: CPI moves the 10-year yield, the dollar and VIX, and the 10-year yield's move
-follows the size of the surprise, weakly. Rung 1 added the jobs report and Fed decisions: both
-move markets, the jobs report most, and the yield's and the dollar's moves follow the payroll
-surprise clearly but just short of the bar. See [MVP results](docs/mvp-results.md) for what that
-means and the options for what comes next, and the [roadmap](docs/roadmap.md) for the ladder.
+**What it predicts:** the direction of the 10-year yield and the dollar index on the three links
+that hold walk-forward (the jobs report's dollar clearly, its yield barely over drift, retail
+sales' yield), each printed with its record as counts and its band, never a probability: none has
+proved honest yet. On release days the calls are made, graded and delivered as a desktop popup
+unattended ([the release-day job](docs/steps/release-day-job.md), [the evening
+score](docs/steps/evening-score.md)). Stocks, gold and VIX follow no surprise by direction; the
+Fed, the ECB, euro-area inflation and ISM give no call. [MVP results](docs/mvp-results.md) has the
+findings in plain words, the [roadmap](docs/roadmap.md) what comes next, and
+[status](docs/status.md) the task in hand.
 
 > **Data provenance:** the seed reference tables are partial (read-only Notion export limits) and
 > the effect-size values in them are illustrative placeholders, not measurements — replacing them

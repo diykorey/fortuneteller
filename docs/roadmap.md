@@ -9,6 +9,9 @@
 Given an event, say which instruments move, by how much, in which direction — with confidence that
 means something. A warning product, not HFT: the latency budget is seconds to minutes.
 
+*Amended 2026-10-23:* an entertainment tool with a realistic approach, not a financial one
+([Legend](legend.md#the-target)). The bars stay; the surface widens.
+
 ## The MVP — "does the edge exist?"
 
 The MVP answers one question with real data: **when CPI comes in different from what was expected,
@@ -77,6 +80,28 @@ widen. Each new expected value is one expectation source and each new event one 
 | 4a | **Cross-country effects** — part 1, [US releases and Europe's stocks](steps/cross-country.md), **done** 2026-10-21: Europe moves on Fed decisions and follows CPI's surprise more than New York, short of *tracks*. Part 2, [ECB decisions](steps/ecb-decisions.md), **done** 2026-10-22: they move the dollar, not Europe's stocks. Part 3, [euro-area inflation](steps/euro-inflation.md), **done** 2026-10-22: the flash moves New York, probably by another release that day, and nothing follows its surprise. The whole step: non-US markets with their country; moves and surprises in standard units; `effect_size_matrix` per (event type, origin country) × market; a report per affected country | One event has one surprise, but a different power in each country's markets; measuring that needs markets abroad, which come with more events |
 | 4b | **[The US manufacturing survey (ISM)](steps/ism-manufacturing.md)** — one more US flow, from TradingView, chosen 2026-10-23. **Done** 2026-10-23: the yield and the dollar track its surprise, short of *holds* walk-forward; it explains part of New York's flash-day move | Part 3 of step 4a found New York moving on euro-area flash days and named ISM, released the same morning, as the likely cause, untested |
 
+Decided 2026-10-23, after step 4b, with the target amended: the five monthly flows added since
+step 4 gave no new call, nothing built reaches anyone but the laptop's popup, and the taxonomy's
+other half (statements, shocks, news) is unmeasured. So: show what is measured, raise the call
+count once, then widen events and markets, with every bar unchanged. A statement nobody scheduled
+is never called before it happens: for news the product is a graded reaction record, and for a
+scheduled statement a preview. Counts checked 2026-10-23 on the calendars already cached.
+
+| # | Step | Why now |
+| --- | --- | --- |
+| 5 | **The scoreboard** — a static page the evening job writes from the calls log and the score: every call and its grade, every link's record, every event's verdicts for every market, and how many *moves* chance alone would give at these counts | Everything below is a table nobody sees without it. A static page is not a web service, so no graduation trigger fires |
+| 6 | **Jobless claims** — the weekly US release (Thursday 08:30 New York, about 700 since 2013 with a forecast) as a flow with its surprise, called live by the morning job | The only event that beats the sample wall: about 50 calls a year against 12 for a monthly one |
+| 7 | **More outcomes** — oil, EUR/USD, the Nasdaq, the 5-year yield, the FTSE 100, the STOXX 600, bitcoin, a defence and an energy ETF, each with its close and zone; "does it move?" only, unless a sign is written down first | Free on Yahoo with daily history; every verdict table gains rows, and oil and defence are the natural outcomes of step 10's shocks. More cells mean more *moves* by chance: the scoreboard says how many |
+| 8 | **Scheduled statements** — the Fed chair's and the ECB president's speeches, testimonies and press conferences as two flows, "does it move?" only; the morning job previews a scheduled one with its record | The cached calendar holds 5,644 timed Fed and ECB statements since 2013, none with an expected value, so no surprise. Only the chair's and the president's are events: 1.7 statements a trading day would leave no ordinary day |
+| 9 | **Germany's calendar** — ZEW and Ifo (10:00 and 11:00 Frankfurt) and the German flash CPI, the first European surprises with a forecast history | A `DE` fetch of the same calendar. Whether Europe reacts to its own survey news, after the ECB and the flash showed it reacting mostly to the US |
+| 10 | **Dated shocks** — elections (US, European Parliament, Germany, France, UK), tariff announcements, debt-ceiling deadlines and summits as hand-written dates in a seed CSV; "does it move?" and for how long (`ret_1w`) | The taxonomy's other half, measured honestly; the n is tiny by nature and the page says *too few* |
+| 11 | **News as a feed** — GDELT, one narrow question first: the US president's statements on trade since 2015, against oil, stocks and the dollar, with the bar fixed before measuring | The only free news-event history with actors and tone, and noisy. Decides whether a feed is worth building on before any detection machinery (rung 7) |
+
+Later, not planned in detail: a statement's text read for its direction (hawkish or dovish), the
+first use of a language model, graded like a surprise; prediction-market prices as an election's
+expected value; and "beat the fortune teller", a person's own call logged before the release and
+graded beside the machine's.
+
 ## After the MVP — the feature ladder
 
 In order. Each rung is worth building only because the one below it worked.
@@ -89,10 +114,10 @@ In order. Each rung is worth building only because the one below it worked.
 | 4 | **[Keep score](steps/rung-4-keep-score.md)** — log predictions, grade them against outcomes. **Done** 2026-10-16: logged and graded on the first two live releases; every verdict "too few", as expected | You cannot grade predictions you are not yet making. |
 | 5 | **[Live path](steps/rung-5-live-path.md)** — fetch the release when it lands, instead of by hand. **Done** 2026-10-16: the first fetched actual equals FRED's; unattended by [the release-day job](steps/release-day-job.md), installed 2026-10-15 | Automating a manual step that must first be worth automating. |
 | 6 | **[Delivery](steps/rung-6-delivery.md)** — the warning actually reaches a person. Chosen 2026-10-21: a desktop popup on this laptop | Never deliver uncalibrated warnings; needs rung 3. *Amended 2026-10-20* ([the record, not a probability](steps/record-not-probability.md)): a warning carries the direction, its walk-forward record and its band, never a stated probability, until one proves honest by rung 3's rule. |
-| 7 | **Unscheduled events** — detection, classification, entity linking, corroboration | The hardest part of the system, and worthless without a working predictor behind it. |
+| 7 | **Unscheduled events** — detection, classification, entity linking, corroboration. *Amended 2026-10-23:* statements, shocks and news are measured as history first (steps 8, 10 and 11 above); live detection stays last | The hardest part of the system, and worthless without a working predictor behind it. |
 
-Beyond the ladder, and deliberately not planned in detail: breadth (more instruments, regime
-conditioning), productization, and operations. They get planned when rung 7 is in sight.
+Beyond the ladder, and deliberately not planned in detail: regime conditioning, productization
+beyond the scoreboard, and operations. They get planned when rung 7 is in sight.
 
 ## The rules this roadmap is built on
 

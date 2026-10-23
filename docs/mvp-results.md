@@ -282,17 +282,21 @@ as a desktop popup. Chosen 2026-10-21: [cross-country effects, part 1](steps/cro
 US releases against Europe's stocks. Chosen 2026-10-22: [ECB decisions](steps/ecb-decisions.md),
 the first event from outside the US, and [euro-area inflation](steps/euro-inflation.md), the first
 with a surprise. Chosen 2026-10-23: [the ISM survey](steps/ism-manufacturing.md), tested as the
-flash day's other release. The options after it:
+flash day's other release. Decided 2026-10-23: the target is an entertainment tool with a realistic
+approach ([Legend](legend.md#the-target)), and the plan widens what is shown while every bar stays:
+the [roadmap](roadmap.md#next-steps-in-order)'s steps 5–11, the scoreboard first. The options as
+they stood:
 
 | Option | What it is | Cost | What it would tell us |
 | --- | --- | --- | --- |
 | ~~**More events**~~ (roadmap rung 1) | ~~Add the jobs report (NFP) and Fed decisions~~ **done**, above | — | — |
-| **Sharper measurement** | Economists' consensus forecasts for CPI and payrolls, and intraday prices around the release | Paid data | Whether the yield's and the dollar's jobs-report link passes the bar against a real forecast; for CPI, whether the weak link is the market or our daily window |
+| **Sharper measurement** | Economists' consensus forecasts for CPI and payrolls, and intraday prices around the release | Paid data | Whether the yield's and the dollar's jobs-report link passes the bar against a real forecast; for CPI, whether the weak link is the market or our daily window. *Deferred 2026-10-23:* it serves a trading use, not the amended target |
 | ~~**A better free forecast**~~ | ~~A model of each jobs report from what is published before it (weekly jobless claims, the ADP report)~~ **done**, above: both links pass since 2014, but against the trend too | — | — |
 | ~~**Predict the next release**~~ (rung 2) | ~~Forecast each link's direction, graded walk-forward~~ **done**, above: the jobs-report dollar holds clearly, the yield on drift, CPI too few | — | — |
 | ~~**Honest confidence**~~ (rung 3) | ~~A probability and a band per call, graded~~ **done**, above: the bands are honest, the probabilities not | — | — |
 | ~~**More events**~~ (roadmap step 4) | ~~Retail sales, core PCE, GDP~~ **done**, above: retail sales' yield holds; core PCE and GDP give no calls | — | — |
-| **Cross-country effects** (roadmap step 4a) | ECB decisions and euro-area releases, with markets abroad | Free sources, more work | Whether a US surprise moves foreign markets, and the reverse |
+| ~~**Cross-country effects**~~ (roadmap step 4a) | ~~ECB decisions and euro-area releases, with markets abroad~~ **done** in three parts, above: Europe follows US news more than its own; Germany's calendar is step 9 | — | — |
+| **Widen what is shown** (roadmap steps 5–11) | The scoreboard, jobless claims, more outcomes, scheduled statements, Germany's calendar, dated shocks, news as a feed | Free sources, more work | Chosen 2026-10-23: whether the fortunes reach anyone, and what the taxonomy's other half does to markets |
 | ~~**Keep score**~~ (rung 4) | ~~Log each live call and grade it later~~ **done**, above: logged and graded, unattended from 2026-10-16; verdicts "too few" | — | — |
 
 Rung 1 strengthened the case for better expected values before predicting: two links (the yield
