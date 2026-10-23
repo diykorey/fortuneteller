@@ -14,17 +14,22 @@ verdicts of other flows turned unclear. *(PR #175.)*
 
 ## In progress
 
-Release-day job step 3, evening score step 2 and rung 6 step 2: the first release the morning job
+The plan update of 2026-10-23 (this change): the target amended to an entertainment tool with a
+realistic approach; roadmap steps 5–11 added, the scoreboard first; the README's status brought
+up to date.
+
+Also waiting: release-day job step 3, evening score step 2 and rung 6 step 2: the first release the morning job
 logs, pops up and the evening grades, waiting for the next CPI or retail sales release.
 
 ## Next
 
-To be chosen: sharper measurement (paid data), or a pause until the November releases.
+The scoreboard, spec (roadmap step 5): a static page from the calls log and the score.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-23 | The plan update: the target amended, roadmap steps 5–11, README status | this change |
 | 2026-10-23 | The US manufacturing survey (ISM), step 2: results — the yield and the dollar track it; no call | PR #175 |
 | 2026-10-23 | The US manufacturing survey (ISM), step 1: the flow, shared with the flash | PR #174 |
 | 2026-10-23 | The US manufacturing survey (ISM), spec | PR #173 |

@@ -325,8 +325,15 @@ Terms are grouped by what they are about, alphabetical within each group.
   first published that day and the months revised that day. Rung 1 reads NFP's first-published
   changes from it in one request.
 - **GDELT** — a free global database of news events. A detection-stage source, deferred.
+- **GDELT** (Global Database of Events, Language and Tone) — a free, machine-coded record of the
+  world's news as dated events since 2015 (daily since 1979), each with its actors, type and tone.
+  The only free history of statements and shocks as events, and noisy: [roadmap](roadmap.md) step
+  11 measures one narrow question against a bar fixed first.
 - **PAYEMS** — the FRED series ID for total US non-farm payrolls, in thousands of jobs: the NFP
   headline number.
+- **Prediction market** — a market in contracts that pay on an event's outcome (an election, a
+  rate decision); its price is a crowd's probability, the nearest thing to a consensus for a
+  political event. Polymarket's history is free from 2020. Not used yet.
 - **Series ID** — a data provider's unique code for one time series (e.g. `CPIAUCSL`). Load-bearing
   the way instrument symbols are: the wrong ID silently fetches the wrong data.
 - **DFEDTAR / DFEDTARU** — FRED series IDs for the Fed's federal funds target: a single rate until
@@ -408,6 +415,9 @@ Terms are grouped by what they are about, alphabetical within each group.
   liquid instruments) before widening to anything else.
 - **Replay harness** (legacy) — the discarded mechanism for running canned events through the
   prediction core. Appears in legacy docs; not part of the current plan.
+- **Scoreboard** — the static page the evening job will write ([roadmap](roadmap.md) step 5): every
+  call graded, every link's record, every event's verdicts for every market. The first thing
+  delivered to anyone but this laptop.
 - **The reset** — 2026-08-05, when `main` was rolled back to the M0 spine because the
   implementation had become over-engineered for the stage. Recorded in [CLAUDE.md](../CLAUDE.md).
 - **The spine** — the M0 data layer: models, schema, store, seed loader, CLI. Shipped.

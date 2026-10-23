@@ -21,6 +21,15 @@ we are never competing with HFT and never need to.
 "Confidence that means something" is the hard part and the whole point. A system that says 70% must
 be right about 70% of the time, or the number is decoration.
 
+*Amended 2026-10-23.* **An entertainment tool with a realistic approach, not a financial one.** A
+fortune teller who shows their record: each fortune is a direction with its graded history beside
+it, or a measured reaction to a kind of event, never advice. That changes the surface, not the
+method: every bar stays where it was fixed, nothing is tuned for a result, and a negative result is
+still a result. It changes what counts as progress: more kinds of events and markets, a steadier
+cadence, and being seen. A reaction record graded after the fact, and a preview before a scheduled
+statement, count as fortunes; a direction right six times in ten is content when the four are
+shown too.
+
 ## The idea
 
 The bet, in one sentence:
