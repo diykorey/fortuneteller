@@ -4,11 +4,14 @@
 
 FortuneTeller — an event-driven market-impact prediction & warning system: ingest social / political
 / climate / macro events, predict which instruments move (direction + magnitude + horizon) with
-**calibrated** confidence. A warning product, not HFT (latency budget is seconds-to-minutes).
+**calibrated** confidence. A warning product, not HFT (latency budget is seconds-to-minutes). *Amended 2026-10-23:* an
+entertainment tool with a realistic approach, not a financial one (`docs/legend.md`, the target):
+the bars stay, the surface widens.
 
-The repo is **bootstrapping**: M0 (the data spine) plus the MVP and the feature-ladder rungs in
-`docs/status.md`; what each CLI command does is in `uv run fortuneteller --help`. **Nothing forecasts
-a release before it lands yet.**
+The repo holds M0 (the data spine), the MVP, ladder rungs 1–6 and roadmap steps 1–4b;
+`docs/status.md` has the task in hand, and `uv run fortuneteller --help` what each command does.
+**A call is made from the actual once it lands, never before it**, and a statement nobody scheduled
+is never called before it happens.
 
 ## The 2026-08-05 reset — read before planning any work
 
@@ -38,9 +41,14 @@ task expected after it as the new *Next*; when finishing one, record it in the s
 
 ## The documents
 
-Only two are current, both rewritten on 2026-09-11:
+The current set, each kept true or deleted:
 
-- **`docs/roadmap.md`** — the MVP and the feature ladder after it. **Build from this.**
+- **`docs/legend.md`** — the target and the way; the template every step document follows.
+- **`docs/roadmap.md`** — the MVP, the ladder and the numbered steps after it. **Build from this.**
+- **`docs/status.md`**, **`docs/mvp-results.md`**, **`docs/steps/*.md`** — the task in hand, the
+  findings in plain words, one spec per step.
+- **`docs/schema.md`**, **`docs/precision.md`**, **`docs/extending.md`** — every column, every
+  known shortcut and its trigger, how to add a flow or an expectation source.
 - **`docs/glossary.md`** — every acronym and term. Add to it whenever you introduce one.
 
 Everything under **`docs/legacy/`** is the pre-reset corpus: reference material, **not
@@ -50,13 +58,15 @@ roadmap wins. `docs/legacy/README.md` says what in there is still worth reading 
 
 ## Scope discipline — the provable core
 
-The MVP measures exactly one slice before widening anything: **CPI × 5 liquid instruments** (SPY,
-UST 10Y, DXY, Gold, VIX) over real history, from free sources (FRED + yfinance/Stooq). The full
-31-event taxonomy, 55 instruments, 132 platforms, unscheduled detection, and paid/tick data are
-**post-proof**. Do not implement against the full breadth until the core is measured.
+The core is measured: nine events × seven markets from free sources, three links that hold
+walk-forward. Widening is planned in `docs/roadmap.md` steps 5–11 and goes one flow or one set of
+markets per PR, each with a spec whose bars and expected outcome are written before anything is
+measured and amended only with a date. Still deferred: unscheduled detection (rung 7, history
+first) and paid data.
 
-**Measure before predicting.** The MVP produces measured numbers, not warnings — emitting confident
-output derived from placeholder seed values is the specific failure the reset was a response to.
+**Measure before predicting.** Every number comes from real data and is graded. A call carries its
+record as counts and its band, never a probability, until one proves honest by rung 3's rule.
+Emitting confident output from placeholder values is the specific failure the reset answered.
 
 ## Commands
 
@@ -70,7 +80,8 @@ just check                           # the full local gate = lint + typecheck + 
 
 ## Where things live
 
-- **The plan:** `docs/roadmap.md` — the MVP (four steps) and the feature ladder after it. M0 shipped
+- **The plan:** `docs/roadmap.md` — the MVP, the ladder and the numbered steps after it. Work goes
+  spec → one branch → one PR per step, `docs/status.md` updated in the same change. M0 shipped
   as tickets M0-01…09 (issues #2–#10, milestone closed); its ticket doc is now
   `docs/legacy/m0-tickets.md`. There is no ticket set for the MVP steps and none is needed yet.
 - **The data spine:** Pydantic v2 models + a thin SQL helper over DuckDB — **no ORM**. Schema is plain
