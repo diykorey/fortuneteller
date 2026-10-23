@@ -212,7 +212,7 @@ class Trend12m:
         announced = {event.event_id: event.event_ts for event in events}
         origin = {event.event_id: (event.event_type, event.country) for event in events}
         expected: list[Expectation] = []
-        actuals = [a for a in actuals if a.measure not in sources.EURO_FLASH_ROWS]
+        actuals = [a for a in actuals if a.measure not in sources.TRADINGVIEW_ROWS]
         for group in dict.fromkeys((origin[a.event_id], a.measure) for a in actuals):
             _origin, measure = group
             by_period = {a.period: a for a in actuals if (origin[a.event_id], a.measure) == group}
@@ -612,40 +612,40 @@ TRADINGVIEW_FORECAST = "tradingview_forecast"
 
 
 class TradingViewForecast:
-    """TradingView's forecast for each euro-area flash estimate (docs/steps/euro-inflation.md);
-    known by the end of the day before the release (assumed)."""
+    """TradingView's forecast for each release read from its calendar alone, in
+    ``sources.TRADINGVIEW_ROWS`` (docs/steps/euro-inflation.md, ism-manufacturing.md); known by the
+    end of the day before the release in its own zone (assumed)."""
 
     name = TRADINGVIEW_FORECAST
     label = "TradingView's forecast"
-    zone = sources.FRANKFURT
 
     def expectations(
         self, events: Sequence[EventInstance], actuals: Sequence[Actual], api_key: str
     ) -> list[Expectation]:
-        wanted = [a for a in own_actuals(events, actuals) if a.measure in sources.EURO_FLASH_ROWS]
-        if not wanted:
-            return []
-        released = {
-            event.event_id: event.event_ts.replace(tzinfo=UTC).astimezone(self.zone).date()
-            for event in events
-        }
-        forecasts = {
-            (flash.announced.astimezone(self.zone).date(), flash.measure): flash.forecast
-            for flash in sources.euro_flashes(settings.cache_dir)
-            if flash.forecast is not None
-        }
-        return [
-            Expectation(
-                a.event_id,
-                a.measure,
-                self.name,
-                forecast,
-                a.unit,
-                end_of_day(released[a.event_id] - timedelta(days=1), self.zone),
-            )
-            for a in wanted
-            if (forecast := forecasts.get((released[a.event_id], a.measure))) is not None
-        ]
+        rows = sources.TRADINGVIEW_ROWS
+        wanted = [a for a in own_actuals(events, actuals) if a.measure in rows]
+        announced = {event.event_id: event.event_ts.replace(tzinfo=UTC) for event in events}
+
+        def day(measure: str, when: datetime) -> date:
+            return when.astimezone(rows[measure].zone).date()
+
+        expected: list[Expectation] = []
+        for country in dict.fromkeys(rows[a.measure].country for a in wanted):
+            measures = {m for m, row in rows.items() if row.country == country}
+            forecasts = {
+                (r.measure, day(r.measure, r.announced)): r.forecast
+                for r in sources.tradingview_releases(settings.cache_dir, measures)
+                if r.forecast is not None
+            }
+            for a in wanted:
+                released = day(a.measure, announced[a.event_id])
+                forecast = forecasts.get((a.measure, released))
+                if a.measure in measures and forecast is not None:
+                    known_at = end_of_day(released - timedelta(days=1), rows[a.measure].zone)
+                    expected.append(
+                        Expectation(a.event_id, a.measure, self.name, forecast, a.unit, known_at)
+                    )
+        return expected
 
 
 EXPECTATION_SOURCES: list[ExpectationSource] = [

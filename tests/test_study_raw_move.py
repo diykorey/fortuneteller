@@ -342,14 +342,15 @@ def test_raw_move_measures_ecb_decisions(tmp_db: Path, capsys: pytest.CaptureFix
     assert sum(line.endswith(" moves") for line in capsys.readouterr().out.splitlines()) == 7
 
 
-def test_raw_move_measures_euro_flash_estimates(
-    tmp_db: Path, capsys: pytest.CaptureFixture[str]
+@pytest.mark.parametrize("flow", [flows.HICP_FLOW, flows.ISM_FLOW], ids=lambda f: f.cli_name)
+def test_raw_move_measures_tradingview_releases(
+    flow: flows.TradingViewFlow, tmp_db: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
-    # given euro-area flash estimates and prices stored
-    _synthetic_store(db.get_connection(), flow=flows.HICP_FLOW)
+    # given the flow's releases and prices stored
+    _synthetic_store(db.get_connection(), flow=flow)
 
-    # when the command runs for the flash
-    code = main(["raw-move", "--event", "hicp"])
+    # when the command runs for it
+    code = main(["raw-move", "--event", flow.cli_name])
 
     # then each of the seven markets gets its verdict
     assert code == 0
