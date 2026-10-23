@@ -249,6 +249,17 @@ Measured 2026-10-22. Detail in [ECB decisions](steps/ecb-decisions.md#results).
 or Euro Stoxx 50, not the S&P 500, the yield or gold; VIX is unclear. The Fed moves six of seven.
 Taking ECB days out of the ordinary days changed no US verdict.
 
+## Cross-country effects: euro-area inflation
+
+Measured 2026-10-22. Detail in [euro-area inflation](steps/euro-inflation.md#results).
+
+143 flash HICP estimates since 2014 move the S&P 500 (ratio 1.41) and VIX (1.44), not Europe's
+stocks, the yield or the dollar; on flash days with no other release the two fall short of the bar,
+so the move is probably another US release that day. Against TradingView's forecast nothing follows
+the core surprise; the DAX comes nearest (unclear). No call. Flash days, shared with US releases,
+changed two GDP verdicts: the dollar index against the surprise to *doesn't*, VIX on release days to
+unclear.
+
 ## What comes next
 
 Chosen 2026-10-13: keep score ([rung 4](steps/rung-4-keep-score.md)), done above with the live path
@@ -258,7 +269,8 @@ probability](steps/record-not-probability.md), the call printed without a percen
 check yet. Chosen 2026-10-21: [delivery](steps/rung-6-delivery.md) (rung 6), each call
 as a desktop popup. Chosen 2026-10-21: [cross-country effects, part 1](steps/cross-country.md),
 US releases against Europe's stocks. Chosen 2026-10-22: [ECB decisions](steps/ecb-decisions.md),
-the first event from outside the US. The options after it:
+the first event from outside the US, and [euro-area inflation](steps/euro-inflation.md), the first
+with a surprise. The options after it:
 
 | Option | What it is | Cost | What it would tell us |
 | --- | --- | --- | --- |

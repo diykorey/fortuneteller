@@ -8,25 +8,25 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Cross-country effects, part 3, spec: euro-area inflation. *(PR #169.)*
+Cross-country effects, part 3, step 2: results. Euro-area flash inflation moves the S&P 500 and
+VIX, not Europe's stocks; nothing follows its surprise; two GDP verdicts changed. *(PR #171.)*
 
 ## In progress
 
-Cross-country effects, part 3, step 1: the flash flow *(PR #170)*. The euro area's flash HICP
-as an event flow with its surprise against TradingView's forecast. [Spec](steps/euro-inflation.md).
-
-Also waiting: release-day job step 3, evening score step 2 and rung 6 step 2: the first release the morning job
+Release-day job step 3, evening score step 2 and rung 6 step 2: the first release the morning job
 logs, pops up and the evening grades, waiting for the next CPI or retail sales release.
 
 ## Next
 
-Cross-country effects, part 3, step 2: results, the flash's verdicts and the two US verdicts it
-changed.
+To be chosen: sharper measurement (paid data), the US manufacturing survey (ISM) as an event,
+or a pause until the November releases.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-22 | Cross-country effects, part 3, step 2: results — the flash moves New York, not Europe; nothing follows its surprise | PR #171 |
+| 2026-10-22 | Cross-country effects, part 3, step 1: the flash HICP flow; two GDP verdicts changed by shared days | PR #170 |
 | 2026-10-22 | Cross-country effects, part 3, spec: euro-area inflation, the flash HICP and its surprise | PR #169 |
 | 2026-10-22 | Cross-country effects, part 2, step 2: results — the ECB moves the dollar, not Europe's stocks | PR #168 |
 | 2026-10-22 | Cross-country effects, part 2, step 1: the ECB flow | PR #167 |
