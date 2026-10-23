@@ -59,7 +59,49 @@ At the end: ISM releases loaded as an event flow with their surprise, run throug
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~The ISM flow: events and actuals from TradingView, the forecast as its expectation, the rule above~~ **done**; `load-releases` stored 163 releases, 2013-04-01 to 2026-10-01, and `load-surprises` 163 surprises; HICP's and every US flow's stored rows identical. Other flows' outputs moved by the rule: shared releases left out, retail 48 (was 47), core PCE 67 (55), HICP 81 (64); three verdicts, reported in step 2 | A test's calendar quarter stores a release at its New York time with its surprise; `raw-move` and `surprise --event ism` print seven verdicts; `live` unchanged; HICP's stored rows identical through the shared flow (143 events, 124 core and 143 headline surprises), though its verdicts may move by shared days |
-| 2 | Results here and in [`mvp-results.md`](../mvp-results.md) | Seven verdicts on both tests, the flash-day check, other flows' verdicts before and after, against the expected outcome |
+| 2 | ~~Results here and in [`mvp-results.md`](../mvp-results.md)~~ **done** | Seven verdicts on both tests, the flash-day check, other flows' verdicts before and after, against the expected outcome |
+
+## Results
+
+Measured 2026-10-23 (`raw-move`, `surprise` and `predict --event ism`): 163 releases, 2013-04 to
+2026-10.
+
+| Market | Does it move? ratio, p | Does it follow the surprise? rank corr, p, hit rate |
+| --- | --- | --- |
+| S&P 500 | 1.19, 0.045, unclear | 0.16, 0.10, doesn't |
+| 10-year yield | 1.47, 0.0006, **moves** | 0.33, 0.0002, 67%, **tracks** |
+| Dollar index | 1.26, 0.017, unclear | 0.26, 0.003, 67%, **tracks** |
+| Gold | 1.23, 0.031, unclear | 0.41, 0.0001, unclear (no expected sign) |
+| VIX | 1.14, 0.09, unclear | 0.15, 0.12, doesn't |
+| DAX | 1.37, 0.001, **moves** | 0.10, 0.31, doesn't |
+| Euro Stoxx 50 | 1.28, 0.014, unclear | 0.08, 0.43, doesn't |
+
+The surprise test runs on 110 releases: 53 share their day with another stored release and are
+left out. A point of surprise moves the yield 1.3 bp and the dollar index 0.08%; gold falls 0.25%
+(no expected sign, so unclear).
+
+**ISM is growth news the bond market reads.** The yield moves 47% more on ISM days and follows the
+surprise as closely as it follows the jobs report's; so does the dollar. Every market moves more on
+ISM days than on ordinary ones, the DAX by 37% (Frankfurt is open at 10:00 New York).
+
+**Walk-forward, no call.** The yield's link opens in 2014-09 and is right on 31 of 49 (63%, p 0.04),
+short of *holds*; the dollar's opens in 2019-12, 7 of 11, too few. ISM would get no call even if
+`live` ran after 10:00.
+
+**The flash-day check, repeated.** On flash days with no other stored release, now 62 (17 of the
+79 were ISM days), the S&P 500's ratio falls from 1.40 to 1.25 (p 0.09) and VIX's stays 1.25
+(p 0.07): ISM explains part of New York's flash-day move, not all; the rest is unexplained, short of
+the bar as before.
+
+**Other flows** (*with ISM days out of ordinary days and shared days grown*). Left out as shared:
+retail sales 48 (was 47), core PCE 67 (55), the flash 81 (64). Three verdicts changed: CPI's S&P 500
+on release days, *doesn't* to unclear (ratio crossing 1.10, p 0.04); GDP's gold on release days,
+*doesn't* to unclear (1.10, p 0.22); the flash's Euro Stoxx 50 against the surprise, *doesn't* to
+unclear (0.16, p 0.14, 61% on 53). Every call is unchanged; retail sales' yield still holds.
+
+**Against what was written down first.** *Moves the S&P 500, the yield and VIX:* right on the yield;
+the S&P 500 and VIX are unclear, and the DAX moves. *The yield and the dollar index follow its
+surprise:* right, both track. *Flash days without ISM still move more, short of the bar:* right.
 
 ## Technical details
 

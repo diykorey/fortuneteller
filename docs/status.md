@@ -8,25 +8,25 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-The US manufacturing survey (ISM), spec: ISM's index as an event flow with its surprise against
-TradingView's forecast, and the flash-day check repeated without ISM days. *(PR #173.)*
+The US manufacturing survey (ISM), step 2: results. The yield and the dollar index track its
+surprise, short of *holds* walk-forward; ISM explains part of New York's flash-day move; three
+verdicts of other flows turned unclear. *(PR #175.)*
 
 ## In progress
 
-The US manufacturing survey (ISM), step 1 *(PR #174)*: the flow, read from TradingView's
-calendar through one flow shared with the euro-area flash. [Spec](steps/ism-manufacturing.md).
-
-Also waiting: release-day job step 3, evening score step 2 and rung 6 step 2: the first release the morning job
+Release-day job step 3, evening score step 2 and rung 6 step 2: the first release the morning job
 logs, pops up and the evening grades, waiting for the next CPI or retail sales release.
 
 ## Next
 
-The US manufacturing survey (ISM), step 2: results, and the flash-day check without ISM days.
+To be chosen: sharper measurement (paid data), or a pause until the November releases.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-23 | The US manufacturing survey (ISM), step 2: results — the yield and the dollar track it; no call | PR #175 |
+| 2026-10-23 | The US manufacturing survey (ISM), step 1: the flow, shared with the flash | PR #174 |
 | 2026-10-23 | The US manufacturing survey (ISM), spec | PR #173 |
 | 2026-10-22 | Cross-country effects, part 3, step 2: results — the flash moves New York, not Europe; nothing follows its surprise | PR #171 |
 | 2026-10-22 | Cross-country effects, part 3, step 1: the flash HICP flow; two GDP verdicts changed by shared days | PR #170 |
