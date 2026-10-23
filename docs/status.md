@@ -13,13 +13,16 @@ VIX, not Europe's stocks; nothing follows its surprise; two GDP verdicts changed
 
 ## In progress
 
-Release-day job step 3, evening score step 2 and rung 6 step 2: the first release the morning job
+The US manufacturing survey (ISM), spec *(PR #173)*. ISM's index as an event flow with its
+surprise against TradingView's forecast, run through rung 1 and step 4, and the euro-area
+flash-day check repeated without ISM days. [Spec](steps/ism-manufacturing.md).
+
+Also waiting: release-day job step 3, evening score step 2 and rung 6 step 2: the first release the morning job
 logs, pops up and the evening grades, waiting for the next CPI or retail sales release.
 
 ## Next
 
-To be chosen: sharper measurement (paid data), the US manufacturing survey (ISM) as an event,
-or a pause until the November releases.
+The US manufacturing survey (ISM), step 1: the flow, its events and surprise from TradingView.
 
 ## Done
 
