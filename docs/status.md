@@ -8,27 +8,29 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-The plan update of 2026-10-23: the target amended to an entertainment tool with a realistic
-approach; roadmap steps 5–11, the scoreboard first; CLAUDE.md and the README brought up to date.
-*(PR #176.)*
-
-## In progress
-
 The scoreboard, spec *(PR #177)*: a static page, written by the evening job and served by GitHub
 Pages, with every call graded, every link's record and every event's verdicts for every market.
 [Spec](steps/scoreboard.md).
+
+## In progress
+
+The scoreboard, step 1 *(PR #178)*: `fortuneteller scoreboard` writes `docs/scoreboard/data.json`
+and the page that renders it, from the same functions as the commands; the calls with the popup's
+record and band, graded.
 
 Also waiting: release-day job step 3, evening score step 2 and rung 6 step 2: the first release the morning job
 logs, pops up and the evening grades, waiting for the next CPI or retail sales release.
 
 ## Next
 
-The scoreboard, step 1: `fortuneteller scoreboard` writes the page's data and the page renders it.
+The scoreboard, step 2: the evening job writes the page after `score`; GitHub Pages enabled on
+`main`, `/docs`, by hand.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-23 | The scoreboard, step 1: `fortuneteller scoreboard` writes the page's data and the page; the first page committed | PR #178 |
 | 2026-10-23 | The scoreboard, spec | PR #177 |
 | 2026-10-23 | The plan update: the target amended, roadmap steps 5–11, README status | PR #176 |
 | 2026-10-23 | The US manufacturing survey (ISM), step 2: results — the yield and the dollar track it; no call | PR #175 |

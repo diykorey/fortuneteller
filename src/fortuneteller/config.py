@@ -19,6 +19,8 @@ class Settings(BaseSettings):
     cache_dir: Path = Path("data/cache")
     # Rung 4's log of live calls; committed, unlike the store.
     calls_path: Path = Path("data/calls.csv")
+    # The scoreboard's data and page, written by `scoreboard` and served by GitHub Pages.
+    scoreboard_dir: Path = Path("docs/scoreboard")
     # SecretStr so the value cannot print itself in a traceback or repr; read it with
     # .get_secret_value() at the call site.
     fred_api_key: SecretStr | None = None
