@@ -14,17 +14,17 @@ record and band, graded; the first page committed.
 
 ## In progress
 
-The scoreboard, step 2 *(PR #179)*: the evening job rewrites the page after `score`, into the score pull
-request; a run repeated on the same day resets its branch instead of failing (issue #172).
-Waiting on a repository setting: GitHub Pages on `main`, `/docs`, by hand.
+Jobless claims, spec: the weekly release as a flow, a lesser release whose days change no other
+flow's tables, called live every Thursday. [Spec](steps/jobless-claims.md). One decision open
+before step 1: who merges the silent Thursdays.
 
-Also waiting: release-day job step 3, evening score step 2 and rung 6 step 2: the first release the morning job
-logs, pops up and the evening grades, waiting for the next CPI or retail sales release.
+Also waiting: the scoreboard's GitHub Pages setting (step 2) and its first release day (step 3);
+release-day job step 3, evening score step 2 and rung 6 step 2: the first release the morning job
+logs, pops up and the evening grades.
 
 ## Next
 
-The scoreboard, step 3: results, the first release day on the published page (the jobs report of
-2026-11-06).
+Jobless claims, step 1: the flow, the lesser-release rule, `live` on Thursdays.
 
 ## Done
 
