@@ -14,7 +14,7 @@ record and band, graded; the first page committed.
 
 ## In progress
 
-The scoreboard, step 2: the evening job rewrites the page after `score`, into the score pull
+The scoreboard, step 2 *(PR #179)*: the evening job rewrites the page after `score`, into the score pull
 request; a run repeated on the same day resets its branch instead of failing (issue #172).
 Waiting on a repository setting: GitHub Pages on `main`, `/docs`, by hand.
 
@@ -30,6 +30,7 @@ The scoreboard, step 3: results, the first release day on the published page (th
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-26 | The scoreboard, step 2: the evening job rewrites the page into the score pull request; a same-day run resets its branch | PR #179 |
 | 2026-10-23 | The scoreboard, step 1: `fortuneteller scoreboard` writes the page's data and the page; the first page committed | PR #178 |
 | 2026-10-23 | The scoreboard, spec | PR #177 |
 | 2026-10-23 | The plan update: the target amended, roadmap steps 5–11, README status | PR #176 |
