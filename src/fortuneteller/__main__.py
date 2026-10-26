@@ -593,7 +593,10 @@ def _predict_release(
     try:
         shared = (
             expectations.other_releases(
-                [m for m, _ in rule.combinations], upcoming.day, settings.cache_dir
+                [m for m, _ in rule.combinations],
+                upcoming.day,
+                settings.cache_dir,
+                lesser=_lesser_measures(),
             )
             if rule.alone
             else []
@@ -682,6 +685,16 @@ def _predict_release(
         f"both graded by `fortuneteller predict --event {flow.cli_name}`"
     )
     return _log_calls(calls, live, released)
+
+
+def _lesser_measures() -> list[str]:
+    """The measures of the lesser flows, whose releases share nobody's day."""
+    return [
+        measure
+        for flow in flows.EVENT_FLOWS
+        if flow.lesser and flow.surprise_rule is not None
+        for measure, _baseline in flow.surprise_rule.combinations
+    ]
 
 
 def _live(_args: argparse.Namespace) -> int:
@@ -824,7 +837,15 @@ def _score(_args: argparse.Namespace) -> int:
                     print(f"  {note}")
     missed = study.missed_releases(rows, con=con)
     print()
-    print(f"missed: {len(missed)} releases since {study.LOG_SINCE} with no rows")
+    later = [
+        f"{flow.cli_name} since {rule.logged_since}"
+        for flow in flows.EVENT_FLOWS
+        if (rule := flow.surprise_rule) is not None and rule.logged_since != flows.LOG_SINCE
+    ]
+    print(
+        f"missed: {len(missed)} releases since {flows.LOG_SINCE} with no rows"
+        + (f" ({', '.join(later)})" if later else "")
+    )
     for note in missed:
         print(f"  {note}")
     return 0

@@ -974,7 +974,10 @@ def test_score_grades_the_calls_in_time_and_lists_the_void_missed_and_pending(
         "  cpi 2026-11-12: actual 0.4 is not FRED's first print 0.3",
     ]
     assert out[out.index("pending: 1") + 1] == "  cpi 2027-01-13: the release is not loaded"
-    assert out[-2:] == ["missed: 1 releases since 2026-10-13 with no rows", "  cpi 2026-12-10"]
+    assert out[-2:] == [
+        "missed: 1 releases since 2026-10-13 with no rows (claims since 2026-10-29)",
+        "  cpi 2026-12-10",
+    ]
 
 
 def test_a_call_on_tradingview_s_forecast_is_logged_and_graded(
@@ -1003,7 +1006,7 @@ def test_a_call_on_tradingview_s_forecast_is_logged_and_graded(
         "VIX          up        2026-09  1          1      100%      0.5000  100%             too few",
     ]
     assert not any(line.startswith(("void:", "pending:")) for line in out)
-    assert out[-1] == "missed: 0 releases since 2026-10-13 with no rows"
+    assert out[-1] == "missed: 0 releases since 2026-10-13 with no rows (claims since 2026-10-29)"
 
 
 @pytest.mark.parametrize(
@@ -1079,7 +1082,8 @@ def test_live_never_asks_for_a_release_after_its_run(
     # when the release-day job's command runs
     code = main(["live"])
 
-    # then it asks for every 08:30 US measure, but neither euro-area one nor ISM's
+    # then it asks for every 08:30 US measure, claims among them, but neither euro-area one nor
+    # ISM's
     assert code == 0
     assert "core" in asked
-    assert not set(sources.TRADINGVIEW_ROWS) & set(asked)
+    assert set(sources.TRADINGVIEW_ROWS) & set(asked) == {sources.INITIAL_CLAIMS}

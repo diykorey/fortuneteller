@@ -14,9 +14,9 @@ record and band, graded; the first page committed.
 
 ## In progress
 
-Jobless claims, spec: the weekly release as a flow, a lesser release whose days change no other
-flow's tables, called live every Thursday. [Spec](steps/jobless-claims.md). One decision open
-before step 1: who merges the silent Thursdays.
+Jobless claims, step 1: the weekly flow from TradingView with Nasdaq's consensus, a lesser release
+whose days change no other flow's tables, called live every Thursday from 2026-10-29.
+[Spec](steps/jobless-claims.md).
 
 Also waiting: the scoreboard's GitHub Pages setting (step 2) and its first release day (step 3);
 release-day job step 3, evening score step 2 and rung 6 step 2: the first release the morning job
@@ -24,7 +24,8 @@ logs, pops up and the evening grades.
 
 ## Next
 
-Jobless claims, step 1: the flow, the lesser-release rule, `live` on Thursdays.
+Jobless claims, step 2: results, seven verdicts on both tests on lone days and the walk-forward
+records.
 
 ## Done
 

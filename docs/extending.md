@@ -48,6 +48,9 @@ trend and its `surprise` report use its own events only, even with the same meas
 US's ([country-aware events](steps/country-aware-events.md)). A market outside New York gives its
 `PriceSeries` its own close time and `zone`.
 
+A lesser release sets `lesser = True` ([jobless claims](steps/jobless-claims.md), the first): its days
+are no other flow's shared or busy days, and its own tables keep only the days it has alone.
+
 ## A new expectation source
 
 Write one class in `src/fortuneteller/expectations.py` and add it to `EXPECTATION_SOURCES`.

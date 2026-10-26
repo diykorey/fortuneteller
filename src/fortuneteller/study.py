@@ -360,10 +360,16 @@ def measure_raw_moves(
     """Each MVP instrument's moves on the event's days against its moves on ordinary days.
 
     An ordinary day is one that is no stored event's reaction day, of any type: a jobs-report or
-    Fed day is not a fair "other day" for CPI.
+    Fed day is not a fair "other day" for CPI. A lesser flow's days stay ordinary, and its own
+    event days are the ones it has alone.
     """
     events = stored_events(flow, con=con)
-    every_event = [e for each in EVENT_FLOWS for e in stored_events(each, con=con)]
+    if flow.lesser:
+        shared = shared_days(flow, con=con)
+        events = [e for e in events if e.event_id not in shared]
+    every_event = [
+        e for each in EVENT_FLOWS if not each.lesser for e in stored_events(each, con=con)
+    ]
     results: dict[str, RawMove] = {}
     for instrument, series in MVP_PRICE_SERIES.items():
         closes = stored_closes(instrument, con=con)
@@ -472,11 +478,12 @@ def surprise_pairs(
 
 
 def shared_days(flow: EventFlow, con: duckdb.DuckDBPyConnection | None = None) -> dict[int, date]:
-    """The flow's stored releases on a day that also holds another flow's, by event id."""
+    """The flow's stored releases on a day that also holds another flow's, by event id; a lesser
+    flow's releases share nobody's day."""
     others = {
         release_date(event)
         for each in EVENT_FLOWS
-        if (each.event_type, each.country) != (flow.event_type, flow.country)
+        if (each.event_type, each.country) != (flow.event_type, flow.country) and not each.lesser
         for event in stored_events(each, con=con)
     }
     return {
@@ -989,10 +996,6 @@ def read_calls(path: Path) -> list[LoggedCall]:
     return calls
 
 
-# Rung 4 step 2: the log graded. Every release from the day logging began is expected in it.
-LOG_SINCE = date(2026, 10, 13)
-
-
 @dataclass(frozen=True)
 class LiveScore:
     """One flow's logged calls: each link's graded calls, and the rows left ungraded, with why.
@@ -1101,14 +1104,14 @@ def score_calls(
 def missed_releases(
     rows: Sequence[LoggedCall], con: duckdb.DuckDBPyConnection | None = None
 ) -> list[str]:
-    """Each stored release since ``LOG_SINCE`` of a flow with an expected value that has no row in
-    the log, oldest first."""
+    """Each stored release of a flow with an expected value, from its rule's ``logged_since``, that
+    has no row in the log, oldest first."""
     logged = {(r.flow, r.day) for r in rows}
     missed = [
         (day, flow.cli_name)
         for flow in EVENT_FLOWS
-        if flow.surprise_rule is not None
+        if (rule := flow.surprise_rule) is not None
         for event in stored_events(flow, con=con)
-        if (day := release_date(event)) >= LOG_SINCE and (flow.cli_name, day) not in logged
+        if (day := release_date(event)) >= rule.logged_since and (flow.cli_name, day) not in logged
     ]
     return [f"{name} {day}" for day, name in sorted(missed)]

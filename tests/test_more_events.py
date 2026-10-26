@@ -205,6 +205,24 @@ def test_another_flow_s_row_on_the_calendar_shares_the_day(
     assert others == ["Core Inflation Rate MoM", expectations.FED_DECISION_ROW]
 
 
+def test_a_lesser_flow_s_row_shares_nobody_s_day_but_its_own_day_is_shared(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given a Thursday with retail sales and the claims report
+    day = date(2026, 11, 19)
+    _tradingview_quarter(
+        monkeypatch, [("Retail Sales MoM", day, "US"), ("Initial Jobless Claims", day, "US")]
+    )
+    lesser = [sources.INITIAL_CLAIMS]
+
+    # when each asks who else is out that day
+    retail = expectations.other_releases([sources.RETAIL_SALES], day, tmp_path, lesser=lesser)
+    claims = expectations.other_releases([sources.INITIAL_CLAIMS], day, tmp_path, lesser=lesser)
+
+    # then retail sales has the day to itself, and claims shares it
+    assert (retail, claims) == ([], ["Retail Sales MoM"])
+
+
 @pytest.mark.parametrize(
     ("estimate", "expected"),
     [

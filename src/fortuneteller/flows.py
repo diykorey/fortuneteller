@@ -49,6 +49,7 @@ RETAIL_EVENT_TYPE = "Retail sales"
 PCE_EVENT_TYPE = "PCE inflation"
 GDP_EVENT_TYPE = "GDP growth"
 MANUFACTURING_EVENT_TYPE = "Manufacturing survey"
+CLAIMS_EVENT_TYPE = "Jobless claims"
 UNITED_STATES = "United States"
 # CPI, the jobs report, retail sales, PCE and GDP all come out at 08:30 New York time.
 RELEASE_TIME = time(8, 30)
@@ -470,6 +471,10 @@ NFP_EXPECTED_SIGN = {
 NOTICEABLE_PAYROLLS_K = 50.0
 
 
+# Rung 4's log began on this day; a flow that landed later says so in its rule.
+LOG_SINCE = date(2026, 10, 13)
+
+
 @dataclass(frozen=True)
 class SurpriseRule:
     """What step 4 measures for one event type. The first combination gives the verdict; the
@@ -477,7 +482,8 @@ class SurpriseRule:
     which the report names ``step``. Each pair of ``compared`` baselines of the verdict's measure is
     also judged side by side, on the reports both cover. With ``alone``, a release on a day holding
     another flow's release is left out of every table (step 4's shared days). ``predict`` calls
-    each release from its surprise against ``predicted_from``."""
+    each release from its surprise against ``predicted_from``. ``missed`` expects the flow's
+    releases in the log from ``logged_since``."""
 
     combinations: tuple[tuple[str, str], ...]
     expected_sign: Mapping[str, int]
@@ -486,6 +492,7 @@ class SurpriseRule:
     compared: tuple[tuple[str, str], ...] = ()
     alone: bool = False
     predicted_from: str = NASDAQ_CONSENSUS
+    logged_since: date = LOG_SINCE
 
 
 CPI_SURPRISE_RULE = SurpriseRule(
@@ -552,6 +559,17 @@ ISM_SURPRISE_RULE = SurpriseRule(
     alone=True,
     predicted_from=TRADINGVIEW_FORECAST,
 )
+# More claims is weaker hiring, so the jobs report's signs reversed; noticeable from 5k, two thirds
+# of the forecast's median miss (docs/steps/jobless-claims.md).
+CLAIMS_EXPECTED_SIGN = {instrument: -sign for instrument, sign in NFP_EXPECTED_SIGN.items()}
+CLAIMS_SURPRISE_RULE = SurpriseRule(
+    ((sources.INITIAL_CLAIMS, NASDAQ_CONSENSUS), (sources.INITIAL_CLAIMS, TRADINGVIEW_FORECAST)),
+    CLAIMS_EXPECTED_SIGN,
+    5.0,
+    "5k",
+    alone=True,
+    logged_since=date(2026, 10, 29),
+)
 
 
 # The flows.
@@ -573,6 +591,9 @@ class EventFlow(Protocol):
     cli_name: str
     label: str
     surprise_rule: SurpriseRule | None
+    # A lesser release: its days are no other flow's shared or busy days, and its own tables keep
+    # only the days it has alone (docs/steps/jobless-claims.md).
+    lesser: bool
 
     def events(self, api_key: str) -> EventBatch: ...
 
@@ -613,6 +634,7 @@ class CpiFlow:
     cli_name = "cpi"
     label = "CPI"
     surprise_rule: SurpriseRule | None = CPI_SURPRISE_RULE
+    lesser = False
 
     def events(self, api_key: str) -> EventBatch:
         return _release_batch(self, sources.CPI_SERIES_ID, api_key)
@@ -647,6 +669,7 @@ class NfpFlow:
     cli_name = "nfp"
     label = "NFP"
     surprise_rule: SurpriseRule | None = NFP_SURPRISE_RULE
+    lesser = False
 
     def events(self, api_key: str) -> EventBatch:
         return _release_batch(self, sources.NFP_SERIES_ID, api_key)
@@ -666,6 +689,7 @@ class FedFlow:
     cli_name = "fomc"
     label = "Fed"
     surprise_rule: SurpriseRule | None = None
+    lesser: bool = False
 
     def events(self, api_key: str) -> EventBatch:
         decisions = load_fomc_decisions(api_key)
@@ -704,6 +728,7 @@ class EcbFlow:
     cli_name = "ecb"
     label = "ECB"
     surprise_rule: SurpriseRule | None = None
+    lesser: bool = False
 
     def events(self, api_key: str) -> EventBatch:
         decisions = load_ecb_decisions(settings.cache_dir)
@@ -753,6 +778,11 @@ class TradingViewFlow:
     unit: str
     noun: str
     surprise_rule: SurpriseRule | None = None
+    lesser: bool = False
+
+    @property
+    def weekly(self) -> bool:
+        return any(sources.TRADINGVIEW_ROWS[m].weekly for m in self.measures)
 
     def events(self, api_key: str) -> EventBatch:
         releases = sources.tradingview_releases(settings.cache_dir, self.measures)
@@ -783,7 +813,7 @@ class TradingViewFlow:
             event_type=self.event_type,
             event_ts=announced.astimezone(UTC).replace(tzinfo=None),
             country=self.country,
-            detail=period.strftime("%Y-%m"),
+            detail=period.isoformat() if self.weekly else period.strftime("%Y-%m"),
             scheduled=True,
             consensus=None,
             actual=None,
@@ -810,6 +840,7 @@ class LevelFlow:
     measure: str
     power: int = 1
     surprise_rule: SurpriseRule | None = None
+    lesser: bool = False
     country: str = UNITED_STATES
     zone: ZoneInfo = NEW_YORK
 
@@ -855,6 +886,19 @@ ISM_FLOW = TradingViewFlow(
     "ISM manufacturing surveys",
     surprise_rule=ISM_SURPRISE_RULE,
 )
+CLAIMS_FLOW = TradingViewFlow(
+    CLAIMS_EVENT_TYPE,
+    UNITED_STATES,
+    NEW_YORK,
+    10,
+    "claims",
+    "CLM",
+    (sources.INITIAL_CLAIMS,),
+    THOUSANDS,
+    "jobless claims reports",
+    surprise_rule=CLAIMS_SURPRISE_RULE,
+    lesser=True,
+)
 RETAIL_FLOW = LevelFlow(
     RETAIL_EVENT_TYPE,
     4,
@@ -893,6 +937,7 @@ EVENT_FLOWS: list[EventFlow] = [
     ECB_FLOW,
     HICP_FLOW,
     ISM_FLOW,
+    CLAIMS_FLOW,
 ]
 
 

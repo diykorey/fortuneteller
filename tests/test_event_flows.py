@@ -532,3 +532,35 @@ def test_an_ism_release_is_stored_at_its_new_york_time_with_its_surprise(
         (sources.ISM_PMI, expectations.TRADINGVIEW_FORECAST, 1.1)
     ]
     assert expectations.Trend12m().expectations(stored, actuals, "unused") == []
+
+
+def test_a_claims_report_is_stored_on_its_thursday_with_its_week_and_surprise(
+    tmp_db: Path, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # given a quarter of the US calendar with one claims report, continuing claims beside it and
+    # the next week's report not yet out
+    title = sources.TRADINGVIEW_ROWS[sources.INITIAL_CLAIMS].title
+    rows = [
+        _flash_row(title, "2025-02-06T13:30:00.000Z", 219.0, 213.0, country="US"),
+        _flash_row("Continuing Jobless Claims", "2025-02-06T13:30:00.000Z", 1886.0, 1870.0, "US"),
+        _flash_row(title, "2025-02-13T13:30:00.000Z", None, 215.0, country="US"),
+    ]
+    for row, week in zip(rows, ("2025-02-01", "2025-01-25", "2025-02-08"), strict=True):
+        row["referenceDate"] = f"{week}T00:00:00Z"
+    _tradingview_quarter(monkeypatch, tmp_path, "US", rows)
+
+    # when the flow's events are stored and its actual paired with TradingView's forecast
+    stored, actuals, rows_out = _stored_with_surprises(flows.CLAIMS_FLOW)
+
+    # then the one report is an event at 08:30 New York on its Thursday, its week the detail, 6k
+    # above the forecast
+    assert [(e.event_id, e.country, e.detail) for e in stored] == [
+        (1020250206, "United States", "2025-02-01")
+    ]
+    assert stored[0].event_ts.replace(tzinfo=UTC).astimezone(NEW_YORK).time() == time(8, 30)
+    assert [(a.period, a.value, a.unit) for a in actuals] == [
+        (date(2025, 2, 1), 219.0, flows.THOUSANDS)
+    ]
+    assert [(r.measure, r.baseline, round(r.surprise, 2)) for r in rows_out] == [
+        (sources.INITIAL_CLAIMS, expectations.TRADINGVIEW_FORECAST, 6.0)
+    ]

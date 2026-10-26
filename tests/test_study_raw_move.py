@@ -1,7 +1,7 @@
 """Raw move: do the instruments move more on CPI days than on all other days?"""
 
 import random
-from datetime import date, timedelta
+from datetime import date, datetime, time, timedelta
 from pathlib import Path
 from statistics import median
 
@@ -13,6 +13,7 @@ from fortuneteller.__main__ import describe_raw_moves, main
 from fortuneteller.models import DailyBar
 from fortuneteller.stats import median_not_drawn
 from fortuneteller.sources import (
+    NEW_YORK,
     FirstRelease,
     DailyClosingPrice,
 )
@@ -35,6 +36,7 @@ from fortuneteller.study import (
     daily_moves,
     measure_raw_moves,
     move_verdict,
+    shared_days,
 )
 
 
@@ -377,6 +379,34 @@ def test_another_events_days_are_not_ordinary_days() -> None:
     # then the jobs days leave the ordinary days, and the CPI days stay as they were
     assert before.other_days - after.other_days == 36
     assert after.event_days == before.event_days == 36
+
+
+def test_a_lesser_flow_s_days_stay_ordinary_and_its_own_days_are_the_ones_it_has_alone() -> None:
+    # given CPI's synthetic store, then two claims reports: one on a CPI day, one on a day of its own
+    con = duckdb.connect(":memory:")
+    db.init_db(con=con)
+    _synthetic_store(con)
+    before = measure_raw_moves(CPI_FLOW, con=con)
+    cpi_day = flows.release_date(flows.stored_events(CPI_FLOW, con=con)[0])
+    alone = _weekday(cpi_day + timedelta(days=7))
+    claims = [
+        flows.CLAIMS_FLOW.event_instance(
+            datetime.combine(day, time(8, 30), tzinfo=NEW_YORK), day - timedelta(days=5)
+        )
+        for day in (cpi_day, alone)
+    ]
+    flows.store_events(claims, con=con)
+
+    # when both flows' raw moves are measured
+    after = measure_raw_moves(CPI_FLOW, con=con)
+    own = measure_raw_moves(flows.CLAIMS_FLOW, con=con)
+
+    # then CPI's comparison has not moved, claims' counts its lone day only, and only claims' day
+    # with CPI is a shared day
+    assert after == before
+    assert {raw.overall.event_days for raw in own.values()} == {1}
+    assert shared_days(flows.CLAIMS_FLOW, con=con) == {claims[0].event_id: cpi_day}
+    assert shared_days(CPI_FLOW, con=con) == {}
 
 
 def _weekday(day: date) -> date:

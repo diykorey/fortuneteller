@@ -407,6 +407,9 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **M0 … M7** — the superseded milestone scheme from the old roadmap. **M0 (the data spine) shipped
   and is real**; M1–M7 describe a plan that has been replaced by the MVP and the feature ladder.
 - **`main_05082026`** — the branch preserving the implementation discarded in the reset.
+- **Lesser release** — a flow whose days count as no other flow's shared or busy days, and whose
+  own tables keep only the days it has alone: [jobless claims](steps/jobless-claims.md), out on a
+  fifth of all trading days, is the first.
 - **MVP** (Minimum Viable Product) — here, specifically: the measured answer to *does the edge
   exist*, defined in [the roadmap](roadmap.md). Not a shipped product.
 - **`observations`** — one row per event per instrument: the prices and returns around that event.
