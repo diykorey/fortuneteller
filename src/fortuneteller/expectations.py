@@ -413,6 +413,9 @@ UNREADABLE_CONSENSUS = {
     # first print (0.0 for +0.3, -0.1 for +1.0); GDP rebuilt from levels is 0.05 under BEA's print.
     (sources.RETAIL_SALES, date(2008, 2, 13)),
     (sources.RETAIL_SALES, date(2009, 2, 12)),
+    # Found 2026-10-26: the seven weeks of claims published at once after the shutdown; the event's
+    # week, the newest, had no consensus on either calendar.
+    (sources.INITIAL_CLAIMS, date(2025, 11, 20)),
     (sources.GDP, date(2011, 4, 28)),
     (sources.GDP, date(2014, 7, 30)),
 }
