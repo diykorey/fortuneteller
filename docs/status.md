@@ -14,7 +14,7 @@ record and band, graded; the first page committed.
 
 ## In progress
 
-Jobless claims, step 1: the weekly flow from TradingView with Nasdaq's consensus, a lesser release
+Jobless claims, step 1 *(PR #181)*: the weekly flow from TradingView with Nasdaq's consensus, a lesser release
 whose days change no other flow's tables, called live every Thursday from 2026-10-29.
 [Spec](steps/jobless-claims.md).
 
@@ -31,6 +31,8 @@ records.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-26 | Jobless claims, step 1: the weekly flow, a lesser release, called live on Thursdays | PR #181 |
+| 2026-10-26 | Jobless claims, spec | PR #180 |
 | 2026-10-26 | The scoreboard, step 2: the evening job rewrites the page into the score pull request; a same-day run resets its branch | PR #179 |
 | 2026-10-23 | The scoreboard, step 1: `fortuneteller scoreboard` writes the page's data and the page; the first page committed | PR #178 |
 | 2026-10-23 | The scoreboard, spec | PR #177 |
