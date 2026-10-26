@@ -792,18 +792,36 @@ class TradingViewFlow:
         for release in releases:
             day = release.announced.astimezone(self.zone).date()
             by_day.setdefault(day, set()).add((release.announced, release.period))
+        # Weeks first published together at one time (seven on 2025-11-20, after the shutdown) are
+        # one event, the newest week, as the jobs report's months are.
+        carried = {}
+        for day, times in by_day.items():
+            if self.weekly and len(times) > 1 and len({announced for announced, _ in times}) == 1:
+                carried[day] = len(times) - 1
+                by_day[day] = {max(times, key=lambda announced_period: announced_period[1])}
         if split := [f"{day}" for day, times in by_day.items() if len(times) != 1]:
             raise ValueError(f"{self.noun} at two times or for two months on {', '.join(split)}")
         events = [self.event_instance(*times.pop()) for times in by_day.values()]
         first, last = min(by_day), max(by_day)
-        return EventBatch(events, [f"loaded {len(events)} {self.noun}, {first} … {last}"])
+        report = [f"loaded {len(events)} {self.noun}, {first} … {last}"]
+        if carried:
+            days = ", ".join(f"{day}" for day in sorted(carried))
+            report.append(
+                f"  {sum(carried.values())} earlier weeks first published with a later one: {days}"
+            )
+        return EventBatch(events, report)
 
     def actuals(self, events: Sequence[EventInstance], api_key: str) -> list[Actual]:
-        ids = {release_date(event): event.event_id for event in events}
+        ids = {(release_date(event), event_month(event)): event.event_id for event in events}
         return [
             Actual(event_id, release.measure, release.period, release.actual, self.unit)
             for release in sources.tradingview_releases(settings.cache_dir, self.measures)
-            if (event_id := ids.get(release.announced.astimezone(self.zone).date())) is not None
+            if (
+                event_id := ids.get(
+                    (release.announced.astimezone(self.zone).date(), release.period)
+                )
+            )
+            is not None
         ]
 
     def event_instance(self, announced: datetime, period: date) -> EventInstance:

@@ -537,23 +537,30 @@ def test_an_ism_release_is_stored_at_its_new_york_time_with_its_surprise(
 def test_a_claims_report_is_stored_on_its_thursday_with_its_week_and_surprise(
     tmp_db: Path, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
-    # given a quarter of the US calendar with one claims report, continuing claims beside it and
-    # the next week's report not yet out
+    # given a quarter of the US calendar with one Thursday publishing two weeks at once, continuing
+    # claims beside them and the next week's report not yet out
     title = sources.TRADINGVIEW_ROWS[sources.INITIAL_CLAIMS].title
     rows = [
         _flash_row(title, "2025-02-06T13:30:00.000Z", 219.0, 213.0, country="US"),
+        _flash_row(title, "2025-02-06T13:30:00.000Z", 224.0, 210.0, country="US"),
         _flash_row("Continuing Jobless Claims", "2025-02-06T13:30:00.000Z", 1886.0, 1870.0, "US"),
         _flash_row(title, "2025-02-13T13:30:00.000Z", None, 215.0, country="US"),
     ]
-    for row, week in zip(rows, ("2025-02-01", "2025-01-25", "2025-02-08"), strict=True):
+    weeks = ("2025-02-01", "2025-01-25", "2025-01-25", "2025-02-08")
+    for row, week in zip(rows, weeks, strict=True):
         row["referenceDate"] = f"{week}T00:00:00Z"
     _tradingview_quarter(monkeypatch, tmp_path, "US", rows)
 
     # when the flow's events are stored and its actual paired with TradingView's forecast
+    report = flows.CLAIMS_FLOW.events("unused").report
     stored, actuals, rows_out = _stored_with_surprises(flows.CLAIMS_FLOW)
 
-    # then the one report is an event at 08:30 New York on its Thursday, its week the detail, 6k
-    # above the forecast
+    # then the Thursday is one event at 08:30 New York, the newer week its detail and its actual,
+    # 6k above the forecast, and the week carried with it is reported
+    assert report == [
+        "loaded 1 jobless claims reports, 2025-02-06 … 2025-02-06",
+        "  1 earlier weeks first published with a later one: 2025-02-06",
+    ]
     assert [(e.event_id, e.country, e.detail) for e in stored] == [
         (1020250206, "United States", "2025-02-01")
     ]
