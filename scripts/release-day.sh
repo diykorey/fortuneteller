@@ -47,10 +47,13 @@ git -C "$job_tree" switch -q --discard-changes --detach origin/main ||
 export FT_DB_PATH="$main_checkout/data/fortuneteller.duckdb"
 export FT_CACHE_DIR="$main_checkout/data/cache"
 
-# Commits $1 on branch $2 and opens its pull request with body $3.
+# Commits $files as $1 on branch $2 and opens its pull request with body $3. A run repeated on
+# the same day, after a failed push or a morning catch-up, finds the branch the first run made:
+# -C resets it rather than refusing it (the 2026-10-22 evening failed so, issue #172).
 open_pr() {
-    git -C "$job_tree" switch -q -c "$2" &&
-        git -C "$job_tree" commit -q -m "$1" -- "$file" &&
+    # shellcheck disable=SC2086
+    git -C "$job_tree" switch -q -C "$2" &&
+        git -C "$job_tree" commit -q -m "$1" -- $files &&
         git -C "$job_tree" -c credential.helper= -c credential.helper='!gh auth git-credential' \
             push -q "https://github.com/$repo.git" "$2" &&
         gh pr create -R "$repo" --base main --head "$2" --title "$1" --body "$3" ||
@@ -59,6 +62,7 @@ open_pr() {
 
 if [ "$step" = live ]; then
     file=data/calls.csv
+    files=$file
     FT_CALLS_PATH="$job_tree/$file" uv run --directory "$job_tree" fortuneteller live
     live=$?
     if ! git -C "$job_tree" diff --quiet -- "$file"; then
@@ -95,6 +99,10 @@ if grep -q '^pending: ' "$job_tree/$file"; then
     exit 0
 fi
 if ! git -C "$job_tree" diff --quiet -- "$file"; then
+    # The scoreboard (docs/steps/scoreboard.md) is rewritten into the same pull request.
+    FT_CALLS_PATH=data/calls.csv uv run --directory "$job_tree" fortuneteller scoreboard ||
+        report "fortuneteller scoreboard exited $?"
+    files="$file docs/scoreboard"
     open_pr "Score the calls on $day" "score-$day" \
         "Graded by the evening score at $(date -u +%H:%M:%SZ), after the closes."
 fi

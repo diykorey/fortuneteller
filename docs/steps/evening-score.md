@@ -22,6 +22,11 @@ shows it, and on a failure an issue.
 - **The result is a file.** `score`'s output is committed as `data/score.txt`. When it differs
   from `origin/main`'s, it goes to a branch `score-<day>` and a pull request; when it is the same,
   nothing opens. `score` prints the same text twice on the same data (checked 2026-10-19).
+  *Amended 2026-10-26:* on the days it differs, [the scoreboard](scoreboard.md) is rewritten after
+  it and goes into the same commit. A run repeated on the same day, after a failed push or as a
+  catch-up, finds the branch the first run made and resets it rather than refusing it: the
+  2026-10-22 evening failed on exactly that (issue #172), after the morning's catch-up run had
+  opened that day's pull request.
 - **It waits rather than mislabels.** While a `calls-*` pull request is open, its rows are not on
   `main` and would read as missed: the run exits 0 and loads nothing. So it does while a `score-*`
   pull request is open, which a second would repeat (*added 2026-10-20*). While any row is pending

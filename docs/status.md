@@ -8,23 +8,23 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-The scoreboard, spec *(PR #177)*: a static page, written by the evening job and served by GitHub
-Pages, with every call graded, every link's record and every event's verdicts for every market.
-[Spec](steps/scoreboard.md).
+The scoreboard, step 1 *(PR #178)*: `fortuneteller scoreboard` writes `docs/scoreboard/data.json`
+and the page that renders it, from the same functions as the commands; the calls with the popup's
+record and band, graded; the first page committed.
 
 ## In progress
 
-The scoreboard, step 1 *(PR #178)*: `fortuneteller scoreboard` writes `docs/scoreboard/data.json`
-and the page that renders it, from the same functions as the commands; the calls with the popup's
-record and band, graded.
+The scoreboard, step 2: the evening job rewrites the page after `score`, into the score pull
+request; a run repeated on the same day resets its branch instead of failing (issue #172).
+Waiting on a repository setting: GitHub Pages on `main`, `/docs`, by hand.
 
 Also waiting: release-day job step 3, evening score step 2 and rung 6 step 2: the first release the morning job
 logs, pops up and the evening grades, waiting for the next CPI or retail sales release.
 
 ## Next
 
-The scoreboard, step 2: the evening job writes the page after `score`; GitHub Pages enabled on
-`main`, `/docs`, by hand.
+The scoreboard, step 3: results, the first release day on the published page (the jobs report of
+2026-11-06).
 
 ## Done
 
