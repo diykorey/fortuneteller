@@ -642,14 +642,15 @@ class TradingViewForecast:
         expected: list[Expectation] = []
         for country in dict.fromkeys(rows[a.measure].country for a in wanted):
             measures = {m for m, row in rows.items() if row.country == country}
+            # Keyed by the period too: a day publishing several weeks at once has a forecast each.
             forecasts = {
-                (r.measure, day(r.measure, r.announced)): r.forecast
+                (r.measure, day(r.measure, r.announced), r.period): r.forecast
                 for r in sources.tradingview_releases(settings.cache_dir, measures)
                 if r.forecast is not None
             }
             for a in wanted:
                 released = day(a.measure, announced[a.event_id])
-                forecast = forecasts.get((a.measure, released))
+                forecast = forecasts.get((a.measure, released, a.period))
                 if a.measure in measures and forecast is not None:
                     known_at = end_of_day(released - timedelta(days=1), rows[a.measure].zone)
                     expected.append(
