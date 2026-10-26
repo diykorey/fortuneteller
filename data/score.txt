@@ -50,12 +50,12 @@ DXY          up        —        0          0      —         —       —   
 
 walk-forward (replay)
 instrument   expected  from     predicted  right  hit rate  p       always expected  verdict
-UST10Y / ZN  up        2011-05  80         51     64%       0.0092  42%              holds
-DXY          up        2008-08  4          2      50%       0.6875  50%              too few
+UST10Y / ZN  up        2011-05  72         49     68%       0.0015  44%              holds
+DXY          up        2008-08  2          1      50%       0.7500  50%              too few
 
 confidence (live)
 instrument   calls  stated  right  Brier   coin p  drift Brier  drift p  in band (allowed)  verdict
-UST10Y / ZN  1      64%     0%     0.4121  1.0000  0.1764       1.0000   0/1 (0–1)          too few
+UST10Y / ZN  1      64%     0%     0.4121  1.0000  0.1890       1.0000   0/1 (0–1)          too few
 DXY          0      —       —      —       —       —            —        —                  too few
 
 calibration (live)
