@@ -81,9 +81,11 @@ The vocabulary, so the words stay load-bearing:
 - **Milestone** — **retired.** The old M0–M7 scheme planned seven milestones ahead of a single
   measurement, and most of it was discarded. M0 is kept as a historical label for what shipped.
   Do not reintroduce the scheme.
-- **Release** — **does not exist yet.** Nothing is published or versioned for anyone else's use.
-  When something is delivered to a person outside the repo, that is rung 6, and this entry gets
-  rewritten then rather than guessed at now.
+- **Release** — the [scoreboard](steps/scoreboard.md): the page in `docs/scoreboard/`, rewritten
+  by the evening job on the days the score changes and served by GitHub Pages from `main` once
+  that repository setting is on (*rewritten 2026-10-26*, when the page and the job's line were
+  built; rung 6 had delivered a popup to one laptop first). Nothing is versioned or packaged for
+  anyone else's use, and nothing is planned to be.
 
 ## What every step document must say
 

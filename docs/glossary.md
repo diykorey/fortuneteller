@@ -415,9 +415,10 @@ Terms are grouped by what they are about, alphabetical within each group.
   liquid instruments) before widening to anything else.
 - **Replay harness** (legacy) — the discarded mechanism for running canned events through the
   prediction core. Appears in legacy docs; not part of the current plan.
-- **Scoreboard** — the static page the evening job will write ([roadmap](roadmap.md) step 5): every
-  call graded, every link's record, every event's verdicts for every market. The first thing
-  delivered to anyone but this laptop.
+- **Scoreboard** — the static page `fortuneteller scoreboard` writes to `docs/scoreboard/` and the
+  evening job rewrites with the score ([roadmap](roadmap.md) step 5): every call graded, every
+  link's record, every event's verdicts for every market, and the chance count beside each grid.
+  The first thing delivered to anyone but this laptop, once GitHub Pages serves it.
 - **The reset** — 2026-08-05, when `main` was rolled back to the M0 spine because the
   implementation had become over-engineered for the stage. Recorded in [CLAUDE.md](../CLAUDE.md).
 - **The spine** — the M0 data layer: models, schema, store, seed loader, CLI. Shipped.
