@@ -13,7 +13,7 @@ by analogy for four of them, the chance line counted. [Spec](steps/more-outcomes
 
 ## In progress
 
-More outcomes, step 1 *(PR TBD)*: the nine markets loaded with their closes checked, signs in
+More outcomes, step 1 *(PR #185)*: the nine markets loaded with their closes checked, signs in
 every rule, every existing cell identical; four new links hold walk-forward at once, the jobs
 report's euro and 5-year yield, retail sales' 5-year yield and ISM's. [Spec](steps/more-outcomes.md).
 
@@ -32,7 +32,7 @@ links' walk-forward records, the chance line, against the expected outcome.
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-27 | More outcomes, step 1: the nine markets loaded, closes checked, signs by analogy; four new links hold, three of them live | PR TBD |
+| 2026-10-27 | More outcomes, step 1: the nine markets loaded, closes checked, signs by analogy; four new links hold, three of them live | PR #185 |
 | 2026-10-27 | More outcomes, spec: nine markets, signs by analogy, the chance line counted | PR #184 |
 | 2026-10-27 | Jobless claims, step 2: results — nothing moves on lone claims days; the yield follows the surprise, short of *tracks*; no call | PR #183 |
 | 2026-10-26 | Jobless claims, step 1: the weekly flow, a lesser release, called live on Thursdays | PR #181 |
