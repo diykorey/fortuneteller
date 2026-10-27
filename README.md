@@ -67,9 +67,9 @@ tests/           # pytest suite (ruff + mypy --strict + pytest is the gate)
 ## Status
 
 Bootstrapping, **measurable-spine first**. M0 (the data spine), the MVP, ladder rungs 1–6 and the
-roadmap's steps 1–4b are complete. The repo holds nine events (US CPI, the jobs report, Fed
-decisions, retail sales, core PCE, GDP and the ISM survey; ECB decisions and the euro area's flash
-inflation) and seven markets (the S&P 500, the 10-year yield, the dollar index, gold, VIX, the DAX
+roadmap's steps 1–4b are complete. The repo holds ten events (US CPI, the jobs report, Fed
+decisions, retail sales, core PCE, GDP, the ISM survey and weekly jobless claims; ECB decisions and
+the euro area's flash inflation) and seven markets (the S&P 500, the 10-year yield, the dollar index, gold, VIX, the DAX
 and the Euro Stoxx 50), 1972 to today, from free sources: each market's measured move around every
 release, how it relates to each surprise, and a walk-forward replay of every link.
 

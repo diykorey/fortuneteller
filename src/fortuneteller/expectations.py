@@ -178,8 +178,10 @@ def load_model_inputs(api_key: str) -> tuple[dict[date, MonthlyChange], dict[dat
 
 
 def event_month(event: EventInstance) -> date:
-    """The month an event measures: its ``detail``, ``YYYY-MM``."""
-    return date.fromisoformat(f"{event.detail}-01")
+    """The period an event measures: its ``detail``, a month as ``YYYY-MM`` or a week's end as
+    ``YYYY-MM-DD``."""
+    detail = event.detail or ""
+    return date.fromisoformat(detail if len(detail) == 10 else f"{detail}-01")
 
 
 def own_actuals(events: Iterable[EventInstance], actuals: Iterable[Actual]) -> list[Actual]:
@@ -396,6 +398,7 @@ CONSENSUS_ROWS = {
     sources.RETAIL_SALES: ("Retail Sales", "Retail Sales MoM", 1, 0.3),
     sources.CORE_PCE: ("Core PCE Price Index", "Core PCE Price Index MoM", 1, 0.2),
     sources.GDP: ("GDP", "GDP Growth Rate QoQ Adv", 1, 0.5),
+    sources.INITIAL_CLAIMS: ("Initial Jobless Claims", "Initial Jobless Claims", 0, 5.0),
 }
 # Nasdaq's calendar carries no consensus before 2008 (checked 2026-10-09): earlier days are not asked.
 CONSENSUS_SINCE = date(2008, 1, 1)
@@ -410,6 +413,9 @@ UNREADABLE_CONSENSUS = {
     # first print (0.0 for +0.3, -0.1 for +1.0); GDP rebuilt from levels is 0.05 under BEA's print.
     (sources.RETAIL_SALES, date(2008, 2, 13)),
     (sources.RETAIL_SALES, date(2009, 2, 12)),
+    # Found 2026-10-26: the seven weeks of claims published at once after the shutdown; the event's
+    # week, the newest, had no consensus on either calendar.
+    (sources.INITIAL_CLAIMS, date(2025, 11, 20)),
     (sources.GDP, date(2011, 4, 28)),
     (sources.GDP, date(2014, 7, 30)),
 }
@@ -548,14 +554,18 @@ def published_actual(measure: str, day: date, cache_dir: Path) -> float | None:
 FED_DECISION_ROW = "Fed Interest Rate Decision"
 
 
-def other_releases(measures: Iterable[str], day: date, cache_dir: Path) -> list[str]:
-    """The other flows' rows on TradingView's calendar for ``day``: any there shares the day.
+def other_releases(
+    measures: Iterable[str], day: date, cache_dir: Path, lesser: Iterable[str] = ()
+) -> list[str]:
+    """The other flows' rows on TradingView's calendar for ``day``: any there shares the day. A
+    ``lesser`` flow's measures share nobody's day.
 
     TradingView's, not Nasdaq's: Nasdaq names all three GDP estimates "GDP", and only the advance
     estimate is a flow's release (2014 to 2026-09, it gives the replay's shared days on all 355).
     """
     own = {CONSENSUS_ROWS[measure][1] for measure in measures if measure in CONSENSUS_ROWS}
-    others = ({names[1] for names in CONSENSUS_ROWS.values()} - own) | {FED_DECISION_ROW}
+    counted = {m: names for m, names in CONSENSUS_ROWS.items() if m not in set(lesser)}
+    others = ({names[1] for names in counted.values()} - own) | {FED_DECISION_ROW}
     payload = sources.fetch_tradingview_quarter(sources.quarter_start(day), cache_dir)
     return sorted(
         {row.name for row in sources.parse_tradingview(payload, others) if row.day == day}
@@ -632,14 +642,15 @@ class TradingViewForecast:
         expected: list[Expectation] = []
         for country in dict.fromkeys(rows[a.measure].country for a in wanted):
             measures = {m for m, row in rows.items() if row.country == country}
+            # Keyed by the period too: a day publishing several weeks at once has a forecast each.
             forecasts = {
-                (r.measure, day(r.measure, r.announced)): r.forecast
+                (r.measure, day(r.measure, r.announced), r.period): r.forecast
                 for r in sources.tradingview_releases(settings.cache_dir, measures)
                 if r.forecast is not None
             }
             for a in wanted:
                 released = day(a.measure, announced[a.event_id])
-                forecast = forecasts.get((a.measure, released))
+                forecast = forecasts.get((a.measure, released, a.period))
                 if a.measure in measures and forecast is not None:
                     known_at = end_of_day(released - timedelta(days=1), rows[a.measure].zone)
                     expected.append(

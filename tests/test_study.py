@@ -283,6 +283,15 @@ def test_load_releases_prints_count_range_and_skipped_months(
                 49.8,
             )
         ],
+        sources.INITIAL_CLAIMS: [
+            sources.TradingViewRelease(
+                sources.INITIAL_CLAIMS,
+                datetime(2025, 2, 6, 13, 30, tzinfo=UTC),
+                date(2025, 2, 1),
+                219.0,
+                213.0,
+            )
+        ],
     }
     monkeypatch.setattr(
         sources,
@@ -307,8 +316,9 @@ def test_load_releases_prints_count_range_and_skipped_months(
     report += "loaded 2 ECB decisions, 2025-01-30 … 2025-03-06\n"
     report += "loaded 1 euro-area flash estimates, 2025-02-03 … 2025-02-03\n"
     report += "loaded 1 ISM manufacturing surveys, 2025-02-03 … 2025-02-03\n"
+    report += "loaded 1 jobless claims reports, 2025-02-06 … 2025-02-06\n"
     assert capsys.readouterr().out == report * 2
-    assert db.count_rows("event_instances", con=db.get_connection()) == 21
+    assert db.count_rows("event_instances", con=db.get_connection()) == 22
 
 
 def test_load_releases_stores_nothing_when_any_flow_fails(

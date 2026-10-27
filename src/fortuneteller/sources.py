@@ -297,6 +297,7 @@ EURO_CORE = "euro_core"
 EURO_HEADLINE = "euro_headline"
 # The US manufacturing survey's index (docs/steps/ism-manufacturing.md), in index points.
 ISM_PMI = "ism_pmi"
+INITIAL_CLAIMS = "initial_claims"
 NOWCAST = "nowcast"
 ACTUAL = "actual"
 # The chart series step 4 reads, by name in the file; the PCE series are left out.
@@ -674,21 +675,26 @@ def parse_ecb_decisions(payload: bytes) -> list[datetime]:
 @dataclass(frozen=True)
 class TradingViewRow:
     """A release read from TradingView's calendar alone: the calendar's country, the row's title,
-    the first quarter it is listed in, and the zone its day is told in."""
+    the first quarter it is listed in, and the zone its day is told in. A ``weekly`` row's period
+    is the week's end, where a monthly row's is its month."""
 
     country: str
     title: str
     since: date
     zone: ZoneInfo
+    weekly: bool = False
 
 
-# Checked 2026-10-22: flashes from 2014-11-28; 2026-10-23: ISM from 2013-04-01.
+# Checked 2026-10-22: flashes from 2014-11-28; 2026-10-23: ISM from 2013-04-01; 2026-10-26: claims
+# from 2013-03-07.
 EURO_FLASH_FROM = date(2014, 10, 1)
 ISM_FROM = date(2013, 4, 1)
+CLAIMS_FROM = date(2013, 1, 1)
 TRADINGVIEW_ROWS = {
     EURO_CORE: TradingViewRow("EU", "Core Inflation Rate YoY Flash", EURO_FLASH_FROM, FRANKFURT),
     EURO_HEADLINE: TradingViewRow("EU", "Inflation Rate YoY Flash", EURO_FLASH_FROM, FRANKFURT),
     ISM_PMI: TradingViewRow("US", "ISM Manufacturing PMI", ISM_FROM, NEW_YORK),
+    INITIAL_CLAIMS: TradingViewRow("US", "Initial Jobless Claims", CLAIMS_FROM, NEW_YORK, True),
 }
 
 
@@ -707,18 +713,23 @@ class TradingViewRelease:
 def parse_tradingview_releases(payload: bytes, measures: Iterable[str]) -> list[TradingViewRelease]:
     """The releases of ``measures`` in a TradingView calendar reply; one not yet out is left out."""
     rows = {(TRADINGVIEW_ROWS[m].country, TRADINGVIEW_ROWS[m].title): m for m in measures}
+    releases = []
     try:
-        return [
-            TradingViewRelease(
-                rows[(row.get("country"), row["title"])],
-                _utc(row["date"]),
-                _utc(row["referenceDate"]).date().replace(day=1),
-                float(row["actual"]),
-                None if row.get("forecast") is None else float(row["forecast"]),
+        for row in _tradingview_rows(payload):
+            measure = rows.get((row.get("country"), row["title"]))
+            if measure is None or row.get("actual") is None:
+                continue
+            period = _utc(row["referenceDate"]).date()
+            releases.append(
+                TradingViewRelease(
+                    measure,
+                    _utc(row["date"]),
+                    period if TRADINGVIEW_ROWS[measure].weekly else period.replace(day=1),
+                    float(row["actual"]),
+                    None if row.get("forecast") is None else float(row["forecast"]),
+                )
             )
-            for row in _tradingview_rows(payload)
-            if (row.get("country"), row["title"]) in rows and row.get("actual") is not None
-        ]
+        return releases
     except MALFORMED_REPLY as exc:
         raise CalendarError(f"TradingView sent an unexpected reply: {exc!r}") from None
 
