@@ -92,9 +92,9 @@ sales' yield), each printed with its record as counts and its band, never a prob
 proved honest yet. On release days the calls are made, graded and delivered as a desktop popup
 unattended ([the release-day job](docs/steps/release-day-job.md), [the evening
 score](docs/steps/evening-score.md)). Stocks, gold and VIX follow no surprise by direction; the
-Fed, the ECB, euro-area inflation and ISM give no call. [MVP results](docs/mvp-results.md) has the
-findings in plain words, the [roadmap](docs/roadmap.md) what comes next, and
-[status](docs/status.md) the task in hand.
+Fed, the ECB, euro-area inflation, ISM and jobless claims give no call. [MVP
+results](docs/mvp-results.md) has the findings in plain words, the [roadmap](docs/roadmap.md) what
+comes next, and [status](docs/status.md) the task in hand.
 
 > **Data provenance:** the seed reference tables are partial (read-only Notion export limits) and
 > the effect-size values in them are illustrative placeholders, not measurements — replacing them

@@ -8,15 +8,15 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-The scoreboard, step 1 *(PR #178)*: `fortuneteller scoreboard` writes `docs/scoreboard/data.json`
-and the page that renders it, from the same functions as the commands; the calls with the popup's
-record and band, graded; the first page committed.
+Jobless claims, step 2 *(PR #183)*: results. Nothing moves on claims' 450 lone days; the yield
+follows the surprise at 56%, short of *tracks*; no link opens walk-forward, so no call; no other
+flow changed. [Results](steps/jobless-claims.md#results).
 
 ## In progress
 
-Jobless claims, step 1 *(PR #181)*: the weekly flow from TradingView with Nasdaq's consensus, a lesser release
-whose days change no other flow's tables, called live every Thursday from 2026-10-29.
-[Spec](steps/jobless-claims.md).
+Jobless claims, step 3: the first Thursday unattended, 2026-10-29: the morning job logs claims'
+rows and opens their pull request with no one there, the evening grades them. Open: who merges the
+silent Thursdays ([spec](steps/jobless-claims.md#open-to-decide-before-step-1)).
 
 Also waiting: the scoreboard's GitHub Pages setting (step 2) and its first release day (step 3);
 release-day job step 3, evening score step 2 and rung 6 step 2: the first release the morning job
@@ -24,13 +24,15 @@ logs, pops up and the evening grades.
 
 ## Next
 
-Jobless claims, step 2: results, seven verdicts on both tests on lone days and the walk-forward
-records.
+More outcomes (roadmap step 7), the spec: oil, EUR/USD, the Nasdaq, the 5-year yield, the FTSE 100,
+the STOXX 600, bitcoin, a defence and an energy ETF, "does it move?" only unless a sign is written
+down first.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-27 | Jobless claims, step 2: results — nothing moves on lone claims days; the yield follows the surprise, short of *tracks*; no call | PR #183 |
 | 2026-10-26 | Jobless claims, step 1: the weekly flow, a lesser release, called live on Thursdays | PR #181 |
 | 2026-10-26 | Jobless claims, spec | PR #180 |
 | 2026-10-26 | The scoreboard, step 2: the evening job rewrites the page into the score pull request; a same-day run resets its branch | PR #179 |
