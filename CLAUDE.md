@@ -58,7 +58,7 @@ roadmap wins. `docs/legacy/README.md` says what in there is still worth reading 
 
 ## Scope discipline — the provable core
 
-The core is measured: nine events × seven markets from free sources, three links that hold
+The core is measured: ten events × sixteen markets from free sources, three links that hold
 walk-forward. Widening is planned in `docs/roadmap.md` steps 5–11 and goes one flow or one set of
 markets per PR, each with a spec whose bars and expected outcome are written before anything is
 measured and amended only with a date. Still deferred: unscheduled detection (rung 7, history

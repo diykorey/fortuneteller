@@ -246,7 +246,7 @@ def test_rebuilding_removes_a_row_that_no_longer_applies() -> None:
     assert release_counts[CPI_FLOW]["SPY / ES"] == ReleaseCounts(skipped_before_history=1)
     rows = con.execute("SELECT count(*) FROM observations WHERE instrument = 'SPY / ES'").fetchone()
     assert rows == (0,)
-    assert db.count_rows("observations", con=con) == 6
+    assert db.count_rows("observations", con=con) == 15
 
 
 def test_rerunning_changes_no_count_and_events_can_still_be_reloaded() -> None:
@@ -259,7 +259,7 @@ def test_rerunning_changes_no_count_and_events_can_still_be_reloaded() -> None:
     store_releases(CPI_FLOW, [HOT_PRINT], con=con)
 
     # then nothing is duplicated and the foreign key does not block the event reload
-    assert db.count_rows("observations", con=con) == 7
+    assert db.count_rows("observations", con=con) == 16
     assert db.count_rows("event_instances", con=con) == 1
 
 
@@ -311,10 +311,19 @@ def test_load_prices_prints_counts_per_instrument_and_in_total(
         "VIX          1 observations\n"
         "DAX          1 observations\n"
         "SX5E         1 observations\n"
-        "7 instruments × 1 releases = 6 observations\n"
+        "BRN          1 observations\n"
+        "EURUSD       1 observations\n"
+        "COMP         1 observations\n"
+        "UST5Y / ZF   1 observations\n"
+        "UKX          1 observations\n"
+        "SXXP         1 observations\n"
+        "BTC          1 observations\n"
+        "ITA          1 observations\n"
+        "XLE          1 observations\n"
+        "16 instruments × 1 releases = 15 observations\n"
     )
     assert capsys.readouterr().out == report * 2
-    assert db.count_rows("observations") == 6
+    assert db.count_rows("observations") == 15
 
 
 def test_load_prices_needs_the_releases_first(

@@ -291,9 +291,18 @@ def test_loading_every_instrument_twice_changes_no_row_count(
             "VIX": 4,
             "DAX": 4,
             "SX5E": 4,
+            "BRN": 4,
+            "EURUSD": 4,
+            "COMP": 4,
+            "UST5Y / ZF": 4,
+            "UKX": 4,
+            "SXXP": 4,
+            "BTC": 4,
+            "ITA": 4,
+            "XLE": 4,
         }
     )
-    assert db.count_rows("daily_bars", con=con) == 30
+    assert db.count_rows("daily_bars", con=con) == 66
 
 
 def test_tickers_cover_the_mvp_instruments_by_exact_symbol() -> None:
@@ -302,7 +311,7 @@ def test_tickers_cover_the_mvp_instruments_by_exact_symbol() -> None:
         symbols = {row["symbol"] for row in csv.DictReader(handle)}
 
     # when the MVP ticker table is compared with it
-    # then all seven instruments are there, each spelled exactly as the join key
+    # then all sixteen instruments are there, each spelled exactly as the join key
     assert list(MVP_PRICE_SERIES) == [
         "SPY / ES",
         "UST10Y / ZN",
@@ -311,6 +320,15 @@ def test_tickers_cover_the_mvp_instruments_by_exact_symbol() -> None:
         "VIX",
         "DAX",
         "SX5E",
+        "BRN",
+        "EURUSD",
+        "COMP",
+        "UST5Y / ZF",
+        "UKX",
+        "SXXP",
+        "BTC",
+        "ITA",
+        "XLE",
     ]
     assert set(MVP_PRICE_SERIES) <= symbols
 

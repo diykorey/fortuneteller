@@ -435,17 +435,39 @@ def payroll_actuals(api_key: str, jobs: Sequence[EventInstance]) -> list[Actual]
 
 # CPI surprises smaller than this are noise for the hit rate, in percentage points.
 NOTICEABLE_SURPRISE_PP = 0.1
+
+
+def with_more_outcomes(signs: dict[str, int]) -> dict[str, int]:
+    """The nine more outcomes' signs by analogy (docs/steps/more-outcomes.md): the euro the dollar
+    index's reversed, the 5-year yield the 10-year's, the Nasdaq the S&P 500's, the FTSE 100 and
+    the STOXX 600 the DAX's; oil, bitcoin and the two sector ETFs none."""
+    return {
+        **signs,
+        "BRN": 0,
+        "EURUSD": -signs["DXY"],
+        "COMP": signs["SPY / ES"],
+        "UST5Y / ZF": signs["UST10Y / ZN"],
+        "UKX": signs["DAX"],
+        "SXXP": signs["DAX"],
+        "BTC": 0,
+        "ITA": 0,
+        "XLE": 0,
+    }
+
+
 # The direction a hotter-than-expected CPI should move each instrument; gold has no agreed one.
 # Europe's stock indices take the S&P 500's sign, here and below (docs/steps/cross-country.md).
-EXPECTED_SIGN = {
-    "SPY / ES": -1,
-    "UST10Y / ZN": 1,
-    "DXY": 1,
-    "GC / XAU": 0,
-    "VIX": 1,
-    "DAX": -1,
-    "SX5E": -1,
-}
+EXPECTED_SIGN = with_more_outcomes(
+    {
+        "SPY / ES": -1,
+        "UST10Y / ZN": 1,
+        "DXY": 1,
+        "GC / XAU": 0,
+        "VIX": 1,
+        "DAX": -1,
+        "SX5E": -1,
+    }
+)
 # Core against the trend gives the verdict; the other three are context (decided 2026-10-05).
 VERDICT_COMBINATION = (sources.CORE, TREND_12M)
 COMBINATIONS = (
@@ -458,15 +480,17 @@ COMBINATIONS = (
 )
 # The direction a stronger-than-expected jobs report should move each instrument: rates and the
 # dollar up; equities, VIX and gold have no agreed sign ("good news is bad news"). Rung 1 decision.
-NFP_EXPECTED_SIGN = {
-    "SPY / ES": 0,
-    "UST10Y / ZN": 1,
-    "DXY": 1,
-    "GC / XAU": 0,
-    "VIX": 0,
-    "DAX": 0,
-    "SX5E": 0,
-}
+NFP_EXPECTED_SIGN = with_more_outcomes(
+    {
+        "SPY / ES": 0,
+        "UST10Y / ZN": 1,
+        "DXY": 1,
+        "GC / XAU": 0,
+        "VIX": 0,
+        "DAX": 0,
+        "SX5E": 0,
+    }
+)
 # Payroll surprises smaller than this are noise for the hit rate, in thousands of jobs.
 NOTICEABLE_PAYROLLS_K = 50.0
 
@@ -530,15 +554,17 @@ PCE_SURPRISE_RULE = _consensus_rule(CORE_PCE, EXPECTED_SIGN, 0.1)
 GDP_SURPRISE_RULE = _consensus_rule(GDP, NFP_EXPECTED_SIGN, 0.5)
 # A hotter euro area: Europe's stocks down, and the euro up, so the dollar index down
 # (docs/steps/euro-inflation.md).
-EURO_EXPECTED_SIGN = {
-    "SPY / ES": 0,
-    "UST10Y / ZN": 0,
-    "DXY": -1,
-    "GC / XAU": 0,
-    "VIX": 0,
-    "DAX": -1,
-    "SX5E": -1,
-}
+EURO_EXPECTED_SIGN = with_more_outcomes(
+    {
+        "SPY / ES": 0,
+        "UST10Y / ZN": 0,
+        "DXY": -1,
+        "GC / XAU": 0,
+        "VIX": 0,
+        "DAX": -1,
+        "SX5E": -1,
+    }
+)
 HICP_SURPRISE_RULE = SurpriseRule(
     (
         (sources.EURO_CORE, TRADINGVIEW_FORECAST),

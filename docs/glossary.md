@@ -107,8 +107,11 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **BDI** (Baltic Dry Index) — cost of shipping dry bulk cargo; a gauge of global trade demand.
 - **Basis point** (bp, "bip") — one hundredth of a percent (0.01%). Bond and rate moves are quoted
   in bps: "10Y up 8 bps" means the yield rose 0.08 percentage points.
-- **BRN** (Brent crude) — the global oil price benchmark, traded on ICE.
-- **BTC** (Bitcoin) — the crypto bellwether.
+- **BRN** (Brent crude) — the global oil price benchmark, traded on ICE. Measured from
+  2026-10-27 ([more outcomes](steps/more-outcomes.md)) as Yahoo's `BZ=F`, the front month, at its
+  14:30 New York settlement.
+- **BTC** (Bitcoin) — the crypto bellwether. Measured from 2026-10-27 as Yahoo's `BTC-USD`, the
+  UTC day's last price; its weekend bars are dropped, as every market's are.
 - **BUND / FGBL** — the German 10-year government bond and its futures contract (Eurex); the
   eurozone's risk-free benchmark. Free price history is awkward, which is why the MVP uses the US
   10-year instead.
@@ -117,6 +120,8 @@ Terms are grouped by what they are about, alphabetical within each group.
   currency's rates rise.
 - **CDS** (Credit Default Swap) — insurance against a borrower defaulting; its price is a direct
   read on perceived default risk.
+- **COMP** (Nasdaq Composite) — the index of every Nasdaq-listed stock, the growth end of US
+  equities; closes 16:00 New York. Yahoo's `^IXIC`. Takes the S&P 500's expected sign.
 - **Contagion** — a shock spreading from where it started to firms or markets exposed to it: one
   bank's failure raising doubts about similar banks.
 - **DAX** — Germany's index of its 40 largest listed companies, closing 17:30 Frankfurt time. One
@@ -126,6 +131,10 @@ Terms are grouped by what they are about, alphabetical within each group.
   euro). Rises on risk-off and on hawkish Fed expectations.
 - **ES** (E-mini S&P 500 future) — the futures contract on the S&P 500, which trades nearly around
   the clock and therefore reacts to releases outside US stock-market hours.
+- **EURUSD** — the euro in dollars, the dollar index's largest weight (58%), so mostly its mirror;
+  it takes the dollar index's expected sign reversed. Yahoo's `EURUSD=X`, whose daily close is the
+  price at 00:00 London of the bar's own day, so the bar after a US release is the next London
+  day's.
 - **Flight to safety** — money leaving risky assets for havens (Treasuries, gold, the dollar, the
   yen) during a shock. Usually lowers Treasury yields; see scenario 6 for when it did not.
 - **Front-month / continuous futures** — a futures contract expires, so a long price history is
@@ -135,6 +144,8 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **FX** (Foreign Exchange) — the currency market.
 - **Gold / XAU / GC** — gold; `XAU` is its currency-style code, `GC` its COMEX futures symbol. A
   haven asset, sensitive to real interest rates.
+- **ITA** — the iShares U.S. Aerospace & Defense ETF; the defence outcome of dated shocks. Closes
+  16:00 New York; no expected sign.
 - **KRE** — an ETF of US regional-bank shares; the market's read on regional-bank stress. Not in
   the instrument universe.
 - **Liquidity** — how easily something can be traded without moving its own price. The MVP sticks to
@@ -148,13 +159,20 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **SPY** — the largest ETF tracking the S&P 500; a cheap, free-data stand-in for the index.
 - **Stablecoin depeg** — a coin meant to hold a fixed value (USDC at $1) trading away from it. A
   systemic-stress signal.
+- **SXXP** (STOXX Europe 600) — 600 companies across Europe, computed in Zurich, closing 17:30
+  there. Yahoo's `^STOXX`. Takes the DAX's expected sign.
 - **Ticker / symbol** — the short code identifying an instrument (`SPY`, `^VIX`). **These strings
   are load-bearing here** — they are join keys between seed data, measurements, and predictions, so
   drift silently breaks lookups.
+- **UKX** (FTSE 100) — London's 100 largest listed companies, closing 16:30 London (the closing
+  auction). Yahoo's `^FTSE`. Takes the DAX's expected sign.
 - **UST 10Y** (US Treasury 10-year) — the 10-year US government bond yield; the world's benchmark
   interest rate and the most direct read on an inflation release. Its canonical symbol in
   `instruments.csv` is **`UST10Y / ZN`** (the cash note and its CBOT futures code), mirroring
   `BUND / FGBL`. Measured as a **yield in bps**, so it moves opposite to the bond's price.
+- **UST 5Y** (US Treasury 5-year) — the 5-year yield, the front end of the curve and the most
+  policy-sensitive maturity. Symbol **`UST5Y / ZF`** (the note and its CBOT futures code), Yahoo's
+  `^FVX`, in bps like the 10-year, whose expected sign it takes.
 - **VIX** — the Cboe Volatility Index, the market's expected S&P 500 volatility over the next 30
   days, derived from option prices. The "fear gauge": spikes on shocks.
 - **^TNX** — Yahoo Finance's symbol for the US 10-year yield. A *vendor* ticker, deliberately not
@@ -163,7 +181,10 @@ Terms are grouped by what they are about, alphabetical within each group.
   1 bp.
 - **Vendor ticker** — a data provider's own code for an instrument, as opposed to the project's
   canonical symbol. Step 2 maps five: `^GSPC` (S&P 500 index), `^TNX`, `DX-Y.NYB` (dollar index),
-  `GC=F` (gold futures), `^VIX`.
+  `GC=F` (gold futures), `^VIX`; cross-country two, `^GDAXI` and `^STOXX50E`; more outcomes nine,
+  `BZ=F`, `EURUSD=X`, `^IXIC`, `^FVX`, `^FTSE`, `^STOXX`, `BTC-USD`, `ITA` and `XLE`.
+- **XLE** — the Energy Select Sector SPDR ETF, the US energy sector; oil's equity echo. Closes
+  16:00 New York; no expected sign.
 
 ## Measuring the effect
 

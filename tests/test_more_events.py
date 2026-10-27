@@ -276,4 +276,6 @@ def test_a_live_release_on_a_shared_day_logs_every_link_silent(
     assert [(c.flow, c.instrument, c.outcome) for c in calls] == [
         ("retail", "UST10Y / ZN", study.SILENT),
         ("retail", "DXY", study.SILENT),
+        ("retail", "EURUSD", study.SILENT),
+        ("retail", "UST5Y / ZF", study.SILENT),
     ]

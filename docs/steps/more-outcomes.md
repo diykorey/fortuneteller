@@ -18,7 +18,7 @@ Probed 2026-10-27 on Yahoo's chart API, daily bars:
 | Symbol | Market | Yahoo | Zone | Close, expected | Daily since |
 | --- | --- | --- | --- | --- | --- |
 | `BRN` | Brent crude, front month | `BZ=F` | New York | 14:30, the ICE settlement | 2007-07 |
-| `EURUSD` | The euro against the dollar | `EURUSD=X` | London | 23:59, the day's last price | 2003-12 |
+| `EURUSD` | The euro against the dollar | `EURUSD=X` | London | ~~23:59, the day's last price~~ *measured 2026-10-27:* 00:00 of the bar's own day, the price Yahoo keeps as the close, so the next London day's bar is the first after a US release | 2003-12 |
 | `COMP` | Nasdaq Composite | `^IXIC` | New York | 16:00 | 1971-02 |
 | `UST5Y / ZF` | US Treasury 5-year yield, in bps | `^FVX` | New York | 15:00, as the 10-year's | 1970-01 |
 | `UKX` | FTSE 100, London | `^FTSE` | London | 16:30 | 1984-01 |
@@ -65,7 +65,7 @@ and is not taken.
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | The nine markets: seed rows, Yahoo series with their close and zone checked against intraday bars, signs in every flow's rule, `load-prices` stores them, the page's grids sixteen columns wide | `load-prices` stores nine more series; a test's 08:30 New York release falls on the same day's close in London, Zurich and UTC, and a 14:00 Fed decision on the next day's FTSE close; every existing output identical on a copy of the store; the scoreboard rebuilt in under ten minutes |
+| 1 | ~~The nine markets: seed rows, Yahoo series with their close and zone checked against intraday bars, signs in every flow's rule, `load-prices` stores them, the page's grids sixteen columns wide~~ **done** 2026-10-27: closes checked against 5-minute bars of 2026-10-19 to 26 (Brent's 14:30 settlement and the 5-year's last bar exact; the stock indices' after their last bar, as the DAX's; bitcoin's the 23:55 UTC bar; EUR/USD's the price at 00:00 London of its own day, the table above amended); on a copy of the store `load-prices` stored 70,792 closes for the nine, 144,077 for the sixteen, and 45,773 observations; the ten events' cells for the seven markets, the calls, the missed line and the rules identical before and after, `score` and `predict` adding rows only; the grids 16 columns wide, 160, 128 and 48 cells; the scoreboard rebuilt in 502 s alone (10 min 16 s beside the test suite). Four new links hold walk-forward at once, for step 2: the jobs report's euro (56 of 81, p 0.0004) and 5-year yield (71 of 101, p 0.0000), retail sales' 5-year yield (49 of 74, p 0.0035) and ISM's (34 of 50, p 0.008; not called live, ISM lands at 10:00); the first three are called from their next release | `load-prices` stores nine more series; a test's 08:30 New York release falls on the same day's close in London, Zurich and UTC, and a 14:00 Fed decision on the next day's FTSE close; every existing output identical on a copy of the store; the scoreboard rebuilt in under ten minutes |
 | 2 | Results here and in [`mvp-results.md`](../mvp-results.md) | Nine markets' verdicts on both tests for every flow, the signed links' walk-forward records, the chance line, against the expected outcome |
 
 ## Technical details

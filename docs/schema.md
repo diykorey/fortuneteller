@@ -79,9 +79,12 @@ MVP uses exactly one row, `CPI / inflation surprise`.
 
 ## instruments
 
-The instruments whose prices can be measured. Source: `data/seed/instruments.csv`, a representative
-15-row subset of 55. The MVP uses five: `SPY / ES`, `UST10Y / ZN`, `DXY`, `GC / XAU`, `VIX`;
-[cross-country effects](steps/cross-country.md) adds `DAX` and `SX5E` (2026-10-21).
+The instruments whose prices can be measured. Source: `data/seed/instruments.csv`, 22 rows: a
+representative 15-row subset of 55 from the Notion export, and 7 added 2026-10-27. The MVP uses
+five: `SPY / ES`, `UST10Y / ZN`, `DXY`, `GC / XAU`, `VIX`; [cross-country
+effects](steps/cross-country.md) adds `DAX` and `SX5E` (2026-10-21); [more
+outcomes](steps/more-outcomes.md) adds `BRN`, `EURUSD`, `COMP`, `UST5Y / ZF`, `UKX`, `SXXP`,
+`BTC`, `ITA` and `XLE` (2026-10-27), so sixteen are measured.
 
 | Column | Type | Meaning |
 | --- | --- | --- |
@@ -298,7 +301,8 @@ Example rows:
 | `UST10Y / ZN` | 2022-09-13 | 3.422 | `yahoo:^TNX` |
 
 **How much data.** Counted from the live source on 2026-09-28, after the empty and weekend rows are
-dropped. It grows by about five rows per trading day, one per instrument.
+dropped. It grows by about sixteen rows per trading day, one per instrument; 144,077 rows for the
+sixteen on 2026-10-27.
 
 | Instrument | Rows | From |
 | --- | --- | --- |
@@ -310,9 +314,18 @@ dropped. It grows by about five rows per trading day, one per instrument.
 | **Total** | **58,458** | |
 | `DAX` | 9,814 | 1987-12-30 (counted 2026-10-21) |
 | `SX5E` | 4,903 | 2007-03-30 (counted 2026-10-21) |
+| `UST5Y / ZF` | 14,224 | 1970-01-02 (counted 2026-10-27) |
+| `COMP` | 14,048 | 1971-02-05 (counted 2026-10-27) |
+| `UKX` | 10,816 | 1984-01-03 (counted 2026-10-27) |
+| `XLE` | 7,003 | 1998-12-22 (counted 2026-10-27) |
+| `EURUSD` | 5,942 | 2003-12-01 (counted 2026-10-27) |
+| `SXXP` | 5,659 | 2004-04-26 (counted 2026-10-27) |
+| `ITA` | 5,151 | 2006-05-05 (counted 2026-10-27) |
+| `BRN` | 4,790 | 2007-07-30 (counted 2026-10-27) |
+| `BTC` | 3,159 | 2014-09-17 (counted 2026-10-27) |
 
-A few megabytes in all. `observations` is these same days thinned down to the CPI release days —
-about 2,700 rows.
+A few megabytes in all. `observations` is these same days thinned down to the release days —
+about 2,700 rows for CPI and the five; 45,773 for ten events and sixteen markets on 2026-10-27.
 
 | Column | Type | Meaning |
 | --- | --- | --- |

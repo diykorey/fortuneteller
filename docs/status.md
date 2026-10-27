@@ -8,14 +8,14 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Jobless claims, step 2 *(PR #183)*: results. Nothing moves on claims' 450 lone days; the yield
-follows the surprise at 56%, short of *tracks*; no link opens walk-forward, so no call; no other
-flow changed. [Results](steps/jobless-claims.md#results).
+More outcomes, spec *(PR #184)*: nine markets, oil to bitcoin, each with its close and zone, signs
+by analogy for four of them, the chance line counted. [Spec](steps/more-outcomes.md).
 
 ## In progress
 
-More outcomes, spec *(PR #184)*: nine markets, oil to bitcoin, each with its close and zone, signs
-by analogy for four of them, the chance line counted. [Spec](steps/more-outcomes.md).
+More outcomes, step 1 *(PR TBD)*: the nine markets loaded with their closes checked, signs in
+every rule, every existing cell identical; four new links hold walk-forward at once, the jobs
+report's euro and 5-year yield, retail sales' 5-year yield and ISM's. [Spec](steps/more-outcomes.md).
 
 Also waiting: jobless claims step 3, the first Thursday unattended (2026-10-29), and who merges the
 silent Thursdays ([spec](steps/jobless-claims.md#open-to-decide-before-step-1)); the scoreboard's
@@ -25,13 +25,14 @@ grades.
 
 ## Next
 
-More outcomes, step 1: the nine markets loaded with their closes checked, signs in every rule;
-every existing output identical.
+More outcomes, step 2: results, nine markets' verdicts on both tests for every flow, the signed
+links' walk-forward records, the chance line, against the expected outcome.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-27 | More outcomes, step 1: the nine markets loaded, closes checked, signs by analogy; four new links hold, three of them live | PR TBD |
 | 2026-10-27 | More outcomes, spec: nine markets, signs by analogy, the chance line counted | PR #184 |
 | 2026-10-27 | Jobless claims, step 2: results — nothing moves on lone claims days; the yield follows the surprise, short of *tracks*; no call | PR #183 |
 | 2026-10-26 | Jobless claims, step 1: the weekly flow, a lesser release, called live on Thursdays | PR #181 |

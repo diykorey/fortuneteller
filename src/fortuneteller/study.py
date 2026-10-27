@@ -33,7 +33,15 @@ import duckdb
 from . import db, expectations, sources, stats
 from .models import DailyBar, EventInstance, Observation
 from .flows import EVENT_FLOWS, RELEASE_TIME, EventFlow, release_date, stored_events
-from .sources import FRANKFURT, NEW_YORK, DailyClosingPrice, YahooError
+from .sources import (
+    FRANKFURT,
+    LONDON,
+    NEW_YORK,
+    UTC_ZONE,
+    ZURICH,
+    DailyClosingPrice,
+    YahooError,
+)
 
 
 # Step 2 — each instrument's daily closes from Yahoo (docs/steps/step-2-prices.md).
@@ -46,11 +54,14 @@ class PriceSeries(NamedTuple):
     zone: ZoneInfo
 
 
-# The five MVP instruments and Europe's two stock indices (docs/steps/cross-country.md), keyed by
+# Every market measured: the five MVP instruments, Europe's two stock indices
+# (docs/steps/cross-country.md) and the nine more outcomes (docs/steps/more-outcomes.md), keyed by
 # the exact symbol in data/seed/instruments.csv, with the Yahoo ticker each is read from, the unit
-# its move is measured in (pct for prices, bps for the yield) and the local time and zone of its
-# daily close: the intraday price Yahoo's close matches, measured on 2026-09 data. Gold's is the
-# COMEX settlement; Europe's is the closing auction after the last 5-minute bar, 17:25 (2026-10).
+# its move is measured in (pct for prices, bps for a yield) and the local time and zone of its
+# daily close: the intraday price Yahoo's close matches, measured on 2026-09 and 2026-10 data.
+# Gold's and Brent's are their settlements; a stock index's the closing auction after its last
+# 5-minute bar; EUR/USD's the price at 00:00 London of the bar's own day, which is how Yahoo
+# stamps a currency pair, so the next London day's bar is the first to follow a US release.
 MVP_PRICE_SERIES = {
     "SPY / ES": PriceSeries("^GSPC", "pct", time(16, 0), NEW_YORK),
     "UST10Y / ZN": PriceSeries("^TNX", "bps", time(15, 0), NEW_YORK),
@@ -59,6 +70,15 @@ MVP_PRICE_SERIES = {
     "VIX": PriceSeries("^VIX", "pct", time(16, 15), NEW_YORK),
     "DAX": PriceSeries("^GDAXI", "pct", time(17, 30), FRANKFURT),
     "SX5E": PriceSeries("^STOXX50E", "pct", time(17, 30), FRANKFURT),
+    "BRN": PriceSeries("BZ=F", "pct", time(14, 30), NEW_YORK),
+    "EURUSD": PriceSeries("EURUSD=X", "pct", time(0, 0), LONDON),
+    "COMP": PriceSeries("^IXIC", "pct", time(16, 0), NEW_YORK),
+    "UST5Y / ZF": PriceSeries("^FVX", "bps", time(15, 0), NEW_YORK),
+    "UKX": PriceSeries("^FTSE", "pct", time(16, 30), LONDON),
+    "SXXP": PriceSeries("^STOXX", "pct", time(17, 30), ZURICH),
+    "BTC": PriceSeries("BTC-USD", "pct", time(23, 59), UTC_ZONE),
+    "ITA": PriceSeries("ITA", "pct", time(16, 0), NEW_YORK),
+    "XLE": PriceSeries("XLE", "pct", time(16, 0), NEW_YORK),
 }
 
 
@@ -83,7 +103,7 @@ def store_daily_bars(
 def load_daily_bars(con: duckdb.DuckDBPyConnection | None = None) -> dict[str, int]:
     """Fetch, parse and store every MVP instrument's daily closes; return the count per instrument.
 
-    All five are fetched and parsed before any is stored, so a failure on one leaves ``daily_bars``
+    All are fetched and parsed before any is stored, so a failure on one leaves ``daily_bars``
     as it was rather than half-refreshed.
     """
     fetched: dict[str, tuple[str, list[DailyClosingPrice]]] = {}
