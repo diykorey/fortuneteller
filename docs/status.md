@@ -8,7 +8,7 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Jobless claims, step 2 *(PR TBD)*: results. Nothing moves on claims' 450 lone days; the yield
+Jobless claims, step 2 *(PR #183)*: results. Nothing moves on claims' 450 lone days; the yield
 follows the surprise at 56%, short of *tracks*; no link opens walk-forward, so no call; no other
 flow changed. [Results](steps/jobless-claims.md#results).
 
@@ -32,7 +32,7 @@ down first.
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-27 | Jobless claims, step 2: results — nothing moves on lone claims days; the yield follows the surprise, short of *tracks*; no call | PR TBD |
+| 2026-10-27 | Jobless claims, step 2: results — nothing moves on lone claims days; the yield follows the surprise, short of *tracks*; no call | PR #183 |
 | 2026-10-26 | Jobless claims, step 1: the weekly flow, a lesser release, called live on Thursdays | PR #181 |
 | 2026-10-26 | Jobless claims, spec | PR #180 |
 | 2026-10-26 | The scoreboard, step 2: the evening job rewrites the page into the score pull request; a same-day run resets its branch | PR #179 |
