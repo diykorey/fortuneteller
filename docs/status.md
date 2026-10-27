@@ -14,7 +14,7 @@ flow changed. [Results](steps/jobless-claims.md#results).
 
 ## In progress
 
-More outcomes, spec *(PR TBD)*: nine markets, oil to bitcoin, each with its close and zone, signs
+More outcomes, spec *(PR #184)*: nine markets, oil to bitcoin, each with its close and zone, signs
 by analogy for four of them, the chance line counted. [Spec](steps/more-outcomes.md).
 
 Also waiting: jobless claims step 3, the first Thursday unattended (2026-10-29), and who merges the
@@ -32,7 +32,7 @@ every existing output identical.
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-27 | More outcomes, spec: nine markets, signs by analogy, the chance line counted | PR TBD |
+| 2026-10-27 | More outcomes, spec: nine markets, signs by analogy, the chance line counted | PR #184 |
 | 2026-10-27 | Jobless claims, step 2: results — nothing moves on lone claims days; the yield follows the surprise, short of *tracks*; no call | PR #183 |
 | 2026-10-26 | Jobless claims, step 1: the weekly flow, a lesser release, called live on Thursdays | PR #181 |
 | 2026-10-26 | Jobless claims, spec | PR #180 |
