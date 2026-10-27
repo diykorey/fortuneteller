@@ -271,6 +271,18 @@ flash days without ISM, New York's move shrinks (S&P 500 1.40 to 1.25) but does 
 ISM days out of ordinary days, CPI's S&P 500 and GDP's gold turn unclear on release days, and the
 flash's Euro Stoxx 50 against its surprise; every call is unchanged.
 
+## Jobless claims
+
+Measured 2026-10-27. Detail in [jobless claims](steps/jobless-claims.md#results).
+
+706 weekly reports since 2013, 450 of them on a day with no other stored release: on those days no
+market moves more than on an ordinary one (gold nearest, ratio 1.10, p 0.06). The yield follows the
+surprise against Nasdaq's consensus the expected way, more claims a lower yield, but faintly (rank
+corr 0.14 on 448 days, right on 56% of the 307 noticeable surprises), short of *tracks*; the dollar
+index less so. No link opens walk-forward, so no call: the morning job logs silent rows every
+Thursday from 2026-10-29 until one does. By the lesser-release rule nothing else changed, and taking
+claims days out of ordinary days would move CPI's and the jobs report's yield ratios by under 0.001.
+
 ## What comes next
 
 Chosen 2026-10-13: keep score ([rung 4](steps/rung-4-keep-score.md)), done above with the live path
@@ -284,8 +296,9 @@ the first event from outside the US, and [euro-area inflation](steps/euro-inflat
 with a surprise. Chosen 2026-10-23: [the ISM survey](steps/ism-manufacturing.md), tested as the
 flash day's other release. Decided 2026-10-23: the target is an entertainment tool with a realistic
 approach ([Legend](legend.md#the-target)), and the plan widens what is shown while every bar stays:
-the [roadmap](roadmap.md#next-steps-in-order)'s steps 5–11, the scoreboard first. The options as
-they stood:
+the [roadmap](roadmap.md#next-steps-in-order)'s steps 5–11, the scoreboard first. Chosen
+2026-10-26: [jobless claims](steps/jobless-claims.md), the one event that beats the sample wall. The
+options as they stood:
 
 | Option | What it is | Cost | What it would tell us |
 | --- | --- | --- | --- |
