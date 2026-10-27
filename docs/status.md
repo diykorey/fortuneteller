@@ -14,24 +14,25 @@ flow changed. [Results](steps/jobless-claims.md#results).
 
 ## In progress
 
-Jobless claims, step 3: the first Thursday unattended, 2026-10-29: the morning job logs claims'
-rows and opens their pull request with no one there, the evening grades them. Open: who merges the
-silent Thursdays ([spec](steps/jobless-claims.md#open-to-decide-before-step-1)).
+More outcomes, spec *(PR TBD)*: nine markets, oil to bitcoin, each with its close and zone, signs
+by analogy for four of them, the chance line counted. [Spec](steps/more-outcomes.md).
 
-Also waiting: the scoreboard's GitHub Pages setting (step 2) and its first release day (step 3);
-release-day job step 3, evening score step 2 and rung 6 step 2: the first release the morning job
-logs, pops up and the evening grades.
+Also waiting: jobless claims step 3, the first Thursday unattended (2026-10-29), and who merges the
+silent Thursdays ([spec](steps/jobless-claims.md#open-to-decide-before-step-1)); the scoreboard's
+GitHub Pages setting (step 2) and its first release day (step 3); release-day job step 3, evening
+score step 2 and rung 6 step 2: the first release the morning job logs, pops up and the evening
+grades.
 
 ## Next
 
-More outcomes (roadmap step 7), the spec: oil, EUR/USD, the Nasdaq, the 5-year yield, the FTSE 100,
-the STOXX 600, bitcoin, a defence and an energy ETF, "does it move?" only unless a sign is written
-down first.
+More outcomes, step 1: the nine markets loaded with their closes checked, signs in every rule;
+every existing output identical.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-27 | More outcomes, spec: nine markets, signs by analogy, the chance line counted | PR TBD |
 | 2026-10-27 | Jobless claims, step 2: results — nothing moves on lone claims days; the yield follows the surprise, short of *tracks*; no call | PR #183 |
 | 2026-10-26 | Jobless claims, step 1: the weekly flow, a lesser release, called live on Thursdays | PR #181 |
 | 2026-10-26 | Jobless claims, spec | PR #180 |
