@@ -14,7 +14,7 @@ report's euro and 5-year yield, retail sales' 5-year yield and ISM's. [Spec](ste
 
 ## In progress
 
-Jobless claims, step 3 *(PR TBD)*: the job merges a pull request whose rows are all silent, decided
+Jobless claims, step 3 *(PR #187)*: the job merges a pull request whose rows are all silent, decided
 2026-10-28; `live` says so on its last line, the script merges on it.
 
 Also waiting: jobless claims step 4, the first Thursday unattended (2026-10-29); the scoreboard's
@@ -31,7 +31,7 @@ links' walk-forward records, the chance line, against the expected outcome.
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-28 | Jobless claims, step 3: the job merges a pull request whose rows are all silent | PR TBD |
+| 2026-10-28 | Jobless claims, step 3: the job merges a pull request whose rows are all silent | PR #187 |
 | 2026-10-27 | More outcomes, step 1: the nine markets loaded, closes checked, signs by analogy; four new links hold, three of them live | PR #185 |
 | 2026-10-27 | More outcomes, spec: nine markets, signs by analogy, the chance line counted | PR #184 |
 | 2026-10-27 | Jobless claims, step 2: results — nothing moves on lone claims days; the yield follows the surprise, short of *tracks*; no call | PR #183 |
