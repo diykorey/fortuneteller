@@ -279,3 +279,35 @@ def test_a_live_release_on_a_shared_day_logs_every_link_silent(
         ("retail", "EURUSD", study.SILENT),
         ("retail", "UST5Y / ZF", study.SILENT),
     ]
+
+
+def test_live_s_last_line_says_when_every_row_of_the_day_is_silent(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given retail sales' history, its release today on a day CPI also comes out, its actual out
+    _store_with_surprise(
+        db.get_connection(), RETAIL_FLOW, sources.RETAIL_SALES, [date(2024, 4, 15)]
+    )
+    day = date(2026, 11, 17)
+    monkeypatch.setattr(
+        expectations,
+        "next_consensus",
+        lambda measure, today, cache_dir: expectations.NextConsensus(
+            day if measure == sources.RETAIL_SALES else day + timedelta(days=30), 0.4, 0.4
+        ),
+    )
+    monkeypatch.setattr(expectations, "published_actual", lambda measure, day, cache_dir: 1.4)
+    monkeypatch.setattr(cli, "_now", lambda: datetime.combine(day, time(8, 31), tzinfo=NEW_YORK))
+    _tradingview_quarter(
+        monkeypatch, [("Retail Sales MoM", day, "US"), ("Core Inflation Rate MoM", day, "US")]
+    )
+
+    # when the release-day job's command runs
+    code = main(["live"])
+
+    # then every link is logged silent, and the last line says so: the script merges on it
+    captured = capsys.readouterr()
+    rows = study.read_calls(settings.calls_path)
+    assert code == 0, captured.err
+    assert rows and all(row.outcome == study.SILENT for row in rows)
+    assert captured.out.splitlines()[-1] == f"live: {len(rows)} rows logged today, all silent"

@@ -31,7 +31,9 @@ shows it, and on a failure an issue.
   `main` and would read as missed: the run exits 0 and loads nothing. So it does while a `score-*`
   pull request is open, which a second would repeat (*added 2026-10-20*). While any row is pending
   (its release, surprise or close not loaded yet), nothing is committed. The next run picks either
-  up.
+  up. *Amended 2026-10-28*: a day whose rows are all
+  silent is merged by the morning job itself ([jobless claims](jobless-claims.md)), so the evening
+  waits only on a day with a call.
 - **Weekdays at 18:00 New York**, well after the 16:15 VIX close. A run missed while the laptop was
   off runs at the next login (`Persistent=true`). Both jobs take one lock, so a late evening run
   and the morning's `live` never hold the database at once.

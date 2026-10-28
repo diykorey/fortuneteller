@@ -28,7 +28,12 @@ release day it opens the pull request, and on a failure it opens an issue.
   in the one in use. It reads the database and the calendar cache of the main checkout and writes
   only `data/calls.csv` in its own tree.
 - **It opens, never merges.** Logged rows go to a branch `calls-<flows>-<day>` and a pull request
-  to `main`, as by hand. Merging stays a person's.
+  to `main`, as by hand. Merging stays a person's. *Amended 2026-10-28* ([jobless
+  claims](jobless-claims.md#open-to-decide-before-step-1)): a pull request whose rows are all
+  silent is merged by the job itself, as a merge commit, since a silent row claims nothing and
+  claims bring fifty such days a year; one holding a call, a small surprise or a call with too few
+  before it, or a run that failed, still waits for a person. A merge that fails is reported like
+  any failure, and the pull request stays open.
 - **Every failure on a release day is reported**: no actual within 30 minutes, calendars that
   disagree, a locked database, a push or `gh` error. The job opens an issue with the run's output;
   if it cannot reach GitHub at all, the output stays in the journal. A machine asleep or off at 08:30

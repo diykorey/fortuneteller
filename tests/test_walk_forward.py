@@ -419,14 +419,17 @@ def test_live_fetches_and_logs_the_release_of_the_day(
     # when the release-day job's command runs at 08:30
     code = main(["live"])
 
-    # then CPI alone is fetched, called and logged
+    # then CPI alone is fetched, called and logged, and the last line counts the rows not silent
     out = capsys.readouterr().out.splitlines()
+    rows = study.read_calls(settings.calls_path)
+    spoke = sum(row.outcome != study.SILENT for row in rows)
     assert code == 0
     assert out[:2] == [
         "live: cpi is released today",
         "actual 0.3 from TradingView at 08:30:15 New York",
     ]
-    assert {row.flow for row in study.read_calls(settings.calls_path)} == {"cpi"}
+    assert {row.flow for row in rows} == {"cpi"}
+    assert spoke and out[-1] == f"live: {len(rows)} rows logged today, {spoke} not silent"
 
 
 def test_live_on_a_day_without_a_release_does_nothing(
@@ -463,9 +466,11 @@ def test_live_leaves_a_release_already_logged_alone(
     # when the release-day job's command runs again
     code = main(["live"])
 
-    # then it reads nothing, logs nothing more, and does not fail
+    # then it reads nothing, logs nothing more, does not fail, and still sums up the day's rows
     assert code == 0
-    assert capsys.readouterr().out == f"live: cpi is already in {settings.calls_path}\n"
+    assert capsys.readouterr().out == (
+        f"live: cpi is already in {settings.calls_path}\nlive: 1 row logged today, all silent\n"
+    )
     assert waits == []
     assert len(study.read_calls(settings.calls_path)) == 1
 

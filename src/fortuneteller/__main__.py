@@ -734,6 +734,13 @@ def _live(_args: argparse.Namespace) -> int:
         failed = _predict(args) != 0 or failed
     if not released and not failed:
         print(f"live: no release today ({today})")
+    rows = [c for c in study.read_calls(settings.calls_path) if c.day == today]
+    if rows:
+        spoke = sum(c.outcome != study.SILENT for c in rows)
+        print(
+            f"live: {len(rows)} row{'s' if len(rows) != 1 else ''} logged today, "
+            f"{f'{spoke} not silent' if spoke else 'all silent'}"
+        )
     return 1 if failed else 0
 
 

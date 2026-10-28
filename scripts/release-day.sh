@@ -60,6 +60,22 @@ open_pr() {
         report "committing, pushing or opening the pull request for $2"
 }
 
+# Merges the pull request of branch $1 as a merge commit and deletes the branch. GitHub may still
+# be working out whether a pull request opened seconds ago can be merged, so it is asked three times.
+merge_pr() {
+    merged=
+    for _ in 1 2 3; do
+        if gh pr merge -R "$repo" --merge "$1"; then
+            merged=1
+            break
+        fi
+        sleep 20
+    done
+    [ -n "$merged" ] || report "merging the pull request for $1"
+    git -C "$job_tree" -c credential.helper= -c credential.helper='!gh auth git-credential' \
+        push -q "https://github.com/$repo.git" --delete "$1" || echo "the branch $1 stays on GitHub"
+}
+
 if [ "$step" = live ]; then
     file=data/calls.csv
     files=$file
@@ -71,8 +87,17 @@ if [ "$step" = live ]; then
         at=$(date -u +%H:%M:%SZ)
         open_pr "Log the live $flows call of $day" "calls-$flows-$day" \
             "Logged by the release-day job at $at; graded by \`score\` after the closes."
+        # Rows that are all silent claim nothing, so their pull request is merged here (decided
+        # 2026-10-28, docs/steps/jobless-claims.md); a call, or a run that failed, waits for a person.
+        if [ "$live" -eq 0 ] && grep -Eq 'rows? logged today, all silent$' "$out"; then
+            merge_pr "calls-$flows-$day"
+            kept="merged: every row silent"
+        else
+            kept="open for review"
+        fi
         popup "Log the live $flows call of $day" \
-            "$(grep -E ': actual |^.{12} (up|down|—) |^no prediction: ' "$out")"
+            "$(grep -E ': actual |^.{12} (up|down|—) |^no prediction: ' "$out")
+$kept"
     fi
     [ "$live" -eq 0 ] || report "fortuneteller live exited $live"
     exit 0
