@@ -8,29 +8,29 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-More outcomes, step 1 *(PR #185)*: the nine markets loaded with their closes checked, signs in
-every rule, every existing cell identical; four new links hold walk-forward at once, the jobs
-report's euro and 5-year yield, retail sales' 5-year yield and ISM's. [Spec](steps/more-outcomes.md).
-
-## In progress
-
 Jobless claims, step 3 *(PR #187)*: the job merges a pull request whose rows are all silent, decided
 2026-10-28; `live` says so on its last line, the script merges on it.
 
+## In progress
+
+More outcomes, step 2 *(PR TBD)*: the results, nine markets on both tests for every flow, the
+signed links' records, against the expected outcome. [Results](steps/more-outcomes.md#results).
+
 Also waiting: jobless claims step 4, the first Thursday unattended (2026-10-29); the scoreboard's
-first release day on the published page (step 3; GitHub Pages enabled 2026-10-27); release-day
-job step 3, evening score step 2 and rung 6 step 2: the first release the morning job logs, pops up and the evening
-grades.
+first release day on the published page (step 3); release-day job step 3, evening score step 2
+and rung 6 step 2: the first release the morning job logs, pops up and the evening grades.
 
 ## Next
 
-More outcomes, step 2: results, nine markets' verdicts on both tests for every flow, the signed
-links' walk-forward records, the chance line, against the expected outcome.
+Scheduled statements (roadmap step 8), the spec: the Fed chair's and the ECB president's speeches,
+testimonies and press conferences as two flows, "does it move?" only; the morning job previews a
+scheduled one with its record.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-28 | More outcomes, step 2: results — the 5-year yield the most responsive market, four new links hold, three live | PR TBD |
 | 2026-10-28 | Jobless claims, step 3: the job merges a pull request whose rows are all silent | PR #187 |
 | 2026-10-27 | More outcomes, step 1: the nine markets loaded, closes checked, signs by analogy; four new links hold, three of them live | PR #185 |
 | 2026-10-27 | More outcomes, spec: nine markets, signs by analogy, the chance line counted | PR #184 |

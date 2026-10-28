@@ -283,6 +283,20 @@ index less so. No link opens walk-forward, so no call: the morning job logs sile
 Thursday from 2026-10-29 until one does. By the lesser-release rule nothing else changed, and taking
 claims days out of ordinary days would move CPI's and the jobs report's yield ratios by under 0.001.
 
+## More outcomes
+
+Measured 2026-10-27. Detail in [more outcomes](steps/more-outcomes.md#results).
+
+Nine markets beside the seven, under the same bars. The 5-year yield is the most responsive market
+of the sixteen: it moves 90% more on jobs-report days, tracks CPI, retail sales and ISM, and holds
+walk-forward on the jobs report (71 of 101), retail sales (49 of 74) and ISM (34 of 50). The euro
+mirrors the dollar index and holds on the jobs report too (56 of 81). The Nasdaq moves on seven of
+ten events, the S&P 500 on two, lone claims days among them. London and the STOXX 600 move on Fed
+and jobs-report days as Frankfurt does, and not on the ECB's. Brent and the energy ETF move on ISM
+days only; the defence ETF on none; bitcoin on none, and less than on ordinary days. 23 of the
+nine's 90 release-day cells say *moves* where chance would give one. Four new links hold, three of
+them called live from 6 November.
+
 ## What comes next
 
 Chosen 2026-10-13: keep score ([rung 4](steps/rung-4-keep-score.md)), done above with the live path
@@ -297,7 +311,8 @@ with a surprise. Chosen 2026-10-23: [the ISM survey](steps/ism-manufacturing.md)
 flash day's other release. Decided 2026-10-23: the target is an entertainment tool with a realistic
 approach ([Legend](legend.md#the-target)), and the plan widens what is shown while every bar stays:
 the [roadmap](roadmap.md#next-steps-in-order)'s steps 5–11, the scoreboard first. Chosen
-2026-10-26: [jobless claims](steps/jobless-claims.md), the one event that beats the sample wall. The
+2026-10-26: [jobless claims](steps/jobless-claims.md), the one event that beats the sample wall.
+Chosen 2026-10-27: [more outcomes](steps/more-outcomes.md), nine markets beside the seven. The
 options as they stood:
 
 | Option | What it is | Cost | What it would tell us |
