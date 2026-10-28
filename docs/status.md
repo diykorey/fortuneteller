@@ -8,19 +8,18 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-More outcomes, spec *(PR #184)*: nine markets, oil to bitcoin, each with its close and zone, signs
-by analogy for four of them, the chance line counted. [Spec](steps/more-outcomes.md).
-
-## In progress
-
 More outcomes, step 1 *(PR #185)*: the nine markets loaded with their closes checked, signs in
 every rule, every existing cell identical; four new links hold walk-forward at once, the jobs
 report's euro and 5-year yield, retail sales' 5-year yield and ISM's. [Spec](steps/more-outcomes.md).
 
-Also waiting: jobless claims step 3, the first Thursday unattended (2026-10-29), and who merges the
-silent Thursdays ([spec](steps/jobless-claims.md#open-to-decide-before-step-1)); the scoreboard's
-GitHub Pages setting (step 2) and its first release day (step 3); release-day job step 3, evening
-score step 2 and rung 6 step 2: the first release the morning job logs, pops up and the evening
+## In progress
+
+Jobless claims, step 3 *(PR TBD)*: the job merges a pull request whose rows are all silent, decided
+2026-10-28; `live` says so on its last line, the script merges on it.
+
+Also waiting: jobless claims step 4, the first Thursday unattended (2026-10-29); the scoreboard's
+first release day on the published page (step 3; GitHub Pages enabled 2026-10-27); release-day
+job step 3, evening score step 2 and rung 6 step 2: the first release the morning job logs, pops up and the evening
 grades.
 
 ## Next
@@ -32,6 +31,7 @@ links' walk-forward records, the chance line, against the expected outcome.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-28 | Jobless claims, step 3: the job merges a pull request whose rows are all silent | PR TBD |
 | 2026-10-27 | More outcomes, step 1: the nine markets loaded, closes checked, signs by analogy; four new links hold, three of them live | PR #185 |
 | 2026-10-27 | More outcomes, spec: nine markets, signs by analogy, the chance line counted | PR #184 |
 | 2026-10-27 | Jobless claims, step 2: results — nothing moves on lone claims days; the yield follows the surprise, short of *tracks*; no call | PR #183 |
