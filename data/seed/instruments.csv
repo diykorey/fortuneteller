@@ -14,3 +14,10 @@ UST10Y / ZN,US Treasury 10Y,rates_bond,us,CBOT (CME) / OTC cash,US risk-free ben
 VIX,VIX (equity volatility),volatility,us,Cboe,The fear gauge; spikes on every risk-off event.
 CDS,Sovereign CDS (EM / periphery),credit_cds,em,ICE / Markit,"Default-risk gauge (Russia 2022, Italy, EM)."
 BDI,Baltic Dry Index,freight,global,Baltic Exchange,Dry-bulk freight; China-demand & disruption gauge.
+EURUSD,EUR/USD,fx,global,OTC / CME,"The euro in dollars; 58% of the dollar index, so mostly its mirror. Yahoo's daily close is the price at 00:00 London of the bar's day."
+COMP,Nasdaq Composite,equity_index,us,Nasdaq,Every Nasdaq-listed stock; the growth end of US equities; closes 16:00 New York.
+UST5Y / ZF,US Treasury 5Y,rates_bond,us,CBOT (CME) / OTC cash,The front end of the curve; measured as yield in bps like the 10-year.
+UKX,FTSE 100,equity_index,europe,LSE,London's 100 largest listed companies; closes 16:30 London.
+SXXP,STOXX Europe 600,equity_index,europe,STOXX,600 companies across Europe; closes 17:30 Zurich.
+ITA,US aerospace & defence ETF,sector_etf,us,Cboe BZX,iShares U.S. Aerospace & Defense; the defence outcome of dated shocks.
+XLE,US energy sector ETF,sector_etf,us,NYSE Arca,Energy Select Sector SPDR; oil's equity echo.

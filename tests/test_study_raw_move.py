@@ -34,6 +34,7 @@ from fortuneteller.study import (
     compare_moves,
     reaction_days,
     daily_moves,
+    first_reaction_day,
     measure_raw_moves,
     move_verdict,
     shared_days,
@@ -213,17 +214,18 @@ def _synthetic_store(con: duckdb.DuckDBPyConnection, flow: EventFlow = CPI_FLOW)
         reference = date(year - 1, 12, 1) if month_index == 1 else date(year, month_index - 1, 1)
         releases.append(FirstRelease(reference, released, 300.0))
     store_releases(flow, releases, con=con)
-    release_days = {release.released for release in releases}
-    rng = random.Random(5)
-    day, price, closes = date(2020, 12, 1), 100.0, []
-    while day < date(2024, 1, 31):
-        if day.weekday() < 5:
-            size = 0.02 if day in release_days else 0.005
-            price *= 1 + rng.choice((-1, 1)) * size * rng.uniform(0.5, 1.5)
-            closes.append(DailyBar(instrument="", day=day, close=price, source="s"))
-        day += timedelta(days=1)
-    for instrument in MVP_PRICE_SERIES:
-        bars = [bar.model_copy(update={"instrument": instrument}) for bar in closes]
+    events = flows.stored_events(flow, con=con)
+    for instrument, series in MVP_PRICE_SERIES.items():
+        # The 2% lands on the day the instrument's close first carries the release: the euro's next
+        big_days = {first_reaction_day(event, series) for event in events}
+        rng = random.Random(5)
+        day, price, bars = date(2020, 12, 1), 100.0, []
+        while day < date(2024, 1, 31):
+            if day.weekday() < 5:
+                size = 0.02 if day in big_days else 0.005
+                price *= 1 + rng.choice((-1, 1)) * size * rng.uniform(0.5, 1.5)
+                bars.append(DailyBar(instrument=instrument, day=day, close=price, source="s"))
+            day += timedelta(days=1)
         db.insert_models("daily_bars", bars, con=con)
 
 
@@ -277,7 +279,7 @@ def test_raw_move_prints_a_verdict_per_instrument_and_the_rule(
     # then every instrument has a verdict line, and the rule is printed with them
     out = capsys.readouterr().out
     assert code == 0
-    assert sum(line.endswith(" moves") for line in out.splitlines()) == 7
+    assert sum(line.endswith(" moves") for line in out.splitlines()) == 16
     assert "moves = ratio >= 1.10 and p < 0.01" in out
 
 
@@ -327,7 +329,7 @@ def test_raw_move_takes_the_event_to_measure(
 
     # then the jobs report gets its verdicts, and CPI says what to load first
     assert nfp == 0
-    assert sum(line.endswith(" moves") for line in nfp_out.splitlines()) == 7
+    assert sum(line.endswith(" moves") for line in nfp_out.splitlines()) == 16
     assert cpi == 1
     assert "no CPI / inflation surprise releases stored" in capsys.readouterr().err
 
@@ -339,9 +341,9 @@ def test_raw_move_measures_ecb_decisions(tmp_db: Path, capsys: pytest.CaptureFix
     # when the command runs for the ECB
     code = main(["raw-move", "--event", "ecb"])
 
-    # then each of the seven markets gets its verdict
+    # then each of the sixteen markets gets its verdict
     assert code == 0
-    assert sum(line.endswith(" moves") for line in capsys.readouterr().out.splitlines()) == 7
+    assert sum(line.endswith(" moves") for line in capsys.readouterr().out.splitlines()) == 16
 
 
 @pytest.mark.parametrize("flow", [flows.HICP_FLOW, flows.ISM_FLOW], ids=lambda f: f.cli_name)
@@ -354,9 +356,9 @@ def test_raw_move_measures_tradingview_releases(
     # when the command runs for it
     code = main(["raw-move", "--event", flow.cli_name])
 
-    # then each of the seven markets gets its verdict
+    # then each of the sixteen markets gets its verdict
     assert code == 0
-    assert sum(line.endswith(" moves") for line in capsys.readouterr().out.splitlines()) == 7
+    assert sum(line.endswith(" moves") for line in capsys.readouterr().out.splitlines()) == 16
 
 
 def test_another_events_days_are_not_ordinary_days() -> None:

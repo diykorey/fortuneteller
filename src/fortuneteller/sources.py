@@ -27,6 +27,12 @@ from zoneinfo import ZoneInfo
 NEW_YORK = ZoneInfo("America/New_York")
 # The ECB's decisions and Europe's market closes.
 FRANKFURT = ZoneInfo("Europe/Berlin")
+# London's close, and the day Yahoo stamps on a currency pair's bar.
+LONDON = ZoneInfo("Europe/London")
+# The STOXX indices are computed in Zurich.
+ZURICH = ZoneInfo("Europe/Zurich")
+# Bitcoin trades every hour of every day; Yahoo's daily bar is the UTC day.
+UTC_ZONE = ZoneInfo("UTC")
 
 
 # A reply that is not the expected JSON shape raises one of these while it is read.

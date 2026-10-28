@@ -69,8 +69,9 @@ tests/           # pytest suite (ruff + mypy --strict + pytest is the gate)
 Bootstrapping, **measurable-spine first**. M0 (the data spine), the MVP, ladder rungs 1–6 and the
 roadmap's steps 1–4b are complete. The repo holds ten events (US CPI, the jobs report, Fed
 decisions, retail sales, core PCE, GDP, the ISM survey and weekly jobless claims; ECB decisions and
-the euro area's flash inflation) and seven markets (the S&P 500, the 10-year yield, the dollar index, gold, VIX, the DAX
-and the Euro Stoxx 50), 1972 to today, from free sources: each market's measured move around every
+the euro area's flash inflation) and sixteen markets (the S&P 500, the Nasdaq, the 10-year and 5-year yields, the dollar index
+and the euro, gold, Brent, VIX, the DAX, the Euro Stoxx 50, the FTSE 100 and the STOXX 600,
+bitcoin, a defence and an energy ETF), 1972 to today, from free sources: each market's measured move around every
 release, how it relates to each surprise, and a walk-forward replay of every link.
 
 ```bash
@@ -86,10 +87,11 @@ uv run fortuneteller score                  # the live calls, graded
 uv run fortuneteller scoreboard             # the page: every call graded, every verdict and record
 ```
 
-**What it predicts:** the direction of the 10-year yield and the dollar index on the three links
-that hold walk-forward (the jobs report's dollar clearly, its yield barely over drift, retail
-sales' yield), each printed with its record as counts and its band, never a probability: none has
-proved honest yet. On release days the calls are made, graded and delivered as a desktop popup
+**What it predicts:** the direction of the 10-year and 5-year yields, the dollar index and the euro
+on the six links that hold walk-forward at 08:30 (the jobs report's dollar and euro, its two yields,
+retail sales' two yields; ISM's 5-year yield holds too, but ISM lands at 10:00, after the morning
+job), each printed with its record as counts and its band, never a probability: none has proved honest yet. On release days the calls are made, graded
+and delivered as a desktop popup
 unattended ([the release-day job](docs/steps/release-day-job.md), [the evening
 score](docs/steps/evening-score.md)). Stocks, gold and VIX follow no surprise by direction; the
 Fed, the ECB, euro-area inflation, ISM and jobless claims give no call. [MVP

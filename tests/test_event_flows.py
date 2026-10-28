@@ -347,6 +347,78 @@ def test_an_08_30_release_in_new_york_reacts_in_frankfurt_the_same_day(
     assert day == released
 
 
+@pytest.mark.parametrize("released", [date(2026, 6, 10), date(2026, 3, 11), date(2026, 10, 28)])
+@pytest.mark.parametrize("instrument", ["UKX", "SXXP", "BTC", "BRN", "UST5Y / ZF"])
+def test_an_08_30_release_in_new_york_reacts_the_same_day_in_london_zurich_and_utc(
+    released: date, instrument: str
+) -> None:
+    # given a CPI release at 08:30 New York
+    event = flows.to_event_instance(FirstRelease(date(2026, 1, 1), released, 100.0), flows.CPI_FLOW)
+
+    # when its first reaction day is found on a market closing in London, Zurich, UTC or New York
+    day = study.first_reaction_day(event, study.MVP_PRICE_SERIES[instrument])
+
+    # then it is the release's own day: every one of these closes comes after 08:30 New York
+    assert day == released
+
+
+@pytest.mark.parametrize("released", [date(2026, 6, 10), date(2026, 3, 11), date(2026, 10, 28)])
+def test_an_08_30_release_reacts_in_the_euro_s_next_london_day(released: date) -> None:
+    # given a CPI release at 08:30 New York, and Yahoo's euro bar closing at 00:00 London of its day
+    event = flows.to_event_instance(FirstRelease(date(2026, 1, 1), released, 100.0), flows.CPI_FLOW)
+
+    # when its first reaction day is found
+    day = study.first_reaction_day(event, study.MVP_PRICE_SERIES["EURUSD"])
+
+    # then it is the next London day's bar, the first whose price follows the release
+    assert day == released + timedelta(days=1)
+
+
+def test_a_14_00_fed_decision_reacts_in_london_the_next_day_and_in_brent_the_same_day() -> None:
+    # given a Fed decision at 14:00 New York
+    decision = flows.fomc_event_instance(sources.FomcDecision(date(2022, 9, 21), True))
+
+    # when its first reaction day is found on the FTSE 100, bitcoin and Brent
+    days = {
+        instrument: study.first_reaction_day(decision, study.MVP_PRICE_SERIES[instrument])
+        for instrument in ("UKX", "BTC", "BRN")
+    }
+
+    # then London has closed (19:00 there); bitcoin's UTC day and Brent's 14:30 settlement have not
+    assert days == {"UKX": date(2022, 9, 22), "BTC": date(2022, 9, 21), "BRN": date(2022, 9, 21)}
+
+
+def test_the_more_outcomes_take_their_signs_by_analogy() -> None:
+    # given a rule's signs for the seven markets measured first
+    seven = {
+        "SPY / ES": -1,
+        "UST10Y / ZN": 1,
+        "DXY": 1,
+        "GC / XAU": 0,
+        "VIX": 1,
+        "DAX": -1,
+        "SX5E": -1,
+    }
+
+    # when the nine more outcomes are added
+    signs = flows.with_more_outcomes(seven)
+
+    # then the euro mirrors the dollar index, the 5-year yield follows the 10-year's, the Nasdaq the
+    # S&P 500's, the FTSE 100 and the STOXX 600 the DAX's, the rest have none, in the markets' order
+    assert {k: v for k, v in signs.items() if k not in seven} == {
+        "BRN": 0,
+        "EURUSD": -1,
+        "COMP": -1,
+        "UST5Y / ZF": 1,
+        "UKX": -1,
+        "SXXP": -1,
+        "BTC": 0,
+        "ITA": 0,
+        "XLE": 0,
+    }
+    assert list(signs) == list(study.MVP_PRICE_SERIES)
+
+
 def test_a_day_only_value_is_known_at_the_end_of_its_own_zones_day() -> None:
     # given a value dated 2022-09-12 in Tokyo
     # when its end of day is found
