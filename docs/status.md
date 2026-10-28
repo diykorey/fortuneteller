@@ -13,7 +13,7 @@ Jobless claims, step 3 *(PR #187)*: the job merges a pull request whose rows are
 
 ## In progress
 
-More outcomes, step 2 *(PR TBD)*: the results, nine markets on both tests for every flow, the
+More outcomes, step 2 *(PR #189)*: the results, nine markets on both tests for every flow, the
 signed links' records, against the expected outcome. [Results](steps/more-outcomes.md#results).
 
 Also waiting: jobless claims step 4, the first Thursday unattended (2026-10-29); the scoreboard's
@@ -30,7 +30,7 @@ scheduled one with its record.
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-28 | More outcomes, step 2: results — the 5-year yield the most responsive market, four new links hold, three live | PR TBD |
+| 2026-10-28 | More outcomes, step 2: results — the 5-year yield the most responsive market, four new links hold, three live | PR #189 |
 | 2026-10-28 | Jobless claims, step 3: the job merges a pull request whose rows are all silent | PR #187 |
 | 2026-10-27 | More outcomes, step 1: the nine markets loaded, closes checked, signs by analogy; four new links hold, three of them live | PR #185 |
 | 2026-10-27 | More outcomes, spec: nine markets, signs by analogy, the chance line counted | PR #184 |
