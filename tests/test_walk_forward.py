@@ -466,9 +466,11 @@ def test_live_leaves_a_release_already_logged_alone(
     # when the release-day job's command runs again
     code = main(["live"])
 
-    # then it reads nothing, logs nothing more, and does not fail
+    # then it reads nothing, logs nothing more, does not fail, and still sums up the day's rows
     assert code == 0
-    assert capsys.readouterr().out == f"live: cpi is already in {settings.calls_path}\n"
+    assert capsys.readouterr().out == (
+        f"live: cpi is already in {settings.calls_path}\nlive: 1 row logged today, all silent\n"
+    )
     assert waits == []
     assert len(study.read_calls(settings.calls_path)) == 1
 

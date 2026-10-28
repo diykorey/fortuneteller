@@ -89,7 +89,7 @@ if [ "$step" = live ]; then
             "Logged by the release-day job at $at; graded by \`score\` after the closes."
         # Rows that are all silent claim nothing, so their pull request is merged here (decided
         # 2026-10-28, docs/steps/jobless-claims.md); a call, or a run that failed, waits for a person.
-        if [ "$live" -eq 0 ] && grep -q 'rows logged today, all silent$' "$out"; then
+        if [ "$live" -eq 0 ] && grep -Eq 'rows? logged today, all silent$' "$out"; then
             merge_pr "calls-$flows-$day"
             kept="merged: every row silent"
         else

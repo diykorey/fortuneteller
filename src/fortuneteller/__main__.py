@@ -738,7 +738,8 @@ def _live(_args: argparse.Namespace) -> int:
     if rows:
         spoke = sum(c.outcome != study.SILENT for c in rows)
         print(
-            f"live: {len(rows)} rows logged today, {f'{spoke} not silent' if spoke else 'all silent'}"
+            f"live: {len(rows)} row{'s' if len(rows) != 1 else ''} logged today, "
+            f"{f'{spoke} not silent' if spoke else 'all silent'}"
         )
     return 1 if failed else 0
 
