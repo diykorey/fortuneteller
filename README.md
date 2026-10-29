@@ -88,15 +88,16 @@ uv run fortuneteller scoreboard             # the page: every call graded, every
 ```
 
 **What it predicts:** the direction of the 10-year and 5-year yields, the dollar index and the euro
-on the six links that hold walk-forward at 08:30 (the jobs report's dollar and euro, its two yields,
-retail sales' two yields; ISM's 5-year yield holds too, but ISM lands at 10:00, after the morning
-job), each printed with its record as counts and its band, never a probability: none has proved honest yet. On release days the calls are made, graded
-and delivered as a desktop popup
+on the six links that hold walk-forward at 08:30 (the jobs report's dollar and euro, its two
+yields, retail sales' two yields; ISM's 5-year yield holds too, but ISM lands at 10:00, after the
+morning job), each printed with its record as counts and its band, never a probability: none has
+proved honest yet. On release days the calls are made, graded and delivered as a desktop popup
 unattended ([the release-day job](docs/steps/release-day-job.md), [the evening
-score](docs/steps/evening-score.md)). Stocks, gold and VIX follow no surprise by direction; the
-Fed, the ECB, euro-area inflation, ISM and jobless claims give no call. [MVP
-results](docs/mvp-results.md) has the findings in plain words, the [roadmap](docs/roadmap.md) what
-comes next, and [status](docs/status.md) the task in hand.
+score](docs/steps/evening-score.md)), and the [scoreboard](https://diykorey.github.io/fortuneteller/scoreboard/) shows
+every call graded, every verdict and every record, rewritten by the evening job. Stocks, gold and
+VIX follow no surprise by direction; the Fed, the ECB, euro-area inflation, ISM and jobless claims
+give no call. [MVP results](docs/mvp-results.md) has the findings in plain words, the
+[roadmap](docs/roadmap.md) what comes next, and [status](docs/status.md) the task in hand.
 
 > **Data provenance:** the seed reference tables are partial (read-only Notion export limits) and
 > the effect-size values in them are illustrative placeholders, not measurements — replacing them
