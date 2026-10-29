@@ -297,6 +297,19 @@ days only; the defence ETF on none; bitcoin on none, and less than on ordinary d
 nine's 90 release-day cells say *moves* where chance would give one. Four new links hold, three of
 them called live from 6 November.
 
+## Scheduled statements
+
+Measured 2026-10-29. Detail in [scheduled statements](steps/scheduled-statements.md#results).
+
+The Fed chair's speeches and testimonies move no market on the 176 days the chair speaks alone; the
+10-year yield and VIX come nearest. The ECB president's 339 lone days move VIX, Brent and the Nasdaq
+by the fixed rule, and nothing in Europe; three *moves* in sixteen cells where chance gives 0.16,
+and none survives the era split. The president's days start in 2013, and markets louder now than in
+their past look as if they move on any recent day. The baseline that pools every year, chosen at
+step 3, has met its trigger: an exploratory look with ordinary days from 2013 on moves the Euro
+Stoxx 50 instead of the Nasdaq on the president's days, and six markets instead of one on lone
+claims days.
+
 ## What comes next
 
 Chosen 2026-10-13: keep score ([rung 4](steps/rung-4-keep-score.md)), done above with the live path

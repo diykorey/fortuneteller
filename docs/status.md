@@ -8,14 +8,14 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Scheduled statements, spec *(PR #191)*: the Fed chair's and the ECB president's speeches and
-testimonies as two lesser flows, "does it move?" only, press conferences left out; the morning
-preview fixed before measuring. [Spec](steps/scheduled-statements.md).
+Scheduled statements, step 1 *(PR #193)*: the seed row and the two lesser flows from the cached
+calendar; `load-releases` stores them; every existing scoreboard entry identical on a copy.
 
 ## In progress
 
-Scheduled statements, step 1 *(PR #193)*: the seed row and the two lesser flows from the cached
-calendar; `load-releases` stores them; every existing scoreboard entry identical on a copy.
+Scheduled statements, step 2 *(PR TBD)*: the results. The Fed chair moves nothing; the ECB
+president's three *moves* do not survive the era split, and precision's *loud and quiet years*
+trigger has fired. [Results](steps/scheduled-statements.md#results).
 
 Also waiting: jobless claims step 4's evening, the first Thursday's grading (its morning ran
 unattended 2026-10-29: 19 rows all silent, #192 merged by the job); the scoreboard's
@@ -24,13 +24,15 @@ and rung 6 step 2: the first release the morning job logs, pops up and the eveni
 
 ## Next
 
-Scheduled statements, step 2: both flows' verdicts for all sixteen markets, against the expected
-outcome, here and in `mvp-results.md`.
+Scheduled statements, step 3, the preview, as planned; or first, if chosen, a spec for the baseline
+from each flow's own years, since precision's *loud and quiet years* trigger fired (it would change
+every flow's raw-move verdicts). Not decided.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-29 | Scheduled statements, step 2: results — the Fed chair moves nothing; the president's three *moves* fail the era split | PR TBD |
 | 2026-10-29 | Scheduled statements, step 1: the two lesser flows stored, every existing entry identical | PR #193 |
 | 2026-10-29 | Scheduled statements, spec: two lesser flows, the chair's and the president's; the preview fixed first | PR #191 |
 | 2026-10-28 | More outcomes, step 2: results — the 5-year yield the most responsive market, four new links hold, three live | PR #189 |
