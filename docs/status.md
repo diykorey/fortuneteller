@@ -14,7 +14,7 @@ preview fixed before measuring. [Spec](steps/scheduled-statements.md).
 
 ## In progress
 
-Scheduled statements, step 1 *(PR TBD)*: the seed row and the two lesser flows from the cached
+Scheduled statements, step 1 *(PR #193)*: the seed row and the two lesser flows from the cached
 calendar; `load-releases` stores them; every existing scoreboard entry identical on a copy.
 
 Also waiting: jobless claims step 4, the first Thursday unattended (2026-10-29); the scoreboard's
@@ -30,7 +30,7 @@ outcome, here and in `mvp-results.md`.
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-29 | Scheduled statements, step 1: the two lesser flows stored, every existing entry identical | PR TBD |
+| 2026-10-29 | Scheduled statements, step 1: the two lesser flows stored, every existing entry identical | PR #193 |
 | 2026-10-29 | Scheduled statements, spec: two lesser flows, the chair's and the president's; the preview fixed first | PR #191 |
 | 2026-10-28 | More outcomes, step 2: results — the 5-year yield the most responsive market, four new links hold, three live | PR #189 |
 | 2026-10-28 | The scoreboard: GitHub Pages on, its address in the docs, the bare address redirected | PR #188 |
