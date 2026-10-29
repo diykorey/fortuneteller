@@ -14,7 +14,7 @@ trigger has fired. [Results](steps/scheduled-statements.md#results).
 
 ## In progress
 
-Ordinary days from each flow's own years (roadmap step 8a), spec *(PR TBD)*: the raw move's
+Ordinary days from each flow's own years (roadmap step 8a), spec *(PR #195)*: the raw move's
 ordinary days from each flow's first reaction day on each market, the expected outcome written
 first. [Spec](steps/own-years-baseline.md).
 
@@ -33,7 +33,7 @@ step 3).
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-29 | Ordinary days from each flow's own years, spec: chosen before the statements' preview | PR TBD |
+| 2026-10-29 | Ordinary days from each flow's own years, spec: chosen before the statements' preview | PR #195 |
 | 2026-10-29 | Scheduled statements, step 2: results — the Fed chair moves nothing; the president's three *moves* fail the era split | PR #194 |
 | 2026-10-29 | Scheduled statements, step 1: the two lesser flows stored, every existing entry identical | PR #193 |
 | 2026-10-29 | Scheduled statements, spec: two lesser flows, the chair's and the president's; the preview fixed first | PR #191 |
