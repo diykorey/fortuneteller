@@ -13,7 +13,7 @@ signed links' records, against the expected outcome. [Results](steps/more-outcom
 
 ## In progress
 
-Scheduled statements, spec *(PR TBD)*: the Fed chair's and the ECB president's speeches and
+Scheduled statements, spec *(PR #191)*: the Fed chair's and the ECB president's speeches and
 testimonies as two lesser flows, "does it move?" only, press conferences left out; the morning
 preview fixed before measuring. [Spec](steps/scheduled-statements.md).
 
@@ -30,7 +30,7 @@ Scheduled statements, step 1: the seed row and the two flows from the cached cal
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-29 | Scheduled statements, spec: two lesser flows, the chair's and the president's; the preview fixed first | PR TBD |
+| 2026-10-29 | Scheduled statements, spec: two lesser flows, the chair's and the president's; the preview fixed first | PR #191 |
 | 2026-10-28 | More outcomes, step 2: results — the 5-year yield the most responsive market, four new links hold, three live | PR #189 |
 | 2026-10-28 | The scoreboard: GitHub Pages on, its address in the docs, the bare address redirected | PR #188 |
 | 2026-10-28 | Jobless claims, step 3: the job merges a pull request whose rows are all silent | PR #187 |
