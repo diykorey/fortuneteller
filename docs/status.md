@@ -8,13 +8,14 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Jobless claims, step 3 *(PR #187)*: the job merges a pull request whose rows are all silent, decided
-2026-10-28; `live` says so on its last line, the script merges on it.
+More outcomes, step 2 *(PR #189)*: the results, nine markets on both tests for every flow, the
+signed links' records, against the expected outcome. [Results](steps/more-outcomes.md#results).
 
 ## In progress
 
-More outcomes, step 2 *(PR #189)*: the results, nine markets on both tests for every flow, the
-signed links' records, against the expected outcome. [Results](steps/more-outcomes.md#results).
+Scheduled statements, spec *(PR #191)*: the Fed chair's and the ECB president's speeches and
+testimonies as two lesser flows, "does it move?" only, press conferences left out; the morning
+preview fixed before measuring. [Spec](steps/scheduled-statements.md).
 
 Also waiting: jobless claims step 4, the first Thursday unattended (2026-10-29); the scoreboard's
 first release day on the published page (step 3); release-day job step 3, evening score step 2
@@ -22,14 +23,14 @@ and rung 6 step 2: the first release the morning job logs, pops up and the eveni
 
 ## Next
 
-Scheduled statements (roadmap step 8), the spec: the Fed chair's and the ECB president's speeches,
-testimonies and press conferences as two flows, "does it move?" only; the morning job previews a
-scheduled one with its record.
+Scheduled statements, step 1: the seed row and the two flows from the cached calendar,
+`load-releases` stores them, every existing output identical on a copy of the store.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-29 | Scheduled statements, spec: two lesser flows, the chair's and the president's; the preview fixed first | PR #191 |
 | 2026-10-28 | More outcomes, step 2: results — the 5-year yield the most responsive market, four new links hold, three live | PR #189 |
 | 2026-10-28 | The scoreboard: GitHub Pages on, its address in the docs, the bare address redirected | PR #188 |
 | 2026-10-28 | Jobless claims, step 3: the job merges a pull request whose rows are all silent | PR #187 |
