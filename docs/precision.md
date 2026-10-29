@@ -64,6 +64,13 @@ this by splitting the results by era.
 | NFP hit-rate cut-off | Surprises of at least 50k count | A cut-off scaled to each era's typical surprise | Hit rate rests on fewer than 50 releases |
 | NFP expected value | The 12-month trend of first-published payroll changes, as for CPI | Economists' consensus (paid), or a model that uses the weekly jobless claims and the ADP report published before each release | The yield and the dollar rank-correlate at p 0.0001 but miss the 60% hit-rate bar (58%, 56%): a truer expected value may decide them |
 
+## Step 8 — scheduled statements
+
+| Choice | Now | More precise | Trigger |
+| --- | --- | --- | --- |
+| Whose statement | The calendar's title naming the holder in office that day (a term table in `flows`); another speaker, a press conference or a title naming nobody is left out | The Fed's and the ECB's own speech and testimony lists, which name the speaker | A statement the calendar titles without a name, or a new holder the table lacks |
+| Statement time | The time the calendar lists, not checked; one a day, the earliest | The time the text was released, from the central bank's own page | A statement near a close, where the side of the close decides its day |
+
 ## Steps 1–2 — choices already built in
 
 | Choice | Now | More precise | Trigger |

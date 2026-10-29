@@ -298,6 +298,22 @@ def test_load_releases_prints_count_range_and_skipped_months(
         "tradingview_releases",
         lambda _cache_dir, measures: [r for m in measures for r in releases[m]],
     )
+    statements = {
+        "US": ("Fed Chair Powell Speech", "2025-02-07T15:00:00.000Z"),
+        "EU": ("ECB President Lagarde Speech", "2025-02-10T09:00:00.000Z"),
+    }
+    monkeypatch.setattr(
+        sources,
+        "fetch_tradingview_since",
+        lambda _start, _cache_dir, _today, country: [
+            json.dumps(
+                {
+                    "status": "ok",
+                    "result": [{"title": statements[country][0], "date": statements[country][1]}],
+                }
+            ).encode()
+        ],
+    )
 
     # when the command runs twice
     first = main(["load-releases"])
@@ -317,8 +333,10 @@ def test_load_releases_prints_count_range_and_skipped_months(
     report += "loaded 1 euro-area flash estimates, 2025-02-03 … 2025-02-03\n"
     report += "loaded 1 ISM manufacturing surveys, 2025-02-03 … 2025-02-03\n"
     report += "loaded 1 jobless claims reports, 2025-02-06 … 2025-02-06\n"
+    report += "loaded 1 Fed chair statements, 2025-02-07 … 2025-02-07\n"
+    report += "loaded 1 ECB president statements, 2025-02-10 … 2025-02-10\n"
     assert capsys.readouterr().out == report * 2
-    assert db.count_rows("event_instances", con=db.get_connection()) == 22
+    assert db.count_rows("event_instances", con=db.get_connection()) == 24
 
 
 def test_load_releases_stores_nothing_when_any_flow_fails(

@@ -478,6 +478,75 @@ def test_ecb_decisions_are_read_quarter_by_quarter_at_their_time(
     )
 
 
+def _us_quarter(*rows: tuple[str, str]) -> bytes:
+    # A TradingView US calendar reply holding ``rows`` of (title, UTC time), with no values.
+    return json.dumps(
+        {
+            "status": "ok",
+            "result": [
+                {"title": t, "country": "US", "date": when, "actual": None} for t, when in rows
+            ],
+        }
+    ).encode()
+
+
+def test_the_fed_chair_s_statements_are_the_ones_given_in_office_one_a_day(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # given a quarter of the US calendar across the 2014 handover: the chair's speeches and
+    # testimonies, his successor's speech before her term, two on one day, a press conference,
+    # another speaker, and a speech still ahead
+    reply = _us_quarter(
+        ("Fed Yellen Speech", "2014-01-15T15:00:00.000Z"),
+        ("Fed Bernanke testifies", "2014-01-16T15:00:00.000Z"),
+        ("Fed Yellen Testimony", "2014-02-11T20:00:00.000Z"),
+        ("Fed Chair Yellen Speaks", "2014-02-11T15:00:00.000Z"),
+        ("Fed Press Conference", "2014-03-19T18:30:00.000Z"),
+        ("Fed Williams Speech", "2014-03-20T16:00:00.000Z"),
+        ("FOMC Member Yellen Speech", "2014-03-21T16:00:00.000Z"),
+        ("Fed Chair Yellen Speaks", "2014-03-31T16:00:00.000Z"),
+    )
+    monkeypatch.setattr(
+        sources, "fetch_tradingview_quarter", lambda start, *_args, **_kwargs: reply
+    )
+    monkeypatch.setattr(flows, "STATEMENTS_FROM", date(2014, 1, 1))
+
+    # when the statements given by noon UTC on 2014-03-31 are loaded
+    batch = flows.FED_CHAIR_FLOW.load(tmp_path, datetime(2014, 3, 31, 12, 0, tzinfo=UTC))
+
+    # then Bernanke's testimony and Yellen's earliest statement as chair are the events, at their
+    # times, and the report counts what was left out
+    assert [(e.event_id, e.detail) for e in batch.events] == [
+        (1120140116, "Fed Bernanke testifies"),
+        (1120140211, "Fed Chair Yellen Speaks"),
+    ]
+    assert batch.events[1].event_ts == datetime(2014, 2, 11, 15, 0)
+    assert batch.report == [
+        "loaded 2 Fed chair statements, 2014-01-16 … 2014-02-11",
+        "  left out 1 titled with a holder out of office that day",
+        "  1 days with two, the earliest kept",
+    ]
+
+
+def test_an_ecb_president_s_late_speech_is_on_its_frankfurt_day(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # given a Lagarde speech at 23:30 UTC, already the next day in Frankfurt
+    reply = _euro_quarter(("ECB President Lagarde Speech", "2025-03-03T23:30:00.000Z", None))
+    monkeypatch.setattr(
+        sources, "fetch_tradingview_quarter", lambda start, *_args, **_kwargs: reply
+    )
+    monkeypatch.setattr(flows, "STATEMENTS_FROM", date(2025, 1, 1))
+
+    # when the president's statements are loaded
+    batch = flows.ECB_PRESIDENT_FLOW.load(tmp_path, datetime(2025, 3, 31, tzinfo=UTC))
+
+    # then the event is a euro-area statement of 2025-03-04
+    assert [(e.event_id, e.event_type, e.country) for e in batch.events] == [
+        (1220250304, "Central-bank statement", "Euro area")
+    ]
+
+
 def test_load_releases_reports_a_calendar_failure(
     tmp_db: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:

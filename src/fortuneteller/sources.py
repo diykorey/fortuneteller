@@ -678,6 +678,23 @@ def parse_ecb_decisions(payload: bytes) -> list[datetime]:
         raise CalendarError(f"TradingView sent an unexpected reply: {exc!r}") from None
 
 
+# A speech or a testimony, as the calendar writes them (once "Testymony").
+STATEMENT_WORDS = re.compile(r"speech|speaks|testi|testy", re.IGNORECASE)
+
+
+def parse_statements(payload: bytes, prefix: str) -> list[tuple[datetime, str]]:
+    """When each speech or testimony titled ``prefix …`` in a TradingView calendar reply is given,
+    in UTC, with its title."""
+    try:
+        return [
+            (_utc(row["date"]), row["title"])
+            for row in _tradingview_rows(payload)
+            if row["title"].startswith(f"{prefix} ") and STATEMENT_WORDS.search(row["title"])
+        ]
+    except MALFORMED_REPLY as exc:
+        raise CalendarError(f"TradingView sent an unexpected reply: {exc!r}") from None
+
+
 @dataclass(frozen=True)
 class TradingViewRow:
     """A release read from TradingView's calendar alone: the calendar's country, the row's title,

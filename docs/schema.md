@@ -14,7 +14,7 @@ through `db.insert_models` (`effect_size_matrix`, which nothing writes yet, has 
 
 | Table | Kind | One row per | Filled by | Rows once loaded |
 | --- | --- | --- | --- | --- |
-| [`event_types`](#event_types) | Reference | Kind of market-moving event | `seed` | 36 |
+| [`event_types`](#event_types) | Reference | Kind of market-moving event | `seed` | 37 |
 | [`instruments`](#instruments) | Reference | Tradable instrument | `seed` | 13 |
 | [`effect_size_seed`](#effect_size_seed) | Reference | Event type × instrument guess | `seed` | 15 |
 | [`news_sources`](#news_sources) | Reference | News or data feed | `seed` | 25 |
@@ -45,7 +45,9 @@ CSVs. No foreign key enforces this except `observations.event_id`; tests guard t
 The taxonomy of market-moving events. Source: `data/seed/event_types.csv`, 31 rows from Notion, complete, and
 three added in [step 4](steps/step-4-more-events.md): `Retail sales`, `PCE inflation` and `GDP
 growth`, split from `Other macro data`, since an event flow is its (type, country); and
-`Manufacturing survey`, the ISM's, in [step 4b](steps/ism-manufacturing.md). The
+`Manufacturing survey`, the ISM's, in [step 4b](steps/ism-manufacturing.md); `Jobless claims`; and
+`Central-bank statement`, the Fed chair's and the ECB president's speeches and testimonies, in
+[scheduled statements](steps/scheduled-statements.md). The
 MVP uses exactly one row, `CPI / inflation surprise`.
 
 | Column | Type | Meaning |
@@ -243,14 +245,14 @@ change.
 
 | Column | Type | Meaning | Filled today |
 | --- | --- | --- | --- |
-| `event_id` | BIGINT, **PK** | Stable id: the event type's code, then the release day as `YYYYMMDD` — CPI on 2022-09-13 is `120220913` (`flows.event_id`; the code is the event flow's `type_code`). Codes: `1` CPI, `2` NFP, `3` US central-bank decision, `4` retail sales, `5` core PCE, `6` GDP, `7` ECB decision, `8` euro-area flash HICP (their day is Frankfurt's), `9` ISM manufacturing, `10` jobless claims. Unique across event types, and sorted by date within one. | Yes |
-| `event_type` | TEXT | An `event_types.event_type`: `CPI / inflation surprise`, `NFP / labor data`, `Central-bank decision`, `Retail sales`, `PCE inflation`, `GDP growth` or `Manufacturing survey`. | Yes |
-| `event_ts` | TIMESTAMP | When the market learned of the event: for CPI, NFP, retail sales, PCE and GDP, the release day at 08:30 New York time; for a flash HICP, the calendar's time (11:00 Frankfurt); for ISM, the calendar's (10:00 New York); for jobless claims, the calendar's (08:30 New York, a Wednesday before a holiday); for a Fed decision, the time its statement came out: 14:15 New York until 2013-03-20 and 14:00 since, with the exceptions listed in `study.FOMC_ANNOUNCED_AT` (unscheduled decisions, and 12:30 on the 2011–2012 press-conference days); sources in [rung 1](steps/rung-1-more-events.md). Stored as **naive UTC**, because DuckDB would shift a time-zone-aware value into the session's time zone. | Yes |
+| `event_id` | BIGINT, **PK** | Stable id: the event type's code, then the release day as `YYYYMMDD` — CPI on 2022-09-13 is `120220913` (`flows.event_id`; the code is the event flow's `type_code`). Codes: `1` CPI, `2` NFP, `3` US central-bank decision, `4` retail sales, `5` core PCE, `6` GDP, `7` ECB decision, `8` euro-area flash HICP (their day is Frankfurt's), `9` ISM manufacturing, `10` jobless claims, `11` the Fed chair's statements, `12` the ECB president's (their day is Frankfurt's). Unique across event types, and sorted by date within one. | Yes |
+| `event_type` | TEXT | An `event_types.event_type`: `CPI / inflation surprise`, `NFP / labor data`, `Central-bank decision`, `Retail sales`, `PCE inflation`, `GDP growth`, `Manufacturing survey`, `Jobless claims` or `Central-bank statement`. | Yes |
+| `event_ts` | TIMESTAMP | When the market learned of the event: for CPI, NFP, retail sales, PCE and GDP, the release day at 08:30 New York time; for a flash HICP, the calendar's time (11:00 Frankfurt); for ISM, the calendar's (10:00 New York); for jobless claims, the calendar's (08:30 New York, a Wednesday before a holiday); for a Fed chair's or an ECB president's statement, the calendar's listed time; for a Fed decision, the time its statement came out: 14:15 New York until 2013-03-20 and 14:00 since, with the exceptions listed in `study.FOMC_ANNOUNCED_AT` (unscheduled decisions, and 12:30 on the 2011–2012 press-conference days); sources in [rung 1](steps/rung-1-more-events.md). Stored as **naive UTC**, because DuckDB would shift a time-zone-aware value into the session's time zone. | Yes |
 | `country` | TEXT | A `countries.country`: the event's origin, its flow's `country`. Events are read back by event type **and** country, so one type in two countries never mixes. `United States`, or `Euro area` for ECB decisions and flash HICP. | Yes |
-| `detail` | TEXT | What the event is about. For CPI, NFP, retail sales and PCE, the reference month as `YYYY-MM`, i.e. the month measured: about six weeks before `event_ts` for CPI, about one for NFP; for GDP, the quarter's first month (`2026-04` is the second quarter). When a release day first publishes two months (NFP, October and November 2025; PCE, February and March 2019, and October and November 2025), the row is the newer month. For a Fed decision, `scheduled meeting` or `unscheduled`. For a flash HICP or ISM, the month measured; for jobless claims, the week's end as `YYYY-MM-DD`. | Yes |
+| `detail` | TEXT | What the event is about. For CPI, NFP, retail sales and PCE, the reference month as `YYYY-MM`, i.e. the month measured: about six weeks before `event_ts` for CPI, about one for NFP; for GDP, the quarter's first month (`2026-04` is the second quarter). When a release day first publishes two months (NFP, October and November 2025; PCE, February and March 2019, and October and November 2025), the row is the newer month. For a Fed decision, `scheduled meeting` or `unscheduled`. For a flash HICP or ISM, the month measured; for jobless claims, the week's end as `YYYY-MM-DD`. For a statement, the calendar's title, as `Fed Chair Powell Testimony`: the earliest of the day, by the holder in office that day. | Yes |
 | `scheduled` | BOOLEAN | `true` if the date was known in advance (a data release, a scheduled Fed meeting), `false` if not (an emergency Fed cut, a war, a hack). | Yes |
 | `consensus` | DOUBLE | What forecasters expected before the release, from a survey. | No: no free survey history exists. Step 4's expected values are a trend and a model, so they go in [`surprises`](#surprises) instead |
-| `actual` | DOUBLE | The number released, as first published, before any revision. For CPI, the index level; for NFP, total non-farm payrolls in thousands. NULL for a Fed or ECB decision, which this measures only as happening, and for a flash HICP, ISM or jobless claims, whose values are in [`surprises`](#surprises). | Yes, except decisions, flash HICP, ISM and claims |
+| `actual` | DOUBLE | The number released, as first published, before any revision. For CPI, the index level; for NFP, total non-farm payrolls in thousands. NULL for a Fed or ECB decision or a statement, which this measures only as happening, and for a flash HICP, ISM or jobless claims, whose values are in [`surprises`](#surprises). | Yes, except decisions, flash HICP, ISM and claims |
 | `surprise` | DOUBLE | `actual − consensus`: the part the market did not expect. | No; see `consensus` |
 | `surprise_sd` | DOUBLE | `surprise` divided by the typical size of past surprises, so surprises of different events compare. | No; nothing planned before a second event type |
 | `surprise_source` | TEXT | Where `consensus` came from. | No; see `consensus` |
@@ -271,7 +273,7 @@ warning: the 14 unscheduled Fed decisions since 1994 (e.g. 2001-09-17, 2020-03-1
 | --- | --- |
 | `first_release` | `actual` is the number as first published on `event_ts`, before any later revision — the number the market actually reacted to. Every CPI, NFP, retail sales, PCE and GDP row. |
 | `fed_calendar` | The day comes from the Fed's own meeting calendar, cross-checked: every target-rate change since 1994 falls on a stored decision or up to 3 days after it. Every Fed row. |
-| `tradingview_calendar` | The decision and its announcement time come from TradingView's calendar, from 2013-04 on; not cross-checked against another source. Every ECB row; every flash HICP row from 2014-11 on every ISM row from 2013-04 on and every jobless claims row from 2013-03 on, their actuals too (claims checked against FRED's `ICSA` first print on 26 weeks, 2026-10-26: all equal). |
+| `tradingview_calendar` | The decision and its announcement time come from TradingView's calendar, from 2013-04 on; not cross-checked against another source. Every ECB row; every flash HICP row from 2014-11 on every ISM row from 2013-04 on and every jobless claims row from 2013-03 on, their actuals too (claims checked against FRED's `ICSA` first print on 26 weeks, 2026-10-26: all equal); every statement row, from 2013-02 on, its title too. |
 
 **`rate_regime`** (not filled yet): intended values `hiking`, `cutting`, `on-hold`, per the legacy
 design.
@@ -325,7 +327,8 @@ sixteen on 2026-10-27.
 | `BTC` | 3,159 | 2014-09-17 (counted 2026-10-27) |
 
 A few megabytes in all. `observations` is these same days thinned down to the release days —
-about 2,700 rows for CPI and the five; 45,773 for ten events and sixteen markets on 2026-10-27.
+about 2,700 rows for CPI and the five; 45,773 for ten events and sixteen markets on 2026-10-27;
+57,050 with the two statement flows on 2026-10-29.
 
 | Column | Type | Meaning |
 | --- | --- | --- |

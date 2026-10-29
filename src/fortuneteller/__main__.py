@@ -206,7 +206,7 @@ def _move_rule() -> str:
     return (
         f"{study.MOVES} = ratio >= {study.MOVE_RATIO_BAR:.2f} and p < {study.MOVE_P_BAR}; "
         f"{study.UNCLEAR} = one of the two; {study.DOESNT_MOVE} = neither; "
-        f"other = days with no {_any_of(flow.label for flow in flows.EVENT_FLOWS)} reaction"
+        f"other = days with no {_any_of(f.label for f in flows.EVENT_FLOWS if not f.lesser)} reaction"
     )
 
 
