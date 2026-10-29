@@ -13,8 +13,8 @@ Jobless claims, step 3 *(PR #187)*: the job merges a pull request whose rows are
 
 ## In progress
 
-The scoreboard, after step 2 *(PR #188)*: GitHub Pages enabled 2026-10-27; the published address in
-the docs, and the bare site address sent to the page.
+More outcomes, step 2 *(PR #189)*: the results, nine markets on both tests for every flow, the
+signed links' records, against the expected outcome. [Results](steps/more-outcomes.md#results).
 
 Also waiting: jobless claims step 4, the first Thursday unattended (2026-10-29); the scoreboard's
 first release day on the published page (step 3); release-day job step 3, evening score step 2
@@ -22,13 +22,15 @@ and rung 6 step 2: the first release the morning job logs, pops up and the eveni
 
 ## Next
 
-More outcomes, step 2: results, nine markets' verdicts on both tests for every flow, the signed
-links' walk-forward records, the chance line, against the expected outcome.
+Scheduled statements (roadmap step 8), the spec: the Fed chair's and the ECB president's speeches,
+testimonies and press conferences as two flows, "does it move?" only; the morning job previews a
+scheduled one with its record.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-28 | More outcomes, step 2: results — the 5-year yield the most responsive market, four new links hold, three live | PR #189 |
 | 2026-10-28 | The scoreboard: GitHub Pages on, its address in the docs, the bare address redirected | PR #188 |
 | 2026-10-28 | Jobless claims, step 3: the job merges a pull request whose rows are all silent | PR #187 |
 | 2026-10-27 | More outcomes, step 1: the nine markets loaded, closes checked, signs by analogy; four new links hold, three of them live | PR #185 |
