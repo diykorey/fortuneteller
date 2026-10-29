@@ -60,7 +60,7 @@ before it happens.
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~The seed row and the two lesser flows from the cached calendar; `load-releases` stores them; the scoreboard gains two rows~~ **done**; `load-releases` stores 245 Fed chair and 462 ECB president statements, every existing scoreboard entry identical on a copy of the store, the scoreboard in 527 s | A test's calendar quarter keeps a chair's speech and testimony, one event on a day with two, and drops a governor's speech and a press conference; `raw-move --event fedchair` prints sixteen verdicts; every existing output identical on a copy of the store; the scoreboard rebuilt within the evening job's twenty minutes (about 600 s expected, 502 s now) |
-| 2 | Results here and in [`mvp-results.md`](../mvp-results.md) | Both flows' verdicts for all sixteen markets, against the expected outcome |
+| 2 | ~~Results here and in [`mvp-results.md`](../mvp-results.md)~~ **done** | Both flows' verdicts for all sixteen markets, against the expected outcome |
 | 3 | The preview: `live` prints a line for each statement later today, and the job pops it up, also on a day with no call | A test's calendar day with a 10:00 chair speech prints the line with the flow's movers read from the scoreboard's data; a speech at 03:00 prints nothing |
 
 *Amended 2026-10-29, in step 1:* Warsh was sworn in on 2026-05-22, so Powell's last day as chair is
@@ -79,6 +79,55 @@ prints how many rows each flow drops for being out of term. The preview reads
 test at 08:30, and today's calendar quarter as `live` already fetches it. `docs/schema.md` gets the
 event type and the two origins, `docs/precision.md` the title matching and TradingView's listed
 time, `docs/glossary.md` *Statement flow* and *Preview*.
+
+## Results
+
+Measured 2026-10-29 (`raw-move --event fedchair` and `--event ecbchief` on a copy of the store
+with every price loaded): each flow on its lone days, against every ordinary day of each market's
+history, as fixed.
+
+| Market | Fed chair: ratio, p, verdict | By era: 2008–19, 2020– | ECB president: ratio, p, verdict | By era: 2008–19, 2020– |
+| --- | --- | --- | --- | --- |
+| S&P 500 | 0.83, 0.96, doesn't | 0.75, 0.92 | 0.95, 0.75, doesn't | 0.65, 1.02 |
+| 10-year yield | 1.15, 0.17, unclear | 0.87, 1.21 | 0.90, 0.99, doesn't | 0.74, 0.87 |
+| Dollar index | 1.07, 0.25, doesn't | 0.99, 1.17 | 1.02, 0.40, doesn't | 0.85, 1.09 |
+| Gold | 1.03, 0.40, doesn't | 0.95, 1.18 | 1.01, 0.46, doesn't | 0.72, 1.09 |
+| VIX | 1.22, 0.015, unclear | 1.12, 1.09 | 1.24, 0.001, **moves** | 1.19, 1.08 |
+| DAX | 0.90, 0.82, doesn't | 0.89, 1.08 | 0.95, 0.74, doesn't | 0.84, 1.19 |
+| Euro Stoxx 50 | 0.84, 0.95, doesn't | 0.72, 1.12 | 1.10, 0.11, unclear | 0.90, 1.24 |
+| Brent | 1.02, 0.41, doesn't | 0.98, 1.10 | 1.26, 0.002, **moves** | 1.26, 1.09 |
+| EUR/USD | 0.98, 0.59, doesn't | 0.78, 1.25 | 0.95, 0.76, doesn't | 0.97, 1.13 |
+| Nasdaq | 1.10, 0.16, unclear | 0.71, 1.02 | 1.27, 0.0002, **moves** | 0.71, 1.17 |
+| 5-year yield | 1.05, 0.40, doesn't | 1.07, 1.17 | 0.90, 0.998, doesn't | 0.83, 0.97 |
+| FTSE 100 | 0.78, 0.996, doesn't | 0.82, 0.99 | 0.90, 0.93, doesn't | 1.01, 1.15 |
+| STOXX 600 | 0.98, 0.60, doesn't | 0.79, 1.05 | 1.00, 0.52, doesn't | 0.96, 0.99 |
+| Bitcoin | 1.05, 0.32, doesn't | 0.88, 1.20 | 1.11, 0.13, unclear | 1.23, 1.02 |
+| Defence ETF | 0.90, 0.87, doesn't | 0.77, 0.94 | 1.03, 0.35, doesn't | 0.69, 1.14 |
+| Energy ETF | 0.96, 0.69, doesn't | 0.62, 1.27 | 1.01, 0.45, doesn't | 0.90, 1.01 |
+
+176 Fed chair days and 339 ECB president days for the S&P 500, a few fewer where a market's
+history is shorter or its holiday differs.
+
+- **The Fed chair moves nothing.** No market reaches the bar; the 10-year yield and VIX are the
+  nearest, at 1.15 and 1.22, neither under p 0.01.
+- **The ECB president moves VIX, Brent and the Nasdaq, and nothing in Europe.** By the fixed rule
+  these are three *moves*, where chance gives 0.16 in the flow's sixteen cells. They are not to be
+  believed: within each era no market reaches 1.10 in both, and the Nasdaq's 1.27 overall is 0.71
+  and 1.17 by era. The president's days are all from 2013 on and two thirds from 2020 on, while each
+  market's ordinary days run back to 1971 for the Nasdaq and 1990 for VIX; a market louder now than
+  in its past moves "more" on any recent day. Precision's *loud and quiet years* trigger, *moves*
+  overall but near 1.00 by era, has fired.
+- **Against the expected outcome:** both wrong. The chair moves no yield and no dollar at the bar
+  (the 10-year at 1.15 is the closest); the president moves three markets, none of them the euro.
+
+*Exploratory, chosen after the results above were seen, so not a verdict:* the same ratios with
+ordinary days only from 2013 on. The Fed chair's yields and dollar rise to 1.16–1.23 (p 0.01–0.04,
+*unclear*); the president's Nasdaq falls to 1.17 (p 0.02) and the Euro Stoxx 50 rises to *moves*
+(1.24, p 0.001), with Brent still *moves* (1.29). Claims' lone days, seen the same way, would move
+six markets instead of the Nasdaq alone. Every flow measured from 2013 (the ECB, the flash HICP,
+ISM, claims, the statements) and every market with a long history carries the same tilt, in either
+direction; the Nasdaq's *moves* on seven of ten events ([more outcomes](more-outcomes.md#results))
+is probably part of it.
 
 ## What this does not do
 
