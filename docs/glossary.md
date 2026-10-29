@@ -431,6 +431,11 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **Lesser release** — a flow whose days count as no other flow's shared or busy days, and whose
   own tables keep only the days it has alone: [jobless claims](steps/jobless-claims.md), out on a
   fifth of all trading days, is the first.
+- **Statement flow** — a lesser flow of one person's scheduled speeches and testimonies, with no
+  number and so no surprise: the Fed chair's and the ECB president's, in
+  [scheduled statements](steps/scheduled-statements.md).
+- **Preview** — the morning job's line about a statement still ahead that day: its time and the
+  markets that *move* on its flow's past days, a record and never a direction.
 - **MVP** (Minimum Viable Product) — here, specifically: the measured answer to *does the edge
   exist*, defined in [the roadmap](roadmap.md). Not a shipped product.
 - **`observations`** — one row per event per instrument: the prices and returns around that event.
