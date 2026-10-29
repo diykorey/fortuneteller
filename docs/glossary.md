@@ -433,7 +433,8 @@ Terms are grouped by what they are about, alphabetical within each group.
   fifth of all trading days, is the first.
 - **Statement flow** — a lesser flow of one person's scheduled speeches and testimonies, with no
   number and so no surprise: the Fed chair's and the ECB president's, in
-  [scheduled statements](steps/scheduled-statements.md).
+  [scheduled statements](steps/scheduled-statements.md). `fedchair` and `ecbchief` on the command
+  line, **FCH** and **ECP** in its tables.
 - **Preview** — the morning job's line about a statement still ahead that day: its time and the
   markets that *move* on its flow's past days, a record and never a direction.
 - **MVP** (Minimum Viable Product) — here, specifically: the measured answer to *does the edge

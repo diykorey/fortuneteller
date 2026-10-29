@@ -346,9 +346,13 @@ def test_raw_move_measures_ecb_decisions(tmp_db: Path, capsys: pytest.CaptureFix
     assert sum(line.endswith(" moves") for line in capsys.readouterr().out.splitlines()) == 16
 
 
-@pytest.mark.parametrize("flow", [flows.HICP_FLOW, flows.ISM_FLOW], ids=lambda f: f.cli_name)
+@pytest.mark.parametrize(
+    "flow",
+    [flows.HICP_FLOW, flows.ISM_FLOW, flows.FED_CHAIR_FLOW, flows.ECB_PRESIDENT_FLOW],
+    ids=lambda f: f.cli_name,
+)
 def test_raw_move_measures_tradingview_releases(
-    flow: flows.TradingViewFlow, tmp_db: Path, capsys: pytest.CaptureFixture[str]
+    flow: EventFlow, tmp_db: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:
     # given the flow's releases and prices stored
     _synthetic_store(db.get_connection(), flow=flow)

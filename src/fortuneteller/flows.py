@@ -789,6 +789,87 @@ def ecb_event_instance(announced: datetime) -> EventInstance:
     )
 
 
+# The Fed chair's and the ECB president's statements (docs/steps/scheduled-statements.md).
+STATEMENT_EVENT_TYPE = "Central-bank statement"
+STATEMENTS_FROM = date(2013, 1, 1)
+
+
+@dataclass(eq=False)
+class StatementFlow:
+    """One office's speeches and testimonies from TradingView's calendar, at their listed time: a
+    row counts if the holder it names was in office that day, one a day, the earliest. No number,
+    so no surprise; a lesser flow."""
+
+    country: str
+    zone: ZoneInfo
+    type_code: int
+    cli_name: str
+    label: str
+    calendar: str
+    prefix: str
+    office: str
+    # Each holder and their last day in office, the current one's None.
+    holders: tuple[tuple[str, date | None], ...]
+    event_type: str = STATEMENT_EVENT_TYPE
+    surprise_rule: SurpriseRule | None = None
+    lesser: bool = True
+
+    def holder(self, day: date) -> str:
+        return next(name for name, last in self.holders if last is None or day <= last)
+
+    def events(self, api_key: str) -> EventBatch:
+        return self.load(settings.cache_dir, datetime.now(UTC))
+
+    def load(self, cache_dir: Path, now: datetime) -> EventBatch:
+        """The statements given by ``now`` (aware), from every calendar quarter since 2013."""
+        payloads = sources.fetch_tradingview_since(
+            STATEMENTS_FROM, cache_dir, now.astimezone(self.zone).date(), self.calendar
+        )
+        given = sorted({s for p in payloads for s in sources.parse_statements(p, self.prefix)})
+        by_day: dict[date, list[tuple[datetime, str]]] = {}
+        out_of_office = 0
+        for at, title in given:
+            day = at.astimezone(self.zone).date()
+            if at > now:
+                continue
+            if self.holder(day) in title:
+                by_day.setdefault(day, []).append((at, title))
+            else:
+                out_of_office += any(name in title for name, _ in self.holders)
+        if not by_day:
+            raise sources.CalendarError(f"TradingView listed no {self.office} statements")
+        events = [self.event_instance(*statements[0]) for statements in by_day.values()]
+        report = [f"loaded {len(events)} {self.office} statements, {min(by_day)} … {max(by_day)}"]
+        if out_of_office:
+            report.append(f"  left out {out_of_office} titled with a holder out of office that day")
+        if twice := sum(len(statements) > 1 for statements in by_day.values()):
+            report.append(f"  {twice} days with two, the earliest kept")
+        return EventBatch(events, report)
+
+    def actuals(self, events: Sequence[EventInstance], api_key: str) -> list[Actual]:
+        return []
+
+    def event_instance(self, given: datetime, title: str) -> EventInstance:
+        """Map one statement, given at ``given`` (aware), to its ``event_instances`` row."""
+        return EventInstance(
+            event_id=event_id(self, given.astimezone(self.zone).date()),
+            event_type=self.event_type,
+            event_ts=given.astimezone(UTC).replace(tzinfo=None),
+            country=self.country,
+            detail=title,
+            scheduled=True,
+            consensus=None,
+            actual=None,
+            surprise=None,
+            surprise_sd=None,
+            surprise_source=None,
+            priced_in_prior=None,
+            vix_t0=None,
+            rate_regime=None,
+            quality=TRADINGVIEW_CALENDAR,
+        )
+
+
 @dataclass(eq=False)
 class TradingViewFlow:
     """A release read from TradingView's calendar alone, at the time it was announced, with one
@@ -971,6 +1052,34 @@ GDP_FLOW = LevelFlow(
     power=4,
     surprise_rule=GDP_SURPRISE_RULE,
 )
+# Warsh sworn in 2026-05-22; Powell's later speeches are a governor's.
+FED_CHAIR_FLOW = StatementFlow(
+    UNITED_STATES,
+    NEW_YORK,
+    11,
+    "fedchair",
+    "FCH",
+    "US",
+    "Fed",
+    "Fed chair",
+    (
+        ("Bernanke", date(2014, 1, 31)),
+        ("Yellen", date(2018, 2, 3)),
+        ("Powell", date(2026, 5, 21)),
+        ("Warsh", None),
+    ),
+)
+ECB_PRESIDENT_FLOW = StatementFlow(
+    EURO_AREA,
+    FRANKFURT,
+    12,
+    "ecbchief",
+    "ECP",
+    "EU",
+    "ECB",
+    "ECB president",
+    (("Draghi", date(2019, 10, 31)), ("Lagarde", None)),
+)
 EVENT_FLOWS: list[EventFlow] = [
     CPI_FLOW,
     NFP_FLOW,
@@ -982,6 +1091,8 @@ EVENT_FLOWS: list[EventFlow] = [
     HICP_FLOW,
     ISM_FLOW,
     CLAIMS_FLOW,
+    FED_CHAIR_FLOW,
+    ECB_PRESIDENT_FLOW,
 ]
 
 

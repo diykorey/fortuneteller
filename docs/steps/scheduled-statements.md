@@ -59,9 +59,15 @@ before it happens.
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | The seed row and the two lesser flows from the cached calendar; `load-releases` stores them; the scoreboard gains two rows | A test's calendar quarter keeps a chair's speech and testimony, one event on a day with two, and drops a governor's speech and a press conference; `raw-move --event fedchair` prints sixteen verdicts; every existing output identical on a copy of the store; the scoreboard rebuilt within the evening job's twenty minutes (about 600 s expected, 502 s now) |
+| 1 | ~~The seed row and the two lesser flows from the cached calendar; `load-releases` stores them; the scoreboard gains two rows~~ **done**; `load-releases` stores 245 Fed chair and 462 ECB president statements, every existing scoreboard entry identical on a copy of the store, the scoreboard in 527 s | A test's calendar quarter keeps a chair's speech and testimony, one event on a day with two, and drops a governor's speech and a press conference; `raw-move --event fedchair` prints sixteen verdicts; every existing output identical on a copy of the store; the scoreboard rebuilt within the evening job's twenty minutes (about 600 s expected, 502 s now) |
 | 2 | Results here and in [`mvp-results.md`](../mvp-results.md) | Both flows' verdicts for all sixteen markets, against the expected outcome |
 | 3 | The preview: `live` prints a line for each statement later today, and the job pops it up, also on a day with no call | A test's calendar day with a 10:00 chair speech prints the line with the flow's movers read from the scoreboard's data; a speech at 03:00 prints nothing |
+
+*Amended 2026-10-29, in step 1:* Warsh was sworn in on 2026-05-22, so Powell's last day as chair is
+2026-05-21 and his 2026-05-31 speech a governor's. With the current quarter fetched and the euro
+calendar read from 2013-01 as the US one is, the counts are 245 Fed chair days and 462 ECB
+president days (2 and 27 days with two statements); the one ECB row left out is a 2013 speech
+titled with Lagarde's name.
 
 ## Technical details
 

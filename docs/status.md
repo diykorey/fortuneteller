@@ -8,28 +8,30 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-More outcomes, step 2 *(PR #189)*: the results, nine markets on both tests for every flow, the
-signed links' records, against the expected outcome. [Results](steps/more-outcomes.md#results).
-
-## In progress
-
 Scheduled statements, spec *(PR #191)*: the Fed chair's and the ECB president's speeches and
 testimonies as two lesser flows, "does it move?" only, press conferences left out; the morning
 preview fixed before measuring. [Spec](steps/scheduled-statements.md).
 
-Also waiting: jobless claims step 4, the first Thursday unattended (2026-10-29); the scoreboard's
+## In progress
+
+Scheduled statements, step 1 *(PR #193)*: the seed row and the two lesser flows from the cached
+calendar; `load-releases` stores them; every existing scoreboard entry identical on a copy.
+
+Also waiting: jobless claims step 4's evening, the first Thursday's grading (its morning ran
+unattended 2026-10-29: 19 rows all silent, #192 merged by the job); the scoreboard's
 first release day on the published page (step 3); release-day job step 3, evening score step 2
 and rung 6 step 2: the first release the morning job logs, pops up and the evening grades.
 
 ## Next
 
-Scheduled statements, step 1: the seed row and the two flows from the cached calendar,
-`load-releases` stores them, every existing output identical on a copy of the store.
+Scheduled statements, step 2: both flows' verdicts for all sixteen markets, against the expected
+outcome, here and in `mvp-results.md`.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-29 | Scheduled statements, step 1: the two lesser flows stored, every existing entry identical | PR #193 |
 | 2026-10-29 | Scheduled statements, spec: two lesser flows, the chair's and the president's; the preview fixed first | PR #191 |
 | 2026-10-28 | More outcomes, step 2: results — the 5-year yield the most responsive market, four new links hold, three live | PR #189 |
 | 2026-10-28 | The scoreboard: GitHub Pages on, its address in the docs, the bare address redirected | PR #188 |

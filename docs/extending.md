@@ -51,6 +51,10 @@ US's ([country-aware events](steps/country-aware-events.md)). A market outside N
 A lesser release sets `lesser = True` ([jobless claims](steps/jobless-claims.md), the first): its days
 are no other flow's shared or busy days, and its own tables keep only the days it has alone.
 
+Another office's statements are one more `StatementFlow`
+([scheduled statements](steps/scheduled-statements.md)): its calendar, its title prefix and the
+holders with their last day in office.
+
 ## A new expectation source
 
 Write one class in `src/fortuneteller/expectations.py` and add it to `EXPECTATION_SOURCES`.
