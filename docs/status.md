@@ -13,7 +13,7 @@ calendar; `load-releases` stores them; every existing scoreboard entry identical
 
 ## In progress
 
-Scheduled statements, step 2 *(PR TBD)*: the results. The Fed chair moves nothing; the ECB
+Scheduled statements, step 2 *(PR #194)*: the results. The Fed chair moves nothing; the ECB
 president's three *moves* do not survive the era split, and precision's *loud and quiet years*
 trigger has fired. [Results](steps/scheduled-statements.md#results).
 
@@ -32,7 +32,7 @@ every flow's raw-move verdicts). Not decided.
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-29 | Scheduled statements, step 2: results — the Fed chair moves nothing; the president's three *moves* fail the era split | PR TBD |
+| 2026-10-29 | Scheduled statements, step 2: results — the Fed chair moves nothing; the president's three *moves* fail the era split | PR #194 |
 | 2026-10-29 | Scheduled statements, step 1: the two lesser flows stored, every existing entry identical | PR #193 |
 | 2026-10-29 | Scheduled statements, spec: two lesser flows, the chair's and the president's; the preview fixed first | PR #191 |
 | 2026-10-28 | More outcomes, step 2: results — the 5-year yield the most responsive market, four new links hold, three live | PR #189 |
