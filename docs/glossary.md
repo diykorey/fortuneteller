@@ -442,7 +442,8 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **Scoreboard** — the static page `fortuneteller scoreboard` writes to `docs/scoreboard/` and the
   evening job rewrites with the score ([roadmap](roadmap.md) step 5): every call graded, every
   link's record, every event's verdicts for every market, and the chance count beside each grid.
-  The first thing delivered to anyone but this laptop, once GitHub Pages serves it.
+  The first thing delivered to anyone but this laptop: GitHub Pages serves it at
+  <https://diykorey.github.io/fortuneteller/scoreboard/> since 2026-10-27.
 - **The reset** — 2026-08-05, when `main` was rolled back to the M0 spine because the
   implementation had become over-engineered for the stage. Recorded in [CLAUDE.md](../CLAUDE.md).
 - **The spine** — the M0 data layer: models, schema, store, seed loader, CLI. Shipped.

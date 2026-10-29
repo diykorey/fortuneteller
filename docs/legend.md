@@ -82,9 +82,10 @@ The vocabulary, so the words stay load-bearing:
   measurement, and most of it was discarded. M0 is kept as a historical label for what shipped.
   Do not reintroduce the scheme.
 - **Release** — the [scoreboard](steps/scoreboard.md): the page in `docs/scoreboard/`, rewritten
-  by the evening job on the days the score changes and served by GitHub Pages from `main` once
-  that repository setting is on (*rewritten 2026-10-26*, when the page and the job's line were
-  built; rung 6 had delivered a popup to one laptop first). Nothing is versioned or packaged for
+  by the evening job on the days the score changes and served by GitHub Pages from `main` at
+  <https://diykorey.github.io/fortuneteller/scoreboard/> (*rewritten 2026-10-26*, when the page and the
+  job's line were built, the setting on since 2026-10-27; rung 6 had delivered a popup to one
+  laptop first). Nothing is versioned or packaged for
   anyone else's use, and nothing is planned to be.
 
 ## What every step document must say
