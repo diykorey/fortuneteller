@@ -17,7 +17,8 @@ preview fixed before measuring. [Spec](steps/scheduled-statements.md).
 Scheduled statements, step 1 *(PR #193)*: the seed row and the two lesser flows from the cached
 calendar; `load-releases` stores them; every existing scoreboard entry identical on a copy.
 
-Also waiting: jobless claims step 4, the first Thursday unattended (2026-10-29); the scoreboard's
+Also waiting: jobless claims step 4's evening, the first Thursday's grading (its morning ran
+unattended 2026-10-29: 19 rows all silent, #192 merged by the job); the scoreboard's
 first release day on the published page (step 3); release-day job step 3, evening score step 2
 and rung 6 step 2: the first release the morning job logs, pops up and the evening grades.
 
