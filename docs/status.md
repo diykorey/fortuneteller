@@ -13,7 +13,7 @@ flow's first reaction day on each market, the expected outcome written first.
 
 ## In progress
 
-Own years, step 1 *(PR TBD)*: `measure_raw_moves` takes ordinary days from the flow's own years;
+Own years, step 1 *(PR #198)*: `measure_raw_moves` takes ordinary days from the flow's own years;
 59 cells changed verdict in eleven flows, everything but the raw move identical.
 
 Also waiting: jobless claims step 4's evening, graded in #197 (the evening run caught up by
@@ -30,7 +30,7 @@ step documents. Then the statements' preview (step 8's step 3).
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-10-30 | Own years, step 1: ordinary days from each flow's first day; 59 cells changed, *moves* 52 → 54 | PR TBD |
+| 2026-10-30 | Own years, step 1: ordinary days from each flow's first day; 59 cells changed, *moves* 52 → 54 | PR #198 |
 | 2026-10-29 | Ordinary days from each flow's own years, spec: chosen before the statements' preview | PR #195 |
 | 2026-10-29 | Scheduled statements, step 2: results — the Fed chair moves nothing; the president's three *moves* fail the era split | PR #194 |
 | 2026-10-29 | Scheduled statements, step 1: the two lesser flows stored, every existing entry identical | PR #193 |
