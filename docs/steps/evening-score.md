@@ -37,6 +37,9 @@ shows it, and on a failure an issue.
 - **Weekdays at 18:00 New York**, well after the 16:15 VIX close. A run missed while the laptop was
   off runs at the next login (`Persistent=true`). Both jobs take one lock, so a late evening run
   and the morning's `live` never hold the database at once.
+  *Amended 2026-10-30:* a caught-up run can start as the laptop wakes, before the network is back;
+  the 2026-10-29 and 2026-10-30 evenings failed so (#190, and one that could not even open its
+  issue). The fetch is now tried for three minutes, for both jobs, before the run fails.
 - **Every failure is reported** as the morning's are: an issue with the run's output. FRED's errors
   are printed with the key redacted (`sources._fred_get`, every path).
 - **No hardening of the loaders.** `load-surprises` timed out on Nasdaq on 2026-10-16 while the

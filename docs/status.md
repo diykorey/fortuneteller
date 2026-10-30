@@ -32,6 +32,7 @@ every flow's raw-move verdicts). Not decided.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-30 | The jobs wait three minutes for the network when caught up at a wake; two evenings lost to it | PR TBD |
 | 2026-10-29 | Scheduled statements, step 2: results — the Fed chair moves nothing; the president's three *moves* fail the era split | PR #194 |
 | 2026-10-29 | Scheduled statements, step 1: the two lesser flows stored, every existing entry identical | PR #193 |
 | 2026-10-29 | Scheduled statements, spec: two lesser flows, the chair's and the president's; the preview fixed first | PR #191 |
