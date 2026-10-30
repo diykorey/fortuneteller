@@ -8,14 +8,15 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Scheduled statements, step 1 *(PR #193)*: the seed row and the two lesser flows from the cached
-calendar; `load-releases` stores them; every existing scoreboard entry identical on a copy.
-
-## In progress
-
 Scheduled statements, step 2 *(PR #194)*: the results. The Fed chair moves nothing; the ECB
 president's three *moves* do not survive the era split, and precision's *loud and quiet years*
 trigger has fired. [Results](steps/scheduled-statements.md#results).
+
+## In progress
+
+Ordinary days from each flow's own years (roadmap step 8a), spec *(PR #195)*: the raw move's
+ordinary days from each flow's first reaction day on each market, the expected outcome written
+first. [Spec](steps/own-years-baseline.md).
 
 Also waiting: jobless claims step 4's evening, the first Thursday's grading (its morning ran
 unattended 2026-10-29: 19 rows all silent, #192 merged by the job); the scoreboard's
@@ -24,14 +25,15 @@ and rung 6 step 2: the first release the morning job logs, pops up and the eveni
 
 ## Next
 
-Scheduled statements, step 3, the preview, as planned; or first, if chosen, a spec for the baseline
-from each flow's own years, since precision's *loud and quiet years* trigger fired (it would change
-every flow's raw-move verdicts). Not decided.
+Own years, step 1: `measure_raw_moves` takes ordinary days from the flow's own years; all twelve
+flows re-measured on a copy, every changed verdict listed. Then the statements' preview (step 8's
+step 3).
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-29 | Ordinary days from each flow's own years, spec: chosen before the statements' preview | PR #195 |
 | 2026-10-29 | Scheduled statements, step 2: results — the Fed chair moves nothing; the president's three *moves* fail the era split | PR #194 |
 | 2026-10-29 | Scheduled statements, step 1: the two lesser flows stored, every existing entry identical | PR #193 |
 | 2026-10-29 | Scheduled statements, spec: two lesser flows, the chair's and the president's; the preview fixed first | PR #191 |
