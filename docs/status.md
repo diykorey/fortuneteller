@@ -33,6 +33,7 @@ step 3).
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-30 | The jobs wait three minutes for the network when caught up at a wake; two evenings lost to it | PR #196 |
 | 2026-10-29 | Ordinary days from each flow's own years, spec: chosen before the statements' preview | PR #195 |
 | 2026-10-29 | Scheduled statements, step 2: results — the Fed chair moves nothing; the president's three *moves* fail the era split | PR #194 |
 | 2026-10-29 | Scheduled statements, step 1: the two lesser flows stored, every existing entry identical | PR #193 |
