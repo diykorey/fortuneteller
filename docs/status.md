@@ -8,31 +8,29 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Scheduled statements, step 2 *(PR #194)*: the results. The Fed chair moves nothing; the ECB
-president's three *moves* do not survive the era split, and precision's *loud and quiet years*
-trigger has fired. [Results](steps/scheduled-statements.md#results).
+Ordinary days from each flow's own years, spec *(PR #195)*: the raw move's ordinary days from each
+flow's first reaction day on each market, the expected outcome written first.
 
 ## In progress
 
-Ordinary days from each flow's own years (roadmap step 8a), spec *(PR #195)*: the raw move's
-ordinary days from each flow's first reaction day on each market, the expected outcome written
-first. [Spec](steps/own-years-baseline.md).
+Own years, step 1 *(PR TBD)*: `measure_raw_moves` takes ordinary days from the flow's own years;
+59 cells changed verdict in eleven flows, everything but the raw move identical.
 
-Also waiting: jobless claims step 4's evening, the first Thursday's grading (its morning ran
-unattended 2026-10-29: 19 rows all silent, #192 merged by the job); the scoreboard's
+Also waiting: jobless claims step 4's evening, graded in #197 (the evening run caught up by
+hand on 2026-10-30, after two failed at a wake: #196 waits for the network); the scoreboard's
 first release day on the published page (step 3); release-day job step 3, evening score step 2
 and rung 6 step 2: the first release the morning job logs, pops up and the evening grades.
 
 ## Next
 
-Own years, step 1: `measure_raw_moves` takes ordinary days from the flow's own years; all twelve
-flows re-measured on a copy, every changed verdict listed. Then the statements' preview (step 8's
-step 3).
+Own years, step 2: the results here and in `mvp-results.md`, the changed findings amended in their
+step documents. Then the statements' preview (step 8's step 3).
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-10-30 | Own years, step 1: ordinary days from each flow's first day; 59 cells changed, *moves* 52 → 54 | PR TBD |
 | 2026-10-29 | Ordinary days from each flow's own years, spec: chosen before the statements' preview | PR #195 |
 | 2026-10-29 | Scheduled statements, step 2: results — the Fed chair moves nothing; the president's three *moves* fail the era split | PR #194 |
 | 2026-10-29 | Scheduled statements, step 1: the two lesser flows stored, every existing entry identical | PR #193 |

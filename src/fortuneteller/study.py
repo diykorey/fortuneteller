@@ -381,7 +381,9 @@ def measure_raw_moves(
 
     An ordinary day is one that is no stored event's reaction day, of any type: a jobs-report or
     Fed day is not a fair "other day" for CPI. A lesser flow's days stay ordinary, and its own
-    event days are the ones it has alone.
+    event days are the ones it has alone. Ordinary days start at the flow's first reaction day on
+    each market, so a flow is not judged against years it has no days in
+    (docs/steps/own-years-baseline.md).
     """
     events = stored_events(flow, con=con)
     if flow.lesser:
@@ -395,8 +397,11 @@ def measure_raw_moves(
         closes = stored_closes(instrument, con=con)
         days = reaction_days(closes, [first_reaction_day(event, series) for event in events])
         busy = reaction_days(closes, [first_reaction_day(event, series) for event in every_event])
+        first = min(days, default=None)
         by_era: dict[str, tuple[list[float], list[float]]] = {label: ([], []) for label, _ in ERAS}
         for day, move in daily_moves(closes, series.unit).items():
+            if first is not None and day < first:
+                continue
             on_event, other = by_era[era_of(day)]
             if day in days:
                 on_event.append(move)

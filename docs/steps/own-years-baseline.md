@@ -40,7 +40,7 @@ them is judged against decades in which it had no days.
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | `measure_raw_moves` takes ordinary days from the flow's first reaction day on each market | A test's market, loud in old years and quiet since, no longer *moves* on events that all fall in the quiet years; all twelve flows re-measured on a copy of the store; every changed verdict listed; the surprise, walk-forward and calls entries identical |
+| 1 | ~~`measure_raw_moves` takes ordinary days from the flow's first reaction day on each market~~ **done**; on a copy of the store, 59 cells changed verdict in eleven flows (the jobs report's in none), *moves* 52 → 54; surprise, walk-forward, calls and the chance line identical; the scoreboard in 502 s | A test's market, quiet in old years and loud since, no longer *moves* on events that all fall in the quiet years; all twelve flows re-measured on a copy of the store; every changed verdict listed; the surprise, walk-forward and calls entries identical |
 | 2 | Results here and in [`mvp-results.md`](../mvp-results.md); the changed findings amended in their step documents | Every flow's verdicts before and after, against the expected outcome |
 
 ## Technical details
