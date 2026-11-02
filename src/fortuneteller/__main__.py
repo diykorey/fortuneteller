@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import sys
 import textwrap
 import time
@@ -329,8 +330,16 @@ def _any_of(labels: Iterable[str]) -> str:
 
 
 def _move_size(value: float, unit: str, signed: bool = False) -> str:
+    if math.isnan(value):
+        return "—"
     sign = "+" if signed else ""
     return f"{value:{sign}.1f} bp" if unit == "bps" else f"{value * 100:{sign}.2f}%"
+
+
+def _ratio_p(c: study.MoveComparison) -> str:
+    if c.verdict == study.TOO_FEW:
+        return f"{'—':>5}  {'—':<6}"
+    return f"{c.ratio:>5.2f}  {c.p:.4f}"
 
 
 def describe_raw_moves(results: dict[str, study.RawMove], label: str) -> list[str]:
@@ -343,7 +352,7 @@ def describe_raw_moves(results: dict[str, study.RawMove], label: str) -> list[st
         c = raw.overall
         lines.append(
             f"{instrument:<12} {c.event_days:>8}  {_move_size(c.median_event, raw.unit):>10}  "
-            f"{_move_size(c.median_other, raw.unit):>12}  {c.ratio:>5.2f}  {c.p:.4f}  {c.verdict}"
+            f"{_move_size(c.median_other, raw.unit):>12}  {_ratio_p(c)}  {c.verdict}"
         )
     eras = next(iter(results.values())).eras
     lines += [
@@ -378,10 +387,14 @@ def _raw_move(args: argparse.Namespace) -> int:
         )
         return 1
     try:
-        results = study.measure_raw_moves(flow, con=con)
+        results = study.measure_raw_moves(flow, con=con, week=args.week)
     except ValueError as exc:
         print(f"raw-move: {exc}", file=sys.stderr)
         return 1
+    if args.week:
+        print(
+            f"over a week: the move from the close before each day to the {study.WEEK_CLOSES}th close"
+        )
     for line in describe_raw_moves(results, label=flow.label):
         print(line)
     return 0
@@ -938,7 +951,7 @@ def scoreboard_data(
         if not stored:
             continue
         raw = study.measure_raw_moves(flow, con=con)
-        cells["raw_move"] += len(raw)
+        cells["raw_move"] += sum(r.overall.verdict != study.TOO_FEW for r in raw.values())
         entry: dict[str, object] = {
             "name": flow.cli_name,
             "label": flow.label,
@@ -948,14 +961,18 @@ def scoreboard_data(
             "first": flows.release_date(stored[0]).isoformat(),
             "last": flows.release_date(stored[-1]).isoformat(),
             "raw_move": {
-                instrument: {
-                    "days": r.overall.event_days,
-                    "median_event": _move_size(r.overall.median_event, r.unit),
-                    "median_other": _move_size(r.overall.median_other, r.unit),
-                    "ratio": round(r.overall.ratio, 2),
-                    "p": round(r.overall.p, 4),
-                    "verdict": r.overall.verdict,
-                }
+                instrument: (
+                    {"days": r.overall.event_days, "verdict": r.overall.verdict}
+                    if r.overall.verdict == study.TOO_FEW
+                    else {
+                        "days": r.overall.event_days,
+                        "median_event": _move_size(r.overall.median_event, r.unit),
+                        "median_other": _move_size(r.overall.median_other, r.unit),
+                        "ratio": round(r.overall.ratio, 2),
+                        "p": round(r.overall.p, 4),
+                        "verdict": r.overall.verdict,
+                    }
+                )
                 for instrument, r in raw.items()
             },
             "surprise": None,
@@ -1144,6 +1161,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_raw.add_argument(
         "--event", choices=event_names, default="cpi", help="the event (default: cpi)"
+    )
+    p_raw.add_argument(
+        "--week",
+        action="store_true",
+        help="compare five-day moves, from the close before each day to the fifth close from it",
     )
     p_raw.set_defaults(func=_raw_move)
 

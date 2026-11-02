@@ -8,9 +8,9 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Dated shocks, part 1, spec *(PR #204)*: national elections in the US, the UK, Germany, France and
-the European Parliament as five lesser flows from a hand-written seed file; lone days judged on
-the reaction day, *too few* under ten days a cell, and a five-day ratio beside the day's.
+Elections, step 1 *(PR #205)*: the seed file's 86 vote days as five lesser flows, lone days on
+the reaction day, *too few* under ten days a cell, `raw-move --week`; every existing scoreboard
+entry identical on a copy of the store.
 
 ## In progress
 
@@ -22,13 +22,14 @@ run rewrites it.
 
 ## Next
 
-Elections, step 1: the seed file's 86 vote days, the five flows, `raw-move --week`; every existing
-output identical on a copy of the store. Then its results (step 2).
+Elections, step 2: results, the five flows on the day and over a week against the expected
+outcome. Then dated shocks, part 2: tariff announcements, its spec first.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-02 | Elections, step 1: five lesser flows from a hand-written seed file, *too few* under ten days, `raw-move --week`; every existing entry identical | PR #205 |
 | 2026-11-02 | Dated shocks, part 1, spec: elections as five lesser flows, *too few* under ten days | PR #204 |
 | 2026-11-02 | Germany's calendar, step 2: results — the surveys move nothing; the euro tracks the German flash CPI | PR #203 |
 | 2026-11-02 | Germany's calendar, step 1: three lesser flows stored, every existing entry identical; *missed* only for flows called live | PR #202 |

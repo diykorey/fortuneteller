@@ -170,6 +170,7 @@ before it as counts, the band half its moves land in, and the grade on the close
       .concat(data.markets.map((m) => {
         const r = e.raw_move[m];
         if (!r) return dash();
+        if (r.verdict === 'too few') return cell(r.verdict, r.days + ' days, under ten');
         return cell(r.verdict, 'ratio ' + r.ratio.toFixed(2) + ', p ' + p4(r.p),
           r.median_event + ' on ' + r.days + ' days vs ' + r.median_other);
       }))));

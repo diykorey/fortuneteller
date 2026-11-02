@@ -86,9 +86,9 @@ def test_rows_nonempty_and_valid(filename: str, table: str, model: type[BaseMode
 def test_seed_dir_has_no_unexpected_csvs() -> None:
     # given the committed seed CSVs
     actual = {path.name for path in settings.seed_dir.glob("*.csv")}
-    # when compared to the contracted set
-    expected = {filename for filename, _table, _model in SEED_TABLES}
-    # then exactly the five contracted files are present
+    # when compared to the contracted set: the seed tables, and the one file a flow reads itself
+    expected = {filename for filename, _table, _model in SEED_TABLES} | {"elections.csv"}
+    # then exactly those files are present
     assert actual == expected
 
 

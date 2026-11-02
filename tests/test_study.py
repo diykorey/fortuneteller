@@ -327,6 +327,19 @@ def test_load_releases_prints_count_range_and_skipped_months(
         ],
     )
 
+    votes = [
+        ("United States", "2024-11-05", "20:00"),
+        ("United Kingdom", "2024-07-04", "22:00"),
+        ("Germany", "2025-02-23", "18:00"),
+        ("France", "2022-04-24", "20:00"),
+        ("European Union", "2024-06-09", "23:00"),
+    ]
+    (tmp_db.parent / "elections.csv").write_text(
+        "electorate,vote_day,polls_close,office\n"
+        + "".join(f"{who},{day},{close},general\n" for who, day, close in votes)
+    )
+    monkeypatch.setattr(settings, "seed_dir", tmp_db.parent)
+
     # when the command runs twice
     first = main(["load-releases"])
     second = main(["load-releases"])
@@ -350,8 +363,13 @@ def test_load_releases_prints_count_range_and_skipped_months(
     report += "loaded 1 ZEW surveys, 2025-02-18 … 2025-02-18\n"
     report += "loaded 1 Ifo surveys, 2025-02-24 … 2025-02-24\n"
     report += "loaded 1 German flash CPI estimates, 2025-02-14 … 2025-02-14\n"
+    report += "loaded 1 United States votes, 2024-11-05 … 2024-11-05\n"
+    report += "loaded 1 United Kingdom votes, 2024-07-04 … 2024-07-04\n"
+    report += "loaded 1 Germany votes, 2025-02-23 … 2025-02-23\n"
+    report += "loaded 1 France votes, 2022-04-24 … 2022-04-24\n"
+    report += "loaded 1 European Union votes, 2024-06-09 … 2024-06-09\n"
     assert capsys.readouterr().out == report * 2
-    assert db.count_rows("event_instances", con=db.get_connection()) == 27
+    assert db.count_rows("event_instances", con=db.get_connection()) == 32
 
 
 def test_load_releases_stores_nothing_when_any_flow_fails(

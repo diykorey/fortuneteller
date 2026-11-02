@@ -8,6 +8,7 @@ flow and one line in ``EVENT_FLOWS``; prices, raw move and the surprise apply to
 
 from __future__ import annotations
 
+import csv
 from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from datetime import UTC, date, datetime, time, timedelta
@@ -771,6 +772,7 @@ EURO_AREA = "Euro area"
 GERMANY = "Germany"
 ECB_FROM = date(2013, 4, 1)
 TRADINGVIEW_CALENDAR = "tradingview_calendar"
+HAND_WRITTEN = "hand_written"
 
 
 def load_ecb_decisions(cache_dir: Path, today: date | None = None) -> list[datetime]:
@@ -919,6 +921,77 @@ class StatementFlow:
             vix_t0=None,
             rate_regime=None,
             quality=TRADINGVIEW_CALENDAR,
+        )
+
+
+# National elections, from the hand-written seed file (docs/steps/elections.md).
+ELECTION_EVENT_TYPE = "National election"
+UNITED_KINGDOM = "United Kingdom"
+FRANCE = "France"
+EUROPEAN_UNION = "European Union"
+
+
+@dataclass(eq=False)
+class ElectionFlow:
+    """One electorate's national votes from ``data/seed/elections.csv``, each at its polls' close in
+    the flow's zone; a vote whose polls have not closed is not an event yet. No number, so no
+    surprise; a lesser flow whose lone days are judged on the reaction day."""
+
+    country: str
+    zone: ZoneInfo
+    type_code: int
+    cli_name: str
+    label: str
+    event_type: str = ELECTION_EVENT_TYPE
+    surprise_rule: SurpriseRule | None = None
+    lesser: bool = True
+
+    def events(self, api_key: str) -> EventBatch:
+        return self.load(settings.seed_dir / "elections.csv", datetime.now(UTC))
+
+    def load(self, path: Path, now: datetime) -> EventBatch:
+        """The votes in ``path`` whose polls closed by ``now`` (aware)."""
+        with path.open(newline="") as file:
+            rows = [row for row in csv.DictReader(file) if row["electorate"] == self.country]
+        closed = [
+            (
+                datetime.combine(
+                    date.fromisoformat(row["vote_day"]),
+                    time.fromisoformat(row["polls_close"]),
+                    tzinfo=self.zone,
+                ),
+                row["office"],
+            )
+            for row in rows
+        ]
+        given = [(at, office) for at, office in closed if at <= now]
+        if not given:
+            raise ValueError(f"{path}: no {self.country} vote whose polls have closed")
+        days = [at.date() for at, _ in given]
+        report = f"loaded {len(given)} {self.country} votes, {min(days)} … {max(days)}"
+        return EventBatch([self.event_instance(at, office) for at, office in given], [report])
+
+    def actuals(self, events: Sequence[EventInstance], api_key: str) -> list[Actual]:
+        return []
+
+    def event_instance(self, closed: datetime, office: str) -> EventInstance:
+        """Map one vote, its polls closed at ``closed`` (aware), to its ``event_instances`` row."""
+        return EventInstance(
+            event_id=event_id(self, closed.date()),
+            event_type=self.event_type,
+            event_ts=closed.astimezone(UTC).replace(tzinfo=None),
+            country=self.country,
+            detail=office,
+            scheduled=True,
+            consensus=None,
+            actual=None,
+            surprise=None,
+            surprise_sd=None,
+            surprise_source=None,
+            priced_in_prior=None,
+            vix_t0=None,
+            rate_regime=None,
+            quality=HAND_WRITTEN,
         )
 
 
@@ -1171,6 +1244,12 @@ ECB_PRESIDENT_FLOW = StatementFlow(
     "ECB president",
     (("Draghi", date(2019, 10, 31)), ("Lagarde", None)),
 )
+# Germany, France and the European Union vote on Central European Time, Frankfurt's.
+US_ELECTION_FLOW = ElectionFlow(UNITED_STATES, NEW_YORK, 16, "uselect", "USE")
+UK_ELECTION_FLOW = ElectionFlow(UNITED_KINGDOM, sources.LONDON, 17, "ukelect", "UKE")
+DE_ELECTION_FLOW = ElectionFlow(GERMANY, FRANKFURT, 18, "deelect", "DEE")
+FR_ELECTION_FLOW = ElectionFlow(FRANCE, FRANKFURT, 19, "frelect", "FRE")
+EU_ELECTION_FLOW = ElectionFlow(EUROPEAN_UNION, FRANKFURT, 20, "euelect", "EUE")
 EVENT_FLOWS: list[EventFlow] = [
     CPI_FLOW,
     NFP_FLOW,
@@ -1187,6 +1266,11 @@ EVENT_FLOWS: list[EventFlow] = [
     ZEW_FLOW,
     IFO_FLOW,
     DE_CPI_FLOW,
+    US_ELECTION_FLOW,
+    UK_ELECTION_FLOW,
+    DE_ELECTION_FLOW,
+    FR_ELECTION_FLOW,
+    EU_ELECTION_FLOW,
 ]
 
 

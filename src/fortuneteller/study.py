@@ -18,6 +18,7 @@ from __future__ import annotations
 
 import csv
 import io
+import math
 import random
 from bisect import bisect_left
 from collections.abc import Iterable, Sequence
@@ -35,6 +36,7 @@ from .models import DailyBar, EventInstance, Observation
 from .flows import (
     EVENT_FLOWS,
     RELEASE_TIME,
+    ElectionFlow,
     EventFlow,
     called_live,
     release_date,
@@ -282,6 +284,8 @@ def store_observations(
 
 # Step 3's rule for "moves", fixed before the verdicts were run; see docs/steps/step-3-raw-move.md.
 MOVE_RATIO_BAR = 1.10
+# Fewer event days than this give no verdict (docs/steps/elections.md); chosen, not derived.
+MIN_EVENT_DAYS = 10
 MOVE_P_BAR = 0.01
 MOVES = "moves"
 UNCLEAR = "unclear"
@@ -301,6 +305,24 @@ def daily_moves(closes: Sequence[DailyClosingPrice], unit: str) -> dict[date, fl
         for before, after in zip(closes, closes[1:], strict=False)
         if (after.day - before.day).days <= MAX_CLOSE_GAP_DAYS
     }
+
+
+# A week's move: from the close before a day to the fifth close from it (docs/steps/elections.md).
+WEEK_CLOSES = 5
+
+
+def weekly_moves(closes: Sequence[DailyClosingPrice], unit: str) -> dict[date, float]:
+    """Each day's absolute five-day move, from the previous close to the fifth close from the day,
+    keyed by the day; a window with a hole in the data is skipped, as in ``daily_moves``."""
+    moves = {}
+    for i in range(1, len(closes) - WEEK_CLOSES + 1):
+        window = closes[i - 1 : i + WEEK_CLOSES]
+        if all(
+            (after.day - before.day).days <= MAX_CLOSE_GAP_DAYS
+            for before, after in zip(window, window[1:], strict=False)
+        ):
+            moves[closes[i].day] = abs(release_move(window[0], window[-1], unit))
+    return moves
 
 
 def reaction_days(closes: Sequence[DailyClosingPrice], first_days: Iterable[date]) -> set[date]:
@@ -349,7 +371,14 @@ def compare_moves(
 
     ``p`` is the share of random relabellings, drawing as many days as there are event days from
     all of them, whose ratio is at least the real one, counting the real labelling itself.
+    Under ``MIN_EVENT_DAYS`` event days there is no verdict, only ``TOO_FEW``, with no ratio and
+    no ``p`` (docs/steps/elections.md).
     """
+    if len(event) < MIN_EVENT_DAYS:
+        middle = median(event) if event else math.nan
+        return MoveComparison(
+            len(event), len(other), middle, median(other), math.nan, math.nan, TOO_FEW
+        )
     median_event, median_other = median(event), median(other)
     ratio = median_event / median_other
     pool = sorted([*event, *other])
@@ -382,7 +411,7 @@ def era_of(day: date) -> str:
 
 
 def measure_raw_moves(
-    flow: EventFlow, con: duckdb.DuckDBPyConnection | None = None
+    flow: EventFlow, con: duckdb.DuckDBPyConnection | None = None, week: bool = False
 ) -> dict[str, RawMove]:
     """Each MVP instrument's moves on the event's days against its moves on ordinary days.
 
@@ -390,10 +419,12 @@ def measure_raw_moves(
     Fed day is not a fair "other day" for CPI. A lesser flow's days stay ordinary, and its own
     event days are the ones it has alone. Ordinary days start at the flow's first reaction day on
     each market, so a flow is not judged against years it has no days in
-    (docs/steps/own-years-baseline.md).
+    (docs/steps/own-years-baseline.md). An election is alone if its reaction day is no other
+    flow's; ``week`` compares five-day moves (docs/steps/elections.md).
     """
+    election = isinstance(flow, ElectionFlow)
     events = stored_events(flow, con=con)
-    if flow.lesser:
+    if flow.lesser and not election:
         shared = shared_days(flow, con=con)
         events = [e for e in events if e.event_id not in shared]
     every_event = [
@@ -404,9 +435,12 @@ def measure_raw_moves(
         closes = stored_closes(instrument, con=con)
         days = reaction_days(closes, [first_reaction_day(event, series) for event in events])
         busy = reaction_days(closes, [first_reaction_day(event, series) for event in every_event])
+        if election:
+            days -= busy
         first = min(days, default=None)
         by_era: dict[str, tuple[list[float], list[float]]] = {label: ([], []) for label, _ in ERAS}
-        for day, move in daily_moves(closes, series.unit).items():
+        moves = weekly_moves(closes, series.unit) if week else daily_moves(closes, series.unit)
+        for day, move in moves.items():
             if first is not None and day < first:
                 continue
             on_event, other = by_era[era_of(day)]
