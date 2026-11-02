@@ -74,7 +74,7 @@ week after.
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~The seed file with the 86 vote days, the five flows, lone days on the reaction day, *too few* under ten, `raw-move --week`~~ **done** | A test's seed rows store a Sunday vote at its polls' close, with a Monday reaction; a Thursday vote whose Friday holds a jobs report is left out; a vote whose polls close after now is not stored; a five-day window around a known week gives its move; every existing output identical on a copy of the store; the days left out named |
-| 2 | Results here and in [`mvp-results.md`](../mvp-results.md) | The five flows' verdicts on the day and over a week, against the expected outcome |
+| 2 | ~~Results here and in [`mvp-results.md`](../mvp-results.md)~~ **done** | The five flows' verdicts on the day and over a week, against the expected outcome |
 
 *Step 1, 2026-11-02:* on a copy of the store, every existing flow's scoreboard entry is identical,
 and so are the calls and *missed*. The five flows add 30 cells with a verdict to the chance line
@@ -82,6 +82,47 @@ and so are the calls and *missed*. The five flows add 30 cells with a verdict to
 counted on the S&P 500's days: the UK's 8 votes with a US release on the Friday (7 kept), the
 US's 2 with a Fed decision on the Wednesday (26 kept), the European Parliament's 1 with retail
 sales on the Monday (9 kept); none of Germany's 15 or France's 18.
+
+## Results
+
+Measured 2026-11-02 (`raw-move` and `raw-move --week` for each flow) on step 1's copy of the
+store: each flow on its lone reaction days, against ordinary days from its own years.
+
+| | US (26 days) | UK (7) | Germany (15) | France (18) | European Parliament (9) |
+| --- | --- | --- | --- | --- | --- |
+| Moves on the day? | **the S&P 500, 2.24 (p 0.0002), and the Nasdaq, 2.01 (p 0.003)**; *unclear* VIX 1.78 (p 0.019), the DAX, the euro, the STOXX 600, energy, both yields, gold | all *too few* | none; the DAX nearest, 1.76 (p 0.07), on 10 days | **VIX, 2.23 (p 0.004)**; the stocks and yields no more than any day | all *too few* |
+| Over a week? | none; VIX nearest, 1.82 (p 0.012), the Nasdaq 1.52, the S&P 500 1.47 | all *too few* | none; VIX 1.91 (p 0.02), the 5-year yield 1.86 (p 0.02) | none; every ratio under 1.21 | all *too few* |
+
+- **An American vote moves American stocks, for a day.** The S&P 500's move the morning after is
+  twice an ordinary day's, and larger with time: 1.29 in 1970–1989, 1.84 to 2007, 4.52 to 2019,
+  4.01 since. A week later the excess is mostly gone (1.47, *unclear*): the market reprices once
+  and does not keep running.
+- **France's VIX.** Every French reaction day is a Monday, and VIX moves more on Mondays after
+  the weekend. Against ordinary Mondays alone it still moves, 2.04 (p 0.009), just inside the bar;
+  its era ratios are 1.55, 2.18 and 2.55. US and European stocks move no more than on any day, so
+  it is fear priced in New York, not a market re-rated. Against ordinary Wednesdays the US's VIX
+  would move too, 2.03 (p 0.007). Both are checks, not verdicts: the rule compares every
+  ordinary day.
+- **Germany's votes move nothing,** on the day or over the week.
+- **Too few:** the UK and the European Parliament have under ten lone days on every market;
+  bitcoin, Brent, the Euro Stoxx 50 and defence have them for every flow.
+- **Chance:** 30 cells with a verdict on the day, 0.3 *moves* by chance, and three *moves*; 30
+  over a week, none.
+- **No call.** An election has no surprise and no sign, so nothing is called.
+
+**Against the expected outcome:**
+
+- US elections move VIX and the S&P 500 on the day: right for the S&P 500, with the Nasdaq
+  beside it; **wrong** for VIX, *unclear* at p 0.019.
+- No European vote moves a market at the bar: **wrong**, France's moves VIX; right for Germany.
+- The UK's cells are all *too few*: right, and the European Parliament's too.
+- After a week no ratio reaches the bar: right in every flow.
+
+**What it means.** Of the taxonomy's other half, the first dated shock measured moves markets
+the way it is told: a US election day is one of the larger days of a year for American stocks, and
+the move is a one-day repricing, not a trend. Europe's votes barely register, French presidential
+rounds aside, and only on VIX. No call follows: the direction would need the result, and the
+result is not a surprise this project can grade.
 
 ## Technical details
 

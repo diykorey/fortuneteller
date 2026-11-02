@@ -338,6 +338,20 @@ p 0.001. That is the first European surprise a market follows; the euro-area fla
 has none. Walk-forward the euro's link opens in 2022-11 and is right on 12 of 19, too few; no call.
 The expected outcome was right on the surveys and wrong on the flash.
 
+## Elections
+
+Measured 2026-11-02. Detail in [Elections](steps/elections.md#results).
+
+National votes as five lesser flows, each on its lone reaction days: the US (26), the UK (7),
+Germany (15), France's presidential rounds (18) and the European Parliament (9). A US election
+moves the S&P 500 (2.24, p 0.0002) and the Nasdaq (2.01) the next day, about four times an
+ordinary day since 2008; a week later the excess has faded to *unclear*. France's rounds move VIX
+(2.23, p 0.004), still inside the bar against ordinary Mondays, and no stock market. Germany's
+votes move nothing. The UK's and the European Parliament's cells are all *too few*, under ten
+days. Over a week nothing reaches the bar. No call: an election has no surprise. The expected
+outcome was right on the S&P 500, the UK and the week, and wrong on the US's VIX (*unclear*) and
+on France.
+
 ## What comes next
 
 Chosen 2026-10-13: keep score ([rung 4](steps/rung-4-keep-score.md)), done above with the live path
