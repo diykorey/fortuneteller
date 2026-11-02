@@ -73,8 +73,15 @@ week after.
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | The seed file with the 86 vote days, the five flows, lone days on the reaction day, *too few* under ten, `raw-move --week` | A test's seed rows store a Sunday vote at its polls' close, with a Monday reaction; a Thursday vote whose Friday holds a jobs report is left out; a vote whose polls close after now is not stored; a five-day window around a known week gives its move; every existing output identical on a copy of the store; the days left out named |
+| 1 | ~~The seed file with the 86 vote days, the five flows, lone days on the reaction day, *too few* under ten, `raw-move --week`~~ **done** | A test's seed rows store a Sunday vote at its polls' close, with a Monday reaction; a Thursday vote whose Friday holds a jobs report is left out; a vote whose polls close after now is not stored; a five-day window around a known week gives its move; every existing output identical on a copy of the store; the days left out named |
 | 2 | Results here and in [`mvp-results.md`](../mvp-results.md) | The five flows' verdicts on the day and over a week, against the expected outcome |
+
+*Step 1, 2026-11-02:* on a copy of the store, every existing flow's scoreboard entry is identical,
+and so are the calls and *missed*. The five flows add 30 cells with a verdict to the chance line
+(240 → 270); the other 50 read *too few*. The build takes 10 minutes 20 seconds. Left out,
+counted on the S&P 500's days: the UK's 8 votes with a US release on the Friday (7 kept), the
+US's 2 with a Fed decision on the Wednesday (26 kept), the European Parliament's 1 with retail
+sales on the Monday (9 kept); none of Germany's 15 or France's 18.
 
 ## Technical details
 

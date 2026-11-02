@@ -1,0 +1,88 @@
+electorate,vote_day,polls_close,office
+United States,1970-11-03,20:00,midterm
+United States,1972-11-07,20:00,presidential
+United States,1974-11-05,20:00,midterm
+United States,1976-11-02,20:00,presidential
+United States,1978-11-07,20:00,midterm
+United States,1980-11-04,20:00,presidential
+United States,1982-11-02,20:00,midterm
+United States,1984-11-06,20:00,presidential
+United States,1986-11-04,20:00,midterm
+United States,1988-11-08,20:00,presidential
+United States,1990-11-06,20:00,midterm
+United States,1992-11-03,20:00,presidential
+United States,1994-11-08,20:00,midterm
+United States,1996-11-05,20:00,presidential
+United States,1998-11-03,20:00,midterm
+United States,2000-11-07,20:00,presidential
+United States,2002-11-05,20:00,midterm
+United States,2004-11-02,20:00,presidential
+United States,2006-11-07,20:00,midterm
+United States,2008-11-04,20:00,presidential
+United States,2010-11-02,20:00,midterm
+United States,2012-11-06,20:00,presidential
+United States,2014-11-04,20:00,midterm
+United States,2016-11-08,20:00,presidential
+United States,2018-11-06,20:00,midterm
+United States,2020-11-03,20:00,presidential
+United States,2022-11-08,20:00,midterm
+United States,2024-11-05,20:00,presidential
+United States,2026-11-03,20:00,midterm
+United Kingdom,1970-06-18,22:00,general
+United Kingdom,1974-02-28,22:00,general
+United Kingdom,1974-10-10,22:00,general
+United Kingdom,1979-05-03,22:00,general
+United Kingdom,1983-06-09,22:00,general
+United Kingdom,1987-06-11,22:00,general
+United Kingdom,1992-04-09,22:00,general
+United Kingdom,1997-05-01,22:00,general
+United Kingdom,2001-06-07,22:00,general
+United Kingdom,2005-05-05,22:00,general
+United Kingdom,2010-05-06,22:00,general
+United Kingdom,2015-05-07,22:00,general
+United Kingdom,2017-06-08,22:00,general
+United Kingdom,2019-12-12,22:00,general
+United Kingdom,2024-07-04,22:00,general
+Germany,1972-11-19,18:00,Bundestag
+Germany,1976-10-03,18:00,Bundestag
+Germany,1980-10-05,18:00,Bundestag
+Germany,1983-03-06,18:00,Bundestag
+Germany,1987-01-25,18:00,Bundestag
+Germany,1990-12-02,18:00,Bundestag
+Germany,1994-10-16,18:00,Bundestag
+Germany,1998-09-27,18:00,Bundestag
+Germany,2002-09-22,18:00,Bundestag
+Germany,2005-09-18,18:00,Bundestag
+Germany,2009-09-27,18:00,Bundestag
+Germany,2013-09-22,18:00,Bundestag
+Germany,2017-09-24,18:00,Bundestag
+Germany,2021-09-26,18:00,Bundestag
+Germany,2025-02-23,18:00,Bundestag
+France,1974-05-05,20:00,presidential first round
+France,1974-05-19,20:00,presidential second round
+France,1981-04-26,20:00,presidential first round
+France,1981-05-10,20:00,presidential second round
+France,1988-04-24,20:00,presidential first round
+France,1988-05-08,20:00,presidential second round
+France,1995-04-23,20:00,presidential first round
+France,1995-05-07,20:00,presidential second round
+France,2002-04-21,20:00,presidential first round
+France,2002-05-05,20:00,presidential second round
+France,2007-04-22,20:00,presidential first round
+France,2007-05-06,20:00,presidential second round
+France,2012-04-22,20:00,presidential first round
+France,2012-05-06,20:00,presidential second round
+France,2017-04-23,20:00,presidential first round
+France,2017-05-07,20:00,presidential second round
+France,2022-04-10,20:00,presidential first round
+France,2022-04-24,20:00,presidential second round
+European Union,1979-06-10,23:00,European Parliament
+European Union,1984-06-17,23:00,European Parliament
+European Union,1989-06-18,23:00,European Parliament
+European Union,1994-06-12,23:00,European Parliament
+European Union,1999-06-13,23:00,European Parliament
+European Union,2004-06-13,23:00,European Parliament
+European Union,2009-06-07,23:00,European Parliament
+European Union,2014-05-25,23:00,European Parliament
+European Union,2019-05-26,23:00,European Parliament
+European Union,2024-06-09,23:00,European Parliament

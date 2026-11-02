@@ -22,6 +22,8 @@ any coverage gap, and a primary news source).
 | 8 | Italy | ~2.5 | — | — | Reuters / Il Sole 24 Ore |
 | 9 | Canada | ~2.4 | — | — | Reuters / Globe and Mail |
 | 10 | Brazil | ~2.3 | — | — | Reuters / Valor Econômico |
+| 0 | Euro area | ~16.4 | — | Not a country: the union whose central bank is the ECB; unranked | Reuters / ECB |
+| 0 | European Union | ~21 | — | Not a country: the union whose parliament is elected; unranked ([elections](../../steps/elections.md)) | Reuters / European Parliament |
 
 The full Notion table extends through rank 50 and records, per country, how many of the 132 tracked
 [trading platforms](platforms.md) sit in that market and whether any coverage gap remains.

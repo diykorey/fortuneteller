@@ -71,6 +71,14 @@ this by splitting the results by era.
 | Whose statement | The calendar's title naming the holder in office that day (a term table in `flows`); another speaker, a press conference or a title naming nobody is left out | The Fed's and the ECB's own speech and testimony lists, which name the speaker | A statement the calendar titles without a name, or a new holder the table lacks |
 | Statement time | The time the calendar lists, not checked; one a day, the earliest | The time the text was released, from the central bank's own page | A statement near a close, where the side of the close decides its day |
 
+## Step 10 — dated shocks: elections
+
+| Choice | Now | More precise | Trigger |
+| --- | --- | --- | --- |
+| Too few | A cell under ten event days has no verdict ([elections](steps/elections.md)); chosen, not derived | A minimum from the test's power: the fewest days at which a ratio of 1.5 reaches p < 0.01 | A cell at ten to fifteen days whose verdict decides a finding |
+| Over a week | Five-day moves from the close before each day; an event's window against every window that starts on an ordinary day. Windows overlap, so neighbouring ordinary windows share four days and `p` is optimistic | Non-overlapping windows, or a block permutation | A week verdict at a `p` near 0.01 |
+| Result time | The polls' close, written by hand; a result known later (a close race, a count overnight) still reacts the next day, and one known sooner from exit polls the same | The hour each result was called, from news archives | A vote whose result came more than a trading day after the polls closed |
+
 ## Steps 1–2 — choices already built in
 
 | Choice | Now | More precise | Trigger |

@@ -1,5 +1,6 @@
 """Raw move: do the instruments move more on CPI days than on all other days?"""
 
+import math
 import random
 from datetime import date, datetime, time, timedelta
 from pathlib import Path
@@ -27,6 +28,7 @@ from fortuneteller.study import (
     DOESNT_MOVE,
     MOVES,
     MVP_PRICE_SERIES,
+    TOO_FEW,
     UNCLEAR,
     EraRatio,
     MoveComparison,
@@ -38,6 +40,7 @@ from fortuneteller.study import (
     measure_raw_moves,
     move_verdict,
     shared_days,
+    weekly_moves,
 )
 
 
@@ -447,3 +450,95 @@ def _weekday(day: date) -> date:
     while day.weekday() >= 5:
         day += timedelta(days=1)
     return day
+
+
+def test_a_vote_is_an_event_at_its_polls_close_once_they_have_closed(tmp_path: Path) -> None:
+    # given a seed file with a past and a future Bundestag vote and a French one
+    seed = tmp_path / "elections.csv"
+    seed.write_text(
+        "electorate,vote_day,polls_close,office\n"
+        "Germany,2025-02-23,18:00,Bundestag\n"
+        "Germany,2029-09-23,18:00,Bundestag\n"
+        "France,2022-04-24,20:00,presidential second round\n"
+    )
+
+    # when Germany's votes are loaded on a day between the two
+    batch = flows.DE_ELECTION_FLOW.load(seed, datetime(2026, 11, 2, 12, 0, tzinfo=NEW_YORK))
+
+    # then the past vote alone is an event, at 18:00 Frankfurt on the Sunday, reacting on Monday
+    assert [(e.event_id, e.country, e.detail) for e in batch.events] == [
+        (1820250223, "Germany", "Bundestag")
+    ]
+    assert batch.events[0].event_ts == datetime(2025, 2, 23, 17, 0)
+    assert first_reaction_day(batch.events[0], MVP_PRICE_SERIES["DAX"]) == date(2025, 2, 24)
+    assert batch.report == ["loaded 1 Germany votes, 2025-02-23 … 2025-02-23"]
+
+
+def test_a_vote_is_alone_unless_its_reaction_day_holds_another_release() -> None:
+    # given CPI's synthetic store, jobs reports on Fridays 2022-08-05 and 2022-11-04, an ECB decision
+    # on Thursday 2022-09-01, and three UK votes: two the evening before a jobs report, one on the
+    # ECB's day
+    con = duckdb.connect(":memory:")
+    db.init_db(con=con)
+    _synthetic_store(con)
+    jobs = [
+        FirstRelease(date(2022, 7, 1), date(2022, 8, 5), 1.0),
+        FirstRelease(date(2022, 10, 1), date(2022, 11, 4), 1.0),
+    ]
+    store_releases(NFP_FLOW, jobs, con=con)
+    ecb = datetime(2022, 9, 1, 14, 15, tzinfo=flows.FRANKFURT)
+    flows.store_events([flows.ecb_event_instance(ecb)], con=con)
+    votes = [
+        flows.UK_ELECTION_FLOW.event_instance(
+            datetime.combine(day, time(22, 0), tzinfo=flows.sources.LONDON), "general"
+        )
+        for day in (date(2022, 8, 4), date(2022, 9, 1), date(2022, 11, 3))
+    ]
+    flows.store_events(votes, con=con)
+
+    # when the UK's raw move is measured
+    results = measure_raw_moves(flows.UK_ELECTION_FLOW, con=con)
+
+    # then the vote on the ECB's day is alone, its Friday free, and the two before a jobs report are
+    # not; one day is too few for a verdict
+    assert results["SPY / ES"].overall.event_days == 1
+    assert {raw.overall.verdict for raw in results.values()} == {TOO_FEW}
+
+
+def test_a_week_s_move_runs_from_the_close_before_to_the_fifth_close() -> None:
+    # given seven weekday closes, the last a hole of three weeks later
+    days = [date(2022, 9, d) for d in (12, 13, 14, 15, 16, 19)] + [date(2022, 10, 10)]
+    closes = _closes(*zip(days, [100.0, 101.0, 99.0, 102.0, 104.0, 110.0, 90.0], strict=True))
+
+    # when the five-day moves are computed
+    moves = weekly_moves(closes, "pct")
+
+    # then the one whole window, keyed by its first day, runs from 100 to 110; the next has a hole
+    assert moves == {date(2022, 9, 13): pytest.approx(0.10)}
+
+
+def test_under_ten_event_days_there_is_no_verdict() -> None:
+    # given nine event days four times the size of every other day
+    event, other = [0.04] * 9, [0.01] * 200
+
+    # when they are compared
+    comparison = compare_moves(event, other)
+
+    # then the comparison says too few, with no ratio and no p
+    assert comparison.verdict == TOO_FEW
+    assert comparison.event_days == 9
+    assert math.isnan(comparison.ratio) and math.isnan(comparison.p)
+
+
+def test_raw_move_over_a_week(tmp_db: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    # given releases and prices stored
+    _synthetic_store(db.get_connection())
+
+    # when the command runs over a week
+    code = main(["raw-move", "--week"])
+
+    # then it says so and every market gets a verdict
+    out = capsys.readouterr().out.splitlines()
+    assert code == 0
+    assert out[0] == "over a week: the move from the close before each day to the 5th close"
+    assert sum(line.split()[-1] in (MOVES, UNCLEAR, DOESNT_MOVE) for line in out[2:18]) == 16
