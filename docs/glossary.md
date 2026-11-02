@@ -91,6 +91,10 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **German flash CPI** (TradingView's *Inflation Rate YoY Prel*) — Destatis's first print of the
   month's German inflation, at 14:00 Frankfurt, after six states have published theirs that
   morning.
+- **National election** — a country's vote for its president or parliament, here a dated shock with
+  no forecast: its result lands when the polls close, and the market's reaction is the next
+  trading day ([elections](steps/elections.md)).
+- **Too few** (raw move) — a cell with fewer than ten event days, given no verdict.
 - **PMI** (Purchasing Managers' Index) — a survey-based activity gauge where above 50 means
   expansion, below 50 contraction.
 - **Reference month** — the month a release *measures*, as opposed to the day it is *published*.
