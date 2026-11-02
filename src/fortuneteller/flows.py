@@ -849,6 +849,21 @@ class StatementFlow:
     def actuals(self, events: Sequence[EventInstance], api_key: str) -> list[Actual]:
         return []
 
+    def ahead(self, cache_dir: Path, now: datetime) -> tuple[datetime, str] | None:
+        """The day's statement, the earliest given in office on ``now``'s day in the office's zone,
+        if it is still ahead of ``now`` (aware); read from the current calendar quarter."""
+        today = now.astimezone(self.zone).date()
+        quarter = date(today.year, (today.month - 1) // 3 * 3 + 1, 1)
+        payload = sources.fetch_tradingview_quarter(
+            quarter, cache_dir, today, country=self.calendar
+        )
+        todays = sorted(
+            (at, title)
+            for at, title in sources.parse_statements(payload, self.prefix)
+            if at.astimezone(self.zone).date() == today and self.holder(today) in title
+        )
+        return todays[0] if todays and todays[0][0] > now else None
+
     def event_instance(self, given: datetime, title: str) -> EventInstance:
         """Map one statement, given at ``given`` (aware), to its ``event_instances`` row."""
         return EventInstance(

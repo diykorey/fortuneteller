@@ -8,10 +8,10 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Own years, step 2 *(PR #199)*: the results in the step document and `mvp-results.md`, the changed
-findings amended where they stand. 60 cells changed on today's store, *moves* 52 → 54, no call;
-the Nasdaq moves on two flows instead of nine, lone claims days on six markets. Precision's new
-trigger fires on the ECB president's Brent; left noted, a lesser flow with no call.
+Scheduled statements, step 3 *(PR #200)*: the preview. `live` prints a line for each Fed chair's
+or ECB president's statement still ahead today, with the markets that moved on its flow's lone days
+read from the scoreboard's data, and the morning job pops it up, also on a day with no call. The
+first is due 2026-11-05: Lagarde at 10:00 New York.
 
 ## In progress
 
@@ -23,13 +23,14 @@ run rewrites it.
 
 ## Next
 
-The statements' preview (step 8's step 3): the morning popup names a statement later today and the
-markets that move on its flow's days. Then Germany's calendar (roadmap step 9).
+Germany's calendar (roadmap step 9), its spec first: ZEW, Ifo and the German flash CPI, the first
+European surprises with a forecast history.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-02 | Scheduled statements, step 3: the preview, popped up on a statement's morning | PR #200 |
 | 2026-11-02 | Own years, step 2: results — 60 cells changed, the Nasdaq moves on two flows, lone claims days on six markets; no call changed | PR #199 |
 | 2026-10-30 | Own years, step 1: ordinary days from each flow's first day; 59 cells changed, *moves* 52 → 54 | PR #198 |
 | 2026-10-30 | The jobs wait three minutes for the network when caught up at a wake; two evenings lost to it | PR #196 |

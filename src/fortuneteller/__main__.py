@@ -734,6 +734,12 @@ def _live(_args: argparse.Namespace) -> int:
         failed = _predict(args) != 0 or failed
     if not released and not failed:
         print(f"live: no release today ({today})")
+    try:
+        for line in _previews(now):
+            print(line)
+    except (sources.CalendarError, OSError, ValueError, KeyError) as exc:
+        print(f"live: the statements' preview: {exc!r}", file=sys.stderr)
+        failed = True
     rows = [c for c in study.read_calls(settings.calls_path) if c.day == today]
     if rows:
         spoke = sum(c.outcome != study.SILENT for c in rows)
@@ -742,6 +748,41 @@ def _live(_args: argparse.Namespace) -> int:
             f"{f'{spoke} not silent' if spoke else 'all silent'}"
         )
     return 1 if failed else 0
+
+
+def _previews(now: datetime) -> list[str]:
+    """A line for each statement still ahead today, with the markets that moved on its flow's lone
+    days, read from the scoreboard's data; the record only, never a direction (scheduled
+    statements, step 3)."""
+    statements = [
+        (flow, given)
+        for flow in flows.EVENT_FLOWS
+        if isinstance(flow, flows.StatementFlow)
+        and (given := flow.ahead(settings.cache_dir, now)) is not None
+    ]
+    if not statements:
+        return []
+    data = json.loads((settings.scoreboard_dir / "data.json").read_text())
+    measured = {event["name"]: event["raw_move"] for event in data["events"]}
+    lines = []
+    for flow, (at, title) in statements:
+        cells = measured[flow.cli_name]
+        days = max(cell["days"] for cell in cells.values())
+        movers = [
+            f"{market} {cell['ratio']:.2f}"
+            for market, cell in cells.items()
+            if cell["verdict"] == study.MOVES
+        ]
+        record = (
+            f"moved more than on ordinary days: {', '.join(movers)}"
+            if movers
+            else "no market moved more than on ordinary days"
+        )
+        lines.append(
+            f"preview: {title} at {at.astimezone(sources.NEW_YORK):%H:%M} New York; "
+            f"on the {flow.office}'s {days} days alone before, {record}"
+        )
+    return lines
 
 
 def _now() -> datetime:
