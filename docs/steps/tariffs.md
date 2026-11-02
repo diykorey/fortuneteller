@@ -37,11 +37,21 @@ over the week, as elections did.
   2002 steel and 2009 tyre actions: a decade between broad ones. Applied to the titles on
   2026-11-02 the rule keeps about 117 documents on **78 signing days**: 7 in 2018, 2 in 2019, 6 in
   2020, 4 in 2021, 5 in 2022, 3 in 2023, 6 in 2024, 27 in 2025 and 18 so far in 2026. Step 1
-  reads each document whose title leaves it open and settles the count.
+  reads each document whose title leaves it open and settles the count. *Amended 2026-11-03:*
+  settled at **103 documents on 73 days**: 6, 2, 5, 4, 5, 3, 6, 28 and 14 a year. Out after
+  reading: quota-only steps with no duty changed (2018-08-29, 2020-08-28), orders that leave a
+  duty to a later decision (Venezuelan oil, Cuba, Iran), negotiations without a duty (aircraft, wind
+  turbines, robotics, critical minerals) and the Graham Act's order, which waives its own duties.
+  In: extensions that move the date a duty changes, and the 2025 orders that keep low-value
+  shipments duty-free.
 - **One event a day.** Several documents signed the same day are one event.
 - **Time: the next trading day.** The Federal Register gives the signing day, not the hour. Each
   signing is taken as after the close, 16:00 New York, so its reaction is the next trading day's
-  close; a weekend signing reacts on Monday. This is the elections' rule.
+  close; a weekend signing reacts on Monday. This is the elections' rule. *Amended 2026-11-03:*
+  20:00 New York, not 16:00: VIX closes at 16:15 and bitcoin at midnight UTC, so 16:00 put their
+  reaction on the signing day. At 20:00 every market reacts on its next close; bitcoin, which
+  trades at weekends, on the Sunday. A signing is stored as not scheduled: its day was not known
+  in advance.
 - **Known misses, written down first:**
   - Announcements before the signing: steel and aluminium were announced on 2018-03-01 and signed
     on 2018-03-08.
@@ -49,7 +59,8 @@ over the week, as elections did.
   - Section 301 lists published by USTR, not the president: the China lists of 2018 and 2019.
   - Same-session signings: the 2025-04-09 pause was announced at 13:18 New York and moved the
     market that day; its row reacts on 2025-04-10.
-- **Origin:** a new seed event type `Tariff action`, country `United States`.
+- **Origin:** a new seed event type `Tariff action`, country `United States`. *Amended 2026-11-03:* the seed
+  already holds `Tariff / trade-war / sanctions`, from Notion; the flow uses it, and no row is added.
 
 ## The rule, fixed before any move is measured
 
@@ -57,7 +68,8 @@ over the week, as elections did.
   the flow's own years, *too few* under ten days a cell.
 - **Lesser, as claims and elections are:** each tariff day stays an ordinary day for every other
   flow. The flow keeps only its lone reaction days, judged on the reaction day against the lead
-  flows. Every existing output stays identical.
+  flows. Every existing output stays identical. *Amended 2026-11-03:* the scoreboard gains the
+  flow's entry, and its cells with a verdict join the chance line's count, as elections' did.
 - **No surprise and no call:** no free calendar forecasts a tariff, so there is no sign, no surprise
   table and no walk-forward.
 - **And over a week:** `raw-move --week`, as built for elections. 2025's signings cluster
@@ -74,15 +86,33 @@ over the week, as elections did.
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | The seed file with each counted document and its number, the flow stored, the misses named | A test's seed rows store a Saturday signing with a Monday reaction and two documents on one day as one event; every row's number is the Federal Register's for that title; every existing output identical on a copy of the store; the days left out as shared named |
+| 1 | ~~The seed file with each counted document and its number, the flow stored, the misses named~~ **done** | A test's seed rows store a Saturday signing with a Monday reaction and two documents on one day as one event; every row's number is the Federal Register's for that title; every existing output identical on a copy of the store; the days left out as shared named |
 | 2 | Results here and in [`mvp-results.md`](../mvp-results.md) | The flow's verdicts on the day and over a week, by era, against the expected outcome |
+
+*Step 1, 2026-11-03:* 103 documents on 73 signing days, 2018-01-23 to 2026-10-23, each number the
+Federal Register's for its title as its API listed them on 2026-11-02. On a copy of the store
+every existing scoreboard entry is identical, and so are the calls and *missed*; the flow adds 16
+cells to the chance line (270 → 286). The build takes 9 minutes 50 seconds. On the S&P 500 the
+flow keeps 44 days. The 29 left out share their reaction day with a lead flow's release: ISM 10,
+jobs reports 9, the euro-area flash 7, retail sales 5, CPI 5, core PCE 2, GDP 1. Some share
+with two releases or three, so the counts add to more than 29. By signing day:
+2018-03-08, 2018-04-30, 2018-05-31, 2020-08-06, 2021-01-14, 2022-03-31, 2022-05-27, 2022-05-31,
+2023-05-31, 2024-05-14, 2024-05-31, 2024-07-10, 2025-02-01, 2025-03-02, 2025-03-06, 2025-04-09,
+2025-04-29, 2025-05-12, 2025-06-16, 2025-07-30, 2025-07-31, 2025-08-11, 2025-09-04, 2026-04-02,
+2026-06-01, 2026-07-15, 2026-07-31, 2026-08-06 and 2026-08-13. Among them the first steel and
+aluminium proclamations (a jobs report the next day), the first IEEPA duties (ISM's Monday) and
+the 2025-04-09 pause (CPI's Thursday).
 
 ## Technical details
 
 Elections and tariffs are now two cases of one thing, a flow read from a hand-written seed file
 with no surprise, so step 1 turns `ElectionFlow` into one class for both. Its file name and the
 column holding the time are fields, and `measure_raw_moves`' election branch becomes a branch for
-the class. The tariff flow's time is a fixed 16:00 New York, not a column. Type code 21, CLI name
+the class. The tariff flow's time is a fixed 16:00 New York, not a column. *Amended 2026-11-03:*
+built as `flows.DatedShockFlow`, whose fields name the seed file, its day, detail and time
+columns, an optional country column and the fixed time (20:00); the elections are built by
+`flows.election_flow`. The document numbers stay in the seed file; the stored `detail` holds the
+day's titles. Type code 21, CLI name
 `tariff`. `docs/schema.md` gets the type, and `docs/legacy/data/` the seed file.
 
 ## What this does not do

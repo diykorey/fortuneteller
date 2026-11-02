@@ -6,6 +6,8 @@ invalid enum value fails CI. Each seed file is checked against two canonical sou
 """
 
 import csv
+import re
+from datetime import date
 from pathlib import Path
 
 import duckdb
@@ -86,8 +88,11 @@ def test_rows_nonempty_and_valid(filename: str, table: str, model: type[BaseMode
 def test_seed_dir_has_no_unexpected_csvs() -> None:
     # given the committed seed CSVs
     actual = {path.name for path in settings.seed_dir.glob("*.csv")}
-    # when compared to the contracted set: the seed tables, and the one file a flow reads itself
-    expected = {filename for filename, _table, _model in SEED_TABLES} | {"elections.csv"}
+    # when compared to the contracted set: the seed tables, and the files the dated-shock flows read themselves
+    expected = {filename for filename, _table, _model in SEED_TABLES} | {
+        "elections.csv",
+        "tariffs.csv",
+    }
     # then exactly those files are present
     assert actual == expected
 
@@ -109,3 +114,18 @@ def test_mvp_instrument_resolves_by_exact_symbol(symbol: str) -> None:
     # when an MVP instrument is looked up by its canonical symbol
     # then it is present exactly as written
     assert symbol in symbols
+
+
+def test_tariff_rows_are_federal_register_documents_since_2018() -> None:
+    # given the committed tariff actions
+    with (settings.seed_dir / "tariffs.csv").open(newline="", encoding="utf-8") as handle:
+        rows = list(csv.DictReader(handle))
+    # when their days and document numbers are read
+    days = [date.fromisoformat(row["signing_day"]) for row in rows]
+    numbers = [row["document_number"] for row in rows]
+    # then each is a Federal Register number, once, signed since 2018 and by today, in date order
+    assert all(re.fullmatch(r"20\d\d-\d{5}", number) for number in numbers)
+    assert len(set(numbers)) == len(numbers)
+    assert date(2018, 1, 1) <= min(days) and max(days) <= date.today()
+    assert days == sorted(days)
+    assert all(row["title"].strip() == row["title"] and row["title"] for row in rows)
