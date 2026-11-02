@@ -8,9 +8,8 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Tariff actions, step 1 *(PR #208)*: 103 presidential documents on 73 signing days as one lesser
-flow, at 20:00 New York; `ElectionFlow` became `DatedShockFlow`, one class for both seed files;
-every existing scoreboard entry identical on a copy of the store.
+Tariff actions, step 2 *(PR #209)*: results — a signing moves Europe's stocks, on the next
+close and over the week; no US market moves.
 
 ## In progress
 
@@ -22,13 +21,14 @@ run rewrites it.
 
 ## Next
 
-Tariff actions, step 2: results on the day and over a week, by era, against the expected
-outcome. Then dated shocks, part 3: debt-ceiling deadlines, its spec first.
+Dated shocks, part 3: debt-ceiling deadlines, its spec first; which deadlines count and what
+day each is dated by, chosen before any move is measured.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-03 | Tariff actions, step 2: results — Europe's stocks move on a signing, New York's do not | PR #209 |
 | 2026-11-03 | Tariff actions, step 1: 73 signing days stored as one lesser flow, every existing entry identical | PR #208 |
 | 2026-11-02 | Dated shocks, part 2, spec: tariff actions from the Federal Register, signings since 2018 | PR #207 |
 | 2026-11-02 | Elections, step 2: results — the US moves its stocks for a day, France VIX; nothing over a week | PR #206 |

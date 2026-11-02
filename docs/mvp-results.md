@@ -352,6 +352,19 @@ days. Over a week nothing reaches the bar. No call: an election has no surprise.
 outcome was right on the S&P 500, the UK and the week, and wrong on the US's VIX (*unclear*) and
 on France.
 
+## Tariff actions
+
+Measured 2026-11-03. Detail in [Tariff actions](steps/tariffs.md#results).
+
+The US president's signed tariff documents since 2018, from the Federal Register: 73 signing days,
+44 of them alone on their reaction day. On the next close Europe's stocks move: the DAX (1.64, p
+0.004) and the Euro Stoxx 50 (1.62). Over the week the DAX (1.58) and the STOXX 600 (1.52) do. No
+US market moves on the next close. Europe closes before New York's afternoon, so a signing then
+reaches New York's close the same day and Europe's only the next; on the signing day itself (a one-off
+check, [detail](steps/tariffs.md#results)) the S&P 500 is 1.22, short of the bar, and the measure cannot tell the two apart. The expected outcome was wrong on
+the day and over the week; its era split and its dilution were not testable. No call: a signing has
+no surprise.
+
 ## What comes next
 
 Chosen 2026-10-13: keep score ([rung 4](steps/rung-4-keep-score.md)), done above with the live path
