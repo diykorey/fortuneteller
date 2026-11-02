@@ -382,8 +382,9 @@ def test_another_events_days_are_not_ordinary_days() -> None:
     # when CPI's raw move is measured again
     after = measure_raw_moves(CPI_FLOW, con=con)["SPY / ES"].overall
 
-    # then the jobs days leave the ordinary days, and the CPI days stay as they were
-    assert before.other_days - after.other_days == 36
+    # then the jobs days leave the ordinary days, but the first, before CPI's first release and so
+    # never one, and the CPI days stay as they were
+    assert before.other_days - after.other_days == 35
     assert after.event_days == before.event_days == 36
 
 
@@ -413,6 +414,33 @@ def test_a_lesser_flow_s_days_stay_ordinary_and_its_own_days_are_the_ones_it_has
     assert {raw.overall.event_days for raw in own.values()} == {1}
     assert shared_days(flows.CLAIMS_FLOW, con=con) == {claims[0].event_id: cpi_day}
     assert shared_days(CPI_FLOW, con=con) == {}
+
+
+def test_ordinary_days_start_at_the_flow_s_first_day() -> None:
+    # given CPI's 36 releases in 2021-2023 and a market quiet before 2021 and loud since, whose
+    # release days move no more than its other days since 2021
+    con = duckdb.connect(":memory:")
+    db.init_db(con=con)
+    _synthetic_store(con)
+    instrument = "SPY / ES"
+    con.execute("DELETE FROM daily_bars WHERE instrument = ?", [instrument])
+    rng = random.Random(7)
+    day, price, bars = date(2010, 1, 4), 100.0, []
+    while day < date(2024, 1, 31):
+        if day.weekday() < 5:
+            size = 0.002 if day.year < 2021 else 0.01
+            price *= 1 + rng.choice((-1, 1)) * size * rng.uniform(0.5, 1.5)
+            bars.append(DailyBar(instrument=instrument, day=day, close=price, source="s"))
+        day += timedelta(days=1)
+    db.insert_models("daily_bars", bars, con=con)
+
+    # when the raw move is measured
+    raw = measure_raw_moves(CPI_FLOW, con=con)[instrument]
+
+    # then the quiet years are no ordinary days, and the release days do not move
+    assert raw.overall.verdict != MOVES
+    assert raw.overall.other_days < 800
+    assert raw.eras["2008-2019"].event_days == 0
 
 
 def _weekday(day: date) -> date:
