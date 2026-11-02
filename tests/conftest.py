@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from fortuneteller import db, expectations, sources
+from fortuneteller import db, expectations, flows, sources
 from fortuneteller.config import settings
 
 
@@ -31,3 +31,5 @@ def no_calendars(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
         raise AssertionError(f"a test asked {what}")
 
     monkeypatch.setattr(sources, "_calendar_get", refuse)
+    # No statement is ahead on a test's day unless the test says so.
+    monkeypatch.setattr(flows.StatementFlow, "ahead", lambda self, cache_dir, now: None)

@@ -12,6 +12,7 @@ import pytest
 from pydantic import SecretStr
 
 from fortuneteller import db, expectations, flows, sources, study
+import fortuneteller.__main__ as cli
 from fortuneteller.__main__ import main
 from fortuneteller.config import settings
 from fortuneteller.expectations import Actual, Expectation, event_month, own_actuals
@@ -544,6 +545,97 @@ def test_an_ecb_president_s_late_speech_is_on_its_frankfurt_day(
     # then the event is a euro-area statement of 2025-03-04
     assert [(e.event_id, e.event_type, e.country) for e in batch.events] == [
         (1220250304, "Central-bank statement", "Euro area")
+    ]
+
+
+# The real method; the shared fixture makes every other test's day statement-free.
+STATEMENT_AHEAD = flows.StatementFlow.ahead
+PREVIEW_DAY = date(2026, 11, 12)
+AT_0830 = datetime.combine(PREVIEW_DAY, time(8, 30), tzinfo=NEW_YORK)
+
+
+def _statements_on_the_preview_day(
+    monkeypatch: pytest.MonkeyPatch, us: Sequence[tuple[str, str]]
+) -> None:
+    monkeypatch.setattr(flows.StatementFlow, "ahead", STATEMENT_AHEAD)
+    replies = {"US": _us_quarter(*us), "EU": b'{"status": "no_data"}'}
+    monkeypatch.setattr(
+        sources,
+        "fetch_tradingview_quarter",
+        lambda start, cache_dir, today, country: replies[country],
+    )
+
+
+@pytest.mark.parametrize(
+    ("rows", "ahead"),
+    [
+        ([("Fed Chair Warsh Speech", "2026-11-12T15:00:00.000Z")], "Fed Chair Warsh Speech"),
+        (
+            [
+                ("Fed Chair Warsh Speech", "2026-11-12T08:00:00.000Z"),
+                ("Fed Chair Warsh Testimony", "2026-11-12T15:00:00.000Z"),
+            ],
+            None,
+        ),
+        ([("Fed Powell Speech", "2026-11-12T15:00:00.000Z")], None),
+        ([("Fed Chair Warsh Speech", "2026-11-13T15:00:00.000Z")], None),
+    ],
+    ids=["at-10:00", "earliest-at-03:00", "out-of-office", "tomorrow"],
+)
+def test_a_statement_is_ahead_only_if_the_day_s_earliest_is_still_to_come(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    rows: list[tuple[str, str]],
+    ahead: str | None,
+) -> None:
+    # given the US calendar on the preview day
+    _statements_on_the_preview_day(monkeypatch, rows)
+
+    # when the chair's statement ahead is asked at 08:30 New York
+    found = flows.FED_CHAIR_FLOW.ahead(tmp_path, AT_0830)
+
+    # then only a statement given in office today, the day's earliest and still to come, is ahead
+    assert (found[1] if found else None) == ahead
+
+
+def test_live_previews_a_statement_ahead_with_its_flow_s_movers(
+    tmp_db: Path,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    # given no release today, a chair's speech at 10:00 New York, and the scoreboard's data in which
+    # the chair's lone days moved the 10-year yield and no other market
+    monkeypatch.setattr(expectations, "next_consensus", lambda measure, today, cache_dir: None)
+    _statements_on_the_preview_day(
+        monkeypatch, [("Fed Chair Warsh Speech", "2026-11-12T15:00:00.000Z")]
+    )
+    monkeypatch.setattr(cli, "_now", lambda: AT_0830)
+    cell = {"days": 176, "ratio": 1.0, "verdict": "doesn't"}
+    data = {
+        "events": [
+            {
+                "name": "fedchair",
+                "raw_move": {
+                    "SPY / ES": cell,
+                    "UST10Y / ZN": {"days": 177, "ratio": 1.234, "verdict": "moves"},
+                },
+            },
+            {"name": "ecbchief", "raw_move": {"SPY / ES": cell}},
+        ]
+    }
+    monkeypatch.setattr(settings, "scoreboard_dir", tmp_path)
+    (tmp_path / "data.json").write_text(json.dumps(data))
+
+    # when the release-day job's command runs at 08:30
+    code = main(["live"])
+
+    # then it says there is no release and previews the speech with its record, no direction
+    assert code == 0
+    assert capsys.readouterr().out.splitlines() == [
+        "live: no release today (2026-11-12)",
+        "preview: Fed Chair Warsh Speech at 10:00 New York; on the Fed chair's 177 days alone "
+        "before, moved more than on ordinary days: UST10Y / ZN 1.23",
     ]
 
 

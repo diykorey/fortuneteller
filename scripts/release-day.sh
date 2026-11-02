@@ -109,6 +109,9 @@ if [ "$step" = live ]; then
             "$(grep -E ': actual |^.{12} (up|down|—) |^no prediction: ' "$out")
 $kept"
     fi
+    # A statement later today pops up on its own, also on a day with no call (scheduled-statements.md).
+    previews=$(grep '^preview: ' "$out" | sed 's/^preview: //')
+    [ -z "$previews" ] || popup "A statement today, $day" "$previews"
     [ "$live" -eq 0 ] || report "fortuneteller live exited $live"
     exit 0
 fi
