@@ -8,10 +8,8 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Scheduled statements, step 3 *(PR #200)*: the preview. `live` prints a line for each Fed chair's
-or ECB president's statement still ahead today, with the markets that moved on its flow's lone days
-read from the scoreboard's data, and the morning job pops it up, also on a day with no call. The
-first is due 2026-11-05: Lagarde at 10:00 New York.
+Germany's calendar, spec *(PR #201)*: ZEW, Ifo and the German flash CPI as three lesser flows
+from TradingView's `DE` calendar, their signs and the expected outcome written first.
 
 ## In progress
 
@@ -23,13 +21,14 @@ run rewrites it.
 
 ## Next
 
-Germany's calendar (roadmap step 9), its spec first: ZEW, Ifo and the German flash CPI, the first
-European surprises with a forecast history.
+Germany's calendar, step 1: the three flows stored and measured on a copy of the store, every
+existing output identical. Then its results (step 2).
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-02 | Germany's calendar, spec: three lesser flows, the surveys' and the flash's signs fixed first | PR #201 |
 | 2026-11-02 | Scheduled statements, step 3: the preview, popped up on a statement's morning | PR #200 |
 | 2026-11-02 | Own years, step 2: results — 60 cells changed, the Nasdaq moves on two flows, lone claims days on six markets; no call changed | PR #199 |
 | 2026-10-30 | Own years, step 1: ordinary days from each flow's first day; 59 cells changed, *moves* 52 → 54 | PR #198 |

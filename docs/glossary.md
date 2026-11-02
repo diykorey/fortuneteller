@@ -83,6 +83,14 @@ Terms are grouped by what they are about, alphabetical within each group.
   York time. Traditionally the biggest scheduled mover after CPI and the Fed.
 - **ISM** (Institute for Supply Management) — publishes the US manufacturing PMI at 10:00 New
   York on the month's first working day ([the ISM survey](steps/ism-manufacturing.md)).
+- **ZEW** (Leibniz Centre for European Economic Research) — its *Economic Sentiment Index* asks
+  financial analysts whether Germany's economy will be better or worse in six months, out at 11:00
+  Frankfurt in the month's second or third week ([Germany's calendar](steps/germany-calendar.md)).
+- **Ifo** (Ifo Institute, Munich) — its *Business Climate* index surveys German firms on their
+  current business and their outlook, out at 10:00 Frankfurt late in the month.
+- **German flash CPI** (TradingView's *Inflation Rate YoY Prel*) — Destatis's first print of the
+  month's German inflation, at 14:00 Frankfurt, after six states have published theirs that
+  morning.
 - **PMI** (Purchasing Managers' Index) — a survey-based activity gauge where above 50 means
   expansion, below 50 contraction.
 - **Reference month** — the month a release *measures*, as opposed to the day it is *published*.
