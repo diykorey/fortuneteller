@@ -79,6 +79,14 @@ this by splitting the results by era.
 | Over a week | Five-day moves from the close before each day; an event's window against every window that starts on an ordinary day. Windows overlap, so neighbouring ordinary windows share four days and `p` is optimistic | Non-overlapping windows, or a block permutation | A week verdict at a `p` near 0.01 |
 | Result time | The polls' close, written by hand; a result known later (a close race, a count overnight) still reacts the next day, and one known sooner from exit polls the same | The hour each result was called, from news archives | A vote whose result came more than a trading day after the polls closed |
 
+## Step 10 — dated shocks: tariff actions
+
+| Choice | Now | More precise | Trigger |
+| --- | --- | --- | --- |
+| Signing time | Every signing at 20:00 New York, after every market's close, reacting on each market's next close ([tariff actions](steps/tariffs.md)): the Federal Register gives the day, not the hour. A signing in the session (the 2025-04-09 pause, announced at 13:18) is measured a day late | The hour of each signing or announcement, from the White House's own record | A day the market moved on a signing it is measured after |
+| The signing, not the announcement | The document's signing day; an announcement before it (steel, 2018-03-01, signed 2018-03-08), a post (2019-05-05, 2019-08-01) and USTR's own Section 301 lists are not events | A second, mechanical source for announcements, chosen before measuring | A results finding that hangs on a tariff day the signings miss |
+| Clustered signings | 2025's signings sit days apart (2025-03-02, 03-03, 03-06), so their week windows overlap each other as well as the ordinary ones, on top of the overlap elections already note | One event per cluster, or a block permutation | A week verdict at a `p` near 0.01 |
+
 ## Steps 1–2 — choices already built in
 
 | Choice | Now | More precise | Trigger |

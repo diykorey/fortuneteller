@@ -36,7 +36,7 @@ from .models import DailyBar, EventInstance, Observation
 from .flows import (
     EVENT_FLOWS,
     RELEASE_TIME,
-    ElectionFlow,
+    DatedShockFlow,
     EventFlow,
     called_live,
     release_date,
@@ -419,12 +419,12 @@ def measure_raw_moves(
     Fed day is not a fair "other day" for CPI. A lesser flow's days stay ordinary, and its own
     event days are the ones it has alone. Ordinary days start at the flow's first reaction day on
     each market, so a flow is not judged against years it has no days in
-    (docs/steps/own-years-baseline.md). An election is alone if its reaction day is no other
-    flow's; ``week`` compares five-day moves (docs/steps/elections.md).
+    (docs/steps/own-years-baseline.md). A dated shock (an election, a tariff action) is alone if
+    its reaction day is no other flow's; ``week`` compares five-day moves (docs/steps/elections.md).
     """
-    election = isinstance(flow, ElectionFlow)
+    dated = isinstance(flow, DatedShockFlow)
     events = stored_events(flow, con=con)
-    if flow.lesser and not election:
+    if flow.lesser and not dated:
         shared = shared_days(flow, con=con)
         events = [e for e in events if e.event_id not in shared]
     every_event = [
@@ -435,7 +435,7 @@ def measure_raw_moves(
         closes = stored_closes(instrument, con=con)
         days = reaction_days(closes, [first_reaction_day(event, series) for event in events])
         busy = reaction_days(closes, [first_reaction_day(event, series) for event in every_event])
-        if election:
+        if dated:
             days -= busy
         first = min(days, default=None)
         by_era: dict[str, tuple[list[float], list[float]]] = {label: ([], []) for label, _ in ERAS}

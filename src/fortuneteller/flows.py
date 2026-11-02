@@ -924,65 +924,88 @@ class StatementFlow:
         )
 
 
-# National elections, from the hand-written seed file (docs/steps/elections.md).
+# Dated shocks, from hand-written seed files: national elections (docs/steps/elections.md) and
+# tariff actions (docs/steps/tariffs.md).
 ELECTION_EVENT_TYPE = "National election"
+TARIFF_EVENT_TYPE = "Tariff / trade-war / sanctions"
 UNITED_KINGDOM = "United Kingdom"
 FRANCE = "France"
 EUROPEAN_UNION = "European Union"
+# After every market's close, VIX's 16:15 and bitcoin's midnight UTC among them; the US polls'.
+AFTER_EVERY_CLOSE = time(20, 0)
 
 
 @dataclass(eq=False)
-class ElectionFlow:
-    """One electorate's national votes from ``data/seed/elections.csv``, each at its polls' close in
-    the flow's zone; a vote whose polls have not closed is not an event yet. No number, so no
-    surprise; a lesser flow whose lone days are judged on the reaction day."""
+class DatedShockFlow:
+    """Dated events read from a hand-written seed file, each at its day and time in the flow's zone;
+    one not yet past is not an event. Rows on one day are one event. No number, so no surprise; a
+    lesser flow whose lone days are judged on the reaction day.
 
+    ``country_column`` keeps the rows naming the flow's country (every row when ``None``);
+    ``time_column`` gives each row's time (``fixed_time`` for every row when ``None``); ``scheduled``
+    is whether the day was known in advance."""
+
+    event_type: str
     country: str
     zone: ZoneInfo
     type_code: int
     cli_name: str
     label: str
-    event_type: str = ELECTION_EVENT_TYPE
+    seed_file: str
+    noun: str
+    day_column: str
+    detail_column: str
+    country_column: str | None = None
+    time_column: str | None = None
+    fixed_time: time = AFTER_EVERY_CLOSE
+    scheduled: bool = True
     surprise_rule: SurpriseRule | None = None
     lesser: bool = True
 
     def events(self, api_key: str) -> EventBatch:
-        return self.load(settings.seed_dir / "elections.csv", datetime.now(UTC))
+        return self.load(settings.seed_dir / self.seed_file, datetime.now(UTC))
 
     def load(self, path: Path, now: datetime) -> EventBatch:
-        """The votes in ``path`` whose polls closed by ``now`` (aware)."""
+        """The events in ``path`` that happened by ``now`` (aware)."""
         with path.open(newline="") as file:
-            rows = [row for row in csv.DictReader(file) if row["electorate"] == self.country]
-        closed = [
-            (
-                datetime.combine(
-                    date.fromisoformat(row["vote_day"]),
-                    time.fromisoformat(row["polls_close"]),
-                    tzinfo=self.zone,
-                ),
-                row["office"],
+            rows = [
+                row
+                for row in csv.DictReader(file)
+                if self.country_column is None or row[self.country_column] == self.country
+            ]
+        by_time: dict[datetime, list[str]] = {}
+        seen: dict[date, datetime] = {}
+        for row in rows:
+            at = datetime.combine(
+                date.fromisoformat(row[self.day_column]),
+                time.fromisoformat(row[self.time_column]) if self.time_column else self.fixed_time,
+                tzinfo=self.zone,
             )
-            for row in rows
-        ]
-        given = [(at, office) for at, office in closed if at <= now]
-        if not given:
-            raise ValueError(f"{path}: no {self.country} vote whose polls have closed")
-        days = [at.date() for at, _ in given]
-        report = f"loaded {len(given)} {self.country} votes, {min(days)} … {max(days)}"
-        return EventBatch([self.event_instance(at, office) for at, office in given], [report])
+            if seen.setdefault(at.date(), at) != at:
+                raise ValueError(f"{path}: two times on {at.date()} for {self.country}")
+            if at <= now:
+                by_time.setdefault(at, []).append(row[self.detail_column])
+        if not by_time:
+            raise ValueError(
+                f"{path}: no {self.country} {self.noun} by {now.isoformat(timespec='minutes')}"
+            )
+        days = [at.date() for at in by_time]
+        report = f"loaded {len(by_time)} {self.country} {self.noun}, {min(days)} … {max(days)}"
+        events = [self.event_instance(at, "; ".join(details)) for at, details in by_time.items()]
+        return EventBatch(events, [report])
 
     def actuals(self, events: Sequence[EventInstance], api_key: str) -> list[Actual]:
         return []
 
-    def event_instance(self, closed: datetime, office: str) -> EventInstance:
-        """Map one vote, its polls closed at ``closed`` (aware), to its ``event_instances`` row."""
+    def event_instance(self, at: datetime, detail: str) -> EventInstance:
+        """Map one dated event at ``at`` (aware) to its ``event_instances`` row."""
         return EventInstance(
-            event_id=event_id(self, closed.date()),
+            event_id=event_id(self, at.date()),
             event_type=self.event_type,
-            event_ts=closed.astimezone(UTC).replace(tzinfo=None),
+            event_ts=at.astimezone(UTC).replace(tzinfo=None),
             country=self.country,
-            detail=office,
-            scheduled=True,
+            detail=detail,
+            scheduled=self.scheduled,
             consensus=None,
             actual=None,
             surprise=None,
@@ -993,6 +1016,26 @@ class ElectionFlow:
             rate_regime=None,
             quality=HAND_WRITTEN,
         )
+
+
+def election_flow(
+    country: str, zone: ZoneInfo, type_code: int, cli_name: str, label: str
+) -> DatedShockFlow:
+    """One electorate's national votes from ``elections.csv``, each at its polls' close."""
+    return DatedShockFlow(
+        ELECTION_EVENT_TYPE,
+        country,
+        zone,
+        type_code,
+        cli_name,
+        label,
+        seed_file="elections.csv",
+        noun="votes",
+        day_column="vote_day",
+        detail_column="office",
+        country_column="electorate",
+        time_column="polls_close",
+    )
 
 
 @dataclass(eq=False)
@@ -1245,11 +1288,24 @@ ECB_PRESIDENT_FLOW = StatementFlow(
     (("Draghi", date(2019, 10, 31)), ("Lagarde", None)),
 )
 # Germany, France and the European Union vote on Central European Time, Frankfurt's.
-US_ELECTION_FLOW = ElectionFlow(UNITED_STATES, NEW_YORK, 16, "uselect", "USE")
-UK_ELECTION_FLOW = ElectionFlow(UNITED_KINGDOM, sources.LONDON, 17, "ukelect", "UKE")
-DE_ELECTION_FLOW = ElectionFlow(GERMANY, FRANKFURT, 18, "deelect", "DEE")
-FR_ELECTION_FLOW = ElectionFlow(FRANCE, FRANKFURT, 19, "frelect", "FRE")
-EU_ELECTION_FLOW = ElectionFlow(EUROPEAN_UNION, FRANKFURT, 20, "euelect", "EUE")
+US_ELECTION_FLOW = election_flow(UNITED_STATES, NEW_YORK, 16, "uselect", "USE")
+UK_ELECTION_FLOW = election_flow(UNITED_KINGDOM, sources.LONDON, 17, "ukelect", "UKE")
+DE_ELECTION_FLOW = election_flow(GERMANY, FRANKFURT, 18, "deelect", "DEE")
+FR_ELECTION_FLOW = election_flow(FRANCE, FRANKFURT, 19, "frelect", "FRE")
+EU_ELECTION_FLOW = election_flow(EUROPEAN_UNION, FRANKFURT, 20, "euelect", "EUE")
+TARIFF_FLOW = DatedShockFlow(
+    TARIFF_EVENT_TYPE,
+    UNITED_STATES,
+    NEW_YORK,
+    21,
+    "tariff",
+    "TAR",
+    seed_file="tariffs.csv",
+    noun="tariff actions",
+    day_column="signing_day",
+    detail_column="title",
+    scheduled=False,
+)
 EVENT_FLOWS: list[EventFlow] = [
     CPI_FLOW,
     NFP_FLOW,
@@ -1271,6 +1327,7 @@ EVENT_FLOWS: list[EventFlow] = [
     DE_ELECTION_FLOW,
     FR_ELECTION_FLOW,
     EU_ELECTION_FLOW,
+    TARIFF_FLOW,
 ]
 
 

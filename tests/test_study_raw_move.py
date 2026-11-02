@@ -474,6 +474,47 @@ def test_a_vote_is_an_event_at_its_polls_close_once_they_have_closed(tmp_path: P
     assert batch.report == ["loaded 1 Germany votes, 2025-02-23 … 2025-02-23"]
 
 
+def test_a_tariff_signing_reacts_the_next_trading_day_one_event_a_day(tmp_path: Path) -> None:
+    # given a seed file with two documents signed on Saturday 2025-02-01, one on Wednesday
+    # 2025-04-02 and one not signed yet
+    seed = tmp_path / "tariffs.csv"
+    seed.write_text(
+        "signing_day,document_number,title\n"
+        "2025-02-01,2025-02406,Imposing Duties on the Northern Border\n"
+        "2025-02-01,2025-02407,Imposing Duties on the Southern Border\n"
+        "2025-04-02,2025-06063,Regulating Imports With a Reciprocal Tariff\n"
+        "2026-12-01,2026-99999,A signing still to come\n"
+    )
+
+    # when the tariff actions are loaded on 2026-11-02
+    batch = flows.TARIFF_FLOW.load(seed, datetime(2026, 11, 2, 12, 0, tzinfo=NEW_YORK))
+
+    # then the Saturday's two documents are one unscheduled event at 20:00 New York, after every
+    # close: the S&P 500 and VIX react on Monday and Thursday, bitcoin on Sunday and Thursday; the
+    # future one is not stored
+    assert [(e.event_id, e.detail) for e in batch.events] == [
+        (
+            2120250201,
+            "Imposing Duties on the Northern Border; Imposing Duties on the Southern Border",
+        ),
+        (2120250402, "Regulating Imports With a Reciprocal Tariff"),
+    ]
+    assert batch.events[0].event_ts == datetime(2025, 2, 2, 1, 0)
+    assert not batch.events[0].scheduled
+    closes = _closes(
+        (date(2025, 1, 31), 100.0),
+        (date(2025, 2, 3), 99.0),
+        (date(2025, 4, 2), 100.0),
+        (date(2025, 4, 3), 95.0),
+    )
+    for market in ("SPY / ES", "VIX"):
+        first_days = [first_reaction_day(e, MVP_PRICE_SERIES[market]) for e in batch.events]
+        assert reaction_days(closes, first_days) == {date(2025, 2, 3), date(2025, 4, 3)}
+    btc = [first_reaction_day(e, MVP_PRICE_SERIES["BTC"]) for e in batch.events]
+    assert btc == [date(2025, 2, 2), date(2025, 4, 3)]
+    assert batch.report == ["loaded 2 United States tariff actions, 2025-02-01 … 2025-04-02"]
+
+
 def test_a_vote_is_alone_unless_its_reaction_day_holds_another_release() -> None:
     # given CPI's synthetic store, jobs reports on Fridays 2022-08-05 and 2022-11-04, an ECB decision
     # on Thursday 2022-09-01, and three UK votes: two the evening before a jobs report, one on the
@@ -542,3 +583,18 @@ def test_raw_move_over_a_week(tmp_db: Path, capsys: pytest.CaptureFixture[str]) 
     assert code == 0
     assert out[0] == "over a week: the move from the close before each day to the 5th close"
     assert sum(line.split()[-1] in (MOVES, UNCLEAR, DOESNT_MOVE) for line in out[2:18]) == 16
+
+
+def test_two_times_on_one_day_are_refused(tmp_path: Path) -> None:
+    # given a seed file with two German votes on one day at different hours
+    seed = tmp_path / "elections.csv"
+    seed.write_text(
+        "electorate,vote_day,polls_close,office\n"
+        "Germany,2025-02-23,18:00,Bundestag\n"
+        "Germany,2025-02-23,20:00,Bundestag\n"
+    )
+
+    # when Germany's votes are loaded
+    # then the file is refused: one day is one event, at one time
+    with pytest.raises(ValueError, match="two times on 2025-02-23"):
+        flows.DE_ELECTION_FLOW.load(seed, datetime(2026, 11, 2, 12, 0, tzinfo=NEW_YORK))

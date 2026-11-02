@@ -133,7 +133,9 @@ column of the file, not a rule in code. `raw-move --week` adds `study.weekly_mov
 `daily_moves`, and a `--week` flag that switches between them; the scoreboard is unchanged but
 for *too few* in a cell, which none shows today. The reaction-day check is a lesser flow's: the
 election flows' days are compared with the lead flows' first reaction days on each market.
-`docs/schema.md` gets the type and the country, `docs/legacy/data/` the seed file.
+`docs/schema.md` gets the type and the country, `docs/legacy/data/` the seed file. *Amended 2026-11-03
+([tariff actions](tariffs.md)):* `ElectionFlow` became `flows.DatedShockFlow`, one class for both
+seed files; the five election flows are built by `flows.election_flow`.
 
 ## What this does not do
 

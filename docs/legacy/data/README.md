@@ -30,6 +30,7 @@ at most 25 ranked rows per call). So each table below is one of:
 | Top 50 Countries by GDP — Coverage | 50 | Representative subset (10) | [countries.md](countries.md) |
 | Markets & Trading Platforms | 132 | Representative subset | [platforms.md](platforms.md) |
 | National elections (not from Notion) | — | Full for five electorates: 87 vote days, US from 1970, UK from 1970, Germany from 1972, France from 1974, the European Parliament from 1979, each checked against its official record ([elections](../../steps/elections.md)) | `data/seed/elections.csv` |
+| Tariff actions (not from Notion) | — | Full by its rule: 103 presidential documents on 73 signing days, 2018-01-23 to 2026-10-23, each imposing, changing or ending an additional US import duty, with its Federal Register document number ([tariff actions](../../steps/tariffs.md)) | `data/seed/tariffs.csv` |
 | Platform → Top 10 Impactful Events | — | Not mirrored (mapping, derivable) | — |
 | Event → Top 10 Impacted Platforms | — | Not mirrored (mapping, derivable) | — |
 | Event-Study Calibration Dataset | worked examples | Empty fact table at M0 — see [calibration-dataset.md](../calibration-dataset.md) | — |
