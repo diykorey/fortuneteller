@@ -129,6 +129,11 @@ ISM, claims, the statements) and every market with a long history carries the sa
 direction; the Nasdaq's *moves* on seven of ten events ([more outcomes](more-outcomes.md#results))
 is probably part of it.
 
+*Amended 2026-11-02*, [own years](own-years-baseline.md#results), now the rule: the president moves
+the Euro Stoxx 50 (1.25) and Brent (1.28), no longer VIX or the Nasdaq; the chair still nothing.
+Brent's *moves* is 1.09 since 2020, where two thirds of the president's days fall: precision's
+*years inside the span* trigger fires on it. The Nasdaq now *moves* on two flows, not nine.
+
 ## What this does not do
 
 No other speakers, no press conferences, no Bank of England or other central bank, no reading of

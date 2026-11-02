@@ -43,7 +43,7 @@ this by splitting the results by era.
 | --- | --- | --- | --- |
 | Decision rule | One ratio of medians and its permutation `p`; a fixed bar (1.10, 0.01) | A confidence interval on the ratio, so the output says how large the effect could plausibly be, not only whether it passed | An instrument comes out *unclear* |
 | Coarse old yields | `^TNX` closes before 1990 are rounded to whole basis points, so many daily moves tie and the 1970–1989 UST ratio moves in coarse steps | A finer source for those years; FRED's `DGS10` is identical, so none free is known | The 1970–1989 UST era row matters to a conclusion |
-| Years inside the span | Ordinary days from the flow's first reaction day on each market ([own years](steps/own-years-baseline.md), built 2026-10-30), every year inside that span pooled | Ordinary days weighted to match each year's share of the flow's days, or a model of each day's expected volatility (e.g. GARCH) | A flow whose days bunch in its last years, with era ratios that disagree with its verdict |
+| Years inside the span | Ordinary days from the flow's first reaction day on each market ([own years](steps/own-years-baseline.md), built 2026-10-30), every year inside that span pooled | Ordinary days weighted to match each year's share of the flow's days, or a model of each day's expected volatility (e.g. GARCH) | A flow whose days bunch in its last years, with era ratios that disagree with its verdict. *Fired 2026-11-02* ([own years](steps/own-years-baseline.md#results)) on one cell, the ECB president's Brent: 1.28 overall, 1.09 since 2020, where 219 of its 332 days fall. Left for now: a lesser flow, no call; weighting when a lead flow's cell or a call fires it |
 
 ## Step 4 — the expected value and the surprise
 

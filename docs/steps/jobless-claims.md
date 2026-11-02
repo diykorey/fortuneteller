@@ -111,7 +111,10 @@ TradingView's forecast the picture is the same (the yield 0.13, p 0.002, 56% of 
 less, the yield 3% more, gold 10% more (p 0.06, unclear by the ratio alone). The eras disagree,
 without a verdict: before 2020 every market but gold moved less on lone claims days than on
 ordinary ones; since 2020 all but VIX move more, the dollar index 27% on its 223 days, the DAX 21%,
-the Euro Stoxx 50 16%.
+the Euro Stoxx 50 16%. (*Amended 2026-11-02*, [own years](own-years-baseline.md#results): against
+ordinary days from 2013 on, six markets *move* on lone claims days, the dollar index, gold, the DAX,
+the euro, the 5-year yield and the FTSE 100 (1.16–1.26), each 1.10 or more in both eras but gold;
+the Nasdaq no longer does. Seen before the rule was fixed, so not evidence for it.)
 
 **The yield leans the right way, faintly.** More claims than expected, a lower yield: the rank
 correlation is small (0.14) but on 448 days unlikely to be chance (p 0.002); the direction is right

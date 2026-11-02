@@ -8,28 +8,29 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Ordinary days from each flow's own years, spec *(PR #195)*: the raw move's ordinary days from each
-flow's first reaction day on each market, the expected outcome written first.
+Own years, step 2 *(this PR)*: the results in the step document and `mvp-results.md`, the changed
+findings amended where they stand. 60 cells changed on today's store, *moves* 52 → 54, no call;
+the Nasdaq moves on two flows instead of nine, lone claims days on six markets. Precision's new
+trigger fires on the ECB president's Brent; left noted, a lesser flow with no call.
 
 ## In progress
 
-Own years, step 1 *(PR #198)*: `measure_raw_moves` takes ordinary days from the flow's own years;
-59 cells changed verdict in eleven flows, everything but the raw move identical.
-
-Also waiting: jobless claims step 4's evening, graded in #197 (the evening run caught up by
-hand on 2026-10-30, after two failed at a wake: #196 waits for the network); the scoreboard's
-first release day on the published page (step 3); release-day job step 3, evening score step 2
-and rung 6 step 2: the first release the morning job logs, pops up and the evening grades.
+Waiting: the scoreboard's first release day on the published page (step 3); release-day job step
+3, evening score step 2 and rung 6 step 2: the first release the morning job logs, pops up and the
+evening grades. The jobs report on 2026-11-06 is the first with the euro and the 5-year yield
+called. The published page still shows the raw move from before own years until the next evening
+run rewrites it.
 
 ## Next
 
-Own years, step 2: the results here and in `mvp-results.md`, the changed findings amended in their
-step documents. Then the statements' preview (step 8's step 3).
+The statements' preview (step 8's step 3): the morning popup names a statement later today and the
+markets that move on its flow's days. Then Germany's calendar (roadmap step 9).
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-02 | Own years, step 2: results — 60 cells changed, the Nasdaq moves on two flows, lone claims days on six markets; no call changed | this PR |
 | 2026-10-30 | Own years, step 1: ordinary days from each flow's first day; 59 cells changed, *moves* 52 → 54 | PR #198 |
 | 2026-10-30 | The jobs wait three minutes for the network when caught up at a wake; two evenings lost to it | PR #196 |
 | 2026-10-29 | Ordinary days from each flow's own years, spec: chosen before the statements' preview | PR #195 |
@@ -174,9 +175,9 @@ step documents. Then the statements' preview (step 8's step 3).
 | --- | --- | --- |
 | CPI (clean baseline) | moves: UST 10Y, DXY, VIX; doesn't: S&P 500, gold | as the MVP |
 | NFP | moves: all five | unclear: UST 10Y, DXY, gold; doesn't: S&P 500, VIX. Since 2014: UST 10Y and DXY track, against the forecast and the trend alike |
-| Fed | moves: S&P 500, DXY (borderline), gold, VIX; unclear: UST 10Y | none: no free expected value |
-| Retail sales (step 4) | moves: UST 10Y, DXY | against the consensus: UST 10Y tracks; DXY doesn't |
-| Core PCE (step 4) | moves: VIX | none track: too few noticeable surprises |
+| Fed | moves: S&P 500, gold, VIX; unclear: UST 10Y, DXY (moves, borderline, until own years) | none: no free expected value |
+| Retail sales (step 4) | moves: UST 10Y; unclear: DXY (moves until own years) | against the consensus: UST 10Y tracks; DXY doesn't |
+| Core PCE (step 4) | none; VIX unclear (moves until own years) | none track: too few noticeable surprises |
 | GDP (step 4) | moves: UST 10Y, DXY | none track; DXY unclear |
 
 ## Known, not yet fixed
