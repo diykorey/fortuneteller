@@ -8,7 +8,7 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Own years, step 2 *(this PR)*: the results in the step document and `mvp-results.md`, the changed
+Own years, step 2 *(PR #199)*: the results in the step document and `mvp-results.md`, the changed
 findings amended where they stand. 60 cells changed on today's store, *moves* 52 → 54, no call;
 the Nasdaq moves on two flows instead of nine, lone claims days on six markets. Precision's new
 trigger fires on the ECB president's Brent; left noted, a lesser flow with no call.
@@ -30,7 +30,7 @@ markets that move on its flow's days. Then Germany's calendar (roadmap step 9).
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-11-02 | Own years, step 2: results — 60 cells changed, the Nasdaq moves on two flows, lone claims days on six markets; no call changed | this PR |
+| 2026-11-02 | Own years, step 2: results — 60 cells changed, the Nasdaq moves on two flows, lone claims days on six markets; no call changed | PR #199 |
 | 2026-10-30 | Own years, step 1: ordinary days from each flow's first day; 59 cells changed, *moves* 52 → 54 | PR #198 |
 | 2026-10-30 | The jobs wait three minutes for the network when caught up at a wake; two evenings lost to it | PR #196 |
 | 2026-10-29 | Ordinary days from each flow's own years, spec: chosen before the statements' preview | PR #195 |
