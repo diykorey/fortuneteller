@@ -8,9 +8,9 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Germany's calendar, step 2 *(PR #203)*: the surveys move nothing; the German flash CPI moves the
-dollar index (not since 2020) and the euro tracks its surprise, the first European surprise that
-does; walk-forward too few, no call.
+Dated shocks, part 1, spec *(PR #204)*: national elections in the US, the UK, Germany, France and
+the European Parliament as five lesser flows from a hand-written seed file; lone days judged on
+the reaction day, *too few* under ten days a cell, and a five-day ratio beside the day's.
 
 ## In progress
 
@@ -22,13 +22,14 @@ run rewrites it.
 
 ## Next
 
-Dated shocks (roadmap step 10), its spec first: elections, tariff announcements, debt-ceiling
-deadlines and summits as hand-written dates; "does it move?" and for how long.
+Elections, step 1: the seed file's 86 vote days, the five flows, `raw-move --week`; every existing
+output identical on a copy of the store. Then its results (step 2).
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-02 | Dated shocks, part 1, spec: elections as five lesser flows, *too few* under ten days | PR #204 |
 | 2026-11-02 | Germany's calendar, step 2: results — the surveys move nothing; the euro tracks the German flash CPI | PR #203 |
 | 2026-11-02 | Germany's calendar, step 1: three lesser flows stored, every existing entry identical; *missed* only for flows called live | PR #202 |
 | 2026-11-02 | Germany's calendar, spec: three lesser flows, the surveys' and the flash's signs fixed first | PR #201 |
