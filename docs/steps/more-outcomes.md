@@ -132,6 +132,10 @@ jobs report beside it, a point better.
 **The Nasdaq moves on more events than the S&P 500**: seven of ten, against the S&P 500's two,
 including retail sales, core PCE, the euro-area flash and lone claims days (1.16, p 0.009), the only
 market claims move. It follows CPI's surprise as the S&P 500 does, *unclear*, and no link opens.
+(*Amended 2026-11-02*, [own years](own-years-baseline.md#results): most of that was its ordinary
+days running from 1971. Against ordinary days from each flow's first day, the Nasdaq *moves* on two
+events, the jobs report and ISM; the S&P 500 on four, the jobs report, the Fed, ISM and the
+euro-area flash.)
 
 **London and the STOXX 600 behave as Frankfurt does**: Fed and jobs-report days move them, the STOXX
 600 ISM and core PCE days too; CPI days do not; the ECB's own decisions move neither (1.08, 1.15
@@ -140,7 +144,10 @@ market claims move. It follows CPI's surprise as the S&P 500 does, *unclear*, an
 **Brent moves on ISM days alone** (1.42), the energy ETF with it (1.28); on no other release does
 either reach the bar. **Bitcoin moves on no release**, and less than on ordinary days on most: GDP
 days 0.57, ECB days 0.79, jobs-report days 0.86. **The defence ETF moves on none**, the Fed nearest
-(1.17, p 0.05).
+(1.17, p 0.05). (*Amended 2026-11-02*, [own years](own-years-baseline.md#results): the FTSE 100
+now moves on ECB, ISM and lone claims days too, the STOXX 600 as before; the nine's *moves* stay 24
+of 90 on today's store (23 when measured), different cells. Brent also *moves* on the ECB president's
+lone days, a cell precision's *years inside the span* trigger fires on.)
 
 **Against what was written down first.** *The 5-year moves and tracks wherever the 10-year does,
 with larger ratios:* right, but for CPI and ISM, where its ratio is smaller, and it holds once more

@@ -206,7 +206,8 @@ Terms are grouped by what they are about, alphabetical within each group.
   is the COMEX *settlement*, 13:30 New York — before a 14:00 Fed decision, so gold's reaction to
   one lands on the next day's close.
 - **Ordinary day** — step 3's baseline: a trading day that is no stored event's reaction day (no
-  CPI, jobs report or Fed decision), since rung 1's sub-step 6.
+  CPI, jobs report or Fed decision), since rung 1's sub-step 6; and, since
+  [own years](steps/own-years-baseline.md), none before the flow's first reaction day on that market.
 - **Vintage / new-and-revised view** — a series' values as they stood on one release day. FRED's
   `output_type=3` returns one column per release day; payrolls need it because every jobs report
   revises the two months before.

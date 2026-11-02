@@ -80,7 +80,9 @@ and 1.25) but fall short of the bar (p 0.012 and 0.048). The likely cause is not
 falls on the month's first working day, the day of the US manufacturing survey (ISM), which is not a
 stored event; untested. (*Amended 2026-10-23*, [the ISM survey](ism-manufacturing.md#results): not
 often, 25 of 142 flash days and 17 of the 79; with ISM stored, the 62 left move 1.25 and 1.25: ISM
-explains part.)
+explains part.) (*Amended 2026-11-02*, [own years](own-years-baseline.md#results): against
+ordinary days from 2013 on, the S&P 500 still *moves* (1.55; 1.42 and 1.40 by era) and VIX falls to
+*unclear* (1.27, p 0.018); the euro, the FTSE 100, the DAX and the 5-year yield rise to *unclear*.)
 
 **Nothing follows the surprise.** The DAX comes nearest, the right way (a hotter print, a lower
 DAX, 62% of noticeable surprises), short of p < 0.01; headline gives the same picture for both

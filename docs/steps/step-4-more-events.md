@@ -161,6 +161,10 @@ Measured 2026-10-12 on Nasdaq's consensus, 2008 to today, shared days left out.
 | Core PCE | VIX | none: 19 noticeable surprises in 207 | no link ever opens | too few |
 | GDP | yield, dollar | none; the dollar unclear, 71% (21) | no link ever opens | too few |
 
+*Amended 2026-11-02*, [own years](own-years-baseline.md#results): against ordinary days from each
+flow's first day, retail sales' dollar falls to *unclear* (1.19, p 0.012) and core PCE's VIX too
+(1.17, p 0.015); retail sales moves the yield alone, core PCE none of these five. GDP's stand.
+
 **Retail sales adds one link: the yield.** A stronger-than-expected report sends the 10-year
 yield up on 67% of noticeable surprises. Replayed walk-forward, the link opened in May 2011 and was
 right on 50 of 78 calls (64%). It holds over all history; without COVID it misses the bar narrowly

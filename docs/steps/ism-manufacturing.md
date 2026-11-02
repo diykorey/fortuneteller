@@ -83,6 +83,10 @@ left out. A point of surprise moves the yield 1.3 bp and the dollar index 0.08%;
 **ISM is growth news the bond market reads.** The yield moves 47% more on ISM days and follows the
 surprise as closely as it follows the jobs report's; so does the dollar. Every market moves more on
 ISM days than on ordinary ones, the DAX by 37% (Frankfurt is open at 10:00 New York).
+(*Amended 2026-11-02*, [own years](own-years-baseline.md#results): against ordinary days from 2013
+on, twelve of sixteen markets *move*, the S&P 500, the dollar index, gold, the Euro Stoxx 50 and
+the FTSE 100 added; VIX falls to *doesn't*. The S&P 500's and the Nasdaq's are 1.04 and 1.06 since
+2020, Brent's 1.02 before.)
 
 **Walk-forward, no call.** The yield's link opens in 2014-09 and is right on 31 of 49 (63%, p 0.04),
 short of *holds*; the dollar's opens in 2019-12, 7 of 11, too few. ISM would get no call even if

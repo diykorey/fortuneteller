@@ -63,6 +63,9 @@ Measured 2026-10-22 (`raw-move --event ecb` and `--event fomc`): 115 decisions, 
 **The ECB moves the dollar, not Europe's stocks.** The dollar index moves 41% more on ECB days than
 on ordinary ones, in both eras (1.48 in 2008–2019, 1.30 since). Neither European index does; the
 DAX moves slightly less than usual. The Fed moves six of seven markets; the ECB one.
+(*Amended 2026-11-02*, [own years](own-years-baseline.md#results): against ordinary days from 2013
+on, the FTSE 100 *moves* too (1.37, 1.30 and 1.53 by era); the DAX and the Euro Stoxx 50 rise to
+*unclear* (1.17, 1.18), the dollar index stays (1.49).)
 
 **US verdicts unchanged.** With ECB days out of every market's ordinary days, no verdict of any flow
 changed; ratios moved by at most 0.01 and p in the third decimal.

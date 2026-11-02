@@ -258,6 +258,8 @@ event's reaction day; each move starts at the last close before the event.
 **What it does not say.**
 
 - **The Fed's dollar verdict is borderline** (p 0.0096 against 0.01), not a strong result.
+  (*Amended 2026-11-02*, [own years](own-years-baseline.md#results): against ordinary days from
+  the Fed's first decision in 1994 on, it is *unclear*, 1.18 at p 0.018.)
 - **Five of the 14 unscheduled Fed decisions were not rate changes:** 2007-08-10, 2007-08-17,
   2008-03-11, 2010-05-09 and 2019-10-11 were liquidity and implementation statements. They count
   as Fed days here.

@@ -84,7 +84,7 @@ decisions (1994 on, including 14 unscheduled ones). Two fixes came with them:
 | Market | CPI | Jobs report | Fed decision |
 | --- | --- | --- | --- |
 | 10-year yield | Yes (+33%) | **Yes (+67%)** | Unclear (+23%) |
-| Dollar index | Yes (+18%) | Yes (+25%) | Yes, borderline (+22%) |
+| Dollar index | Yes (+18%) | Yes (+25%) | Yes, borderline (+22%); unclear (+18%) from [own years](#own-years) |
 | VIX | Yes (+22%) | Yes (+31%) | Yes (+25%) |
 | S&P 500 | No | Yes (+19%) | Yes (+30%) |
 | Gold | No | Yes (+27%) | **Yes (+81%)** |
@@ -295,7 +295,8 @@ ten events, the S&P 500 on two, lone claims days among them. London and the STOX
 and jobs-report days as Frankfurt does, and not on the ECB's. Brent and the energy ETF move on ISM
 days only; the defence ETF on none; bitcoin on none, and less than on ordinary days. 23 of the
 nine's 90 release-day cells say *moves* where chance would give one. Four new links hold, three of
-them called live from 6 November.
+them called live from 6 November. (*Amended 2026-11-02*, [own years](#own-years): the Nasdaq now
+moves on two events, the S&P 500 on four; London on the ECB's, ISM's and lone claims days too.)
 
 ## Scheduled statements
 
@@ -308,7 +309,22 @@ and none survives the era split. The president's days start in 2013, and markets
 their past look as if they move on any recent day. The baseline that pools every year, chosen at
 step 3, has met its trigger: an exploratory look with ordinary days from 2013 on moves the Euro
 Stoxx 50 instead of the Nasdaq on the president's days, and six markets instead of one on lone
-claims days.
+claims days. (*Amended 2026-11-02*, [own years](#own-years): built as the rule, those are now the
+verdicts.)
+
+## Own years
+
+Measured 2026-11-02. Detail in [own years](steps/own-years-baseline.md#results).
+
+Each flow's days are now compared with ordinary days from its own years, not every year of a
+market's history. 60 of 192 cells changed verdict; *moves* went from 52 to 54, and no call changed.
+The Nasdaq was the tilt: it moved on nine flows, now on two, the jobs report and ISM. ISM moves
+twelve of sixteen markets. Lone claims days, where nothing moved, move six: the dollar, the euro,
+the 5-year yield, gold, the DAX and the FTSE 100. The Fed's dollar, retail sales' dollar and core
+PCE's VIX fall to *unclear*; the ECB adds the FTSE 100, and the euro-area flash keeps the S&P 500 but
+loses VIX and the Nasdaq. The expected outcome was right on the Nasdaq and the jobs report, wrong on
+how few cells the older flows would change and on the flash's S&P 500. One cell, the ECB president's
+Brent, still *moves* on days bunched since 2020 where its ratio is 1.09: precision's new trigger.
 
 ## What comes next
 
