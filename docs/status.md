@@ -8,9 +8,9 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Germany's calendar, step 1 *(PR #202)*: ZEW, Ifo and the German flash CPI stored as three lesser
-flows; every existing scoreboard entry identical on a copy of the store. The page's *missed* now
-counts only the flows `live` calls, which ISM's release today would otherwise have tripped.
+Germany's calendar, step 2 *(PR #203)*: the surveys move nothing; the German flash CPI moves the
+dollar index (not since 2020) and the euro tracks its surprise, the first European surprise that
+does; walk-forward too few, no call.
 
 ## In progress
 
@@ -22,13 +22,14 @@ run rewrites it.
 
 ## Next
 
-Germany's calendar, step 2: the three flows' verdicts against the expected outcome, here and in
-`mvp-results.md`. Then dated shocks (roadmap step 10), its spec first.
+Dated shocks (roadmap step 10), its spec first: elections, tariff announcements, debt-ceiling
+deadlines and summits as hand-written dates; "does it move?" and for how long.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-02 | Germany's calendar, step 2: results — the surveys move nothing; the euro tracks the German flash CPI | PR #203 |
 | 2026-11-02 | Germany's calendar, step 1: three lesser flows stored, every existing entry identical; *missed* only for flows called live | PR #202 |
 | 2026-11-02 | Germany's calendar, spec: three lesser flows, the surveys' and the flash's signs fixed first | PR #201 |
 | 2026-11-02 | Scheduled statements, step 3: the preview, popped up on a statement's morning | PR #200 |

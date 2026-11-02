@@ -74,7 +74,46 @@ rung 1, step 4 and walk-forward for all sixteen markets.
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~The three flows, their TradingView rows and their seed types; `load-releases` and `load-surprises` store them; the scoreboard gains three rows~~ **done** 2026-11-02; on a copy of the store, 157 ZEW, 104 Ifo and 144 flash CPI releases and their surprises stored; the scoreboard built by the code before and after from that same copy, every existing entry identical, three flows added, in 12 min beside the other build. The page's *missed* would have listed the three: it now counts only the flows `live` calls, as ISM and the euro-area flash would have shown from their next release | A test's `DE` quarter stores a ZEW, an Ifo and a flash CPI release at their Frankfurt times, with their surprises; `raw-move` and `surprise --event zew` print sixteen verdicts; every existing output identical on a copy of the store; `live` unchanged; the scoreboard rebuilt within the evening job's twenty minutes |
-| 2 | Results here and in [`mvp-results.md`](../mvp-results.md) | Every verdict of the three, against the expected outcome |
+| 2 | ~~Results here and in [`mvp-results.md`](../mvp-results.md)~~ **done** 2026-11-02, [below](#results) | Every verdict of the three, against the expected outcome |
+
+## Results
+
+Measured 2026-11-02 (`raw-move`, `surprise` and `predict` for each flow) on step 1's copy of the
+store: each flow on its lone days, against ordinary days from its own years.
+
+| | ZEW (113 days) | Ifo (97) | German flash CPI (85) |
+| --- | --- | --- | --- |
+| Moves? | none; nearest the 10-year yield 1.18 (p 0.10), the STOXX 600 1.12, the 5-year yield 1.11 | none; nearest bitcoin and the 10-year yield, 1.13 | **the dollar index, 1.35 (p 0.007)**; *unclear* the DAX, the Euro Stoxx 50 (both 1.22), the FTSE 100, the euro, gold and energy |
+| Follows the surprise? | none; VIX 0.25 (p 0.0098), no expected sign, *unclear* | none; the DAX and the STOXX 600 nearest, 0.15 (p 0.08), 55% and 57% | **the euro tracks**: 0.33, p 0.001, right on 65% of 57; the dollar index the same way, 0.25 (p 0.0101), 57%, short of the bar |
+| Walk-forward | the dollar index opens 2020-12, 4 of 7 | no link opens | the euro opens 2022-11, 12 of 19; the dollar index 2018-07, 9 of 18; too few |
+
+- **Germany's surveys move nothing.** On a lone ZEW or Ifo day every market moves as on an ordinary
+  day, and none follows the surprise the expected way: a stronger survey sends no index up.
+- **Germany's inflation moves the dollar, and its surprise the euro.** A hotter German flash than
+  forecast lifts the euro (65% of noticeable surprises). The euro-area flash, a few days later,
+  moves no market by its surprise ([euro-area inflation](euro-inflation.md#results)): by then its
+  largest member's print is known. The dollar's *moves* does not survive the era split: 1.50 in
+  2015–2019, 1.06 since 2020.
+- **Chance:** the three flows add 48 *does it move?* cells (0.5 *moves* by chance) and one *moves*;
+  48 surprise cells (0.5 by chance) and one *tracks*.
+- **No call.** None of the three is called live, and no link holds walk-forward.
+
+**Against the expected outcome:**
+
+- No market moves at the bar: right for ZEW and Ifo; **wrong** for the flash CPI's dollar index.
+- The euro and the DAX nearest on ZEW days: **wrong**, they move as on any day (0.99 and 1.02); the
+  yields and the STOXX 600 come nearest.
+- Nothing tracks: **wrong**, the euro tracks the flash CPI's surprise. The DAX nearest on Ifo: right,
+  beside the STOXX 600.
+- Ifo the fewest noticeable surprises and no link opens: **wrong**, the flash CPI has the fewest (58
+  against Ifo's 67); right that no Ifo link opens, while ZEW's dollar and the flash's euro and
+  dollar do, short of 30 calls.
+
+**What it means.** Europe does move on its own news, but on inflation, not on sentiment: the
+euro follows the German flash. It is the first European link with a surprise that tracks. With
+about five graded calls a year (19 since 2022-11), it reaches 30, enough to hold or not, around
+2029. A live call would land
+too late: the flash comes out at 14:00 Frankfurt, 30 minutes before the morning job.
 
 ## Technical details
 

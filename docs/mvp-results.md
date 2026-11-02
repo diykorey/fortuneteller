@@ -326,6 +326,18 @@ loses VIX and the Nasdaq. The expected outcome was right on the Nasdaq and the j
 how few cells the older flows would change and on the flash's S&P 500. One cell, the ECB president's
 Brent, still *moves* on days bunched since 2020 where its ratio is 1.09: precision's new trigger.
 
+## Germany's calendar
+
+Measured 2026-11-02. Detail in [Germany's calendar](steps/germany-calendar.md#results).
+
+Three German releases as lesser flows, each on its lone days: ZEW's analysts (113), Ifo's firms
+(97) and the national flash CPI (85). The two surveys move no market and no market follows their
+surprise. The flash CPI moves the dollar index (1.35), though only before 2020, and the euro tracks
+its surprise: a hotter German print than forecast lifts the euro on 65% of noticeable surprises,
+p 0.001. That is the first European surprise a market follows; the euro-area flash a few days later
+has none. Walk-forward the euro's link opens in 2022-11 and is right on 12 of 19, too few; no call.
+The expected outcome was right on the surveys and wrong on the flash.
+
 ## What comes next
 
 Chosen 2026-10-13: keep score ([rung 4](steps/rung-4-keep-score.md)), done above with the live path
