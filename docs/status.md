@@ -8,8 +8,9 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Germany's calendar, spec *(PR #201)*: ZEW, Ifo and the German flash CPI as three lesser flows
-from TradingView's `DE` calendar, their signs and the expected outcome written first.
+Germany's calendar, step 1 *(PR #202)*: ZEW, Ifo and the German flash CPI stored as three lesser
+flows; every existing scoreboard entry identical on a copy of the store. The page's *missed* now
+counts only the flows `live` calls, which ISM's release today would otherwise have tripped.
 
 ## In progress
 
@@ -21,13 +22,14 @@ run rewrites it.
 
 ## Next
 
-Germany's calendar, step 1: the three flows stored and measured on a copy of the store, every
-existing output identical. Then its results (step 2).
+Germany's calendar, step 2: the three flows' verdicts against the expected outcome, here and in
+`mvp-results.md`. Then dated shocks (roadmap step 10), its spec first.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-02 | Germany's calendar, step 1: three lesser flows stored, every existing entry identical; *missed* only for flows called live | PR #202 |
 | 2026-11-02 | Germany's calendar, spec: three lesser flows, the surveys' and the flash's signs fixed first | PR #201 |
 | 2026-11-02 | Scheduled statements, step 3: the preview, popped up on a statement's morning | PR #200 |
 | 2026-11-02 | Own years, step 2: results — 60 cells changed, the Nasdaq moves on two flows, lone claims days on six markets; no call changed | PR #199 |

@@ -61,7 +61,9 @@ rung 1, step 4 and walk-forward for all sixteen markets.
 - **No live calls.** All three land before the release-day job's 08:30 New York run, so `live`
   skips them, as it skips the euro-area flash. `predict` grades their links walk-forward.
 - **Chance, counted:** fifteen flows × sixteen markets = 240 *does it move?* cells, 2.4 *moves*
-  by chance; the surprise and walk-forward grids grow by 48 cells each.
+  by chance; the surprise and walk-forward grids grow by 48 cells each. *Amended 2026-11-02, in
+  step 1:* walk-forward only by 18, a cell for each market with an expected sign, six a flow; the
+  grids hold 176 and 66 cells.
 - **Expected outcome, written down first:** none of the three moves a market at the bar, the euro
   and the DAX the nearest on ZEW days. Nothing tracks a surprise; the DAX comes closest on Ifo
   and the euro on the flash CPI. Ifo's 97 lone days give the fewest noticeable surprises, and no
@@ -71,7 +73,7 @@ rung 1, step 4 and walk-forward for all sixteen markets.
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | The three flows, their TradingView rows and their seed types; `load-releases` and `load-surprises` store them; the scoreboard gains three rows | A test's `DE` quarter stores a ZEW, an Ifo and a flash CPI release at their Frankfurt times, with their surprises; `raw-move` and `surprise --event zew` print sixteen verdicts; every existing output identical on a copy of the store; `live` unchanged; the scoreboard rebuilt within the evening job's twenty minutes |
+| 1 | ~~The three flows, their TradingView rows and their seed types; `load-releases` and `load-surprises` store them; the scoreboard gains three rows~~ **done** 2026-11-02; on a copy of the store, 157 ZEW, 104 Ifo and 144 flash CPI releases and their surprises stored; the scoreboard built by the code before and after from that same copy, every existing entry identical, three flows added, in 12 min beside the other build. The page's *missed* would have listed the three: it now counts only the flows `live` calls, as ISM and the euro-area flash would have shown from their next release | A test's `DE` quarter stores a ZEW, an Ifo and a flash CPI release at their Frankfurt times, with their surprises; `raw-move` and `surprise --event zew` print sixteen verdicts; every existing output identical on a copy of the store; `live` unchanged; the scoreboard rebuilt within the evening job's twenty minutes |
 | 2 | Results here and in [`mvp-results.md`](../mvp-results.md) | Every verdict of the three, against the expected outcome |
 
 ## Technical details

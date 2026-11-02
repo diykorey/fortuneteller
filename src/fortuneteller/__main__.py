@@ -712,11 +712,9 @@ def _live(_args: argparse.Namespace) -> int:
         return 1
     released, failed = [], False
     for flow in flows.EVENT_FLOWS:
-        if flow.surprise_rule is None:
+        if not flows.called_live(flow) or flow.surprise_rule is None:
             continue
         measure = flow.surprise_rule.combinations[0][0]
-        if measure not in expectations.CONSENSUS_ROWS:
-            continue
         try:
             upcoming = expectations.next_consensus(measure, today, settings.cache_dir)
         except sources.CalendarError as exc:
