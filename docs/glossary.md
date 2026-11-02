@@ -94,6 +94,11 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **National election** — a country's vote for its president or parliament, here a dated shock with
   no forecast: its result lands when the polls close, and the market's reaction is the next
   trading day ([elections](steps/elections.md)).
+- **Tariff action** — a presidential document that imposes, raises, lowers, suspends or ends an
+  additional US import duty, dated by its signing; a dated shock with no forecast
+  ([tariff actions](steps/tariffs.md)). Under **Section 232** (national security), **Section 301**
+  (unfair trade practices), **Section 201** (safeguards against a surge of imports) or **IEEPA**
+  (the International Emergency Economic Powers Act).
 - **Too few** (raw move) — a cell with fewer than ten event days, given no verdict.
 - **PMI** (Purchasing Managers' Index) — a survey-based activity gauge where above 50 means
   expansion, below 50 contraction.
@@ -353,6 +358,8 @@ Terms are grouped by what they are about, alphabetical within each group.
   energy). Its first-release history on FRED starts in 1997.
 - **Economic calendar** — a commercial listing of upcoming releases with forecasts. The usual source
   of **consensus**, and rarely free for long histories.
+- **Federal Register** — the US government's daily journal of rules and presidential documents,
+  with a free API; the source of the tariff actions' signing days and document numbers.
 - **FRED** (Federal Reserve Economic Data) — the St. Louis Fed's free database and API of economic
   series, including CPI. Free, keyed, reliable; carries actuals but not market expectations.
 - **FRED new-and-revised view** (`output_type=3`) — one column per release day, holding the month

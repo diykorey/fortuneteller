@@ -8,8 +8,8 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Elections, step 2 *(PR #206)*: results — a US vote moves the S&P 500 and the Nasdaq for a day,
-France's rounds move VIX, nothing over a week; the UK and the European Parliament *too few*.
+Dated shocks, part 2, spec *(PR #207)*: tariff actions as one lesser flow, the president's
+signed documents from the Federal Register since 2018, each reacting the next trading day.
 
 ## In progress
 
@@ -21,13 +21,14 @@ run rewrites it.
 
 ## Next
 
-Dated shocks, part 2: tariff announcements, its spec first; which announcements count is
-chosen before any move is measured.
+Tariff actions, step 1: the seed file with each counted document, one seed-file flow class for
+elections and tariffs; every existing output identical on a copy of the store. Then its results.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-02 | Dated shocks, part 2, spec: tariff actions from the Federal Register, signings since 2018 | PR #207 |
 | 2026-11-02 | Elections, step 2: results — the US moves its stocks for a day, France VIX; nothing over a week | PR #206 |
 | 2026-11-02 | Elections, step 1: five lesser flows from a hand-written seed file, *too few* under ten days, `raw-move --week`; every existing entry identical | PR #205 |
 | 2026-11-02 | Dated shocks, part 1, spec: elections as five lesser flows, *too few* under ten days | PR #204 |
