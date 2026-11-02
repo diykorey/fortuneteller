@@ -87,7 +87,7 @@ over the week, as elections did.
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~The seed file with each counted document and its number, the flow stored, the misses named~~ **done** | A test's seed rows store a Saturday signing with a Monday reaction and two documents on one day as one event; every row's number is the Federal Register's for that title; every existing output identical on a copy of the store; the days left out as shared named |
-| 2 | Results here and in [`mvp-results.md`](../mvp-results.md) | The flow's verdicts on the day and over a week, by era, against the expected outcome |
+| 2 | ~~Results here and in [`mvp-results.md`](../mvp-results.md)~~ **done** | The flow's verdicts on the day and over a week, by era, against the expected outcome |
 
 *Step 1, 2026-11-03:* 103 documents on 73 signing days, 2018-01-23 to 2026-10-23, each number the
 Federal Register's for its title as its API listed them on 2026-11-02. On a copy of the store
@@ -102,6 +102,57 @@ with two releases or three, so the counts add to more than 29. By signing day:
 2026-06-01, 2026-07-15, 2026-07-31, 2026-08-06 and 2026-08-13. Among them the first steel and
 aluminium proclamations (a jobs report the next day), the first IEEPA duties (ISM's Monday) and
 the 2025-04-09 pause (CPI's Thursday).
+
+## Results
+
+Measured 2026-11-03 (`raw-move --event tariff`, with and without `--week`) on step 1's copy of
+the store: 44 lone reaction days on most markets (on the day 45 on the DAX and bitcoin, 38 on the
+euro; over a week 43 on three European indices),
+against ordinary days since 2018.
+
+| | On the day | Over a week |
+| --- | --- | --- |
+| **Moves** | **the DAX, 1.64 (p 0.004); the Euro Stoxx 50, 1.62 (p 0.004)** | **the DAX, 1.58 (p 0.002); the STOXX 600, 1.52 (p 0.003)** |
+| *Unclear* | the STOXX 600 1.42 (p 0.02), gold 1.36, VIX 1.35 (p 0.05), the FTSE 100 1.29, bitcoin 1.12 | the FTSE 100 1.45 (p 0.01), the Euro Stoxx 50 1.42 (p 0.02), gold 1.17, the dollar 1.16 |
+| Doesn't | the S&P 500 0.92, the Nasdaq 1.02, both yields (0.77, 0.71), the dollar 0.76, the euro, Brent, defence, energy | the S&P 500 0.94, the Nasdaq, both yields, VIX 1.05, the euro, Brent, defence, energy, bitcoin |
+
+- **On the next close only Europe's stocks clear the bar.** The DAX and the Euro Stoxx 50 move
+  about 1.6 times an ordinary day. The STOXX 600 (1.42) and the FTSE 100 (1.29) are *unclear*. The
+  S&P 500, the Nasdaq, the yields and the dollar move as on an ordinary day.
+- **Over the week the DAX is the one index to clear it on the day and over the week:** 1.58 over five closes, with the STOXX
+  600 at 1.52. The Euro Stoxx 50 drops to *unclear* (1.42), and the dollar rises to *unclear*
+  (1.16).
+- **By era:** 2018–2019 has 5 days on every market, too few to compare with since 2020, when the
+  DAX is 1.52, the Euro Stoxx 50 1.56, VIX 1.38 and the S&P 500 0.85.
+- **A check, not a verdict: the signing day.** Europe's markets close by 11:30 New York. A
+  signing or an announcement during New York's afternoon lands in New York's close that day but
+  in Europe's next close, the one measured here. On the signing day itself, measured by a one-off script with
+  rung 1's comparison (each market's moves on the signing days that are trading days and hold no
+  lead release, 44 on the S&P 500 and 41 on the DAX, against ordinary days that are neither
+  signing nor reaction days), the S&P 500 moves 1.22 (p 0.17, *unclear*) and the DAX 1.08. So part of what Europe shows may be news New York
+  took the afternoon before; the measure cannot tell. That Europe's goods were the target of many
+  of these duties is a guess, not tested.
+- **Chance:** expected by chance, 0.16 *moves* of 16 cells; found, 2. Over a week the same: 2.
+  The two are close to one finding, not two: the DAX, the Euro Stoxx 50 and the STOXX 600 hold
+  many of the same companies. The week's p values are optimistic, since its windows overlap
+  ([precision](../precision.md)).
+- **No call.** A signing has no surprise and no sign.
+
+**Against the expected outcome:**
+
+- Routine proclamations dilute the rest: **not tested**; nothing here splits routine signings
+  from broad ones.
+- No market moves at the bar on the day: **wrong**, the DAX and the Euro Stoxx 50 move.
+- 2020–now well above the earlier years on the S&P 500 and VIX: **not tested**, the earlier years
+  have 5 days; since 2020 the S&P 500 is below an ordinary day (0.85) and VIX above (1.38).
+- Over a week nothing reaches the bar: **wrong**, the DAX and the STOXX 600 move, both at p values the
+  overlapping windows make optimistic.
+
+**What it means.** On the next close after a president signs a tariff, Europe's main indices move
+more than on an ordinary day and the S&P 500 does not. Whether that is Europe reacting to the
+duty or catching up with New York's afternoon, this daily measure cannot separate. Two of New
+York's largest tariff days, the 2025-04-09 pause and the first IEEPA duties, share their
+reaction day with CPI and ISM and are not counted; 2025-04-02, the reciprocal rates, is.
 
 ## Technical details
 
