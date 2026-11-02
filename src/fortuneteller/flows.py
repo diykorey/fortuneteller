@@ -20,6 +20,7 @@ import duckdb
 from . import db, sources
 from .config import settings
 from .expectations import (
+    CONSENSUS_ROWS,
     EXPECTATION_SOURCES,
     MonthlyChange,
     first_published_payroll_changes,
@@ -50,6 +51,8 @@ PCE_EVENT_TYPE = "PCE inflation"
 GDP_EVENT_TYPE = "GDP growth"
 MANUFACTURING_EVENT_TYPE = "Manufacturing survey"
 CLAIMS_EVENT_TYPE = "Jobless claims"
+INVESTOR_SURVEY_EVENT_TYPE = "Investor sentiment survey"
+BUSINESS_SURVEY_EVENT_TYPE = "Business climate survey"
 UNITED_STATES = "United States"
 # CPI, the jobs report, retail sales, PCE and GDP all come out at 08:30 New York time.
 RELEASE_TIME = time(8, 30)
@@ -597,6 +600,39 @@ CLAIMS_SURPRISE_RULE = SurpriseRule(
     logged_since=date(2026, 10, 29),
 )
 
+# A stronger German survey: Europe's stocks up and the euro up, so the dollar index down; a hotter
+# German flash, the euro-area flash's signs (docs/steps/germany-calendar.md).
+GERMAN_SURVEY_EXPECTED_SIGN = with_more_outcomes(
+    {
+        "SPY / ES": 0,
+        "UST10Y / ZN": 0,
+        "DXY": -1,
+        "GC / XAU": 0,
+        "VIX": 0,
+        "DAX": 1,
+        "SX5E": 1,
+    }
+)
+
+
+def _german_rule(
+    measure: str, expected_sign: Mapping[str, int], noticeable: float, step: str
+) -> SurpriseRule:
+    """TradingView's forecast gives the verdict; noticeable from two thirds of its median miss."""
+    return SurpriseRule(
+        ((measure, TRADINGVIEW_FORECAST),),
+        expected_sign,
+        noticeable,
+        step,
+        alone=True,
+        predicted_from=TRADINGVIEW_FORECAST,
+    )
+
+
+ZEW_SURPRISE_RULE = _german_rule(sources.DE_ZEW, GERMAN_SURVEY_EXPECTED_SIGN, 3.5, "3.5 points")
+IFO_SURPRISE_RULE = _german_rule(sources.DE_IFO, GERMAN_SURVEY_EXPECTED_SIGN, 0.5, "0.5 points")
+DE_CPI_SURPRISE_RULE = _german_rule(sources.DE_CPI, EURO_EXPECTED_SIGN, 0.1, "0.1pp")
+
 
 # The flows.
 
@@ -732,6 +768,7 @@ class FedFlow:
 
 # The ECB's decisions (docs/steps/ecb-decisions.md): TradingView lists them from 2013-04-04.
 EURO_AREA = "Euro area"
+GERMANY = "Germany"
 ECB_FROM = date(2013, 4, 1)
 TRADINGVIEW_CALENDAR = "tradingview_calendar"
 
@@ -1039,6 +1076,45 @@ CLAIMS_FLOW = TradingViewFlow(
     surprise_rule=CLAIMS_SURPRISE_RULE,
     lesser=True,
 )
+ZEW_FLOW = TradingViewFlow(
+    INVESTOR_SURVEY_EVENT_TYPE,
+    GERMANY,
+    FRANKFURT,
+    13,
+    "zew",
+    "ZEW",
+    (sources.DE_ZEW,),
+    POINTS,
+    "ZEW surveys",
+    surprise_rule=ZEW_SURPRISE_RULE,
+    lesser=True,
+)
+IFO_FLOW = TradingViewFlow(
+    BUSINESS_SURVEY_EVENT_TYPE,
+    GERMANY,
+    FRANKFURT,
+    14,
+    "ifo",
+    "IFO",
+    (sources.DE_IFO,),
+    POINTS,
+    "Ifo surveys",
+    surprise_rule=IFO_SURPRISE_RULE,
+    lesser=True,
+)
+DE_CPI_FLOW = TradingViewFlow(
+    CPI_EVENT_TYPE,
+    GERMANY,
+    FRANKFURT,
+    15,
+    "decpi",
+    "DCP",
+    (sources.DE_CPI,),
+    PERCENT,
+    "German flash CPI estimates",
+    surprise_rule=DE_CPI_SURPRISE_RULE,
+    lesser=True,
+)
 RETAIL_FLOW = LevelFlow(
     RETAIL_EVENT_TYPE,
     4,
@@ -1108,7 +1184,18 @@ EVENT_FLOWS: list[EventFlow] = [
     CLAIMS_FLOW,
     FED_CHAIR_FLOW,
     ECB_PRESIDENT_FLOW,
+    ZEW_FLOW,
+    IFO_FLOW,
+    DE_CPI_FLOW,
 ]
+
+
+def called_live(flow: EventFlow) -> bool:
+    """Whether `live` calls the flow: its verdict's measure has a consensus row the morning job asks
+    for before it lands. The others (released before 08:30 New York, or after) are graded
+    walk-forward only, and no row of theirs is expected in the log."""
+    rule = flow.surprise_rule
+    return rule is not None and rule.combinations[0][0] in CONSENSUS_ROWS
 
 
 def check_flows(event_flows: Sequence[EventFlow]) -> None:

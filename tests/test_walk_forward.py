@@ -967,6 +967,27 @@ def _row(
     )
 
 
+def test_a_release_live_does_not_call_is_never_missed(tmp_db: Path) -> None:
+    # given a CPI release after the log began, and an ISM and a ZEW survey after it too, landing
+    # after and before the morning job's run; none of them logged
+    con = db.get_connection()
+    _live_release(con, date(2026, 11, 12))
+    cpi = flows.stored_events(flows.CPI_FLOW, con=con)[-1]
+    for flow, day in ((flows.ISM_FLOW, date(2026, 11, 2)), (flows.ZEW_FLOW, date(2026, 11, 17))):
+        update = {
+            "event_id": flows.event_id(flow, day),
+            "event_type": flow.event_type,
+            "country": flow.country,
+        }
+        flows.store_events([cpi.model_copy(update=update)], con=con)
+
+    # when the log is checked for missed releases
+    missed = study.missed_releases([], con=con)
+
+    # then only CPI, which `live` calls, is missed
+    assert missed == ["cpi 2026-11-12"]
+
+
 def test_score_grades_the_calls_in_time_and_lists_the_void_missed_and_pending(
     tmp_db: Path, capsys: pytest.CaptureFixture[str]
 ) -> None:

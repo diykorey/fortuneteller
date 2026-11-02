@@ -81,7 +81,8 @@ the replay's shared days on all 355 of the three flows' release days, Nasdaq on 
   log does not hold: it is reckoned as the replay's, from the noticeable releases before the call.
 - **Pending, not void:** a row whose release, surprise or move is not loaded yet waits.
 - **Missed:** a release of a flow with an expected value, stored and on or after 2026-10-13 (the day
-  logging began), with no row.
+  logging began), with no row. *Amended 2026-11-02* ([Germany's calendar](germany-calendar.md)):
+  only a flow `live` calls; one released before 08:30 New York or after has no row to miss.
 - **Against the replay:** each link's live record beside its replayed record over every stored
   release, the live ones included once loaded; a measurement only.
 

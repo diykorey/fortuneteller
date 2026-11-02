@@ -304,6 +304,11 @@ EURO_HEADLINE = "euro_headline"
 # The US manufacturing survey's index (docs/steps/ism-manufacturing.md), in index points.
 ISM_PMI = "ism_pmi"
 INITIAL_CLAIMS = "initial_claims"
+# Germany's calendar (docs/steps/germany-calendar.md): the two surveys in index points, the flash
+# CPI year on year in percent.
+DE_ZEW = "de_zew"
+DE_IFO = "de_ifo"
+DE_CPI = "de_cpi"
 NOWCAST = "nowcast"
 ACTUAL = "actual"
 # The chart series step 4 reads, by name in the file; the PCE series are left out.
@@ -713,11 +718,18 @@ class TradingViewRow:
 EURO_FLASH_FROM = date(2014, 10, 1)
 ISM_FROM = date(2013, 4, 1)
 CLAIMS_FROM = date(2013, 1, 1)
+# Checked 2026-11-02: ZEW from 2013-10-15, Ifo from 2018-02-22, the German flash CPI from 2014-11-27.
+ZEW_FROM = date(2013, 10, 1)
+IFO_FROM = date(2018, 1, 1)
+DE_CPI_FROM = date(2014, 10, 1)
 TRADINGVIEW_ROWS = {
     EURO_CORE: TradingViewRow("EU", "Core Inflation Rate YoY Flash", EURO_FLASH_FROM, FRANKFURT),
     EURO_HEADLINE: TradingViewRow("EU", "Inflation Rate YoY Flash", EURO_FLASH_FROM, FRANKFURT),
     ISM_PMI: TradingViewRow("US", "ISM Manufacturing PMI", ISM_FROM, NEW_YORK),
     INITIAL_CLAIMS: TradingViewRow("US", "Initial Jobless Claims", CLAIMS_FROM, NEW_YORK, True),
+    DE_ZEW: TradingViewRow("DE", "ZEW Economic Sentiment Index", ZEW_FROM, FRANKFURT),
+    DE_IFO: TradingViewRow("DE", "Ifo Business Climate", IFO_FROM, FRANKFURT),
+    DE_CPI: TradingViewRow("DE", "Inflation Rate YoY Prel", DE_CPI_FROM, FRANKFURT),
 }
 
 

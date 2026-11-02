@@ -292,6 +292,18 @@ def test_load_releases_prints_count_range_and_skipped_months(
                 213.0,
             )
         ],
+        **{
+            measure: [
+                sources.TradingViewRelease(
+                    measure, datetime(2025, 2, day, hour, 0, tzinfo=UTC), date(2025, 1, 1), 1.0, 0.5
+                )
+            ]
+            for measure, day, hour in (
+                (sources.DE_ZEW, 18, 10),
+                (sources.DE_IFO, 24, 9),
+                (sources.DE_CPI, 14, 13),
+            )
+        },
     }
     monkeypatch.setattr(
         sources,
@@ -335,8 +347,11 @@ def test_load_releases_prints_count_range_and_skipped_months(
     report += "loaded 1 jobless claims reports, 2025-02-06 … 2025-02-06\n"
     report += "loaded 1 Fed chair statements, 2025-02-07 … 2025-02-07\n"
     report += "loaded 1 ECB president statements, 2025-02-10 … 2025-02-10\n"
+    report += "loaded 1 ZEW surveys, 2025-02-18 … 2025-02-18\n"
+    report += "loaded 1 Ifo surveys, 2025-02-24 … 2025-02-24\n"
+    report += "loaded 1 German flash CPI estimates, 2025-02-14 … 2025-02-14\n"
     assert capsys.readouterr().out == report * 2
-    assert db.count_rows("event_instances", con=db.get_connection()) == 24
+    assert db.count_rows("event_instances", con=db.get_connection()) == 27
 
 
 def test_load_releases_stores_nothing_when_any_flow_fails(

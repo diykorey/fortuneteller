@@ -32,7 +32,14 @@ import duckdb
 
 from . import db, expectations, sources, stats
 from .models import DailyBar, EventInstance, Observation
-from .flows import EVENT_FLOWS, RELEASE_TIME, EventFlow, release_date, stored_events
+from .flows import (
+    EVENT_FLOWS,
+    RELEASE_TIME,
+    EventFlow,
+    called_live,
+    release_date,
+    stored_events,
+)
 from .sources import (
     FRANKFURT,
     LONDON,
@@ -1129,13 +1136,13 @@ def score_calls(
 def missed_releases(
     rows: Sequence[LoggedCall], con: duckdb.DuckDBPyConnection | None = None
 ) -> list[str]:
-    """Each stored release of a flow with an expected value, from its rule's ``logged_since``, that
-    has no row in the log, oldest first."""
+    """Each stored release of a flow `live` calls, from its rule's ``logged_since``, that has no row
+    in the log, oldest first."""
     logged = {(r.flow, r.day) for r in rows}
     missed = [
         (day, flow.cli_name)
         for flow in EVENT_FLOWS
-        if (rule := flow.surprise_rule) is not None
+        if called_live(flow) and (rule := flow.surprise_rule) is not None
         for event in stored_events(flow, con=con)
         if (day := release_date(event)) >= rule.logged_since and (flow.cli_name, day) not in logged
     ]

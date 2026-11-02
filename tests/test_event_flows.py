@@ -767,6 +767,58 @@ def test_an_ism_release_is_stored_at_its_new_york_time_with_its_surprise(
     assert expectations.Trend12m().expectations(stored, actuals, "unused") == []
 
 
+@pytest.mark.parametrize(
+    ("flow", "when", "at", "actual", "forecast", "event_id", "unit"),
+    [
+        (flows.ZEW_FLOW, "2025-02-18T10:00:00.000Z", time(11, 0), 26.0, 20.0, 1320250218, "points"),
+        (flows.IFO_FLOW, "2025-02-24T09:00:00.000Z", time(10, 0), 85.2, 85.8, 1420250224, "points"),
+        (
+            flows.DE_CPI_FLOW,
+            "2025-02-14T13:00:00.000Z",
+            time(14, 0),
+            2.3,
+            2.2,
+            1520250214,
+            "percent",
+        ),
+    ],
+    ids=["zew", "ifo", "decpi"],
+)
+def test_a_german_release_is_stored_at_its_frankfurt_time_with_its_surprise(
+    tmp_db: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    flow: flows.TradingViewFlow,
+    when: str,
+    at: time,
+    actual: float,
+    forecast: float,
+    event_id: int,
+    unit: str,
+) -> None:
+    # given a quarter of the German calendar with the flow's release, a row of its name on the
+    # euro-area calendar and its next release not yet out
+    title = sources.TRADINGVIEW_ROWS[flow.measures[0]].title
+    rows = [
+        _flash_row(title, when, actual, forecast, country="DE"),
+        _flash_row(title, when, actual + 5, forecast, country="EU"),
+        _flash_row(title, "2025-03-20T10:00:00.000Z", None, forecast, country="DE"),
+    ]
+    _tradingview_quarter(monkeypatch, tmp_path, "DE", rows)
+
+    # when the flow's events are stored and its actual paired with TradingView's forecast
+    stored, actuals, rows_out = _stored_with_surprises(flow)
+
+    # then the one release is a German event at its Frankfurt time, a lesser one, with its surprise
+    assert flow.lesser
+    assert [(e.event_id, e.country, e.detail) for e in stored] == [(event_id, "Germany", "2025-01")]
+    assert stored[0].event_ts.replace(tzinfo=UTC).astimezone(sources.FRANKFURT).time() == at
+    assert [(a.value, a.unit) for a in actuals] == [(actual, unit)]
+    assert [(r.measure, r.baseline, round(r.surprise, 2)) for r in rows_out] == [
+        (flow.measures[0], expectations.TRADINGVIEW_FORECAST, round(actual - forecast, 2))
+    ]
+
+
 def test_a_claims_report_is_stored_on_its_thursday_with_its_week_and_surprise(
     tmp_db: Path, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
