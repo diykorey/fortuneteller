@@ -36,7 +36,17 @@ report() {
 exec 4>"$job_tree.lock"
 flock 4 || report "flock $job_tree.lock"
 
-git -C "$main_checkout" fetch -q origin || report "git fetch"
+# A run the timer catches up as the laptop wakes can start before the network is back (#190, and a
+# 2026-10-30 run that could not even open its issue), so the fetch is tried for three minutes.
+fetched=
+for _ in $(seq 12); do
+    if git -C "$main_checkout" fetch -q origin; then
+        fetched=1
+        break
+    fi
+    sleep 15
+done
+[ -n "$fetched" ] || report "git fetch"
 if [ ! -d "$job_tree" ]; then
     git -C "$main_checkout" worktree add -q --detach "$job_tree" origin/main ||
         report "git worktree add"
