@@ -99,6 +99,10 @@ Terms are grouped by what they are about, alphabetical within each group.
   ([tariff actions](steps/tariffs.md)). Under **Section 232** (national security), **Section 301**
   (unfair trade practices), **Section 201** (safeguards against a surge of imports) or **IEEPA**
   (the International Emergency Economic Powers Act).
+- **Debt limit** (debt ceiling) — the most the US Treasury may borrow, set by law; when it is
+  reached Treasury uses **extraordinary measures** (accounting steps that free room under the
+  limit) until Congress raises or suspends it, or until the **X-date**, the day Treasury expects
+  to run out of cash ([the debt limit](steps/debt-limit.md)).
 - **Too few** (raw move) — a cell with fewer than ten event days, given no verdict.
 - **PMI** (Purchasing Managers' Index) — a survey-based activity gauge where above 50 means
   expansion, below 50 contraction.

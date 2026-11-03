@@ -8,8 +8,8 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Tariff actions, step 2 *(PR #209)*: results — a signing moves Europe's stocks, on the next
-close and over the week; no US market moves.
+Dated shocks, part 3, spec *(PR #210)*: the debt limit, each law that changed it since 1970 as
+one lesser flow, dated by the day Congress cleared it.
 
 ## In progress
 
@@ -21,13 +21,14 @@ run rewrites it.
 
 ## Next
 
-Dated shocks, part 3: debt-ceiling deadlines, its spec first; which deadlines count and what
-day each is dated by, chosen before any move is measured.
+The debt limit, step 1: the seed file with 75 laws, the flow stored, each market's lone days
+counted; every existing output identical on a copy of the store. Then its results.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-03 | Dated shocks, part 3, spec: the debt limit, dated by Congress's final vote | PR #210 |
 | 2026-11-03 | Tariff actions, step 2: results — Europe's stocks move on a signing, New York's do not | PR #209 |
 | 2026-11-03 | Tariff actions, step 1: 73 signing days stored as one lesser flow, every existing entry identical | PR #208 |
 | 2026-11-02 | Dated shocks, part 2, spec: tariff actions from the Federal Register, signings since 2018 | PR #207 |
