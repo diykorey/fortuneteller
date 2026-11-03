@@ -494,6 +494,64 @@ def parse_fomc_calendar(payload: bytes) -> list[FomcDecision]:
     return [FomcDecision(day, scheduled) for day, scheduled in sorted(decisions.items())]
 
 
+# The Fed statement's tone (docs/steps/fed-statement-tone.md): a link whose whole text is
+# "Statement" on a year page, the HTML link after "Statement:" on the calendar.
+FED_SITE = "https://www.federalreserve.gov"
+STATEMENT_ONLY_LINK = re.compile(r'href="([^"]*?(\d{8})[^"]*)"[^>]*>\s*Statement\s*<')
+CALENDAR_STATEMENT_LINK = re.compile(
+    r'Statement:.*?href="([^"]*pressreleases/monetary(\d{8})a\.htm)"', re.S
+)
+STATEMENT_STARTS = re.compile(r"(for immediate release|for release at)\b", re.I)
+STATEMENT_ENDS = re.compile(
+    r"voting for|voting against|for media inquiries|last update|\d{4} monetary policy$|home$", re.I
+)
+
+
+def parse_fomc_statement_links(payload: bytes) -> dict[date, str]:
+    """Each decision's statement address on one of the Fed's year pages or its calendar, by the
+    statement's date; refused if a date has two."""
+    html = payload.decode("utf-8", errors="replace")
+    if "row fomc-meeting" in html:
+        units = re.split(r'class="(?:fomc-meeting--shaded )?row fomc-meeting"', html)[1:]
+        pattern = CALENDAR_STATEMENT_LINK
+    else:
+        units = [block.split("</h5>", 1)[-1] for block in re.split(r"<h5[^>]*>", html)[1:]]
+        pattern = STATEMENT_ONLY_LINK
+    found: dict[date, set[str]] = {}
+    for unit in units:
+        for match in pattern.finditer(unit):
+            found.setdefault(_day(match[2]), set()).add(urllib.parse.urljoin(FED_SITE, match[1]))
+    if twice := sorted(day for day, urls in found.items() if len(urls) > 1):
+        raise FedError(f"two statements on {', '.join(str(day) for day in twice)}")
+    return {day: urls.pop() for day, urls in sorted(found.items())}
+
+
+def statement_text(payload: bytes) -> str:
+    """A statement page's body, one line per paragraph: after "For immediate release" or "For
+    release at …" (and a "Share" line), up to the vote, the media line, the old pages' footer or
+    "Last update"."""
+    page = payload.decode("utf-8", errors="replace")
+    page = re.sub(r"(?is)<(script|style)\b[^>]*>.*?</\1>|<!--.*?-->", " ", page)
+    text = html.unescape(re.sub(r"<[^>]+>", "\n", page))
+    lines = [" ".join(line.split()) for line in text.splitlines()]
+    lines = [line for line in lines if line]
+    start = next((i for i, line in enumerate(lines) if STATEMENT_STARTS.match(line)), None)
+    if start is None:
+        raise FedError("a statement page has no release line")
+    body = lines[start + 1 :]
+    if body and body[0].lower() == "share":
+        body = body[1:]
+    end = next((i for i, line in enumerate(body) if STATEMENT_ENDS.match(line)), None)
+    if end is None:
+        raise FedError("a statement page has no end")
+    return "\n".join(body[:end])
+
+
+def fetch_statement(day: date, url: str, cache_dir: Path) -> bytes:
+    """The statement of ``day``, kept under ``cache_dir/fed`` once fetched: it never changes."""
+    return _cached(cache_dir / "fed" / f"{day}.html", True, lambda: fetch_fed_page(url))
+
+
 def fetch_series(api_key: str, series_id: str, timeout: float = 30.0) -> bytes:
     """Return the raw FRED response: a series' observations as they stand today."""
     return _fred_get(api_key, {"series_id": series_id}, timeout)

@@ -412,6 +412,18 @@ does not rule out a few large post days; no *moves* is not no effect. **By the r
 step 11 closes with no:** the president's topic-matched text posts give no US market a *moves* on
 the day. That measures those posts, not news in general. No call.
 
+## The Fed statement's tone
+
+Measured 2026-11-03. Detail in [the Fed statement's tone](steps/fed-statement-tone.md#results).
+
+Each Fed statement since 2000 was scored with a published hawkish/dovish word list (Apel and Blix
+Grimaldi, 2012): adjective–noun phrases such as "higher inflation" or "slower growth". The list
+finds a phrase in 19 of the 226 statements. The Fed writes the noun first ("inflation remains
+elevated") or with words the list does not have ("subdued inflation", "economic growth"). So no
+signed link reaches the 40 holds the test needs; each has one. **By the rule written first, the
+step stops before any move is read:** the Fed flow gets no surprise, and the question is
+untested, not answered no. No call.
+
 ## What comes next
 
 Chosen 2026-10-13: keep score ([rung 4](steps/rung-4-keep-score.md)), done above with the live path

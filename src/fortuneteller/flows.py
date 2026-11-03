@@ -33,6 +33,7 @@ from .expectations import (
     TREND_12M,
     Actual,
     build_surprises,
+    statement_tone,
     event_month,
     previous_month,
 )
@@ -241,16 +242,22 @@ def unmatched_target_changes(
     ]
 
 
+def target_rates(api_key: str) -> list[tuple[date, float]]:
+    """The Fed's target rate by day from FRED: the rate, then the range's top from 2008-12-16."""
+    rates = []
+    for series_id, start, end in TARGET_RATE_SERIES:
+        series = sources.parse_series(sources.fetch_series(api_key, series_id))
+        rates += [(day, value) for day, value in series if start <= day <= end]
+    return rates
+
+
 def load_fomc_decisions(api_key: str) -> list[sources.FomcDecision]:
     """Every Fed decision since 1994, refused if a target-rate change has no decision."""
     pages = [sources.fetch_fed_page(sources.fed_history_url(year)) for year in FED_HISTORY_YEARS]
     calendar = sources.fetch_fed_page(sources.FED_CALENDAR_URL)
     decisions = [d for page in pages for d in sources.parse_fomc_history(page)]
     decisions += sources.parse_fomc_calendar(calendar)
-    rates = []
-    for series_id, start, end in TARGET_RATE_SERIES:
-        series = sources.parse_series(sources.fetch_series(api_key, series_id))
-        rates += [(day, value) for day, value in series if start <= day <= end]
+    rates = target_rates(api_key)
     if unmatched := unmatched_target_changes(decisions, rates):
         days = ", ".join(str(day) for day in unmatched)
         raise ValueError(f"the target rate changed with no Fed decision on {days}")
@@ -1463,3 +1470,72 @@ def load_surprises(api_key: str, con: duckdb.DuckDBPyConnection | None = None) -
     rows = build_surprises(events, actuals, expected, with_surprise)
     db.replace_rows("surprises", rows, "TRUE", con=con)
     return rows
+
+
+# The Fed statement's tone (docs/steps/fed-statement-tone.md): every statement since the first of
+# 2000, against the one before. Stopped by its rule, so nothing is stored; ``load-tone`` reports.
+TONE_FROM = date(2000, 2, 2)
+# A signed link under this many holds with a non-zero surprise is too few, not a no.
+TONE_MIN_PAIRS = 40
+# The links with a sign for a hawkish surprise: yields and the dollar up, stocks and the euro down.
+TONE_SIGNED = ("SPY / ES", "UST10Y / ZN", "DXY", "EURUSD", "COMP", "UST5Y / ZF")
+
+
+def is_hold(day: date, rates: Mapping[date, float]) -> bool:
+    """Whether the target rate ``TARGET_EFFECT_DAYS`` after a decision is the one of the day
+    before; not a hold while FRED has no rate for the later day."""
+    after = rates.get(day + timedelta(days=TARGET_EFFECT_DAYS))
+    return after is not None and after == rates.get(day - timedelta(days=1))
+
+
+def tone_surprises(
+    events: Sequence[EventInstance], tones: Mapping[int, float | None]
+) -> dict[int, float]:
+    """Each decision's tone minus the one of the decision just before, by event id, when both have
+    a tone; never reaching further back."""
+    surprises = {}
+    for before, event in zip(events, events[1:], strict=False):
+        now, then = tones.get(event.event_id), tones.get(before.event_id)
+        if now is not None and then is not None:
+            surprises[event.event_id] = now - then
+    return surprises
+
+
+@dataclass(frozen=True)
+class ToneLoad:
+    surprises: dict[int, float]
+    tones: dict[int, tuple[float | None, list[str]]]
+    holds: set[int]
+
+
+def load_tone(
+    api_key: str, cache_dir: Path, con: duckdb.DuckDBPyConnection | None = None
+) -> ToneLoad:
+    """Score every stored Fed decision's statement since ``TONE_FROM``, each against the one before;
+    refused if a decision has no statement link, or two pages give it different ones."""
+    events = stored_events(FED_FLOW, con=con)
+    if not events:
+        raise ValueError("no Fed decisions stored; run `fortuneteller load-releases` first")
+    years = [year for year in FED_HISTORY_YEARS if year >= TONE_FROM.year]
+    pages = [sources.fetch_fed_page(sources.fed_history_url(year)) for year in years]
+    pages.append(sources.fetch_fed_page(sources.FED_CALENDAR_URL))
+    links: dict[date, str] = {}
+    for page in pages:
+        for day, url in sources.parse_fomc_statement_links(page).items():
+            if links.setdefault(day, url) != url:
+                raise ValueError(f"two statements for the Fed decision of {day}")
+    scored = [e for e in events if release_date(e) >= TONE_FROM]
+    if missing := [release_date(e) for e in scored if release_date(e) not in links]:
+        raise ValueError(f"no statement for the Fed decision of {', '.join(map(str, missing))}")
+    tones = {
+        e.event_id: statement_tone(
+            sources.statement_text(
+                sources.fetch_statement(release_date(e), links[release_date(e)], cache_dir)
+            )
+        )
+        for e in scored
+    }
+    rates = dict(target_rates(api_key))
+    holds = {e.event_id for e in scored if is_hold(release_date(e), rates)}
+    surprises = tone_surprises(events, {i: tone for i, (tone, _) in tones.items()})
+    return ToneLoad(surprises, tones, holds)
