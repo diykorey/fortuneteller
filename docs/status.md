@@ -23,9 +23,12 @@ Beat the fortune teller, step 3: the first live round, a release `live` calls gu
 merged pull request ([the spec](steps/beat-the-fortune-teller.md)). It waits for a release; the
 jobs report on 2026-11-06 is the first.
 
+The Fed statement's tone, the spec ([step 13](steps/fed-statement-tone.md)).
+
 ## Next
 
-Not chosen yet: the roadmap's numbered steps are done; the next is picked from its "later" list.
+The Fed statement's tone, step 1: fetch and score every statement since 2000, store the two
+measures, give the Fed flow its surprise rule.
 
 ## Done
 
