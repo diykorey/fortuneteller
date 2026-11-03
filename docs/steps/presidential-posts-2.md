@@ -117,7 +117,7 @@ the difference.
   - 179 reaction days.
   - 57 shared with a major flow: a jobs report 10, CPI 9, core PCE 9, the euro-area flash 9, ISM 8,
     the ECB 5, retail sales 4, the Fed 2, GDP 1.
-  - 122 lone, 14 of them (11%) shared with a tariff signing.
+  - 122 lone, 19 of them (16%) shared with a tariff signing (by New York day).
   - Later posts the first-post rule drops add 8 reaction days (4%).
 - **Lone and ordinary days by market:**
   - 122 and 192 on the S&P 500, the Nasdaq, both yields, defence and energy;
