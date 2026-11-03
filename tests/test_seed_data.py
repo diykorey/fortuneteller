@@ -93,6 +93,7 @@ def test_seed_dir_has_no_unexpected_csvs() -> None:
         "elections.csv",
         "tariffs.csv",
         "debt_limit.csv",
+        "summits.csv",
     }
     # then exactly those files are present
     assert actual == expected
@@ -151,3 +152,21 @@ def test_debt_limit_rows_are_public_laws_cleared_since_1970() -> None:
     assert all(re.fullmatch(r"[0-2]\d:[0-5]\d", row["time"]) for row in rows)
     assert cleared == sorted(cleared) and cleared[0] >= date(1970, 6, 29)
     assert all(c <= s for c, s in zip(cleared, signed, strict=True))
+
+
+def test_summit_rows_are_g7_and_g20_summits_since_1975() -> None:
+    # given the committed summits
+    with (settings.seed_dir / "summits.csv").open(newline="", encoding="utf-8") as handle:
+        reader = csv.DictReader(handle)
+        header = reader.fieldnames
+        rows = list(reader)
+    # when their last days and sources are read
+    days = [date.fromisoformat(row["last_day"]) for row in rows]
+    sources = [row["source_url"] for row in rows]
+    # then each is a G7 or G20 summit with its rule's hour and its page, once, in order, by today
+    assert header == ["last_day", "time", "summit", "source_url"]
+    assert all(re.fullmatch(r"G(7|20) \S.*", row["summit"]) for row in rows)
+    assert {row["time"] for row in rows} <= {"08:00", "20:00"}
+    assert all(re.fullmatch(r"https://www\.g(7|20)\.utoronto\.ca/\S+", s) for s in sources)
+    assert len(set(days)) == len(days) and len(set(sources)) == len(sources)
+    assert days == sorted(days) and days[0] >= date(1975, 11, 17) and days[-1] <= date.today()

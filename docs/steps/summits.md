@@ -89,8 +89,22 @@ At the end: both forums' summits as one lesser flow, from a hand-written seed fi
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | The seed file with 70 summits, the flow stored, each market's lone days counted, the days left out as shared named by lead flow | A test's seed rows store a Saturday last day with a Monday reaction on the S&P 500 and a Sunday one on bitcoin; a weekday European last day reacting that day; the seed test checks the header, `summit` opening with `G7 ` or `G20 `, `time` 08:00 or 20:00, `source_url` on `utoronto.ca`, last days in order since 1975-11-17 and by today, no repeated `last_day` or `source_url`; each market's lone days and the left-out days written here; every existing scoreboard entry identical on a copy of the store |
+| 1 | ~~The seed file with 70 summits, the flow stored, each market's lone days counted, the days left out as shared named by lead flow~~ **done** | A test's seed rows store a Saturday last day with a Monday reaction on the S&P 500 and a Sunday one on bitcoin; a weekday European last day reacting that day; the seed test checks the header, `summit` opening with `G7 ` or `G20 `, `time` 08:00 or 20:00, `source_url` on `utoronto.ca`, last days in order since 1975-11-17 and by today, no repeated `last_day` or `source_url`; each market's lone days and the left-out days written here; every existing scoreboard entry identical on a copy of the store |
 | 2 | Results here and in [`mvp-results.md`](../mvp-results.md) | The flow's verdicts on the day and over a week, the two checks, against the expected outcome |
+
+*Step 1, 2026-11-03:* 70 summits stored, 1975-11-17 to 2026-06-17, 30 of them at 08:00. On a copy
+of the store every existing scoreboard entry is identical, and so are the calls and *missed*; the
+flow adds 16 cells with a verdict to the chance line (296 → 312). The build takes 9 minutes 25
+seconds. Lone days by market: the dollar 52, the S&P 500, the Nasdaq and both yields 51, the FTSE
+100 45, the DAX 42, VIX 36, the STOXX 600 28, energy 28, gold 27, the Euro Stoxx 50 26, the euro
+25, defence 24, Brent 22, bitcoin 16; no market is *too few*. Left out as shared on the S&P 500,
+19 summits: G7 London 1991 (CPI), Kananaskis 2002 (core PCE), Sea Island 2004 (retail sales),
+Gleneagles 2005 (a jobs report), Muskoka 2010 and G20 Toronto 2010 (core PCE), Deauville 2011
+(core PCE), G20 Cannes 2011 (a jobs report), G20 Los Cabos 2012 (the Fed), Lough Erne 2013 (CPI),
+G20 St. Petersburg 2013 (a jobs report), Brussels 2014 (the ECB), Taormina 2017 (core PCE), G20
+Buenos Aires 2018, Osaka 2019 and Rome 2021 (ISM), G20 Bali 2022 (retail sales), Kananaskis 2025
+(the Fed) and Evian 2026 (the Fed and retail sales). Beside a Fed decision, as the spec expected of
+June: the G7 of 2025 and 2026 and the G20 of 2012.
 
 ## Technical details
 

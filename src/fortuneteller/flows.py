@@ -925,13 +925,16 @@ class StatementFlow:
 
 
 # Dated shocks, from hand-written seed files: national elections (docs/steps/elections.md), tariff
-# actions (docs/steps/tariffs.md) and the debt limit (docs/steps/debt-limit.md).
+# actions (docs/steps/tariffs.md), the debt limit (docs/steps/debt-limit.md) and summits
+# (docs/steps/summits.md).
 ELECTION_EVENT_TYPE = "National election"
 TARIFF_EVENT_TYPE = "Tariff / trade-war / sanctions"
 DEBT_LIMIT_EVENT_TYPE = "Fiscal: debt-ceiling / shutdown"
+SUMMIT_EVENT_TYPE = "Leaders' summit"
 UNITED_KINGDOM = "United Kingdom"
 FRANCE = "France"
 EUROPEAN_UNION = "European Union"
+G7_G20 = "G7 / G20"
 # After every market's close, VIX's 16:15 and bitcoin's midnight UTC among them; the US polls'.
 AFTER_EVERY_CLOSE = time(20, 0)
 
@@ -1321,6 +1324,19 @@ DEBT_LIMIT_FLOW = DatedShockFlow(
     time_column="time",
     scheduled=False,
 )
+SUMMIT_FLOW = DatedShockFlow(
+    SUMMIT_EVENT_TYPE,
+    G7_G20,
+    NEW_YORK,
+    23,
+    "summit",
+    "SUM",
+    seed_file="summits.csv",
+    noun="summits",
+    day_column="last_day",
+    detail_column="summit",
+    time_column="time",
+)
 EVENT_FLOWS: list[EventFlow] = [
     CPI_FLOW,
     NFP_FLOW,
@@ -1344,6 +1360,7 @@ EVENT_FLOWS: list[EventFlow] = [
     EU_ELECTION_FLOW,
     TARIFF_FLOW,
     DEBT_LIMIT_FLOW,
+    SUMMIT_FLOW,
 ]
 
 

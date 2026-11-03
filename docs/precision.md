@@ -95,6 +95,13 @@ this by splitting the results by era.
 | Riders | A law whose limit change rides in a broader act (`vehicle` `rider`, 25 of 75) is measured with the rest of its act; a check repeats the test on `debt` laws alone | The broader act's own dates as a separate flow | A *moves* that the debt-only check does not keep |
 | Clustered votes | Five stopgaps signed in October 1990, and runs in 1980 and 1987, sit days apart, so their week windows overlap each other | One event per cluster | A week verdict at a `p` near 0.01 |
 
+## Step 10 — dated shocks: summits
+
+| Choice | Now | More precise | Trigger |
+| --- | --- | --- | --- |
+| Summit time | No source gives the hour: 08:00 New York for a weekday last day in Europe or Asia, 20:00 for a weekend or a summit in the Americas ([summits](steps/summits.md)). A text issued before the last day is measured on the last day | Each communiqué's release hour, from the presidency's own record | A *moves* that the other-day check reverses |
+| Shared weeks | Muskoka and Toronto (2010) are two events with one reaction day; a G7 and a G20 within a week of each other overlap their week windows | One event per pair | A week verdict at a `p` near 0.01 |
+
 ## Steps 1–2 — choices already built in
 
 | Choice | Now | More precise | Trigger |

@@ -8,8 +8,9 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Dated shocks, part 4, spec *(PR #213)*: [summits](steps/summits.md), the G7's 51 and the G20's 19
-annual leaders' summits as one lesser flow, each dated by its last day at 20:00 New York.
+Summits, step 1 *(PR #214)*: 70 G7 and G20 summits as one lesser flow, each at its last day (08:00
+New York for a weekday in Europe or Asia, else 20:00); every existing scoreboard entry identical on
+a copy of the store.
 
 ## In progress
 
@@ -21,13 +22,14 @@ run rewrites it.
 
 ## Next
 
-Summits, step 1: the seed file with 70 summits, the flow stored, each market's lone days
-counted. Then step 2, results, which closes step 10; step 11, news as a feed, after it.
+Summits, step 2: results on the day and over a week, the G7-alone and other-day checks, against
+the expected outcome. It closes step 10; step 11, news as a feed, after it.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-03 | Summits, step 1: 70 summits stored as one lesser flow, every existing entry identical | PR #214 |
 | 2026-11-03 | Dated shocks, part 4, spec: summits, the G7 and the G20 as one lesser flow | PR #213 |
 | 2026-11-03 | The debt limit, step 2: results — both Treasury yields move on the day and over a week, no stock market does | PR #212 |
 | 2026-11-03 | The debt limit, step 1: 73 days stored as one lesser flow, every existing entry identical | PR #211 |
