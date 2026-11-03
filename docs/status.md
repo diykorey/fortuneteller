@@ -8,8 +8,8 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Beat the fortune teller, step 2 *(PR #225)*: the scoreboard shows every guess beside the
-machine's row, each handle's count, how to play and the two notices.
+The Fed statement's tone, the spec *(PR #226)*: each statement's tone from a published word list
+against the previous statement's, judged on holds, every bar fixed before anything is fetched.
 
 ## In progress
 
@@ -23,14 +23,19 @@ Beat the fortune teller, step 3: the first live round, a release `live` calls gu
 merged pull request ([the spec](steps/beat-the-fortune-teller.md)). It waits for a release; the
 jobs report on 2026-11-06 is the first.
 
+The Fed statement's tone, step 1 ([step 13](steps/fed-statement-tone.md)): `load-tone` fetches
+and scores every statement since 2000 and stores the two measures; the Fed flow gets its surprise
+rule unless the stop rule fires.
+
 ## Next
 
-Not chosen yet: the roadmap's numbered steps are done; the next is picked from its "later" list.
+The Fed statement's tone, step 2: results.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-03 | The Fed statement's tone: spec | PR #226 |
 | 2026-11-03 | Beat the fortune teller, step 2: the scoreboard shows the guesses | PR #225 |
 | 2026-11-03 | Beat the fortune teller, step 1: `score` grades guesses beside the machine's calls | PR #224 |
 | 2026-11-03 | Beat the fortune teller: spec | PR #223 |
