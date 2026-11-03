@@ -1,6 +1,6 @@
 """Build data/seed/presidential_posts.csv from the Trump Twitter Archive dump (docs/steps/presidential-posts.md).
 
-Usage: uv run python scripts/presidential_posts.py <path to the archive's JSON dump>
+Usage, from the repository root: uv run python scripts/presidential_posts.py <the archive's JSON dump>
 """
 
 import csv

@@ -33,7 +33,7 @@ a seed file built by a committed script. It gets rung 1's test on the day and ov
   `drive.usercontent.google.com/download?id=16wm-2NTKohhcA26w-kaWfhLIGwl_oX95&export=download&confirm=t`,
   md5 `073b99bfa3fc75a7757ac6edf5d0f767`, fetched 2026-11-03; fields `date`, naive UTC, `text`,
   `isRetweet` `t`/`f`), read once by `scripts/presidential_posts.py`; nothing is read at run time.
-- **The rule, fixed before any price is looked at:** a tweet with `isRetweet` `f`, its text not
+- **The rule, fixed before any price is looked at:** a tweet with `isRetweet` `f`, its text, unescaped and stripped of links, not
   starting `RT @`, `"` or `“`, deleted ones kept, posted at or after 2017-01-20 12:00
   New York through the archive's last tweet, whose text, HTML entities unescaped and links removed,
   matches `\btariff|\btrade[\s-]+war|\btrade[\s-]+deal` ignoring case. Only @realDonaldTrump is
@@ -62,7 +62,7 @@ a seed file built by a committed script. It gets rung 1's test on the day and ov
   ten days a cell. **Lesser:** each day stays ordinary for every other flow; the flow keeps its
   lone reaction days. Every existing scoreboard entry stays identical. No surprise, no call.
 - **And over a week:** `raw-move --week`. Post days fall on one day in six, so many ordinary
-  windows hold one: a week null is weak evidence. The last windows, from 2021-01-04, reach past
+  windows hold one: a week null is weak evidence. The last windows, from 2021-01-05, reach past
   the term; accepted.
 - **Families:** a family *moves* if most of it does: three of the four European indices, both
   yields.

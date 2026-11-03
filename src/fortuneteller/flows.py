@@ -924,7 +924,7 @@ class StatementFlow:
         )
 
 
-# Dated shocks, from hand-written seed files: national elections (docs/steps/elections.md), tariff
+# Dated shocks, from seed files written by hand or by a script: national elections (docs/steps/elections.md), tariff
 # actions (docs/steps/tariffs.md), the debt limit (docs/steps/debt-limit.md), summits
 # (docs/steps/summits.md) and the president's trade posts (docs/steps/presidential-posts.md).
 ELECTION_EVENT_TYPE = "National election"
@@ -942,7 +942,7 @@ AFTER_EVERY_CLOSE = time(20, 0)
 
 @dataclass(eq=False)
 class DatedShockFlow:
-    """Dated events read from a hand-written seed file, each at its day and time in the flow's zone;
+    """Dated events read from a seed file, each at its day and time in the flow's zone;
     one not yet past is not an event. Rows on one day are one event. No number, so no surprise; a
     lesser flow whose lone days are judged on the reaction day.
 
