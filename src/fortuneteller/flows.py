@@ -924,13 +924,14 @@ class StatementFlow:
         )
 
 
-# Dated shocks, from hand-written seed files: national elections (docs/steps/elections.md), tariff
-# actions (docs/steps/tariffs.md), the debt limit (docs/steps/debt-limit.md) and summits
-# (docs/steps/summits.md).
+# Dated shocks, from seed files written by hand or by a script: national elections (docs/steps/elections.md), tariff
+# actions (docs/steps/tariffs.md), the debt limit (docs/steps/debt-limit.md), summits
+# (docs/steps/summits.md) and the president's trade posts (docs/steps/presidential-posts.md).
 ELECTION_EVENT_TYPE = "National election"
 TARIFF_EVENT_TYPE = "Tariff / trade-war / sanctions"
 DEBT_LIMIT_EVENT_TYPE = "Fiscal: debt-ceiling / shutdown"
 SUMMIT_EVENT_TYPE = "Leaders' summit"
+POST_EVENT_TYPE = "Presidential post"
 UNITED_KINGDOM = "United Kingdom"
 FRANCE = "France"
 EUROPEAN_UNION = "European Union"
@@ -941,13 +942,13 @@ AFTER_EVERY_CLOSE = time(20, 0)
 
 @dataclass(eq=False)
 class DatedShockFlow:
-    """Dated events read from a hand-written seed file, each at its day and time in the flow's zone;
+    """Dated events read from a seed file, each at its day and time in the flow's zone;
     one not yet past is not an event. Rows on one day are one event. No number, so no surprise; a
     lesser flow whose lone days are judged on the reaction day.
 
     ``country_column`` keeps the rows naming the flow's country (every row when ``None``);
     ``time_column`` gives each row's time (``fixed_time`` for every row when ``None``); ``scheduled``
-    is whether the day was known in advance."""
+    is whether the day was known in advance; ``ordinary_until`` ends the flow's ordinary days."""
 
     event_type: str
     country: str
@@ -965,6 +966,7 @@ class DatedShockFlow:
     scheduled: bool = True
     surprise_rule: SurpriseRule | None = None
     lesser: bool = True
+    ordinary_until: date | None = None
 
     def events(self, api_key: str) -> EventBatch:
         return self.load(settings.seed_dir / self.seed_file, datetime.now(UTC))
@@ -1337,6 +1339,21 @@ SUMMIT_FLOW = DatedShockFlow(
     detail_column="summit",
     time_column="time",
 )
+POSTS_FLOW = DatedShockFlow(
+    POST_EVENT_TYPE,
+    UNITED_STATES,
+    NEW_YORK,
+    24,
+    "posts",
+    "PST",
+    seed_file="presidential_posts.csv",
+    noun="tweet days",
+    day_column="day",
+    detail_column="posts",
+    time_column="time",
+    scheduled=False,
+    ordinary_until=date(2021, 1, 8),
+)
 EVENT_FLOWS: list[EventFlow] = [
     CPI_FLOW,
     NFP_FLOW,
@@ -1361,6 +1378,7 @@ EVENT_FLOWS: list[EventFlow] = [
     TARIFF_FLOW,
     DEBT_LIMIT_FLOW,
     SUMMIT_FLOW,
+    POSTS_FLOW,
 ]
 
 

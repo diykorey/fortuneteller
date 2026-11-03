@@ -33,7 +33,7 @@ a seed file built by a committed script. It gets rung 1's test on the day and ov
   `drive.usercontent.google.com/download?id=16wm-2NTKohhcA26w-kaWfhLIGwl_oX95&export=download&confirm=t`,
   md5 `073b99bfa3fc75a7757ac6edf5d0f767`, fetched 2026-11-03; fields `date`, naive UTC, `text`,
   `isRetweet` `t`/`f`), read once by `scripts/presidential_posts.py`; nothing is read at run time.
-- **The rule, fixed before any price is looked at:** a tweet with `isRetweet` `f`, its text not
+- **The rule, fixed before any price is looked at:** a tweet with `isRetweet` `f`, its text, unescaped and stripped of links, not
   starting `RT @`, `"` or `“`, deleted ones kept, posted at or after 2017-01-20 12:00
   New York through the archive's last tweet, whose text, HTML entities unescaped and links removed,
   matches `\btariff|\btrade[\s-]+war|\btrade[\s-]+deal` ignoring case. Only @realDonaldTrump is
@@ -62,7 +62,7 @@ a seed file built by a committed script. It gets rung 1's test on the day and ov
   ten days a cell. **Lesser:** each day stays ordinary for every other flow; the flow keeps its
   lone reaction days. Every existing scoreboard entry stays identical. No surprise, no call.
 - **And over a week:** `raw-move --week`. Post days fall on one day in six, so many ordinary
-  windows hold one: a week null is weak evidence. The last windows, from 2021-01-04, reach past
+  windows hold one: a week null is weak evidence. The last windows, from 2021-01-05, reach past
   the term; accepted.
 - **Families:** a family *moves* if most of it does: three of the four European indices, both
   yields.
@@ -91,8 +91,19 @@ a seed file built by a committed script. It gets rung 1's test on the day and ov
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | The script, the seed file, `ordinary_until`, the flow stored; each market's lone days, the days shared with a tariff signing and the later tweets the first-tweet rule drops counted | A test's seed rows (`2018-03-02,07:50,…` and `2019-05-04,13:00,…`) store events `2420180302` and `2420190504`, not scheduled, the first reacting that day on the S&P 500, the second on Monday 05-06 and on bitcoin that Saturday; a test of `ordinary_until` drops a later ordinary day; the seed test checks the header, days in order inside the term, the times, counts ≥ 1; every existing scoreboard entry identical on a copy of the store |
+| 1 | ~~The script, the seed file, `ordinary_until`, the flow stored; each market's lone days, the days shared with a tariff signing and the later tweets the first-tweet rule drops counted~~ **done** | A test's seed rows (`2018-03-02,07:50,…` and `2019-05-04,13:00,…`) store events `2420180302` and `2420190504`, not scheduled, the first reacting that day on the S&P 500, the second on Monday 05-06 and on bitcoin that Saturday; a test of `ordinary_until` drops a later ordinary day; the seed test checks the header, days in order inside the term, the times, counts ≥ 1; every existing scoreboard entry identical on a copy of the store |
 | 2 | Results here and in [`mvp-results.md`](../mvp-results.md) | The verdicts, the three checks, against the expected outcome |
+
+*Step 1, 2026-11-03:* the rule finds 265 tweets on 179 New York days, 2017-02-03 to 2020-11-21,
+28 of them with a rate-naming tweet; on the S&P 500 they are 146 reaction days. On a copy of the
+store every existing scoreboard entry is identical, and so are the calls and *missed*; the flow
+adds 16 cells to the chance line (312 → 328). The build takes 14 minutes. Lone days by market:
+103 on the S&P 500, the Nasdaq, gold, the DAX, the Euro Stoxx 50, the STOXX 600, Brent, defence
+and energy, 104 on both yields, the dollar and VIX, 102 on the euro, 107 on the FTSE 100, 112 on
+bitcoin; none *too few*. Left out as shared on the S&P 500: 51 tweet days, by lead flow ISM 16,
+core PCE 9, retail sales 9, CPI 7, the euro-area flash 5, a jobs report 5, GDP 3, the ECB 2, the
+Fed 1. The two counts: later tweets the first-tweet rule drops add 7 reaction days (5%); 2 (1%)
+share a day with a tariff signing; both under 10%, so no fourth check.
 
 ## Technical details
 

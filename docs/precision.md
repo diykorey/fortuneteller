@@ -102,6 +102,15 @@ this by splitting the results by era.
 | Summit time | No source gives the hour: 08:00 New York for a weekday last day in Europe or Asia, 20:00 for a weekend or a summit in the Americas ([summits](steps/summits.md)). A text issued before the last day is measured on the last day | Each communiqué's release hour, from the presidency's own record | A *moves* that the other-day check reverses |
 | Shared weeks | Muskoka and Toronto (2010) are two events with one reaction day; a G7 and a G20 within a week of each other overlap their week windows | One event per pair | A week verdict at a `p` near 0.01 |
 
+## Step 11 — news as a feed: the president's trade posts
+
+| Choice | Now | More precise | Trigger |
+| --- | --- | --- | --- |
+| The source | The president's own tweets, first term; GDELT is not used: its article counts follow the market, it names no speaker and has no trade topic ([the president's trade posts](steps/presidential-posts.md)) | GDELT's article search as a cross-check of when coverage started | A finding that hangs on coverage, not on the tweet |
+| The keyword rule | `tariff`, `trade war` or `trade deal` in the tweet's own text, retweets and quotes out; catches deals with no tariff | A reading of each tweet's meaning, a language model's job (rung 7) | A *moves* the rate-naming check does not keep |
+| First tweet only | A day is timed at its first matching tweet; a later one after the close is dropped (7 S&P 500 reaction days, 5%) | Every tweet's own reaction day | The dropped share above 10% |
+| The term's end | Ordinary days end at 2021-01-08 (`ordinary_until`); week windows from 2021-01-05 reach past it | Week windows that end by the bound | A week verdict at a `p` near 0.01 |
+
 ## Steps 1–2 — choices already built in
 
 | Choice | Now | More precise | Trigger |
