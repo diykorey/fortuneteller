@@ -8,19 +8,17 @@
 **In plain words:** part 1 found no market *moves* on a first-term trade tweet. Does that hold
 for his Truth Social posts since 2025-01-20, the term in which tariffs were announced in posts?
 
-**What closes step 11, written first.** A news feed is worth building on only if, on the day:
-- a market *moves*;
-- that market keeps a ratio of at least 1.10 once the tariff signings are left out (check 2),
-  because otherwise the tariff flow already carries the effect;
-- and its placebo stays under 1.05 (check 1).
-
-Otherwise step 11 closes with no, and rung 7 waits for another reason.
+**What closes step 11, written first.** A news feed is worth building on only if one of the three
+US markets (the S&P 500, the Nasdaq, VIX) *moves* on the day and reaches the last row of the
+readings below. A lone *moves* elsewhere, at 0.16 expected by chance, is not enough. Otherwise step
+11 closes with no, and rung 7 waits for another reason.
 
 Part 1 left this part waiting for a committed record of the posts. *Decided 2026-11-03:* the record
 is the seed file this part commits, built by a committed script from one frozen snapshot of CNN's
-archive. Its md5 is recorded below, and the copy is kept beside the project's handoff notes. A
-later fetch will not match the md5. Filtered at the cutoff, it is expected to rebuild the same
-seed, and step 1 records the difference.
+archive. Its md5 is recorded below. The copy holds full post text, so it is not committed; it is
+kept on the maintainer's machine, and only there can the md5 be checked. A later fetch will not
+match the md5. Filtered at the cutoff, it is expected to rebuild the same seed, and step 1 records
+the difference.
 
 ## The events
 
@@ -58,7 +56,7 @@ seed, and step 1 records the difference.
 
 - **Rung 1's test, unchanged,** on all sixteen markets, with part 1's families. The flow is lesser,
   so every existing scoreboard entry stays identical. No surprise, no call.
-- **Chance:** 16 more cells on the day, if none is *too few*; 328 → 344.
+- **Chance:** 16 more cells on the day, less any *too few* or context-only cell; at most 328 → 344.
 - **The week is context, not graded.** Step 1 counts the share of ordinary week windows that hold a
   post reaction day. With posts on about 40% of closes, it is near nine in ten.
 - **Four checks, not verdicts, outside the chance count.**
@@ -69,23 +67,26 @@ seed, and step 1 records the difference.
      - Expected: at or above 1.05 on the S&P 500 and VIX, as in part 1 (1.47 and 1.42).
      - At 37% density this day is often the day after another post, and step 1 counts it per
        market. Under ten days, the cell is not graded.
-  2. **Without tariff signings:** reaction days shared with a signing's calendar day or reaction
-     day leave the post days. Signing reaction days also leave the ordinary days.
+  2. **Without tariff signings:** a post day leaves the event days if its calendar day is a
+     signing's day, or its reaction day is a signing's reaction day. Every signing reaction day
+     also leaves the ordinary days.
      - Expected: under 1.10 on at least two of the three US markets.
   3. **Without April 2025:** that month's reaction days leave both sides.
-     - Expected: every graded cell falls by at least 0.10.
+     - Expected: under 1.10 on at least two of the three US markets.
   4. **Outside the session:** days whose first post came before 09:30 or from 16:00 New York, or on
      a day New York is shut; the three US markets only.
      - Expected: each keeps a ratio of at least 1.10, as in part 1, where the Nasdaq missed.
   - Naming a rate is dropped: part 1 found nothing. The seed keeps `rate_time`.
-- **Readings, written first, for a market that *moves*:**
+- **Readings, written first, for a market that *moves*:** an ordered decision, in which the first
+  row that applies wins.
 
-  | Outcome | Reading |
-  | --- | --- |
-  | Survives check 2, placebo under 1.05 | The posts move it: step 11's yes |
-  | Survives check 2, placebo at or above 1.05 | Clustering not excluded |
-  | Under 1.10 in check 2 | The signings carry it |
-  | Under 1.10 in check 3 | April 2025 carries it |
+  | # | Outcome | Reading |
+  | --- | --- | --- |
+  | 1 | Under 1.10 in check 2 | The signings carry it |
+  | 2 | Under 1.10 in check 3 | April 2025 carries it |
+  | 3 | Placebo at or above 1.05 | Clustering not excluded |
+  | 4 | Under 1.10 in check 4 (US markets) | Reverse timing not excluded |
+  | 5 | None of the above | The posts move it: step 11's yes |
 
 - **Expected outcome, written first, cell by cell, on the day:**
   - *moves*: the S&P 500, the Nasdaq and VIX, because announcements are inside;
