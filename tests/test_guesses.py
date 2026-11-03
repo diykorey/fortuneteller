@@ -1,6 +1,7 @@
+import json
 import os
 import subprocess
-from datetime import UTC, date, datetime, time
+from datetime import UTC, date, datetime, time, timedelta
 from pathlib import Path
 
 import duckdb
@@ -9,12 +10,14 @@ import pytest
 from fortuneteller import db, expectations, flows, study
 from fortuneteller.__main__ import main
 from fortuneteller.config import settings
+from fortuneteller.models import DailyBar
 from fortuneteller.sources import CORE, NEW_YORK, FirstRelease
 
 DAY = date(2026, 11, 12)
 BEFORE = datetime(2026, 11, 12, 13, 0, tzinfo=UTC)  # 08:00 New York
 HEADER = "flow,instrument,direction\n"
 GIT_HEADER = HEADER.encode()
+GuessFile = tuple[str, str, bytes | None]
 
 
 def _git(repo: Path, *args: str, who: str = "player") -> str:
@@ -175,14 +178,11 @@ def test_each_guess_is_graded_voided_or_waits(tmp_db: Path) -> None:
     ]
 
 
-def test_score_prints_each_guess_beside_the_machine_s_row(
-    tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
-) -> None:
-    # given a CPI release with its surprise and moves; the machine's rows: a call on the S&P 500
-    # that is right, a too-few call on the yield with a direction, a call on the euro logged after
-    # its close, silent on VIX, none on the dollar; and alice's guesses, one for a release not
-    # loaded yet
-    con = db.get_connection()
+def _play(con: duckdb.DuckDBPyConnection, monkeypatch: pytest.MonkeyPatch) -> list[GuessFile]:
+    # A CPI release with its surprise and moves; the machine's rows: a call on the S&P 500 that is
+    # right, a too-few call on the yield with a direction, a call on the euro logged after its
+    # close, silent on VIX, none on the dollar; and alice's guesses, one for a release not loaded
+    # yet. The files are returned so a test can add one.
     moves = {"SPY / ES": -0.004, "DXY": 0.002, "VIX": 0.01, "UST10Y / ZN": 5.0, "EURUSD": 0.001}
     _cpi_release(con, DAY, moves)
     event = flows.stored_events(flows.CPI_FLOW, con=con)[-1]
@@ -202,12 +202,39 @@ def test_score_prints_each_guess_beside_the_machine_s_row(
         ],
     )
     rows = b"cpi,SPY / ES,up\ncpi,UST10Y / ZN,down\ncpi,EURUSD,up\ncpi,VIX,up\ncpi,DXY,up\n"
-    files = [
+    files: list[GuessFile] = [
         ("2026-11-12-alice.csv", "a", GIT_HEADER + rows),
         ("2027-01-13-alice.csv", "b", GIT_HEADER + b"cpi,DXY,up\n"),
     ]
     monkeypatch.setattr(study, "guess_files", lambda directory: files)
     monkeypatch.setattr(study, "merged_at", lambda directory, sha: BEFORE)
+    return files
+
+
+def _closes(con: duckdb.DuckDBPyConnection) -> None:
+    # Every market's close six weeks either side of the release, so the scoreboard has ordinary
+    # days after it.
+    bars = [
+        DailyBar(instrument=instrument, day=day, close=100.0 + i % 3, source="s")
+        for i, day in enumerate(DAY - timedelta(days=d) for d in range(42, -43, -1))
+        if day.weekday() < 5
+        for instrument in study.MVP_PRICE_SERIES
+    ]
+    db.insert_models("daily_bars", bars, con=con)
+
+
+def _block(out: list[str]) -> list[str]:
+    # The guesses block of ``score``'s output, from its header to the next blank line or the end.
+    start = next(i for i, line in enumerate(out) if line.startswith("guesses: "))
+    end = next((i for i in range(start, len(out)) if not out[i]), len(out))
+    return out[start:end]
+
+
+def test_score_prints_each_guess_beside_the_machine_s_row(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given a release, the machine's rows and alice's guesses
+    _play(db.get_connection(), monkeypatch)
 
     # when the log is scored
     code = main(["score"])
@@ -227,6 +254,67 @@ def test_score_prints_each_guess_beside_the_machine_s_row(
         "  alice: 3 of 5 right",
     ]
     assert not any(line.startswith("pending:") for line in out[start:])
+
+
+def test_the_scoreboard_shows_the_guesses_as_score_prints_them(
+    tmp_db: Path,
+    tmp_path: Path,
+    capsys: pytest.CaptureFixture[str],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # given the same round, a badly named file beside it, and the closes stored
+    con = db.get_connection()
+    files = _play(con, monkeypatch)
+    files.append(("2026-11-12-Bob.csv", "c", GIT_HEADER + b"cpi,DXY,up\n"))
+    _closes(con)
+    out_dir = tmp_path / "scoreboard"
+    monkeypatch.setattr(settings, "scoreboard_dir", out_dir)
+
+    # when the log is scored and the scoreboard written
+    assert main(["score"]) == 0
+    block = _block(capsys.readouterr().out.splitlines())
+    code = main(["scoreboard"])
+
+    # then the page's data rebuilds score's guesses block line for line, and the page shows it
+    assert code == 0
+    data = json.loads((out_dir / "data.json").read_text())
+    rebuilt = [f"guesses: {len(data['guesses']) + len(data['bad_guesses'])}"]
+    for g in data["guesses"]:
+        state = g["state"] if g["reason"] is None else f"{g['state']}, {g['reason']}"
+        rebuilt.append(
+            f"  {g['day']} {g['who']} {g['event']} {g['market']} {g['direction']}: {state}; "
+            f"machine: {g['machine']}"
+        )
+    rebuilt += [f"  {note}" for note in data["bad_guesses"]]
+    rebuilt += [f"  {h['who']}: {h['right']} of {h['graded']} right" for h in data["handles"]]
+    assert rebuilt == block
+    assert data["handles"] == [{"who": "alice", "right": 3, "graded": 5}]
+    page = (out_dir / "index.html").read_text()
+    assert '<table id="guesses">' in page and "Not a fair fight" in page
+    assert '"machine": "not logged"' in page
+
+
+def test_the_scoreboard_stops_when_github_cannot_be_asked(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given a stored release and closes, a guess file, and GitHub not answering
+    con = db.get_connection()
+    _cpi_release(con, DAY)
+    _closes(con)
+    files = [("2026-11-12-alice.csv", "a", GIT_HEADER + b"cpi,DXY,up\n")]
+    monkeypatch.setattr(study, "guess_files", lambda directory: files)
+
+    def fail(directory: Path, sha: str) -> None:
+        raise subprocess.CalledProcessError(1, ["gh", "api"])
+
+    monkeypatch.setattr(study, "merged_at", fail)
+
+    # when the scoreboard is written
+    code = main(["scoreboard"])
+
+    # then it stops with an error rather than voiding the guess
+    assert code == 1
+    assert "the guesses cannot be read" in capsys.readouterr().err
 
 
 def test_score_stops_when_github_cannot_be_asked(
