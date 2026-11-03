@@ -100,9 +100,8 @@ scheduled statement a preview. Counts checked 2026-10-23 on the calendars alread
 | 12 | **[Beat the fortune teller](steps/beat-the-fortune-teller.md)** — a person's call logged before the release, graded beside the machine's on the same rules and shown on the scoreboard. *Added 2026-11-03* from the list below, after step 11 closed | The Legend's 2026-10-23 amendment: an entertainment tool that shows its record; being seen counts as progress. Needs no new data or model |
 
 Later, not planned in detail: a statement's text read for its direction (hawkish or dovish), the
-first use of a language model, graded like a surprise; prediction-market prices as an election's
-expected value; and "beat the fortune teller", a person's own call logged before the release and
-graded beside the machine's.
+first use of a language model, graded like a surprise; and prediction-market prices as an election's
+expected value. ("Beat the fortune teller" is now step 12.)
 
 ## After the MVP — the feature ladder
 
