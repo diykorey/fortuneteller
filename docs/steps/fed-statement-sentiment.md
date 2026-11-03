@@ -50,18 +50,21 @@ a surprise rule with its verdict, unless this step's stop rule fires.
   - **Matches.** Every entry of A5, A6, A7 and A8 is found as a substring of the normal form that
     starts at the start of a word. So "unemployment" is never "employment", "decrease" is never
     "ease ", and "elaborate" is never "labor".
-    - A match's **span** is its text without the spaces at its ends. Where two spans overlap, the
-      longer is kept; at equal length, the one that starts first. So "job gains" is never also
-      "gains", and "investment spending" never also "spending".
-    - Matches with the same span are all kept, one per topic: " low" for output and "low" for
-      labor and inflation are one stretch of text, scored in each topic.
+    - An A8 phrase is matched first, and the words inside it are matched by nothing else.
+    - A match's **span** is its text without the spaces at its ends. Overlaps are settled within
+      each topic, its keywords and modifiers together: where two spans overlap, the longer is
+      kept; at equal length, the one that starts first. So "job gains" is never also "gains", and
+      "investment spending" never also "spending".
+    - Across topics nothing is settled: " low" for output and "low" for labor and inflation are
+      all kept, and an output "remain moderate" does not take "moderate " from inflation.
     - A match's **position** is the index of the word it starts in.
   - **Pairs.** Each A5 keyword pairs with the closest A6/A7 modifier of its topic in the same
     sentence, before or after it, by the difference in positions. On a tie, the modifier after
     the keyword wins. The pair scores the keyword's score times the modifier's. A keyword with no
-    modifier of its topic in its sentence scores nothing.
+    modifier of its topic in its sentence scores nothing. One modifier may pair with several
+    keywords: "inflation and inflation expectations have declined" is two pairs.
   - **A8 phrases stand alone.** Each scores its own score in its topic, because the phrase
-    already holds its subject. Words inside it are matched by nothing else.
+    already holds its subject.
   - **A9 and A10 rules.**
     - A rule written as parenthesised parts joined by `)|(` is split there. Every part must
       match the sentence, each as a regular expression searched in the normal form, with its `|`
@@ -74,9 +77,9 @@ a surprise rule with its verdict, unless this step's stop rule fires.
   - **The index.** Let N be the number of words in the informative sentences. Each of the five
     topics scores the sum of its scores over √N. The statement's sentiment is the sum of the five.
     With N = 0 there is no sentiment.
-- **The surprise is the change; the paper uses the level.** The paper's footnote 32 turns down
-  differencing the index and uses its level, with yields over 30 minutes. For the level it finds
-  the 5-year yield significant and the 10-year not (Table 5). Here, as in step 13, the surprise
+- **The surprise is the change; the paper uses the level.** The paper's footnote 32 sets its
+  level against Lucca and Trebbi's differences, and it tests yields over 30 minutes. For the
+  level it finds the 5-year yield significant and, in Table 5's panel B, the 10-year not. Here, as in step 13, the surprise
   is the change from the previous statement, because the market has read that one, and the move
   is the day's. So the paper's evidence is not borrowed for this test.
 - **Reused from step 13:** the statements and their cut, the baseline (the decision just before;
@@ -107,6 +110,12 @@ a surprise rule with its verdict, unless this step's stop rule fires.
     in 2018. The index of 2008-12-16 must be below zero, and that of 2018-09-26 above zero.
   - Every statement's index lies between −1 and 1, as the paper's does.
   - The statements from 2000-02-02 to 2019-12-11 number within 10 of the paper's 166.
+  - The paper's worked example, on the real text: the statement of 2008-12-16 has the labor pair
+    −1 from "labor market conditions have deteriorated".
+  - The paper finds labor sentiment close to zero before 2010. The mean absolute labor score of
+    the 2000–2009 statements must be under half that of the 2010–2019 statements.
+- **A defect is not a rule.** Code that does not do what the rules above say is fixed, and the fix
+  is recorded here with the numbers before and after. The rules themselves are frozen.
 - **The hand read:** the five holds with the highest sentiment and the five with the lowest are
   printed with their pairs and read. It has one trigger, written now: if 3 or more of the 10 have
   a pair from text outside the statement's body, the cut is fixed, and the 10 are read once more.
@@ -117,13 +126,13 @@ a surprise rule with its verdict, unless this step's stop rule fires.
 - **Expected outcome, written first:** the 10-year and 5-year yields are *unclear* at best, the
   dollar and the euro *doesn't*. The text arrives with the decision, the dots and, since 2011,
   the press conference, and a day's move holds all of them. The paper finds even the level
-  insignificant for the 10-year yield over 30 minutes. No link tracks; no call.
+  insignificant for the 10-year yield over 30 minutes (panel B). No link tracks; no call.
 
 ## The steps
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | The seed dictionary; `load-sentiment` scores each statement; the counts, `noticeable`, the three checks and the hand read written here; then, unless stopped, the stored measures and the Fed flow's surprise rule | The tests below pass; on a copy of the store every other flow's scoreboard entry, `score` and `missed` are identical |
+| 1 | The seed dictionary; `load-sentiment` scores each statement; the counts, `noticeable`, the five checks and the hand read written here; then, unless stopped, the stored measures and the Fed flow's surprise rule | The tests below pass; on a copy of the store every other flow's scoreboard entry, `score` and `missed` are identical |
 | 2 | Results here and in [`mvp-results.md`](../mvp-results.md) | The verdicts against the expected outcome |
 
 ## How you know it is right
@@ -136,14 +145,17 @@ a surprise rule with its verdict, unless this step's stop rule fires.
   - "Software" is not "soft", "moderated" is not "moderate (space)", "unemployment" yields
     no "employment", and "decrease" no "ease ".
   - "The unemployment rate has remained low" gives a labor pair of +1 though " low" is also an
-    output modifier.
-  - An A8 phrase scores alone.
+    output modifier, and "inflation is expected to remain moderate" keeps its inflation pair
+    beside the output "remain moderate".
+  - "Inflation and inflation expectations have declined" is two pairs from one modifier.
+  - An A8 phrase scores alone, and a keyword inside it scores nothing.
 - **Rules:**
   - An A9 rule with parts scores a sentence only when every part matches, and "(complete|moderate)"
     matches either word.
   - "Be patient" is a one-part rule.
   - An A10 sentence is left out of the four topics and of N, but still scores `policy`.
-  - "Long-term", "U.S." and a curly apostrophe match their entries.
+  - "Long-term", "U.S." and a curly apostrophe match their entries, and the A10 rule with
+    "today’s" matches "today's".
 - **The index:** the topics' sums over √N, and no index for N = 0.
 - **The seed file:** 282 rows, 33, 88, 98, 33, 16 and 14 by table. Each score is −1, 0 or 1, and
   each topic is one of the six.
@@ -156,8 +168,8 @@ live call, no change to the evening job.
 ## Technical details
 
 - **Seed:** `data/seed/fomc_sentiment_dictionary.csv`, columns `table,entry,score,topic`. It is
-  described in `docs/schema.md`'s seed list. The other seeds are database tables; this one is read
-  by `expectations` alone.
+  described in `docs/schema.md`'s seed list. The other seeds are database tables; this one is a
+  read-only copy of the paper, read by `expectations` alone.
 - **Code:**
   - `expectations.sentence_pairs(sentence) -> list[tuple[str, int, str]]` gives each topic, score
     and matched text.
