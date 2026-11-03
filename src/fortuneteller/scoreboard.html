@@ -56,7 +56,8 @@ before it as counts, the band half its moves land in, and the grade on the close
 <code>data/guesses/&lt;day&gt;-&lt;handle&gt;.csv</code>, with the header
 <code>flow,instrument,direction</code> and one row per market (<code>cpi,SPY / ES,up</code>), and
 open a pull request that adds only that file. A guess counts only if the owner merges the pull
-request before 08:30 New York on its day; a late or unmerged one is void.
+request before 08:30 New York on its day; one merged later is void, and one never merged is
+not shown.
 <a href="https://github.com/diykorey/fortuneteller/blob/main/docs/steps/beat-the-fortune-teller.md">The rules</a>.</p>
 <p class="muted"><strong>Not a fair fight:</strong> a person guesses before the release; the machine
 calls after it, knowing the actual, and only on the links and days it chooses.</p>
@@ -139,7 +140,9 @@ record is shown, losses included. A handle is dropped from the page on request; 
   // The guesses, newest day first, each beside the machine's row; each handle's record as counts.
   const handles = byId('handles');
   handles.appendChild(head(['Handle', 'Record']));
-  if (!data.handles.length) handles.appendChild(row([el('td', 'No guess yet.', 'none')]));
+  if (!data.handles.length && !data.bad_guesses.length) {
+    handles.appendChild(row([el('td', 'No guess yet.', 'none')]));
+  }
   data.handles.forEach((h) => {
     handles.appendChild(row([el('td', h.who), el('td', h.right + ' of ' + h.graded + ' right')]));
   });
@@ -152,7 +155,8 @@ record is shown, losses included. A handle is dropped from the page on request; 
     if (g.reason) grade.appendChild(el('small', g.reason));
     const machine = el('td', g.machine,
       ['right', 'wrong', 'void', 'waiting'].includes(g.machine) ? g.machine : 'none');
-    guesses.appendChild(row([el('td', g.day), el('td', g.who), el('td', labels[g.event] || g.event),
+    guesses.appendChild(row([el('td', g.day), el('td', g.who),
+      el('td', Object.hasOwn(labels, g.event) ? labels[g.event] : g.event),
       el('td', g.market), el('td', g.direction), grade, machine]));
   });
   data.bad_guesses.forEach((note) => byId('bad-guesses').appendChild(el('li', note)));

@@ -28,7 +28,8 @@ Two things make this hard. Both come from the person, not the machine, being the
     with one row per market, and open a pull request.
   - The pull request must be merged before the release time. Only the owner can merge, so a guess
     counts only if the owner merges it in time. The page says so, and lists the guess pull requests
-    that were not merged in time.
+    that were not merged in time. *Amended 2026-11-03:* it lists those merged too late, as void
+    guesses with the reason; one never merged does not reach `main` and is not shown.
   - A pull request that touches anything but its own new file is refused. A guess pull request is
     merged by merge commit or squash, never rebased.
   - Every rule is checked in grading, so a hand-written file gets the same rules as any other.
