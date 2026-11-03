@@ -400,6 +400,18 @@ louder than the reaction day (the S&P 500 1.47, p 0.09), a check and not a verdi
 markets it is quieter. Against the expected outcome: met on seven cells, near on eight, missed on
 one (the Nasdaq); over a week met. No call.
 
+**The second term** ([part 2](steps/presidential-posts-2.md#results)): 220 Truth Social post days
+from a frozen snapshot of CNN's archive, 122 lone on the S&P 500, compared with ordinary days of
+2025-01-22 to 2026-10-30. No US market *moves* on the day: the S&P 500 0.86, the Nasdaq 0.87, VIX
+0.98; outside the session they stay under 1.10 (0.85, 0.86, 1.03). Bitcoin *moves* (1.33, p 0.009), one hit
+where 0.16 are expected by chance, with its day before at 1.10, so clustering is not excluded.
+Against the expected outcome: met on four cells, near on eight, missed on four (the three US
+markets and bitcoin). Over a week, context only and not graded, gold and energy *move*; 80–83% of
+ordinary week windows hold a post day, so a week result is weak evidence. A median test does not
+rule out a few large post days; no *moves* is not no effect. **By the rule written first, step 11
+closes with no:** the president's topic-matched text posts give no US market a *moves* on the day.
+That measures those posts, not news in general. No call.
+
 ## What comes next
 
 Chosen 2026-10-13: keep score ([rung 4](steps/rung-4-keep-score.md)), done above with the live path

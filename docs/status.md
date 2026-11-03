@@ -8,8 +8,8 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-The president's trade posts, part 2, step 1 *(PR #220)*: 220 second-term post days as the lesser
-flow `posts2`; every existing scoreboard entry identical, the chance line 328 → 344.
+The president's trade posts, part 2, step 2 *(PR #221)*: results. No US market moves on a
+second-term trade-post day; bitcoin alone, clustering not excluded. Step 11 closes with no.
 
 ## In progress
 
@@ -19,18 +19,17 @@ evening grades. The jobs report on 2026-11-06 is the first with the euro and the
 called. The published page still shows the raw move from before own years until the next evening
 run rewrites it.
 
-The president's trade posts, part 2, step 2: results, against [the spec](steps/presidential-posts-2.md)'s
-expected outcome, checks and readings.
-
 ## Next
 
-Step 11 closed yes or no by part 2's readings; then the next step from the roadmap, or a choice
-for the user if none is written.
+Not chosen: the roadmap's numbered steps are done through 11. Candidates for the user: rung 7,
+live detection, which step 11's no does not support; a step 12 from the roadmap's "later" list (a
+statement's text read for its direction, prediction-market prices, "beat the fortune teller").
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-03 | The president's trade posts, part 2, step 2: results — no US market moves on a post day; step 11 closes with no | PR #221 |
 | 2026-11-03 | The president's trade posts, part 2, step 1: 220 second-term post days as one lesser flow, every existing entry identical | PR #220 |
 | 2026-11-03 | The president's trade posts, part 2: spec | PR #219 |
 | 2026-11-03 | The president's trade posts, step 2: results — nothing moves on a tweet day | PR #218 |
