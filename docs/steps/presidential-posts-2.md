@@ -103,7 +103,7 @@ the difference.
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~The script reads either archive; the second seed and flow are stored. Counted on the real calendar: posts, days, empty-text posts, lone and ordinary days per market, placebo days, the two kinds of shared day on the S&P 500 by reaction day, later posts the first-post rule drops, and the week windows holding a post~~ **done** | Tests below pass; part 1's seed is rebuilt byte-identical from its dump; a fetch on step 1's day, cut at 2026-10-31, rebuilds the seed with its difference recorded; every existing scoreboard entry is identical on a copy of the store |
-| 2 | Results here and in [`mvp-results.md`](../mvp-results.md) | The verdicts, the four checks, the reading and step 11's answer, against the expected outcome |
+| 2 | ~~Results here and in [`mvp-results.md`](../mvp-results.md)~~ **done** | The verdicts, the four checks, the reading and step 11's answer, against the expected outcome |
 
 *Step 1, 2026-11-03:*
 - **The seed:** the rule finds 322 posts on 220 New York days, 2025-01-22 to 2026-10-19, 174 of
@@ -127,6 +127,63 @@ the difference.
   - None under 100 ordinary days, none *too few*.
 - **Placebo days:** 47 to 49 a market, 58 on bitcoin.
 - **Week windows:** 80% to 83% of ordinary week windows hold a post reaction day.
+
+## Results
+
+Measured 2026-11-03 on step 1's copy of the store, with `raw-move --event posts2` (with and without
+`--week`) and a one-off script for the four checks. Each market's lone reaction days (122 on the
+S&P 500, 124 on bitcoin) are compared with ordinary days of 2025-01-21 to 2026-10-30.
+
+| | On the day | Over a week, context only |
+| --- | --- | --- |
+| **Moves** | bitcoin 1.33 (p 0.009) | gold 1.32 (p 0.007), energy 1.34 (p 0.009) |
+| *Unclear* | the FTSE 100 1.38, Brent 1.32, the euro 1.31, the 10-year yield 1.25 (p 0.015), the dollar 1.17, defence 1.16, gold 1.11 | the dollar 1.21, the euro 1.21, VIX 1.15, the Nasdaq 1.13 |
+| Doesn't | the S&P 500 0.86, the Nasdaq 0.87, VIX 0.98, the DAX 0.87, the Euro Stoxx 50 0.90, the STOXX 600 0.90, the 5-year yield 1.08, energy 1.02 | the other nine, every ratio 1.07 or under |
+
+- **No US market *moves*.** On the day the S&P 500, the Nasdaq and VIX are at or below an ordinary
+  day: 0.86, 0.87 and 0.98.
+- **Bitcoin *moves*:** 1.33, p 0.009, on 124 days. It is one *moves* in 16 cells, where 0.16 are
+  expected by chance.
+- **The week is context, not graded:** 80–83% of ordinary week windows hold a post reaction day.
+
+**The four checks.** Each is graded on the S&P 500, the Nasdaq, VIX and bitcoin.
+
+| Check | The S&P 500 | The Nasdaq | VIX | Bitcoin | Expected | Grade |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1. The day before (47–58 days) | 1.07 | 1.27 | 0.96 | 1.10 | ≥ 1.05 on the S&P 500 and VIX | met on the S&P 500, missed on VIX |
+| 2. Without tariff signings (103 days) | 0.85 | 0.89 | 0.98 | 1.41 (p 0.008) | under 1.10 on two of the three US markets | met on all three |
+| 3. Without April 2025 (111 days) | 0.86 | 0.92 | 0.99 | 1.27 (p 0.02) | under 1.10 on two of the three | met on all three |
+| 4. Outside the session (87 days) | 0.85 | 0.86 | 1.03 | — | ≥ 1.10 on each | missed on all three |
+
+- Checks 2 and 3 are met trivially: they were written for a US market that *moves*, and none did.
+- In check 2, 19 of the S&P 500's 122 lone days share a tariff signing.
+
+**Reading, for bitcoin, the one market that *moves*:**
+- check 2 keeps it (1.41) and check 3 keeps it (1.27);
+- its placebo is 1.10, at or above 1.05, so row 3 applies: clustering is not excluded.
+
+**Against the expected outcome, cell by cell on the day:**
+- **met on four:** the dollar, Brent and the 10-year yield are *unclear*, and energy *doesn't*;
+- **near on eight:**
+  - the DAX, the Euro Stoxx 50, the STOXX 600 and the 5-year yield are *doesn't* where *unclear*
+    was expected;
+  - the FTSE 100, gold, defence and the euro are *unclear* where *doesn't* was expected;
+- **missed on four:**
+  - the S&P 500, the Nasdaq and VIX *doesn't*, where *moves* was expected;
+  - bitcoin *moves*, where *doesn't* was expected.
+
+Step 11's verdict was expected to be no, and it is no.
+
+**What it means.** On the next close, no US market *moves* on the president's trade posts, in
+either term. In the second term, the post days are no louder on US stocks than ordinary days of
+that term. Bitcoin's *moves* is one hit at a chance rate of 0.16, with a loud day before it.
+
+So **step 11 closes with no**:
+- GDELT cannot date these events;
+- the president's own trade posts give no US market a *moves* on the day;
+- a news feed is not worth building on for this question, and rung 7 waits for another reason.
+
+The tariff signings themselves are measured in [tariffs](tariffs.md).
 
 ## Technical details
 
