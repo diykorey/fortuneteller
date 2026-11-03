@@ -614,6 +614,35 @@ def test_a_debt_limit_vote_reacts_on_each_market_s_next_close(tmp_path: Path) ->
     assert batch.report == ["loaded 3 United States debt-limit laws, 1981-09-29 … 2023-06-03"]
 
 
+def test_a_summit_reacts_on_its_last_day_in_europe_and_after_it_on_a_weekend(
+    tmp_path: Path,
+) -> None:
+    # given a seed file with a G7 summit ending on a Saturday and one ending on a Tuesday in Bavaria
+    seed = tmp_path / "summits.csv"
+    seed.write_text(
+        "last_day,time,summit,source_url\n"
+        "2018-06-09,20:00,G7 Charlevoix,https://www.g7.utoronto.ca/summit/2018charlevoix/index.html\n"
+        "2022-06-28,08:00,G7 Elmau,https://www.g7.utoronto.ca/summit/2022elmau/index.html\n"
+    )
+
+    # when the summits are loaded
+    batch = flows.SUMMIT_FLOW.load(seed, datetime(2026, 11, 3, 12, 0, tzinfo=NEW_YORK))
+
+    # then both are scheduled events; the Saturday one reacts on Monday on the S&P 500 and on
+    # Sunday on bitcoin, and the Tuesday one reacts that day in New York and in Frankfurt
+    assert [(e.event_id, e.detail, e.scheduled) for e in batch.events] == [
+        (2320180609, "G7 Charlevoix", True),
+        (2320220628, "G7 Elmau", True),
+    ]
+    spy = MVP_PRICE_SERIES["SPY / ES"]
+    closes = _closes((date(2018, 6, 8), 100.0), (date(2018, 6, 11), 101.0))
+    assert reaction_days(closes, [first_reaction_day(batch.events[0], spy)]) == {date(2018, 6, 11)}
+    assert first_reaction_day(batch.events[0], MVP_PRICE_SERIES["BTC"]) == date(2018, 6, 10)
+    assert first_reaction_day(batch.events[1], spy) == date(2022, 6, 28)
+    assert first_reaction_day(batch.events[1], MVP_PRICE_SERIES["DAX"]) == date(2022, 6, 28)
+    assert batch.report == ["loaded 2 G7 / G20 summits, 2018-06-09 … 2022-06-28"]
+
+
 def test_two_times_on_one_day_are_refused(tmp_path: Path) -> None:
     # given a seed file with two German votes on one day at different hours
     seed = tmp_path / "elections.csv"
