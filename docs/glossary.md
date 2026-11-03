@@ -128,6 +128,11 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **Surprise_sd / standardized surprise** — the surprise divided by how big surprises usually are
   for that release (its standard deviation). Makes a CPI miss and a payrolls miss comparable on one
   scale. `"unknown"` when there is too little history to standardize.
+- **Tone / Net Index** — how hawkish a Fed statement sounds, counted from adjective–noun phrases
+  ("higher inflation" hawkish, "slower growth" dovish) on a published word list: hawkish over all
+  phrases minus dovish over all phrases, plus 1, so 0 is all dovish and 2 all hawkish. No phrase,
+  no tone ([the Fed statement's tone](steps/fed-statement-tone.md)).
+- **Hold** — a Fed decision after which the target rate is the one of the day before it.
 
 ## Instruments & markets
 

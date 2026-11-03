@@ -8,6 +8,7 @@ actual, then stores ``actual − expected``. A new source is one class and one l
 
 from __future__ import annotations
 
+import re
 from collections.abc import Iterable, Mapping, Sequence
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
@@ -657,6 +658,52 @@ class TradingViewForecast:
                         Expectation(a.event_id, a.measure, self.name, forecast, a.unit, known_at)
                     )
         return expected
+
+
+# The Fed statement's tone (docs/steps/fed-statement-tone.md): the main word list of Apel and
+# Blix Grimaldi, "The Information Content of Central Bank Minutes", Sveriges Riksbank Working
+# Paper 261 (2012), without its extended nouns. ``x*`` matches a word starting with ``x``.
+TONE = "tone"
+TONE_HOLDS = "tone_holds"
+PREVIOUS_STATEMENT = "previous_statement"
+TONE_NOUNS = (
+    "inflation*",
+    "price*",
+    "wage*",
+    "oil price*",
+    "cyclical position*",
+    "growth*",
+    "development*",
+)
+HAWKISH_ADJECTIVES = ("high*", "strong*", "increasing", "increase*", "fast*")
+DOVISH_ADJECTIVES = ("low*", "weak*", "decreasing", "decreas*", "slow*")
+
+
+def _word_matches(word: str, pattern: str) -> bool:
+    return word.startswith(pattern[:-1]) if pattern.endswith("*") else word == pattern
+
+
+def statement_tone(text: str) -> tuple[float | None, list[str]]:
+    """The paper's Net Index of a statement, from 0 (all dovish) to 2 (all hawkish), and the
+    phrases it counted; no tone without a phrase. A phrase is an adjective right before a noun,
+    with only whitespace or a hyphen between them; any other character breaks it."""
+    tokens = re.findall(r"[a-z]+|[^a-z\s-]", text.lower())
+    nouns = sorted((noun.split() for noun in TONE_NOUNS), key=len, reverse=True)
+    phrases: list[str] = []
+    hawk = dove = 0
+    for i, word in enumerate(tokens):
+        hawkish = any(_word_matches(word, a) for a in HAWKISH_ADJECTIVES)
+        if not hawkish and not any(_word_matches(word, a) for a in DOVISH_ADJECTIVES):
+            continue
+        for noun in nouns:
+            following = tokens[i + 1 : i + 1 + len(noun)]
+            if len(following) == len(noun) and all(map(_word_matches, following, noun)):
+                phrases.append(" ".join([word, *following]))
+                hawk, dove = (hawk + 1, dove) if hawkish else (hawk, dove + 1)
+                break
+    if not phrases:
+        return None, phrases
+    return hawk / (hawk + dove) - dove / (hawk + dove) + 1, phrases
 
 
 EXPECTATION_SOURCES: list[ExpectationSource] = [

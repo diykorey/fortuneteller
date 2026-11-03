@@ -101,8 +101,38 @@ Four things make this hard.
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | `load-tone` fetches every statement since 2000, scores its tone and stores the two measures against the previous statement; each signed link's count, `noticeable` and the hand read written here; then, unless stopped, the Fed flow gets its surprise rule | The tests below pass; on a copy of the store every other flow's scoreboard entry, `score` and `missed` are identical |
-| 2 | Results here and in [`mvp-results.md`](../mvp-results.md) | The verdicts against the expected outcome |
+| 1 | ~~`load-tone` fetches every statement since 2000, scores its tone and stores the two measures against the previous statement; each signed link's count, `noticeable` and the hand read written here; then, unless stopped, the Fed flow gets its surprise rule~~ **done, stopped** | The tests below pass; on a copy of the store every other flow's scoreboard entry, `score` and `missed` are identical |
+| 2 | ~~Results here and in [`mvp-results.md`](../mvp-results.md)~~ **not run**: the stop rule fired | The verdicts against the expected outcome |
+
+*Step 1, 2026-11-03:* `load-tone` on a copy of the store scored all 226 Fed statements from
+2000-02-02 to 2026-10-28. Every stored decision had exactly one statement link. Then:
+- **19 statements have a tone.** An independent regex over the same texts finds the same 19.
+- 151 decisions are holds. 10 `tone` surprises and 8 `tone_holds` are stored; 6 of the holds are
+  alone on their day.
+- **Each signed link has 1 hold with a non-zero surprise and a move**, against the 40 required.
+  Every link is *too few*, so **step 1 stops**: the Fed flow gets no surprise rule and step 2 is
+  not run.
+- `noticeable` would be 2.0, the only non-zero value.
+- **The hand read:** the five lowest holds (2012-06-20, 2012-08-01, 2015-04-29, 2015-06-17,
+  2015-07-29) read "lower prices" or "decreasing prices". The five highest (2025-05-07, 2017-09-20,
+  2012-04-25, 2011-08-09, 2011-06-22) read "higher inflation" or "higher prices". All come from the
+  statements' text, so the trigger did not fire.
+- On the copy, `score` is identical with and without the tone rows.
+- *Amended 2026-11-03:* with no rule, the parts only a rule would need were not built: the
+  `PREVIOUS_STATEMENT` expectation source, the Fed skip in `load_surprises` and the month read
+  from the event's day. `load-tone`, the tone and the stored rows remain, so the count can be
+  repeated. The text cut also stops at "Voting against", which a 2026 statement has without
+  "Voting for", and at the old pages' footer ("2000 Monetary policy", "Home"). HTML comments are
+  dropped.
+
+## Results
+
+**Untested, not no.** The paper's list reads Swedish minutes, where an adjective comes before
+its noun. The Fed's statements mostly put the noun first ("inflation remains elevated",
+"growth is strong"). Where an adjective does come first, it is one the list lacks ("subdued
+inflation", "moderate growth", "economic growth"). So 207 of 226 statements give no phrase, and
+the surprise test never runs. A word list that reads the Fed's own phrasing, or a model, would be
+a new step with its own list fixed first.
 
 ## How you know it is right
 

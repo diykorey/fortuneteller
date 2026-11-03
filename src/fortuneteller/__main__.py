@@ -15,6 +15,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import statistics
 import subprocess
 import sys
 import textwrap
@@ -132,6 +133,72 @@ def describe_surprises(rows: Sequence[Surprise]) -> list[str]:
             f"{measure:<9} {baseline:<10} {len(ids):>3} surprises, released {first} … {last}"
         )
     return lines
+
+
+# One-sided p < 0.01 on a rank correlation of n pairs needs about this times 1/sqrt(n - 1).
+Z_ONE_SIDED_01 = 2.326
+
+
+def describe_tone(load: flows.ToneLoad, con: duckdb.DuckDBPyConnection) -> list[str]:
+    """``load-tone``'s report, written before any move is read: the statements scored, each signed
+    link's count of holds with a non-zero surprise and a move (shared days left out) with the
+    smallest correlation it could detect, the noticeable surprise, and the holds with the highest
+    and the lowest tone, with their phrases."""
+    scored = len(load.tones)
+    toned = sum(tone is not None for tone, _ in load.tones.values())
+    holds = [r for r in load.rows if r.measure == expectations.TONE_HOLDS]
+    shared = study.shared_days(flows.FED_FLOW, con=con)
+    lone = [r for r in holds if r.event_id not in shared]
+    lines = [
+        f"statements: {scored} since {flows.TONE_FROM}, {toned} with a tone, "
+        f"{len(load.holds)} holds",
+        f"surprises: {sum(r.measure == expectations.TONE for r in load.rows)} on every decision, "
+        f"{len(holds)} on holds, {len(lone)} of them alone on their day",
+    ]
+    moving = [r.event_id for r in lone if r.surprise != 0]
+    lines.append("signed links, holds with a non-zero surprise and a move:")
+    for instrument, sign in flows.FED_TONE_SIGN.items():
+        if not sign:
+            continue
+        n = 0
+        if moving:
+            marks = ", ".join("?" * len(moving))
+            (n,) = con.execute(
+                "SELECT count(*) FROM observations WHERE instrument = ? AND ret_1d IS NOT NULL "
+                f"AND event_id IN ({marks})",
+                [instrument, *moving],
+            ).fetchone() or (0,)
+        smallest = f"{Z_ONE_SIDED_01 / math.sqrt(n - 1):.2f}" if n > 1 else "-"
+        verdict = "" if n >= flows.TONE_MIN_PAIRS else ", too few"
+        lines.append(f"  {instrument:<12} {n:>4}, smallest detectable {smallest}{verdict}")
+    sizes = sorted(abs(r.surprise) for r in lone if r.surprise != 0)
+    lines.append(f"noticeable: {statistics.median(sizes):.4f}" if sizes else "noticeable: none")
+    by_tone = sorted(
+        (tone, flows.event_date(i), phrases)
+        for i, (tone, phrases) in load.tones.items()
+        if i in load.holds and tone is not None
+    )
+    for label, chosen in (("lowest", by_tone[:5]), ("highest", by_tone[::-1][:5])):
+        lines.append(f"holds with the {label} tone:")
+        for tone, day, phrases in chosen:
+            lines.append(f"  {day} {tone:.2f}: {'; '.join(phrases)}")
+    return lines
+
+
+def _load_tone(_args: argparse.Namespace) -> int:
+    api_key = _fred_key("load-tone")
+    if not api_key:
+        return 1
+    con = db.get_connection()
+    db.init_db(con=con)
+    try:
+        load = flows.load_tone(api_key, settings.cache_dir, con=con)
+    except (sources.FredError, sources.FedError, ValueError) as exc:
+        print(f"load-tone: {exc}", file=sys.stderr)
+        return 1
+    for line in describe_tone(load, con):
+        print(line)
+    return 0
 
 
 def _load_surprises(_args: argparse.Namespace) -> int:
@@ -1256,6 +1323,11 @@ def build_parser() -> argparse.ArgumentParser:
         "load-surprises", help="load each event's surprise against every expected value"
     )
     p_surprises.set_defaults(func=_load_surprises)
+
+    p_tone = sub.add_parser(
+        "load-tone", help="score each Fed statement's tone against the previous statement's"
+    )
+    p_tone.set_defaults(func=_load_tone)
 
     p_surprise = sub.add_parser(
         "surprise", help="does each instrument's release-day move follow the event's surprise?"
