@@ -19,10 +19,13 @@ evening grades. The jobs report on 2026-11-06 is the first with the euro and the
 called. The published page still shows the raw move from before own years until the next evening
 run rewrites it.
 
+The president's trade posts, part 2: [the spec](steps/presidential-posts-2.md), the second term's
+Truth Social posts from a frozen snapshot of CNN's archive.
+
 ## Next
 
-Not chosen yet. Candidates: the president's trade posts, part 2 (the second term, from a committed
-record of its posts); rung 7, live detection, which part 1's null result does not support.
+The president's trade posts, part 2, step 1: the script reads both archives, the second seed and
+flow (`posts2`), counted on the real calendar.
 
 ## Done
 
