@@ -9,6 +9,7 @@ flow and one line in ``EVENT_FLOWS``; prices, raw move and the surprise apply to
 from __future__ import annotations
 
 import csv
+import statistics
 from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from datetime import UTC, date, datetime, time, timedelta
@@ -28,12 +29,14 @@ from .expectations import (
     first_published_percent_changes,
     NASDAQ_CONSENSUS,
     NOWCAST_BASELINE,
+    PREVIOUS_STATEMENT,
     PAYROLL_MODEL,
     TRADINGVIEW_FORECAST,
     TREND_12M,
     Actual,
     build_surprises,
     statement_tone,
+    statement_topics,
     event_month,
     previous_month,
 )
@@ -608,6 +611,30 @@ CLAIMS_SURPRISE_RULE = SurpriseRule(
     logged_since=date(2026, 10, 29),
 )
 
+# A stronger statement than the previous one: yields and the dollar up, the euro down; stocks
+# unsigned. The verdict on holds; noticeable is step 1's median non-zero surprise on holds
+# (docs/steps/fed-statement-sentiment.md).
+SENTIMENT = "sentiment"
+SENTIMENT_HOLDS = "sentiment_holds"
+FED_SENTIMENT_RULE = SurpriseRule(
+    ((SENTIMENT_HOLDS, PREVIOUS_STATEMENT), (SENTIMENT, PREVIOUS_STATEMENT)),
+    with_more_outcomes(
+        {
+            "SPY / ES": 0,
+            "UST10Y / ZN": 1,
+            "DXY": 1,
+            "GC / XAU": 0,
+            "VIX": 0,
+            "DAX": 0,
+            "SX5E": 0,
+        }
+    ),
+    0.1119,
+    "0.11",
+    alone=True,
+    predicted_from=PREVIOUS_STATEMENT,
+)
+
 # A stronger German survey: Europe's stocks up and the euro up, so the dollar index down; a hotter
 # German flash, the euro-area flash's signs (docs/steps/germany-calendar.md).
 GERMAN_SURVEY_EXPECTED_SIGN = with_more_outcomes(
@@ -758,7 +785,7 @@ class FedFlow:
     type_code = 3
     cli_name = "fomc"
     label = "Fed"
-    surprise_rule: SurpriseRule | None = None
+    surprise_rule: SurpriseRule | None = FED_SENTIMENT_RULE
     lesser: bool = False
 
     def events(self, api_key: str) -> EventBatch:
@@ -1449,12 +1476,13 @@ def load_surprises(api_key: str, con: duckdb.DuckDBPyConnection | None = None) -
     expectation source its expectations, and ``build_surprises`` checks and pairs them.
 
     Nothing is stored unless every flow's own checks pass (CPI's against the Cleveland Fed, NFP's
-    against FRED's revision history) and every expectation fits its event.
+    against FRED's revision history) and every expectation fits its event. The Fed's sentiment is
+    ``load-sentiment``'s, and kept.
     """
     events: list[EventInstance] = []
     actuals: list[Actual] = []
     for flow in EVENT_FLOWS:
-        if flow.surprise_rule is None:
+        if flow.surprise_rule is None or flow is FED_FLOW:
             continue
         if typed := stored_events(flow, con=con):
             events += typed
@@ -1466,9 +1494,13 @@ def load_surprises(api_key: str, con: duckdb.DuckDBPyConnection | None = None) -
         for source in EXPECTATION_SOURCES
         for expectation in source.expectations(events, actuals, api_key)
     ]
-    with_surprise = [flow.event_type for flow in EVENT_FLOWS if flow.surprise_rule is not None]
+    with_surprise = [
+        flow.event_type
+        for flow in EVENT_FLOWS
+        if flow.surprise_rule is not None and flow is not FED_FLOW
+    ]
     rows = build_surprises(events, actuals, expected, with_surprise)
-    db.replace_rows("surprises", rows, "TRUE", con=con)
+    db.replace_rows("surprises", rows, "measure NOT IN (?, ?)", SENTIMENT_MEASURES, con=con)
     return rows
 
 
@@ -1508,11 +1540,12 @@ class ToneLoad:
     holds: set[int]
 
 
-def load_tone(
+def fed_statements(
     api_key: str, cache_dir: Path, con: duckdb.DuckDBPyConnection | None = None
-) -> ToneLoad:
-    """Score every stored Fed decision's statement since ``TONE_FROM``, each against the one before;
-    refused if a decision has no statement link, or two pages give it different ones."""
+) -> tuple[list[EventInstance], dict[int, str], set[int]]:
+    """Every stored Fed decision, the text of each one's statement since ``TONE_FROM``, and the
+    holds among them; refused if a decision has no statement link, or two pages give it different
+    ones."""
     events = stored_events(FED_FLOW, con=con)
     if not events:
         raise ValueError("no Fed decisions stored; run `fortuneteller load-releases` first")
@@ -1527,15 +1560,107 @@ def load_tone(
     scored = [e for e in events if release_date(e) >= TONE_FROM]
     if missing := [release_date(e) for e in scored if release_date(e) not in links]:
         raise ValueError(f"no statement for the Fed decision of {', '.join(map(str, missing))}")
-    tones = {
-        e.event_id: statement_tone(
-            sources.statement_text(
-                sources.fetch_statement(release_date(e), links[release_date(e)], cache_dir)
-            )
+    texts = {
+        e.event_id: sources.statement_text(
+            sources.fetch_statement(release_date(e), links[release_date(e)], cache_dir)
         )
         for e in scored
     }
     rates = dict(target_rates(api_key))
     holds = {e.event_id for e in scored if is_hold(release_date(e), rates)}
+    return events, texts, holds
+
+
+def load_tone(
+    api_key: str, cache_dir: Path, con: duckdb.DuckDBPyConnection | None = None
+) -> ToneLoad:
+    """Score every stored Fed decision's statement since ``TONE_FROM``, each against the one
+    before."""
+    events, texts, holds = fed_statements(api_key, cache_dir, con)
+    tones = {i: statement_tone(text) for i, text in texts.items()}
     surprises = tone_surprises(events, {i: tone for i, (tone, _) in tones.items()})
     return ToneLoad(surprises, tones, holds)
+
+
+# The Fed statement's sentiment (docs/steps/fed-statement-sentiment.md): step 13's question with
+# the paper's dictionary built from the FOMC's own statements.
+SENTIMENT_SIGNED = ("UST10Y / ZN", "UST5Y / ZF", "DXY", "EURUSD")
+# The checks against the paper, each stopping the step when it fails.
+PAPER_BELOW_ZERO = date(2008, 12, 16)
+PAPER_ABOVE_ZERO = date(2018, 9, 26)
+PAPER_SAMPLE = (date(2000, 2, 2), date(2019, 12, 11), 166)
+PAPER_SAMPLE_SLACK = 10
+PAPER_WORKED_PAIR = "labor -1: labor ... deteriorat"
+
+
+SENTIMENT_MEASURES = (SENTIMENT, SENTIMENT_HOLDS)
+
+
+@dataclass(frozen=True)
+class SentimentLoad(ToneLoad):
+    labor: dict[int, float]
+    rows: list[Surprise]
+
+
+def load_sentiment(
+    api_key: str, cache_dir: Path, con: duckdb.DuckDBPyConnection | None = None
+) -> SentimentLoad:
+    """Score every stored Fed decision's statement since ``TONE_FROM`` with the paper's
+    sentiment index, each against the one before."""
+    events, texts, holds = fed_statements(api_key, cache_dir, con)
+    tones: dict[int, tuple[float | None, list[str]]] = {}
+    indexes: dict[int, float] = {}
+    labor: dict[int, float] = {}
+    for i, text in texts.items():
+        topics, pairs = statement_topics(text)
+        if topics is not None:
+            indexes[i], labor[i] = float(sum(topics.values())), topics["labor"]
+        tones[i] = (indexes.get(i), pairs)
+    surprises = tone_surprises(events, indexes)
+    previous = {after.event_id: before.event_id for before, after in zip(events, events[1:])}
+    rows = [
+        Surprise(
+            event_id=i,
+            measure=measure,
+            baseline=PREVIOUS_STATEMENT,
+            actual_mom=indexes[i],
+            expected_mom=indexes[previous[i]],
+            surprise=surprise,
+        )
+        for i, surprise in surprises.items()
+        for measure in ((SENTIMENT, SENTIMENT_HOLDS) if i in holds else (SENTIMENT,))
+    ]
+    return SentimentLoad(surprises, tones, holds, labor, rows)
+
+
+def store_sentiment(load: SentimentLoad, con: duckdb.DuckDBPyConnection | None = None) -> int:
+    """Replace the stored sentiment surprises with the load's."""
+    return db.replace_rows("surprises", load.rows, "measure IN (?, ?)", SENTIMENT_MEASURES, con=con)
+
+
+def sentiment_checks(load: SentimentLoad) -> list[tuple[str, bool]]:
+    """The checks against the paper, each with whether it passes."""
+    by_day = {event_date(i): index for i, (index, _) in load.tones.items()}
+    below, above = by_day.get(PAPER_BELOW_ZERO), by_day.get(PAPER_ABOVE_ZERO)
+    indexes = [index for index in by_day.values() if index is not None]
+    first, last, count = PAPER_SAMPLE
+    sample = sum(first <= day <= last for day in by_day)
+    worked = next(
+        (pairs for i, (_, pairs) in load.tones.items() if event_date(i) == PAPER_BELOW_ZERO), []
+    )
+    before = [abs(s) for i, s in load.labor.items() if event_date(i).year < 2010]
+    after = [abs(s) for i, s in load.labor.items() if 2010 <= event_date(i).year < 2020]
+    labor_quiet = bool(before and after) and (statistics.mean(before) < statistics.mean(after) / 2)
+    return [
+        (
+            f"{PAPER_BELOW_ZERO} below zero and {PAPER_ABOVE_ZERO} above",
+            below is not None and above is not None and below < 0 < above,
+        ),
+        ("every index between -1 and 1", all(-1 <= index <= 1 for index in indexes)),
+        (
+            f"{sample} statements {first} to {last}, the paper's {count}",
+            abs(sample - count) <= PAPER_SAMPLE_SLACK,
+        ),
+        (f'{PAPER_BELOW_ZERO} has "{PAPER_WORKED_PAIR}"', PAPER_WORKED_PAIR in worked),
+        ("labor before 2010 under half of 2010-2019", labor_quiet),
+    ]

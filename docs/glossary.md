@@ -133,6 +133,12 @@ Terms are grouped by what they are about, alphabetical within each group.
   phrases minus dovish over all phrases, plus 1, so 0 is all dovish and 2 all hawkish. No phrase,
   no tone ([the Fed statement's tone](steps/fed-statement-tone.md)).
 - **Hold** — a Fed decision after which the target rate is the one of the day before it.
+- **Sentiment index** — how strong a Fed statement reads on Gardner, Scotti and Vega's dictionary
+  built from the FOMC's own statements: each **keyword** (a topic word such as "unemployment" or
+  "inflation") times its closest **modifier** (a word such as "declined" or "elevated", scored 1, 0
+  or −1), plus long phrases and future-policy rules, summed over the square root of the words. About
+  −1 to 1; positive means a stronger economy or higher inflation
+  ([the Fed statement's sentiment](steps/fed-statement-sentiment.md)).
 
 ## Instruments & markets
 

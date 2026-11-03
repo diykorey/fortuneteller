@@ -27,7 +27,10 @@ through `db.insert_models` (`effect_size_matrix`, which nothing writes yet, has 
 
 **Reference** tables are configuration: committed CSVs in `data/seed/`, loaded by
 `uv run fortuneteller seed`, and re-loadable at any time. Most are partial exports of a Notion
-workspace; [`legacy/data/`](legacy/data/README.md) says how complete each one is. **Fact** tables
+workspace; [`legacy/data/`](legacy/data/README.md) says how complete each one is. One seed file is
+no table: `data/seed/fomc_sentiment_dictionary.csv`, a read-only copy of Tables A5–A10 of Gardner,
+Scotti and Vega's FOMC dictionary (columns `table,entry,score,topic`, 282 rows), read by
+`expectations` alone ([the Fed statement's sentiment](steps/fed-statement-sentiment.md)). **Fact** tables
 hold what really happened, fetched from outside sources. The **derived** table would hold numbers
 computed from the facts.
 
@@ -444,7 +447,9 @@ payroll rows on 2026-10-06 against the trend (from 1956): every stored jobs repo
 twelve; and, from 2026-10-09, 148 against the payroll model (from 2014). Against Nasdaq's consensus,
 from 2026-10-09: core 220, headline 219 and payrolls 222, all from 2008. From 2026-10-12
 ([step 4](steps/step-4-more-events.md)): retail sales 291 against the trend (from 2002) and 214
-against the consensus, core PCE 300 and 216, GDP 135 (from 1993) and 70.
+against the consensus, core PCE 300 and 216, GDP 135 (from 1993) and 70. The Fed's sentiment rows
+are filled by `uv run fortuneteller load-sentiment` instead, and `load-surprises` keeps them: 376
+on 2026-11-03, from 2000 ([the Fed statement's sentiment](steps/fed-statement-sentiment.md)).
 
 Example row:
 
@@ -457,7 +462,7 @@ Example row:
 | `event_id` | BIGINT, **PK** | The release, an `event_instances.event_id`. Core and headline come out in the same BLS release, so they share it. |
 | `measure` | TEXT, **PK** | Which number; see below. |
 | `baseline` | TEXT, **PK** | Where the expected value came from: the `name` of an expectation source in `expectations.EXPECTATION_SOURCES`; see below. |
-| `actual_mom` | DOUBLE | The month-over-month change **as first published**: for CPI in percent (`0.567` means +0.567%); for `payrolls` in thousands of jobs (`315` means +315,000); for retail sales and core PCE in percent month on month, for GDP in percent quarter on quarter, annualized; for the euro-area measures the year-on-year rate in percent; for `ism_pmi` the index itself; for `initial_claims` the week's new claims in thousands. The number the market saw, not today's revised one. |
+| `actual_mom` | DOUBLE | The month-over-month change **as first published**: for CPI in percent (`0.567` means +0.567%); for `payrolls` in thousands of jobs (`315` means +315,000); for retail sales and core PCE in percent month on month, for GDP in percent quarter on quarter, annualized; for the euro-area measures the year-on-year rate in percent; for `ism_pmi` the index itself; for `initial_claims` the week's new claims in thousands; for the Fed's sentiment, the statement's index. The number the market saw, not today's revised one. |
 | `expected_mom` | DOUBLE | What `baseline` expected that change to be, in the same unit. |
 | `surprise` | DOUBLE | `actual_mom − expected_mom`: percentage points for CPI, retail sales, core PCE, GDP and flash HICP, thousands of jobs for payrolls, thousands of claims for `initial_claims`, index points for ISM. Positive means hotter or stronger than expected. |
 
@@ -480,6 +485,8 @@ Example row:
 | `de_zew` | ZEW's Economic Sentiment Index for Germany, in points (the share of optimistic analysts minus pessimistic), as TradingView's calendar shows it ([Germany's calendar](steps/germany-calendar.md)); a lesser release, as `initial_claims`. With `tradingview_forecast` only. |
 | `de_ifo` | Ifo's Business Climate index for Germany, in points (2015 = 100), the same way. With `tradingview_forecast` only. |
 | `de_cpi` | Germany's flash CPI, year on year, in percent, the same way. With `tradingview_forecast` only. |
+| `sentiment` | A Fed statement's sentiment index (Gardner, Scotti and Vega's dictionary, about −1 to 1, positive for a stronger economy or higher inflation), every decision since 2000 but the first ([the Fed statement's sentiment](steps/fed-statement-sentiment.md)). With `previous_statement` only. Context, without a verdict. |
+| `sentiment_holds` | The same, on holds only: decisions whose target rate is unchanged. The verdict's measure. |
 
 **`baseline`** — what "expected" means:
 
@@ -489,6 +496,7 @@ Example row:
 | `nowcast` | The Cleveland Fed's model estimate, the last one published before the release day. Close to what the market saw, but only from 2013. |
 | `nasdaq_consensus` | The consensus published on Nasdaq's economic calendar before the release, checked against TradingView's, or TradingView's forecast where Nasdaq has no row ([consensus fallback](steps/consensus-fallback.md)); counted as known by the end of the day before. Core CPI, headline CPI and payrolls, from 2008 ([free consensus](steps/free-consensus.md)); retail sales, core PCE and GDP from 2008 too ([step 4](steps/step-4-more-events.md)); initial jobless claims from 2013 ([jobless claims](steps/jobless-claims.md)). |
 | `tradingview_forecast` | The euro-area and German measures, `ism_pmi` and `initial_claims`: TradingView's forecast on its calendar, counted as known by the end of the day before in the release's zone; unchecked (Nasdaq's calendar lists no euro-area flash, and ISM's is not asked for; for claims it is context beside Nasdaq's). From 2014-11, 2013-04 and 2013-03; ZEW from 2013-10, Ifo from 2018-02, the German flash CPI from 2014-11. |
+| `previous_statement` | The Fed's sentiment only: the index of the statement of the decision just before, never reaching further back. |
 | `payroll_model` | Payrolls only: a least-squares forecast from ADP's change, the jobless-claims change and the 12-month trend, each as first published, refitted before every report on earlier reports only ([nfp-forecast](steps/nfp-forecast.md)). From 2014; none for June–August 2022, when ADP paused. |
 
 ## effect_size_matrix
