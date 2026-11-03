@@ -92,7 +92,7 @@ a seed file built by a committed script. It gets rung 1's test on the day and ov
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~The script, the seed file, `ordinary_until`, the flow stored; each market's lone days, the days shared with a tariff signing and the later tweets the first-tweet rule drops counted~~ **done** | A test's seed rows (`2018-03-02,07:50,…` and `2019-05-04,13:00,…`) store events `2420180302` and `2420190504`, not scheduled, the first reacting that day on the S&P 500, the second on Monday 05-06 and on bitcoin that Saturday; a test of `ordinary_until` drops a later ordinary day; the seed test checks the header, days in order inside the term, the times, counts ≥ 1; every existing scoreboard entry identical on a copy of the store |
-| 2 | Results here and in [`mvp-results.md`](../mvp-results.md) | The verdicts, the three checks, against the expected outcome |
+| 2 | ~~Results here and in [`mvp-results.md`](../mvp-results.md)~~ **done** | The verdicts, the three checks, against the expected outcome |
 
 *Step 1, 2026-11-03:* the rule finds 265 tweets on 179 New York days, 2017-02-03 to 2020-11-21,
 28 of them with a rate-naming tweet; on the S&P 500 they are 146 reaction days. On a copy of the
@@ -104,6 +104,51 @@ bitcoin; none *too few*. Left out as shared on the S&P 500: 51 tweet days, by le
 core PCE 9, retail sales 9, CPI 7, the euro-area flash 5, a jobs report 5, GDP 3, the ECB 2, the
 Fed 1. The two counts: later tweets the first-tweet rule drops add 7 reaction days (5%); 2 (1%)
 share a day with a tariff signing; both under 10%, so no fourth check.
+
+## Results
+
+Measured 2026-11-03 (`raw-move --event posts`, with and without `--week`) on step 1's copy of the
+store: each market's lone reaction days (103 on the S&P 500, 112 on bitcoin), against ordinary
+days of the first term only.
+
+| | On the day | Over a week |
+| --- | --- | --- |
+| **Moves** | none | none |
+| *Unclear* | the 5-year yield 1.22 (p 0.07), the DAX 1.21, the FTSE 100 1.16, the S&P 500 1.13, VIX 1.12, Brent 1.11 | none |
+| Doesn't | the 10-year yield 1.07, the dollar 1.09, gold 0.88, the Euro Stoxx 50 1.01, the STOXX 600 1.07, the euro 0.81, the Nasdaq 0.98, bitcoin 1.06, defence 0.97, energy 1.05 | all sixteen, every ratio 1.08 or under |
+
+- **No market *moves* by the bar** (ratio ≥ 1.10 at p < 0.01), on the next close or over the
+  week. Six of sixteen clear 1.10 on the day and are *unclear*; none has p < 0.01, the lowest is
+  the 5-year yield's 0.07.
+- **By era, with no p value and not a verdict:** the S&P 500 is 1.40 on the 92 days of 2017–2019
+  and 1.01 on the 11 of 2020.
+- **Check 1, not a verdict: the day before.** No market moves on the reaction day, so the check's
+  condition is empty. The trading day before each reaction day, itself no reaction day (about 50
+  days a market), is louder than the reaction day on US stocks and VIX: the S&P 500 1.47 (p 0.09),
+  VIX 1.42 (p 0.06), the Nasdaq 1.22. On 9 of 16 markets it is quieter (the DAX 0.99, the FTSE
+  100 0.76, Brent 0.82); no placebo cell *moves*.
+- **Check 2, not a verdict: outside the session** (143 of the 179 days, 88 on the S&P 500): the S&P
+  500 1.11 and VIX 1.12 stay above 1.10, the Nasdaq 0.98 does not; none moves.
+- **Check 3, not a verdict: naming a rate** (28 days, 15 lone on the S&P 500): a higher ratio than
+  the full flow on two of the six US markets, VIX 1.59 and the 5-year yield 1.25; the S&P 500 0.98,
+  the Nasdaq 0.89, the 10-year 0.83, the dollar 1.01. None moves.
+- **Chance:** 16 cells on the day, 0.16 *moves* by chance; found none. Over a week none.
+- **No call.** A tweet has no surprise and no sign here.
+
+**Against the expected outcome, cell by cell on the day:** met on seven (the DAX and Brent
+*unclear*; the 10-year yield, gold, defence, energy and bitcoin *doesn't*); near on eight (the S&P
+500 and VIX *unclear* for *moves*; the Euro Stoxx 50, the STOXX 600, the dollar and the euro
+*doesn't* for *unclear*; the FTSE 100 and the 5-year yield *unclear* for *doesn't*); **missed** on
+one, the Nasdaq, *doesn't* for *moves*. Over a week: met on all sixteen cells. The checks: the
+placebo is not gradeable, its condition is empty; outside the session missed on the Nasdaq (0.98),
+the S&P 500 and VIX meet it; naming a rate missed (higher on two of six, four needed).
+
+**What it means.** On this measure no market *moves* on the president's trade tweets of
+2017–2020, on the next close or over the week, and the tweets naming a rate do no better. No
+*moves* is not no effect: six cells are *unclear*. On US stocks and VIX the day before is louder,
+which is consistent with tweets clustering in loud weeks; a check, not a verdict. For step 11,
+part 1: GDELT cannot date these events, and the president's first-term trade tweets give no
+*moves*. Whether a feed is worth building on stays open until part 2, the second term.
 
 ## Technical details
 

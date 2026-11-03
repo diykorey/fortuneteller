@@ -387,6 +387,19 @@ cell of 16 where chance gives 0.16; the euro does not follow (1.16) and the G7 a
 (1.49, p 0.03). Over a week nothing moves. The expected outcome, nothing moving, was wrong for the
 dollar alone. No call: a summit has no surprise.
 
+## The president's trade posts
+
+Measured 2026-11-03. Detail in [the president's trade posts](steps/presidential-posts.md#results).
+
+GDELT, measured first, cannot date a statement: its article counts follow the market, it names no
+speaker and has no trade topic. The president's own first-term tweets about tariffs or trade
+can: 179 tweet days, 146 reaction days on the S&P 500, 103 of them lone, compared with ordinary
+days of the same term. No market *moves*, on the next close or over the week; six are *unclear*,
+the lowest p the 5-year yield's 0.07. On US stocks and VIX the day before each reaction day is
+louder than the reaction day (the S&P 500 1.47, p 0.09), a check and not a verdict; on 9 of 16
+markets it is quieter. Against the expected outcome: met on seven cells, near on eight, missed on
+one (the Nasdaq); over a week met. No call.
+
 ## What comes next
 
 Chosen 2026-10-13: keep score ([rung 4](steps/rung-4-keep-score.md)), done above with the live path
