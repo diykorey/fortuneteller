@@ -7,8 +7,7 @@ from pydantic import SecretStr
 from fortuneteller import db, expectations, flows, sources
 from fortuneteller.__main__ import main
 from fortuneteller.config import settings
-from fortuneteller.models import Surprise
-from fortuneteller.sources import FedError, FirstRelease, FomcDecision
+from fortuneteller.sources import FedError, FomcDecision
 
 YEAR_PAGE = b"""
 <h5>January 31-February 1 Meeting - 2000</h5>
@@ -45,20 +44,20 @@ def test_the_tone_counts_the_paper_s_phrases() -> None:
     # given statements written with the paper's adjectives and nouns
     worked = "Higher inflation, slower growth and strong growth."
     twice = "higher inflation and higher inflation"
-    broken = "higher energy prices; the rate stays low. Growth slowed, and slow is not low."
+    broken = "higher energy prices; the rate stays low. Growth eased, and slowly prices rose."
     oil = "Lower oil prices and high-inflation risk."
 
     # when each is scored
     tones = [expectations.statement_tone(text) for text in (worked, twice, broken, oil)]
 
     # then the worked example is 4/3, each occurrence counts, a word between or a full stop breaks
-    # a phrase, oil price counts once, and no phrase is no tone
+    # a phrase, "slowly" counts as slow*, oil price counts once, and no phrase is no tone
     assert tones[0] == (
         pytest.approx(4 / 3),
         ["higher inflation", "slower growth", "strong growth"],
     )
     assert tones[1] == (2.0, ["higher inflation", "higher inflation"])
-    assert tones[2] == (None, [])
+    assert tones[2] == (0.0, ["slowly prices"])
     assert tones[3] == (1.0, ["lower oil prices", "high inflation"])
 
 
@@ -131,45 +130,42 @@ def _fed_events(days: list[date]) -> list[int]:
     return [e.event_id for e in flows.stored_events(flows.FED_FLOW, con=con)]
 
 
-def test_load_tone_stores_each_statement_against_the_one_before(
+def _pages(monkeypatch: pytest.MonkeyPatch, links: dict[date, str]) -> None:
+    monkeypatch.setattr(sources, "fetch_fed_page", lambda url: url.encode())
+    monkeypatch.setattr(sources, "parse_fomc_statement_links", lambda page: links)
+
+
+def test_load_tone_scores_each_statement_against_the_one_before(
     tmp_db: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    # given four decisions since 2000: the second statement has no phrase, the fourth is a cut
+    # given five decisions since 2000: the second statement has no phrase, the fifth is a cut
     days = [date(2000, 2, 2), date(2000, 3, 21), date(2000, 5, 16), date(2000, 6, 28)]
-    first, _, third, fourth = _fed_events(days)
+    days.append(date(2000, 8, 22))
+    first, _, third, fourth, fifth = _fed_events(days)
     texts = {
         days[0]: "higher inflation",
         days[1]: "nothing to count",
         days[2]: "lower inflation and higher inflation",
         days[3]: "weak growth",
+        days[4]: "strong growth",
     }
-    links = {day: f"https://example.test/{day}" for day in days}
-    monkeypatch.setattr(sources, "fetch_fed_page", lambda url: b"")
-    monkeypatch.setattr(sources, "parse_fomc_statement_links", lambda page: links)
+    _pages(monkeypatch, {day: f"https://example.test/{day}" for day in days})
     monkeypatch.setattr(sources, "fetch_statement", lambda day, url, cache: texts[day].encode())
     monkeypatch.setattr(sources, "statement_text", lambda page: page.decode())
     rates = [(day, 6.0) for day in (date(2000, 2, 1), date(2000, 2, 5), date(2000, 5, 15))]
-    rates += [(date(2000, 5, 19), 6.0), (date(2000, 6, 27), 6.0), (date(2000, 7, 1), 5.75)]
+    rates += [(date(2000, 5, 19), 6.0), (date(2000, 6, 27), 6.0), (date(2000, 7, 1), 6.0)]
+    rates += [(date(2000, 8, 21), 6.0), (date(2000, 8, 25), 5.75)]
     monkeypatch.setattr(flows, "target_rates", lambda api_key: rates)
 
     # when the tone is loaded
     load = flows.load_tone("key", tmp_path)
 
-    # then only the fourth has a surprise against the third, the first two having none against a
-    # statement without a tone, and as a cut it is no hold; the third is a hold
-    assert load.holds == {first, third}
-    assert load.rows == [
-        Surprise(
-            event_id=fourth,
-            measure=expectations.TONE,
-            baseline=expectations.PREVIOUS_STATEMENT,
-            actual_mom=0.0,
-            expected_mom=1.0,
-            surprise=-1.0,
-        )
-    ]
-    stored = db.get_connection().execute("SELECT event_id, measure FROM surprises").fetchall()
-    assert stored == [(fourth, expectations.TONE)]
+    # then the third has no surprise against a statement without a tone, the fourth and fifth have
+    # theirs, the fourth a hold and the fifth a cut, and nothing is stored
+    assert load.holds == {first, third, fourth}
+    assert load.surprises == {fourth: -1.0, fifth: 2.0}
+    assert load.tones[third] == (1.0, ["lower inflation", "higher inflation"])
+    assert db.count_rows("surprises", con=db.get_connection()) == 0
 
 
 def test_a_decision_without_a_statement_stops_the_load(
@@ -177,37 +173,28 @@ def test_a_decision_without_a_statement_stops_the_load(
 ) -> None:
     # given a stored decision since 2000 the pages hold no statement for
     _fed_events([date(1999, 12, 21), date(2000, 2, 2)])
-    monkeypatch.setattr(sources, "fetch_fed_page", lambda url: b"")
-    monkeypatch.setattr(sources, "parse_fomc_statement_links", lambda page: {})
+    _pages(monkeypatch, {})
 
     # when the tone is loaded, then it stops, naming the decision; the one before 2000 is not asked
     with pytest.raises(ValueError, match="no statement for the Fed decision of 2000-02-02$"):
         flows.load_tone("key", tmp_path)
 
 
-def test_load_surprises_leaves_the_tone_rows(tmp_db: Path, monkeypatch: pytest.MonkeyPatch) -> None:
-    # given a stored tone row, and a CPI release whose surprises are rebuilt from nothing
-    con = db.get_connection()
-    (fed,) = _fed_events([date(2000, 2, 2)])
-    tone = Surprise(
-        event_id=fed,
-        measure=expectations.TONE,
-        baseline=expectations.PREVIOUS_STATEMENT,
-        actual_mom=1.0,
-        expected_mom=2.0,
-        surprise=-1.0,
+def test_two_pages_giving_one_decision_two_statements_stop_the_load(
+    tmp_db: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given a decision two pages each link a different statement for
+    _fed_events([date(2000, 2, 2)])
+    monkeypatch.setattr(sources, "fetch_fed_page", lambda url: url.encode())
+    monkeypatch.setattr(
+        sources,
+        "parse_fomc_statement_links",
+        lambda page: {date(2000, 2, 2): page.decode()},
     )
-    db.insert_models("surprises", [tone], con=con)
-    flows.store_releases(flows.CPI_FLOW, [FirstRelease(date(2026, 9, 1), date(2026, 10, 15), 0.3)])
-    monkeypatch.setattr(flows, "EVENT_FLOWS", [flows.CPI_FLOW])
-    monkeypatch.setattr(flows, "EXPECTATION_SOURCES", [])
-    monkeypatch.setattr(flows.CPI_FLOW, "actuals", lambda events, api_key: [])
 
-    # when the surprises are rebuilt
-    flows.load_surprises("key", con=con)
-
-    # then the tone row is still there
-    assert db.fetch_all(Surprise, "SELECT * FROM surprises", con=con) == [tone]
+    # when the tone is loaded, then it stops
+    with pytest.raises(ValueError, match="two statements for the Fed decision of 2000-02-02"):
+        flows.load_tone("key", tmp_path)
 
 
 def test_load_tone_reports_the_counts_before_any_move(
@@ -216,23 +203,12 @@ def test_load_tone_reports_the_counts_before_any_move(
     # given a load with two holds, one with a surprise and a move on the 10-year yield
     monkeypatch.setattr(settings, "fred_api_key", SecretStr("key"))
     first, second, third = _fed_events([date(2000, 2, 2), date(2000, 3, 21), date(2000, 5, 16)])
-    rows = [
-        Surprise(
-            event_id=third,
-            measure=measure,
-            baseline=expectations.PREVIOUS_STATEMENT,
-            actual_mom=2.0,
-            expected_mom=1.5,
-            surprise=0.5,
-        )
-        for measure in (expectations.TONE, expectations.TONE_HOLDS)
-    ]
     tones = {
         first: (None, []),
         second: (1.5, ["higher prices"]),
         third: (2.0, ["higher inflation"]),
     }
-    load = flows.ToneLoad(rows, tones, {second, third})
+    load = flows.ToneLoad({third: 0.5}, tones, {second, third})
     monkeypatch.setattr(flows, "load_tone", lambda api_key, cache_dir, con=None: load)
     db.get_connection().execute(
         "INSERT INTO observations (event_id, instrument, ret_unit, ret_1d) VALUES (?, ?, 'bps', 3)",
@@ -251,5 +227,10 @@ def test_load_tone_reports_the_counts_before_any_move(
         "signed links, holds with a non-zero surprise and a move:",
     ]
     assert "  UST10Y / ZN     1, smallest detectable -, too few" in out
+    assert "  SPY / ES        0, smallest detectable -, too few" in out
     assert "noticeable: 0.5000" in out
-    assert "  2000-05-16 2.00: higher inflation" in out
+    assert out[-3:] == [
+        "holds with the highest tone:",
+        "  2000-05-16 2.00: higher inflation",
+        "  2000-03-21 1.50: higher prices",
+    ]

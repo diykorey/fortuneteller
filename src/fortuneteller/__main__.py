@@ -144,22 +144,19 @@ def describe_tone(load: flows.ToneLoad, con: duckdb.DuckDBPyConnection) -> list[
     link's count of holds with a non-zero surprise and a move (shared days left out) with the
     smallest correlation it could detect, the noticeable surprise, and the holds with the highest
     and the lowest tone, with their phrases."""
-    scored = len(load.tones)
     toned = sum(tone is not None for tone, _ in load.tones.values())
-    holds = [r for r in load.rows if r.measure == expectations.TONE_HOLDS]
+    holds = {i: s for i, s in load.surprises.items() if i in load.holds}
     shared = study.shared_days(flows.FED_FLOW, con=con)
-    lone = [r for r in holds if r.event_id not in shared]
+    lone = {i: s for i, s in holds.items() if i not in shared}
     lines = [
-        f"statements: {scored} since {flows.TONE_FROM}, {toned} with a tone, "
+        f"statements: {len(load.tones)} since {flows.TONE_FROM}, {toned} with a tone, "
         f"{len(load.holds)} holds",
-        f"surprises: {sum(r.measure == expectations.TONE for r in load.rows)} on every decision, "
-        f"{len(holds)} on holds, {len(lone)} of them alone on their day",
+        f"surprises: {len(load.surprises)} on every decision, {len(holds)} on holds, "
+        f"{len(lone)} of them alone on their day",
+        "signed links, holds with a non-zero surprise and a move:",
     ]
-    moving = [r.event_id for r in lone if r.surprise != 0]
-    lines.append("signed links, holds with a non-zero surprise and a move:")
-    for instrument, sign in flows.FED_TONE_SIGN.items():
-        if not sign:
-            continue
+    moving = [i for i, s in lone.items() if s != 0]
+    for instrument in flows.TONE_SIGNED:
         n = 0
         if moving:
             marks = ", ".join("?" * len(moving))
@@ -171,7 +168,7 @@ def describe_tone(load: flows.ToneLoad, con: duckdb.DuckDBPyConnection) -> list[
         smallest = f"{Z_ONE_SIDED_01 / math.sqrt(n - 1):.2f}" if n > 1 else "-"
         verdict = "" if n >= flows.TONE_MIN_PAIRS else ", too few"
         lines.append(f"  {instrument:<12} {n:>4}, smallest detectable {smallest}{verdict}")
-    sizes = sorted(abs(r.surprise) for r in lone if r.surprise != 0)
+    sizes = sorted(abs(s) for s in lone.values() if s != 0)
     lines.append(f"noticeable: {statistics.median(sizes):.4f}" if sizes else "noticeable: none")
     by_tone = sorted(
         (tone, flows.event_date(i), phrases)

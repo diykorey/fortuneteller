@@ -31,9 +31,6 @@ from .expectations import (
     PAYROLL_MODEL,
     TRADINGVIEW_FORECAST,
     TREND_12M,
-    PREVIOUS_STATEMENT,
-    TONE,
-    TONE_HOLDS,
     Actual,
     build_surprises,
     statement_tone,
@@ -1471,21 +1468,17 @@ def load_surprises(api_key: str, con: duckdb.DuckDBPyConnection | None = None) -
     ]
     with_surprise = [flow.event_type for flow in EVENT_FLOWS if flow.surprise_rule is not None]
     rows = build_surprises(events, actuals, expected, with_surprise)
-    db.replace_rows("surprises", rows, TONE_ROWS, TONE_MEASURES, con=con)
+    db.replace_rows("surprises", rows, "TRUE", con=con)
     return rows
 
 
 # The Fed statement's tone (docs/steps/fed-statement-tone.md): every statement since the first of
-# 2000, against the one before; written by ``load-tone`` alone, which ``load-surprises`` leaves be.
+# 2000, against the one before. Stopped by its rule, so nothing is stored; ``load-tone`` reports.
 TONE_FROM = date(2000, 2, 2)
 # A signed link under this many holds with a non-zero surprise is too few, not a no.
 TONE_MIN_PAIRS = 40
-# A hawkish surprise: yields and the dollar up, stocks and the euro down; no other sign.
-FED_TONE_SIGN = with_more_outcomes(
-    {"SPY / ES": -1, "UST10Y / ZN": 1, "DXY": 1, "GC / XAU": 0, "VIX": 0, "DAX": 0, "SX5E": 0}
-)
-TONE_MEASURES = (TONE, TONE_HOLDS)
-TONE_ROWS = "measure NOT IN (?, ?)"
+# The links with a sign for a hawkish surprise: yields and the dollar up, stocks and the euro down.
+TONE_SIGNED = ("SPY / ES", "UST10Y / ZN", "DXY", "EURUSD", "COMP", "UST5Y / ZF")
 
 
 def is_hold(day: date, rates: Mapping[date, float]) -> bool:
@@ -1496,35 +1489,21 @@ def is_hold(day: date, rates: Mapping[date, float]) -> bool:
 
 
 def tone_surprises(
-    events: Sequence[EventInstance],
-    tones: Mapping[int, float | None],
-    holds: Iterable[int],
-) -> list[Surprise]:
-    """Each decision's tone against the one just before it, oldest first, when both have one; a
-    hold's again as ``tone_holds``."""
-    held = set(holds)
-    rows = []
+    events: Sequence[EventInstance], tones: Mapping[int, float | None]
+) -> dict[int, float]:
+    """Each decision's tone minus the one of the decision just before, by event id, when both have
+    a tone; never reaching further back."""
+    surprises = {}
     for before, event in zip(events, events[1:], strict=False):
         now, then = tones.get(event.event_id), tones.get(before.event_id)
-        if now is None or then is None:
-            continue
-        for measure in (TONE, TONE_HOLDS) if event.event_id in held else (TONE,):
-            rows.append(
-                Surprise(
-                    event_id=event.event_id,
-                    measure=measure,
-                    baseline=PREVIOUS_STATEMENT,
-                    actual_mom=now,
-                    expected_mom=then,
-                    surprise=now - then,
-                )
-            )
-    return rows
+        if now is not None and then is not None:
+            surprises[event.event_id] = now - then
+    return surprises
 
 
 @dataclass(frozen=True)
 class ToneLoad:
-    rows: list[Surprise]
+    surprises: dict[int, float]
     tones: dict[int, tuple[float | None, list[str]]]
     holds: set[int]
 
@@ -1532,16 +1511,19 @@ class ToneLoad:
 def load_tone(
     api_key: str, cache_dir: Path, con: duckdb.DuckDBPyConnection | None = None
 ) -> ToneLoad:
-    """Score every stored Fed decision's statement since ``TONE_FROM`` and store the surprises;
-    refused if a decision has no statement link."""
+    """Score every stored Fed decision's statement since ``TONE_FROM``, each against the one before;
+    refused if a decision has no statement link, or two pages give it different ones."""
     events = stored_events(FED_FLOW, con=con)
     if not events:
         raise ValueError("no Fed decisions stored; run `fortuneteller load-releases` first")
-    pages = [sources.fetch_fed_page(sources.fed_history_url(y)) for y in range(2000, 2021)]
+    years = [year for year in FED_HISTORY_YEARS if year >= TONE_FROM.year]
+    pages = [sources.fetch_fed_page(sources.fed_history_url(year)) for year in years]
     pages.append(sources.fetch_fed_page(sources.FED_CALENDAR_URL))
     links: dict[date, str] = {}
     for page in pages:
-        links.update(sources.parse_fomc_statement_links(page))
+        for day, url in sources.parse_fomc_statement_links(page).items():
+            if links.setdefault(day, url) != url:
+                raise ValueError(f"two statements for the Fed decision of {day}")
     scored = [e for e in events if release_date(e) >= TONE_FROM]
     if missing := [release_date(e) for e in scored if release_date(e) not in links]:
         raise ValueError(f"no statement for the Fed decision of {', '.join(map(str, missing))}")
@@ -1555,6 +1537,5 @@ def load_tone(
     }
     rates = dict(target_rates(api_key))
     holds = {e.event_id for e in scored if is_hold(release_date(e), rates)}
-    rows = tone_surprises(events, {i: tone for i, (tone, _) in tones.items()}, holds)
-    db.replace_rows("surprises", rows, "measure IN (?, ?)", TONE_MEASURES, con=con)
-    return ToneLoad(rows, tones, holds)
+    surprises = tone_surprises(events, {i: tone for i, (tone, _) in tones.items()})
+    return ToneLoad(surprises, tones, holds)

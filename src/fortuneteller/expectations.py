@@ -663,9 +663,6 @@ class TradingViewForecast:
 # The Fed statement's tone (docs/steps/fed-statement-tone.md): the main word list of Apel and
 # Blix Grimaldi, "The Information Content of Central Bank Minutes", Sveriges Riksbank Working
 # Paper 261 (2012), without its extended nouns. ``x*`` matches a word starting with ``x``.
-TONE = "tone"
-TONE_HOLDS = "tone_holds"
-PREVIOUS_STATEMENT = "previous_statement"
 TONE_NOUNS = (
     "inflation*",
     "price*",

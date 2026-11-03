@@ -107,8 +107,8 @@ Four things make this hard.
 *Step 1, 2026-11-03:* `load-tone` on a copy of the store scored all 226 Fed statements from
 2000-02-02 to 2026-10-28. Every stored decision had exactly one statement link. Then:
 - **19 statements have a tone.** An independent regex over the same texts finds the same 19.
-- 151 decisions are holds. 10 `tone` surprises and 8 `tone_holds` are stored; 6 of the holds are
-  alone on their day.
+- 151 decisions are holds. 10 decisions have a surprise against the one before, 8 of them holds,
+  and 6 of those 8 are alone on their day.
 - **Each signed link has 1 hold with a non-zero surprise and a move**, against the 40 required.
   Every link is *too few*, so **step 1 stops**: the Fed flow gets no surprise rule and step 2 is
   not run.
@@ -117,11 +117,12 @@ Four things make this hard.
   2015-07-29) read "lower prices" or "decreasing prices". The five highest (2025-05-07, 2017-09-20,
   2012-04-25, 2011-08-09, 2011-06-22) read "higher inflation" or "higher prices". All come from the
   statements' text, so the trigger did not fire.
-- On the copy, `score` is identical with and without the tone rows.
-- *Amended 2026-11-03:* with no rule, the parts only a rule would need were not built: the
-  `PREVIOUS_STATEMENT` expectation source, the Fed skip in `load_surprises` and the month read
-  from the event's day. `load-tone`, the tone and the stored rows remain, so the count can be
-  repeated. The text cut also stops at "Voting against", which a 2026 statement has without
+- *Amended 2026-11-03:* with no rule, nothing is stored. `load-tone` computes the tones and
+  surprises in memory and prints the counts above, so they can be repeated. The parts only a rule
+  would need were not built: the `surprises` rows and their baseline, the `PREVIOUS_STATEMENT`
+  expectation source, the Fed skip in `load_surprises` and the month read from the event's day.
+  The store, `score`, *missed* and the scoreboard are untouched; `score` on the copy is identical
+  to the committed `data/score.txt`. The text cut also stops at "Voting against", which a 2026 statement has without
   "Voting for", and at the old pages' footer ("2000 Monetary policy", "Home"). HTML comments are
   dropped.
 
@@ -159,8 +160,8 @@ change to the Fed flow's events or to any other flow, and no change to the eveni
   - Its `replace_rows` filter keeps the rows whose measure is `tone` or `tone_holds`.
 - **Source:**
   - `sources.parse_fomc_statement_links(page) -> dict[date, str]` reads the year pages (2000–2020)
-    with the existing `STATEMENT_LINK` (a link whose text is "Statement") and the calendar with
-    `CALENDAR_STATEMENT` (the HTML link after "Statement:"). The 2006–2011 addresses redirect to
+    with `STATEMENT_ONLY_LINK` (a link whose whole text is "Statement") and the calendar with
+    `CALENDAR_STATEMENT_LINK` (the HTML link after "Statement:"). The 2006–2011 addresses redirect to
     `/newsevents/pressreleases/`, and the redirect is followed.
   - `sources.statement_text(page) -> str`: the tags are stripped. The body starts after the line
     "For immediate release" or "For release at …" (and a "Share" line after it). It ends at the

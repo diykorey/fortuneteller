@@ -444,10 +444,7 @@ payroll rows on 2026-10-06 against the trend (from 1956): every stored jobs repo
 twelve; and, from 2026-10-09, 148 against the payroll model (from 2014). Against Nasdaq's consensus,
 from 2026-10-09: core 220, headline 219 and payrolls 222, all from 2008. From 2026-10-12
 ([step 4](steps/step-4-more-events.md)): retail sales 291 against the trend (from 2002) and 214
-against the consensus, core PCE 300 and 216, GDP 135 (from 1993) and 70. The Fed statement's
-tone rows are written by `uv run fortuneteller load-tone`, run by hand, and `load-surprises`
-leaves them in place ([the Fed statement's tone](steps/fed-statement-tone.md)): 10 `tone` and 8
-`tone_holds` rows on 2026-11-03.
+against the consensus, core PCE 300 and 216, GDP 135 (from 1993) and 70.
 
 Example row:
 
@@ -483,8 +480,6 @@ Example row:
 | `de_zew` | ZEW's Economic Sentiment Index for Germany, in points (the share of optimistic analysts minus pessimistic), as TradingView's calendar shows it ([Germany's calendar](steps/germany-calendar.md)); a lesser release, as `initial_claims`. With `tradingview_forecast` only. |
 | `de_ifo` | Ifo's Business Climate index for Germany, in points (2015 = 100), the same way. With `tradingview_forecast` only. |
 | `de_cpi` | Germany's flash CPI, year on year, in percent, the same way. With `tradingview_forecast` only. |
-| `tone` | A Fed statement's tone, the Net Index from 0 (dovish) to 2 (hawkish); `surprise` is its change from the previous statement's. Every decision since 2000 whose statement and the one before both have a tone. With `previous_statement` only. |
-| `tone_holds` | The same, on holds only: decisions after which the target rate did not change. |
 
 **`baseline`** — what "expected" means:
 
@@ -494,7 +489,6 @@ Example row:
 | `nowcast` | The Cleveland Fed's model estimate, the last one published before the release day. Close to what the market saw, but only from 2013. |
 | `nasdaq_consensus` | The consensus published on Nasdaq's economic calendar before the release, checked against TradingView's, or TradingView's forecast where Nasdaq has no row ([consensus fallback](steps/consensus-fallback.md)); counted as known by the end of the day before. Core CPI, headline CPI and payrolls, from 2008 ([free consensus](steps/free-consensus.md)); retail sales, core PCE and GDP from 2008 too ([step 4](steps/step-4-more-events.md)); initial jobless claims from 2013 ([jobless claims](steps/jobless-claims.md)). |
 | `tradingview_forecast` | The euro-area and German measures, `ism_pmi` and `initial_claims`: TradingView's forecast on its calendar, counted as known by the end of the day before in the release's zone; unchecked (Nasdaq's calendar lists no euro-area flash, and ISM's is not asked for; for claims it is context beside Nasdaq's). From 2014-11, 2013-04 and 2013-03; ZEW from 2013-10, Ifo from 2018-02, the German flash CPI from 2014-11. |
-| `previous_statement` | `tone` and `tone_holds` only: the tone of the statement of the Fed decision just before. Not an `expectations.EXPECTATION_SOURCES` entry; `load-tone` writes these rows itself. |
 | `payroll_model` | Payrolls only: a least-squares forecast from ADP's change, the jobless-claims change and the 12-month trend, each as first published, refitted before every report on earlier reports only ([nfp-forecast](steps/nfp-forecast.md)). From 2014; none for June–August 2022, when ADP paused. |
 
 ## effect_size_matrix
