@@ -132,35 +132,43 @@ the difference.
 
 Measured 2026-11-03 on step 1's copy of the store, with `raw-move --event posts2` (with and without
 `--week`) and a one-off script for the four checks. Each market's lone reaction days (122 on the
-S&P 500, 124 on bitcoin) are compared with ordinary days of 2025-01-21 to 2026-10-30.
+S&P 500, 124 on bitcoin) are compared with ordinary days from each market's first reaction day,
+2025-01-22 on most, to 2026-10-30. Step 1's lone counts include reaction days with no bar for a
+move; measured, the European indices have a few fewer (110 on the Euro Stoxx 50, the STOXX 600 and
+the FTSE 100, 113 on the DAX).
 
 | | On the day | Over a week, context only |
 | --- | --- | --- |
 | **Moves** | bitcoin 1.33 (p 0.009) | gold 1.32 (p 0.007), energy 1.34 (p 0.009) |
 | *Unclear* | the FTSE 100 1.38, Brent 1.32, the euro 1.31, the 10-year yield 1.25 (p 0.015), the dollar 1.17, defence 1.16, gold 1.11 | the dollar 1.21, the euro 1.21, VIX 1.15, the Nasdaq 1.13 |
-| Doesn't | the S&P 500 0.86, the Nasdaq 0.87, VIX 0.98, the DAX 0.87, the Euro Stoxx 50 0.90, the STOXX 600 0.90, the 5-year yield 1.08, energy 1.02 | the other nine, every ratio 1.07 or under |
+| Doesn't | the S&P 500 0.86, the Nasdaq 0.87, VIX 0.98, the DAX 0.87, the Euro Stoxx 50 0.90, the STOXX 600 0.90, the 5-year yield 1.08, energy 1.02 | the other ten, every ratio 1.07 or under |
 
 - **No US market *moves*.** On the day the S&P 500, the Nasdaq and VIX are at or below an ordinary
   day: 0.86, 0.87 and 0.98.
 - **Bitcoin *moves*:** 1.33, p 0.009, on 124 days. It is one *moves* in 16 cells, where 0.16 are
   expected by chance.
-- **The week is context, not graded:** 80–83% of ordinary week windows hold a post reaction day.
+- **The week is context, not graded:** gold and energy *move*, but 80–83% of ordinary week windows
+  hold a post reaction day, so a week result is weak evidence.
 
-**The four checks.** Each is graded on the S&P 500, the Nasdaq, VIX and bitcoin.
+**The four checks.** Each is reported on the S&P 500, the Nasdaq, VIX and bitcoin. Check 1's
+expectation names only the S&P 500 and VIX, and checks 2–4 only US markets, so bitcoin (and, in
+check 1, the Nasdaq) has no expectation to grade; bitcoin's checks feed the reading instead.
 
 | Check | The S&P 500 | The Nasdaq | VIX | Bitcoin | Expected | Grade |
 | --- | --- | --- | --- | --- | --- | --- |
-| 1. The day before (47–58 days) | 1.07 | 1.27 | 0.96 | 1.10 | ≥ 1.05 on the S&P 500 and VIX | met on the S&P 500, missed on VIX |
-| 2. Without tariff signings (103 days) | 0.85 | 0.89 | 0.98 | 1.41 (p 0.008) | under 1.10 on two of the three US markets | met on all three |
-| 3. Without April 2025 (111 days) | 0.86 | 0.92 | 0.99 | 1.27 (p 0.02) | under 1.10 on two of the three | met on all three |
+| 1. The day before (48 days, 58 on bitcoin) | 1.07 | 1.27 | 0.96 | 1.10 | ≥ 1.05 on the S&P 500 and VIX | met on the S&P 500, missed on VIX |
+| 2. Without tariff signings (103 days) | 0.85 | 0.89 | 0.98 | 1.41 (p 0.008) | under 1.10 on two of the three US markets | met (all three under 1.10) |
+| 3. Without April 2025 (111 days, 113 on bitcoin) | 0.86 | 0.92 | 0.99 | 1.27 (p 0.02) | under 1.10 on two of the three | met (all three under 1.10) |
 | 4. Outside the session (87 days) | 0.85 | 0.86 | 1.03 | — | ≥ 1.10 on each | missed on all three |
 
 - Checks 2 and 3 are met trivially: they were written for a US market that *moves*, and none did.
 - In check 2, 19 of the S&P 500's 122 lone days share a tariff signing.
 
 **Reading, for bitcoin, the one market that *moves*:**
-- check 2 keeps it (1.41) and check 3 keeps it (1.27);
-- its placebo is 1.10, at or above 1.05, so row 3 applies: clustering is not excluded.
+- check 2 leaves its ratio at 1.41 (p 0.008), and check 3 at 1.27, above 1.10 (p 0.02, so *unclear*
+  there);
+- its placebo is 1.10 (p 0.27), at or above the 1.05 line, so row 3 applies: clustering is not
+  excluded.
 
 **Against the expected outcome, cell by cell on the day:**
 - **met on four:** the dollar, Brent and the 10-year yield are *unclear*, and energy *doesn't*;
@@ -172,16 +180,20 @@ S&P 500, 124 on bitcoin) are compared with ordinary days of 2025-01-21 to 2026-1
   - the S&P 500, the Nasdaq and VIX *doesn't*, where *moves* was expected;
   - bitcoin *moves*, where *doesn't* was expected.
 
-Step 11's verdict was expected to be no, and it is no.
+Step 11's verdict was expected to be no, through the signings carrying a US move; it is no for a
+different reason: no US market moves.
 
 **What it means.** On the next close, no US market *moves* on the president's trade posts, in
-either term. In the second term, the post days are no louder on US stocks than ordinary days of
-that term. Bitcoin's *moves* is one hit at a chance rate of 0.16, with a loud day before it.
+either term. On lone second-term post days, the typical (median) move on US stocks is no larger
+than on an ordinary day of the term. A median test does not rule out a few large post days, and no
+*moves* is not no effect. Bitcoin's *moves* is one hit where 0.16 are expected by chance, with its
+day before at 1.10 (p 0.27), above the 1.05 line.
 
-So **step 11 closes with no**:
+So, by the rule written first (a US market must *move* and pass every reading), **step 11 closes
+with no**:
 - GDELT cannot date these events;
-- the president's own trade posts give no US market a *moves* on the day;
-- a news feed is not worth building on for this question, and rung 7 waits for another reason.
+- the president's topic-matched text posts, on lone days, give no US market a *moves* on the day;
+- this measures those posts, not news in general; rung 7 waits for another reason.
 
 The tariff signings themselves are measured in [tariffs](tariffs.md).
 
