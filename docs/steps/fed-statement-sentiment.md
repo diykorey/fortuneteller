@@ -13,8 +13,7 @@ Step 13's list was made for Swedish minutes. It found a phrase in 19 of 226 Fed 
 test never ran. Gardner, Scotti and Vega built a dictionary from the FOMC's statements of
 2000–2020: *Words Speak as Loudly as Actions*, Finance and Economics Discussion Series 2021-074,
 Federal Reserve Board, later in the Journal of Econometrics 231(2), 2022. It reads the Fed's own
-phrasing ("the unemployment rate has declined", "inflation remains elevated"). It gives a number
-to every statement that says anything about the economy.
+phrasing ("the unemployment rate has declined", "inflation remains elevated").
 
 At the end: every Fed statement since 2000 has the paper's sentiment index, and the Fed flow has
 a surprise rule with its verdict, unless this step's stop rule fires.
@@ -22,41 +21,62 @@ a surprise rule with its verdict, unless this step's stop rule fires.
 ## The way to reach it
 
 - **The dictionary is the paper's, copied whole before any statement is scored.** Tables A5–A10
-  of the working paper's appendix go verbatim into `data/seed/fomc_sentiment_dictionary.csv`, one
-  row per entry, with the table, the entry, its score and its topic. The tables are:
-  - A5: 33 topic keywords with a score of 1 or −1, in four topics: inflation, labor, output and
-    financial.
-  - A6–A8: modifiers per topic, scored 1, 0 or −1, including A8's long phrases.
-  - A9: 16 rules for future policy.
-  - A10: 14 rules for uninformative sentences.
+  of the working paper's appendix go verbatim into `data/seed/fomc_sentiment_dictionary.csv`. Each
+  row holds the table, the entry, its score and its topic. Where the paper's prose counts differ
+  from its tables, the tables govern. The tables are:
+  - A5: 33 keywords, in four topics (`inflation`, `labor`, `output`, `financial`);
+  - A6: 88 modifiers, and A7: 98, each scored 1, 0 or −1 for one topic;
+  - A8: 33 long phrases;
+  - A9: 16 future-policy rules, topic `policy`;
+  - A10: 14 rules for uninformative sentences, score 0, topic `uninformative`.
 
-  The paper built its dictionary by reading the same statements, but never from market moves.
-  That is why it may be used here: it is fixed before any move is read.
+  The paper built the dictionary by reading the same statements, but never from market moves.
+  That is why it may be used here.
 - **The paper's own program is not published** ("available upon request"). So the choices below
-  are this step's, written down now, before any statement is scored:
-  - The text is lowercased and split into sentences at ". ", "; " and line ends.
-  - An entry matches as a substring of the sentence, so "declin" matches "declined". "(space)" in
-    an entry is a literal space: "ease (space)" is "ease ". "Soft (exclude software)" is "soft"
-    not followed by "ware".
-  - **Pairs:** each keyword occurrence pairs with the closest modifier of its topic in the same
-    sentence, before or after it. Distance is counted in words, from the keyword's first word to
-    the modifier's first word. On a tie, the modifier after the keyword wins. An A8 phrase counts
-    as one modifier at its first word. A modifier that sits inside a longer matched modifier or
-    keyword is not counted on its own.
-  - A keyword with no modifier of its topic in the sentence scores nothing.
-  - **The pair's score** is the keyword's score times the modifier's.
-  - **A9 rules:** a rule's parenthesised parts must all match the sentence, each as a regular
-    expression. Each rule that matches adds its score once per sentence.
-  - **A10 rules** work the same way. A sentence matching any of them is left out of the four
-    topics, but not out of the future-policy score.
-  - **The index:** for each of the five topics, the sum of its scores divided by the square root
-    of the statement's word count, the uninformative sentences left out of that count. The
-    statement's sentiment is the sum of the five.
-- **Reused from step 13:** the statements and their cut (`load-tone`'s fetch, link and body
-  rules), the baseline (the decision just before; never reaching further back), holds, shared
-  days left out, and the separate command, which the evening job does not run.
-- **The paper's sign.** A positive index means a stronger economy or higher inflation, which
-  points to tightening. So a positive surprise is read as hawkish, as in step 13.
+  are this step's, written down now, before any statement is scored. None of them may change after.
+  - **Text.**
+    - A statement's paragraphs are joined into one line, so an inline tag cannot split a
+      sentence.
+    - It is lowercased. "U.S." becomes "us", and curly apostrophes become straight.
+    - Sentences end at ".", "?" or ";" followed by a space, or at the text's end.
+  - **Normal form.** In a sentence, every character that is not a letter, a digit or an
+    apostrophe becomes a space. Runs of spaces become one, and one space is added at each end.
+    - Each entry gets the same treatment; "(space)" in an entry is a space there. So "moderate
+      (space)" matches "moderate." but not "moderated".
+    - Hyphens become spaces on both sides, so "long-term" matches "long term".
+    - "Soft (exclude software)" is "soft" not followed by "ware".
+    - A **word** is a run between spaces in the normal form.
+  - **Matches.** Every entry of A5, A6, A7 and A8 is found as a substring of the normal form.
+    - Where two matches overlap, the longer one is kept; at equal length, the one that starts
+      first. So "unemployment" is never also "employment", "job gains" is never also "gains", and
+      "increase " is never also "ease ".
+    - One stretch of text can be a modifier for several topics, each with its own score.
+    - A match's **position** is the index of the word it starts in.
+  - **Pairs.** Each A5 keyword pairs with the closest A6/A7 modifier of its topic in the same
+    sentence, before or after it, by the difference in positions. On a tie, the modifier after
+    the keyword wins. The pair scores the keyword's score times the modifier's. A keyword with no
+    modifier of its topic in its sentence scores nothing.
+  - **A8 phrases stand alone.** Each scores its own score in its topic, because the phrase
+    already holds its subject. Words inside it are matched by nothing else.
+  - **A9 and A10 rules.**
+    - A rule written as parenthesised parts joined by `)|(` is split there. Every part must
+      match the sentence, each as a regular expression on the normal form, with its `|` meaning
+      "or". A rule without parentheses is one part.
+    - A9: each rule that matches adds its score to `policy`, once per sentence.
+    - A10: a sentence matching any rule is uninformative. It is left out of the four topics and
+      of the word count, but not out of `policy`.
+  - **The index.** Let N be the number of words in the informative sentences. Each of the five
+    topics scores the sum of its scores over √N. The statement's sentiment is the sum of the five.
+    With N = 0 there is no sentiment.
+- **The surprise is the change; the paper uses the level.** The paper's footnote 32 turns down
+  differencing the index and uses its level, with yields over 30 minutes. For the level it finds
+  the 5-year yield significant and the 10-year not (Table 5). Here, as in step 13, the surprise
+  is the change from the previous statement, because the market has read that one, and the move
+  is the day's. So the paper's evidence is not borrowed for this test.
+- **Reused from step 13:** the statements and their cut, the baseline (the decision just before;
+  never reaching further back), holds, and shared days left out. A command of its own,
+  `load-sentiment`, sits beside `load-tone`, which keeps printing step 13's counts. The evening
+  job runs neither.
 
 ## The rule, fixed before any sentiment is measured
 
@@ -64,51 +84,61 @@ a surprise rule with its verdict, unless this step's stop rule fires.
   at p < 0.01 and the hit rate on noticeable surprises is at least 60%; *unclear* when only one of
   the two holds.
 - **The verdict:** sentiment on holds against the previous statement. Context, not graded:
-  sentiment on every decision, and the ten unsigned markets.
-- **Expected signs, for a positive surprise:**
+  sentiment on every decision, and the twelve unsigned markets.
+- **Expected signs, for a positive surprise:** a stronger economy or higher inflation, which
+  points to tightening.
   - up: the 10-year yield, the 5-year yield, the dollar;
-  - down: the euro;
-  - S&P 500 and Nasdaq: *also* up. The paper's index is good news about the economy, and its
-    own result is that stocks respond to it. This differs from step 13, and is written down
-    first.
+  - down: the euro.
   - The dollar and the euro count as one finding.
+  - Stocks are unsigned. Good news about the economy and a tighter path pull them opposite ways,
+    and the paper does not test them on statement days.
 - **Noticeable:** the median of the non-zero absolute surprises on holds. It is computed in step 1
   from the sentiment alone, before any move is read, and written here.
 - **Too few, not no:** a signed link under 40 holds with a non-zero surprise and a move is *too
   few*. If every link is under 40, step 1 stops.
+- **Checks against the paper. Any one failing stops step 1, as a misreading of the dictionary:**
+  - The paper's Figure 2 shows the overall index below zero at the end of 2008 and above zero
+    in 2018. The index of 2008-12-16 must be below zero, and that of 2018-09-26 above zero.
+  - Every statement's index lies between −1 and 1, as the paper's does.
+  - The statements from 2000-02-02 to 2019-12-11 number within 10 of the paper's 166.
 - **The hand read:** the five holds with the highest sentiment and the five with the lowest are
-  printed with their scored pairs and read. It has one trigger, written now: if 3 or more of the
-  10 have a pair from text outside the statement's body, the cut is fixed, and the 10 are read once
-  more. Nothing else the read finds changes the dictionary, the matching or the rule.
-- **A check against the paper, not a verdict.** The paper's Figure 2 shows the overall index
-  below zero at the end of 2008 and above zero through 2018. In step 1 the index is printed for
-  2008-12-16 and 2018-09-26. If both come out with the opposite sign, the step stops, as a
-  misreading of the dictionary.
+  printed with their pairs and read. It has one trigger, written now: if 3 or more of the 10 have
+  a pair from text outside the statement's body, the cut is fixed, and the 10 are read once more.
+  Nothing else the read finds changes the dictionary, the matching or the rule.
 - **No live call; walk-forward graded only for a link that tracks.**
-- **Chance, counted:** 6 signed links. At p < 0.01, about 0.06 *tracks* by chance.
+- **Chance, counted:** 4 signed links, 3 findings. At p < 0.01, about 0.04 *tracks* by chance.
 - **Every other flow's scoreboard entry, the calls and *missed* stay identical.**
-- **Expected outcome, written first:** the 10-year and 5-year yields are *unclear* at best. A
-  statement's text arrives with the decision, the dots and, since 2011, the press conference, and
-  the market reads those first. No link tracks; no call.
+- **Expected outcome, written first:** the 10-year and 5-year yields are *unclear* at best, the
+  dollar and the euro *doesn't*. The text arrives with the decision, the dots and, since 2011,
+  the press conference, and a day's move holds all of them. The paper finds even the level
+  insignificant for the 10-year yield over 30 minutes. No link tracks; no call.
 
 ## The steps
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | The seed dictionary; `load-tone` scores each statement's sentiment and stores the two measures against the previous statement; the counts, `noticeable`, the two dates' signs and the hand read written here; unless stopped, the Fed flow gets its surprise rule | The tests below pass; on a copy of the store every other flow's scoreboard entry, `score` and `missed` are identical |
+| 1 | The seed dictionary; `load-sentiment` scores each statement; the counts, `noticeable`, the three checks and the hand read written here; then, unless stopped, the stored measures and the Fed flow's surprise rule | The tests below pass; on a copy of the store every other flow's scoreboard entry, `score` and `missed` are identical |
 | 2 | Results here and in [`mvp-results.md`](../mvp-results.md) | The verdicts against the expected outcome |
 
 ## How you know it is right
 
-- The paper's two worked examples: "the unemployment rate has declined" scores +1, and "labor
-  market conditions have deteriorated" scores −1.
-- A sentence with "inflation" and two modifiers chooses the nearer one, and the one after it on a
-  tie. "Software" is not "soft". "Moderated" is not "moderate (space)".
-- An A9 rule scores a sentence only when every part matches. An A10 sentence is left out of the
-  four topics and of the word count.
-- The seed file has every row of Tables A5–A10, counted against the paper (A5: 33, A9: 16, A10:
-  14). Each score is −1, 0 or 1, and each topic is one of the five.
-- A statement's index is the sum of its topics over the square root of its informative words.
+- **The paper's two worked examples, through `sentence_pairs(sentence)`:** "the unemployment
+  rate has declined" gives one labor pair scoring +1, and "labor market conditions have
+  deteriorated" gives one scoring −1.
+- **Pairing:**
+  - "inflation" with two inflation modifiers takes the nearer one, and the one after it on a tie.
+  - "Software" is not "soft", "moderated" is not "moderate (space)", and "unemployment" yields
+    no "employment".
+  - An A8 phrase scores alone.
+- **Rules:**
+  - An A9 rule with parts scores a sentence only when every part matches, and "(complete|moderate)"
+    matches either word.
+  - "Be patient" is a one-part rule.
+  - An A10 sentence is left out of the four topics and of N, but still scores `policy`.
+  - "Long-term", "U.S." and a curly apostrophe match their entries.
+- **The index:** the topics' sums over √N, and no index for N = 0.
+- **The seed file:** 282 rows, 33, 88, 98, 33, 16 and 14 by table. Each score is −1, 0 or 1, and
+  each topic is one of the six.
 
 ## What this step does not do
 
@@ -117,21 +147,28 @@ live call, no change to the evening job.
 
 ## Technical details
 
-- **Seed:** `data/seed/fomc_sentiment_dictionary.csv`, with columns `table,entry,score,topic`,
-  documented in `docs/legacy/data/` style beside the other seeds and listed in `docs/schema.md`'s
-  seed section.
-- **Sentiment:** `expectations.statement_sentiment(text) -> tuple[float | None, list[str]]` returns
-  the index and the scored pairs. It is `None` when the statement has no informative word.
-- **Command:** `load-tone` scores with the sentiment in place of step 13's tone. The step 13 tone
-  stays in the code, since its count is the record of that step.
-- **Rows and rule, unless stopped:**
+- **Seed:** `data/seed/fomc_sentiment_dictionary.csv`, columns `table,entry,score,topic`. It is
+  described in `docs/schema.md`'s seed list. The other seeds are database tables; this one is read
+  by `expectations` alone.
+- **Code:**
+  - `expectations.sentence_pairs(sentence) -> list[tuple[str, int, str]]` gives each topic, score
+    and matched text.
+  - `expectations.statement_sentiment(text) -> tuple[float | None, list[str]]` gives the index
+    and its pairs.
+  - `flows.fed_statements(api_key, cache_dir, con)` is step 13's fetch, cut and holds, shared by
+    `load_tone` and `load_sentiment`.
+- **Unless stopped:**
   - `surprises` gets the measures `sentiment` and `sentiment_holds`, against the baseline
-    `previous_statement`, written by `load-tone`. `load_surprises` skips the Fed flow and keeps
-    those rows.
-  - `PREVIOUS_STATEMENT` joins `EXPECTATION_SOURCES` for its label.
-  - `study._flow_pairs` reads a decision's month from its day.
+    `previous_statement`. The actual is the index, the expected the previous index.
+  - `load-sentiment` replaces `measure IN ('sentiment', 'sentiment_holds')`.
+  - `load_surprises` skips the Fed flow and replaces `measure NOT IN ('sentiment',
+    'sentiment_holds')`.
+  - `PREVIOUS_STATEMENT` joins `EXPECTATION_SOURCES` with the label "the previous statement".
+    Its `expectations` returns nothing.
+  - `study._flow_pairs` reads the month from the event's day only when `detail` is not a month,
+    so no other flow changes.
   - `FED_FLOW` gets a `SurpriseRule` with `combinations=((SENTIMENT_HOLDS, PREVIOUS_STATEMENT),
-    (SENTIMENT, PREVIOUS_STATEMENT))`, the six signs, `noticeable` from step 1, `alone=True` and
-    `predicted_from=PREVIOUS_STATEMENT`.
+    (SENTIMENT, PREVIOUS_STATEMENT))`, the four signs, `noticeable` from step 1 (`step` its value
+    to two places), `alone=True` and `predicted_from=PREVIOUS_STATEMENT`.
 - **Docs:** `docs/schema.md`, `docs/glossary.md` (sentiment index, keyword, modifier),
   `docs/status.md`, the roadmap's row.
