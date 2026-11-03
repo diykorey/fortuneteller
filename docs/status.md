@@ -23,10 +23,12 @@ Beat the fortune teller, step 3: the first live round, a release `live` calls gu
 merged pull request ([the spec](steps/beat-the-fortune-teller.md)). It waits for a release; the
 jobs report on 2026-11-06 is the first.
 
+The Fed statement's sentiment, the spec ([step 14](steps/fed-statement-sentiment.md)).
+
 ## Next
 
-Not chosen yet: the roadmap's numbered steps are done or waiting; the next is picked from its
-"later" list or a new idea.
+The Fed statement's sentiment, step 1: the paper's dictionary as a seed, a new command scoring each
+statement with it (`load-sentiment`), and the Fed flow's surprise rule unless the stop rule fires.
 
 ## Done
 
