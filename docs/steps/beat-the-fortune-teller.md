@@ -26,15 +26,23 @@ Two things make this hard. Both come from the person, not the machine, being the
   cache, so a command is not the interface; the file is.
   - **How to play**, linked from the page: on GitHub, add a file `data/guesses/<day>-<handle>.csv`
     with one row per market, and open a pull request.
-  - The pull request must be merged before the release time.
+  - The pull request must be merged before the release time. Only the owner can merge, so a guess
+    counts only if the owner merges it in time. The page says so, and lists the guess pull requests
+    that were not merged in time.
+  - A pull request that touches anything but its own new file is refused.
   - Every rule is checked in grading, so a hand-written file gets the same rules as any other.
 - **The witness must hold against the person it binds.** Rung 4's pull request was opened by the
   machine, which had no reason to cheat. A person does, by changing a guess after the release or by
-  keeping only the winner of two. So the witness is what was on `main`, not what a pull request said:
-  - The guess counts at the time of the commit that added its file to `main`. That commit must be
-    GitHub's own (committer `GitHub <noreply@github.com>`, as every merge on this repository is),
-    so the time is GitHub's.
-  - A pull request that was closed unmerged never reaches `main`.
+  keeping only the winner of two. A commit's own committer and date are plain text anyone with push
+  can write, so the witness is GitHub's record of the merge:
+  - The commit that added the file to `main` is found along `main`'s first parents, which gives the
+    merge (or squash) commit.
+  - GitHub is asked which pull request has that commit as its `merge_commit_sha`. That pull
+    request's `merged_at` is the guess's time, and GitHub sets it.
+  - The guess is read as that commit holds it, so a later edit to the file, by anyone, changes
+    nothing.
+  - A pull request closed unmerged never reaches `main`, and a file pushed without a pull request
+    has no `merged_at`.
 
 ## What a guess is
 
@@ -43,21 +51,21 @@ A file `data/guesses/<day>-<handle>.csv`, header `flow,instrument,direction`, on
 - `instrument`: a market symbol as in `data/calls.csv` (`SPY / ES`);
 - `direction`: `up` or `down`.
 
-The day and the handle come from the file name. The handle is 1 to 20 letters, digits or `-`. It
-is chosen by the player and **not checked**, so one person can play under two handles. The page
+The day and the handle come from the file name: the day is its first ten characters, the handle the
+rest, 1 to 20 lowercase letters, digits or `-`. The handle is chosen by the player and **not
+checked**, so one person can play under two handles. The page
 says so and shows every handle's full record, losses included.
 
 ## The rule, fixed before any guess is graded
 
 **A guess is void, listed with its reason and not graded, if:**
-- its flow is not one that `live` calls;
+- its flow is unknown, or not one that `live` calls;
 - its market is not one of the flow's links;
-- the file reached `main` other than by GitHub's commit, or at or after the release time (08:30 New
-  York, `flows.RELEASE_TIME`) on its day;
-- the file was changed on `main` after the commit that added it;
-- the flow had no release that day, known once the day's close is loaded;
-- or it repeats a handle, flow, day and market already guessed. The earliest counts; there can be
-  two files only through a renamed handle, so a repeat is within one file.
+- its file reached `main` without a merged pull request, or the pull request was merged at or after
+  the release time (08:30 New York, `flows.RELEASE_TIME`) on its day;
+- the flow had no release that day: none is stored for that day, though a later release of the
+  flow is (so a late load waits, not voids);
+- or it repeats a flow and market already in its file: the first row counts.
 
 **Otherwise it is graded, as in rung 2:** right if the day's move on that market closed strictly
 the called way, wrong if not. Until then it is *waiting*.
@@ -67,6 +75,7 @@ the called way, wrong if not. Until then it is *waiting*.
 **The machine's row beside it:** its logged row for that flow, day and market, as `score` grades
 it:
 - right or wrong when it has a direction (a call, or *too few* with a direction);
+- void or waiting when `score` voids it or waits on it;
 - "no call" when it is silent or small;
 - "not logged" when there is no row.
 
@@ -88,11 +97,13 @@ closing up or down; the machine's calls are few. The step delivers the game, not
 ## How you know it is right
 
 The step 1 tests include:
-- a file added by a non-GitHub commit is void;
-- a file added at 08:30 is void;
-- a file changed after it was added is void;
+- in a temporary repository: a file added on a side branch and merged is found at the merge commit,
+  and one added by a squash commit at that commit;
+- a file whose pull request was merged at 08:30 is void, and one with no pull request is void (the
+  GitHub lookup replaced in the test);
+- a file edited after it was added is graded as added;
 - a market outside the flow's links is void;
-- a day the flow did not release is void;
+- a day the flow did not release is void, and one whose release is not loaded yet waits;
 - a guess for a later day shows as *waiting*, and `score` prints no `pending:` line for it;
 - planted rows are graded right and wrong, each beside a machine row that is right, too few,
   silent and not logged.
@@ -117,25 +128,34 @@ head-to-head total, no change to the machine's calls or rules or to the evening 
   - `tests/conftest.py` points it at a temporary directory, as it does `calls_path`.
 - **Reading:** `study.read_guesses(directory) -> list[Guess]`.
   - `Guess` holds `day`, `who`, `flow`, `instrument`, `direction` (+1 or −1), `path`.
-  - A bad file name, header or row is an error, as in `read_calls`.
-- **Witness:** `study.guess_witness(path) -> tuple[datetime, bool] | None`, read with `git log` on
-  `main`.
-  - It returns the committer time of the commit that added the file, and whether that committer is
-    `GitHub <noreply@github.com>`.
-  - It returns `None` when a later commit changed the file.
-  - The tests build a temporary repository with `GIT_COMMITTER_*` set.
+  - Only `*.csv` files are read, so the `.gitkeep` is skipped. A bad file name, header or row voids
+    that file's guesses, with the reason, so one bad pull request cannot stop `score`.
+- **Witness:** two functions.
+  - `study.added_in(repo, path) -> str`: the commit that added the file, from
+    `git -C <repo> log --first-parent --diff-filter=A --format=%H HEAD -- <path>`. `HEAD` is the
+    checkout `score` runs in (the job's is `origin/main`, freshly fetched). If git fails or the
+    history is missing, it is an error, not a void.
+  - `study.merged_at(sha) -> datetime | None`: GitHub's `merged_at` for the pull request whose
+    `merge_commit_sha` is `sha`, from `gh api repos/{repo}/commits/{sha}/pulls`. Tests replace it.
+  - The guesses are read from `git show <sha>:<path>`.
 - **Grading:** `study.score_guesses(guesses, rows, con) -> list[GradedGuess]`, with
   `state ∈ {right, wrong, waiting, void}`, a reason, and the machine's grade.
   - The links are the items of `flow.surprise_rule.expected_sign` with a nonzero sign.
   - "Called by `live`" is `flows.called_live(flow)`.
   - The move is `observations.ret_1d` for the release's event.
-- **Printing:** `score` prints its `guesses` block before `missed:`, one line per guess, then each
-  handle's count. Its labels are `void` and `waiting`, indented, never `pending:`.
+- **Printing:** `score` prints its `guesses` block before `missed:`, and none when there are no
+  guesses, so the output is unchanged today.
+  - The header is `guesses: N`.
+  - Then one line per guess: `  <day> <handle> <flow> <instrument> <up|down>: <state>; machine:
+    <grade>`, with the reason after a void.
+  - Then one line per handle: `  <handle>: <right> of <graded> right`.
+  - No line starts with `pending:`.
 - **The page:**
   - `scoreboard` adds a `guesses` list and per-handle counts to `data.json`;
   - the template `src/fortuneteller/scoreboard.html` gets one table and the two notices.
 - **Docs:**
   - `docs/glossary.md`: guess, void guess, handle;
-  - `docs/precision.md`: the witness, the unchecked handle;
+  - `docs/precision.md`: the witness (GitHub's `merged_at`), the owner's merge as a selection, the
+    unchecked handle;
   - `docs/steps/scoreboard.md`: the amendment;
   - `docs/status.md`.
