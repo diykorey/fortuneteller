@@ -27,8 +27,8 @@ The Fed statement's sentiment, the spec ([step 14](steps/fed-statement-sentiment
 
 ## Next
 
-The Fed statement's sentiment, step 1: the paper's dictionary as a seed, `load-tone` scoring each
-statement with it, and the Fed flow's surprise rule unless the stop rule fires.
+The Fed statement's sentiment, step 1: the paper's dictionary as a seed, a new command scoring each
+statement with it (`load-sentiment`), and the Fed flow's surprise rule unless the stop rule fires.
 
 ## Done
 
