@@ -924,10 +924,11 @@ class StatementFlow:
         )
 
 
-# Dated shocks, from hand-written seed files: national elections (docs/steps/elections.md) and
-# tariff actions (docs/steps/tariffs.md).
+# Dated shocks, from hand-written seed files: national elections (docs/steps/elections.md), tariff
+# actions (docs/steps/tariffs.md) and the debt limit (docs/steps/debt-limit.md).
 ELECTION_EVENT_TYPE = "National election"
 TARIFF_EVENT_TYPE = "Tariff / trade-war / sanctions"
+DEBT_LIMIT_EVENT_TYPE = "Fiscal: debt-ceiling / shutdown"
 UNITED_KINGDOM = "United Kingdom"
 FRANCE = "France"
 EUROPEAN_UNION = "European Union"
@@ -1306,6 +1307,20 @@ TARIFF_FLOW = DatedShockFlow(
     detail_column="title",
     scheduled=False,
 )
+DEBT_LIMIT_FLOW = DatedShockFlow(
+    DEBT_LIMIT_EVENT_TYPE,
+    UNITED_STATES,
+    NEW_YORK,
+    22,
+    "debt",
+    "DBT",
+    seed_file="debt_limit.csv",
+    noun="debt-limit laws",
+    day_column="cleared",
+    detail_column="public_law",
+    time_column="time",
+    scheduled=False,
+)
 EVENT_FLOWS: list[EventFlow] = [
     CPI_FLOW,
     NFP_FLOW,
@@ -1328,6 +1343,7 @@ EVENT_FLOWS: list[EventFlow] = [
     FR_ELECTION_FLOW,
     EU_ELECTION_FLOW,
     TARIFF_FLOW,
+    DEBT_LIMIT_FLOW,
 ]
 
 

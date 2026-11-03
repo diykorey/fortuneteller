@@ -87,6 +87,14 @@ this by splitting the results by era.
 | The signing, not the announcement | The document's signing day; an announcement before it (steel, 2018-03-01, signed 2018-03-08), a post (2019-05-05, 2019-08-01) and USTR's own Section 301 lists are not events | A second, mechanical source for announcements, chosen before measuring | A results finding that hangs on a tariff day the signings miss |
 | Clustered signings | 2025's signings sit days apart (2025-03-02, 03-03, 03-06), so their week windows overlap each other as well as the ordinary ones, on top of the overlap elections already note | One event per cluster, or a block permutation | A week verdict at a `p` near 0.01 |
 
+## Step 10 — dated shocks: the debt limit
+
+| Choice | Now | More precise | Trigger |
+| --- | --- | --- | --- |
+| Vote time | The final congressional vote's day and roll-call time since 2005; before it 20:00 New York on the day the Congressional Record gives ([the debt limit](steps/debt-limit.md)). A deal announced before the vote (2011-07-31, 2023-05-27) is not an event | Roll-call times before 2005, from the Congressional Record | A finding that hangs on a pre-2005 law whose vote came in market hours |
+| Riders | A law whose limit change rides in a broader act (`vehicle` `rider`, 25 of 75) is measured with the rest of its act; a check repeats the test on `debt` laws alone | The broader act's own dates as a separate flow | A *moves* that the debt-only check does not keep |
+| Clustered votes | Five stopgaps signed in October 1990, and runs in 1980 and 1987, sit days apart, so their week windows overlap each other | One event per cluster | A week verdict at a `p` near 0.01 |
+
 ## Steps 1–2 — choices already built in
 
 | Choice | Now | More precise | Trigger |

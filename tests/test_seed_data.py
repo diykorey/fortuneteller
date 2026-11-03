@@ -88,10 +88,11 @@ def test_rows_nonempty_and_valid(filename: str, table: str, model: type[BaseMode
 def test_seed_dir_has_no_unexpected_csvs() -> None:
     # given the committed seed CSVs
     actual = {path.name for path in settings.seed_dir.glob("*.csv")}
-    # when compared to the contracted set: the seed tables, and the files the dated-shock flows read themselves
+    # when compared to the contracted set: the seed tables, and the dated-shock flows' own files
     expected = {filename for filename, _table, _model in SEED_TABLES} | {
         "elections.csv",
         "tariffs.csv",
+        "debt_limit.csv",
     }
     # then exactly those files are present
     assert actual == expected
@@ -129,3 +130,24 @@ def test_tariff_rows_are_federal_register_documents_since_2018() -> None:
     assert date(2018, 1, 1) <= min(days) and max(days) <= date.today()
     assert days == sorted(days)
     assert all(row["title"].strip() == row["title"] and row["title"] for row in rows)
+
+
+def test_debt_limit_rows_are_public_laws_cleared_since_1970() -> None:
+    # given the committed debt-limit laws
+    with (settings.seed_dir / "debt_limit.csv").open(newline="", encoding="utf-8") as handle:
+        reader = csv.DictReader(handle)
+        header = reader.fieldnames
+        rows = list(reader)
+    # when their numbers, kinds and days are read
+    numbers = [row["public_law"] for row in rows]
+    cleared = [date.fromisoformat(row["cleared"]) for row in rows]
+    signed = [date.fromisoformat(row["signed"]) for row in rows]
+    # then each is a public law, once, of a known kind, cleared in order since 1970 and by its signing
+    assert header == ["cleared", "time", "signed", "public_law", "action", "vehicle"]
+    assert all(re.fullmatch(r"\d{2,3}-\d{1,3}", number) for number in numbers)
+    assert len(set(numbers)) == len(numbers)
+    assert {row["action"] for row in rows} <= {"raise", "temporary", "suspend"}
+    assert {row["vehicle"] for row in rows} <= {"debt", "rider"}
+    assert all(re.fullmatch(r"[0-2]\d:[0-5]\d", row["time"]) for row in rows)
+    assert cleared == sorted(cleared) and cleared[0] >= date(1970, 6, 29)
+    assert all(c <= s for c, s in zip(cleared, signed, strict=True))
