@@ -106,6 +106,11 @@ Terms are grouped by what they are about, alphabetical within each group.
   reached Treasury uses **extraordinary measures** (accounting steps that free room under the
   limit) until Congress raises or suspends it, or until the **X-date**, the day Treasury expects
   to run out of cash ([the debt limit](steps/debt-limit.md)).
+- **G7 / G8** (Group of Seven) — the yearly summit of the leaders of the US, Japan, Germany, France,
+  the UK, Italy and Canada, with the EU; the G8 with Russia, 1997–2013 ([summits](steps/summits.md)).
+- **G20** (Group of Twenty) — nineteen countries, the EU and since 2023 the African Union; its
+  leaders have met since the crisis of 2008.
+- **Communiqué** — the joint statement a summit's leaders issue, normally on its last day.
 - **Too few** (raw move) — a cell with fewer than ten event days, given no verdict.
 - **PMI** (Purchasing Managers' Index) — a survey-based activity gauge where above 50 means
   expansion, below 50 contraction.
