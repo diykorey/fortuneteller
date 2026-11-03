@@ -32,10 +32,17 @@ hand-written seed file with each law's number. It gets rung 1's test on the day 
   not by law. That leaves **75 laws**, by decade 18, 24, 11, 9, 9 and 4.
 - **The day: Congress's final vote.** Taken at 20:00 New York, after every market's close, as
   tariff actions: many final votes come in the evening, and the record gives no hour for the
-  older ones. A vote after midnight and before the next session is dated by the evening it began,
-  as the Congressional Record dates it (2018-02-08, 2021-12-14); a law passed over a veto by the
-  override (1980-06-06). Laws cleared on one day are one event: **73 days**, with two laws each
-  on 1981-09-29 and 1990-10-27. Stored as not scheduled: even when a
+  older ones. *Amended 2026-11-03, before any move was measured:* 11 of the 19
+  final votes since 2005 came before 16:00 New York in the day: 109-182 (11:17), 110-289
+  (11:00), 110-343 (13:22), 111-123 (07:16), 111-139 (15:49), 112-25 (12:16), 113-3 (15:37),
+  113-83 (14:55), 115-56 (10:33), 116-37 (11:54) and 119-21 (14:31); three more came
+  after midnight (114-74 at 02:43, 115-123 at 05:32, 117-73 at 00:20). So the seed file has a `time` column: the
+  roll-call time since 2005, on the calendar day the vote was taken (2015-10-30 02:43, 2018-02-09
+  05:32, 2021-12-15 00:20), and 20:00 before it. Each market reacts on its first close after that
+  time. ~~A vote after midnight is dated by the evening it began (2018-02-08, 2021-12-14).~~ The
+  after-midnight votes keep the same reaction close either way. A law passed over a veto is dated
+  by the override (1980-06-06). Laws cleared on one day are one event: **73 days**, with two laws
+  each on 1981-09-29 and 1990-10-27. Stored as not scheduled: even when a
   temporary limit's expiry was known, the day Congress would act was not.
 - **Two kinds, written down first.** `debt` if the law's title is about the public debt alone;
   `rider` if the change rides inside a broader act: budget reconciliations, the Budget Control Act,
@@ -48,9 +55,10 @@ hand-written seed file with each law's number. It gets rung 1's test on the day 
   - A vote in market hours: the Senate's 2011 vote at midday on 08-02, after the House's the
     evening before, and the 2013 Senate deal at midday on 10-16; the 20:00 rule puts their
     reactions on the next day. The bank rescue of 2008 (P.L. 110-343, a rider) cleared the
-    House at about 13:20 on 10-03, and its reaction lands on 10-06; the failed House vote of
-    09-29 is in no window. Step 1 records which final votes since 2005 came before 16:00 New
-    York, from the roll-call times, and lists them here.
+    House at about 13:20 on 10-03, and its reaction lands on 10-06; *amended 2026-11-03:* with
+    the vote times 2011 and 2008 react on their own day (2011-08-02, 2008-10-03); 2013 still
+    reacts on 10-17, its final House vote came at 22:18; the failed House vote of 09-29 is in no window. The final votes before 16:00
+    are listed under *The day* above.
   - Inside a week window: the S&P downgrade of 2011-08-05 falls in the 2011 law's week.
   - Left out entirely: the days the limit was reached and extraordinary measures began (dated by
     Treasury's own letters only since 2011, eleven episodes), the X-date letters, shutdowns.
@@ -83,15 +91,29 @@ hand-written seed file with each law's number. It gets rung 1's test on the day 
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | The seed file with 75 laws on 73 days, the flow stored, each market's lone days counted, the days left out as shared named by lead flow | A test's seed rows store a vote cleared on a Saturday with each market's next close as its reaction, and two laws cleared on one day as one event; the seed test checks the header, each law number's form (`\d{2,3}-\d{1,3}`), that no number repeats, `action` in raise/temporary/suspend, `vehicle` in debt/rider, `cleared` in order since 1970-06-29 and never after `signed`; each market's lone days and the left-out days written here; every existing scoreboard entry identical on a copy of the store |
+| 1 | ~~The seed file with 75 laws on 73 days, the flow stored, each market's lone days counted, the days left out as shared named by lead flow~~ **done** | A test's seed rows store a vote cleared on a Saturday with each market's next close as its reaction, and two laws cleared on one day as one event; the seed test checks the header, each law number's form (`\d{2,3}-\d{1,3}`), that no number repeats, `action` in raise/temporary/suspend, `vehicle` in debt/rider, `cleared` in order since 1970-06-29 and never after `signed`, each `time` as hours and minutes; each market's lone days and the left-out days written here; every existing scoreboard entry identical on a copy of the store |
 | 2 | Results here and in [`mvp-results.md`](../mvp-results.md) | The flow's verdicts on the day and over a week, the two checks, against the expected outcome |
+
+*Step 1, 2026-11-03:* 75 laws on 73 days stored, 1970-06-29 to 2025-07-03. On a copy of the store
+every existing scoreboard entry is identical, and so are the calls and *missed*; the flow adds 10
+cells with a verdict to the chance line (286 → 296). The build takes 9 minutes 15 seconds. Lone
+days by market: the S&P 500 60, the 10-year and 5-year yields 59, the Nasdaq 59, the dollar 58,
+the FTSE 100 33, the DAX 21, VIX 19, the STOXX 600 10, energy 10; *too few*: gold 9, the Euro
+Stoxx 50 9, the euro 9, defence 8, Brent 7, bitcoin 3. Left out as shared on the S&P 500, 13 laws:
+105-33 (a jobs report), 107-199 (core PCE), 109-182 (CPI), 110-91 (core PCE), 110-343 (a jobs
+report), 112-25 (core PCE), 113-3 (core PCE), 114-74 (core PCE and the euro-area flash), 116-37
+(ISM), 117-50 (CPI), 117-73 (the Fed and retail sales), 118-5 (a jobs report), 119-21 (a jobs
+report). Among them three of the four standoffs the spec names: the 2008 bank rescue, 2011 and
+2023. Of the modern standoffs only 2013 is measured.
 
 ## Technical details
 
 One more `flows.DatedShockFlow`, `DEBT_LIMIT_FLOW`: type code 22, CLI name `debt`, label `DBT`,
 noun `debt-limit laws`, event type `Fiscal: debt-ceiling / shutdown`; seed file `debt_limit.csv`
 with the header `cleared,signed,public_law,action,vehicle`, day column `cleared`, detail column
-`public_law`, the fixed 20:00, `scheduled=False`. No new code path. The checks run as one-off
+`public_law`, the fixed 20:00, `scheduled=False`. No new code path. *Amended 2026-11-03:* the
+header is `cleared,time,signed,public_law,action,vehicle`, read with `time_column="time"` in place
+of the fixed 20:00, so the midday votes under known misses are measured on their own day. The checks run as one-off
 scripts on the store copy, as tariffs' signing-day check did; `raw-move` is unchanged.
 
 Tests: `tests/test_study_raw_move.py` gets the Saturday and one-day test; `tests/test_seed_data.py`

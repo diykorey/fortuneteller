@@ -585,6 +585,35 @@ def test_raw_move_over_a_week(tmp_db: Path, capsys: pytest.CaptureFixture[str]) 
     assert sum(line.split()[-1] in (MOVES, UNCLEAR, DOESNT_MOVE) for line in out[2:18]) == 16
 
 
+def test_a_debt_limit_vote_reacts_on_each_market_s_next_close(tmp_path: Path) -> None:
+    # given a seed file with two laws cleared on one evening and one cleared on Saturday at 22:37
+    seed = tmp_path / "debt_limit.csv"
+    seed.write_text(
+        "cleared,time,signed,public_law,action,vehicle\n"
+        "1981-09-29,20:00,1981-09-30,97-48,temporary,debt\n"
+        "1981-09-29,20:00,1981-09-30,97-49,raise,debt\n"
+        "2011-08-02,12:16,2011-08-02,112-25,raise,rider\n"
+        "2023-06-03,22:37,2023-06-03,118-5,suspend,rider\n"
+    )
+
+    # when the debt-limit laws are loaded
+    batch = flows.DEBT_LIMIT_FLOW.load(seed, datetime(2026, 11, 2, 12, 0, tzinfo=NEW_YORK))
+
+    # then the two 1981 laws are one unscheduled event, the midday vote reacts that afternoon, and
+    # the Saturday vote reacts on Monday on the S&P 500 and on Sunday on bitcoin
+    assert [(e.event_id, e.detail, e.scheduled) for e in batch.events] == [
+        (2219810929, "97-48; 97-49", False),
+        (2220110802, "112-25", False),
+        (2220230603, "118-5", False),
+    ]
+    spy = MVP_PRICE_SERIES["SPY / ES"]
+    assert first_reaction_day(batch.events[1], spy) == date(2011, 8, 2)
+    closes = _closes((date(2023, 6, 2), 100.0), (date(2023, 6, 5), 101.0))
+    assert reaction_days(closes, [first_reaction_day(batch.events[2], spy)]) == {date(2023, 6, 5)}
+    assert first_reaction_day(batch.events[2], MVP_PRICE_SERIES["BTC"]) == date(2023, 6, 4)
+    assert batch.report == ["loaded 3 United States debt-limit laws, 1981-09-29 … 2023-06-03"]
+
+
 def test_two_times_on_one_day_are_refused(tmp_path: Path) -> None:
     # given a seed file with two German votes on one day at different hours
     seed = tmp_path / "elections.csv"

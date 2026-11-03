@@ -341,6 +341,9 @@ def test_load_releases_prints_count_range_and_skipped_months(
     (tmp_db.parent / "tariffs.csv").write_text(
         "signing_day,document_number,title\n2025-03-26,2025-05930,Adjusting Imports of Automobiles\n"
     )
+    (tmp_db.parent / "debt_limit.csv").write_text(
+        "cleared,time,signed,public_law,action,vehicle\n2023-06-01,22:37,2023-06-03,118-5,suspend,rider\n"
+    )
     monkeypatch.setattr(settings, "seed_dir", tmp_db.parent)
 
     # when the command runs twice
@@ -372,8 +375,9 @@ def test_load_releases_prints_count_range_and_skipped_months(
     report += "loaded 1 France votes, 2022-04-24 … 2022-04-24\n"
     report += "loaded 1 European Union votes, 2024-06-09 … 2024-06-09\n"
     report += "loaded 1 United States tariff actions, 2025-03-26 … 2025-03-26\n"
+    report += "loaded 1 United States debt-limit laws, 2023-06-01 … 2023-06-01\n"
     assert capsys.readouterr().out == report * 2
-    assert db.count_rows("event_instances", con=db.get_connection()) == 33
+    assert db.count_rows("event_instances", con=db.get_connection()) == 34
 
 
 def test_load_releases_stores_nothing_when_any_flow_fails(

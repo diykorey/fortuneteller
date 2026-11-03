@@ -8,8 +8,8 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Dated shocks, part 3, spec *(PR #210)*: the debt limit, each law that changed it since 1970 as
-one lesser flow, dated by the day Congress cleared it.
+The debt limit, step 1 *(PR #211)*: 75 laws on 73 days as one lesser flow, each at its final
+vote (the roll-call time since 2005); every existing scoreboard entry identical on a copy of the store.
 
 ## In progress
 
@@ -21,13 +21,14 @@ run rewrites it.
 
 ## Next
 
-The debt limit, step 1: the seed file with 75 laws, the flow stored, each market's lone days
-counted; every existing output identical on a copy of the store. Then its results.
+The debt limit, step 2: results on the day and over a week, the debt-only and session-before
+checks, against the expected outcome. Then dated shocks, part 4: summits, its spec first.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-03 | The debt limit, step 1: 73 days stored as one lesser flow, every existing entry identical | PR #211 |
 | 2026-11-03 | Dated shocks, part 3, spec: the debt limit, dated by Congress's final vote | PR #210 |
 | 2026-11-03 | Tariff actions, step 2: results — Europe's stocks move on a signing, New York's do not | PR #209 |
 | 2026-11-03 | Tariff actions, step 1: 73 signing days stored as one lesser flow, every existing entry identical | PR #208 |
