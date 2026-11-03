@@ -28,7 +28,8 @@ Two things make this hard. Both come from the person, not the machine, being the
     with one row per market, and open a pull request.
   - The pull request must be merged before the release time. Only the owner can merge, so a guess
     counts only if the owner merges it in time. The page says so, and lists the guess pull requests
-    that were not merged in time.
+    that were not merged in time. *Amended 2026-11-03:* it lists those merged too late, as void
+    guesses with the reason; one never merged does not reach `main` and is not shown.
   - A pull request that touches anything but its own new file is refused. A guess pull request is
     merged by merge commit or squash, never rebased.
   - Every rule is checked in grading, so a hand-written file gets the same rules as any other.
@@ -114,7 +115,7 @@ The step 1 tests include:
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~`score` reads `data/guesses/`, grades or voids each guess and prints a `guesses` block~~ **done** | The tests above pass; `score` on the real data prints the same calls block as before |
-| 2 | The scoreboard: every guess, each handle's count, the asymmetry and "how to play" | On a test database the JSON's counts equal `score`'s lines; the page shows a guess beside the machine's row |
+| 2 | ~~The scoreboard: every guess, each handle's count, the asymmetry and "how to play"~~ **done** | On a test database the JSON's counts equal `score`'s lines; the page shows a guess beside the machine's row |
 | 3 | The first live round: a release `live` calls, guessed through a merged pull request; results here | At least one guess graded by the evening score that day or the next |
 
 *Step 1, 2026-11-03:* `score` reads every guess file from `main`'s history and grades each guess
@@ -122,6 +123,14 @@ beside the machine's row. On a copy of the real store, with no guesses yet, its 
 to the committed `data/score.txt`. The tests cover a merge commit, a squash commit, a file edited
 and deleted after it was added, a bad file, every void reason, and both kinds of waiting. They also
 cover a GitHub failure, which stops `score` rather than voiding a guess.
+
+*Step 2, 2026-11-03:* `scoreboard` writes `guesses`, `bad_guesses` and `handles` into `data.json`,
+built by the same functions as `score`'s block. A test rebuilds `score`'s block line for line from
+the JSON. The page shows a "Beat the fortune teller" section after the calls: how to play, the
+asymmetry, the public-and-permanent notice, each handle's count, and every guess beside the
+machine's row. It was checked in a browser on a test round. A late merge shows as a void guess with
+its reason; a pull request still open is not listed, since GitHub is asked only about merged
+commits. A GitHub failure stops `scoreboard`, as it stops `score`.
 
 ## What this step does not do
 

@@ -56,7 +56,10 @@ from disk, so the command writes the page too, from the template `scoreboard.htm
 with the JSON embedded; `data.json` beside it is the same data for anyone else. A call's record is
 the replay's calls before its day, which is what the popup counted. `FT_SCOREBOARD_DIR` moves the
 output, for tests. `scripts/release-day.sh` gets one line after `score`. No new unit, no
-daemon-reload.
+daemon-reload. *Amended 2026-11-03 ([Beat the fortune teller](beat-the-fortune-teller.md)):* the
+data also holds `guesses` (each guess's day, handle, event, market, direction, state, reason and the
+machine's grade beside it), `bad_guesses` (one note per unreadable file) and `handles` (right out of
+graded per handle); the page shows them after the calls.
 
 ## What this does not do
 

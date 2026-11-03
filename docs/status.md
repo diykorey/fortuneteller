@@ -8,8 +8,8 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Beat the fortune teller, step 1 *(PR #224)*: `score` grades each guess file from `main`'s
-history beside the machine's row; with no guesses yet its output is unchanged.
+Beat the fortune teller, step 2 *(PR #225)*: the scoreboard shows every guess beside the
+machine's row, each handle's count, how to play and the two notices.
 
 ## In progress
 
@@ -19,18 +19,19 @@ evening grades. The jobs report on 2026-11-06 is the first with the euro and the
 called. The published page still shows the raw move from before own years until the next evening
 run rewrites it.
 
-Beat the fortune teller, step 2: the scoreboard shows every guess, each handle's count, the
-asymmetry and how to play ([the spec](steps/beat-the-fortune-teller.md)).
+Beat the fortune teller, step 3: the first live round, a release `live` calls guessed through a
+merged pull request ([the spec](steps/beat-the-fortune-teller.md)). It waits for a release; the
+jobs report on 2026-11-06 is the first.
 
 ## Next
 
-Beat the fortune teller, step 3: the first live round, a release `live` calls guessed through a
-merged pull request.
+Not chosen yet: the roadmap's numbered steps are done; the next is picked from its "later" list.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-03 | Beat the fortune teller, step 2: the scoreboard shows the guesses | PR #225 |
 | 2026-11-03 | Beat the fortune teller, step 1: `score` grades guesses beside the machine's calls | PR #224 |
 | 2026-11-03 | Beat the fortune teller: spec | PR #223 |
 | 2026-11-03 | The president's trade posts, part 2, step 2: results — no US market moves on a post day; step 11 closes with no | PR #221 |

@@ -35,7 +35,7 @@ td.maybe { background: var(--maybe); }
 td.no, td.none { color: var(--muted); }
 td.right { color: var(--right); font-weight: 600; }
 td.wrong { color: var(--wrong); font-weight: 600; }
-td.pending, td.void, td.missed { color: var(--muted); }
+td.pending, td.void, td.missed, td.waiting { color: var(--muted); }
 a { color: inherit; }
 </style>
 </head>
@@ -50,6 +50,23 @@ verdicts for every market; every link's record on the replay. The numbers are th
 <p class="muted">Each release's lines as logged that morning: the direction called, the link's record
 before it as counts, the band half its moves land in, and the grade on the close.</p>
 <div class="wrap"><table id="calls"></table></div>
+
+<h2>Beat the fortune teller</h2>
+<p class="muted"><strong>How to play:</strong> on GitHub, add a file
+<code>data/guesses/&lt;day&gt;-&lt;handle&gt;.csv</code>, with the header
+<code>flow,instrument,direction</code> and one row per market (<code>cpi,SPY / ES,up</code>), and
+open a pull request that adds only that file. A guess counts only if the owner merges the pull
+request before 08:30 New York on its day; one merged later is void, and one never merged is
+not shown.
+<a href="https://github.com/diykorey/fortuneteller/blob/main/docs/steps/beat-the-fortune-teller.md">The rules</a>.</p>
+<p class="muted"><strong>Not a fair fight:</strong> a person guesses before the release; the machine
+calls after it, knowing the actual, and only on the links and days it chooses.</p>
+<p class="muted"><strong>Public and permanent:</strong> a guess stays in the repository's history and
+on this page. Handles are not checked, so one person can play under two; every handle's full
+record is shown, losses included. A handle is dropped from the page on request; the history stays.</p>
+<div class="wrap"><table id="handles"></table></div>
+<div class="wrap"><table id="guesses"></table></div>
+<ul class="muted" id="bad-guesses"></ul>
 
 <h2>Replay: every release predicted from the ones before it</h2>
 <div class="wrap"><table id="walk"></table></div>
@@ -119,6 +136,30 @@ before it as counts, the band half its moves land in, and the grade on the close
       c.band ? el('td', c.band) : dash(), grade,
     ]));
   });
+
+  // The guesses, newest day first, each beside the machine's row; each handle's record as counts.
+  const handles = byId('handles');
+  handles.appendChild(head(['Handle', 'Record']));
+  if (!data.handles.length && !data.bad_guesses.length) {
+    handles.appendChild(row([el('td', 'No guess yet.', 'none')]));
+  }
+  data.handles.forEach((h) => {
+    handles.appendChild(row([el('td', h.who), el('td', h.right + ' of ' + h.graded + ' right')]));
+  });
+  const guesses = byId('guesses');
+  if (data.guesses.length) {
+    guesses.appendChild(head(['Day', 'Handle', 'Event', 'Market', 'Guessed', 'Grade', 'Machine']));
+  }
+  data.guesses.slice().sort((a, b) => b.day.localeCompare(a.day)).forEach((g) => {
+    const grade = el('td', g.state, g.state);
+    if (g.reason) grade.appendChild(el('small', g.reason));
+    const machine = el('td', g.machine,
+      ['right', 'wrong', 'void', 'waiting'].includes(g.machine) ? g.machine : 'none');
+    guesses.appendChild(row([el('td', g.day), el('td', g.who),
+      el('td', Object.hasOwn(labels, g.event) ? labels[g.event] : g.event),
+      el('td', g.market), el('td', g.direction), grade, machine]));
+  });
+  data.bad_guesses.forEach((note) => byId('bad-guesses').appendChild(el('li', note)));
 
   const chance = (id, key) => {
     const c = data.chance[key];

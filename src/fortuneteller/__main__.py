@@ -896,10 +896,7 @@ def _score(_args: argparse.Namespace) -> int:
                 for note in notes:
                     print(f"  {note}")
     try:
-        guesses, bad = study.read_guesses(study.guess_files(settings.guesses_dir))
-        graded = study.score_guesses(
-            guesses, lambda sha: study.merged_at(settings.guesses_dir, sha), con=con
-        )
+        graded, bad = _read_guesses(con)
     except (OSError, subprocess.CalledProcessError) as exc:
         print(f"score: the guesses cannot be read: {exc}", file=sys.stderr)
         return 1
@@ -934,22 +931,29 @@ def _record(replay: Sequence[study.ConfidentCall], before: date) -> dict[str, in
     return {"right": sum(c.call.right for c in earlier), "calls": len(earlier)}
 
 
-def describe_guesses(
+def _read_guesses(
+    con: duckdb.DuckDBPyConnection,
+) -> tuple[list[study.GradedGuess], list[str]]:
+    """Every guess file on ``main``'s history, graded or voided, and a note for each bad file; a
+    failure of git or GitHub raises, so an outage cannot void every guess."""
+    guesses, bad = study.read_guesses(study.guess_files(settings.guesses_dir))
+    graded = study.score_guesses(
+        guesses, lambda sha: study.merged_at(settings.guesses_dir, sha), con=con
+    )
+    return graded, bad
+
+
+def guess_rows(
     graded: Sequence[study.GradedGuess],
-    bad: Sequence[str],
     rows: Sequence[study.LoggedCall],
     con: duckdb.DuckDBPyConnection,
-) -> list[str]:
-    """``score``'s guesses block: each guess and the machine's row beside it, then each handle's
-    count; nothing when there are no guesses. No line starts with ``pending:``, which the evening
-    job waits on."""
-    if not graded and not bad:
-        return []
+) -> list[dict[str, str | None]]:
+    """Each guess with its state and the machine's row beside it: right or wrong, void or waiting
+    as ``score`` grades the row, "no call" for a row without a direction, "not logged" for none."""
     lives: dict[str, study.LiveScore] = {}
-    lines = ["", f"guesses: {len(graded) + len(bad)}"]
+    out: list[dict[str, str | None]] = []
     for g in graded:
         guess = g.guess
-        state = g.state if g.reason is None else f"{g.state}, {g.reason}"
         row = next(
             (
                 r
@@ -967,16 +971,51 @@ def describe_guesses(
                 lives[row.flow] = study.score_calls(flows.flow_named(row.flow), rows, con=con)
             grade = _grade(row, lives[row.flow])[0]
             machine = study.WAITING if grade == "pending" else grade
-        direction = "up" if guess.direction > 0 else "down"
-        lines.append(
-            f"  {guess.day} {guess.who} {guess.flow} {guess.instrument} {direction}: {state}; "
-            f"machine: {machine}"
+        out.append(
+            {
+                "day": guess.day.isoformat(),
+                "who": guess.who,
+                "event": guess.flow,
+                "market": guess.instrument,
+                "direction": "up" if guess.direction > 0 else "down",
+                "state": g.state,
+                "reason": g.reason,
+                "machine": machine,
+            }
         )
-    lines += [f"  {note}" for note in bad]
+    return out
+
+
+def handle_counts(graded: Sequence[study.GradedGuess]) -> list[dict[str, object]]:
+    """Each handle's record as counts: right out of graded, never a share."""
+    counts = []
     for who in sorted({g.guess.who for g in graded}):
         mine = [g for g in graded if g.guess.who == who and g.state in (study.RIGHT, study.WRONG)]
         right = sum(g.state == study.RIGHT for g in mine)
-        lines.append(f"  {who}: {right} of {len(mine)} right")
+        counts.append({"who": who, "right": right, "graded": len(mine)})
+    return counts
+
+
+def describe_guesses(
+    graded: Sequence[study.GradedGuess],
+    bad: Sequence[str],
+    rows: Sequence[study.LoggedCall],
+    con: duckdb.DuckDBPyConnection,
+) -> list[str]:
+    """``score``'s guesses block: each guess and the machine's row beside it, then each handle's
+    count; nothing when there are no guesses. No line starts with ``pending:``, which the evening
+    job waits on."""
+    if not graded and not bad:
+        return []
+    lines = ["", f"guesses: {len(graded) + len(bad)}"]
+    for g in guess_rows(graded, rows, con):
+        state = g["state"] if g["reason"] is None else f"{g['state']}, {g['reason']}"
+        lines.append(
+            f"  {g['day']} {g['who']} {g['event']} {g['market']} {g['direction']}: {state}; "
+            f"machine: {g['machine']}"
+        )
+    lines += [f"  {note}" for note in bad]
+    lines += [f"  {h['who']}: {h['right']} of {h['graded']} right" for h in handle_counts(graded)]
     return lines
 
 
@@ -996,10 +1035,15 @@ def _grade(row: study.LoggedCall, live: study.LiveScore) -> tuple[str, str | Non
 
 
 def scoreboard_data(
-    rows: Sequence[study.LoggedCall], con: duckdb.DuckDBPyConnection, today: date
+    rows: Sequence[study.LoggedCall],
+    con: duckdb.DuckDBPyConnection,
+    today: date,
+    graded: Sequence[study.GradedGuess] = (),
+    bad: Sequence[str] = (),
 ) -> dict[str, object]:
     """The page's numbers: what ``raw-move``, ``surprise`` and ``predict`` print for every flow
-    with releases stored, the calls as ``score`` grades them, and the chance count by each grid."""
+    with releases stored, the calls and the guesses as ``score`` grades them, and the chance count
+    by each grid."""
     events: list[dict[str, object]] = []
     replays: dict[str, dict[str, list[study.ConfidentCall]]] = {}
     cells = {"raw_move": 0, "surprise": 0, "walk_forward": 0}
@@ -1131,6 +1175,9 @@ def scoreboard_data(
         "events": events,
         "calls": calls,
         "missed": [{"event": name, "day": day} for name, day in missed],
+        "guesses": guess_rows(graded, rows, con),
+        "bad_guesses": list(bad),
+        "handles": handle_counts(graded),
     }
 
 
@@ -1154,7 +1201,12 @@ def _scoreboard(_args: argparse.Namespace) -> int:
         return 1
     today = _now().astimezone(sources.NEW_YORK).date()
     try:
-        data = scoreboard_data(rows, con, today)
+        graded, bad = _read_guesses(con)
+    except (OSError, subprocess.CalledProcessError) as exc:
+        print(f"scoreboard: the guesses cannot be read: {exc}", file=sys.stderr)
+        return 1
+    try:
+        data = scoreboard_data(rows, con, today, graded, bad)
     except ValueError as exc:
         print(f"scoreboard: {exc}", file=sys.stderr)
         return 1
