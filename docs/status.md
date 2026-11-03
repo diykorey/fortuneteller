@@ -8,8 +8,9 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-The debt limit, step 1 *(PR #211)*: 75 laws on 73 days as one lesser flow, each at its final
-vote (the roll-call time since 2005); every existing scoreboard entry identical on a copy of the store.
+The debt limit, step 2 *(PR #212)*: results. Both Treasury yields move about twice an ordinary
+day on the close after Congress's final vote, and still about 1.5 times over a week; no stock
+market moves. The expected outcome was wrong for the yields.
 
 ## In progress
 
@@ -21,13 +22,13 @@ run rewrites it.
 
 ## Next
 
-The debt limit, step 2: results on the day and over a week, the debt-only and session-before
-checks, against the expected outcome. Then dated shocks, part 4: summits, its spec first.
+Dated shocks, part 4: summits, its spec first. Then step 1, the seed file and the flow.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-03 | The debt limit, step 2: results — both Treasury yields move on the day and over a week, no stock market does | PR #212 |
 | 2026-11-03 | The debt limit, step 1: 73 days stored as one lesser flow, every existing entry identical | PR #211 |
 | 2026-11-03 | Dated shocks, part 3, spec: the debt limit, dated by Congress's final vote | PR #210 |
 | 2026-11-03 | Tariff actions, step 2: results — Europe's stocks move on a signing, New York's do not | PR #209 |
