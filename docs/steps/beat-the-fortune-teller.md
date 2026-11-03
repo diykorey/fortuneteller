@@ -64,9 +64,9 @@ says so and shows every handle's full record, losses included.
 - its market is not one of the flow's links;
 - its file reached `main` without a merged pull request, or the pull request was merged at or after
   the release time (08:30 New York, `flows.RELEASE_TIME`) on its day;
-- the flow had no release that day: none is stored for that day, though a later release of the
-  flow is (so a late load waits, not voids);
-- or it repeats a flow and market already in its file: the first row counts.
+- it repeats a flow and market already in its file: the first row counts;
+- or the flow had no release that day: none is stored for that day, though a later release of the
+  flow is (so a late load waits, not voids).
 
 **Otherwise it is graded, as in rung 2:** right if the day's move on that market closed strictly
 the called way, wrong if not. Until then it is *waiting*.
@@ -113,9 +113,15 @@ The step 1 tests include:
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | `score` reads `data/guesses/`, grades or voids each guess and prints a `guesses` block | The tests above pass; `score` on the real data prints the same calls block as before |
+| 1 | ~~`score` reads `data/guesses/`, grades or voids each guess and prints a `guesses` block~~ **done** | The tests above pass; `score` on the real data prints the same calls block as before |
 | 2 | The scoreboard: every guess, each handle's count, the asymmetry and "how to play" | On a test database the JSON's counts equal `score`'s lines; the page shows a guess beside the machine's row |
 | 3 | The first live round: a release `live` calls, guessed through a merged pull request; results here | At least one guess graded by the evening score that day or the next |
+
+*Step 1, 2026-11-03:* `score` reads every guess file from `main`'s history and grades each guess
+beside the machine's row. On a copy of the real store, with no guesses yet, its output is identical
+to the committed `data/score.txt`. The tests cover a merge commit, a squash commit, a file edited
+and deleted after it was added, a bad file, every void reason, and both kinds of waiting. They also
+cover a GitHub failure, which stops `score` rather than voiding a guess.
 
 ## What this step does not do
 
@@ -127,34 +133,48 @@ head-to-head total, no change to the machine's calls or rules or to the evening 
 - **Settings and data:**
   - `settings.guesses_dir` is `data/guesses`, with a `.gitkeep`.
   - `tests/conftest.py` points it at a temporary directory, as it does `calls_path`.
-- **Reading:** `study.read_guesses(files) -> list[Guess]`, from `guess_files`' list.
-  - `Guess` holds `day`, `who`, `flow`, `instrument`, `direction` (+1 or −1), `path`.
-  - Only `*.csv` files are read, so the `.gitkeep` is skipped. A bad file name, header or row voids
-    that file's guesses, with the reason, so one bad pull request cannot stop `score`.
+- **Reading:** `study.read_guesses(files) -> tuple[list[Guess], list[str]]`, from `guess_files`'
+  list: the guesses, and a note for each file that cannot be read.
+  - `Guess` holds `day`, `who`, `flow`, `instrument`, `direction` (+1 or −1), `path` and `sha`.
+  - A bad file voids only its own guesses, with the reason, so one bad pull request cannot stop
+    `score`. A file is bad if:
+    - its name, subfolder included, is not `<day>-<handle>.csv`;
+    - its bytes are not UTF-8 (a byte-order mark is allowed);
+    - its header or a row is wrong, or it cannot be read from its commit.
 - **Witness:** two functions.
-  - `study.guess_files(repo) -> list[tuple[str, str]]`: every file ever added under
-    `data/guesses/` along `main`'s first parents, with the oldest commit that added it, from
-    `git -C <repo> log --first-parent --no-renames --diff-filter=A --name-only HEAD -- data/guesses/`.
-    So a file deleted or renamed later still counts as first added.
+  - `study.guess_files(directory) -> list[tuple[str, str, bytes | None]]`: every file ever added
+    to `directory` along `HEAD`'s first parents, with the oldest commit that added it and its bytes
+    there.
+    - It runs `git -c core.quotePath=false -C <directory> log --first-parent
+      --diff-merges=first-parent --no-renames --diff-filter=A --relative --name-only HEAD -- .`.
+    - A file deleted or renamed later still counts as first added.
     - `HEAD` is the checkout `score` runs in; the job's is `origin/main`, freshly fetched.
     - Only a failure of git itself is an error.
-  - `study.merged_at(sha) -> datetime | None`: GitHub's `merged_at` for the pull request whose
-    `merge_commit_sha` is `sha`, from `gh api repos/{repo}/commits/{sha}/pulls`.
+  - `study.merged_at(directory, sha) -> datetime | None`: GitHub's `merged_at` for the pull request
+    whose `merge_commit_sha` is `sha`, from `gh api repos/diykorey/fortuneteller/commits/{sha}/pulls`.
     - It is `None` only when GitHub answers and no pull request matches. A failure of `gh` is an
       error, so an outage cannot void every guess.
-    - Tests replace it, including one test where it raises.
+    - A stand-in `gh` tests it; `score`'s tests replace it, one with a lookup that raises.
   - The guesses are read from `git show <sha>:<path>`, not from the working tree.
-- **Grading:** `study.score_guesses(guesses, rows, con) -> list[GradedGuess]`, with
-  `state ∈ {right, wrong, waiting, void}`, a reason, and the machine's grade.
+- **Grading:** `study.score_guesses(guesses, merged, con) -> list[GradedGuess]`, where `merged` is
+  the witness lookup. Each `GradedGuess` has `state ∈ {right, wrong, waiting, void}` and a reason.
+  - The void checks run in this order, and the first that applies is the reason:
+    1. the flow;
+    2. the link;
+    3. the merge;
+    4. the repeat;
+    5. no release.
   - The links are the items of `flow.surprise_rule.expected_sign` with a nonzero sign.
   - "Called by `live`" is `flows.called_live(flow)`.
   - The move is `observations.ret_1d` for the release's event.
-- **Printing:** `score` prints its `guesses` block before `missed:`, and none when there are no
-  guesses, so the output is unchanged today.
-  - The header is `guesses: N`.
+  - The machine's grade is looked up by `score` (`describe_guesses` in `__main__.py`), from its own
+    `score_calls` and `_grade`.
+- **Printing:** `score` prints its `guesses` block before `missed:`. When there are no guesses it
+  prints none, so the output is unchanged today.
+  - The header is `guesses: N`, where N counts the guesses plus the bad files.
   - Then one line per guess: `  <day> <handle> <flow> <instrument> <up|down>: <state>; machine:
-    <grade>`, with the reason after a void.
-  - Then one line per handle: `  <handle>: <right> of <graded> right`.
+    <grade>`, with the reason after a void or a wait.
+  - Then one line per bad file, and one per handle: `  <handle>: <right> of <graded> right`.
   - No line starts with `pending:`.
 - **The page:**
   - `scoreboard` adds a `guesses` list and per-handle counts to `data.json`;
@@ -162,7 +182,8 @@ head-to-head total, no change to the machine's calls or rules or to the evening 
 - **Docs:**
   - `docs/glossary.md`: guess, void guess, handle;
   - `docs/precision.md`: the witness (GitHub's `merged_at`), the owner's merge as a selection, the
-    unchecked handle, and that a guess pull request is merged by merge commit or squash. A rebase
-    merge's `merge_commit_sha` need not be the commit that added the file, so such a guess is void;
+    unchecked handle, and that a guess pull request is merged by merge commit or squash. With a rebase
+    merge, `merge_commit_sha` is the pull request's last commit, so a guess counts only when that
+    commit added the file;
   - `docs/steps/scoreboard.md`: the amendment;
   - `docs/status.md`.

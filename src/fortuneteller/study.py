@@ -18,10 +18,13 @@ from __future__ import annotations
 
 import csv
 import io
+import json
 import math
 import random
+import re
+import subprocess
 from bisect import bisect_left
-from collections.abc import Iterable, Sequence
+from collections.abc import Callable, Iterable, Sequence
 from dataclasses import dataclass
 from datetime import UTC, date, datetime, time, timedelta
 from pathlib import Path
@@ -1183,3 +1186,195 @@ def missed_releases(
         if (day := release_date(event)) >= rule.logged_since and (flow.cli_name, day) not in logged
     ]
     return [f"{name} {day}" for day, name in sorted(missed)]
+
+
+# Step 12: a person's guess, graded beside the machine's call (docs/steps/beat-the-fortune-teller.md).
+GUESS_COLUMNS = ("flow", "instrument", "direction")
+GITHUB_REPO = "diykorey/fortuneteller"
+GUESS_FILE = re.compile(r"(\d{4}-\d{2}-\d{2})-([a-z0-9-]{1,20})\.csv")
+RIGHT, WRONG, WAITING, VOID = "right", "wrong", "waiting", "void"
+
+
+@dataclass(frozen=True)
+class Guess:
+    """One row of a guess file: ``direction`` +1 or -1; ``sha`` the commit that added the file."""
+
+    day: date
+    who: str
+    flow: str
+    instrument: str
+    direction: int
+    path: str
+    sha: str
+
+
+@dataclass(frozen=True)
+class GradedGuess:
+    """A guess and its state, with why when it is void or waiting."""
+
+    guess: Guess
+    state: str
+    reason: str | None = None
+
+
+def _git(repo: Path, *args: str) -> bytes:
+    return subprocess.run(
+        ["git", "-c", "core.quotePath=false", "-C", str(repo), *args],
+        check=True,
+        capture_output=True,
+    ).stdout
+
+
+def guess_files(directory: Path) -> list[tuple[str, str, bytes | None]]:
+    """Every file ever added to ``directory`` along ``HEAD``'s first parents, as (path, the oldest
+    commit that added it, its bytes there, ``None`` if they cannot be read); none when the directory
+    does not exist. A file deleted, renamed or edited later is read as it was added."""
+    if not directory.is_dir():
+        return []
+    log = _git(
+        directory,
+        "log",
+        "--first-parent",
+        "--diff-merges=first-parent",
+        "--no-renames",
+        "--diff-filter=A",
+        "--relative",
+        "--name-only",
+        "--format=%x00%H",
+        "HEAD",
+        "--",
+        ".",
+    ).decode("utf-8", errors="replace")
+    added: dict[str, str] = {}
+    for block in log.split("\0")[1:]:
+        sha, *paths = [line for line in block.splitlines() if line]
+        for path in paths:
+            added[path] = sha
+    files: list[tuple[str, str, bytes | None]] = []
+    for path, sha in sorted(added.items()):
+        if path == ".gitkeep":
+            continue
+        try:
+            files.append((path, sha, _git(directory, "show", f"{sha}:./{path}")))
+        except subprocess.CalledProcessError:
+            files.append((path, sha, None))
+    return files
+
+
+def read_guesses(
+    files: Sequence[tuple[str, str, bytes | None]],
+) -> tuple[list[Guess], list[str]]:
+    """The guesses in ``files``, and a note for each file that cannot be read; its guesses are
+    void, and no file can stop the others."""
+    guesses: list[Guess] = []
+    bad: list[str] = []
+    for path, sha, content in files:
+        name = GUESS_FILE.fullmatch(path)
+        try:
+            if name is None:
+                raise ValueError("its name is not <day>-<handle>.csv, lowercase, in data/guesses/")
+            if content is None:
+                raise ValueError("it cannot be read from its commit")
+            reader = csv.DictReader(io.StringIO(content.decode("utf-8-sig")))
+            if tuple(reader.fieldnames or ()) != GUESS_COLUMNS:
+                raise ValueError(f"its header is not {','.join(GUESS_COLUMNS)}")
+            day = date.fromisoformat(name[1])
+            rows = []
+            for r in reader:
+                if None in r or None in r.values():
+                    raise ValueError(f"line {reader.line_num}: not three columns")
+                if r["direction"] not in ("up", "down"):
+                    raise ValueError(f"line {reader.line_num}: direction {r['direction']!r}")
+                rows.append(
+                    Guess(
+                        day,
+                        name[2],
+                        r["flow"],
+                        r["instrument"],
+                        1 if r["direction"] == "up" else -1,
+                        path,
+                        sha,
+                    )
+                )
+        except (ValueError, csv.Error) as exc:
+            bad.append(f"{path}: void, {exc}")
+            continue
+        guesses.extend(rows)
+    return guesses, bad
+
+
+def merged_at(directory: Path, sha: str) -> datetime | None:
+    """When GitHub merged the pull request whose merge commit is ``sha``; ``None`` when GitHub
+    answers and none matches. A failure to ask is an error, so an outage cannot void a guess."""
+    reply = subprocess.run(
+        ["gh", "api", f"repos/{GITHUB_REPO}/commits/{sha}/pulls"],
+        cwd=directory,
+        check=True,
+        capture_output=True,
+        text=True,
+    ).stdout
+    for pull in json.loads(reply):
+        if pull.get("merge_commit_sha") == sha and pull.get("merged_at"):
+            return datetime.fromisoformat(pull["merged_at"])
+    return None
+
+
+def score_guesses(
+    guesses: Sequence[Guess],
+    merged: Callable[[str], datetime | None],
+    con: duckdb.DuckDBPyConnection | None = None,
+) -> list[GradedGuess]:
+    """Each guess right or wrong on its market's move that day, as rung 2 grades a call; void with
+    why when a rule fails; waiting while its release or move is not loaded."""
+    connection = con if con is not None else db.get_connection()
+    by_name = {flow.cli_name: flow for flow in EVENT_FLOWS}
+    times: dict[str, datetime | None] = {}
+    seen: set[tuple[str, str, str]] = set()
+    releases: dict[str, dict[date, EventInstance]] = {}
+    graded = []
+    for g in guesses:
+        flow = by_name.get(g.flow)
+        rule = flow.surprise_rule if flow is not None else None
+        released = datetime.combine(g.day, RELEASE_TIME, tzinfo=NEW_YORK)
+        if g.sha not in times:
+            times[g.sha] = merged(g.sha)
+        at = times[g.sha]
+        reason = None
+        if flow is None or rule is None or not called_live(flow):
+            reason = f"{g.flow} is not a flow `live` calls"
+        elif not rule.expected_sign.get(g.instrument):
+            reason = f"{g.instrument} is not one of {g.flow}'s links"
+        elif at is None:
+            reason = "not merged through a pull request"
+        elif at >= released:
+            reason = (
+                f"merged {at.astimezone(NEW_YORK):%Y-%m-%d %H:%M} New York, not before "
+                f"{released:%H:%M} on {g.day}"
+            )
+        elif (g.path, g.flow, g.instrument) in seen:
+            reason = f"repeats {g.flow} {g.instrument} in its file"
+        seen.add((g.path, g.flow, g.instrument))
+        if reason is not None or flow is None:
+            graded.append(GradedGuess(g, VOID, reason))
+            continue
+        if flow.cli_name not in releases:
+            releases[flow.cli_name] = {
+                release_date(e): e for e in stored_events(flow, con=connection)
+            }
+        events = releases[flow.cli_name]
+        event = events.get(g.day)
+        if event is None:
+            if any(day > g.day for day in events):
+                graded.append(GradedGuess(g, VOID, f"{g.flow} had no release on {g.day}"))
+            else:
+                graded.append(GradedGuess(g, WAITING, "the release is not loaded"))
+            continue
+        move = connection.execute(
+            "SELECT ret_1d FROM observations WHERE event_id = ? AND instrument = ?",
+            [event.event_id, g.instrument],
+        ).fetchone()
+        if move is None or move[0] is None:
+            graded.append(GradedGuess(g, WAITING, "its move is not loaded"))
+            continue
+        graded.append(GradedGuess(g, RIGHT if g.direction * move[0] > 0 else WRONG))
+    return graded

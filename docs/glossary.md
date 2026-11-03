@@ -488,6 +488,12 @@ Terms are grouped by what they are about, alphabetical within each group.
   link's record, every event's verdicts for every market, and the chance count beside each grid.
   The first thing delivered to anyone but this laptop: GitHub Pages serves it at
   <https://diykorey.github.io/fortuneteller/scoreboard/> since 2026-10-27.
+- **Guess** — a person's call on a release, up or down for one market, in a file
+  `data/guesses/<day>-<handle>.csv` added through a pull request; graded beside the machine's call
+  ([beat the fortune teller](steps/beat-the-fortune-teller.md)).
+- **Handle** — the name a player picks in a guess file's name, lowercase, unchecked.
+- **Void guess** — a guess listed with why and never graded: not a flow `live` calls, not one of its
+  links, not merged through a pull request before the release, no release that day, or a repeat.
 - **The reset** — 2026-08-05, when `main` was rolled back to the M0 spine because the
   implementation had become over-engineered for the stage. Recorded in [CLAUDE.md](../CLAUDE.md).
 - **The spine** — the M0 data layer: models, schema, store, seed loader, CLI. Shipped.

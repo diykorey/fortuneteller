@@ -15,6 +15,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import subprocess
 import sys
 import textwrap
 import time
@@ -894,6 +895,16 @@ def _score(_args: argparse.Namespace) -> int:
                 print(f"{label}: {len(notes)}")
                 for note in notes:
                     print(f"  {note}")
+    try:
+        guesses, bad = study.read_guesses(study.guess_files(settings.guesses_dir))
+        graded = study.score_guesses(
+            guesses, lambda sha: study.merged_at(settings.guesses_dir, sha), con=con
+        )
+    except (OSError, subprocess.CalledProcessError) as exc:
+        print(f"score: the guesses cannot be read: {exc}", file=sys.stderr)
+        return 1
+    for line in describe_guesses(graded, bad, rows, con):
+        print(line)
     missed = study.missed_releases(rows, con=con)
     print()
     later = [
@@ -921,6 +932,52 @@ def _record(replay: Sequence[study.ConfidentCall], before: date) -> dict[str, in
     """A link's record as counts on the replay's calls before ``before``: what the popup said."""
     earlier = [c for c in replay if flows.event_date(c.call.event_id) < before]
     return {"right": sum(c.call.right for c in earlier), "calls": len(earlier)}
+
+
+def describe_guesses(
+    graded: Sequence[study.GradedGuess],
+    bad: Sequence[str],
+    rows: Sequence[study.LoggedCall],
+    con: duckdb.DuckDBPyConnection,
+) -> list[str]:
+    """``score``'s guesses block: each guess and the machine's row beside it, then each handle's
+    count; nothing when there are no guesses. No line starts with ``pending:``, which the evening
+    job waits on."""
+    if not graded and not bad:
+        return []
+    lives: dict[str, study.LiveScore] = {}
+    lines = ["", f"guesses: {len(graded) + len(bad)}"]
+    for g in graded:
+        guess = g.guess
+        state = g.state if g.reason is None else f"{g.state}, {g.reason}"
+        row = next(
+            (
+                r
+                for r in rows
+                if (r.flow, r.day, r.instrument) == (guess.flow, guess.day, guess.instrument)
+            ),
+            None,
+        )
+        if row is None:
+            machine = "not logged"
+        elif row.direction is None:
+            machine = "no call"
+        else:
+            if row.flow not in lives:
+                lives[row.flow] = study.score_calls(flows.flow_named(row.flow), rows, con=con)
+            grade = _grade(row, lives[row.flow])[0]
+            machine = study.WAITING if grade == "pending" else grade
+        direction = "up" if guess.direction > 0 else "down"
+        lines.append(
+            f"  {guess.day} {guess.who} {guess.flow} {guess.instrument} {direction}: {state}; "
+            f"machine: {machine}"
+        )
+    lines += [f"  {note}" for note in bad]
+    for who in sorted({g.guess.who for g in graded}):
+        mine = [g for g in graded if g.guess.who == who and g.state in (study.RIGHT, study.WRONG)]
+        right = sum(g.state == study.RIGHT for g in mine)
+        lines.append(f"  {who}: {right} of {len(mine)} right")
+    return lines
 
 
 def _grade(row: study.LoggedCall, live: study.LiveScore) -> tuple[str, str | None]:

@@ -32,7 +32,9 @@ evening job. The first thing delivered beyond this laptop.
   2026-10-23:* the whole command took 193 s for eight events, the ordinary days being counted once
   per flow rather than once per command).
 - **Our numbers only.** The JSON holds verdicts, records and the calls already committed in
-  `data/calls.csv`; no price or release series, the repository being public.
+  `data/calls.csv`; no price or release series, the repository being public. *Amended 2026-11-03*
+  ([beat the fortune teller](beat-the-fortune-teller.md)): the players' guesses are shown too, and
+  they are their players' numbers.
 
 ## The steps
 
