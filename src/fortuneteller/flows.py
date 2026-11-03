@@ -926,12 +926,14 @@ class StatementFlow:
 
 # Dated shocks, from seed files written by hand or by a script: national elections (docs/steps/elections.md), tariff
 # actions (docs/steps/tariffs.md), the debt limit (docs/steps/debt-limit.md), summits
-# (docs/steps/summits.md) and the president's trade posts (docs/steps/presidential-posts.md).
+# (docs/steps/summits.md) and the president's trade posts (docs/steps/presidential-posts.md and
+# docs/steps/presidential-posts-2.md).
 ELECTION_EVENT_TYPE = "National election"
 TARIFF_EVENT_TYPE = "Tariff / trade-war / sanctions"
 DEBT_LIMIT_EVENT_TYPE = "Fiscal: debt-ceiling / shutdown"
 SUMMIT_EVENT_TYPE = "Leaders' summit"
 POST_EVENT_TYPE = "Presidential post"
+POST_2_EVENT_TYPE = "Presidential post (second term)"
 UNITED_KINGDOM = "United Kingdom"
 FRANCE = "France"
 EUROPEAN_UNION = "European Union"
@@ -1354,6 +1356,21 @@ POSTS_FLOW = DatedShockFlow(
     scheduled=False,
     ordinary_until=date(2021, 1, 8),
 )
+POSTS_2_FLOW = DatedShockFlow(
+    POST_2_EVENT_TYPE,
+    UNITED_STATES,
+    NEW_YORK,
+    25,
+    "posts2",
+    "PS2",
+    seed_file="presidential_posts_2.csv",
+    noun="post days",
+    day_column="day",
+    detail_column="posts",
+    time_column="time",
+    scheduled=False,
+    ordinary_until=date(2026, 10, 30),
+)
 EVENT_FLOWS: list[EventFlow] = [
     CPI_FLOW,
     NFP_FLOW,
@@ -1379,6 +1396,7 @@ EVENT_FLOWS: list[EventFlow] = [
     DEBT_LIMIT_FLOW,
     SUMMIT_FLOW,
     POSTS_FLOW,
+    POSTS_2_FLOW,
 ]
 
 

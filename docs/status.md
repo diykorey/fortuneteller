@@ -8,8 +8,8 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-The president's trade posts, step 2 *(PR #218)*: results. No market moves on a first-term trade
-tweet day or over the week; six markets are *unclear*.
+The president's trade posts, part 2, step 1 *(PR #220)*: 220 second-term post days as the lesser
+flow `posts2`; every existing scoreboard entry identical, the chance line 328 → 344.
 
 ## In progress
 
@@ -19,18 +19,20 @@ evening grades. The jobs report on 2026-11-06 is the first with the euro and the
 called. The published page still shows the raw move from before own years until the next evening
 run rewrites it.
 
-The president's trade posts, part 2: [the spec](steps/presidential-posts-2.md), the second term's
-Truth Social posts from a frozen snapshot of CNN's archive.
+The president's trade posts, part 2, step 2: results, against [the spec](steps/presidential-posts-2.md)'s
+expected outcome, checks and readings.
 
 ## Next
 
-The president's trade posts, part 2, step 1: the script reads both archives, the second seed and
-flow (`posts2`), counted on the real calendar.
+Step 11 closed yes or no by part 2's readings; then the next step from the roadmap, or a choice
+for the user if none is written.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-03 | The president's trade posts, part 2, step 1: 220 second-term post days as one lesser flow, every existing entry identical | PR #220 |
+| 2026-11-03 | The president's trade posts, part 2: spec | PR #219 |
 | 2026-11-03 | The president's trade posts, step 2: results — nothing moves on a tweet day | PR #218 |
 | 2026-11-03 | The president's trade posts, step 1: 179 tweet days stored as one lesser flow, every existing entry identical | PR #217 |
 | 2026-11-03 | News as a feed, part 1, spec: the president's trade posts; GDELT cannot date them | PR #216 |

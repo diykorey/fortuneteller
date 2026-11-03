@@ -569,6 +569,22 @@ def test_a_trade_tweet_reacts_on_each_market_s_next_close(tmp_path: Path) -> Non
     assert batch.report == ["loaded 2 United States tweet days, 2018-03-02 … 2019-05-04"]
 
 
+def test_a_second_term_post_day_is_stored_as_an_unscheduled_event(tmp_path: Path) -> None:
+    # given a seed file with one second-term post day during the session
+    seed = tmp_path / "presidential_posts_2.csv"
+    seed.write_text("day,time,posts,rate_time\n2025-04-09,13:18,2,\n")
+
+    # when the post days are loaded
+    batch = flows.POSTS_2_FLOW.load(seed, datetime(2026, 11, 3, 12, 0, tzinfo=NEW_YORK))
+
+    # then it is one unscheduled event of its own type, reacting that day on the S&P 500
+    assert [(e.event_id, e.event_type, e.detail, e.scheduled) for e in batch.events] == [
+        (2520250409, "Presidential post (second term)", "2", False),
+    ]
+    assert first_reaction_day(batch.events[0], MVP_PRICE_SERIES["SPY / ES"]) == date(2025, 4, 9)
+    assert batch.report == ["loaded 1 United States post days, 2025-04-09 … 2025-04-09"]
+
+
 def test_a_dated_flow_s_ordinary_days_end_at_its_ordinary_until() -> None:
     # given CPI's synthetic store of 2021-2023 and two UK votes in 2021
     con = duckdb.connect(":memory:")
