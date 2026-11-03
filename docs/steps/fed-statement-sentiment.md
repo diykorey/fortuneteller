@@ -41,16 +41,20 @@ a surprise rule with its verdict, unless this step's stop rule fires.
     - Sentences end at ".", "?" or ";" followed by a space, or at the text's end.
   - **Normal form.** In a sentence, every character that is not a letter, a digit or an
     apostrophe becomes a space. Runs of spaces become one, and one space is added at each end.
-    - Each entry gets the same treatment; "(space)" in an entry is a space there. So "moderate
-      (space)" matches "moderate." but not "moderated".
+    - Each A5–A8 entry gets the same treatment, without the space at each end; "(space)" in an
+      entry is a space there. So "moderate (space)" matches "moderate." but not "moderated", and
+      "declin" matches "declined".
     - Hyphens become spaces on both sides, so "long-term" matches "long term".
     - "Soft (exclude software)" is "soft" not followed by "ware".
     - A **word** is a run between spaces in the normal form.
-  - **Matches.** Every entry of A5, A6, A7 and A8 is found as a substring of the normal form.
-    - Where two matches overlap, the longer one is kept; at equal length, the one that starts
-      first. So "unemployment" is never also "employment", "job gains" is never also "gains", and
-      "increase " is never also "ease ".
-    - One stretch of text can be a modifier for several topics, each with its own score.
+  - **Matches.** Every entry of A5, A6, A7 and A8 is found as a substring of the normal form that
+    starts at the start of a word. So "unemployment" is never "employment", "decrease" is never
+    "ease ", and "elaborate" is never "labor".
+    - A match's **span** is its text without the spaces at its ends. Where two spans overlap, the
+      longer is kept; at equal length, the one that starts first. So "job gains" is never also
+      "gains", and "investment spending" never also "spending".
+    - Matches with the same span are all kept, one per topic: " low" for output and "low" for
+      labor and inflation are one stretch of text, scored in each topic.
     - A match's **position** is the index of the word it starts in.
   - **Pairs.** Each A5 keyword pairs with the closest A6/A7 modifier of its topic in the same
     sentence, before or after it, by the difference in positions. On a tie, the modifier after
@@ -60,8 +64,10 @@ a surprise rule with its verdict, unless this step's stop rule fires.
     already holds its subject. Words inside it are matched by nothing else.
   - **A9 and A10 rules.**
     - A rule written as parenthesised parts joined by `)|(` is split there. Every part must
-      match the sentence, each as a regular expression on the normal form, with its `|` meaning
-      "or". A rule without parentheses is one part.
+      match the sentence, each as a regular expression searched in the normal form, with its `|`
+      meaning "or". A rule without parentheses is one part.
+    - A rule is only lowercased, with its curly apostrophes made straight, so "today’s" matches
+      and the regular expression stays whole.
     - A9: each rule that matches adds its score to `policy`, once per sentence.
     - A10: a sentence matching any rule is uninformative. It is left out of the four topics and
       of the word count, but not out of `policy`.
@@ -127,8 +133,10 @@ a surprise rule with its verdict, unless this step's stop rule fires.
   deteriorated" gives one scoring −1.
 - **Pairing:**
   - "inflation" with two inflation modifiers takes the nearer one, and the one after it on a tie.
-  - "Software" is not "soft", "moderated" is not "moderate (space)", and "unemployment" yields
-    no "employment".
+  - "Software" is not "soft", "moderated" is not "moderate (space)", "unemployment" yields
+    no "employment", and "decrease" no "ease ".
+  - "The unemployment rate has remained low" gives a labor pair of +1 though " low" is also an
+    output modifier.
   - An A8 phrase scores alone.
 - **Rules:**
   - An A9 rule with parts scores a sentence only when every part matches, and "(complete|moderate)"
@@ -154,9 +162,14 @@ live call, no change to the evening job.
   - `expectations.sentence_pairs(sentence) -> list[tuple[str, int, str]]` gives each topic, score
     and matched text.
   - `expectations.statement_sentiment(text) -> tuple[float | None, list[str]]` gives the index
-    and its pairs.
-  - `flows.fed_statements(api_key, cache_dir, con)` is step 13's fetch, cut and holds, shared by
-    `load_tone` and `load_sentiment`.
+    and its pairs, each written "topic score: matched text".
+  - `flows.fed_statements(api_key, cache_dir, con) -> tuple[list[Event], dict[int, str],
+    set[int]]` is step 13's fetch, cut and holds since `TONE_FROM`: the events, each one's text,
+    and the holds. `load_tone` and `load_sentiment` share it.
+  - `flows.load_sentiment(api_key, cache_dir, con) -> SentimentLoad`, with the fields of
+    `ToneLoad`: the surprises, each statement's index and pairs, and the holds.
+  - `load-sentiment` prints as `load-tone` does: the counts, the signed links, `noticeable`, then
+    each check with "pass" or "fail", then the 5 + 5 holds with their pairs.
 - **Unless stopped:**
   - `surprises` gets the measures `sentiment` and `sentiment_holds`, against the baseline
     `previous_statement`. The actual is the index, the expected the previous index.
@@ -165,8 +178,8 @@ live call, no change to the evening job.
     'sentiment_holds')`.
   - `PREVIOUS_STATEMENT` joins `EXPECTATION_SOURCES` with the label "the previous statement".
     Its `expectations` returns nothing.
-  - `study._flow_pairs` reads the month from the event's day only when `detail` is not a month,
-    so no other flow changes.
+  - `study._flow_pairs` reads the month from the event's day only when `detail` does not begin
+    with a year and month (`YYYY-MM`), so no other flow changes, the weekly claims included.
   - `FED_FLOW` gets a `SurpriseRule` with `combinations=((SENTIMENT_HOLDS, PREVIOUS_STATEMENT),
     (SENTIMENT, PREVIOUS_STATEMENT))`, the four signs, `noticeable` from step 1 (`step` its value
     to two places), `alone=True` and `predicted_from=PREVIOUS_STATEMENT`.
