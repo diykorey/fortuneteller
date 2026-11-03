@@ -117,14 +117,16 @@ days of the first term only.
 | *Unclear* | the 5-year yield 1.22 (p 0.07), the DAX 1.21, the FTSE 100 1.16, the S&P 500 1.13, VIX 1.12, Brent 1.11 | none |
 | Doesn't | the 10-year yield 1.07, the dollar 1.09, gold 0.88, the Euro Stoxx 50 1.01, the STOXX 600 1.07, the euro 0.81, the Nasdaq 0.98, bitcoin 1.06, defence 0.97, energy 1.05 | all sixteen, every ratio 1.08 or under |
 
-- **A day the president tweets about trade is an ordinary day for markets,** on the next close and
-  over the week. No ratio reaches 1.25 on the day; the largest, the 5-year yield's 1.22, has p 0.07.
-- **By era, with no p value:** the S&P 500 is 1.40 on the 92 days of 2017–2019 and 1.01 on the 11 of
-  2020, too few.
-- **Check 1, not a verdict: the day before.** No market moves on the tweet day, so the check's
-  condition is empty. But the day *before* a tweet day, itself no tweet day, is louder than the
-  tweet day on the US markets: the S&P 500 1.47 (p 0.09), VIX 1.42 (p 0.06), the Nasdaq 1.22. The
-  tweets follow loud days more than they make them.
+- **No market *moves* by the bar** (ratio ≥ 1.10 at p < 0.01), on the next close or over the
+  week. Six of sixteen clear 1.10 on the day and are *unclear*; none has p < 0.01, the lowest is
+  the 5-year yield's 0.07.
+- **By era, with no p value and not a verdict:** the S&P 500 is 1.40 on the 92 days of 2017–2019
+  and 1.01 on the 11 of 2020.
+- **Check 1, not a verdict: the day before.** No market moves on the reaction day, so the check's
+  condition is empty. The trading day before each reaction day, itself no reaction day (about 50
+  days a market), is louder than the reaction day on US stocks and VIX: the S&P 500 1.47 (p 0.09),
+  VIX 1.42 (p 0.06), the Nasdaq 1.22. On 9 of 16 markets it is quieter (the DAX 0.99, the FTSE
+  100 0.76, Brent 0.82); no placebo cell *moves*.
 - **Check 2, not a verdict: outside the session** (143 of the 179 days, 88 on the S&P 500): the S&P
   500 1.11 and VIX 1.12 stay above 1.10, the Nasdaq 0.98 does not; none moves.
 - **Check 3, not a verdict: naming a rate** (28 days, 15 lone on the S&P 500): a higher ratio than
@@ -137,16 +139,16 @@ days of the first term only.
 *unclear*; the 10-year yield, gold, defence, energy and bitcoin *doesn't*); near on eight (the S&P
 500 and VIX *unclear* for *moves*; the Euro Stoxx 50, the STOXX 600, the dollar and the euro
 *doesn't* for *unclear*; the FTSE 100 and the 5-year yield *unclear* for *doesn't*); **missed** on
-one, the Nasdaq, *doesn't* for *moves*. Over a week nothing moves: met. The checks: the placebo
-had no *moves* to test, and runs the other way; outside the session two of the three US markets
-keep 1.10, short of all three; naming a rate is higher on two of six markets, short of four.
+one, the Nasdaq, *doesn't* for *moves*. Over a week: met on all sixteen cells. The checks: the
+placebo is not gradeable, its condition is empty; outside the session missed on the Nasdaq (0.98),
+the S&P 500 and VIX meet it; naming a rate missed (higher on two of six, four needed).
 
-**What it means.** On this measure the president's trade tweets of 2017–2020 do not move markets:
-no market clears the bar on the next close or over the week, and the tweets naming a rate do no
-better. The days before them are louder than the days after, which reads as tweets answering a
-loud market, not leading it. For roadmap step 11 the answer is no on this question: neither GDELT,
-which cannot date the events, nor the president's own feed gives a market-moving event history
-here. The second term's posts (part 2) are the one open piece.
+**What it means.** On this measure no market *moves* on the president's trade tweets of
+2017–2020, on the next close or over the week, and the tweets naming a rate do no better. No
+*moves* is not no effect: six cells are *unclear*. On US stocks and VIX the day before is louder,
+which is consistent with tweets clustering in loud weeks; a check, not a verdict. For step 11,
+part 1: GDELT cannot date these events, and the president's first-term trade tweets give no
+*moves*. Whether a feed is worth building on stays open until part 2, the second term.
 
 ## Technical details
 

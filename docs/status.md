@@ -9,7 +9,7 @@ Where the work is and what comes next. Two rules keep it current:
 ## Last completed
 
 The president's trade posts, step 2 *(PR #218)*: results. No market moves on a first-term trade
-tweet day or over the week; the days before are louder than the days after.
+tweet day or over the week; six markets are *unclear*.
 
 ## In progress
 
@@ -22,13 +22,13 @@ run rewrites it.
 ## Next
 
 Not chosen yet. Candidates: the president's trade posts, part 2 (the second term, from a committed
-record of its posts); rung 7, live detection, which step 11's null result does not support.
+record of its posts); rung 7, live detection, which part 1's null result does not support.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-11-03 | The president's trade posts, step 2: results — nothing moves on a tweet day; the days before are louder | PR #218 |
+| 2026-11-03 | The president's trade posts, step 2: results — nothing moves on a tweet day | PR #218 |
 | 2026-11-03 | The president's trade posts, step 1: 179 tweet days stored as one lesser flow, every existing entry identical | PR #217 |
 | 2026-11-03 | News as a feed, part 1, spec: the president's trade posts; GDELT cannot date them | PR #216 |
 | 2026-11-03 | Summits, step 2: results — only the dollar moves on the day, unconfirmed; nothing over a week | PR #215 |
