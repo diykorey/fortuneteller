@@ -19,11 +19,12 @@ evening grades. The jobs report on 2026-11-06 is the first with the euro and the
 called. The published page still shows the raw move from before own years until the next evening
 run rewrites it.
 
+Beat the fortune teller: [the spec](steps/beat-the-fortune-teller.md), step 12 of the roadmap.
+
 ## Next
 
-Not chosen: the roadmap's numbered steps are done through 11. Candidates for the user: rung 7,
-live detection, which step 11's no does not support; a step 12 from the roadmap's "later" list (a
-statement's text read for its direction, prediction-market prices, "beat the fortune teller").
+Beat the fortune teller, step 1: `guess` and its log; `score` grades guesses beside the machine's
+calls.
 
 ## Done
 
