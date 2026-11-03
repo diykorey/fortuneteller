@@ -72,10 +72,12 @@ def matching_truth_posts(dump: list[dict[str, str]]) -> list[tuple[datetime, boo
 
 def main() -> int:
     dump = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
-    if "isRetweet" in dump[0]:
+    if dump and "isRetweet" in dump[0]:
         posts, seed = matching_tweets(dump), SEED
-    else:
+    elif dump and "created_at" in dump[0]:
         posts, seed = matching_truth_posts(dump), SEED_2
+    else:
+        raise SystemExit("unknown archive: its posts have neither isRetweet nor created_at")
     days: dict[str, list[tuple[datetime, bool]]] = {}
     for posted, rate in posts:
         days.setdefault(posted.date().isoformat(), []).append((posted, rate))
