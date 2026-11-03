@@ -50,7 +50,7 @@ Four things make this hard.
 - **The expected value is the previous statement.** The market has read it, so the surprise is
   the tone minus the tone of the statement of the decision just before. If either has no tone,
   there is no surprise; the step never reaches further back. The baseline's name is
-  `previous statement`, and its label "the previous statement".
+  `previous_statement`, and its label "the previous statement".
 - **The decision lands with the statement.** A cut and a dovish text come together, and the move
   may come from the cut. So the verdict is given on **holds** only. A hold is a decision after
   which the target rate (`TARGET_RATE_SERIES`, from FRED) on the decision day plus
@@ -65,7 +65,7 @@ Four things make this hard.
 - **Rung 1's surprise test, unchanged:** *tracks* when the rank correlation has the expected sign
   at p < 0.01 and the hit rate on noticeable surprises is at least 60%; *unclear* when only one of
   the two holds.
-- **The verdict:** `tone on holds` against the previous statement. Context, not graded: `tone` on
+- **The verdict:** `tone_holds` against the previous statement. Context, not graded: `tone` on
   every decision, and the ten unsigned markets.
 - **Expected signs, for a hawkish surprise:**
   - up: the 10-year yield, the 5-year yield, the dollar;
@@ -126,7 +126,7 @@ change to the Fed flow's events or to any other flow, and no change to the eveni
 - **A command of its own: `load-tone`,** run by hand and not by the evening job. The nightly
   `load-surprises` would otherwise depend on federalreserve.gov, and Fed events carry no period.
   - `flows.load_surprises` skips `FED_FLOW`.
-  - Its `replace_rows` filter keeps the rows whose measure is `tone` or `tone on holds`.
+  - Its `replace_rows` filter keeps the rows whose measure is `tone` or `tone_holds`.
 - **Source:**
   - `sources.parse_fomc_statement_links(page) -> dict[date, str]` reads the year pages (2000–2020)
     with the existing `STATEMENT_LINK` (a link whose text is "Statement") and the calendar with
@@ -142,9 +142,9 @@ change to the Fed flow's events or to any other flow, and no change to the eveni
   and the phrases. The word lists are constants beside it, with the paper cited.
 - **Holds:** `load-tone` fetches the target series as `load_fomc_decisions` does.
 - **Rows:** `load-tone` builds the `Surprise` rows itself, not through `build_surprises`, whose
-  `own_actuals` reads a month from `detail`. The measures are `tone` and `tone on holds` and the
-  baseline `previous statement`. The actual is the tone and the expected the previous tone. It
-  replaces the rows `measure IN ('tone', 'tone on holds')`.
+  `own_actuals` reads a month from `detail`. The measures are `tone` and `tone_holds` and the
+  baseline `previous_statement`. The actual is the tone and the expected the previous tone. It
+  replaces the rows `measure IN ('tone', 'tone_holds')`.
   - `PREVIOUS_STATEMENT` joins `EXPECTATION_SOURCES` for its label. Its `expectations` returns
     nothing, because `load-tone` writes the rows.
 - **The month:** `study._flow_pairs` reads a row's month from `detail`. A Fed decision's detail is
