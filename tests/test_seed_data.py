@@ -88,7 +88,8 @@ def test_rows_nonempty_and_valid(filename: str, table: str, model: type[BaseMode
 def test_seed_dir_has_no_unexpected_csvs() -> None:
     # given the committed seed CSVs
     actual = {path.name for path in settings.seed_dir.glob("*.csv")}
-    # when compared to the contracted set: the seed tables, and the dated-shock flows' own files
+    # when compared to the contracted set: the seed tables, the dated-shock flows' own files and the
+    # Fed statement's dictionary
     expected = {filename for filename, _table, _model in SEED_TABLES} | {
         "elections.csv",
         "tariffs.csv",
@@ -96,6 +97,7 @@ def test_seed_dir_has_no_unexpected_csvs() -> None:
         "summits.csv",
         "presidential_posts.csv",
         "presidential_posts_2.csv",
+        "fomc_sentiment_dictionary.csv",
     }
     # then exactly those files are present
     assert actual == expected

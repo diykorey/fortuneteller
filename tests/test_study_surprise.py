@@ -919,11 +919,11 @@ def test_loading_refuses_a_jobs_report_stored_unlike_fred_s_history(
     assert db.count_rows("surprises", con=con) == 0
 
 
-def test_surprise_refuses_the_fed(tmp_db: Path, capsys: pytest.CaptureFixture[str]) -> None:
+def test_surprise_refuses_the_ecb(tmp_db: Path, capsys: pytest.CaptureFixture[str]) -> None:
     # given nothing stored
 
-    # when the Fed's surprise is asked for
-    code = main(["surprise", "--event", "fomc"])
+    # when the ECB's surprise is asked for
+    code = main(["surprise", "--event", "ecb"])
 
     # then it is refused with the reason: no free record of what the market expected
     assert code == 1

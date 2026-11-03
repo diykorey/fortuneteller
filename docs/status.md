@@ -8,8 +8,9 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-The Fed statement's tone, step 1 *(PR #227)*: the published word list reads 19 of 226 Fed
-statements, so every link is too few and the step stops by its rule; untested, not no.
+The Fed statement's sentiment, step 1 *(PR #229)*: the paper's dictionary scores all 226 Fed
+statements and passes the five checks against the paper; every signed link has 95 or more holds,
+so the rows are stored and the Fed flow has its surprise rule.
 
 ## In progress
 
@@ -23,17 +24,17 @@ Beat the fortune teller, step 3: the first live round, a release `live` calls gu
 merged pull request ([the spec](steps/beat-the-fortune-teller.md)). It waits for a release; the
 jobs report on 2026-11-06 is the first.
 
-The Fed statement's sentiment, the spec ([step 14](steps/fed-statement-sentiment.md)).
-
 ## Next
 
-The Fed statement's sentiment, step 1: the paper's dictionary as a seed, a new command scoring each
-statement with it (`load-sentiment`), and the Fed flow's surprise rule unless the stop rule fires.
+The Fed statement's sentiment, step 2: the results, the verdicts against the expected outcome
+([step 14](steps/fed-statement-sentiment.md)).
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-03 | The Fed statement's sentiment, step 1: the paper's dictionary, five checks passed, the Fed's surprise rule | PR #229 |
+| 2026-11-03 | The Fed statement's sentiment: spec | PR #228 |
 | 2026-11-03 | The Fed statement's tone, step 1: the list reads 19 of 226 statements; stopped by its rule | PR #227 |
 | 2026-11-03 | The Fed statement's tone: spec | PR #226 |
 | 2026-11-03 | Beat the fortune teller, step 2: the scoreboard shows the guesses | PR #225 |

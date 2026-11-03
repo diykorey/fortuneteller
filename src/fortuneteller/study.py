@@ -42,6 +42,7 @@ from .flows import (
     DatedShockFlow,
     EventFlow,
     called_live,
+    event_date,
     release_date,
     stored_events,
 )
@@ -579,7 +580,15 @@ def _flow_pairs(
     ).fetchall()
     rule = flow.surprise_rule
     shared = shared_days(flow, con=con) if rule is not None and rule.alone else {}
-    return [(r[0], r[1], r[2], r[3]) for r in rows if r[0] not in shared]
+    return [(r[0], _month(r[0], r[1]), r[2], r[3]) for r in rows if r[0] not in shared]
+
+
+def _month(event_id: int, detail: str | None) -> str:
+    """The month a release reports on: its detail when that begins with one, as for every flow but
+    the Fed's, whose detail says "scheduled meeting"; else the month of its day."""
+    if detail is not None and re.match(r"\d{4}-\d{2}", detail):
+        return detail
+    return f"{event_date(event_id):%Y-%m}"
 
 
 def side_by_side(

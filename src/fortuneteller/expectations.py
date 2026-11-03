@@ -8,10 +8,13 @@ actual, then stores ``actual − expected``. A new source is one class and one l
 
 from __future__ import annotations
 
+import csv
+import math
 import re
 from collections.abc import Iterable, Mapping, Sequence
 from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
+from functools import cache
 from datetime import UTC, date, datetime, time, timedelta
 from pathlib import Path
 from typing import Protocol
@@ -703,12 +706,175 @@ def statement_tone(text: str) -> tuple[float | None, list[str]]:
     return hawk / (hawk + dove) - dove / (hawk + dove) + 1, phrases
 
 
+# The Fed statement's sentiment (docs/steps/fed-statement-sentiment.md): the dictionary of
+# Gardner, Scotti and Vega, "Words Speak as Loudly as Actions", FEDS 2021-074, its Tables A5-A10
+# copied whole into the seed file.
+SENTIMENT_DICTIONARY = "fomc_sentiment_dictionary.csv"
+SENTIMENT_TOPICS = ("inflation", "labor", "output", "financial")
+POLICY = "policy"
+
+
+@dataclass(frozen=True)
+class _Entry:
+    table: str
+    text: str
+    score: int
+    topic: str
+    exclude: str = ""
+
+
+@dataclass(frozen=True)
+class _Match:
+    entry: _Entry
+    start: int
+    end: int
+    position: int
+
+
+def _straight(text: str) -> str:
+    return text.lower().replace("’", "'").replace("‘", "'")
+
+
+def _normal(text: str) -> str:
+    return " ".join(re.sub(r"[^a-z0-9']", " ", _straight(text)).split())
+
+
+def _entry(row: dict[str, str]) -> _Entry:
+    text, exclude = row["entry"], ""
+    if excluded := re.fullmatch(r"(\w+) \(exclude (\w+)\)", text):
+        text, exclude = excluded[1], excluded[2].removeprefix(excluded[1])
+    if row["table"] not in ("A9", "A10"):
+        text = " ".join(_normal(part) for part in text.split("(space)"))
+    return _Entry(row["table"], text, int(row["score"]), row["topic"], exclude)
+
+
+@cache
+def sentiment_dictionary() -> tuple[_Entry, ...]:
+    with (settings.seed_dir / SENTIMENT_DICTIONARY).open(newline="") as f:
+        return tuple(_entry(row) for row in csv.DictReader(f))
+
+
+def _rule_matches(rule: str, sentence: str) -> bool:
+    rule = _straight(rule)
+    parts = rule[1:-1].split(")|(") if rule.startswith("(") and rule.endswith(")") else [rule]
+    return all(re.search(part, sentence) for part in parts)
+
+
+def _matches(entries: Iterable[_Entry], sentence: str) -> list[_Match]:
+    """Each entry's matches in the padded normal form, each starting at the start of a word."""
+    found = []
+    for entry in entries:
+        lead = len(entry.text) - len(entry.text.lstrip())
+        for at in (m.start() for m in re.finditer(re.escape(entry.text), sentence)):
+            start, end = at + lead, at + len(entry.text.rstrip())
+            if sentence[start - 1] != " " or (
+                entry.exclude and sentence.startswith(entry.exclude, at + len(entry.text))
+            ):
+                continue
+            found.append(_Match(entry, start, end, sentence.count(" ", 0, start) - 1))
+    return found
+
+
+def _longest(matches: Iterable[_Match], taken: Sequence[_Match] = ()) -> list[_Match]:
+    """The matches kept where spans overlap: the longer, then the earlier; none overlapping
+    ``taken``."""
+    kept: list[_Match] = []
+    for m in sorted(matches, key=lambda m: (m.start - m.end, m.start)):
+        if all(m.end <= k.start or k.end <= m.start for k in [*kept, *taken]):
+            kept.append(m)
+    return sorted(kept, key=lambda m: m.start)
+
+
+def _span(m: _Match, sentence: str) -> str:
+    return sentence[m.start : m.end]
+
+
+def sentence_pairs(sentence: str) -> list[tuple[str, int, str]]:
+    """A sentence's scores as (topic, score, matched text): the long phrases, each keyword with
+    the closest modifier of its topic (the later on a tie), and the future-policy rules."""
+    text = f" {_normal(sentence.replace('U.S.', 'us'))} "
+    entries = sentiment_dictionary()
+    phrases = _longest(_matches((e for e in entries if e.table == "A8"), text))
+    scores = [(m.entry.topic, m.entry.score, _span(m, text)) for m in phrases]
+    for topic in SENTIMENT_TOPICS:
+        mine = (e for e in entries if e.topic == topic and e.table in ("A5", "A6", "A7"))
+        kept = _longest(_matches(mine, text), phrases)
+        modifiers = [m for m in kept if m.entry.table != "A5"]
+        for keyword in (m for m in kept if m.entry.table == "A5"):
+            if not modifiers:
+                break
+            modifier = min(
+                modifiers,
+                key=lambda m: (abs(m.position - keyword.position), m.position < keyword.position),
+            )
+            first, second = sorted((keyword, modifier), key=lambda m: m.start)
+            scores.append(
+                (
+                    topic,
+                    keyword.entry.score * modifier.entry.score,
+                    f"{_span(first, text)} ... {_span(second, text)}",
+                )
+            )
+    for rule in (e for e in entries if e.table == "A9"):
+        if _rule_matches(rule.text, text):
+            scores.append((POLICY, rule.score, rule.text))
+    return scores
+
+
+def uninformative(sentence: str) -> bool:
+    """Whether a sentence matches one of the paper's rules for uninformative sentences."""
+    text = f" {_normal(sentence.replace('U.S.', 'us'))} "
+    return any(_rule_matches(e.text, text) for e in sentiment_dictionary() if e.table == "A10")
+
+
+def statement_topics(text: str) -> tuple[dict[str, float] | None, list[str]]:
+    """Each of the five topics' sum of scores over the square root of the informative sentences'
+    word count, and the pairs as "topic score: matched text"; nothing for no informative word."""
+    joined = " ".join(text.split()).replace("U.S.", "us")
+    sums = dict.fromkeys((*SENTIMENT_TOPICS, POLICY), 0)
+    words, pairs = 0, []
+    for sentence in re.split(r"[.?;] ", joined):
+        informative = not uninformative(sentence)
+        if informative:
+            words += len(_normal(sentence).split())
+        for topic, score, matched in sentence_pairs(sentence):
+            if informative or topic == POLICY:
+                sums[topic] += score
+                pairs.append(f"{topic} {score:+d}: {matched}")
+    if not words:
+        return None, pairs
+    return {topic: total / math.sqrt(words) for topic, total in sums.items()}, pairs
+
+
+def statement_sentiment(text: str) -> tuple[float | None, list[str]]:
+    """The paper's sentiment index of a statement, the sum of its five topics, and its pairs."""
+    topics, pairs = statement_topics(text)
+    return (None if topics is None else sum(topics.values())), pairs
+
+
+PREVIOUS_STATEMENT = "previous_statement"
+
+
+class PreviousStatement:
+    """The Fed's statement just before, the baseline of its sentiment. ``load-sentiment`` stores
+    those surprises itself, so this source gives ``load-surprises`` nothing."""
+
+    name = PREVIOUS_STATEMENT
+    label = "the previous statement"
+
+    def expectations(
+        self, events: Sequence[EventInstance], actuals: Sequence[Actual], api_key: str
+    ) -> list[Expectation]:
+        return []
+
+
 EXPECTATION_SOURCES: list[ExpectationSource] = [
     Trend12m(),
     ClevelandNowcast(),
     PayrollModel(),
     NasdaqConsensus(),
     TradingViewForecast(),
+    PreviousStatement(),
 ]
 
 

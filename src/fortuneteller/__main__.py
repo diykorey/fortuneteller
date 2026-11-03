@@ -139,24 +139,31 @@ def describe_surprises(rows: Sequence[Surprise]) -> list[str]:
 Z_ONE_SIDED_01 = 2.326
 
 
-def describe_tone(load: flows.ToneLoad, con: duckdb.DuckDBPyConnection) -> list[str]:
+def describe_tone(
+    load: flows.ToneLoad,
+    con: duckdb.DuckDBPyConnection,
+    signed: Sequence[str] = flows.TONE_SIGNED,
+    word: str = "tone",
+    checks: Sequence[tuple[str, bool]] = (),
+) -> list[str]:
     """``load-tone``'s report, written before any move is read: the statements scored, each signed
     link's count of holds with a non-zero surprise and a move (shared days left out) with the
     smallest correlation it could detect, the noticeable surprise, and the holds with the highest
-    and the lowest tone, with their phrases."""
+    and the lowest tone, with their phrases; ``load-sentiment``'s too, with its checks against
+    the paper."""
     toned = sum(tone is not None for tone, _ in load.tones.values())
     holds = {i: s for i, s in load.surprises.items() if i in load.holds}
     shared = study.shared_days(flows.FED_FLOW, con=con)
     lone = {i: s for i, s in holds.items() if i not in shared}
     lines = [
-        f"statements: {len(load.tones)} since {flows.TONE_FROM}, {toned} with a tone, "
+        f"statements: {len(load.tones)} since {flows.TONE_FROM}, {toned} with a {word}, "
         f"{len(load.holds)} holds",
         f"surprises: {len(load.surprises)} on every decision, {len(holds)} on holds, "
         f"{len(lone)} of them alone on their day",
         "signed links, holds with a non-zero surprise and a move:",
     ]
     moving = [i for i, s in lone.items() if s != 0]
-    for instrument in flows.TONE_SIGNED:
+    for instrument in signed:
         n = 0
         if moving:
             marks = ", ".join("?" * len(moving))
@@ -170,13 +177,14 @@ def describe_tone(load: flows.ToneLoad, con: duckdb.DuckDBPyConnection) -> list[
         lines.append(f"  {instrument:<12} {n:>4}, smallest detectable {smallest}{verdict}")
     sizes = sorted(abs(s) for s in lone.values() if s != 0)
     lines.append(f"noticeable: {statistics.median(sizes):.4f}" if sizes else "noticeable: none")
+    lines += [f"check, {'pass' if passed else 'fail'}: {name}" for name, passed in checks]
     by_tone = sorted(
         (tone, flows.event_date(i), phrases)
         for i, (tone, phrases) in load.tones.items()
         if i in load.holds and tone is not None
     )
     for label, chosen in (("lowest", by_tone[:5]), ("highest", by_tone[::-1][:5])):
-        lines.append(f"holds with the {label} tone:")
+        lines.append(f"holds with the {label} {word}:")
         for tone, day, phrases in chosen:
             lines.append(f"  {day} {tone:.2f}: {'; '.join(phrases)}")
     return lines
@@ -195,6 +203,27 @@ def _load_tone(_args: argparse.Namespace) -> int:
         return 1
     for line in describe_tone(load, con):
         print(line)
+    return 0
+
+
+def _load_sentiment(_args: argparse.Namespace) -> int:
+    api_key = _fred_key("load-sentiment")
+    if not api_key:
+        return 1
+    con = db.get_connection()
+    db.init_db(con=con)
+    try:
+        load = flows.load_sentiment(api_key, settings.cache_dir, con=con)
+    except (sources.FredError, sources.FedError, ValueError) as exc:
+        print(f"load-sentiment: {exc}", file=sys.stderr)
+        return 1
+    checks = flows.sentiment_checks(load)
+    for line in describe_tone(load, con, flows.SENTIMENT_SIGNED, "sentiment", checks):
+        print(line)
+    if not all(passed for _, passed in checks):
+        print("not stored: a check against the paper failed")
+        return 1
+    print(f"stored: {flows.store_sentiment(load, con=con)} surprises")
     return 0
 
 
@@ -304,6 +333,11 @@ def _surprises_stored(
     return stored is not None and stored[0] > 0
 
 
+def _surprise_command(flow: flows.EventFlow) -> str:
+    """The command that stores a flow's surprises: the Fed's sentiment is loaded on its own."""
+    return "load-sentiment" if flow is flows.FED_FLOW else "load-surprises"
+
+
 def _surprise(args: argparse.Namespace) -> int:
     flow = flows.flow_named(args.event)
     rule = flow.surprise_rule
@@ -320,7 +354,7 @@ def _surprise(args: argparse.Namespace) -> int:
     for missing, command in (
         (not flows.stored_events(flow, con=con), "load-releases"),
         (db.count_rows("observations", con=con) == 0, "load-prices"),
-        (not _surprises_stored(flow, measure, baseline, con), "load-surprises"),
+        (not _surprises_stored(flow, measure, baseline, con), _surprise_command(flow)),
     ):
         if missing:
             print(
@@ -574,7 +608,7 @@ def _predict(args: argparse.Namespace) -> int:
     ):
         print(
             f"predict: no {baseline} surprises or moves for {args.event} yet; run "
-            "`fortuneteller load-prices` and `fortuneteller load-surprises` first",
+            f"`fortuneteller load-prices` and `fortuneteller {_surprise_command(flow)}` first",
             file=sys.stderr,
         )
         return 1
@@ -1325,6 +1359,11 @@ def build_parser() -> argparse.ArgumentParser:
         "load-tone", help="score each Fed statement's tone against the previous statement's"
     )
     p_tone.set_defaults(func=_load_tone)
+    p_sentiment = sub.add_parser(
+        "load-sentiment",
+        help="score each Fed statement with the FOMC-built dictionary against the previous one",
+    )
+    p_sentiment.set_defaults(func=_load_sentiment)
 
     p_surprise = sub.add_parser(
         "surprise", help="does each instrument's release-day move follow the event's surprise?"

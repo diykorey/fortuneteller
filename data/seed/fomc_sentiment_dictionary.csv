@@ -1,0 +1,283 @@
+table,entry,score,topic
+A5,inflation,1,inflation
+A5,price,1,inflation
+A5,cost,1,inflation
+A5,employers,1,labor
+A5,employment,1,labor
+A5,job gains,1,labor
+A5,job losses,-1,labor
+A5,labor,1,labor
+A5,hiring,1,labor
+A5,underutilization of labor resources,-1,labor
+A5,unemployment,-1,labor
+A5,utilization of the pool of available workers,1,labor
+A5,business conditions,1,output
+A5,business outlook,1,output
+A5,confidence,1,output
+A5,consumption,1,output
+A5,strengthening in final demand,1,output
+A5,demand,1,output
+A5,econom,1,output
+A5,expenditures,1,output
+A5,export,1,output
+A5,income,1,output
+A5,indicators,1,output
+A5,investment,1,output
+A5,investment spending,1,output
+A5,output,1,output
+A5,production,1,output
+A5,sales,1,output
+A5,sentiment,1,output
+A5,spending,1,output
+A5,bank lending,1,financial
+A5,credit,1,financial
+A5,financial,1,financial
+A6,declin,-1,labor
+A6,below,-1,inflation
+A6,deteriorat,-1,labor
+A6,damp,-1,inflation
+A6,diminish,-1,labor
+A6,ease (space),-1,inflation
+A6,disappoint,-1,labor
+A6,easing,-1,inflation
+A6,inhibit,-1,labor
+A6,declin,-1,inflation
+A6,losses,-1,labor
+A6,diminish,-1,inflation
+A6,low,-1,labor
+A6,down,-1,inflation
+A6,modest,-1,labor
+A6,low,-1,inflation
+A6,moderated,-1,labor
+A6,modest,-1,inflation
+A6,reluctant to add,-1,labor
+A6,moderated,-1,inflation
+A6,restrain,-1,labor
+A6,muted,-1,inflation
+A6,set back,-1,labor
+A6,reduction,-1,inflation
+A6,slow,-1,labor
+A6,restrain,-1,inflation
+A6,soft (exclude software),-1,labor
+A6,set back,-1,inflation
+A6,subdued,-1,labor
+A6,slow,-1,inflation
+A6,underutilization,-1,labor
+A6,soft (exclude software),-1,inflation
+A6,weak,-1,labor
+A6,subdued,-1,inflation
+A6,elevat,1,labor
+A6,weak,-1,inflation
+A6,expand,1,labor
+A6,elevat,1,inflation
+A6,gains,1,labor
+A6,expand,1,inflation
+A6,high,1,labor
+A6,foster,1,inflation
+A6,improv,1,labor
+A6,height,1,inflation
+A6,increas,1,labor
+A6,high,1,inflation
+A6,pick up,1,labor
+A6,improv,1,inflation
+A6,picking up,1,labor
+A6,increas,1,inflation
+A6,picked up,1,labor
+A6,persist,1,inflation
+A6,record expansion,1,labor
+A6,pressure,1,inflation
+A6,rebound,1,labor
+A6,pick up,1,inflation
+A6,rise,1,labor
+A6,picking up,1,inflation
+A6,rising,1,labor
+A6,picked up,1,inflation
+A6,rose,1,labor
+A6,moderate (space),1,inflation
+A6,risen,1,labor
+A6,rise,1,inflation
+A6,solid,1,labor
+A6,risk remain,1,inflation
+A6,strong,1,labor
+A6,rising,1,inflation
+A6,strength,1,labor
+A6,rose,1,inflation
+A6,upward,1,labor
+A6,risen,1,inflation
+A6,up (space),1,labor
+A6,solid,1,inflation
+A6,balance,0,labor
+A6,sustain,1,inflation
+A6,mix,0,labor
+A6,strong,1,inflation
+A6,little change,0,labor
+A6,strength,1,inflation
+A6,stable,0,labor
+A6,upward,1,inflation
+A6,stabilizing,0,labor
+A6,up (space),1,inflation
+A6,steady,0,labor
+A6,upside risk,1,inflation
+A6,unchanged,0,labor
+A6,contain,0,inflation
+A7,balance,0,inflation
+A7,subdued,-1,output
+A7,equal probability,0,inflation
+A7,uncertain,-1,output
+A7,little change,0,inflation
+A7,weak,-1,output
+A7,stable,0,inflation
+A7,yet to exhibit sustainable growth,-1,output
+A7,stabilizing,0,inflation
+A7,weigh,-1,output
+A7,steady,0,inflation
+A7,weigh on,-1,output
+A7,unchanged,0,inflation
+A7,weighing on,-1,output
+A7,volatility,0,inflation
+A7,growing at a moderate pace,1,output
+A7,uncertain,0,inflation
+A7,moderating,-1,output
+A7,tight,-1,financial
+A7,moderation,-1,output
+A7,volatile,-1,financial
+A7,moderated,-1,output
+A7,strain,-1,financial
+A7,remain moderate,-1,output
+A7,stress,-1,financial
+A7,more moderate,-1,output
+A7,turmoil,-1,financial
+A7,advanc,1,output
+A7,supportive,1,financial
+A7,bolster,1,output
+A7,unchanged,0,financial
+A7,expand,1,output
+A7,below,-1,output
+A7,remains firm,1,output
+A7,contract,-1,output
+A7,firm,1,output
+A7,cooling,-1,output
+A7,firmer,1,output
+A7,cut,-1,output
+A7,gains,1,output
+A7,damp,-1,output
+A7,grow at a solid pace,1,output
+A7,decelerat,-1,output
+A7,high,1,output
+A7,depress,-1,output
+A7,improv,1,output
+A7,declin,-1,output
+A7,increas,1,output
+A7,deteriorat,-1,output
+A7,moderate (space),1,output
+A7,diminish,-1,output
+A7,pick up,1,output
+A7,dislocation,-1,output
+A7,picking up,1,output
+A7,disappoint,-1,output
+A7,picked up,1,output
+A7,disruption,-1,output
+A7,record expansion,1,output
+A7,down,-1,output
+A7,rebound,1,output
+A7,drag,-1,output
+A7,rise,1,output
+A7,erod,-1,output
+A7,rising,1,output
+A7,(space) flat,-1,output
+A7,rose,1,output
+A7,gap,-1,output
+A7,risen,1,output
+A7,inhibit,-1,output
+A7,solid,1,output
+A7,increasing less rapidly,-1,output
+A7,strength,1,output
+A7,hesitancy,-1,output
+A7,strong,1,output
+A7,(space) low,-1,output
+A7,upward,1,output
+A7,modest,-1,output
+A7,abating,0,output
+A7,might not be strong enough,-1,output
+A7,balance,0,output
+A7,pause,-1,output
+A7,evolve,0,output
+A7,reduction,-1,output
+A7,leveling out,0,output
+A7,restrain,-1,output
+A7,mix,0,output
+A7,slump,-1,output
+A7,same,0,output
+A7,sluggish,-1,output
+A7,temporarily depressed,0,output
+A7,set back,-1,output
+A7,stable,0,output
+A7,shortfall,-1,output
+A7,stabilizing,0,output
+A7,slow,-1,output
+A7,sustain,0,output
+A7,soft (exclude software),-1,output
+A7,tentative,0,output
+A8,downside risks to the outlook for the economy and the labor market as having diminished,1,labor
+A8,declined but remains elevated,1,labor
+A8,declined notably in recent months but remains elevated,1,labor
+A8,"declined somewhat since the summer, it remains elevated",1,labor
+A8,deterioration in labor market is abating,1,labor
+A8,deterioration in the labor market is abating,1,labor
+A8,underutilization of labor resources continues to diminish,1,labor
+A8,"although job losses have slowed, new hiring has lagged",0,labor
+A8,"despite the rise in energy prices, inflation and inflation expectations have eased in recent months",-1,inflation
+A8,the risk of inflation becoming undesirably low,-1,inflation
+A8,the pace of economic recovery is likely to be modest,-1,output
+A8,"recovery is continuing, though at a rate that has been insufficient to bring down unemployment",-1,output
+A8,"recovery is continuing, though at a rate that has been insufficient to bring about a significant improvement in labor market conditions",-1,output
+A8,"recovery is continuing at a moderate pace, though somewhat more slowly than the committee had expected",-1,output
+A8,expanding but remains constrained,-1,output
+A8,"expanding at a moderate rate, though it remains constrained",-1,output
+A8,expanding at a moderate rate but remains constrained,-1,output
+A8,the solid pace of spending growth has slowed somewhat,-1,output
+A8,stabilizing but remains constrained,-1,output
+A8,picked up recently but remains constrained,-1,output
+A8,increasing but remains constrained,-1,output
+A8,"increasing gradually, but remains constrained",-1,output
+A8,"increasing at a moderate pace, but remains constrained",-1,output
+A8,"rising, though less rapidly than earlier in the year",-1,output
+A8,"picked up late last year, but remains constrained",-1,output
+A8,rising at a somewhat slower pace,-1,output
+A8,"improvement, albeit from a depressed level",-1,output
+A8,"fiscal policy is restraining economic growth, although the extent of restraint may be diminishing",0,output
+A8,"fiscal policy is restraining economic growth, although the extent of restraint is diminishing",0,output
+A8,hurricane related disruptions,0,output
+A8,warrant keeping the target federal funds rate below levels,-1,output
+A8,warrant exceptionally low levels of the federal funds rate,-1,output
+A8,expand for a time at a pace below the productivity,0,output
+A9,(policy accommodation)|(maintained),-1,policy
+A9,continue its purchases,-1,policy
+A9,(ready to expand)|(purchase),-1,policy
+A9,(await more evidence)|(pace of its purchases),-1,policy
+A9,(will act)|(as needed),-1,policy
+A9,be patient,0,policy
+A9,(believe)|(policy accommodation)|(removed),1,policy
+A9,(firming)|(need),1,policy
+A9,(expects)|(increases in the target range),1,policy
+A9,(judges)|(increases in the target range),1,policy
+A9,(warrant)|(gradual increases),1,policy
+A9,balance sheet normalization,1,policy
+A9,(end purchase)|(improvement),1,policy
+A9,(reduce)|(purchase),1,policy
+A9,(complete|moderate)|(purchase)|(improvement),1,policy
+A9,(decides to)|(remove policy accommodation),1,policy
+A10,(will)|(assess)|(as needed),0,uninformative
+A10,(will)|(monitor)|(as needed),0,uninformative
+A10,(promote a stronger)|(as announced),0,uninformative
+A10,(review)|(size)|(composition),0,uninformative
+A10,(promote a stronger)|(dual mandate),0,uninformative
+A10,(sizable)|(still increasing holdings),0,uninformative
+A10,(recognize)|(below its 2 percent objective),0,uninformative
+A10,(expect)|(gradual adjustments)|(will .*? strengthen|remain strong),0,uninformative
+A10,(appropriate policy accommodation)|(dual mandate),0,uninformative
+A10,(dual mandate)|(purchasing additional)|(agency mortgage backed securities),0,uninformative
+A10,(long term prospects)|(unusual forces)|(demand abate),0,uninformative
+A10,(sustain.*? expansion)|(symmetric 2 percent objective),0,uninformative
+A10,(federal reserve)|(employ all available tools|using its balance sheet),0,uninformative
+A10,(today’s .*? action)|(help),0,uninformative

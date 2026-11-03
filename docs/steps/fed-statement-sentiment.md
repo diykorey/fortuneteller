@@ -135,6 +135,28 @@ a surprise rule with its verdict, unless this step's stop rule fires.
 | 1 | The seed dictionary; `load-sentiment` scores each statement; the counts, `noticeable`, the five checks and the hand read written here; then, unless stopped, the stored measures and the Fed flow's surprise rule | The tests below pass; on a copy of the store every other flow's scoreboard entry, `score` and `missed` are identical |
 | 2 | Results here and in [`mvp-results.md`](../mvp-results.md) | The verdicts against the expected outcome |
 
+*Step 1, 2026-11-03:* the seed was checked row by row against the paper's tables, all 282 the
+same. `load-sentiment` on a copy of the store scored all 226 statements since 2000-02-02, each
+with an index; 151 are holds, 113 of them alone on their day. Not stopped:
+
+- **Counts:** holds with a non-zero surprise and a move: the 10-year yield, the 5-year and the
+  dollar 111 each, the euro 95. Every link is over 40.
+- **Noticeable:** 0.1119, so `step` is "0.11".
+- **The checks, all passing:** 2008-12-16 at −0.62 and 2018-09-26 at +0.68; every index between
+  −0.76 and +0.89; 170 statements from 2000-02-02 to 2019-12-11 against the paper's 166; the
+  worked pair on 2008-12-16; labor's mean absolute score 0.036 before 2010 against 0.160 after.
+- **The hand read:** all ten statements are cut to their body, so the trigger does not fire. Two
+  things are seen and change nothing. The 2013–14 statements' rate guidance, which names the
+  unemployment rate and inflation beside the "exceptionally low" rate range, scores as if it were
+  news. The mandate sentence ("to foster… price stability"), in 114 of the 226, scores +1 for
+  inflation, and cancels in the change between two statements that both carry it.
+- The rows are stored and the Fed flow has its rule. On the copy, `score`, `missed` and every
+  other flow's scoreboard entry are identical; the scoreboard's chance counts grow by the Fed's
+  16 surprise cells and 4 walk-forward cells.
+- *Amended 2026-11-03:* `SentimentLoad` adds two fields to `ToneLoad`'s: each statement's labor
+  score, for the fifth check, and the rows to store. `load-sentiment` stores only when every check
+  passes, and `surprise` and `predict` name it for the Fed instead of `load-surprises`.
+
 ## How you know it is right
 
 - **The paper's two worked examples, through `sentence_pairs(sentence)`:** "the unemployment
