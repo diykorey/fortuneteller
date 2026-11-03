@@ -121,7 +121,7 @@ this by splitting the results by era.
 | --- | --- | --- | --- |
 | The witness | GitHub's `merged_at` for the pull request whose merge commit added the guess file, found along `main`'s first parents; a commit's own committer and date are not trusted | A signed, timestamped guess outside GitHub | A dispute over a guess's time |
 | The owner's merge | Only the owner can merge, so a guess counts only if merged before 08:30 New York; the page lists guess pull requests not merged in time | Merging guess pull requests automatically before the release | A guess pull request left unmerged in time |
-| Merge method | Merge commit or squash; a rebase merge's commit need not be the one that added the file, so its guess is void | Matching any commit the pull request brought in | A rebased guess pull request |
+| Merge method | Merge commit or squash; with a rebase merge GitHub's merge commit is the pull request's last commit, so a guess counts only if that commit added the file | Matching any commit the pull request brought in | A rebased guess pull request |
 | The handle | Chosen by the player, unchecked: one person can play under two | The pull request author's GitHub login | A handle whose record looks hedged |
 
 ## Steps 1–2 — choices already built in

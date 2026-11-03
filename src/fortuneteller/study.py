@@ -1190,6 +1190,7 @@ def missed_releases(
 
 # Step 12: a person's guess, graded beside the machine's call (docs/steps/beat-the-fortune-teller.md).
 GUESS_COLUMNS = ("flow", "instrument", "direction")
+GITHUB_REPO = "diykorey/fortuneteller"
 GUESS_FILE = re.compile(r"(\d{4}-\d{2}-\d{2})-([a-z0-9-]{1,20})\.csv")
 RIGHT, WRONG, WAITING, VOID = "right", "wrong", "waiting", "void"
 
@@ -1216,22 +1217,25 @@ class GradedGuess:
     reason: str | None = None
 
 
-def _git(repo: Path, *args: str) -> str:
+def _git(repo: Path, *args: str) -> bytes:
     return subprocess.run(
-        ["git", "-C", str(repo), *args], check=True, capture_output=True, text=True
+        ["git", "-c", "core.quotePath=false", "-C", str(repo), *args],
+        check=True,
+        capture_output=True,
     ).stdout
 
 
-def guess_files(directory: Path) -> list[tuple[str, str, str]]:
+def guess_files(directory: Path) -> list[tuple[str, str, bytes | None]]:
     """Every file ever added to ``directory`` along ``HEAD``'s first parents, as (path, the oldest
-    commit that added it, its text there); none when the directory does not exist. A file deleted,
-    renamed or edited later is read as it was added."""
+    commit that added it, its bytes there, ``None`` if they cannot be read); none when the directory
+    does not exist. A file deleted, renamed or edited later is read as it was added."""
     if not directory.is_dir():
         return []
     log = _git(
         directory,
         "log",
         "--first-parent",
+        "--diff-merges=first-parent",
         "--no-renames",
         "--diff-filter=A",
         "--relative",
@@ -1240,35 +1244,45 @@ def guess_files(directory: Path) -> list[tuple[str, str, str]]:
         "HEAD",
         "--",
         ".",
-    )
+    ).decode("utf-8", errors="replace")
     added: dict[str, str] = {}
     for block in log.split("\0")[1:]:
-        sha, *paths = block.split()
+        sha, *paths = [line for line in block.splitlines() if line]
         for path in paths:
             added[path] = sha
-    return [
-        (path, sha, _git(directory, "show", f"{sha}:./{path}"))
-        for path, sha in sorted(added.items())
-        if path.endswith(".csv")
-    ]
+    files: list[tuple[str, str, bytes | None]] = []
+    for path, sha in sorted(added.items()):
+        if path == ".gitkeep":
+            continue
+        try:
+            files.append((path, sha, _git(directory, "show", f"{sha}:./{path}")))
+        except subprocess.CalledProcessError:
+            files.append((path, sha, None))
+    return files
 
 
-def read_guesses(files: Sequence[tuple[str, str, str]]) -> tuple[list[Guess], list[str]]:
+def read_guesses(
+    files: Sequence[tuple[str, str, bytes | None]],
+) -> tuple[list[Guess], list[str]]:
     """The guesses in ``files``, and a note for each file that cannot be read; its guesses are
-    void."""
+    void, and no file can stop the others."""
     guesses: list[Guess] = []
     bad: list[str] = []
-    for path, sha, text in files:
-        name = GUESS_FILE.fullmatch(Path(path).name)
+    for path, sha, content in files:
+        name = GUESS_FILE.fullmatch(path)
         try:
             if name is None:
-                raise ValueError("its name is not <day>-<handle>.csv, lowercase")
-            reader = csv.DictReader(io.StringIO(text))
+                raise ValueError("its name is not <day>-<handle>.csv, lowercase, in data/guesses/")
+            if content is None:
+                raise ValueError("it cannot be read from its commit")
+            reader = csv.DictReader(io.StringIO(content.decode("utf-8-sig")))
             if tuple(reader.fieldnames or ()) != GUESS_COLUMNS:
                 raise ValueError(f"its header is not {','.join(GUESS_COLUMNS)}")
             day = date.fromisoformat(name[1])
             rows = []
             for r in reader:
+                if None in r or None in r.values():
+                    raise ValueError(f"line {reader.line_num}: not three columns")
                 if r["direction"] not in ("up", "down"):
                     raise ValueError(f"line {reader.line_num}: direction {r['direction']!r}")
                 rows.append(
@@ -1282,7 +1296,7 @@ def read_guesses(files: Sequence[tuple[str, str, str]]) -> tuple[list[Guess], li
                         sha,
                     )
                 )
-        except ValueError as exc:
+        except (ValueError, csv.Error) as exc:
             bad.append(f"{path}: void, {exc}")
             continue
         guesses.extend(rows)
@@ -1293,7 +1307,7 @@ def merged_at(directory: Path, sha: str) -> datetime | None:
     """When GitHub merged the pull request whose merge commit is ``sha``; ``None`` when GitHub
     answers and none matches. A failure to ask is an error, so an outage cannot void a guess."""
     reply = subprocess.run(
-        ["gh", "api", f"repos/{{owner}}/{{repo}}/commits/{sha}/pulls"],
+        ["gh", "api", f"repos/{GITHUB_REPO}/commits/{sha}/pulls"],
         cwd=directory,
         check=True,
         capture_output=True,
@@ -1316,6 +1330,7 @@ def score_guesses(
     by_name = {flow.cli_name: flow for flow in EVENT_FLOWS}
     times: dict[str, datetime | None] = {}
     seen: set[tuple[str, str, str]] = set()
+    releases: dict[str, dict[date, EventInstance]] = {}
     graded = []
     for g in guesses:
         flow = by_name.get(g.flow)
@@ -1342,7 +1357,11 @@ def score_guesses(
         if reason is not None or flow is None:
             graded.append(GradedGuess(g, VOID, reason))
             continue
-        events = {release_date(e): e for e in stored_events(flow, con=connection)}
+        if flow.cli_name not in releases:
+            releases[flow.cli_name] = {
+                release_date(e): e for e in stored_events(flow, con=connection)
+            }
+        events = releases[flow.cli_name]
         event = events.get(g.day)
         if event is None:
             if any(day > g.day for day in events):
