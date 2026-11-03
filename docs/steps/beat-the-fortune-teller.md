@@ -29,7 +29,8 @@ Two things make this hard. Both come from the person, not the machine, being the
   - The pull request must be merged before the release time. Only the owner can merge, so a guess
     counts only if the owner merges it in time. The page says so, and lists the guess pull requests
     that were not merged in time.
-  - A pull request that touches anything but its own new file is refused.
+  - A pull request that touches anything but its own new file is refused. A guess pull request is
+    merged by merge commit or squash, never rebased.
   - Every rule is checked in grading, so a hand-written file gets the same rules as any other.
 - **The witness must hold against the person it binds.** Rung 4's pull request was opened by the
   machine, which had no reason to cheat. A person does, by changing a guess after the release or by
@@ -101,7 +102,7 @@ The step 1 tests include:
   and one added by a squash commit at that commit;
 - a file whose pull request was merged at 08:30 is void, and one with no pull request is void (the
   GitHub lookup replaced in the test);
-- a file edited after it was added is graded as added;
+- a file edited after it was added is graded as added, and one deleted later still counts;
 - a market outside the flow's links is void;
 - a day the flow did not release is void, and one whose release is not loaded yet waits;
 - a guess for a later day shows as *waiting*, and `score` prints no `pending:` line for it;
@@ -126,18 +127,23 @@ head-to-head total, no change to the machine's calls or rules or to the evening 
 - **Settings and data:**
   - `settings.guesses_dir` is `data/guesses`, with a `.gitkeep`.
   - `tests/conftest.py` points it at a temporary directory, as it does `calls_path`.
-- **Reading:** `study.read_guesses(directory) -> list[Guess]`.
+- **Reading:** `study.read_guesses(files) -> list[Guess]`, from `guess_files`' list.
   - `Guess` holds `day`, `who`, `flow`, `instrument`, `direction` (+1 or −1), `path`.
   - Only `*.csv` files are read, so the `.gitkeep` is skipped. A bad file name, header or row voids
     that file's guesses, with the reason, so one bad pull request cannot stop `score`.
 - **Witness:** two functions.
-  - `study.added_in(repo, path) -> str`: the commit that added the file, from
-    `git -C <repo> log --first-parent --diff-filter=A --format=%H HEAD -- <path>`. `HEAD` is the
-    checkout `score` runs in (the job's is `origin/main`, freshly fetched). If git fails or the
-    history is missing, it is an error, not a void.
+  - `study.guess_files(repo) -> list[tuple[str, str]]`: every file ever added under
+    `data/guesses/` along `main`'s first parents, with the oldest commit that added it, from
+    `git -C <repo> log --first-parent --no-renames --diff-filter=A --name-only HEAD -- data/guesses/`.
+    So a file deleted or renamed later still counts as first added.
+    - `HEAD` is the checkout `score` runs in; the job's is `origin/main`, freshly fetched.
+    - Only a failure of git itself is an error.
   - `study.merged_at(sha) -> datetime | None`: GitHub's `merged_at` for the pull request whose
-    `merge_commit_sha` is `sha`, from `gh api repos/{repo}/commits/{sha}/pulls`. Tests replace it.
-  - The guesses are read from `git show <sha>:<path>`.
+    `merge_commit_sha` is `sha`, from `gh api repos/{repo}/commits/{sha}/pulls`.
+    - It is `None` only when GitHub answers and no pull request matches. A failure of `gh` is an
+      error, so an outage cannot void every guess.
+    - Tests replace it, including one test where it raises.
+  - The guesses are read from `git show <sha>:<path>`, not from the working tree.
 - **Grading:** `study.score_guesses(guesses, rows, con) -> list[GradedGuess]`, with
   `state ∈ {right, wrong, waiting, void}`, a reason, and the machine's grade.
   - The links are the items of `flow.surprise_rule.expected_sign` with a nonzero sign.
@@ -156,6 +162,7 @@ head-to-head total, no change to the machine's calls or rules or to the evening 
 - **Docs:**
   - `docs/glossary.md`: guess, void guess, handle;
   - `docs/precision.md`: the witness (GitHub's `merged_at`), the owner's merge as a selection, the
-    unchecked handle;
+    unchecked handle, and that a guess pull request is merged by merge commit or squash. A rebase
+    merge's `merge_commit_sha` need not be the commit that added the file, so such a guess is void;
   - `docs/steps/scoreboard.md`: the amendment;
   - `docs/status.md`.
