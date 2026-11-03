@@ -1354,6 +1354,22 @@ POSTS_FLOW = DatedShockFlow(
     scheduled=False,
     ordinary_until=date(2021, 1, 8),
 )
+POST_2_EVENT_TYPE = "Presidential post (second term)"
+POSTS_2_FLOW = DatedShockFlow(
+    POST_2_EVENT_TYPE,
+    UNITED_STATES,
+    NEW_YORK,
+    25,
+    "posts2",
+    "PS2",
+    seed_file="presidential_posts_2.csv",
+    noun="post days",
+    day_column="day",
+    detail_column="posts",
+    time_column="time",
+    scheduled=False,
+    ordinary_until=date(2026, 10, 30),
+)
 EVENT_FLOWS: list[EventFlow] = [
     CPI_FLOW,
     NFP_FLOW,
@@ -1379,6 +1395,7 @@ EVENT_FLOWS: list[EventFlow] = [
     DEBT_LIMIT_FLOW,
     SUMMIT_FLOW,
     POSTS_FLOW,
+    POSTS_2_FLOW,
 ]
 
 

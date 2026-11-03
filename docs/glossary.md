@@ -384,7 +384,8 @@ Terms are grouped by what they are about, alphabetical within each group.
   11 measures one narrow question against a bar fixed first.
 - **Trump Twitter Archive** — a public dump of the president's tweets, each with its time to the
   second, to the 2021 ban; with **CNN's Truth Social archive** (his posts since 2022), the source
-  of [the president's trade posts](steps/presidential-posts.md).
+  of [the president's trade posts](steps/presidential-posts.md) and its
+  [part 2](steps/presidential-posts-2.md).
 - **CAMEO / GKG** — GDELT's event codes (who did what to whom) and its Global Knowledge Graph
   (themes tagged per article). Neither has a trade-statement code or a speaker.
 - **PAYEMS** — the FRED series ID for total US non-farm payrolls, in thousands of jobs: the NFP

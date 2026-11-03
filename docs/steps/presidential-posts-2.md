@@ -102,8 +102,31 @@ the difference.
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | The script reads either archive; the second seed and flow are stored. Counted on the real calendar: posts, days, empty-text posts, lone and ordinary days per market, placebo days, the two kinds of shared day on the S&P 500 by reaction day, later posts the first-post rule drops, and the week windows holding a post | Tests below pass; part 1's seed is rebuilt byte-identical from its dump; a fetch on step 1's day, cut at 2026-10-31, rebuilds the seed with its difference recorded; every existing scoreboard entry is identical on a copy of the store |
+| 1 | ~~The script reads either archive; the second seed and flow are stored. Counted on the real calendar: posts, days, empty-text posts, lone and ordinary days per market, placebo days, the two kinds of shared day on the S&P 500 by reaction day, later posts the first-post rule drops, and the week windows holding a post~~ **done** | Tests below pass; part 1's seed is rebuilt byte-identical from its dump; a fetch on step 1's day, cut at 2026-10-31, rebuilds the seed with its difference recorded; every existing scoreboard entry is identical on a copy of the store |
 | 2 | Results here and in [`mvp-results.md`](../mvp-results.md) | The verdicts, the four checks, the reading and step 11's answer, against the expected outcome |
+
+*Step 1, 2026-11-03:*
+- **The seed:** the rule finds 322 posts on 220 New York days, 2025-01-22 to 2026-10-19, 174 of
+  them weekdays. 55 days hold a rate-naming post.
+- **The rebuilds:** part 1's seed comes out byte-identical. A fetch the same day (37,811 posts, md5
+  `2694f9affa742b77ddf94d8199e418d0`), cut at the window, rebuilds the seed with no difference.
+- **Empty text:** 4,923 posts in the window have no text once links are removed.
+- **The scoreboard:** on a copy of the store every existing entry is identical; the flow adds 16
+  cells to the chance line (328 → 344).
+- **On the S&P 500:**
+  - 179 reaction days.
+  - 57 shared with a major flow: a jobs report 10, CPI 9, core PCE 9, the euro-area flash 9, ISM 8,
+    the ECB 5, retail sales 4, the Fed 2, GDP 1.
+  - 122 lone, 14 of them (11%) shared with a tariff signing.
+  - Later posts the first-post rule drops add 8 reaction days (4%).
+- **Lone and ordinary days by market:**
+  - 122 and 192 on the S&P 500, the Nasdaq, both yields, defence and energy;
+  - 123 and 192 on the dollar; 122 and 194 on VIX; 121 and 194 on Brent; 121 and 204 on the euro;
+  - 115 and 204 on gold; 115 and 209 on the DAX; 113 and 206 on the Euro Stoxx 50 and the STOXX
+    600; 112 and 209 on the FTSE 100; 124 and 206 on bitcoin.
+  - None under 100 ordinary days, none *too few*.
+- **Placebo days:** 47 to 49 a market, 58 on bitcoin.
+- **Week windows:** 80% to 83% of ordinary week windows hold a post reaction day.
 
 ## Technical details
 

@@ -95,6 +95,7 @@ def test_seed_dir_has_no_unexpected_csvs() -> None:
         "debt_limit.csv",
         "summits.csv",
         "presidential_posts.csv",
+        "presidential_posts_2.csv",
     }
     # then exactly those files are present
     assert actual == expected
@@ -187,6 +188,26 @@ def test_tweet_days_are_inside_the_first_term() -> None:
     assert header == ["day", "time", "posts", "rate_time"]
     assert days == sorted(set(days))
     assert date(2017, 1, 20) <= days[0] and days[-1] <= date(2021, 1, 8)
+    assert all(re.fullmatch(r"[0-2]\d:[0-5]\d", row["time"]) for row in rows)
+    assert all(re.fullmatch(r"([0-2]\d:[0-5]\d)?", row["rate_time"]) for row in rows)
+    assert all(row["rate_time"] == "" or row["rate_time"] >= row["time"] for row in rows)
+    assert all(int(row["posts"]) >= 1 for row in rows)
+
+
+def test_post_days_are_inside_the_second_term_window() -> None:
+    # given the committed second-term post days
+    with (settings.seed_dir / "presidential_posts_2.csv").open(
+        newline="", encoding="utf-8"
+    ) as handle:
+        reader = csv.DictReader(handle)
+        header = reader.fieldnames
+        rows = list(reader)
+    # when their days, times and counts are read
+    days = [date.fromisoformat(row["day"]) for row in rows]
+    # then each is a day of the window, once and in order, with its times and at least one post
+    assert header == ["day", "time", "posts", "rate_time"]
+    assert days == sorted(set(days))
+    assert date(2025, 1, 20) <= days[0] and days[-1] <= date(2026, 10, 30)
     assert all(re.fullmatch(r"[0-2]\d:[0-5]\d", row["time"]) for row in rows)
     assert all(re.fullmatch(r"([0-2]\d:[0-5]\d)?", row["rate_time"]) for row in rows)
     assert all(row["rate_time"] == "" or row["rate_time"] >= row["time"] for row in rows)

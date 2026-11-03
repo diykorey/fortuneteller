@@ -110,6 +110,10 @@ this by splitting the results by era.
 | The keyword rule | `tariff`, `trade war` or `trade deal` in the tweet's own text, retweets and quotes out; catches deals with no tariff | A reading of each tweet's meaning, a language model's job (rung 7) | A *moves* the rate-naming check does not keep |
 | First tweet only | A day is timed at its first matching tweet; a later one after the close is dropped (7 S&P 500 reaction days, 5%) | Every tweet's own reaction day | The dropped share above 10% |
 | The term's end | Ordinary days end at 2021-01-08 (`ordinary_until`); week windows from 2021-01-05 reach past it | Week windows that end by the bound | A week verdict at a `p` near 0.01 |
+| Part 2's source | A snapshot of CNN's Truth Social archive of 2026-11-03, md5-pinned, not committed; a fetch the same day rebuilt the seed with no difference; posts deleted before it are missing, where part 1 kept deleted tweets ([part 2](steps/presidential-posts-2.md)) | A committed or archived copy | A seed that a later fetch does not rebuild |
+| Part 2's text-only rule | 4,923 posts in the window have no text once links are removed (images, videos, links) and are out, so an image-only announcement is missed | Reading the image's text | A *moves* that hangs on announcement days |
+| Part 2's first post only | Later posts after the close add 8 S&P 500 reaction days (4%) | Every post's own reaction day | The dropped share above 10% |
+| Part 2's week | Posts react on about 40% of closes, so 83% of the S&P 500's ordinary week windows hold one; the week is context, not graded; windows from 2026-10-27 reach past 2026-10-30 | A week test on a sparser flow | Never for this flow |
 
 ## Steps 1–2 — choices already built in
 
