@@ -377,6 +377,16 @@ about the debt alone, has no match at the bar in the session before, and is not 
 outcome, no market moving, was wrong for both yields. The 2008, 2011 and 2023 standoffs share
 their day with a jobs report or core PCE and are not counted. No call: a vote has no surprise.
 
+## Summits
+
+Measured 2026-11-03. Detail in [Summits](steps/summits.md#results).
+
+The 70 annual G7 and G20 leaders' summits since 1975, each at its last day: 51 of them alone on
+the S&P 500's reaction day. On the day only the dollar index clears the bar (1.68, p 0.001), one
+cell of 16 where chance gives 0.16; the euro does not follow (1.16) and the G7 alone falls short
+(1.49, p 0.03). Over a week nothing moves. The expected outcome, nothing moving, was wrong for the
+dollar alone. No call: a summit has no surprise.
+
 ## What comes next
 
 Chosen 2026-10-13: keep score ([rung 4](steps/rung-4-keep-score.md)), done above with the live path

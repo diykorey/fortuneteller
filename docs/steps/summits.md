@@ -90,7 +90,7 @@ At the end: both forums' summits as one lesser flow, from a hand-written seed fi
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~The seed file with 70 summits, the flow stored, each market's lone days counted, the days left out as shared named by lead flow~~ **done** | A test's seed rows store a Saturday last day with a Monday reaction on the S&P 500 and a Sunday one on bitcoin; a weekday European last day reacting that day; the seed test checks the header, `summit` opening with `G7 ` or `G20 `, `time` 08:00 or 20:00, `source_url` on `utoronto.ca`, last days in order since 1975-11-17 and by today, no repeated `last_day` or `source_url`; each market's lone days and the left-out days written here; every existing scoreboard entry identical on a copy of the store |
-| 2 | Results here and in [`mvp-results.md`](../mvp-results.md) | The flow's verdicts on the day and over a week, the two checks, against the expected outcome |
+| 2 | ~~Results here and in [`mvp-results.md`](../mvp-results.md)~~ **done** | The flow's verdicts on the day and over a week, the two checks, against the expected outcome |
 
 *Step 1, 2026-11-03:* 70 summits stored, 1975-11-17 to 2026-06-17, 30 of them at 08:00. On a copy
 of the store every existing scoreboard entry is identical, and so are the calls and *missed*; the
@@ -105,6 +105,52 @@ G20 St. Petersburg 2013 (a jobs report), Brussels 2014 (the ECB), Taormina 2017 
 Buenos Aires 2018, Osaka 2019 and Rome 2021 (ISM), G20 Bali 2022 (retail sales), Kananaskis 2025
 (the Fed) and Evian 2026 (the Fed and retail sales). Beside a Fed decision, as the spec expected of
 June: the G7 of 2025 and 2026 and the G20 of 2012.
+
+## Results
+
+Measured 2026-11-03 (`raw-move --event summit`, with and without `--week`) on step 1's copy of the
+store: each market's lone reaction days (51 on the S&P 500, 52 on the dollar, 16 on bitcoin),
+against ordinary days from each market's own years (1975 at the earliest).
+
+| | On the day | Over a week |
+| --- | --- | --- |
+| **Moves** | **the dollar, 1.68 (p 0.001)** | none |
+| *Unclear* | the Nasdaq 1.35 (p 0.05), bitcoin 1.47, VIX 1.26, the euro 1.16, energy 1.12, defence 1.11 | the euro 1.32, the STOXX 600 1.27, Brent 1.27, defence 1.26, bitcoin 1.25, VIX 1.23, the Euro Stoxx 50 1.17, the FTSE 100 1.14, the dollar 1.12 |
+| Doesn't | the S&P 500 0.95, both yields (0.82, 0.94), gold 0.65, Brent 0.84, the DAX 0.74, the Euro Stoxx 50 0.66, the STOXX 600 0.70, the FTSE 100 0.75 | the S&P 500 0.99, the Nasdaq 0.90, both yields (0.90, 1.08), gold 1.00, the DAX 1.10 (p 0.31, under 1.10 unrounded), energy 1.04 |
+
+- **One cell clears the bar: the dollar index,** 0.44% on a summit's reaction day against 0.26%
+  on an ordinary one. Nothing else does, on the day or over the week.
+- **The dollar is not confirmed elsewhere.** The euro, the largest part of the index, is *unclear*
+  (1.16, on 25 days since 1999). By era, with no p value, the dollar is 1.23 in 1975–1989, 1.74 in
+  1990–2007, 1.76 in 2008–2019, and 0.92 on the 7 days since 2020, too few.
+- **Europe's four indices sit below an ordinary day:** the DAX 0.74, the Euro Stoxx 50 0.66, the
+  STOXX 600 0.70, the FTSE 100 0.75; low is not tested.
+- **Check 1, not a verdict: the G7 alone** (51 summits, 40 lone days on the S&P 500). Nothing
+  moves; the dollar 1.49 (p 0.03, *unclear*); bitcoin *too few*.
+- **Check 2, not a verdict: the other day** of each weekday summit (the next close for the 08:00
+  ones, the last day's own close for those in the Americas; 31 days on the S&P 500). Nothing moves;
+  the S&P 500 1.23 (p 0.19), the dollar 0.82; bitcoin *too few*.
+- **Chance:** 16 cells on the day, 0.16 *moves* by chance; found 1. Over a week 16, none.
+- **No call.** A summit has no surprise and no sign.
+
+**Against the expected outcome:**
+
+- A summit long announced, its communiqué drafted in advance: **not tested**.
+- No market moves at the bar on the day: **wrong** for the dollar, on one cell of 16, unconfirmed
+  by the euro and short of the bar on the G7 alone.
+- Nor over the week: right.
+- No era claim: kept.
+- Lone days counted and the markets under ten named: done in step 1; none was under ten.
+- The G7 in June near a Fed decision: three summits shared a Fed day (the G7 of 2025 and 2026, the
+  G20 of 2012), all left out as shared.
+
+**What it means.** A G7 or G20 summit is close to an ordinary day for markets. The single *moves*,
+the dollar, is one cell where chance gives 0.16, about a one-in-seven chance of at least one at this
+bar; it is unconfirmed: short of the bar on the G7 alone, and only *unclear* in the euro. Over a
+week nothing moves. Step 10's four dated shocks end here: a US election moves American stocks for a
+day, and France's VIX; a tariff signing Europe's indices, on the day and over the week; Congress's
+final debt-limit vote both Treasury yields, on the day and over the week; a summit only the dollar,
+on the day, unconfirmed.
 
 ## Technical details
 

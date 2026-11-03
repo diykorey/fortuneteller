@@ -8,9 +8,8 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Summits, step 1 *(PR #214)*: 70 G7 and G20 summits as one lesser flow, each at its last day (08:00
-New York for a weekday in Europe or Asia, else 20:00); every existing scoreboard entry identical on
-a copy of the store.
+Summits, step 2 *(PR #215)*: results. Only the dollar index moves on a summit's reaction day
+(1.68), unconfirmed by the euro and the G7 alone; nothing moves over a week. Step 10 is done.
 
 ## In progress
 
@@ -22,13 +21,14 @@ run rewrites it.
 
 ## Next
 
-Summits, step 2: results on the day and over a week, the G7-alone and other-day checks, against
-the expected outcome. It closes step 10; step 11, news as a feed, after it.
+Step 11, news as a feed: its spec first, GDELT's narrow question on the US president's trade
+statements since 2015.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-03 | Summits, step 2: results — only the dollar moves on the day, unconfirmed; nothing over a week | PR #215 |
 | 2026-11-03 | Summits, step 1: 70 summits stored as one lesser flow, every existing entry identical | PR #214 |
 | 2026-11-03 | Dated shocks, part 4, spec: summits, the G7 and the G20 as one lesser flow | PR #213 |
 | 2026-11-03 | The debt limit, step 2: results — both Treasury yields move on the day and over a week, no stock market does | PR #212 |
