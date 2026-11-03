@@ -81,6 +81,9 @@ Terms are grouped by what they are about, alphabetical within each group.
   month or the same month a year ago. Mixing the two silently corrupts a surprise calculation.
 - **NFP** (Non-Farm Payrolls) — the monthly US jobs report, usually the first Friday, 8:30 a.m. New
   York time. Traditionally the biggest scheduled mover after CPI and the Fed.
+- **PCE / core PCE** (Personal Consumption Expenditures price index) — the Fed's preferred US
+  inflation measure, published monthly by the Bureau of Economic Analysis at 8:30 a.m. New
+  York time; *core* leaves out food and energy ([more events](steps/step-4-more-events.md)).
 - **ISM** (Institute for Supply Management) — publishes the US manufacturing PMI at 10:00 New
   York on the month's first working day ([the ISM survey](steps/ism-manufacturing.md)).
 - **ZEW** (Leibniz Centre for European Economic Research) — its *Economic Sentiment Index* asks

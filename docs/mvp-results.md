@@ -365,6 +365,18 @@ check, [detail](steps/tariffs.md#results)) the S&P 500 is 1.22, short of the bar
 the day and over the week; its era split and its dilution were not testable. No call: a signing has
 no surprise.
 
+## The debt limit
+
+Measured 2026-11-03. Detail in [The debt limit](steps/debt-limit.md#results).
+
+The 75 laws that changed the US debt limit since 1970, dated by Congress's final vote: 73 days,
+60 of them alone on the S&P 500's reaction day. On the next close the 10-year and 5-year Treasury
+yields move about twice an ordinary day (1.97 and 1.94, p 0.0002), and over the week still about
+1.5 times. No stock market moves, on the day or over the week. The yields' move holds on the laws
+about the debt alone, has no match at the bar in the session before, and is not month ends. The expected
+outcome, no market moving, was wrong for both yields. The 2008, 2011 and 2023 standoffs share
+their day with a jobs report or core PCE and are not counted. No call: a vote has no surprise.
+
 ## What comes next
 
 Chosen 2026-10-13: keep score ([rung 4](steps/rung-4-keep-score.md)), done above with the live path
