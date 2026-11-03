@@ -8,9 +8,9 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-The Fed statement's sentiment, step 1 *(PR #229)*: the paper's dictionary scores all 226 Fed
-statements and passes the five checks against the paper; every signed link has 95 or more holds,
-so the rows are stored and the Fed flow has its surprise rule.
+The Fed statement's sentiment, step 2 *(PR #230)*: results. The dictionary reads every statement
+and passes the paper's checks, but a stronger statement moves neither yields nor the dollar the
+expected way: all four signed links *doesn't*, no call.
 
 ## In progress
 
@@ -26,13 +26,14 @@ jobs report on 2026-11-06 is the first.
 
 ## Next
 
-The Fed statement's sentiment, step 2: the results, the verdicts against the expected outcome
-([step 14](steps/fed-statement-sentiment.md)).
+Step 15, not chosen yet: the next step from the roadmap's list, or a new one toward the goal of a
+tool ordinary people can read.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-03 | The Fed statement's sentiment, step 2: results — all four signed links *doesn't*, no call | PR #230 |
 | 2026-11-03 | The Fed statement's sentiment, step 1: the paper's dictionary, five checks passed, the Fed's surprise rule | PR #229 |
 | 2026-11-03 | The Fed statement's sentiment: spec | PR #228 |
 | 2026-11-03 | The Fed statement's tone, step 1: the list reads 19 of 226 statements; stopped by its rule | PR #227 |
