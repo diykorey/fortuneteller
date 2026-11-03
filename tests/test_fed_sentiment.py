@@ -344,3 +344,60 @@ def test_the_checks_against_the_paper(tmp_db: Path) -> None:
 
     # then all pass but the statement count, which is 2 against the paper's 166
     assert [passed for _, passed in checks] == [True, True, False, True, True]
+
+
+def test_overlaps_are_settled_within_a_topic_and_a_long_phrase_blocks_every_topic() -> None:
+    # given a two-word keyword over a one-word modifier and keyword, and an output phrase holding a
+    # labor keyword
+    gains = sentence_pairs("Job gains were solid.")
+    spending = sentence_pairs("Investment spending rose.")
+    phrase = sentence_pairs(
+        "The recovery is continuing, though at a rate that has been insufficient to bring down "
+        "unemployment."
+    )
+
+    # when each is scored
+
+    # then the longer match wins in its topic, and the phrase leaves "unemployment" unscored
+    assert gains == [("labor", 1, "job gains ... solid")]
+    assert spending == [("output", 1, "investment spending ... rose")]
+    assert phrase == [
+        (
+            "output",
+            -1,
+            "recovery is continuing though at a rate that has been insufficient to bring down "
+            "unemployment",
+        )
+    ]
+
+
+def test_the_index_sums_the_five_topics() -> None:
+    # given a statement with an inflation, a labor, an output and a policy score
+    text = "Inflation has risen. Unemployment has declined. Spending was weak. We can be patient."
+
+    # when it is scored
+    topics, _ = statement_topics(text)
+    index, pairs = expectations.statement_sentiment(text)
+
+    # then the index is their sum over the square root of the 13 words
+    assert topics is not None
+    assert index == pytest.approx(sum(topics.values())) == pytest.approx(1 / math.sqrt(13))
+    assert len(pairs) == 4
+
+
+def test_the_fed_s_surprise_asks_for_load_sentiment(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    # given a stored Fed decision and a move, but no sentiment loaded
+    (event,) = _fed_events([date(2000, 3, 21)])
+    db.get_connection().execute(
+        "INSERT INTO observations (event_id, instrument, ret_unit, ret_1d) VALUES (?, ?, 'bps', 3)",
+        [event.event_id, "UST10Y / ZN"],
+    )
+
+    # when the Fed's surprise is asked for
+    code = main(["surprise", "--event", "fomc"])
+
+    # then it names the command that loads it
+    assert code == 1
+    assert "run `fortuneteller load-sentiment` first" in capsys.readouterr().err

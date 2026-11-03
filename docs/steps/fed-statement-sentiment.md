@@ -156,6 +156,10 @@ with an index; 151 are holds, 113 of them alone on their day. Not stopped:
 - *Amended 2026-11-03:* `SentimentLoad` adds two fields to `ToneLoad`'s: each statement's labor
   score, for the fifth check, and the rows to store. `load-sentiment` stores only when every check
   passes, and `surprise` and `predict` name it for the Fed instead of `load-surprises`.
+- *Walk-forward, read 2026-11-03:* the scoreboard replays all four signed links, as it does every
+  flow's, and the replay calls a release only while its link is open on the releases before it. No
+  Fed link opens, so each makes 0 calls and *too few*: "graded only for a link that tracks" holds
+  through the replay's own gate, with no guard of its own.
 
 ## How you know it is right
 

@@ -16,6 +16,7 @@ from fortuneteller import db, expectations, flows, sources, study
 from fortuneteller.__main__ import describe_surprise_tracking, main
 from fortuneteller.config import settings
 from fortuneteller.sources import (
+    FomcDecision,
     NEW_YORK,
     ACTUAL,
     CORE,
@@ -511,6 +512,33 @@ def _store_events(con: duckdb.DuckDBPyConnection) -> None:
     flows.store_releases(
         CPI_FLOW, [FirstRelease(m, released_on(m), 100.0) for m in months], con=con
     )
+
+
+def test_loading_keeps_the_fed_s_sentiment(monkeypatch: pytest.MonkeyPatch) -> None:
+    # given CPI's releases and a stored Fed decision with its sentiment surprise
+    _sources_answer(monkeypatch, actual_core=0.57)
+    con = duckdb.connect(":memory:")
+    db.init_db(con=con)
+    _store_events(con)
+    flows.store_fomc_decisions([FomcDecision(date(2022, 9, 21), True)], con=con)
+    (fed,) = flows.stored_events(flows.FED_FLOW, con=con)
+    sentiment = Surprise(
+        event_id=fed.event_id,
+        measure=flows.SENTIMENT,
+        baseline=expectations.PREVIOUS_STATEMENT,
+        actual_mom=0.2,
+        expected_mom=0.1,
+        surprise=0.1,
+    )
+    db.insert_models("surprises", [sentiment], con=con)
+
+    # when the surprises are loaded
+    rows = flows.load_surprises("key", con=con)
+
+    # then CPI's rows are written beside the Fed's, which stays
+    assert db.count_rows("surprises", con=con) == len(rows) + 1
+    kept = con.execute("SELECT count(*) FROM surprises WHERE measure = 'sentiment'").fetchone()
+    assert kept == (1,)
 
 
 def test_loading_stores_each_surprise_once_however_often_it_runs(
