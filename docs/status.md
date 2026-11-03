@@ -8,9 +8,8 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-The debt limit, step 2 *(PR #212)*: results. Both Treasury yields move about twice an ordinary
-day on the close after Congress's final vote, and still about 1.5 times over a week; no stock
-market moves. The expected outcome was wrong for the yields.
+Dated shocks, part 4, spec *(PR #213)*: [summits](steps/summits.md), the G7's 51 and the G20's 19
+annual leaders' summits as one lesser flow, each dated by its last day at 20:00 New York.
 
 ## In progress
 
@@ -22,12 +21,14 @@ run rewrites it.
 
 ## Next
 
-Dated shocks, part 4: summits, its spec first. Then step 1, the seed file and the flow.
+Summits, step 1: the seed file with 70 summits, the flow stored, each market's lone days
+counted. Then step 2, results, which closes step 10; step 11, news as a feed, after it.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-03 | Dated shocks, part 4, spec: summits, the G7 and the G20 as one lesser flow | PR #213 |
 | 2026-11-03 | The debt limit, step 2: results — both Treasury yields move on the day and over a week, no stock market does | PR #212 |
 | 2026-11-03 | The debt limit, step 1: 73 days stored as one lesser flow, every existing entry identical | PR #211 |
 | 2026-11-03 | Dated shocks, part 3, spec: the debt limit, dated by Congress's final vote | PR #210 |
