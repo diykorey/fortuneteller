@@ -2,6 +2,7 @@
 
 import math
 import random
+from dataclasses import replace
 from datetime import date, datetime, time, timedelta
 from pathlib import Path
 from statistics import median
@@ -544,6 +545,51 @@ def test_a_vote_is_alone_unless_its_reaction_day_holds_another_release() -> None
     # not; one day is too few for a verdict
     assert results["SPY / ES"].overall.event_days == 1
     assert {raw.overall.verdict for raw in results.values()} == {TOO_FEW}
+
+
+def test_a_trade_tweet_reacts_on_each_market_s_next_close(tmp_path: Path) -> None:
+    # given a seed file with a weekday tweet before the open and one on a Saturday at 13:00
+    seed = tmp_path / "presidential_posts.csv"
+    seed.write_text("day,time,posts,rate_time\n2018-03-02,07:50,2,07:50\n2019-05-04,13:00,1,\n")
+
+    # when the tweet days are loaded
+    batch = flows.POSTS_FLOW.load(seed, datetime(2026, 11, 3, 12, 0, tzinfo=NEW_YORK))
+
+    # then both are unscheduled events; the first reacts that day on the S&P 500, the second on
+    # Monday on the S&P 500 and that Saturday on bitcoin
+    assert [(e.event_id, e.detail, e.scheduled) for e in batch.events] == [
+        (2420180302, "2", False),
+        (2420190504, "1", False),
+    ]
+    spy = MVP_PRICE_SERIES["SPY / ES"]
+    assert first_reaction_day(batch.events[0], spy) == date(2018, 3, 2)
+    closes = _closes((date(2019, 5, 3), 100.0), (date(2019, 5, 6), 101.0))
+    assert reaction_days(closes, [first_reaction_day(batch.events[1], spy)]) == {date(2019, 5, 6)}
+    assert first_reaction_day(batch.events[1], MVP_PRICE_SERIES["BTC"]) == date(2019, 5, 4)
+    assert batch.report == ["loaded 2 United States tweet days, 2018-03-02 … 2019-05-04"]
+
+
+def test_a_dated_flow_s_ordinary_days_end_at_its_ordinary_until() -> None:
+    # given CPI's synthetic store of 2021-2023 and two UK votes in 2021
+    con = duckdb.connect(":memory:")
+    db.init_db(con=con)
+    _synthetic_store(con)
+    votes = [
+        flows.UK_ELECTION_FLOW.event_instance(
+            datetime.combine(day, time(22, 0), tzinfo=flows.sources.LONDON), "general"
+        )
+        for day in (date(2021, 3, 4), date(2021, 6, 3))
+    ]
+    flows.store_events(votes, con=con)
+    bounded = replace(flows.UK_ELECTION_FLOW, ordinary_until=date(2021, 12, 31))
+
+    # when its raw move is measured with and without the bound
+    open_ended = measure_raw_moves(flows.UK_ELECTION_FLOW, con=con)["SPY / ES"].overall
+    ended = measure_raw_moves(bounded, con=con)["SPY / ES"].overall
+
+    # then the bound keeps both votes and drops the ordinary days of 2022 and 2023
+    assert ended.event_days == open_ended.event_days == 2
+    assert 0 < ended.other_days < open_ended.other_days / 2
 
 
 def test_a_week_s_move_runs_from_the_close_before_to_the_fifth_close() -> None:

@@ -94,6 +94,7 @@ def test_seed_dir_has_no_unexpected_csvs() -> None:
         "tariffs.csv",
         "debt_limit.csv",
         "summits.csv",
+        "presidential_posts.csv",
     }
     # then exactly those files are present
     assert actual == expected
@@ -170,3 +171,23 @@ def test_summit_rows_are_g7_and_g20_summits_since_1975() -> None:
     assert all(re.fullmatch(r"https://www\.g(7|20)\.utoronto\.ca/\S+", s) for s in sources)
     assert len(set(days)) == len(days) and len(set(sources)) == len(sources)
     assert days == sorted(days) and days[0] >= date(1975, 11, 17) and days[-1] <= date.today()
+
+
+def test_tweet_days_are_inside_the_first_term() -> None:
+    # given the committed tweet days
+    with (settings.seed_dir / "presidential_posts.csv").open(
+        newline="", encoding="utf-8"
+    ) as handle:
+        reader = csv.DictReader(handle)
+        header = reader.fieldnames
+        rows = list(reader)
+    # when their days, times and counts are read
+    days = [date.fromisoformat(row["day"]) for row in rows]
+    # then each is a day of the first term, once and in order, with its times and at least one tweet
+    assert header == ["day", "time", "posts", "rate_time"]
+    assert days == sorted(set(days))
+    assert date(2017, 1, 20) <= days[0] and days[-1] <= date(2021, 1, 8)
+    assert all(re.fullmatch(r"[0-2]\d:[0-5]\d", row["time"]) for row in rows)
+    assert all(re.fullmatch(r"([0-2]\d:[0-5]\d)?", row["rate_time"]) for row in rows)
+    assert all(row["rate_time"] == "" or row["rate_time"] >= row["time"] for row in rows)
+    assert all(int(row["posts"]) >= 1 for row in rows)

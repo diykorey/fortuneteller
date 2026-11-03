@@ -420,9 +420,11 @@ def measure_raw_moves(
     event days are the ones it has alone. Ordinary days start at the flow's first reaction day on
     each market, so a flow is not judged against years it has no days in
     (docs/steps/own-years-baseline.md). A dated shock (an election, a tariff action) is alone if
-    its reaction day is no other flow's; ``week`` compares five-day moves (docs/steps/elections.md).
+    its reaction day is no other flow's, and its days end at its ``ordinary_until``
+    (docs/steps/presidential-posts.md); ``week`` compares five-day moves (docs/steps/elections.md).
     """
     dated = isinstance(flow, DatedShockFlow)
+    until = flow.ordinary_until if isinstance(flow, DatedShockFlow) else None
     events = stored_events(flow, con=con)
     if flow.lesser and not dated:
         shared = shared_days(flow, con=con)
@@ -441,7 +443,7 @@ def measure_raw_moves(
         by_era: dict[str, tuple[list[float], list[float]]] = {label: ([], []) for label, _ in ERAS}
         moves = weekly_moves(closes, series.unit) if week else daily_moves(closes, series.unit)
         for day, move in moves.items():
-            if first is not None and day < first:
+            if (first is not None and day < first) or (until is not None and day > until):
                 continue
             on_event, other = by_era[era_of(day)]
             if day in days:

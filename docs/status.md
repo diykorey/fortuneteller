@@ -8,8 +8,9 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-News as a feed, part 1, spec *(PR #216)*: [the president's trade posts](steps/presidential-posts.md);
-GDELT measured first cannot date them, so the days come from his first-term tweets.
+The president's trade posts, step 1 *(PR #217)*: 179 first-term tweet days as one lesser flow,
+compared inside the term (`ordinary_until`); every existing scoreboard entry identical on a copy
+of the store.
 
 ## In progress
 
@@ -21,13 +22,14 @@ run rewrites it.
 
 ## Next
 
-The president's trade posts, step 1: the script and the seed file, `ordinary_until`, the flow
-stored, each market's lone days counted. Then step 2, results.
+The president's trade posts, step 2: results on the day and over a week, the three checks,
+against the expected outcome.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-03 | The president's trade posts, step 1: 179 tweet days stored as one lesser flow, every existing entry identical | PR #217 |
 | 2026-11-03 | News as a feed, part 1, spec: the president's trade posts; GDELT cannot date them | PR #216 |
 | 2026-11-03 | Summits, step 2: results — only the dollar moves on the day, unconfirmed; nothing over a week | PR #215 |
 | 2026-11-03 | Summits, step 1: 70 summits stored as one lesser flow, every existing entry identical | PR #214 |
