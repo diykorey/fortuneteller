@@ -113,9 +113,15 @@ The step 1 tests include:
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | `score` reads `data/guesses/`, grades or voids each guess and prints a `guesses` block | The tests above pass; `score` on the real data prints the same calls block as before |
+| 1 | ~~`score` reads `data/guesses/`, grades or voids each guess and prints a `guesses` block~~ **done** | The tests above pass; `score` on the real data prints the same calls block as before |
 | 2 | The scoreboard: every guess, each handle's count, the asymmetry and "how to play" | On a test database the JSON's counts equal `score`'s lines; the page shows a guess beside the machine's row |
 | 3 | The first live round: a release `live` calls, guessed through a merged pull request; results here | At least one guess graded by the evening score that day or the next |
+
+*Step 1, 2026-11-03:* `score` reads every guess file from `main`'s history and grades each guess
+beside the machine's row. On a copy of the real store, with no guesses yet, its output is identical
+to the committed `data/score.txt`. The tests cover a merge commit, a squash commit, a file edited
+and deleted after it was added, a bad file, every void reason, and both kinds of waiting. They also
+cover a GitHub failure, which stops `score` rather than voiding a guess.
 
 ## What this step does not do
 

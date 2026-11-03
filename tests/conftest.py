@@ -25,6 +25,7 @@ def no_calendars(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     # a test that needs calendar rows patches expectations.fetch_calendars itself.
     monkeypatch.setattr(settings, "cache_dir", tmp_path / "cache")
     monkeypatch.setattr(settings, "calls_path", tmp_path / "calls.csv")
+    monkeypatch.setattr(settings, "guesses_dir", tmp_path / "guesses")
     monkeypatch.setattr(expectations, "fetch_calendars", lambda days, cache_dir: ([], []))
 
     def refuse(url: str, what: str, timeout: float) -> bytes:

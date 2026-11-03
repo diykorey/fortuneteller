@@ -8,8 +8,8 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-The president's trade posts, part 2, step 2 *(PR #221)*: results. No US market moves on a
-second-term trade-post day; bitcoin alone, clustering not excluded. Step 11 closes with no.
+Beat the fortune teller, step 1 *(PR #224)*: `score` grades each guess file from `main`'s
+history beside the machine's row; with no guesses yet its output is unchanged.
 
 ## In progress
 
@@ -19,17 +19,20 @@ evening grades. The jobs report on 2026-11-06 is the first with the euro and the
 called. The published page still shows the raw move from before own years until the next evening
 run rewrites it.
 
-Beat the fortune teller: [the spec](steps/beat-the-fortune-teller.md), step 12 of the roadmap.
+Beat the fortune teller, step 2: the scoreboard shows every guess, each handle's count, the
+asymmetry and how to play ([the spec](steps/beat-the-fortune-teller.md)).
 
 ## Next
 
-Beat the fortune teller, step 1: `guess` and its log; `score` grades guesses beside the machine's
-calls.
+Beat the fortune teller, step 3: the first live round, a release `live` calls guessed through a
+merged pull request.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-03 | Beat the fortune teller, step 1: `score` grades guesses beside the machine's calls | PR #224 |
+| 2026-11-03 | Beat the fortune teller: spec | PR #223 |
 | 2026-11-03 | The president's trade posts, part 2, step 2: results — no US market moves on a post day; step 11 closes with no | PR #221 |
 | 2026-11-03 | The president's trade posts, part 2, step 1: 220 second-term post days as one lesser flow, every existing entry identical | PR #220 |
 | 2026-11-03 | The president's trade posts, part 2: spec | PR #219 |
