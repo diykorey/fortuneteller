@@ -382,6 +382,11 @@ Terms are grouped by what they are about, alphabetical within each group.
   world's news as dated events since 2015 (daily since 1979), each with its actors, type and tone.
   The only free history of statements and shocks as events, and noisy: [roadmap](roadmap.md) step
   11 measures one narrow question against a bar fixed first.
+- **Trump Twitter Archive** — a public dump of the president's tweets, each with its time to the
+  second, to the 2021 ban; with **CNN's Truth Social archive** (his posts since 2022), the source
+  of [the president's trade posts](steps/presidential-posts.md).
+- **CAMEO / GKG** — GDELT's event codes (who did what to whom) and its Global Knowledge Graph
+  (themes tagged per article). Neither has a trade-statement code or a speaker.
 - **PAYEMS** — the FRED series ID for total US non-farm payrolls, in thousands of jobs: the NFP
   headline number.
 - **Prediction market** — a market in contracts that pay on an event's outcome (an election, a

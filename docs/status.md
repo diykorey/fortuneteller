@@ -8,8 +8,8 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Summits, step 2 *(PR #215)*: results. Only the dollar index moves on a summit's reaction day
-(1.68), unconfirmed by the euro and the G7 alone; nothing moves over a week. Step 10 is done.
+News as a feed, part 1, spec *(PR #216)*: [the president's trade posts](steps/presidential-posts.md);
+GDELT measured first cannot date them, so the days come from his first-term tweets.
 
 ## In progress
 
@@ -21,13 +21,14 @@ run rewrites it.
 
 ## Next
 
-Step 11, news as a feed: its spec first, GDELT's narrow question on the US president's trade
-statements since 2015.
+The president's trade posts, step 1: the script and the seed file, `ordinary_until`, the flow
+stored, each market's lone days counted. Then step 2, results.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-03 | News as a feed, part 1, spec: the president's trade posts; GDELT cannot date them | PR #216 |
 | 2026-11-03 | Summits, step 2: results — only the dollar moves on the day, unconfirmed; nothing over a week | PR #215 |
 | 2026-11-03 | Summits, step 1: 70 summits stored as one lesser flow, every existing entry identical | PR #214 |
 | 2026-11-03 | Dated shocks, part 4, spec: summits, the G7 and the G20 as one lesser flow | PR #213 |
