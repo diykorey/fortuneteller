@@ -13,7 +13,7 @@ answer.
 
 ## In progress
 
-Step 19, part 2b: the 5-year breakeven, from FRED (spec to write).
+Step 19, part 2b: the breakeven ([the spec](steps/breakeven.md)).
 
 Step 18, part 2, step 3: the first triggers graded ([the spec](steps/trigger-file.md)). It waits for
 the owner's first trigger, a file under `data/triggers/` merged before a market's reaction close.
