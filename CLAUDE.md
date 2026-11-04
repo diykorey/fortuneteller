@@ -7,6 +7,8 @@ FortuneTeller — an event-driven market-impact prediction & warning system: ing
 **calibrated** confidence. A warning product, not HFT (latency budget is seconds-to-minutes).
 *Amended 2026-10-23:* an entertainment tool with a realistic approach, not a financial one
 (`docs/legend.md`, the target): the bars stay, the surface widens.
+*Amended 2026-11-04:* events found in the news, answered with what followed past events of the
+kind for the markets people feel, over spans from a day to a year (`docs/legend.md`).
 
 The repo holds M0 (the data spine), the MVP, ladder rungs 1–6 and roadmap steps 1–4b;
 `docs/status.md` has the task in hand, and `uv run fortuneteller --help` what each command does.
@@ -59,10 +61,10 @@ roadmap wins. `docs/legacy/README.md` says what in there is still worth reading 
 ## Scope discipline — the provable core
 
 The core is measured: ten events × sixteen markets from free sources, three links that hold
-walk-forward. Widening is planned in `docs/roadmap.md` steps 5–11 and goes one flow or one set of
+walk-forward. Widening is planned in `docs/roadmap.md` steps 5–20 and goes one flow or one set of
 markets per PR, each with a spec whose bars and expected outcome are written before anything is
-measured and amended only with a date. Still deferred: unscheduled detection (rung 7, history
-first) and paid data.
+measured and amended only with a date. News is read into triggers only for kinds already measured
+(step 20); wider detection (rung 7) and paid data stay deferred.
 
 **Measure before predicting.** Every number comes from real data and is graded. A call carries its
 record as counts and its band, never a probability, until one proves honest by rung 3's rule.

@@ -26,12 +26,15 @@ jobs report on 2026-11-06 is the first.
 
 ## Next
 
-The step after 16, not yet chosen.
+Step 17 of the [Roadmap](roadmap.md#next-steps-in-order), what follows over spans: its spec.
+Chosen 2026-11-04 with the target amended ([Legend](legend.md#the-target)): news triggers, the
+markets people feel, spans from a day to a year.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-04 | The target amended: news triggers, the markets people feel, spans from a day to a year; roadmap steps 17–20 | PR #236 |
 | 2026-11-04 | The week ahead, without a call, step 1: the events not called, with their records | PR #235 |
 | 2026-11-04 | The week ahead, without a call: spec | PR #234 |
 | 2026-11-04 | The week ahead, step 1: the scoreboard previews the coming week's releases | PR #233 |
