@@ -139,6 +139,13 @@ this by splitting the results by era.
 | The deadline | A market's usual close time on its first reaction day; on a half-day the real close is earlier, so a trigger merged between the two sees part of the next span's trading | Each exchange's calendar of early closes | A trigger merged on a half-day |
 | An open span before the trigger | Counted as kept when the trigger is answered, so the trigger is left out as the replay will leave it out; if that span later turns out to have a hole, the replay would have kept the trigger | Waiting until every earlier span has ended | A logged *left out* the replay answers |
 
+## Step 19 — the markets people feel
+
+| Choice | Now | More precise | Trigger |
+| --- | --- | --- | --- |
+| Commodities through funds | Corn, wheat, soybeans, gasoline and natural gas read through the US funds holding their futures, whose price has no roll jump; the fund less the front month over 21 closes, median, measured 2026-11-04: corn −0.7%, wheat −0.8%, soybeans −0.3%, gasoline +0.5%, natural gas −1.6% (mean −2.6%) | The front month with each roll day's move taken out, from each contract's own prices | A month or longer answer for natural gas, or a quarter or a year for any fund |
+| Dividends | Yahoo's close is split-adjusted, not dividend-adjusted: `XLU` drops about 0.7% each quarter's ex-dividend day, as `XLE` and `ITA` do | The total-return close, or ex-dividend days left out | An answer for utilities whose events fall on ex-dividend days |
+
 ## Steps 1–2 — choices already built in
 
 | Choice | Now | More precise | Trigger |

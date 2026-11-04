@@ -184,8 +184,13 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **FX** (Foreign Exchange) — the currency market.
 - **Gold / XAU / GC** — gold; `XAU` is its currency-style code, `GC` its COMEX futures symbol. A
   haven asset, sensitive to real interest rates.
+- **CORN, WEAT, SOYB** — the Teucrium corn, wheat and soybean funds, which hold those grains'
+  futures and roll them over days, so their price has no roll jump; bread, feed and cooking oil
+  ([the markets people feel](steps/markets-people-feel.md)). Close 16:00 New York; no expected sign.
 - **ITA** — the iShares U.S. Aerospace & Defense ETF; the defence outcome of dated shocks. Closes
   16:00 New York; no expected sign.
+- **ITB** — the iShares U.S. Home Construction ETF, US homebuilders; housing and mortgages. Closes
+  16:00 New York; no expected sign yet.
 - **KRE** — an ETF of US regional-bank shares; the market's read on regional-bank stress. Not in
   the instrument universe.
 - **Liquidity** — how easily something can be traded without moving its own price. The MVP sticks to
@@ -204,6 +209,8 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **Ticker / symbol** — the short code identifying an instrument (`SPY`, `^VIX`). **These strings
   are load-bearing here** — they are join keys between seed data, measurements, and predictions, so
   drift silently breaks lookups.
+- **UGA, UNG** — the United States Gasoline Fund and Natural Gas Fund, holding gasoline and
+  natural gas futures; petrol at the pump and heating. Close 16:00 New York; no expected sign.
 - **UKX** (FTSE 100) — London's 100 largest listed companies, closing 16:30 London (the closing
   auction). Yahoo's `^FTSE`. Takes the DAX's expected sign.
 - **UST 10Y** (US Treasury 10-year) — the 10-year US government bond yield; the world's benchmark
@@ -222,9 +229,12 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **Vendor ticker** — a data provider's own code for an instrument, as opposed to the project's
   canonical symbol. Step 2 maps five: `^GSPC` (S&P 500 index), `^TNX`, `DX-Y.NYB` (dollar index),
   `GC=F` (gold futures), `^VIX`; cross-country two, `^GDAXI` and `^STOXX50E`; more outcomes nine,
-  `BZ=F`, `EURUSD=X`, `^IXIC`, `^FVX`, `^FTSE`, `^STOXX`, `BTC-USD`, `ITA` and `XLE`.
+  `BZ=F`, `EURUSD=X`, `^IXIC`, `^FVX`, `^FTSE`, `^STOXX`, `BTC-USD`, `ITA` and `XLE`; the markets
+  people feel seven, each its own symbol.
 - **XLE** — the Energy Select Sector SPDR ETF, the US energy sector; oil's equity echo. Closes
   16:00 New York; no expected sign.
+- **XLU** — the Utilities Select Sector SPDR ETF, US utilities; household bills, bought for their
+  rates. Closes 16:00 New York; no expected sign yet.
 
 ## Measuring the effect
 

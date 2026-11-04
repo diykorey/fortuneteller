@@ -8,4 +8,4 @@ Environment=FT_MAIN_CHECKOUT=%h/WorkVolume/work/projects/pet/fortuneteller
 Environment=FT_JOB_TREE=%h/.local/share/fortuneteller/release-day
 EnvironmentFile=%h/WorkVolume/work/projects/pet/fortuneteller/.env
 ExecStart=%h/WorkVolume/work/projects/pet/fortuneteller/scripts/release-day.sh score
-TimeoutStartSec=20min
+TimeoutStartSec=40min

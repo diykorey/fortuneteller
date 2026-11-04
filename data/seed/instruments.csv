@@ -21,3 +21,10 @@ UKX,FTSE 100,equity_index,europe,LSE,London's 100 largest listed companies; clos
 SXXP,STOXX Europe 600,equity_index,europe,STOXX,600 companies across Europe; closes 17:30 Zurich.
 ITA,US aerospace & defence ETF,sector_etf,us,Cboe BZX,iShares U.S. Aerospace & Defense; the defence outcome of dated shocks.
 XLE,US energy sector ETF,sector_etf,us,NYSE Arca,Energy Select Sector SPDR; oil's equity echo.
+CORN,Corn (Teucrium Corn Fund),commodity,us,NYSE Arca,Holds corn futures; bread and feed.
+WEAT,Wheat (Teucrium Wheat Fund),commodity,us,NYSE Arca,Holds wheat futures; bread.
+SOYB,Soybeans (Teucrium Soybean Fund),commodity,us,NYSE Arca,Holds soybean futures; cooking oil and feed.
+UGA,Gasoline (United States Gasoline Fund),commodity,us,NYSE Arca,Holds RBOB gasoline futures; petrol at the pump.
+UNG,Natural gas (United States Natural Gas Fund),commodity,us,NYSE Arca,Holds natural gas futures; heating.
+XLU,US utilities sector ETF,sector_etf,us,NYSE Arca,Utilities Select Sector SPDR; household bills and rates.
+ITB,US homebuilders ETF,sector_etf,us,Cboe BZX,iShares U.S. Home Construction; housing and mortgages.

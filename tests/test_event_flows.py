@@ -349,7 +349,10 @@ def test_an_08_30_release_in_new_york_reacts_in_frankfurt_the_same_day(
 
 
 @pytest.mark.parametrize("released", [date(2026, 6, 10), date(2026, 3, 11), date(2026, 10, 28)])
-@pytest.mark.parametrize("instrument", ["UKX", "SXXP", "BTC", "BRN", "UST5Y / ZF"])
+@pytest.mark.parametrize(
+    "instrument",
+    ["UKX", "SXXP", "BTC", "BRN", "UST5Y / ZF", "CORN", "WEAT", "SOYB", "UGA", "UNG", "XLU", "ITB"],
+)
 def test_an_08_30_release_in_new_york_reacts_the_same_day_in_london_zurich_and_utc(
     released: date, instrument: str
 ) -> None:
@@ -401,11 +404,12 @@ def test_the_more_outcomes_take_their_signs_by_analogy() -> None:
         "SX5E": -1,
     }
 
-    # when the nine more outcomes are added
+    # when the more outcomes are added
     signs = flows.with_more_outcomes(seven)
 
     # then the euro mirrors the dollar index, the 5-year yield follows the 10-year's, the Nasdaq the
-    # S&P 500's, the FTSE 100 and the STOXX 600 the DAX's, the rest have none, in the markets' order
+    # S&P 500's, the FTSE 100 and the STOXX 600 the DAX's, the rest and the seven markets people feel
+    # have none, in the markets' order
     assert {k: v for k, v in signs.items() if k not in seven} == {
         "BRN": 0,
         "EURUSD": -1,
@@ -416,6 +420,13 @@ def test_the_more_outcomes_take_their_signs_by_analogy() -> None:
         "BTC": 0,
         "ITA": 0,
         "XLE": 0,
+        "CORN": 0,
+        "WEAT": 0,
+        "SOYB": 0,
+        "UGA": 0,
+        "UNG": 0,
+        "XLU": 0,
+        "ITB": 0,
     }
     assert list(signs) == list(study.MVP_PRICE_SERIES)
 

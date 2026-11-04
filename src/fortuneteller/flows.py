@@ -455,7 +455,8 @@ NOTICEABLE_SURPRISE_PP = 0.1
 def with_more_outcomes(signs: dict[str, int]) -> dict[str, int]:
     """The nine more outcomes' signs by analogy (docs/steps/more-outcomes.md): the euro the dollar
     index's reversed, the 5-year yield the 10-year's, the Nasdaq the S&P 500's, the FTSE 100 and
-    the STOXX 600 the DAX's; oil, bitcoin and the two sector ETFs none."""
+    the STOXX 600 the DAX's; oil, bitcoin and the two sector ETFs none, nor the seven markets people
+    feel (docs/steps/markets-people-feel.md)."""
     return {
         **signs,
         "BRN": 0,
@@ -467,6 +468,13 @@ def with_more_outcomes(signs: dict[str, int]) -> dict[str, int]:
         "BTC": 0,
         "ITA": 0,
         "XLE": 0,
+        "CORN": 0,
+        "WEAT": 0,
+        "SOYB": 0,
+        "UGA": 0,
+        "UNG": 0,
+        "XLU": 0,
+        "ITB": 0,
     }
 
 
