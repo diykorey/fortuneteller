@@ -8,11 +8,12 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Coffee, step 1 *(PR #260)*: `KC=F` stored and shown, unsigned; every existing output unchanged.
+Coffee, step 2 *(PR #261)*: coffee moves on no flow, unclear on the ISM survey's day; no `follows`
+answer.
 
 ## In progress
 
-Step 19, part 2a, step 2: coffee's results ([the spec](steps/coffee.md)).
+Step 19, part 2b: the 5-year breakeven, from FRED (spec to write).
 
 Step 18, part 2, step 3: the first triggers graded ([the spec](steps/trigger-file.md)). It waits for
 the owner's first trigger, a file under `data/triggers/` merged before a market's reaction close.
@@ -29,12 +30,13 @@ jobs report on 2026-11-06 is the first.
 
 ## Next
 
-Step 19, part 2b: the 5-year breakeven, from FRED.
+Step 19, part 2c: signs for the markets people feel, held until after the jobs report on 2026-11-06.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-04 | Coffee, step 2: results | PR #261 |
 | 2026-11-04 | Coffee, step 1: `KC=F`, unsigned | PR #260 |
 | 2026-11-04 | The markets people feel, part 1, step 2: results | PR #258 |
 | 2026-11-04 | The markets people feel, part 1, step 1: seven markets, unsigned | PR #257 |

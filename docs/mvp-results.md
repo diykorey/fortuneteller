@@ -511,6 +511,15 @@ gas storage report; *corrected 2026-11-04:* not gasoline, whose weekly report is
 market holds walk-forward; 10 answers against about 15 by chance. They move on some days, in no
 direction history can name yet.
 
+## Coffee
+
+Measured 2026-11-04. Detail in [coffee](steps/coffee.md#results).
+
+Coffee, through its front-month future and unsigned, **moves on no flow**: at most *unclear*, on the
+ISM survey's day (ratio 1.17, p 0.037), where corn, soybeans and gasoline move; the expected outcome
+said it would move there. In `follows` it gets no answer in any run. The Legend's "the coffee market
+rose" has a market to read now, and history says no release moves it.
+
 ## What comes next
 
 Chosen 2026-10-13: keep score ([rung 4](steps/rung-4-keep-score.md)), done above with the live path

@@ -55,7 +55,7 @@ rose". This part adds coffee. At the end, `load-prices` stores it, and `raw-move
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~Coffee: a seed row, an `MVP_PRICE_SERIES` row, a 0 sign in `with_more_outcomes`, `load-prices` stores it~~ **done** 2026-11-04 (PR #260) | The tests below pass. On a copy of the store the procedure gives an empty diff, the store's counts are written in `docs/schema.md` and the scoreboard's rebuild time here |
-| 2 | Results here and in [MVP results](../mvp-results.md) | Coffee's *does it move?* verdict for every flow and its `follows` answers, against the expected outcome |
+| 2 | ~~Results here and in [MVP results](../mvp-results.md)~~ **done** 2026-11-04 (PR #261) | Coffee's *does it move?* verdict for every flow and its `follows` answers, against the expected outcome |
 
 *Step 1, 2026-11-04 (PR #260):*
 - On a copy of the store `load-prices` stored coffee's 6,729 closes from 2000-01-03; 184,423 for the 24.
@@ -63,6 +63,22 @@ rose". This part adds coffee. At the end, `load-prices` stores it, and `raw-move
   `raw-move` and `surprise` for every flow, and the scoreboard's whole `data.json`, without coffee
   and the chance lines.
 - The scoreboard was rebuilt in 801 s alone (967 s beside a second rebuild), under the 15-minute bar.
+
+## Results
+
+Measured 2026-11-04 on a copy of the store with the 24 markets loaded, at PR #260.
+
+**Does it move?** Coffee *moves* on no flow. It is *unclear* on four: the ISM survey's day (ratio
+1.17, p 0.037), posts (1.16, 103 days), summits (1.23, 28) and tariff news (1.12, 44); four
+flows have too few days; the other 17 say *doesn't*. The expected outcome said it would move on the
+ISM survey's day, as corn, soybeans and gasoline do: **wrong**, it is larger there but not by the
+bar. `surprise` gives it no verdict beyond *unclear*, as it can't without a sign.
+
+**What follows** (`follows`, four flows, from the day and from the reaction close): coffee gets no
+answer in any of the eight runs and holds nowhere, as expected.
+
+In plain words: coffee's price has its own weather. On the days of the events measured it moves
+no more than on any other day, and what follows them says nothing about which way it goes.
 
 ## How you know it is right
 
