@@ -543,6 +543,7 @@ FOLLOWS_NOUNS = {
     "fomc": "Fed decisions",
     "nfp": "jobs reports",
     "retail": "retail sales releases",
+    "cpi": "CPI releases",
 }
 
 

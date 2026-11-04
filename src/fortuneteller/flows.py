@@ -522,7 +522,9 @@ class SurpriseRule:
     also judged side by side, on the reports both cover. With ``alone``, a release on a day holding
     another flow's release is left out of every table (step 4's shared days). ``predict`` calls
     each release from its surprise against ``predicted_from``. ``missed`` expects the flow's
-    releases in the log from ``logged_since``."""
+    releases in the log from ``logged_since``. ``kind_decimals``, read by ``release_kinds`` only,
+    rounds the actual to its published headline before a release's kind is read
+    (docs/steps/what-follows-cpi.md); step 4 and the live calls keep the unrounded surprise."""
 
     combinations: tuple[tuple[str, str], ...]
     expected_sign: Mapping[str, int]
@@ -532,6 +534,7 @@ class SurpriseRule:
     alone: bool = False
     predicted_from: str = NASDAQ_CONSENSUS
     logged_since: date = LOG_SINCE
+    kind_decimals: int | None = None
 
 
 CPI_SURPRISE_RULE = SurpriseRule(
@@ -540,6 +543,7 @@ CPI_SURPRISE_RULE = SurpriseRule(
     NOTICEABLE_SURPRISE_PP,
     "0.1pp",
     compared=((TREND_12M, NASDAQ_CONSENSUS), (NOWCAST_BASELINE, NASDAQ_CONSENSUS)),
+    kind_decimals=1,
 )
 NFP_SURPRISE_RULE = SurpriseRule(
     ((PAYROLLS, TREND_12M), (PAYROLLS, PAYROLL_MODEL), (PAYROLLS, NASDAQ_CONSENSUS)),

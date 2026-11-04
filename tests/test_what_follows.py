@@ -1,4 +1,5 @@
 import random
+from collections.abc import Mapping
 from datetime import UTC, date, datetime, time, timedelta
 from pathlib import Path
 
@@ -290,6 +291,7 @@ def test_follows_prints_the_table_and_needs_the_key(
 
 NFP = flows.flow_named("nfp")
 RETAIL = flows.flow_named("retail")
+CPI = flows.flow_named("cpi")
 
 
 def _report(day: date, flow: flows.EventFlow = NFP) -> flows.EventInstance:
@@ -305,7 +307,10 @@ def _report(day: date, flow: flows.EventFlow = NFP) -> flows.EventInstance:
 
 
 def _store_reports(
-    surprises: list[tuple[date, str, float]], flow: flows.EventFlow = NFP, measure: str = "payrolls"
+    surprises: list[tuple[date, str, float]],
+    flow: flows.EventFlow = NFP,
+    measure: str = "payrolls",
+    values: Mapping[date, tuple[float, float]] | None = None,
 ) -> None:
     # each release with one surprise row: (day, baseline, surprise in the measure's unit)
     db.init_db()
@@ -318,8 +323,8 @@ def _store_reports(
                 event_id=reports[day].event_id,
                 measure=measure,
                 baseline=baseline,
-                actual_mom=0.0,
-                expected_mom=0.0,
+                actual_mom=(values or {}).get(day, (0.0, 0.0))[0],
+                expected_mom=(values or {}).get(day, (0.0, 0.0))[1],
                 surprise=surprise,
             )
             for day, baseline, surprise in surprises
@@ -504,5 +509,72 @@ def test_follows_for_retail_sales_prints_its_table(
     assert code == 0
     assert out[0] == (
         "follows: 3 retail sales releases 2001-01-29 … 2001-05-21: 1 above, 1 as expected, 1 below"
+    )
+    assert out[2].startswith("above       day    SPY / ES       1   ")
+
+
+def test_a_cpi_release_s_kind_is_read_from_its_headline(tmp_db: Path) -> None:
+    # given core CPI actuals against a 0.2 consensus, each stored with a surprise of 0, and one
+    # with no surprise
+    actuals = [0.281, 0.249, 0.151, 0.149, 0.25, 0.2499, 0.3]
+    days = [date(2024, month, 12) for month in range(1, len(actuals) + 1)]
+    values = dict(zip(days, [(actual, 0.2) for actual in actuals], strict=True))
+    _store_reports([(day, "nasdaq_consensus", 0.0) for day in days], CPI, "core", values)
+    db.get_connection().execute(
+        "UPDATE surprises SET surprise = NULL WHERE event_id = ?", [flows.event_id(CPI, days[-1])]
+    )
+
+    # when the kinds are read
+    kinds = study.release_kinds(CPI)
+
+    # then each is read from its actual rounded half up to 0.1, and the last has none
+    assert [kinds.get(flows.event_id(CPI, day)) for day in days] == [
+        ABOVE,
+        AS_EXPECTED,
+        AS_EXPECTED,
+        BELOW,
+        ABOVE,
+        AS_EXPECTED,
+        None,
+    ]
+
+
+def test_the_headline_rounding_is_cpi_s_alone(tmp_db: Path) -> None:
+    # given a retail sales release 0.46 against 0.2, 0.26 off unrounded and 0.3 off rounded
+    day = date(2024, 1, 17)
+    _store_reports([(day, "nasdaq_consensus", 0.26)], RETAIL, "retail_sales", {day: (0.46, 0.2)})
+
+    # when its kind is read
+    kinds = study.release_kinds(RETAIL)
+
+    # then it is as expected at retail sales' 0.3 line
+    assert kinds[flows.event_id(RETAIL, day)] == AS_EXPECTED
+
+
+def test_follows_for_cpi_prints_its_table(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given no FRED key, one market's closes, and three CPI releases at 0.281, 0.2 and 0.0 against
+    # a 0.2 consensus
+    monkeypatch.setattr(settings, "fred_api_key", None)
+    monkeypatch.setattr(study, "MVP_PRICE_SERIES", {"SPY / ES": study.MVP_PRICE_SERIES["SPY / ES"]})
+    closes = _closes(_alternating(300))
+    days = [closes[i].day for i in (20, 60, 100)]
+    db.init_db()
+    db.get_connection().executemany(
+        "INSERT INTO daily_bars (instrument, day, close, source) VALUES ('SPY / ES', ?, ?, 'test')",
+        [[c.day, c.price] for c in closes],
+    )
+    values = {days[0]: (0.281, 0.2), days[1]: (0.2, 0.2), days[2]: (0.0, 0.2)}
+    _store_reports([(day, "nasdaq_consensus", 0.0) for day in days], CPI, "core", values)
+
+    # when run
+    code = main(["follows", "--event", "cpi"])
+
+    # then it prints the CPI releases' table, the first release above from its headline
+    out = capsys.readouterr().out.splitlines()
+    assert code == 0
+    assert (
+        out[0] == "follows: 3 CPI releases 2001-01-29 … 2001-05-21: 1 above, 1 as expected, 1 below"
     )
     assert out[2].startswith("above       day    SPY / ES       1   ")
