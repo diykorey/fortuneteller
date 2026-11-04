@@ -526,7 +526,8 @@ Measured 2026-11-04. Detail in [the breakeven](steps/breakeven.md#results).
 
 The 5-year breakeven, the bond market's expected inflation, from FRED and unsigned. **After a CPI
 above consensus it rises on the day, and that holds walk-forward:** up after 43 of 61 such releases
-since 2003, 23 of 30 graded right in order (77%), where about none would hold by chance. The first
+since 2003, 23 of 30 graded right in order (77%; 30 is the bar itself), neither placebo giving it,
+where about none would hold by chance. The first
 market people feel with a link that holds; the expected outcome said none would. It moves on CPI's
 days, not on the Fed's, against the expected outcome. Part 2c may sign it, once the evening grade can
 wait a day for FRED's close.

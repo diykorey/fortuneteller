@@ -86,7 +86,8 @@ can't without a sign.
 
 **What follows** (`follows`, four flows, from the day and from the reaction close). **After a CPI
 above consensus, the breakeven rises on the day, and it holds walk-forward:** up after 43 of 61 such
-releases since 2003 (the base 35%), chance 0.0000, and replayed in order 23 of 30 graded right (77%).
+releases since 2003 (the base 35%), chance 0.0000, neither placebo giving it, and replayed in order
+23 of 30 graded right (77%). Thirty graded is the bar itself: one fewer and it would be *too few*.
 It is the first market people feel with a link that holds, against an expected outcome of none, and
 by chance about 0.0 would. Where the 10-year and 5-year yields *can't say* after the same releases,
 the breakeven, the inflation they carry, rises. Its other answers:
@@ -101,7 +102,7 @@ Five answers, three in `cpi`'s run, against an expected outcome of at most 2 in 
 and for the same reason as the hold.
 
 In plain words: when US inflation comes in hotter than economists expected, the bond market's guess
-at the next five years' inflation goes up that day, about seven times in ten, and the record says it
+at the next five years' inflation goes up that day, 43 times in 61, and the record says it
 would have called it right ahead of time. It is the market's own "things will get dearer".
 
 Part 2c may sign it (+1 on a hotter CPI). Before it can be called live, the evening grade must
