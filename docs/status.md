@@ -23,10 +23,12 @@ Beat the fortune teller, step 3: the first live round, a release `live` calls gu
 merged pull request ([the spec](steps/beat-the-fortune-teller.md)). It waits for a release; the
 jobs report on 2026-11-06 is the first.
 
+The week ahead, without a call, the spec ([step 16](steps/watch-ahead.md)).
+
 ## Next
 
-Not chosen yet: the step after 15, from the roadmap's list or a new one toward a tool ordinary
-people can read (a reaction record for the flows `live` does not call is a candidate).
+The week ahead, without a call, step 1: `scoreboard` lists the scheduled events `live` does not
+call, each with its raw-move record ([step 16](steps/watch-ahead.md)).
 
 ## Done
 
