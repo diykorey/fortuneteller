@@ -725,6 +725,18 @@ def _utc(stamp: str) -> datetime:
     return datetime.fromisoformat(stamp.replace("Z", "+00:00"))
 
 
+def calendar_rows(payload: bytes) -> list[tuple[datetime, str, str]]:
+    """Every row of a TradingView calendar reply, held or still ahead: its time in UTC, its
+    country and its title."""
+    try:
+        return [
+            (_utc(row["date"]), row.get("country", ""), row["title"])
+            for row in _tradingview_rows(payload)
+        ]
+    except MALFORMED_REPLY as exc:
+        raise CalendarError(f"TradingView sent an unexpected reply: {exc!r}") from None
+
+
 ECB_DECISION = "ECB Interest Rate Decision"
 
 
@@ -745,6 +757,11 @@ def parse_ecb_decisions(payload: bytes) -> list[datetime]:
 STATEMENT_WORDS = re.compile(r"speech|speaks|testi|testy", re.IGNORECASE)
 
 
+def is_statement(title: str, prefix: str) -> bool:
+    """Whether a calendar row titled ``title`` is a speech or a testimony titled ``prefix …``."""
+    return title.startswith(f"{prefix} ") and STATEMENT_WORDS.search(title) is not None
+
+
 def parse_statements(payload: bytes, prefix: str) -> list[tuple[datetime, str]]:
     """When each speech or testimony titled ``prefix …`` in a TradingView calendar reply is given,
     in UTC, with its title."""
@@ -752,7 +769,7 @@ def parse_statements(payload: bytes, prefix: str) -> list[tuple[datetime, str]]:
         return [
             (_utc(row["date"]), row["title"])
             for row in _tradingview_rows(payload)
-            if row["title"].startswith(f"{prefix} ") and STATEMENT_WORDS.search(row["title"])
+            if is_statement(row["title"], prefix)
         ]
     except MALFORMED_REPLY as exc:
         raise CalendarError(f"TradingView sent an unexpected reply: {exc!r}") from None

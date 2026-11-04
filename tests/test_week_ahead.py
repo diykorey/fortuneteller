@@ -157,10 +157,11 @@ def test_a_calendar_that_cannot_be_read_leaves_the_week_ahead_empty(
     def broken(con: object, today: date, cache_dir: Path) -> list[dict[str, object]]:
         raise sources.CalendarError("TradingView is down")
 
-    def data(rows, con, today, graded, bad, ahead):  # type: ignore[no-untyped-def]
+    def data(rows, con, today, graded, bad, ahead, watch):  # type: ignore[no-untyped-def]
         return {"events": [], "data_until": None, "ahead": ahead}
 
     monkeypatch.setattr(cli, "week_ahead", broken)
+    monkeypatch.setattr(cli, "week_watch", lambda today, cache_dir: [])
     monkeypatch.setattr(cli, "scoreboard_data", data)
     monkeypatch.setattr(cli, "_read_guesses", lambda con: ([], []))
     monkeypatch.setattr(db, "count_rows", lambda table, con=None: 1)

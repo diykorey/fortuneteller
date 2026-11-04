@@ -22,6 +22,7 @@ def scoreboard_dir(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     out = tmp_path / "scoreboard"
     monkeypatch.setattr(settings, "scoreboard_dir", out)
     monkeypatch.setattr(cli, "week_ahead", lambda con, today, cache_dir: [])
+    monkeypatch.setattr(cli, "week_watch", lambda today, cache_dir: [])
     return out
 
 

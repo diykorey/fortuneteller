@@ -8,8 +8,9 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-The week ahead, step 1 *(PR #233)*: the scoreboard opens with each release `live` calls in the next
-seven days, its consensus, thresholds, and each link's rule and record with the base rate beside.
+The week ahead, without a call, step 1 *(PR #235)*: under the week ahead, the scoreboard lists the
+scheduled events `live` does not call, each with how many of its markets moved more than on an
+ordinary day, and no direction.
 
 ## In progress
 
@@ -23,17 +24,16 @@ Beat the fortune teller, step 3: the first live round, a release `live` calls gu
 merged pull request ([the spec](steps/beat-the-fortune-teller.md)). It waits for a release; the
 jobs report on 2026-11-06 is the first.
 
-The week ahead, without a call, the spec ([step 16](steps/watch-ahead.md)).
-
 ## Next
 
-The week ahead, without a call, step 1: `scoreboard` lists the scheduled events `live` does not
-call, each with its raw-move record ([step 16](steps/watch-ahead.md)).
+The step after 16, not yet chosen.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-04 | The week ahead, without a call, step 1: the events not called, with their records | PR #235 |
+| 2026-11-04 | The week ahead, without a call: spec | PR #234 |
 | 2026-11-04 | The week ahead, step 1: the scoreboard previews the coming week's releases | PR #233 |
 | 2026-11-04 | The week ahead: spec | PR #232 |
 | 2026-11-03 | The Fed statement's sentiment, step 2: results — all four signed links *doesn't*, no call | PR #230 |

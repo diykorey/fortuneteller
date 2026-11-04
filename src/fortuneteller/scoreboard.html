@@ -23,6 +23,7 @@ body {
 }
 h1 { font-size: 1.6rem; margin: 0 0 4px; }
 h2 { font-size: 1.15rem; margin: 40px 0 8px; }
+h3 { font-size: 1rem; margin: 24px 0 8px; }
 p { margin: 4px 0; }
 .muted { color: var(--muted); font-size: .9rem; }
 .wrap { overflow-x: auto; margin-top: 10px; }
@@ -54,6 +55,13 @@ threshold. A smaller surprise gets no call. Each market's record is its replay, 
 predicted from the ones before it.</p>
 <div class="wrap"><table id="ahead"></table></div>
 <p class="muted" id="ahead-rule"></p>
+
+<h3>Also on the calendar</h3>
+<p class="muted"><strong>Entertainment, not financial advice.</strong> No call: no direction is given
+for these events. The ratio is the typical size of the day's move, either way, against an ordinary
+day's.</p>
+<div class="wrap"><table id="watch"></table></div>
+<p class="muted" id="watch-chance"></p>
 
 <h2>The calls</h2>
 <p class="muted">Each release's lines as logged that morning: the direction called, the link's record
@@ -217,6 +225,36 @@ record is shown, losses included. A handle is dropped from the page on request; 
     byId(id).textContent = c.cells + ' cells; at p < ' + c.p + ', chance alone passes about '
       + c.by_chance + ' of them. ' + data.rules[key];
   };
+
+  // Also on the calendar: the scheduled events not called, each with its days' record.
+  const watch = byId('watch');
+  const moved = Object.fromEntries(data.events.map((e) => [e.name, e.raw_move]));
+  watch.appendChild(head(['Day', 'Event', 'Record before']));
+  const watched = (data.watch || []).filter((w) => w.day >= today);
+  if (data.watch === null) {
+    watch.appendChild(row([el('td', 'The calendar could not be read on ' + data.written + '.', 'none')]));
+  } else if (!watched.length) {
+    watch.appendChild(row([el('td', 'Nothing else is scheduled in the week from ' + data.written + '.', 'none')]));
+  }
+  watched.forEach((w) => {
+    const cells = Object.hasOwn(moved, w.event) ? Object.entries(moved[w.event]) : [];
+    const tested = cells.filter(([, c]) => c.verdict !== 'too few');
+    let record = 'no record yet';
+    let movers = [];
+    if (cells.length && !tested.length) record = 'too few days to judge';
+    if (tested.length) {
+      const days = Math.max(...cells.map(([, c]) => c.days));
+      movers = tested.filter(([, c]) => c.verdict === 'moves');
+      record = 'On its ' + days + ' days' + (w.lesser ? ' alone' : '') + ', ' + movers.length + ' of '
+        + tested.length + ' markets moved more than on an ordinary day' + (movers.length ? ':' : '.');
+    }
+    const recordCell = el('td', 'No call. ' + record, movers.length ? 'yes' : 'none');
+    movers.forEach(([m, c]) => recordCell.appendChild(el('small', m + ' ' + c.ratio.toFixed(2) + ' times')));
+    const event = el('td', w.label);
+    event.appendChild(el('small', w.title));
+    watch.appendChild(row([el('td', w.day + ' ' + w.time + ' New York'), event, recordCell]));
+  });
+  chance('watch-chance', 'raw_move');
 
   // The grids: one row per event, one column per market; the replay's only for markets some
   // event has an expected direction for.

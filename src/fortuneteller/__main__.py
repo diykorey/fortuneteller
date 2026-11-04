@@ -1140,6 +1140,7 @@ def scoreboard_data(
     graded: Sequence[study.GradedGuess] = (),
     bad: Sequence[str] = (),
     ahead: list[dict[str, object]] | None = None,
+    watch: list[dict[str, object]] | None = None,
 ) -> dict[str, object]:
     """The page's numbers: what ``raw-move``, ``surprise`` and ``predict`` print for every flow
     with releases stored, the calls and the guesses as ``score`` grades them, and the chance count
@@ -1279,6 +1280,7 @@ def scoreboard_data(
         "bad_guesses": list(bad),
         "handles": handle_counts(graded),
         "ahead": ahead,
+        "watch": watch,
     }
 
 
@@ -1348,6 +1350,31 @@ def week_ahead(
     return sorted(ahead, key=lambda release: str(release["day"]))
 
 
+def week_watch(today: date, cache_dir: Path) -> list[dict[str, object]]:
+    """Each scheduled event `live` does not call, from the day after ``today`` to ``AHEAD_DAYS``
+    after it, oldest first, at its New York time (docs/steps/watch-ahead.md)."""
+    start, end = today + timedelta(days=1), today + timedelta(days=AHEAD_DAYS)
+    watch = []
+    for flow in flows.EVENT_FLOWS:
+        if flows.called_live(flow) or not isinstance(
+            flow, flows.FedFlow | flows.EcbFlow | flows.StatementFlow | flows.TradingViewFlow
+        ):
+            continue
+        for at, title in flow.scheduled(cache_dir, start, end):
+            local = at.astimezone(sources.NEW_YORK)
+            watch.append(
+                {
+                    "day": local.date().isoformat(),
+                    "time": f"{local:%H:%M}",
+                    "event": flow.cli_name,
+                    "label": flow.label,
+                    "title": title,
+                    "lesser": flow.lesser,
+                }
+            )
+    return sorted(watch, key=lambda event: (str(event["day"]), str(event["time"])))
+
+
 SCOREBOARD_DATA_MARK = "__SCOREBOARD_DATA__"
 
 
@@ -1377,8 +1404,13 @@ def _scoreboard(_args: argparse.Namespace) -> int:
         ahead = week_ahead(con, today, settings.cache_dir)
     except sources.CalendarError as exc:
         print(f"scoreboard: the week ahead: {exc}", file=sys.stderr)
+    watch = None
     try:
-        data = scoreboard_data(rows, con, today, graded, bad, ahead)
+        watch = week_watch(today, settings.cache_dir)
+    except sources.CalendarError as exc:
+        print(f"scoreboard: also on the calendar: {exc}", file=sys.stderr)
+    try:
+        data = scoreboard_data(rows, con, today, graded, bad, ahead, watch)
     except ValueError as exc:
         print(f"scoreboard: {exc}", file=sys.stderr)
         return 1
