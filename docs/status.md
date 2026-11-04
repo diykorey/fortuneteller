@@ -8,13 +8,12 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-A trigger arrives, part 1, step 2 *(PR #252)*: what follows from the reaction close holds nothing
-walk-forward on any flow; 20 answers on all history against about 17 by chance, 13 of them
-*about the same*.
+The markets people feel, part 1, step 2 *(PR #258)*: homebuilders and utilities move on the Fed's
+days, three farm and fuel funds on the ISM survey's; no new market holds walk-forward.
 
 ## In progress
 
-Step 19, part 1: the markets people feel ([the spec](steps/markets-people-feel.md)).
+Step 19, part 2: coffee, the 5-year breakeven and signs (spec to write).
 
 Step 18, part 2, step 3: the first triggers graded ([the spec](steps/trigger-file.md)). It waits for
 the owner's first trigger, a file under `data/triggers/` merged before a market's reaction close.
@@ -31,12 +30,13 @@ jobs report on 2026-11-06 is the first.
 
 ## Next
 
-Step 19, part 2: coffee, the 5-year breakeven and signs, once part 1's results are in.
+Step 19, part 2's build, once its spec is merged.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-04 | The markets people feel, part 1, step 2: results | PR #258 |
 | 2026-11-04 | The markets people feel, part 1, step 1: seven markets, unsigned | PR #257 |
 | 2026-11-04 | The markets people feel, part 1: spec | PR #256 |
 | 2026-11-04 | A trigger arrives, part 2, step 2: the evening score answers and logs the triggers | PR #255 |
