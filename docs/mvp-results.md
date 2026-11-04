@@ -424,6 +424,18 @@ signed link reaches the 40 holds the test needs; each has one. **By the rule wri
 step stops before any move is read:** the Fed flow gets no surprise, and the question is
 untested, not answered no. No call.
 
+## The Fed statement's sentiment
+
+Measured 2026-11-03. Detail in [the Fed statement's sentiment](steps/fed-statement-sentiment.md#results).
+
+The same question as the tone, with a dictionary built from the FOMC's own statements (Gardner,
+Scotti and Vega, 2021): topic words such as "unemployment" or "inflation" paired with the nearest
+word saying which way they went. It reads all 226 statements since 2000 and passes five checks
+against the paper, among them 2008-12-16 low and 2018-09-26 high. **But no signed market passes
+the test: all four are *doesn't*** on the 113 holds alone on their day. The yields lean the
+expected way short of the bar (the 10-year closest, p 0.15); the euro leans the other way. As written first, no link tracks; no call. The Fed's scoreboard entry now shows these
+verdicts.
+
 ## What comes next
 
 Chosen 2026-10-13: keep score ([rung 4](steps/rung-4-keep-score.md)), done above with the live path

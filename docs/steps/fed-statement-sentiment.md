@@ -161,6 +161,38 @@ with an index; 151 are holds, 113 of them alone on their day. Not stopped:
   Fed link opens, so each makes 0 calls and *too few*: "graded only for a link that tracks" holds
   through the replay's own gate, with no guard of its own.
 
+## Results
+
+Measured 2026-11-03 on the store, every decision since 2000, 113 holds alone on their day.
+
+**No: no signed market passes the test; all four are *doesn't*.** The verdict, on holds:
+
+| Market | Expected | n | Rank correlation | p | Hit rate (n) | Per 0.11 | Verdict |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 10-year yield | up | 113 | 0.10 | 0.152 | 56% (55) | +0.3 bp | doesn't |
+| 5-year yield | up | 113 | 0.03 | 0.379 | 51% (55) | +0.1 bp | doesn't |
+| Dollar index | up | 113 | 0.01 | 0.482 | 42% (55) | 0.00% | doesn't |
+| Euro | down | 97 | −0.15 | 0.921 | 34% (47) | +0.06% | doesn't |
+
+The rank correlation is signed so that positive means the expected way; the move per 0.11 is raw.
+So the yields lean the expected way without reaching the bar, and the euro leans the other way.
+
+- **Against the outcome written first:** the yields were expected *unclear* at best and are
+  *doesn't*; the dollar and the euro *doesn't*, as expected. No link tracks, no call, and the
+  walk-forward replay makes none.
+- **The context points the same way.** On every decision, not only holds, the 10-year yield comes
+  closest: rank correlation 0.12 the expected way, p 0.056, hit rate 59% on 79, short of the bar.
+  None of the twelve unsigned markets moves with the surprise either; Brent's absolute 0.21
+  (p 0.027) on every decision is one of 16 context cells, under the bar.
+- **What it means.** The text works as the paper says: it reads the Fed's own phrasing, matches
+  the paper's checks and puts 2008 low and 2018 high. But the change in its reading is not seen
+  to move a day's markets. Possibly because the decision, since 2011 the press conference, and at
+  quarterly meetings since 2012 the members' rate projections come out the same day, and a day's
+  move holds all of them.
+  Whether the 30-minute window the paper uses would show more is a question for intraday prices,
+  deferred with paid data.
+- The Fed flow keeps its rule, so the scoreboard shows these verdicts beside the raw move.
+
 ## How you know it is right
 
 - **The paper's two worked examples, through `sentence_pairs(sentence)`:** "the unemployment
