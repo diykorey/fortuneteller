@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import csv
 import statistics
-from collections.abc import Iterable, Mapping, Sequence
+from collections.abc import Callable, Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from datetime import UTC, date, datetime, time, timedelta
 from pathlib import Path
@@ -24,6 +24,7 @@ from .config import settings
 from .expectations import (
     CONSENSUS_ROWS,
     EXPECTATION_SOURCES,
+    FED_DECISION_ROW,
     MonthlyChange,
     first_published_payroll_changes,
     first_published_percent_changes,
@@ -800,6 +801,11 @@ class FedFlow:
     def actuals(self, events: Sequence[EventInstance], api_key: str) -> list[Actual]:
         return []
 
+    def scheduled(self, cache_dir: Path, start: date, end: date) -> list[tuple[datetime, str]]:
+        return scheduled_rows(
+            "US", self.zone, cache_dir, start, end, lambda day, _, title: title == FED_DECISION_ROW
+        )
+
 
 # The ECB's decisions (docs/steps/ecb-decisions.md): TradingView lists them from 2013-04-04.
 EURO_AREA = "Euro area"
@@ -807,6 +813,35 @@ GERMANY = "Germany"
 ECB_FROM = date(2013, 4, 1)
 TRADINGVIEW_CALENDAR = "tradingview_calendar"
 HAND_WRITTEN = "hand_written"
+
+
+def scheduled_rows(
+    calendar: str,
+    zone: ZoneInfo,
+    cache_dir: Path,
+    start: date,
+    end: date,
+    keep: Callable[[date, str, str], bool],
+) -> list[tuple[datetime, str]]:
+    """The rows of TradingView's ``calendar`` (US, EU or DE) that ``keep`` takes by their day in
+    ``zone``, country and title, held or still ahead, from ``start`` to ``end``: one a day, the
+    earliest, with its time (UTC) and title (docs/steps/watch-ahead.md)."""
+    # A reply holds whole UTC days, so the days either side are read too; a quarter is kept only
+    # once over by the day before ``start``.
+    rows = []
+    quarter = sources.quarter_start(start - timedelta(days=1))
+    while quarter <= end + timedelta(days=1):
+        payload = sources.fetch_tradingview_quarter(
+            quarter, cache_dir, start - timedelta(days=1), country=calendar
+        )
+        rows += sources.calendar_rows(payload)
+        quarter = date(quarter.year + quarter.month // 10, (quarter.month + 2) % 12 + 1, 1)
+    by_day: dict[date, tuple[datetime, str]] = {}
+    for at, country, title in sorted(rows, key=lambda row: (row[0], row[2])):
+        day = at.astimezone(zone).date()
+        if start <= day <= end and keep(day, country, title):
+            by_day.setdefault(day, (at, title))
+    return sorted(by_day.values())
 
 
 def load_ecb_decisions(cache_dir: Path, today: date | None = None) -> list[datetime]:
@@ -839,6 +874,16 @@ class EcbFlow:
 
     def actuals(self, events: Sequence[EventInstance], api_key: str) -> list[Actual]:
         return []
+
+    def scheduled(self, cache_dir: Path, start: date, end: date) -> list[tuple[datetime, str]]:
+        return scheduled_rows(
+            "EU",
+            self.zone,
+            cache_dir,
+            start,
+            end,
+            lambda day, _, title: title == sources.ECB_DECISION,
+        )
 
 
 def ecb_event_instance(announced: datetime) -> EventInstance:
@@ -922,19 +967,24 @@ class StatementFlow:
     def actuals(self, events: Sequence[EventInstance], api_key: str) -> list[Actual]:
         return []
 
+    def scheduled(self, cache_dir: Path, start: date, end: date) -> list[tuple[datetime, str]]:
+        """Each day's statement, the earliest given by the holder in office that day."""
+        return scheduled_rows(
+            self.calendar,
+            self.zone,
+            cache_dir,
+            start,
+            end,
+            lambda day, _, title: (
+                sources.is_statement(title, self.prefix) and self.holder(day) in title
+            ),
+        )
+
     def ahead(self, cache_dir: Path, now: datetime) -> tuple[datetime, str] | None:
         """The day's statement, the earliest given in office on ``now``'s day in the office's zone,
-        if it is still ahead of ``now`` (aware); read from the current calendar quarter."""
+        if it is still ahead of ``now`` (aware)."""
         today = now.astimezone(self.zone).date()
-        quarter = date(today.year, (today.month - 1) // 3 * 3 + 1, 1)
-        payload = sources.fetch_tradingview_quarter(
-            quarter, cache_dir, today, country=self.calendar
-        )
-        todays = sorted(
-            (at, title)
-            for at, title in sources.parse_statements(payload, self.prefix)
-            if at.astimezone(self.zone).date() == today and self.holder(today) in title
-        )
+        todays = self.scheduled(cache_dir, today, today)
         return todays[0] if todays and todays[0][0] > now else None
 
     def event_instance(self, given: datetime, title: str) -> EventInstance:
@@ -1100,6 +1150,22 @@ class TradingViewFlow:
     @property
     def weekly(self) -> bool:
         return any(sources.TRADINGVIEW_ROWS[m].weekly for m in self.measures)
+
+    def scheduled(self, cache_dir: Path, start: date, end: date) -> list[tuple[datetime, str]]:
+        """Each day's release, its measures' rows as one, titled by the earliest row."""
+        rows = {
+            (sources.TRADINGVIEW_ROWS[m].country, sources.TRADINGVIEW_ROWS[m].title)
+            for m in self.measures
+        }
+        (calendar,) = {country for country, _ in rows}
+        return scheduled_rows(
+            calendar,
+            self.zone,
+            cache_dir,
+            start,
+            end,
+            lambda day, country, title: (country, title) in rows,
+        )
 
     def events(self, api_key: str) -> EventBatch:
         releases = sources.tradingview_releases(settings.cache_dir, self.measures)

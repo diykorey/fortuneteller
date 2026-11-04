@@ -49,8 +49,9 @@ At the end: *The week ahead* has a second table, *Also on the calendar*.
   itself. `StatementFlow.ahead`, the `live` preview, is rewritten on `scheduled`, so the two cannot
   disagree. The dated shocks are left out: their seed files hold only events that have happened.
 - **One event per flow per day,** the earliest, as each flow's `events` counts them. The euro-area
-  flash's core and headline rows are one entry, titled by the first. The window is step 15's: from
-  the day after the page is written to seven days after, New York time.
+  flash's core and headline rows are one entry, titled by the first at that time, alphabetically.
+  The window is step 15's: from the day after the page is written to seven days after, New York
+  time.
 - **Its own calendar error.** `week_watch` also reads the EU and DE calendars, so it gets its own
   `try`. A `CalendarError` leaves `watch` `null`, the table reading "The calendar could not be read
   on <written>.", while `ahead` is unchanged.
@@ -71,6 +72,13 @@ At the end: *The week ahead* has a second table, *Also on the calendar*.
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | `scheduled` on the four flow types; `scoreboard` writes `watch`; the page shows *Also on the calendar* under step 15's table | The tests below pass; both expected outcomes hold; the page is checked in a browser on the copy |
+
+*Step 1, 2026-11-04:* both expected outcomes hold. Against the live calendar that morning, nothing
+is listed from 2026-11-05 to 2026-11-11. On a copy written as on 2026-11-12, ZEW is listed on
+2026-11-17 at 05:00 New York: "On its 113 days alone, 0 of 16 markets moved more than on an
+ordinary day." Every other key of `data.json` is identical to step 15's run, and the page was
+checked in a browser. Market names are shown as the page's other tables show them (`EURUSD`, not
+"the euro").
 
 ## How you know it is right
 
