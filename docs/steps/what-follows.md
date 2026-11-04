@@ -91,8 +91,52 @@ rates, the answer on all history, a placebo's answer and the walk-forward record
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | Kinds, spans, the base and its cut, the answer, the placebo and the walk-forward in `study.py`; `follows` prints them | The tests below pass; the run on a copy of the store prints all 144 cells and both chance lines |
-| 2 | Results: the run on the store, recorded here and in [MVP results](../mvp-results.md), the expected outcome checked, the roadmap row | Each kind's holds, answers, *the period* and *too few* recorded against the expected outcome |
+| 1 | ~~Kinds, spans, the base and its cut, the answer, the placebo and the walk-forward in `study.py`; `follows` prints them~~ **done** 2026-11-04 (PR #239) | The tests below pass; the run on a copy of the store prints all 144 cells and both chance lines |
+| 2 | ~~Results: the run on the store, recorded here and in [MVP results](../mvp-results.md), the expected outcome checked, the roadmap row~~ **done** 2026-11-04, [below](#results) | Each kind's holds, answers, *the period* and *too few* recorded against the expected outcome |
+
+*Step 1, 2026-11-04 (PR #239):* `follows` runs on a copy of the store in about 25 seconds and
+prints the 144 cells and both chance lines. The build's review moved the placebo a span away (the
+amendment above) and stopped counting a decision after a market's last close as a hole.
+
+## Results
+
+Measured 2026-11-04 on a copy of the store, the target rate from FRED that day.
+
+**Nothing holds walk-forward.** Five cells reach 30 graded answers, all holds: the S&P 500, the
+Nasdaq, the FTSE 100 and VIX on the day, the S&P 500 over the month. Four *doesn't*: right on 40
+to 58% at chances of 0.08 to 0.26. VIX on the day of a hold is right on 83 of 162 (51%), about 15
+points over the base rate of its answers, at a chance of 0.00001; it fails only the 60% bar, so it
+*doesn't* hold.
+
+**On all history, four answers**, against about 4.3 by chance (cells answered × 3 × 0.01):
+
+| Kind | Span | Market | Counts up / same / down | Answer | Chance | Placebo |
+| --- | --- | --- | --- | --- | --- | --- |
+| cut | month | GC / XAU | 14 / 9 / 1 | up | 0.0067 | - |
+| hold | day | VIX | 33 / 58 / 93 | down | under 0.0001 | - |
+| hold | month | SPY / ES | 93 / 58 / 26 | up | 0.0044 | - |
+| hike | month | BTC | 1 / 12 / 8 | down | 0.0035 | - |
+
+Every other cell is *can't say*; cuts and hikes rarely open walk-forward, most of their cells
+grading none.
+
+**Against the expected outcome, written first:**
+
+- Cuts cannot hold, hikes none, holds none as the decision: **right**.
+- A few answers near chance's four: **right** (four); gold up a month after cuts: **right**; yields
+  down after cuts: **wrong** (*can't say*).
+- Stocks or VIX after holds, and cuts, marked *the period*: **wrong**. The placebo marks no
+  answer: VIX falls on the day of a hold and not ten closes either side, so it belongs to the day,
+  not the years.
+- Left out only the month, about six decisions: **wrong**. The month leaves out 12 for overlap (7
+  cuts, 4 holds, 1 hike), and spans with a hole in the data cost the European and London indices
+  many more over the month (the FTSE 100 33 holds, the DAX 27), from gaps in their Yahoo histories
+  of more than four days. 2001-09-17 is left out on the US markets, as expected.
+
+**What it means.** A news reader told "the Fed held" gets no answer worth giving yet. The VIX's
+fall on a hold day is real and its own (the placebo says so), but right only half the time.
+Step 18 has nothing to show from part 1; part 2 (the quarter and the year) and the other kinds are
+next in line, under the same bars.
 
 ## How you know it is right
 

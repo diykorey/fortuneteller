@@ -436,6 +436,20 @@ the test: all four are *doesn't*** on the 113 holds alone on their day. The yiel
 expected way short of the bar (the 10-year closest, p 0.15); the euro leans the other way. As written first, no link tracks; no call. The Fed's scoreboard entry now shows these
 verdicts.
 
+## What follows a Fed decision
+
+Measured 2026-11-04. Detail in [what follows](steps/what-follows.md#results).
+
+The first answers by kind of event over spans: after each of 276 Fed decisions since 1994, read
+from the target rate as 40 cuts, 184 holds and 52 hikes, what each of sixteen markets did over a
+day, a week and a month against its own spans of that length. **Nothing holds walk-forward.** Cuts
+and hikes are too few to grade, as written first. On all history four cells answer, against about
+4.3 by chance: gold up a month after a cut, VIX down the day of a hold, the S&P 500 up a month
+after a hold, bitcoin down a month after a hike; the placebo marks none as the period. **The
+nearest is VIX on the day of a hold**: down on 93 of 184, and walk-forward right on 83 of 162
+(51%) against its base rate of about a third, a chance of 0.00001; it misses only the 60% bar. No
+answer; nothing for step 18 to show yet.
+
 ## What comes next
 
 Chosen 2026-10-13: keep score ([rung 4](steps/rung-4-keep-score.md)), done above with the live path

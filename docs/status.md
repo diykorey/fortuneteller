@@ -8,9 +8,9 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-The week ahead, without a call, step 1 *(PR #235)*: under the week ahead, the scoreboard lists the
-scheduled events `live` does not call, each with how many of its markets moved more than on an
-ordinary day, and no direction.
+What follows, part 1, step 2 *(PR #240)*: after 276 Fed decisions, nothing holds walk-forward over
+a day, a week or a month; four answers on all history against 4.3 by chance; VIX on the day of a
+hold the nearest, right on 51%, short of the 60% bar.
 
 ## In progress
 
@@ -24,19 +24,16 @@ Beat the fortune teller, step 3: the first live round, a release `live` calls gu
 merged pull request ([the spec](steps/beat-the-fortune-teller.md)). It waits for a release; the
 jobs report on 2026-11-06 is the first.
 
-What follows, over spans, part 1 ([the spec](steps/what-follows.md)): after a Fed cut, hold or
-hike, each market over a day, a week and a month against its base rate, replayed walk-forward.
-
-What follows, part 1, step 1: `follows`, the kinds, spans, answers, placebo and walk-forward.
-
 ## Next
 
-What follows, part 1, step 2: the results on the store.
+What follows, part 2: the quarter and the year, tested by cycle; or another US flow by kind. Not
+yet chosen.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-04 | What follows, part 1, step 2: results — nothing holds; four answers near chance; VIX on hold days the nearest | PR #240 |
 | 2026-11-04 | What follows, part 1, step 1: `follows` | PR #239 |
 | 2026-11-04 | What follows, part 1: spec | PR #238 |
 | 2026-11-04 | The target: many countries, the US first | PR #237 |
