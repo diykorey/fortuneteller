@@ -351,7 +351,21 @@ def test_an_08_30_release_in_new_york_reacts_in_frankfurt_the_same_day(
 @pytest.mark.parametrize("released", [date(2026, 6, 10), date(2026, 3, 11), date(2026, 10, 28)])
 @pytest.mark.parametrize(
     "instrument",
-    ["UKX", "SXXP", "BTC", "BRN", "UST5Y / ZF", "CORN", "WEAT", "SOYB", "UGA", "UNG", "XLU", "ITB"],
+    [
+        "UKX",
+        "SXXP",
+        "BTC",
+        "BRN",
+        "UST5Y / ZF",
+        "CORN",
+        "WEAT",
+        "SOYB",
+        "UGA",
+        "UNG",
+        "XLU",
+        "ITB",
+        "KC",
+    ],
 )
 def test_an_08_30_release_in_new_york_reacts_the_same_day_in_london_zurich_and_utc(
     released: date, instrument: str
@@ -378,18 +392,26 @@ def test_an_08_30_release_reacts_in_the_euro_s_next_london_day(released: date) -
     assert day == released + timedelta(days=1)
 
 
-def test_a_14_00_fed_decision_reacts_in_london_the_next_day_and_in_brent_the_same_day() -> None:
+def test_a_14_00_fed_decision_reacts_in_london_and_coffee_the_next_day_and_in_brent_the_same_day() -> (
+    None
+):
     # given a Fed decision at 14:00 New York
     decision = flows.fomc_event_instance(sources.FomcDecision(date(2022, 9, 21), True))
 
-    # when its first reaction day is found on the FTSE 100, bitcoin and Brent
+    # when its first reaction day is found on the FTSE 100, bitcoin, Brent and coffee
     days = {
         instrument: study.first_reaction_day(decision, study.MVP_PRICE_SERIES[instrument])
-        for instrument in ("UKX", "BTC", "BRN")
+        for instrument in ("UKX", "BTC", "BRN", "KC")
     }
 
-    # then London has closed (19:00 there); bitcoin's UTC day and Brent's 14:30 settlement have not
-    assert days == {"UKX": date(2022, 9, 22), "BTC": date(2022, 9, 21), "BRN": date(2022, 9, 21)}
+    # then London (19:00 there) and coffee's 13:30 settlement have passed; bitcoin's UTC day and
+    # Brent's 14:30 settlement have not
+    assert days == {
+        "UKX": date(2022, 9, 22),
+        "BTC": date(2022, 9, 21),
+        "BRN": date(2022, 9, 21),
+        "KC": date(2022, 9, 22),
+    }
 
 
 def test_the_more_outcomes_take_their_signs_by_analogy() -> None:
@@ -408,8 +430,8 @@ def test_the_more_outcomes_take_their_signs_by_analogy() -> None:
     signs = flows.with_more_outcomes(seven)
 
     # then the euro mirrors the dollar index, the 5-year yield follows the 10-year's, the Nasdaq the
-    # S&P 500's, the FTSE 100 and the STOXX 600 the DAX's, the rest and the seven markets people feel
-    # have none, in the markets' order
+    # S&P 500's, the FTSE 100 and the STOXX 600 the DAX's, the rest, the seven markets people feel
+    # and coffee have none, in the markets' order
     assert {k: v for k, v in signs.items() if k not in seven} == {
         "BRN": 0,
         "EURUSD": -1,
@@ -427,6 +449,7 @@ def test_the_more_outcomes_take_their_signs_by_analogy() -> None:
         "UNG": 0,
         "XLU": 0,
         "ITB": 0,
+        "KC": 0,
     }
     assert list(signs) == list(study.MVP_PRICE_SERIES)
 

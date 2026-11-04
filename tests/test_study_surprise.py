@@ -857,8 +857,8 @@ def test_surprise_prints_a_verdict_per_instrument_and_the_context(
     context = context[: context.index("")]
     assert code == 0
     assert sum(line.endswith(" tracks") for line in official) == 11
-    assert sum(" nowcast " in line or " trend_12m " in line for line in context) == 69
-    assert sum(" nasdaq_consensus " in line for line in context) == 46
+    assert sum(" nowcast " in line or " trend_12m " in line for line in context) == 72
+    assert sum(" nasdaq_consensus " in line for line in context) == 48
     assert sum("on the same reports" in line for line in out) == 4
 
 

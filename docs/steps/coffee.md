@@ -54,8 +54,15 @@ rose". This part adds coffee. At the end, `load-prices` stores it, and `raw-move
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | Coffee: a seed row, an `MVP_PRICE_SERIES` row, a 0 sign in `with_more_outcomes`, `load-prices` stores it | The tests below pass. On a copy of the store the procedure gives an empty diff, the store's counts are written in `docs/schema.md` and the scoreboard's rebuild time here |
+| 1 | ~~Coffee: a seed row, an `MVP_PRICE_SERIES` row, a 0 sign in `with_more_outcomes`, `load-prices` stores it~~ **done** 2026-11-04 (PR #260) | The tests below pass. On a copy of the store the procedure gives an empty diff, the store's counts are written in `docs/schema.md` and the scoreboard's rebuild time here |
 | 2 | Results here and in [MVP results](../mvp-results.md) | Coffee's *does it move?* verdict for every flow and its `follows` answers, against the expected outcome |
+
+*Step 1, 2026-11-04 (PR #260):*
+- On a copy of the store `load-prices` stored coffee's 6,729 closes from 2000-01-03; 184,423 for the 24.
+- The procedure gave an empty diff: `follows` for its four flows with and without the flag, `score`,
+  `raw-move` and `surprise` for every flow, and the scoreboard's whole `data.json`, without coffee
+  and the chance lines.
+- The scoreboard was rebuilt in 801 s alone (967 s beside a second rebuild), under the 15-minute bar.
 
 ## How you know it is right
 

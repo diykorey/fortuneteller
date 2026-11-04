@@ -81,6 +81,7 @@ class PriceSeries(NamedTuple):
 # 5-minute bar; EUR/USD's the price at 00:00 London of the bar's own day, which is how Yahoo
 # stamps a currency pair, so the next London day's bar is the first to follow a US release. The
 # seven markets people feel (docs/steps/markets-people-feel.md) are US-listed funds closing at 16:00.
+# Coffee (docs/steps/coffee.md) is `KC=F`, ICE's arabica front month, at its 13:30 settlement.
 MVP_PRICE_SERIES = {
     "SPY / ES": PriceSeries("^GSPC", "pct", time(16, 0), NEW_YORK),
     "UST10Y / ZN": PriceSeries("^TNX", "bps", time(15, 0), NEW_YORK),
@@ -105,6 +106,7 @@ MVP_PRICE_SERIES = {
     "UNG": PriceSeries("UNG", "pct", time(16, 0), NEW_YORK),
     "XLU": PriceSeries("XLU", "pct", time(16, 0), NEW_YORK),
     "ITB": PriceSeries("ITB", "pct", time(16, 0), NEW_YORK),
+    "KC": PriceSeries("KC=F", "pct", time(13, 30), NEW_YORK),
 }
 
 

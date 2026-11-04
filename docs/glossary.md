@@ -179,7 +179,7 @@ Terms are grouped by what they are about, alphabetical within each group.
   yen) during a shock. Usually lowers Treasury yields; see scenario 6 for when it did not.
 - **Front-month / continuous futures** — a futures contract expires, so a long price history is
   stitched together from the contract nearest expiry (the *front month*), switching to the next one
-  at each expiry (the *roll*). Yahoo's `GC=F` is such a series; its price can jump on a roll day
+  at each expiry (the *roll*). Yahoo's `GC=F`, `BZ=F` and `KC=F` are such series; their price can jump on a roll day
   for reasons unrelated to any event.
 - **FX** (Foreign Exchange) — the currency market.
 - **Gold / XAU / GC** — gold; `XAU` is its currency-style code, `GC` its COMEX futures symbol. A
@@ -191,6 +191,8 @@ Terms are grouped by what they are about, alphabetical within each group.
   16:00 New York; no expected sign.
 - **ITB** — the iShares U.S. Home Construction ETF, US homebuilders; housing and mortgages. Closes
   16:00 New York; no expected sign yet.
+- **KC** — arabica coffee, read through ICE's front-month future `KC=F`, which rolls five times a
+  year ([coffee](steps/coffee.md)). Settles 13:30 New York; no expected sign.
 - **KRE** — an ETF of US regional-bank shares; the market's read on regional-bank stress. Not in
   the instrument universe.
 - **Liquidity** — how easily something can be traded without moving its own price. The MVP sticks to
@@ -230,7 +232,7 @@ Terms are grouped by what they are about, alphabetical within each group.
   canonical symbol. Step 2 maps five: `^GSPC` (S&P 500 index), `^TNX`, `DX-Y.NYB` (dollar index),
   `GC=F` (gold futures), `^VIX`; cross-country two, `^GDAXI` and `^STOXX50E`; more outcomes nine,
   `BZ=F`, `EURUSD=X`, `^IXIC`, `^FVX`, `^FTSE`, `^STOXX`, `BTC-USD`, `ITA` and `XLE`; the markets
-  people feel seven, each its own symbol.
+  people feel seven, each its own symbol; coffee `KC=F`.
 - **XLE** — the Energy Select Sector SPDR ETF, the US energy sector; oil's equity echo. Closes
   16:00 New York; no expected sign.
 - **XLU** — the Utilities Select Sector SPDR ETF, US utilities; household bills, bought for their
