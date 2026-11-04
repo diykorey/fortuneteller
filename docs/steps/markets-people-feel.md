@@ -106,7 +106,8 @@ the triggers show them. No call is made on them yet.
 - An 08:30 New York release falls on the same day's close for each of the seven (the parametrized
   test in `tests/test_event_flows.py`).
 - The tests that count sixteen markets count 23: `test_study_prices.py`, `test_study_observations.py`,
-  `test_study_raw_move.py` and `test_scoreboard.py`. The other values in them are unchanged.
+  `test_study_raw_move.py`, `test_study_surprise.py` and `test_scoreboard.py`. The other values in
+  them are unchanged.
 
 ## What this part does not do
 
