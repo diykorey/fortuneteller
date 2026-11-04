@@ -22,6 +22,7 @@ import textwrap
 import time
 from collections.abc import Callable, Iterable, Sequence
 from datetime import UTC, date, datetime, timedelta
+from pathlib import Path
 from importlib.resources import files
 
 import duckdb
@@ -1138,6 +1139,7 @@ def scoreboard_data(
     today: date,
     graded: Sequence[study.GradedGuess] = (),
     bad: Sequence[str] = (),
+    ahead: list[dict[str, object]] | None = None,
 ) -> dict[str, object]:
     """The page's numbers: what ``raw-move``, ``surprise`` and ``predict`` print for every flow
     with releases stored, the calls and the guesses as ``score`` grades them, and the chance count
@@ -1276,7 +1278,74 @@ def scoreboard_data(
         "guesses": guess_rows(graded, rows, con),
         "bad_guesses": list(bad),
         "handles": handle_counts(graded),
+        "ahead": ahead,
     }
+
+
+# The week ahead (docs/steps/week-ahead.md): the releases `live` calls in the next seven days.
+AHEAD_DAYS = 7
+
+
+def week_ahead(
+    con: duckdb.DuckDBPyConnection, today: date, cache_dir: Path
+) -> list[dict[str, object]]:
+    """Each release `live` calls from the day after ``today`` to ``AHEAD_DAYS`` after it, oldest
+    first: its consensus, the thresholds either side, and what each signed link would call for a
+    noticeable surprise, with its replay record; every link silent on a shared day."""
+    ahead = []
+    for flow in flows.EVENT_FLOWS:
+        rule = flow.surprise_rule
+        if rule is None or not flows.called_live(flow):
+            continue
+        measure = rule.combinations[0][0]
+        upcoming = expectations.next_consensus(measure, today + timedelta(days=1), cache_dir)
+        if upcoming is None or upcoming.day > today + timedelta(days=AHEAD_DAYS):
+            continue
+        consensus = upcoming.tradingview if upcoming.nasdaq is None else upcoming.nasdaq
+        shared = (
+            expectations.other_releases(
+                [m for m, _ in rule.combinations],
+                upcoming.day,
+                cache_dir,
+                lesser=_lesser_measures(),
+            )
+            if rule.alone
+            else []
+        )
+        replay = study.confident_links(
+            flow, rule.predicted_from, con, next_surprise=rule.noticeable
+        )
+        links: dict[str, dict[str, object]] = {}
+        for instrument, made in replay.items():
+            sign = rule.expected_sign[instrument]
+            calls = made[:-1] if made and made[-1].call.event_id == study.NEXT_RELEASE else made
+            g = study.grade([c.call for c in calls], sign)
+            calling = not shared and len(calls) < len(made)
+            links[instrument] = {
+                "above": _direction(made[-1].call.direction) if calling else None,
+                "below": _direction(-made[-1].call.direction) if calling else None,
+                "right": g.right,
+                "predictions": g.predictions,
+                "always_right": g.always_right,
+                "verdict": g.verdict,
+            }
+        ahead.append(
+            {
+                "day": upcoming.day.isoformat(),
+                "time": f"{flows.RELEASE_TIME:%H:%M}",
+                "event": flow.cli_name,
+                "label": flow.label,
+                "measure": measure,
+                "consensus": consensus,
+                "consensus_from": "TradingView" if upcoming.nasdaq is None else "Nasdaq",
+                "below": round(consensus - rule.noticeable, 9),
+                "above": round(consensus + rule.noticeable, 9),
+                "step": rule.step,
+                "shared": shared,
+                "links": links,
+            }
+        )
+    return sorted(ahead, key=lambda release: str(release["day"]))
 
 
 SCOREBOARD_DATA_MARK = "__SCOREBOARD_DATA__"
@@ -1303,8 +1372,13 @@ def _scoreboard(_args: argparse.Namespace) -> int:
     except (OSError, subprocess.CalledProcessError) as exc:
         print(f"scoreboard: the guesses cannot be read: {exc}", file=sys.stderr)
         return 1
+    ahead = None
     try:
-        data = scoreboard_data(rows, con, today, graded, bad)
+        ahead = week_ahead(con, today, settings.cache_dir)
+    except sources.CalendarError as exc:
+        print(f"scoreboard: the week ahead: {exc}", file=sys.stderr)
+    try:
+        data = scoreboard_data(rows, con, today, graded, bad, ahead)
     except ValueError as exc:
         print(f"scoreboard: {exc}", file=sys.stderr)
         return 1

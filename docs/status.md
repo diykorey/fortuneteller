@@ -8,9 +8,8 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-The Fed statement's sentiment, step 2 *(PR #230)*: results. The dictionary reads every statement
-and passes the paper's checks, but no signed market passes the test: all four *doesn't*, no
-call.
+The week ahead, step 1 *(PR #233)*: the scoreboard opens with each release `live` calls in the next
+seven days, its consensus, thresholds, and each link's rule and record with the base rate beside.
 
 ## In progress
 
@@ -24,17 +23,17 @@ Beat the fortune teller, step 3: the first live round, a release `live` calls gu
 merged pull request ([the spec](steps/beat-the-fortune-teller.md)). It waits for a release; the
 jobs report on 2026-11-06 is the first.
 
-The week ahead, the spec ([step 15](steps/week-ahead.md)).
-
 ## Next
 
-The week ahead, step 1: `scoreboard` writes each coming release's threshold and fortunes, and the
-page shows them first ([step 15](steps/week-ahead.md)).
+Not chosen yet: the step after 15, from the roadmap's list or a new one toward a tool ordinary
+people can read (a reaction record for the flows `live` does not call is a candidate).
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-04 | The week ahead, step 1: the scoreboard previews the coming week's releases | PR #233 |
+| 2026-11-04 | The week ahead: spec | PR #232 |
 | 2026-11-03 | The Fed statement's sentiment, step 2: results — all four signed links *doesn't*, no call | PR #230 |
 | 2026-11-03 | The Fed statement's sentiment, step 1: the paper's dictionary, five checks passed, the Fed's surprise rule | PR #229 |
 | 2026-11-03 | The Fed statement's sentiment: spec | PR #228 |
