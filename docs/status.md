@@ -24,10 +24,12 @@ Beat the fortune teller, step 3: the first live round, a release `live` calls gu
 merged pull request ([the spec](steps/beat-the-fortune-teller.md)). It waits for a release; the
 jobs report on 2026-11-06 is the first.
 
+The week ahead, the spec ([step 15](steps/week-ahead.md)).
+
 ## Next
 
-Step 15, not chosen yet: the next step from the roadmap's list, or a new one toward the goal of a
-tool ordinary people can read.
+The week ahead, step 1: `scoreboard` writes each coming release's threshold and fortunes, and the
+page shows them first ([step 15](steps/week-ahead.md)).
 
 ## Done
 
