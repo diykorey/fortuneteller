@@ -73,6 +73,13 @@ At the end: *The week ahead* has a second table, *Also on the calendar*.
 | --- | --- | --- |
 | 1 | `scheduled` on the four flow types; `scoreboard` writes `watch`; the page shows *Also on the calendar* under step 15's table | The tests below pass; both expected outcomes hold; the page is checked in a browser on the copy |
 
+*Step 1, 2026-11-04:* both expected outcomes hold. Against the live calendar that morning, nothing
+is listed from 2026-11-05 to 2026-11-11. On a copy written as on 2026-11-12, ZEW is listed on
+2026-11-17 at 05:00 New York: "On its 113 days alone, 0 of 16 markets moved more than on an
+ordinary day." Every other key of `data.json` is identical to step 15's run, and the page was
+checked in a browser. Market names are shown as the page's other tables show them (`EURUSD`, not
+"the euro").
+
 ## How you know it is right
 
 - A Fed decision, an ECB decision, a statement by the holder in office, and a ZEW release inside
