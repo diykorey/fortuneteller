@@ -89,7 +89,59 @@ day.
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~`follows --event retail`~~ **done** 2026-11-04 (PR #245) | The tests below pass. On a copy of the store, the header reads `follows: 222 retail sales releases 2008-03-13 … 2026-10-15: 51 above, 109 as expected, 62 below`, and 144 cells print |
-| 2 | Write the results here and in [MVP results](../mvp-results.md), check the expected outcome, and update the roadmap row. Add each answer's counts without the shared days, as a reading aid | Each kind's answers, release marks and walk-forward records are recorded against the expected outcome |
+| 2 | ~~Write the results here and in [MVP results](../mvp-results.md), check the expected outcome, and update the roadmap row. Add each answer's counts without the shared days, as a reading aid~~ **done** 2026-11-04, [below](#results) | Each kind's answers, release marks and walk-forward records are recorded against the expected outcome |
+
+*Step 1, 2026-11-04 (PR #245):* on a copy of the store the header reads as written above and 144
+cells print; the jobs report's table is byte for byte the one part 1b recorded.
+
+## Results
+
+Measured 2026-11-04 on a copy of the store: 222 releases, 51 above, 109 as expected, 62 below.
+
+**Nothing holds walk-forward.** The nearest are the yields after *below*: the 5-year down right
+on 28 of 50 graded (56%), the 10-year on 24 of 47 (51%), both short of 60%. After *above*,
+Europe's two stock indices rise on 17 of 38 graded each: *doesn't*.
+
+**On all history, 5 answers**, against about 4.3 by chance for the 144 cells. None is marked by
+the placebo, and no other kind gives the same answer, so each is read as the kind:
+
+| Kind | Span | Market | Up / same / down | Answer | Chance | Without the shared days |
+| --- | --- | --- | --- | --- | --- | --- |
+| above | day | SX5E | 28 / 16 / 7 | up | 0.0010 | up, 23 / 10 / 6 |
+| above | day | SXXP | 27 / 18 / 6 | up | 0.0008 | up, 21 / 14 / 4 |
+| above | day | EURUSD | 9 / 13 / 29 | down | 0.0012 | *can't say*: maybe the other release |
+| below | day | UST10Y / ZN | 12 / 14 / 36 | down | 0.0004 | down, 9 / 12 / 31 |
+| below | day | UST5Y / ZF | 11 / 14 / 37 | down | 0.0001 | down, 8 / 11 / 33 |
+
+After *above*, the yields lean up but do not answer: the 10-year 24 / 15 / 12 and the 5-year 25 /
+14 / 12, chance 0.03 each. Nothing answers over the week or the month. Of the 163 month spans
+kept on the 10-year yield, 58 hold the next release's reaction close.
+
+The 48 shared days are shared with CPI (22), the Fed (15), the ECB (9), the jobs report and ISM
+(2 each) and the euro-area HICP (1). Some days hold two of these. By kind they are 12 above, 21 as
+expected and 10 below. No answer holds, so the rule for a hold on shared days is not needed.
+
+**Against the expected outcome, written first:**
+
+- Arithmetic: neither *above* nor *below* holds over the month: **right**, though fewer are left
+  out than written (10 of 51 and 15 of 62, not about half). Retail sales come mid-month, and two
+  releases are often more than 21 closes apart. *Above* has at most 41 graded on the day: **right**
+  (38).
+- On the day, *above* answers both yields *up*: **wrong**, they lean up but say *can't say*.
+  *Below* answers at least one yield *down*: **right**, both. The dollar index and EUR/USD answer
+  for neither kind: **wrong**, EUR/USD falls after *above*. At least 3 answers on the yields' six
+  day cells: **wrong**, 2.
+- Walk-forward, *above* holds on the 5-year yield: **wrong**. Nothing else holds: **right**.
+- Over the week at most one answer per kind, over the month at most 2: **right**, none.
+- *As expected* answers VIX *down*, the release: **wrong**, it answers nothing.
+- Without the shared days the yields keep their direction: **right**.
+
+**What it means.** By kind, retail sales say less than the jobs report. Step 4's link is a
+different question: the bigger the surprise, the bigger the yield's move. That link still holds,
+but sorted into three kinds the rise after *above* is not sure enough to answer. A weak report
+lowers both yields on the day, without a record yet. A strong one lifts Europe's stocks, which
+close at 17:30 in Europe, after the release. Retail sales gives no answer a reader could be told
+with a record yet.
 
 ## How you know it is right
 

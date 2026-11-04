@@ -461,6 +461,20 @@ answers by kind that pass every bar. On all history 13 answers against 4.3 by ch
 rise stays over the week, untested walk-forward; nothing answers over the month. VIX falls on a
 report's day whatever it says, the release's doing, not the kind's.
 
+## What follows a retail sales release
+
+Measured 2026-11-04. Detail in [what follows a retail sales release](steps/what-follows-retail.md#results).
+
+Part 1b's method on 222 retail sales releases since 2008, each *above*, *as expected* or *below*
+the consensus by 0.3pp. **Nothing holds walk-forward.** On all history there are 5 answers,
+against 4.3 by chance:
+- after *below*, both yields fall on the day; walk-forward they are right on 56% and 51%, short of
+  60%;
+- after *above*, Europe's stock indices rise and EUR/USD falls on the day.
+
+The yields' rise after *above*, the link step 4 calls, leans up but does not answer by kind.
+Nothing answers over the week or the month.
+
 ## What comes next
 
 Chosen 2026-10-13: keep score ([rung 4](steps/rung-4-keep-score.md)), done above with the live path

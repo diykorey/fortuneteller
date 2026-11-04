@@ -8,9 +8,9 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-What follows, part 1b, step 2 *(PR #243)*: after a jobs report above the consensus, the 10-year
-and 5-year yields rise on the day and hold walk-forward (67%, 65%), the first answers by kind to
-pass every bar; 13 answers on all history against 4.3 by chance.
+What follows, part 1c, step 2 *(PR #246)*: retail sales by kind holds nothing walk-forward; 5
+answers on all history against 4.3 by chance; after a release below the consensus both yields fall
+on the day (56% and 51% walk-forward, short of 60%).
 
 ## In progress
 
@@ -24,9 +24,6 @@ Beat the fortune teller, step 3: the first live round, a release `live` calls gu
 merged pull request ([the spec](steps/beat-the-fortune-teller.md)). It waits for a release; the
 jobs report on 2026-11-06 is the first.
 
-What follows, part 1c: retail sales by kind ([the spec](steps/what-follows-retail.md)); step 2,
-the results, next.
-
 ## Next
 
 Not yet chosen: CPI by kind (only *as expected* can reach 30 graded), part 2 (the quarter and the
@@ -36,6 +33,7 @@ year), or step 18 (a trigger file).
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-04 | What follows, part 1c, step 2: results — retail sales by kind holds nothing; the yields fall after a release below | PR #246 |
 | 2026-11-04 | What follows, part 1c, step 1: `follows --event retail` | PR #245 |
 | 2026-11-04 | What follows, part 1c: spec, retail sales by kind | PR #244 |
 | 2026-11-04 | What follows, part 1b, step 2: results — after a report above the consensus, both yields rise on the day and hold | PR #243 |
