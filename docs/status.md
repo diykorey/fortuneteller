@@ -24,15 +24,18 @@ Beat the fortune teller, step 3: the first live round, a release `live` calls gu
 merged pull request ([the spec](steps/beat-the-fortune-teller.md)). It waits for a release; the
 jobs report on 2026-11-06 is the first.
 
+What follows, part 1b ([the spec](steps/what-follows-jobs.md)): the jobs report above, as
+expected or below its consensus, each market over a day, a week and a month.
+
 ## Next
 
-What follows, part 2: the quarter and the year, tested by cycle; or another US flow by kind. Not
-yet chosen.
+What follows, part 1b, step 1: `follows --event nfp`.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-04 | What follows, part 1b: spec, the jobs report by kind | PR #241 |
 | 2026-11-04 | What follows, part 1, step 2: results — nothing holds; four answers near chance; VIX on hold days the nearest | PR #240 |
 | 2026-11-04 | What follows, part 1, step 1: `follows` | PR #239 |
 | 2026-11-04 | What follows, part 1: spec | PR #238 |
