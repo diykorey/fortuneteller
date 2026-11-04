@@ -475,6 +475,17 @@ against 4.3 by chance:
 The yields' rise after *above*, the link step 4 calls, leans up but does not answer by kind.
 Nothing answers over the week or the month.
 
+## What follows a CPI release
+
+Measured 2026-11-04. Detail in [what follows a CPI release](steps/what-follows-cpi.md#results).
+
+Part 1b's method on 221 CPI releases since 2008, the kind read from the core headline as
+published, rounded to 0.1, against the consensus. **Nothing holds walk-forward.** On all history
+there are 6 answers, against 4.3 by chance, all after a cooler print: the dollar and the 5-year
+yield down and gold up on the day, among them. Every one turns to *can't say* without the days CPI
+shares with retail sales or the Fed. A hotter print, the headline that worries a reader, answers
+nothing.
+
 ## What comes next
 
 Chosen 2026-10-13: keep score ([rung 4](steps/rung-4-keep-score.md)), done above with the live path

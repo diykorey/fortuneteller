@@ -82,7 +82,61 @@ At the end: `fortuneteller follows --event cpi` prints part 1b's table for CPI.
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~`follows --event cpi`, its kinds read from the headline~~ **done** 2026-11-04 (PR #248) | The tests below pass. On a copy of the store, the header reads `follows: 221 CPI releases 2008-02-20 … 2026-10-14: 61 above, 82 as expected, 78 below`, and 144 cells print |
-| 2 | Write the results here and in [MVP results](../mvp-results.md), check the expected outcome, and update the roadmap row. Add each answer's counts without the shared days | Each kind's answers, release marks and walk-forward records are recorded against the expected outcome |
+| 2 | ~~Write the results here and in [MVP results](../mvp-results.md), check the expected outcome, and update the roadmap row. Add each answer's counts without the shared days~~ **done** 2026-11-04, [below](#results) | Each kind's answers, release marks and walk-forward records are recorded against the expected outcome |
+
+*Step 1, 2026-11-04 (PR #248):* on a copy of the store the header reads as written above and 144
+cells print; the jobs report's and retail sales' tables are byte for byte the ones recorded.
+
+## Results
+
+Measured 2026-11-04 on a copy of the store: 221 releases, 61 above, 82 as expected, 78 below,
+read from the headline.
+
+**Nothing holds walk-forward, and little is graded.** The walk-forward calls a release only when
+the earlier ones already answered, and they rarely did: no cell reaches 30 graded, the most is 19.
+
+**On all history, 6 answers**, against about 4.3 by chance for the 144 cells, all after *below*.
+None is marked by the placebo, and neither *above* nor *as expected* gives the same answer, so on
+the release rule each is the kind. Every one turns to *can't say* without the 48 shared days, so
+by the rule fixed first each is read as "maybe the other release":
+
+| Kind | Span | Market | Up / same / down | Answer | Chance | Without the shared days | Without the 26 near the line |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| below | day | DXY | 17 / 23 / 38 | down | 0.0016 | *can't say*, 15 / 18 / 29 | down |
+| below | day | GC / XAU | 41 / 23 / 14 | up | 0.0011 | *can't say*, 32 / 17 / 13 | up |
+| below | day | UST5Y / ZF | 20 / 19 / 39 | down | 0.0057 | *can't say*, 16 / 15 / 31 | down |
+| below | day | SXXP | 33 / 31 / 12 | up | 0.0059 | *can't say*, 27 / 22 / 12 | *can't say* |
+| below | week | VIX | 14 / 29 / 35 | down | 0.0087 | *can't say*, 12 / 20 / 30 | down |
+| below | week | BTC | 27 / 16 / 8 | up | 0.0080 | *can't say*, 24 / 11 / 7 | up |
+
+Without the shared days each loses about a fifth of its releases, and its chance rises to between
+0.011 and 0.037, just over the bar; the leanings stay the same way. The 48 are shared with retail
+sales (22), the Fed (20) and the ECB (8).
+
+After *above*, the yields lean up but do not answer: the 5-year 31 / 13 / 17 (chance 0.04), the
+10-year 29 / 13 / 19 (0.09); the S&P 500 says nothing (25 / 16 / 20). Nothing answers over the
+month. Left out for overlap over the month: 15 of 61 *above* and 23 of 78 *below* on the 10-year
+yield.
+
+**Against the expected outcome, written first:**
+
+- Arithmetic: about a fifth left out over the month: **wrong**, a quarter to 30% (15 of 61, 23 of
+  78); *above* and *below* can still reach 30 there (45 and 54 counted), but nothing answers.
+- On the day, *above* answers the 10-year yield *up*: **wrong**; the 5-year *up*: **wrong**; the
+  S&P 500 *down*: **wrong**. *Below* answers at least two of their reverses: **wrong**, one (the
+  5-year). At least 5 answers on these six cells: **wrong**, 1.
+- Walk-forward, *above* holds on the 5-year yield: **wrong**. Nothing else holds: **right**.
+- Over the week at most 2 answers: **right** (2); over the month at most 2: **right** (none).
+- *As expected* answers nothing but VIX: **right**, nothing at all (VIX 0.0499).
+- Without the shared days the yields keep their direction: **wrong**, the 5-year turns to *can't
+  say*.
+
+**What it means.** Read from the headline the way a reader hears it, CPI by kind says little. A
+cooler-than-expected core print leans the dollar and the 5-year yield down and gold up on the day,
+the way a weaker economy would, but every one of those rests partly on the days CPI shares with
+retail sales or the Fed. The hot print, the one in the news, gives no answer at all: the yields
+lean up and stocks do nothing in particular. Step 4's link, the yield following the size of the
+surprise, is a different question and stands. Nothing here can be told to a reader with a record.
 
 ## How you know it is right
 
