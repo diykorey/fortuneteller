@@ -14,6 +14,8 @@ walk-forward on any flow; 20 answers on all history against about 17 by chance, 
 
 ## In progress
 
+Step 18, part 2: the trigger file and its log ([the spec](steps/trigger-file.md)).
+
 Waiting: the scoreboard's first release day on the published page (step 3); release-day job step
 3, evening score step 2 and rung 6 step 2: the first release the morning job logs, pops up and the
 evening grades. The jobs report on 2026-11-06 is the first with the euro and the 5-year yield
@@ -26,12 +28,13 @@ jobs report on 2026-11-06 is the first.
 
 ## Next
 
-Step 18, part 2: the trigger file and its log ([part 1](steps/after-the-day.md) fixed what it must do).
+Not yet chosen: step 19 (the markets people feel) is the next in the roadmap that needs no trigger.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-04 | A trigger arrives, part 2: spec, the trigger file and its log | PR #253 |
 | 2026-11-04 | A trigger arrives, part 1, step 2: results — nothing holds from the next close; what follows the reaction is mostly no direction | PR #252 |
 | 2026-11-04 | A trigger arrives, part 1, step 1: `follows --after-the-day` | PR #251 |
 | 2026-11-04 | A trigger arrives, part 1: spec, what follows from the next close | PR #250 |
