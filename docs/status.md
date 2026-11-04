@@ -24,15 +24,18 @@ Beat the fortune teller, step 3: the first live round, a release `live` calls gu
 merged pull request ([the spec](steps/beat-the-fortune-teller.md)). It waits for a release; the
 jobs report on 2026-11-06 is the first.
 
+What follows, part 1d: CPI by kind, read from its headline ([the spec](steps/what-follows-cpi.md));
+step 1, `follows --event cpi`, next.
+
 ## Next
 
-Not yet chosen: CPI by kind (only *as expected* can reach 30 graded), part 2 (the quarter and the
-year), or step 18 (a trigger file).
+Not yet chosen: part 2 (the quarter and the year), or step 18 (a trigger file).
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-04 | What follows, part 1d: spec, CPI by kind from its headline | PR #247 |
 | 2026-11-04 | What follows, part 1c, step 2: results — retail sales by kind holds nothing; the yields fall after a release below | PR #246 |
 | 2026-11-04 | What follows, part 1c, step 1: `follows --event retail` | PR #245 |
 | 2026-11-04 | What follows, part 1c: spec, retail sales by kind | PR #244 |
