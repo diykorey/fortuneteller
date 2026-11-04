@@ -14,6 +14,9 @@ walk-forward; 6 answers on all history against 4.3 by chance, all after a cooler
 
 ## In progress
 
+Step 18, part 1: what follows from the next close ([the spec](steps/after-the-day.md)), the spans a
+trigger can answer, measured before any trigger exists.
+
 Waiting: the scoreboard's first release day on the published page (step 3); release-day job step
 3, evening score step 2 and rung 6 step 2: the first release the morning job logs, pops up and the
 evening grades. The jobs report on 2026-11-06 is the first with the euro and the 5-year yield
@@ -26,12 +29,13 @@ jobs report on 2026-11-06 is the first.
 
 ## Next
 
-Not yet chosen: part 2 (the quarter and the year), or step 18 (a trigger file).
+Step 18, part 2: the trigger file and its log, once part 1's results are in.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-04 | A trigger arrives, part 1: spec, what follows from the next close | PR #250 |
 | 2026-11-04 | What follows, part 1d, step 2: results — CPI by kind holds nothing; a cooler print's answers lean on shared days | PR #249 |
 | 2026-11-04 | What follows, part 1d, step 1: `follows --event cpi`, kinds from the headline | PR #248 |
 | 2026-11-04 | What follows, part 1d: spec, CPI by kind from its headline | PR #247 |
