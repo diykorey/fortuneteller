@@ -1,3 +1,4 @@
+import json
 from datetime import date, timedelta
 from pathlib import Path
 
@@ -5,6 +6,7 @@ import pytest
 
 import fortuneteller.__main__ as cli
 from fortuneteller import db, expectations, flows, sources, study
+from fortuneteller.config import settings
 from fortuneteller.expectations import NextConsensus
 from fortuneteller.study import ConfidentCall, Prediction
 
@@ -21,11 +23,14 @@ def _consensus(days: dict[str, NextConsensus], asked: list[str]):
 
 
 def _replay(right: int, wrong: int, calling: int | None):
-    """A replay of ``right`` and ``wrong`` up-calls, then the next release's call when
-    ``calling`` is a direction."""
+    """A replay of ``right`` and ``wrong`` calls, the first five of them right down-calls, then
+    the next release's call when ``calling`` is a direction."""
     made = [
         ConfidentCall(
-            Prediction(i, "2020-01", 1.0, 1, 1.0 if i < right else -1.0), None, None, None
+            Prediction(i, "2020-01", 1.0, d := -1 if i < 5 else 1, d if i < right else -d),
+            None,
+            None,
+            None,
         )
         for i in range(right + wrong)
     ]
@@ -48,14 +53,18 @@ def stubs(monkeypatch: pytest.MonkeyPatch) -> list[str]:
         "retail_sales": NextConsensus(TODAY + timedelta(days=7), None, 0.4),
     }
     monkeypatch.setattr(expectations, "next_consensus", _consensus(days, asked))
-    monkeypatch.setattr(expectations, "other_releases", lambda *args, **kwargs: [])
+    monkeypatch.setattr(expectations, "other_releases", lambda *args, **kwargs: ["ISM"])
     replays = {
         "UST10Y / ZN": _replay(20, 10, 1),
         "DXY": _replay(2, 1, None),
     }
-    monkeypatch.setattr(
-        study, "confident_links", lambda flow, baseline, con, next_surprise: replays
-    )
+
+    def confident_links(flow, baseline, con, next_surprise):  # type: ignore[no-untyped-def]
+        rule = flow.surprise_rule
+        assert (baseline, next_surprise) == (rule.predicted_from, rule.noticeable)
+        return replays
+
+    monkeypatch.setattr(study, "confident_links", confident_links)
     return asked
 
 
@@ -86,7 +95,8 @@ def test_each_release_shows_its_thresholds_and_each_link_s_rule_and_record(
     nfp, retail = cli.week_ahead(db.get_connection(), TODAY, Path("cache"))
 
     # then the threshold is the consensus either side of noticeable, Nasdaq's first, an open link
-    # calls opposite ways either side with its record, and a closed one is silent with its own
+    # calls opposite ways either side with its record and base rate, a closed one is silent with
+    # its own, and only a flow that leaves shared days out names them
     assert (nfp["consensus"], nfp["consensus_from"], nfp["below"], nfp["above"]) == (
         63.0,
         "Nasdaq",
@@ -94,13 +104,15 @@ def test_each_release_shows_its_thresholds_and_each_link_s_rule_and_record(
         113.0,
     )
     assert (retail["consensus"], retail["consensus_from"]) == (0.4, "TradingView")
+    assert nfp["shared"] == []
+    assert retail["shared"] == ["ISM"]
     assert nfp["links"] == {
         "UST10Y / ZN": {
             "above": "up",
             "below": "down",
             "right": 20,
             "predictions": 30,
-            "always_right": 20,
+            "always_right": 15,
             "verdict": study.grade([c.call for c in _replay(20, 10, None)], 1).verdict,
         },
         "DXY": {
@@ -108,7 +120,7 @@ def test_each_release_shows_its_thresholds_and_each_link_s_rule_and_record(
             "below": None,
             "right": 2,
             "predictions": 3,
-            "always_right": 2,
+            "always_right": 1,
             "verdict": study.TOO_FEW,
         },
     }
@@ -136,28 +148,29 @@ def test_a_release_sharing_its_day_is_silent_on_every_link(
 
 
 def test_a_calendar_that_cannot_be_read_leaves_the_week_ahead_empty(
-    tmp_db: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+    tmp_db: Path,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
 ) -> None:
-    # given a calendar that fails, and a scoreboard built from what is stored
+    # given a calendar that fails, and the page's other numbers
     def broken(con: object, today: date, cache_dir: Path) -> list[dict[str, object]]:
         raise sources.CalendarError("TradingView is down")
 
+    def data(rows, con, today, graded, bad, ahead):  # type: ignore[no-untyped-def]
+        return {"events": [], "data_until": None, "ahead": ahead}
+
     monkeypatch.setattr(cli, "week_ahead", broken)
-    seen: dict[str, object] = {}
-
-    def data(*args: object, ahead: object = "unset") -> dict[str, object]:
-        seen["ahead"] = ahead
-        raise ValueError("stop here")
-
-    monkeypatch.setattr(
-        cli, "scoreboard_data", lambda rows, con, today, graded, bad, ahead: data(ahead=ahead)
-    )
+    monkeypatch.setattr(cli, "scoreboard_data", data)
     monkeypatch.setattr(cli, "_read_guesses", lambda con: ([], []))
     monkeypatch.setattr(db, "count_rows", lambda table, con=None: 1)
+    monkeypatch.setattr(settings, "scoreboard_dir", tmp_path / "scoreboard")
 
     # when the scoreboard is written
-    cli.main(["scoreboard"])
+    code = cli.main(["scoreboard"])
 
-    # then the error is printed and the page gets no week ahead
+    # then the error is printed, the page is written, and it has no week ahead
+    assert code == 0
     assert "the week ahead: TradingView is down" in capsys.readouterr().err
-    assert seen["ahead"] is None
+    written = json.loads((tmp_path / "scoreboard" / "data.json").read_text())
+    assert written["ahead"] is None

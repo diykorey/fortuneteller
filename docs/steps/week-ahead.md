@@ -78,7 +78,9 @@ the expected outcome exactly: claims on 2026-11-05 with every link silent; the j
 against 38, the euro 56 of 81 against 45); CPI on 2026-11-10 at TradingView's 0.2, the dollar 8 of
 9, the DAX 5 of 13, the euro 2 of 3 and the 5-year 6 of 8 calling, each *too few*. Every other key
 of `data.json` is unchanged. *Amended 2026-11-04:* each release also says whose consensus it
-shows (`consensus_from`).
+shows (`consensus_from`). One known difference from `live`, left as it is: when
+Nasdaq's and TradingView's consensus are further apart than `live` accepts, `live` logs nothing on
+the morning and exits 1, while the preview has shown the directions the evening before.
 
 ## How you know it is right
 
