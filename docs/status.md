@@ -24,16 +24,18 @@ Beat the fortune teller, step 3: the first live round, a release `live` calls gu
 merged pull request ([the spec](steps/beat-the-fortune-teller.md)). It waits for a release; the
 jobs report on 2026-11-06 is the first.
 
+What follows, over spans, part 1 ([the spec](steps/what-follows.md)): after a Fed cut, hold or
+hike, each market over a day, a week and a month against its base rate, replayed walk-forward.
+
 ## Next
 
-Step 17 of the [Roadmap](roadmap.md#next-steps-in-order), what follows over spans: its spec.
-Chosen 2026-11-04 with the target amended ([Legend](legend.md#the-target)): news triggers, the
-markets people feel, spans from a day to a year.
+What follows, part 1, step 1: `follows --event fomc`.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-04 | What follows, part 1: spec | PR #238 |
 | 2026-11-04 | The target: many countries, the US first | PR #237 |
 | 2026-11-04 | The target amended: news triggers, the markets people feel, spans from a day to a year; roadmap steps 17–20 | PR #236 |
 | 2026-11-04 | The week ahead, without a call, step 1: the events not called, with their records | PR #235 |
