@@ -129,6 +129,7 @@ this by splitting the results by era.
 | Choice | Now | More precise | Trigger |
 | --- | --- | --- | --- |
 | Retail sales' kind | Read from the month-on-month change computed from stored levels, unrounded, against the consensus at ±0.3pp ([part 1c](steps/what-follows-retail.md)); CPI's is read from the headline rounded to 0.1 ([part 1d](steps/what-follows-cpi.md)) | Retail sales' kind from its headline rounded to 0.1 too, as a dated rerun beside part 1c's | Retail sales is shown to a reader by kind, or a retail answer sits near a bar |
+| CPI's headline | The actual rounded half up from the change computed from stored index levels; 26 of 221 releases lie within 0.005 of a rounding line, where the computed change could round apart from the Bureau's own figure | The published headline itself, from the Bureau's release archive | A CPI answer that turns to *can't say* without those 26 |
 
 ## Steps 1–2 — choices already built in
 

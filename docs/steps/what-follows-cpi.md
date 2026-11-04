@@ -31,7 +31,12 @@ At the end: `fortuneteller follows --event cpi` prints part 1b's table for CPI.
   - *as expected* if the two are equal.
 
   On six releases checked against the published figures (2022-09, 2023-03, 2024-02, 2024-09,
-  2024-12, 2025-01), the rounded actual equals the published one each time.
+  2024-12, 2025-01), the rounded actual equals the published one each time. On the store every
+  consensus is on the 0.1 grid, so the three kinds cover every case. 26 of the 221 actuals lie
+  within 0.005 of a rounding line (x.x5), where the computed change could round apart from the
+  Bureau's own figure; the results give each answer's counts without them too, and an answer that turns to
+  *can't say* without them is read as "maybe the rounding". A tie is rounded half up, as the
+  Bureau does.
 - **What the rounding changes.** On the store of 2026-11-04 there are 221 releases, 2008-02-20 …
   2026-10-14:
   - read from the headline: 61 above, 82 as expected, 78 below;
@@ -59,10 +64,11 @@ At the end: `fortuneteller follows --event cpi` prints part 1b's table for CPI.
   - Arithmetic: over the month about a fifth of each kind is left out for overlap, as for retail
     sales, so *above* and *below* can reach 30 graded there.
   - On the day, on all history:
-    - *above* answers the 10-year and 5-year yields *up* and the S&P 500 *down*;
+    - *above* answers the 10-year and 5-year yields *up* and the S&P 500 *down*, each checked on
+      its own;
     - *below* answers at least two of their reverses;
-    - at least 4 answers on these six day cells, against about 0.2 by chance (4.3 for the table's
-      144 cells).
+    - so at least 5 answers on these six day cells, against about 0.2 by chance (4.3 for the
+      table's 144 cells).
   - Walk-forward on the day: *above* holds on the 5-year yield; nothing else holds anywhere.
   - Over the week at most 2 answers in all, and over the month at most 2.
   - *As expected*: no answer except VIX *down* on the day, which would be the release.
@@ -86,9 +92,11 @@ At the end: `fortuneteller follows --event cpi` prints part 1b's table for CPI.
   - 0.151 against 0.2 is *as expected* (it rounds to 0.2), and 0.149 is *below* (it rounds to
     0.1);
   - a NULL surprise has no kind.
-- The same actual 0.281 against 0.2, stored for retail sales at its 0.3 line, is still *as
-  expected*. This shows the headline rounding is CPI's alone.
-- With no key set, given three releases at 0.4, 0.2 and 0.0 against 0.2 and one market's closes,
+- An actual of 0.46 against 0.2 is *as expected* for retail sales at its 0.3 line (0.26
+  unrounded), where rounding would make it *above*. This shows the headline rounding is CPI's
+  alone.
+- An actual of 0.25 against 0.2 is *above* for CPI (half up to 0.3), and 0.2499 *as expected*.
+- With no key set, given three releases at 0.281, 0.2 and 0.0 against 0.2 and one market's closes,
   `follows --event cpi` exits 0. It prints `follows: 3 CPI releases <first> … <last>: 1 above,
   1 as expected, 1 below` and an *above* row.
 - The other `follows` tests pass unchanged.
@@ -97,17 +105,25 @@ At the end: `fortuneteller follows --event cpi` prints part 1b's table for CPI.
 
 - No rerun of retail sales from its headline.
 - No headline CPI: core is the rule's measure.
+- No core PCE: it has the same unrounded actual and 0.1 line; it is its own part.
 - No quarter or year (part 2), no trigger file (step 18). Nothing is stored.
 - Releases are not independent; the chance says more than it should, as in part 1.
 
 ## Technical details
 
 - **`flows.py`:** `SurpriseRule` gains `kind_decimals: int | None = None`, the decimals the
-  headline is published to. `CPI_SURPRISE_RULE` sets it to 1.
+  headline is published to; its docstring says only `release_kinds` reads it, so step 4 and the
+  live calls keep the unrounded surprise. `CPI_SURPRISE_RULE` sets it to 1.
 - **`study.py`:** with `kind_decimals` set, `release_kinds` reads the row's `actual_mom` and
-  `expected_mom`. The kind's surprise is `round(round(actual, d) - expected, 6)`, compared with
-  `noticeable` as now. Without it, nothing changes.
+  `expected_mom`. The actual is rounded half up to `d` decimals (`Decimal.quantize` with
+  `ROUND_HALF_UP`, on `repr` of the float), and the kind's surprise is `round(rounded - expected,
+  6)`, compared with `noticeable` as now. The `surprise IS NOT NULL` filter stays, so a release with no
+  surprise still has no kind. Without `kind_decimals`, nothing changes. The 1 is the decimals
+  `expectations.CONSENSUS_ROWS` already records for core CPI.
 - **`__main__.py`:** `FOLLOWS_NOUNS` gains `"cpi": "CPI releases"`.
-- **Tests:** in `tests/test_what_follows.py`; `_store_reports` takes the actual and expected values.
+- **Tests:** in `tests/test_what_follows.py`. `_store_reports` gains `values: Mapping[date,
+  tuple[float, float]] | None = None`, a release's (actual, expected), 0.0 and 0.0 as now when
+  absent, so the existing tests are unchanged. The CPI tests store a surprise of 0.0 beside their
+  values, which shows the kind is read from the actual and the consensus, not the stored surprise.
 - **Docs:** this spec's results, `docs/mvp-results.md`, the roadmap's row 17, `docs/precision.md`
   (the retail row, in the spec change), and `docs/status.md`.
