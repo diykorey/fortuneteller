@@ -345,7 +345,7 @@ def test_raw_move_measures_ecb_decisions(tmp_db: Path, capsys: pytest.CaptureFix
     # when the command runs for the ECB
     code = main(["raw-move", "--event", "ecb"])
 
-    # then each of the 24 markets gets its verdict
+    # then each market gets its verdict
     assert code == 0
     assert sum(line.endswith(" moves") for line in capsys.readouterr().out.splitlines()) == 24
 
@@ -364,7 +364,7 @@ def test_raw_move_measures_tradingview_releases(
     # when the command runs for it
     code = main(["raw-move", "--event", flow.cli_name])
 
-    # then each of the 24 markets gets its verdict
+    # then each market gets its verdict
     assert code == 0
     assert sum(line.endswith(" moves") for line in capsys.readouterr().out.splitlines()) == 24
 

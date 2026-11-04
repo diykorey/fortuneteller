@@ -87,13 +87,14 @@ MVP uses exactly one row, `CPI / inflation surprise`.
 
 ## instruments
 
-The instruments whose prices can be measured. Source: `data/seed/instruments.csv`, 29 rows: a
-representative 15-row subset of 55 from the Notion export, 7 added 2026-10-27 and 7 added 2026-11-04. The MVP uses
+The instruments whose prices can be measured. Source: `data/seed/instruments.csv`, 30 rows: a
+representative 15-row subset of 55 from the Notion export, 7 added 2026-10-27 and 8 added 2026-11-04. The MVP uses
 five: `SPY / ES`, `UST10Y / ZN`, `DXY`, `GC / XAU`, `VIX`; [cross-country
 effects](steps/cross-country.md) adds `DAX` and `SX5E` (2026-10-21); [more
 outcomes](steps/more-outcomes.md) adds `BRN`, `EURUSD`, `COMP`, `UST5Y / ZF`, `UKX`, `SXXP`,
 `BTC`, `ITA` and `XLE` (2026-10-27); [the markets people feel](steps/markets-people-feel.md) adds
-`CORN`, `WEAT`, `SOYB`, `UGA`, `UNG`, `XLU` and `ITB` (2026-11-04), so 23 are measured.
+`CORN`, `WEAT`, `SOYB`, `UGA`, `UNG`, `XLU` and `ITB` (2026-11-04), and [coffee](steps/coffee.md)
+`KC` (2026-11-04), so 24 are measured.
 
 | Column | Type | Meaning |
 | --- | --- | --- |
@@ -312,8 +313,8 @@ Example rows:
 | `UST10Y / ZN` | 2022-09-13 | 3.422 | `yahoo:^TNX` |
 
 **How much data.** Counted from the live source on 2026-09-28, after the empty and weekend rows are
-dropped. It grows by about 23 rows per trading day, one per instrument; 144,077 rows for the
-sixteen on 2026-10-27; 177,692 for the 23 on 2026-11-04.
+dropped. It grows by about 24 rows per trading day, one per instrument; 144,077 rows for the
+sixteen on 2026-10-27; 177,692 for the 23 on 2026-11-04; 184,423 for the 24 the same day.
 
 | Instrument | Rows | From |
 | --- | --- | --- |
@@ -341,11 +342,12 @@ sixteen on 2026-10-27; 177,692 for the 23 on 2026-11-04.
 | `CORN` | 4,127 | 2010-06-09 (counted 2026-11-04) |
 | `WEAT` | 3,804 | 2011-09-19 (counted 2026-11-04) |
 | `SOYB` | 3,804 | 2011-09-19 (counted 2026-11-04) |
+| `KC` | 6,729 | 2000-01-03 (counted 2026-11-04) |
 
 A few megabytes in all. `observations` is these same days thinned down to the release days —
 about 2,700 rows for CPI and the five; 45,773 for ten events and sixteen markets on 2026-10-27;
 57,050 with the two statement flows on 2026-10-29; 100,993 for every flow and the 23 markets on
-2026-11-04.
+2026-11-04; 105,408 with coffee the same day.
 
 | Column | Type | Meaning |
 | --- | --- | --- |

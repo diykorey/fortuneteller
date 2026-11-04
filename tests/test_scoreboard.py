@@ -34,7 +34,8 @@ def _history(con: duckdb.DuckDBPyConnection) -> None:
     # same one; every market's closes move 0.5% a day, and on a release day the surprise's way 85%
     # of the time, so the moves and surprises come from one set of prices
     rng = random.Random(7)
-    # the markets people feel draw from a stream of their own, so the sixteen keep their prices
+    # the markets people feel and coffee draw from a stream of their own, so the sixteen keep their
+    # prices
     later = random.Random(8)
     releases = []
     for i in range(60):

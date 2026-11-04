@@ -8,12 +8,11 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-The markets people feel, part 1, step 2 *(PR #258)*: homebuilders and utilities move on the Fed's
-days, three farm and fuel funds on the ISM survey's; no new market holds walk-forward.
+Coffee, step 1 *(PR #260)*: `KC=F` stored and shown, unsigned; every existing output unchanged.
 
 ## In progress
 
-Step 19, part 2a: coffee ([the spec](steps/coffee.md)).
+Step 19, part 2a, step 2: coffee's results ([the spec](steps/coffee.md)).
 
 Step 18, part 2, step 3: the first triggers graded ([the spec](steps/trigger-file.md)). It waits for
 the owner's first trigger, a file under `data/triggers/` merged before a market's reaction close.
@@ -36,6 +35,7 @@ Step 19, part 2b: the 5-year breakeven, from FRED.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-04 | Coffee, step 1: `KC=F`, unsigned | PR #260 |
 | 2026-11-04 | The markets people feel, part 1, step 2: results | PR #258 |
 | 2026-11-04 | The markets people feel, part 1, step 1: seven markets, unsigned | PR #257 |
 | 2026-11-04 | The markets people feel, part 1: spec | PR #256 |

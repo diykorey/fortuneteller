@@ -179,7 +179,7 @@ Terms are grouped by what they are about, alphabetical within each group.
   yen) during a shock. Usually lowers Treasury yields; see scenario 6 for when it did not.
 - **Front-month / continuous futures** — a futures contract expires, so a long price history is
   stitched together from the contract nearest expiry (the *front month*), switching to the next one
-  at each expiry (the *roll*). Yahoo's `GC=F`, `BZ=F` and `KC=F` are such series; its price can jump on a roll day
+  at each expiry (the *roll*). Yahoo's `GC=F`, `BZ=F` and `KC=F` are such series; their price can jump on a roll day
   for reasons unrelated to any event.
 - **FX** (Foreign Exchange) — the currency market.
 - **Gold / XAU / GC** — gold; `XAU` is its currency-style code, `GC` its COMEX futures symbol. A
