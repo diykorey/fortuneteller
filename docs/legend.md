@@ -56,6 +56,9 @@ Fed cuts rates → EUR/USD
 - **Bare figures first.** Counts and base rates, never a percentage, until rung 3's honesty rule
   allows one; the words *most probably* (at 60%, above the base rate), *could* and *will not*
   wait for that.
+- **Many countries, the US first.** The goal is readers and markets in different countries; the
+  work starts with US events and US-traded markets, and widens one country at a time once the US
+  answers hold (the euro area and Germany, already stored, next).
 - **What has no past is never shown beside a record:** a what-if about a new technology is
   labelled as reasoning, if shown at all.
 
