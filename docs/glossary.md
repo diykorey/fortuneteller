@@ -248,6 +248,22 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **Ordinary day** — step 3's baseline: a trading day that is no stored event's reaction day (no
   CPI, jobs report or Fed decision), since rung 1's sub-step 6; and, since
   [own years](steps/own-years-baseline.md), none before the flow's first reaction day on that market.
+- **Span** — *added 2026-11-04* ([Legend](legend.md#the-target)): how long after an event its
+  move is measured: a day, a week (5 closes), a month (21), a quarter (63) or a year (252).
+- **Base rate** — *added 2026-11-04*: how often a market went one way over every span of a length
+  in a kind's own years, events or not. Unlike an *ordinary day*, a span is never "alone": other
+  events fall inside a month or a year by design. Unlike the *drift probability*, it counts every
+  span, not earlier releases.
+- **Kind (of event)** — *added 2026-11-04*: what a reader names ("the Fed cuts rates"); in the
+  code an event flow, and for a decision what was decided (cut, hold or hike).
+- **Trigger** (news) — *added 2026-11-04*: an event that has happened, as a record of its flow,
+  what was decided and its day, standing in for a news item (roadmap step 18). Not a *graduation
+  trigger*.
+- **Up / down / about the same / can't say** — *added 2026-11-04*: a span's four answers against
+  its base rate, by the rule fixed in roadmap step 17's spec; *can't say* is shown, never graded
+  as right.
+- **Breakeven inflation** — *added 2026-11-04*: the inflation bond markets expect, a Treasury
+  yield less the inflation-protected yield of the same maturity; FRED's 5-year series `T5YIE`.
 - **Vintage / new-and-revised view** — a series' values as they stood on one release day. FRED's
   `output_type=3` returns one column per release day; payrolls need it because every jobs report
   revises the two months before.

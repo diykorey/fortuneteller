@@ -12,6 +12,9 @@ means something. A warning product, not HFT: the latency budget is seconds to mi
 *Amended 2026-10-23:* an entertainment tool with a realistic approach, not a financial one
 ([Legend](legend.md#the-target)). The bars stay; the surface widens.
 
+*Amended 2026-11-04:* a reader of the news, told what follows for the markets behind what they pay
+for, over spans from a day to a year ([Legend](legend.md#the-target)).
+
 ## The MVP — "does the edge exist?"
 
 The MVP answers one question with real data: **when CPI comes in different from what was expected,
@@ -84,7 +87,8 @@ Decided 2026-10-23, after step 4b, with the target amended: the five monthly flo
 step 4 gave no new call, nothing built reaches anyone but the laptop's popup, and the taxonomy's
 other half (statements, shocks, news) is unmeasured. So: show what is measured, raise the call
 count once, then widen events and markets, with every bar unchanged. A statement nobody scheduled
-is never called before it happens: for news the product is a graded reaction record, and for a
+is never called before it happens: for news the product is a graded reaction record (*retired
+2026-11-04*, below: an event that has happened is answered for the spans after it), and for a
 scheduled statement a preview. Counts checked 2026-10-23 on the calendars already cached.
 
 | # | Step | Why now |
@@ -104,28 +108,26 @@ scheduled statement a preview. Counts checked 2026-10-23 on the calendars alread
 | 16 | **[The week ahead, without a call](steps/watch-ahead.md)** — the scheduled events `live` does not call (Fed and ECB decisions, their heads' statements, the euro-area, ISM and German releases) listed in the week ahead with how markets moved on such days before; no direction. *Added 2026-11-04* by the owner after step 15. **Done** 2026-11-04: the table lists ZEW, Ifo and the rest with their record, no direction | A reader can watch more than six US releases; the record already exists |
 
 Decided 2026-11-04 by the owner, with the target amended ([Legend](legend.md#the-target)): a
-reader of the news, told what follows for the things they pay for, over spans from a day to a
-year. Build on what exists before collecting anything new: central bank decisions first, then the
-markets ordinary people feel, then real news. Collecting is kept apart from predicting; the
-prediction is built on hand-written triggers. Each step below gets its own spec, bars written
-first.
+reader of the news, told what follows for the markets behind what they pay for, over spans of a
+day, a week, a month (21 closes), a quarter (63) and a year (252). Build on what exists first:
+decisions, then a trigger standing in for the news, then the markets people feel, then real news.
+Predicting is built before collecting. Each step gets its own spec, bars written first.
 
 | # | Step | Why now |
 | --- | --- | --- |
-| 17 | **What follows, over spans** — for each stored flow without a surprise rule, and each market, the signed move after every past event over a day, a week, a month, a quarter and a year, against how often the market moves that way over an ordinary span of that length; *up*, *down*, *about the same* or *can't say*, with the counts. Fed and ECB decisions first. Spans that overlap (two decisions six weeks apart share most of a year) are tested as such, not as independent cases | Today a direction comes only from a surprise, and a move is measured only over a day or a week. Every later step needs both. Needs no new data |
-| 18 | **A trigger arrives** — a hand-written file of triggers (kind, place, time, and the number where it has one) stands in for the news; each trigger is matched to its flow and answered with step 17's figures for every span, logged, and graded when each span ends | Separates predicting from collecting, as the owner chose, so the prediction is right before any news is read |
-| 19 | **The markets people feel** — coffee, wheat, corn, soybeans, sugar, cocoa, gasoline, natural gas, utilities and homebuilder stocks, the 5-year expected inflation and the 30-year mortgage rate, each with its close, zone and source; measured under the same bars on the flows that exist | The reader's things, mapped to free daily markets: Yahoo's futures and ETFs, FRED's breakeven and mortgage series |
-| 20 | **News into triggers** — a free news source read into step 18's triggers, by rules first and a model on this machine if rules fall short; checked against a hand-made list of known events before any forecast rests on it. Step 11 found GDELT unable to date one speaker's posts; this asks only for kinds of events, places and days | The owner's flow: the tool finds the event itself. Last of the four, because a forecast it feeds must already be right |
-| 21 | **New kinds of events** — floods and droughts in growing regions, OPEC decisions, earnings reports for single companies, crypto's own news (exchange failures, approvals): each a dated history from a free archive first, then a flow | Where the reader's headlines are; each needs its own history before step 17 can answer for it |
+| 17 | **What follows, over spans** — for the flows whose direction no surprise gives (the thirteen with no surprise rule, and the Fed, whose sentiment rule calls nothing), the signed move after each past event over each span, against the base rate ([Legend](legend.md#the-target)), replayed walk-forward; *up*, *down*, *about the same* or *can't say*, with the counts, and how many *up* or *down* chance alone gives at these counts. A decision's kind is what was decided: cut, hold or hike, the Fed's from its stored target rate (`target_rates`, `is_hold`), the ECB's from the calendar's actual rate, which `parse_ecb_decisions` reads and drops today. Parts, one spec each: Fed decisions over a day, a week and a month first; then the quarter and the year, where spans overlap and a cut cycle is one episode, not eight events, with the test for that fixed in the spec; then the ECB's; other flows one at a time | Today a direction comes only from a surprise; a signed move is stored only over a day (`ret_1d`), and the week is an unsigned five-close move computed for `raw-move --week`. Needs no new data: every price series is stored from its start |
+| 18 | **A trigger arrives** — a hand-written file of triggers (the flow, what was decided, the day) stands in for the news; each is dated by the merge of the pull request that adds it, as a guess is, and answered, once it has happened, with step 17's figures for every span starting after that. One row per trigger, market and span in a log of its own, graded from the stored closes when the span's last close is in; `data/calls.csv` and `score` stay as they are | Predicting apart from collecting, as the owner chose: the answer is tested and graded before any news is read. The file names the flow, so nothing matches news to flows until step 20 |
+| 19 | **The markets people feel** — coffee, wheat, corn, soybeans, gasoline and natural gas futures, utilities and homebuilder stocks from Yahoo, and the 5-year expected inflation (breakeven) from FRED by `fetch_series`; each a row in `MVP_PRICE_SERIES` with its close, zone and unit and a sign in `with_more_outcomes`; the raw move and step 17's spans on the flows that exist. Each series checked for its start, frequency and roll days before measuring, and how futures rolls are treated written first | The reader's everyday things, through free daily markets. Mortgages need nothing new: they follow the 10-year and 5-year yields already stored |
+| 20 | **News into triggers** — a free news source read into step 18's triggers, by rules first and a model on this machine if rules fall short (starting from the unified prompt in `docs/legacy/event-polarity-and-classifier-prompts.md`); first on one stored unscheduled kind, tariff actions, checked against the stored flow as its list of known events before any answer rests on it. Step 11 found GDELT unable to date one speaker's posts; this asks only for kinds of events and their days | What the owner asked for: the tool finds the event itself. Waits until step 17's replay passes and step 18 has graded day and week answers |
 
-Later, not planned in detail: the page's words for the figures (*most probably* at 60% held above
-chance, *could*, *will not*); what-if stories for what has no past (a new technology), labelled
-as reasoning and kept apart from graded records.
-
-Later, not planned in detail: a statement's text read for its direction (hawkish or dovish), the
-first use of a language model, graded like a surprise; and prediction-market prices as an election's
-expected value. ("Beat the fortune teller" is now step 12. *Amended 2026-11-03:* the statement's
-direction is step 13, read with a published word list; a language model stays later.)
+Later, not planned in detail, each chosen one at a time after step 18's results: new kinds of
+events, each a dated history before a flow (OPEC decisions against Brent, already stored; floods
+and droughts in crop-growing regions, with one start day each; earnings reports, with the single
+companies' prices they need; crypto's own news); the page's words for the figures, once rung 3's
+rule allows a percentage; what-if stories for what has no past, labelled as reasoning and kept
+apart from graded records; and prediction-market prices as an election's expected value. (A
+statement's direction read with a published word list became steps 13 and 14; a language model's
+first use is step 20.)
 
 ## After the MVP — the feature ladder
 
@@ -139,7 +141,7 @@ In order. Each rung is worth building only because the one below it worked.
 | 4 | **[Keep score](steps/rung-4-keep-score.md)** — log predictions, grade them against outcomes. **Done** 2026-10-16: logged and graded on the first two live releases; every verdict "too few", as expected | You cannot grade predictions you are not yet making. |
 | 5 | **[Live path](steps/rung-5-live-path.md)** — fetch the release when it lands, instead of by hand. **Done** 2026-10-16: the first fetched actual equals FRED's; unattended by [the release-day job](steps/release-day-job.md), installed 2026-10-15 | Automating a manual step that must first be worth automating. |
 | 6 | **[Delivery](steps/rung-6-delivery.md)** — the warning actually reaches a person. Chosen 2026-10-21: a desktop popup on this laptop | Never deliver uncalibrated warnings; needs rung 3. *Amended 2026-10-20* ([the record, not a probability](steps/record-not-probability.md)): a warning carries the direction, its walk-forward record and its band, never a stated probability, until one proves honest by rung 3's rule. |
-| 7 | **Unscheduled events** — detection, classification, entity linking, corroboration. *Amended 2026-10-23:* statements, shocks and news are measured as history first (steps 8, 10 and 11 above); live detection stays last | The hardest part of the system, and worthless without a working predictor behind it. |
+| 7 | **Unscheduled events** — detection, classification, entity linking, corroboration. *Amended 2026-10-23:* statements, shocks and news are measured as history first (steps 8, 10 and 11 above); live detection stays last. *Amended 2026-11-04:* step 20 reads news into triggers for kinds already measured, after a predictor exists; detection beyond those stays last | The hardest part of the system, and worthless without a working predictor behind it. |
 
 Beyond the ladder, and deliberately not planned in detail: regime conditioning, productization
 beyond the scoreboard, and operations. They get planned when rung 7 is in sight.

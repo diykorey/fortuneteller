@@ -30,44 +30,39 @@ cadence, and being seen. A reaction record graded after the fact, and a preview 
 statement, count as fortunes; a direction right six times in ten is content when the four are
 shown too.
 
-*Amended 2026-11-04, by the owner.* **What a reader reads in the news, turned into what it means
-for the things they pay for.** The reader is someone who reads a headline ("floods in Colombia",
-"the ECB cuts rates") and wonders what follows. The tool finds the event in the news itself,
-recognises its kind, looks up what followed every past event of that kind, and says it with the
-figures (the numbers below are an illustration, not a measurement):
+*Amended 2026-11-04, by the owner.* **A headline, turned into what follows for the things a
+reader pays for.** The reader reads the news ("the Fed cuts rates", later "floods in Colombia")
+and wonders what comes next. The tool is to find the event in the news itself, name its kind, and
+answer with what followed every past event of that kind, over spans from a day to a year (the
+numbers are an illustration, not a measurement):
 
 ```
-ECB cuts rates → EUR/USD
-  next week    down       14 of 22 past cuts, median −0.6%; down in 48% of ordinary weeks
-  next month   can't say  11 of 22
+Fed cuts rates → EUR/USD
+  next week    down       24 of 30 past cuts; all weeks: down 3,900 of 8,000
+  next month   can't say  down 16 of 30; all months: down 3,800 of 8,000
 ```
 
-- **The outcome is a market, not a shelf price.** Each everyday thing is read through the traded
-  market behind it: fuel through gasoline and Brent, coffee through arabica, food through wheat,
-  corn and soybeans, electricity and utilities through natural gas and utilities stocks, mortgages
-  through Treasury yields, housing through homebuilders, inflation through what bond markets expect
-  it to be, stocks through indices and single companies, crypto through its own prices. "The
-  coffee market rose" is enough; shelf prices come later, if ever.
-- **Every forecast has spans** — a day, a week, a month, a quarter, a year — and for each says
-  *up*, *down*, *about the same* or *can't say*, judged against what the market does over an
-  ordinary span of that length. *Can't say* is an answer, and will be the common one at a year.
-- **The guess is arithmetic on history, never a model's opinion.** A language model may read the
-  news into a trigger and turn figures into sentences; the middle stays counts. Free throughout: a
-  model, when it comes, runs on this machine.
-- **Bare figures first, words later.** For now each answer is its counts, its base rate and its
-  typical move. Grouping into *most probably*, *could* and *will not*, with 60% as the line a
-  decision needs, is the page's job once the figures exist, and 60% must hold above chance, not on
-  four cases.
-- **Collecting and predicting are separate.** The prediction is built and graded on hand-written
-  triggers first; real news replaces them once it works, and is checked against a list of known
-  events before any forecast rests on it.
-- **What has no past is a story, not a record.** "Quantum computing could break crypto" has never
-  happened, so nothing can be counted; such a what-if, if shown, is labelled as reasoning and never
-  sits beside a graded record.
+- **The outcome is a market, not a shelf price:** each everyday thing through the traded market
+  behind it, fuel through gasoline and Brent, mortgages through Treasury yields. "The coffee
+  market rose" is enough.
+- **Each span answers *up*, *down*, *about the same* or *can't say*,** against the **base rate**:
+  how often the market went that way over every span of that length in the kind's own years,
+  events or not. The rule from counts to answer, and its bars, are fixed in step 17's spec before
+  measuring, and the answer is replayed walk-forward. *Can't say* is shown and counted, never
+  graded as right.
+- **The answer is arithmetic on history, never a model's opinion.** A model may read the news into
+  a trigger and put figures into sentences; nothing paid is used, so a model runs on this
+  machine. (The owner first proposed a model's guess, then chose this.)
+- **Bare figures first.** Counts and base rates, never a percentage, until rung 3's honesty rule
+  allows one; the words *most probably* (at 60%, above the base rate), *could* and *will not*
+  wait for that.
+- **What has no past is never shown beside a record:** a what-if about a new technology is
+  labelled as reasoning, if shown at all.
 
-The way below still holds: the bars, the walk-forward, the negative results. The
-surprise stays the trigger's number where it has one; where it has none, the direction comes from
-what followed past events of the kind, against the market's own drift.
+This retires one line of the 2026-10-23 decision, "for news the product is a graded reaction
+record": an event that has happened is answered for the spans after it. A call is still never made
+before its event, and the week ahead still gives no direction. Where an event has a surprise, the
+method below is unchanged; where it has none, the direction is the fourth claim below.
 
 ## The idea
 
@@ -80,13 +75,15 @@ The reasoning: anything the market already expects is in the price before the re
 to react to is the **surprise**. If the same kind of surprise produces a similar-sized move each
 time it occurs, that relationship is measurable, and what is measurable can be forecast.
 
-Three things must be true for the product to exist. They are independent, testable, and ordered:
+Three things must be true for the product to exist. They are independent, testable, and ordered
+(*amended 2026-11-04:* a fourth, for events without a surprise):
 
 | # | Must be true | Tested by | If false |
 | --- | --- | --- | --- |
 | 1 | Events move these instruments measurably at all | MVP step 3 | Stop. There is nothing here. |
 | 2 | The size of the move tracks the size of the surprise | MVP step 4 | The event matters but is not forecastable this way — rethink the signal. |
 | 3 | That relationship holds for the *next* release, not just past ones | Ladder rungs 2–4 | It is a description of history, not a predictor. |
+| 4 | *Added 2026-11-04.* After an event of a kind, a market goes one way more often than its base rate over the span | Roadmap step 17, walk-forward | Every span answers *can't say*; the page shows reaction records only. |
 
 This is why the roadmap is shaped the way it is: **each early step tests one of those, cheaply,
 before anything is built on top of it.** The MVP is not a small version of the product. It is the
