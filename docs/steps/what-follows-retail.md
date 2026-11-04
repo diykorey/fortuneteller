@@ -42,14 +42,23 @@ day.
   holds another flow's release is left out of step 4's tables. That covers 48 of 222 releases,
   most of them on a CPI day or an ECB day.
 
-  `follows` keeps them, as part 1b kept the jobs report's 31. Two reasons:
+  `follows` keeps them. This sets aside the flow's own step-4 rule; the jobs report's rule has
+  no `alone`, so part 1b had none to set aside. Two reasons, both stated before measuring:
   - a news reader hears of the release on that day either way;
   - leaving them out would cut *above* to 39, and with ten needed before the walk-forward answers,
-    at most 29 would be graded, short of 30.
+    at most 29 would be graded, short of 30. The choice is made to keep the bar reachable.
 
-  As a reading aid, the results give each answer's counts without the shared days, the way part
-  1b gave them without 2020–21. Fixed before measuring: where an answer turns to *can't say*
-  without the shared days, it is read as "maybe the other release".
+  The cost is a confound: a CPI surprise on the same morning moves the yields too. Fixed before
+  measuring:
+  - Each answer's counts are also given without the shared days. An answer that turns to *can't
+    say* without them is read as "maybe the other release".
+  - For a hold, the results give how many graded calls fall on shared days and how many of those
+    were right. If the calls on lone days are right under 60%, the hold is read as "retail sales
+    or a same-day release", not retail sales alone.
+  - The results give the 48 shared days by the other flow.
+- **The surprise is not rounded.** The actual is the month-on-month change computed from the
+  stored levels, so a surprise sits near the ±0.3 line, not on it: on the store no release is
+  within 0.009 of it.
 
 ## The rule, fixed before anything is shown
 
@@ -63,13 +72,15 @@ day.
   - On the day, on all history:
     - *above* answers both yields *up*;
     - *below* answers at least one yield *down*;
-    - the dollar index and EUR/USD answer for neither kind (retail sales' dollar never held);
-    - at least 3 answers on the two yields, against about 4.3 by chance across the table's 144
-      cells.
+    - on the day the dollar index and EUR/USD answer for neither kind (retail sales' dollar
+      never held);
+    - at least 3 answers on the two yields' six day cells, against about 0.2 by chance (4.3 for
+      the table's 144 cells).
   - Walk-forward on the day: *above* holds on the 5-year yield; nothing else holds anywhere.
   - Over the week, at most one answer per kind. Over the month, at most 2 answers in all.
   - *As expected*: VIX *down* on the day, read as the release, as on a jobs report; nothing else.
-  - Without the shared days, every answer on the yields keeps its direction.
+  - Without the shared days, every answer on the yields keeps its direction; one that turns to
+    *can't say* counts as not keeping it.
 - Every existing output is unchanged byte for byte, including the Fed's and the jobs report's
   `follows` tables.
 
@@ -83,9 +94,11 @@ day.
 ## How you know it is right
 
 - With no key set, given three releases at +0.4, 0 and −0.4 and one market's closes,
-  `follows --event retail` exits 0 and prints the header for them and an *above* row.
-- With a surprise of +0.3 the kind is *above*; with +0.29 it is *as expected*. This catches a
-  noticeable threshold taken from the wrong rule.
+  `follows --event retail` exits 0 and prints `follows: 3 retail sales releases <first> …
+  <last>: 1 above, 1 as expected, 1 below` and an *above* row.
+- `study.release_kinds(RETAIL_FLOW)` on surprises stored as literals: +0.3 is *above*, +0.29 *as
+  expected*, −0.3 *below*, −0.29 *as expected*. This catches a threshold taken from another rule
+  (CPI's 0.1, GDP's 0.5, the jobs report's 50).
 - The Fed's and the jobs report's `follows` tests pass unchanged.
 
 ## What this part does not do
@@ -101,6 +114,7 @@ day.
 - **`__main__.py`:** `FOLLOWS_NOUNS` gains `"retail": "retail sales releases"`. `--event`'s
   choices follow from it.
 - **`study.py`:** no change. `release_kinds` already reads the flow's own rule.
-- **Tests:** in `tests/test_what_follows.py`.
+- **Tests:** in `tests/test_what_follows.py`; the jobs report's helpers `_report` and
+  `_store_reports` take the flow and the measure.
 - **Docs:** this spec's results, `docs/mvp-results.md`, the roadmap's row 17, and
   `docs/status.md`.
