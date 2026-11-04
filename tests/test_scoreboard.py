@@ -34,8 +34,8 @@ def _history(con: duckdb.DuckDBPyConnection) -> None:
     # same one; every market's closes move 0.5% a day, and on a release day the surprise's way 85%
     # of the time, so the moves and surprises come from one set of prices
     rng = random.Random(7)
-    # the markets people feel and coffee draw from a stream of their own, so the sixteen keep their
-    # prices
+    # the markets people feel, coffee and the breakeven draw from a stream of their own, so the
+    # sixteen keep their prices
     later = random.Random(8)
     releases = []
     for i in range(60):
@@ -137,8 +137,8 @@ def test_the_scoreboard_holds_what_the_commands_print(
         assert " ".join(tokens[7:]) == link["verdict"]
     assert "GC / XAU" not in cpi["walk_forward"]["links"]
     assert data["chance"] == {
-        "raw_move": {"cells": 24, "p": 0.01, "by_chance": 0.24},
-        "surprise": {"cells": 24, "p": 0.01, "by_chance": 0.24},
+        "raw_move": {"cells": 25, "p": 0.01, "by_chance": 0.25},
+        "surprise": {"cells": 25, "p": 0.01, "by_chance": 0.25},
         "walk_forward": {"cells": 11, "p": 0.01, "by_chance": 0.11},
     }
     assert data["rules"]["raw_move"] == reports["raw-move"][-1]

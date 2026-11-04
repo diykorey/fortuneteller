@@ -353,12 +353,13 @@ about 2,700 rows for CPI and the five; 45,773 for ten events and sixteen markets
 | --- | --- | --- |
 | `instrument` | TEXT, **PK** | An `instruments.symbol`, e.g. `SPY / ES` — the project's key, not the data vendor's ticker. |
 | `day` | DATE, **PK** | The trading date, **as a calendar date in the exchange's own time zone**. A DATE rather than a TIMESTAMP, so no session or machine time zone can move a price onto the neighbouring day. |
-| `close` | DOUBLE | The closing value that day. A price for four instruments; for `UST10Y / ZN` it is the **yield in percent** (`3.422` means 3.422%), because bonds are measured by yield. Today's bar is never stored: while the market is open its close is not final, so the latest row is the last finished trading day. |
+| `close` | DOUBLE | The closing value that day. A price for four instruments; for `UST10Y / ZN` it is the **yield in percent** (`3.422` means 3.422%), because bonds are measured by yield, and for `T5YIE` the breakeven in percent. Today's bar is never stored: while the market is open its close is not final, so the latest row is the last finished trading day. |
 | `source` | TEXT | Where the value came from, as `<provider>:<vendor ticker>`, so any number can be traced back. |
 
 ### Values
 
-**`source`** — today always `yahoo:` followed by the vendor ticker:
+**`source`** — `yahoo:` followed by the vendor ticker, or for the breakeven `fred:` followed by
+FRED's series id ([the breakeven](steps/breakeven.md)), for example:
 
 | Value | Instrument | What it is |
 | --- | --- | --- |
@@ -369,6 +370,7 @@ about 2,700 rows for CPI and the five; 45,773 for ten events and sixteen markets
 | `yahoo:^VIX` | `VIX` | The Cboe Volatility Index |
 | `yahoo:^GDAXI` | `DAX` | The DAX index, Frankfurt; its day is Frankfurt's |
 | `yahoo:^STOXX50E` | `SX5E` | The Euro Stoxx 50 index; its day is Frankfurt's |
+| `fred:T5YIE` | `T5YIE` | The 5-year breakeven inflation, in percent: the 5-year Treasury yield less the 5-year TIPS yield, from the Treasury's daily curve |
 
 ## observations
 
@@ -433,6 +435,7 @@ daily prices, so the intraday ones stay empty.
 | Value | Meaning |
 | --- | --- |
 | `yahoo` | Daily closes from Yahoo Finance, via `daily_bars` (whose `source` names the exact ticker). |
+| `fred` | The breakeven's daily values from FRED, via `daily_bars` (`fred:T5YIE`). |
 
 **`quality`** — how the move was measured.
 

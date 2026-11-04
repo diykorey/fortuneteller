@@ -69,16 +69,16 @@ tests/           # pytest suite (ruff + mypy --strict + pytest is the gate)
 Bootstrapping, **measurable-spine first**. M0 (the data spine), the MVP, ladder rungs 1–6 and the
 roadmap's steps 1–4b are complete. The repo holds ten events (US CPI, the jobs report, Fed
 decisions, retail sales, core PCE, GDP, the ISM survey and weekly jobless claims; ECB decisions and
-the euro area's flash inflation) and 24 markets (the S&P 500, the Nasdaq, the 10-year and 5-year yields, the dollar index
+the euro area's flash inflation) and 25 markets (the S&P 500, the Nasdaq, the 10-year and 5-year yields, the dollar index
 and the euro, gold, Brent, VIX, the DAX, the Euro Stoxx 50, the FTSE 100 and the STOXX 600,
-bitcoin, a defence and an energy ETF, the funds holding corn, wheat, soybean, gasoline and natural gas futures, utilities and homebuilders, and coffee), 1972 to today, from free sources: each market's measured move around every
+bitcoin, a defence and an energy ETF, the funds holding corn, wheat, soybean, gasoline and natural gas futures, utilities and homebuilders, coffee, and the 5-year breakeven inflation), 1972 to today, from free sources: each market's measured move around every
 release, how it relates to each surprise, and a walk-forward replay of every link.
 
 ```bash
 uv sync
 uv run fortuneteller --help                 # every command and what it prints
 uv run fortuneteller load-releases          # every event, from FRED, the Fed and TradingView (needs FT_FRED_API_KEY)
-uv run fortuneteller load-prices            # daily closes from Yahoo and the move around each release
+uv run fortuneteller load-prices            # daily closes from Yahoo and FRED and the move around each release (needs FT_FRED_API_KEY)
 uv run fortuneteller load-surprises         # each surprise against its expected values
 uv run fortuneteller raw-move --event cpi   # do release days move more than ordinary days?
 uv run fortuneteller surprise --event nfp   # does the move follow the surprise?

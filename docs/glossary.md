@@ -232,7 +232,8 @@ Terms are grouped by what they are about, alphabetical within each group.
   canonical symbol. Step 2 maps five: `^GSPC` (S&P 500 index), `^TNX`, `DX-Y.NYB` (dollar index),
   `GC=F` (gold futures), `^VIX`; cross-country two, `^GDAXI` and `^STOXX50E`; more outcomes nine,
   `BZ=F`, `EURUSD=X`, `^IXIC`, `^FVX`, `^FTSE`, `^STOXX`, `BTC-USD`, `ITA` and `XLE`; the markets
-  people feel seven, each its own symbol; coffee `KC=F`.
+  people feel seven, each its own symbol; coffee `KC=F`. FRED's series for the breakeven is
+  stored as `fred:T5YIE`.
 - **XLE** — the Energy Select Sector SPDR ETF, the US energy sector; oil's equity echo. Closes
   16:00 New York; no expected sign.
 - **XLU** — the Utilities Select Sector SPDR ETF, US utilities; household bills, bought for their
@@ -349,6 +350,9 @@ Terms are grouped by what they are about, alphabetical within each group.
   extreme point cannot drag. Step 4's "move per 0.1 pp of surprise".
 - **t0 / t1** — the two closes a release-day move is measured between: `t0` is the last trading day
   before the release date, `t1` the first trading day on or after it.
+- **T5YIE** — FRED's 5-year breakeven inflation, the 5-year Treasury yield less the 5-year TIPS
+  yield, read at 15:30 New York and published a day later ([the breakeven](steps/breakeven.md)); its
+  move is in basis points; no expected sign.
 - **Tick data** — every individual trade and quote, the highest-resolution (and most expensive)
   market data. Deliberately deferred: daily bars can prove the loop.
 

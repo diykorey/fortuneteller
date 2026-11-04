@@ -283,7 +283,7 @@ def test_raw_move_prints_a_verdict_per_instrument_and_the_rule(
     # then every instrument has a verdict line, and the rule is printed with them
     out = capsys.readouterr().out
     assert code == 0
-    assert sum(line.endswith(" moves") for line in out.splitlines()) == 24
+    assert sum(line.endswith(" moves") for line in out.splitlines()) == 25
     assert "moves = ratio >= 1.10 and p < 0.01" in out
 
 
@@ -333,7 +333,7 @@ def test_raw_move_takes_the_event_to_measure(
 
     # then the jobs report gets its verdicts, and CPI says what to load first
     assert nfp == 0
-    assert sum(line.endswith(" moves") for line in nfp_out.splitlines()) == 24
+    assert sum(line.endswith(" moves") for line in nfp_out.splitlines()) == 25
     assert cpi == 1
     assert "no CPI / inflation surprise releases stored" in capsys.readouterr().err
 
@@ -347,7 +347,7 @@ def test_raw_move_measures_ecb_decisions(tmp_db: Path, capsys: pytest.CaptureFix
 
     # then each market gets its verdict
     assert code == 0
-    assert sum(line.endswith(" moves") for line in capsys.readouterr().out.splitlines()) == 24
+    assert sum(line.endswith(" moves") for line in capsys.readouterr().out.splitlines()) == 25
 
 
 @pytest.mark.parametrize(
@@ -366,7 +366,7 @@ def test_raw_move_measures_tradingview_releases(
 
     # then each market gets its verdict
     assert code == 0
-    assert sum(line.endswith(" moves") for line in capsys.readouterr().out.splitlines()) == 24
+    assert sum(line.endswith(" moves") for line in capsys.readouterr().out.splitlines()) == 25
 
 
 def test_another_events_days_are_not_ordinary_days() -> None:
@@ -644,7 +644,7 @@ def test_raw_move_over_a_week(tmp_db: Path, capsys: pytest.CaptureFixture[str]) 
     out = capsys.readouterr().out.splitlines()
     assert code == 0
     assert out[0] == "over a week: the move from the close before each day to the 5th close"
-    assert sum(line.split()[-1] in (MOVES, UNCLEAR, DOESNT_MOVE) for line in out[2:26]) == 24
+    assert sum(line.split()[-1] in (MOVES, UNCLEAR, DOESNT_MOVE) for line in out[2:27]) == 25
 
 
 def test_a_debt_limit_vote_reacts_on_each_market_s_next_close(tmp_path: Path) -> None:

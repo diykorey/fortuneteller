@@ -365,6 +365,7 @@ def test_an_08_30_release_in_new_york_reacts_in_frankfurt_the_same_day(
         "XLU",
         "ITB",
         "KC",
+        "T5YIE",
     ],
 )
 def test_an_08_30_release_in_new_york_reacts_the_same_day_in_london_zurich_and_utc(
@@ -392,25 +393,26 @@ def test_an_08_30_release_reacts_in_the_euro_s_next_london_day(released: date) -
     assert day == released + timedelta(days=1)
 
 
-def test_a_14_00_fed_decision_reacts_in_london_and_coffee_the_next_day_and_in_brent_the_same_day() -> (
+def test_a_14_00_fed_decision_reacts_next_day_in_london_and_coffee_same_day_in_brent_and_breakeven() -> (
     None
 ):
     # given a Fed decision at 14:00 New York
     decision = flows.fomc_event_instance(sources.FomcDecision(date(2022, 9, 21), True))
 
-    # when its first reaction day is found on the FTSE 100, bitcoin, Brent and coffee
+    # when its first reaction day is found on the FTSE 100, bitcoin, Brent, coffee and the breakeven
     days = {
         instrument: study.first_reaction_day(decision, study.MVP_PRICE_SERIES[instrument])
-        for instrument in ("UKX", "BTC", "BRN", "KC")
+        for instrument in ("UKX", "BTC", "BRN", "KC", "T5YIE")
     }
 
-    # then London (19:00 there) and coffee's 13:30 settlement have passed; bitcoin's UTC day and
-    # Brent's 14:30 settlement have not
+    # then London (19:00 there) and coffee's 13:30 settlement have passed; bitcoin's UTC day,
+    # Brent's 14:30 settlement and the breakeven's 15:30 curve have not
     assert days == {
         "UKX": date(2022, 9, 22),
         "BTC": date(2022, 9, 21),
         "BRN": date(2022, 9, 21),
         "KC": date(2022, 9, 22),
+        "T5YIE": date(2022, 9, 21),
     }
 
 
@@ -431,7 +433,7 @@ def test_the_more_outcomes_take_their_signs_by_analogy() -> None:
 
     # then the euro mirrors the dollar index, the 5-year yield follows the 10-year's, the Nasdaq the
     # S&P 500's, the FTSE 100 and the STOXX 600 the DAX's, the rest, the seven markets people feel
-    # and coffee have none, in the markets' order
+    # and coffee and the breakeven have none, in the markets' order
     assert {k: v for k, v in signs.items() if k not in seven} == {
         "BRN": 0,
         "EURUSD": -1,
@@ -450,6 +452,7 @@ def test_the_more_outcomes_take_their_signs_by_analogy() -> None:
         "XLU": 0,
         "ITB": 0,
         "KC": 0,
+        "T5YIE": 0,
     }
     assert list(signs) == list(study.MVP_PRICE_SERIES)
 
