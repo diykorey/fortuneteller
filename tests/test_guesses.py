@@ -8,6 +8,7 @@ import duckdb
 import pytest
 
 from fortuneteller import db, expectations, flows, study
+import fortuneteller.__main__ as cli
 from fortuneteller.__main__ import main
 from fortuneteller.config import settings
 from fortuneteller.models import DailyBar
@@ -269,6 +270,7 @@ def test_the_scoreboard_shows_the_guesses_as_score_prints_them(
     _closes(con)
     out_dir = tmp_path / "scoreboard"
     monkeypatch.setattr(settings, "scoreboard_dir", out_dir)
+    monkeypatch.setattr(cli, "week_ahead", lambda con, today, cache_dir: [])
 
     # when the log is scored and the scoreboard written
     assert main(["score"]) == 0

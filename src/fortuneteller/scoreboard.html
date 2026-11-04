@@ -46,6 +46,15 @@ a { color: inherit; }
 verdicts for every market; every link's record on the replay. The numbers are the ones
 <a href="https://github.com/diykorey/fortuneteller">the commands</a> print.</p>
 
+<h2>The week ahead</h2>
+<p class="muted"><strong>Entertainment, not financial advice. Nothing is called until the number
+lands; this is the rule it will follow.</strong> For each release in the next seven days: what
+forecasters expect, and what the fortune teller will say if the number lands beyond either
+threshold. A smaller surprise gets no call. Each market's record is its replay, every release
+predicted from the ones before it.</p>
+<div class="wrap"><table id="ahead"></table></div>
+<p class="muted" id="ahead-rule"></p>
+
 <h2>The calls</h2>
 <p class="muted">Each release's lines as logged that morning: the direction called, the link's record
 before it as counts, the band half its moves land in, and the grade on the close.</p>
@@ -111,6 +120,48 @@ record is shown, losses included. A handle is dropped from the page on request; 
   byId('when').textContent = data.data_until
     ? 'Data to ' + data.data_until + '; written ' + data.written + '.'
     : 'Written ' + data.written + '.';
+
+  // The week ahead: releases not yet past, each market's rule and record.
+  const ahead = byId('ahead');
+  const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+  const coming = (data.ahead || []).filter((r) => r.day >= today);
+  ahead.appendChild(head(['Day', 'Event', 'Expected', 'Market', 'If above', 'If below', 'Record before']));
+  if (data.ahead === null) {
+    ahead.appendChild(row([el('td', 'The calendar could not be read on ' + data.written + '.', 'none')]));
+  } else if (!coming.length) {
+    ahead.appendChild(row([el('td', 'No release the fortune teller calls in the week from ' + data.written + '.', 'none')]));
+  }
+  coming.forEach((r) => {
+    Object.entries(r.links).forEach(([market, l], i) => {
+      const first = i === 0;
+      const expected = el('td', first ? String(r.consensus) : '');
+      if (first) expected.appendChild(el('small', r.consensus_from + "'s consensus"));
+      const side = (threshold, direction) => {
+        const td = el('td', r.shared.length || !direction ? 'silent' : direction, direction && !r.shared.length ? '' : 'none');
+        td.appendChild(el('small', threshold));
+        return td;
+      };
+      let record = 'no calls yet';
+      if (l.predictions) {
+        record = l.right + ' of ' + l.predictions;
+        if (l.verdict === 'too few') record += ' so far, too few to judge (needs 30)';
+        else if (l.verdict !== 'holds') record += ", doesn't hold";
+      }
+      const recordCell = el('td', record, l.verdict === 'holds' ? 'yes' : 'none');
+      if (l.predictions) {
+        recordCell.appendChild(el('small', 'its expected direction alone: ' + l.always_right + ' of ' + l.predictions));
+      }
+      const event = el('td', first ? r.label : '');
+      if (first && r.shared.length) event.appendChild(el('small', 'silent: the day also holds ' + r.shared.join(', ')));
+      ahead.appendChild(row([
+        el('td', first ? r.day + ' ' + r.time + ' New York' : ''), event, expected, el('td', market),
+        side('above ' + r.above, l.above), side('below ' + r.below, l.below), recordCell,
+      ]));
+    });
+  });
+  byId('ahead-rule').textContent = 'Written ' + data.written + '; a release whose day has passed is dropped. '
+    + 'The threshold is the consensus plus or minus the rule\'s noticeable surprise; below, each market is called the other way. '
+    + data.rules.walk_forward;
 
   // The calls, newest day first; a release since the log began with no rows is a missed one.
   const calls = byId('calls');

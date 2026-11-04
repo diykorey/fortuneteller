@@ -31,6 +31,9 @@ evening job. The first thing delivered beyond this laptop.
   `raw-move` 18 s, `surprise` 44 s, `predict` 17 s; about ten minutes for every flow (*amended
   2026-10-23:* the whole command took 193 s for eight events, the ordinary days being counted once
   per flow rather than once per command).
+- **The week ahead** (*added 2026-11-04*, [step 15](week-ahead.md)): `ahead` lists each release
+  `live` calls in the next seven days, its consensus, thresholds and each link's rule and record;
+  `null` when the calendar cannot be read. The page shows it first.
 - **Our numbers only.** The JSON holds verdicts, records and the calls already committed in
   `data/calls.csv`; no price or release series, the repository being public. *Amended 2026-11-03*
   ([beat the fortune teller](beat-the-fortune-teller.md)): the players' guesses are shown too, and
