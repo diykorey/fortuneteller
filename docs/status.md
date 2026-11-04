@@ -13,7 +13,7 @@ days, three farm and fuel funds on the ISM survey's; no new market holds walk-fo
 
 ## In progress
 
-Step 19, part 2: coffee, the 5-year breakeven and signs (spec to write).
+Step 19, part 2a: coffee ([the spec](steps/coffee.md)).
 
 Step 18, part 2, step 3: the first triggers graded ([the spec](steps/trigger-file.md)). It waits for
 the owner's first trigger, a file under `data/triggers/` merged before a market's reaction close.
@@ -30,7 +30,7 @@ jobs report on 2026-11-06 is the first.
 
 ## Next
 
-Step 19, part 2's build, once its spec is merged.
+Step 19, part 2b: the 5-year breakeven, from FRED.
 
 ## Done
 
