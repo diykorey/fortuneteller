@@ -524,6 +524,10 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **Handle** — the name a player picks in a guess file's name, lowercase, unchecked.
 - **Void guess** — a guess listed with why and never graded: not a flow `live` calls, not one of its
   links, not merged through a pull request before the release, no release that day, or a repeat.
+- **Trigger** — an event the owner files after it happens, a row `flow,day,kind` in a CSV under
+  `data/triggers/` added through a pull request; answered from the reaction close on each market it
+  was merged in time for, logged in `data/trigger-log.csv` and graded when the span ends
+  ([a trigger arrives](steps/trigger-file.md)).
 - **The reset** — 2026-08-05, when `main` was rolled back to the M0 spine because the
   implementation had become over-engineered for the stage. Recorded in [CLAUDE.md](../CLAUDE.md).
 - **The spine** — the M0 data layer: models, schema, store, seed loader, CLI. Shipped.
