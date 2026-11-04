@@ -289,31 +289,34 @@ def test_follows_prints_the_table_and_needs_the_key(
 
 
 NFP = flows.flow_named("nfp")
+RETAIL = flows.flow_named("retail")
 
 
-def _report(day: date) -> flows.EventInstance:
-    # a jobs report released at 08:30 New York on ``day``
+def _report(day: date, flow: flows.EventFlow = NFP) -> flows.EventInstance:
+    # a release of ``flow`` at 08:30 New York on ``day``
     at = datetime.combine(day, time(8, 30), tzinfo=sources.NEW_YORK)
     return _decision(day).model_copy(
         update={
-            "event_id": flows.event_id(NFP, day),
-            "event_type": NFP.event_type,
+            "event_id": flows.event_id(flow, day),
+            "event_type": flow.event_type,
             "event_ts": at.astimezone(UTC).replace(tzinfo=None),
         }
     )
 
 
-def _store_reports(surprises: list[tuple[date, str, float]]) -> None:
-    # each report with one surprise row: (day, baseline, surprise in thousands)
+def _store_reports(
+    surprises: list[tuple[date, str, float]], flow: flows.EventFlow = NFP, measure: str = "payrolls"
+) -> None:
+    # each release with one surprise row: (day, baseline, surprise in the measure's unit)
     db.init_db()
-    reports = {day: _report(day) for day, _, _ in surprises}
+    reports = {day: _report(day, flow) for day, _, _ in surprises}
     db.insert_models("event_instances", list(reports.values()))
     db.insert_models(
         "surprises",
         [
             Surprise(
                 event_id=reports[day].event_id,
-                measure="payrolls",
+                measure=measure,
                 baseline=baseline,
                 actual_mom=0.0,
                 expected_mom=0.0,
@@ -444,4 +447,62 @@ def test_follows_for_the_jobs_report_needs_no_key_but_its_surprises(
         "follows: 3 jobs reports 2001-01-29 … 2001-05-21: 1 above, 1 as expected, 1 below"
     )
     assert out[1].startswith("kind        span   market")
+    assert out[2].startswith("above       day    SPY / ES       1   ")
+
+
+def test_a_retail_release_s_kind_is_read_at_its_own_threshold(tmp_db: Path) -> None:
+    # given retail sales releases 0.3, 0.29, -0.3 and -0.29pp off the consensus
+    days = [date(2024, 1, 17), date(2024, 2, 15), date(2024, 3, 14), date(2024, 4, 15)]
+    _store_reports(
+        [
+            (days[0], "nasdaq_consensus", 0.3),
+            (days[1], "nasdaq_consensus", 0.29),
+            (days[2], "nasdaq_consensus", -0.3),
+            (days[3], "nasdaq_consensus", -0.29),
+        ],
+        RETAIL,
+        "retail_sales",
+    )
+
+    # when the kinds are read
+    kinds = study.release_kinds(RETAIL)
+
+    # then the 0.3pp line, not another flow's, separates them
+    assert [kinds[flows.event_id(RETAIL, day)] for day in days] == [
+        ABOVE,
+        AS_EXPECTED,
+        BELOW,
+        AS_EXPECTED,
+    ]
+
+
+def test_follows_for_retail_sales_prints_its_table(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given no FRED key, one market's closes, and three retail sales releases with surprises
+    monkeypatch.setattr(settings, "fred_api_key", None)
+    monkeypatch.setattr(study, "MVP_PRICE_SERIES", {"SPY / ES": study.MVP_PRICE_SERIES["SPY / ES"]})
+    closes = _closes(_alternating(300))
+    days = [closes[i].day for i in (20, 60, 100)]
+    db.init_db()
+    db.get_connection().executemany(
+        "INSERT INTO daily_bars (instrument, day, close, source) VALUES ('SPY / ES', ?, ?, 'test')",
+        [[c.day, c.price] for c in closes],
+    )
+    _store_reports(
+        [(days[0], "nasdaq_consensus", 0.4), (days[1], "nasdaq_consensus", 0.0)]
+        + [(days[2], "nasdaq_consensus", -0.4)],
+        RETAIL,
+        "retail_sales",
+    )
+
+    # when run
+    code = main(["follows", "--event", "retail"])
+
+    # then it prints the retail sales releases' table
+    out = capsys.readouterr().out.splitlines()
+    assert code == 0
+    assert out[0] == (
+        "follows: 3 retail sales releases 2001-01-29 … 2001-05-21: 1 above, 1 as expected, 1 below"
+    )
     assert out[2].startswith("above       day    SPY / ES       1   ")

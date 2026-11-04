@@ -539,7 +539,11 @@ def describe_follows(
 
 
 # What ``follows`` calls each flow's events in its header.
-FOLLOWS_NOUNS = {"fomc": "Fed decisions", "nfp": "jobs reports"}
+FOLLOWS_NOUNS = {
+    "fomc": "Fed decisions",
+    "nfp": "jobs reports",
+    "retail": "retail sales releases",
+}
 
 
 def _follows(args: argparse.Namespace) -> int:
