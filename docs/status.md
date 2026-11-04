@@ -34,6 +34,7 @@ markets people feel, spans from a day to a year.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-04 | The target: many countries, the US first | PR #237 |
 | 2026-11-04 | The target amended: news triggers, the markets people feel, spans from a day to a year; roadmap steps 17–20 | PR #236 |
 | 2026-11-04 | The week ahead, without a call, step 1: the events not called, with their records | PR #235 |
 | 2026-11-04 | The week ahead, without a call: spec | PR #234 |
