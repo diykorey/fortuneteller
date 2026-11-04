@@ -260,8 +260,8 @@ Terms are grouped by what they are about, alphabetical within each group.
   what was decided and its day, standing in for a news item (roadmap step 18). Not a *graduation
   trigger*.
 - **Up / down / about the same / can't say** — *added 2026-11-04*: a span's four answers against
-  its base rate, by the rule fixed in roadmap step 17's spec; *can't say* is shown, never graded
-  as right.
+  its base rate, by the rule in [what follows](steps/what-follows.md); under ten events, *too few*.
+  *Can't say* is shown and counted, never graded.
 - **Breakeven inflation** — *added 2026-11-04*: the inflation bond markets expect, a Treasury
   yield less the inflation-protected yield of the same maturity; FRED's 5-year series `T5YIE`.
 - **Vintage / new-and-revised view** — a series' values as they stood on one release day. FRED's
