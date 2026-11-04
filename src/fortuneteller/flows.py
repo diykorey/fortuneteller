@@ -456,7 +456,7 @@ def with_more_outcomes(signs: dict[str, int]) -> dict[str, int]:
     """The nine more outcomes' signs by analogy (docs/steps/more-outcomes.md): the euro the dollar
     index's reversed, the 5-year yield the 10-year's, the Nasdaq the S&P 500's, the FTSE 100 and
     the STOXX 600 the DAX's; oil, bitcoin and the two sector ETFs none, nor the seven markets people
-    feel (docs/steps/markets-people-feel.md)."""
+    feel (docs/steps/markets-people-feel.md), nor coffee (docs/steps/coffee.md)."""
     return {
         **signs,
         "BRN": 0,
@@ -475,6 +475,7 @@ def with_more_outcomes(signs: dict[str, int]) -> dict[str, int]:
         "UNG": 0,
         "XLU": 0,
         "ITB": 0,
+        "KC": 0,
     }
 
 

@@ -28,3 +28,4 @@ UGA,Gasoline (United States Gasoline Fund),commodity,us,NYSE Arca,Holds RBOB gas
 UNG,Natural gas (United States Natural Gas Fund),commodity,us,NYSE Arca,Holds natural gas futures; heating.
 XLU,US utilities sector ETF,sector_etf,us,NYSE Arca,Utilities Select Sector SPDR; household bills and rates.
 ITB,US homebuilders ETF,sector_etf,us,Cboe BZX,iShares U.S. Home Construction; housing and mortgages.
+KC,Coffee (arabica front month),commodity,global,ICE US,Front-month future; rolls five times a year.
