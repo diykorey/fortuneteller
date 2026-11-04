@@ -66,13 +66,66 @@ At the end: `fortuneteller follows --event nfp` prints part 1's table for the jo
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | `release_kinds`; the kinds passed through; `follows --event nfp` | The tests below pass; on a copy of the store the header reads `follows: 222 jobs reports 2008-03-07 … 2026-10-02: 68 above, 104 as expected, 50 below` and 144 cells print |
-| 2 | Results here and in [MVP results](../mvp-results.md), the expected outcome checked, the roadmap row; each answer's counts also without 2020-03 … 2021-12, as a reading aid | Each kind's answers, release marks and walk-forward records recorded against the expected outcome |
+| 1 | ~~`release_kinds`; the kinds passed through; `follows --event nfp`~~ **done** 2026-11-04 (PR #242) | The tests below pass; on a copy of the store the header reads `follows: 222 jobs reports 2008-03-07 … 2026-10-02: 68 above, 104 as expected, 50 below` and 144 cells print |
+| 2 | ~~Results here and in [MVP results](../mvp-results.md), the expected outcome checked, the roadmap row; each answer's counts also without 2020-03 … 2021-12, as a reading aid~~ **done** 2026-11-04, [below](#results) | Each kind's answers, release marks and walk-forward records recorded against the expected outcome |
 
 *Step 1, 2026-11-04 (PR #242):* on a copy of the store the header reads as written above and 144
 cells print; the Fed's table is byte for byte the one part 1 recorded. The header now counts the
 decisions with a kind only: the same 276 today, one fewer in the days after a meeting before FRED
 has the new rate; with none, `follows` says so and exits 1.
+
+## Results
+
+Measured 2026-11-04 on a copy of the store: 222 reports, 68 above, 104 as expected, 50 below.
+
+**Two answers hold walk-forward: after a report above the consensus, the 10-year and the 5-year
+yields rise on the day**, right on 38 and 37 of 57 graded (67% and 65%). Nothing else holds: the
+dollar index (27 of 53), EUR/USD (18 of 45), VIX (24 of 49) and the defence ETF (22 of 50) after
+*above*, VIX after *as expected* (41 of 72) and the 5-year yield after *below* (15 of 30) are
+*doesn't*.
+
+**On all history, 13 answers**, against about 4.3 by chance for the 144 cells:
+
+| Kind | Span | Market | Up / same / down | Answer | Chance | Without 2020-03 … 2021-12 | Read as |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| above | day | UST10Y / ZN | 47 / 8 / 13 | up | under 0.0001 | up, 43 / 6 / 10 | the kind; **holds** |
+| above | day | UST5Y / ZF | 47 / 6 / 15 | up | 0.0001 | up, 44 / 3 / 12 | the kind; **holds** |
+| above | day | DXY | 39 / 16 / 13 | up | 0.0005 | up | the kind |
+| above | day | EURUSD | 10 / 24 / 34 | down | 0.0003 | down | *the period or the weekday* |
+| above | day | VIX | 14 / 17 / 37 | down | 0.0068 | down | the release: *as expected* answers it too |
+| above | day | ITA | 36 / 19 / 13 | up | 0.0047 | *can't say* | the kind, gone without 2020–21 |
+| above | week | UST10Y / ZN | 37 / 14 / 17 | up | 0.0056 | up | the kind |
+| above | week | UST5Y / ZF | 35 / 18 / 15 | up | 0.0051 | up | the kind |
+| as expected | day | VIX | 19 / 26 / 59 | down | 0.0001 | down | the release |
+| below | day | DXY | 12 / 9 / 29 | down | 0.0032 | down | the kind |
+| below | day | GC / XAU | 30 / 12 / 8 | up | 0.0011 | up | the kind |
+| below | day | UST5Y / ZF | 11 / 9 / 30 | down | 0.0014 | down | the kind |
+| below | week | GC / XAU | 28 / 14 / 8 | up | 0.0044 | up | the kind |
+
+Over the month nothing answers. Of the 134 month spans kept on the 10-year yield, 88 hold the next
+report's reaction close; a month answer would have carried it.
+
+**Against the expected outcome, written first:**
+
+- Arithmetic: neither *above* nor *below* holds over the month (39 and 29 counted, none graded to
+  30): **right**.
+- On the day, *above* answers both yields and the dollar *up* and EUR/USD *down*; *below* at least
+  two reverses (the dollar and the 5-year yield); at least 5 answers on these four markets (6):
+  **right**.
+- Walk-forward, *above* holds on the 5-year yield: **right**; on the dollar index and EUR/USD:
+  **wrong**; nothing else holds: **wrong**, the 10-year yield holds too.
+- Over the week, *above* stays on the 5-year yield: **right**; on the dollar index: **wrong**
+  (*can't say*; the 10-year yield instead). Over the month at most 2 answers: **right** (none).
+- *As expected* answers nothing: **wrong**, VIX falls, as on every report's day: the release.
+- Left out over the month about half for overlap (29 of 68 above): **right**; the FTSE 100 and
+  the DAX losing more to holes (13 and 14): **right**.
+
+**What it means.** A reader told "more jobs than expected" can be told, with a record, that
+Treasury yields most probably rise that day: right on two in three replayed reports. The rise
+mostly stays for the week on all history, though not graded to 30 there. A miss lowers the dollar
+and the 5-year yield and lifts gold on the day, without a record yet. Whatever the report says,
+VIX tends to fall on its day, as on a Fed hold: a scheduled release lifts uncertainty off the
+market.
 
 ## How you know it is right
 
