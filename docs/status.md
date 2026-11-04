@@ -8,9 +8,9 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-What follows, part 1, step 2 *(PR #240)*: after 276 Fed decisions, nothing holds walk-forward over
-a day, a week or a month; four answers on all history against 4.3 by chance; VIX on the day of a
-hold the nearest, right on 51%, short of the 60% bar.
+What follows, part 1b, step 2 *(PR #243)*: after a jobs report above the consensus, the 10-year
+and 5-year yields rise on the day and hold walk-forward (67%, 65%), the first answers by kind to
+pass every bar; 13 answers on all history against 4.3 by chance.
 
 ## In progress
 
@@ -24,19 +24,16 @@ Beat the fortune teller, step 3: the first live round, a release `live` calls gu
 merged pull request ([the spec](steps/beat-the-fortune-teller.md)). It waits for a release; the
 jobs report on 2026-11-06 is the first.
 
-What follows, part 1b ([the spec](steps/what-follows-jobs.md)): the jobs report above, as
-expected or below its consensus, each market over a day, a week and a month.
-
-What follows, part 1b, step 1: `follows --event nfp`.
-
 ## Next
 
-What follows, part 1b, step 2: the results on the store.
+Not yet chosen: the next release by kind (CPI, retail sales), part 2 (the quarter and the year),
+or step 18 (a trigger file), which now has two answers to show.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-04 | What follows, part 1b, step 2: results — after a report above the consensus, both yields rise on the day and hold | PR #243 |
 | 2026-11-04 | What follows, part 1b, step 1: `follows --event nfp` | PR #242 |
 | 2026-11-04 | What follows, part 1b: spec, the jobs report by kind | PR #241 |
 | 2026-11-04 | What follows, part 1, step 2: results — nothing holds; four answers near chance; VIX on hold days the nearest | PR #240 |

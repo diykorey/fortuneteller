@@ -450,6 +450,17 @@ nearest is VIX on the day of a hold**: down on 93 of 184, and walk-forward right
 (51%) against its base rate of about a third, a chance of 0.00001; it misses only the 60% bar. No
 answer; nothing for step 18 to show yet.
 
+## What follows a jobs report
+
+Measured 2026-11-04. Detail in [what follows a jobs report](steps/what-follows-jobs.md#results).
+
+Part 1's method on 222 jobs reports since 2008, each *above*, *as expected* or *below* the
+consensus by 50k. **After a report above the consensus, the 10-year and 5-year Treasury yields
+rise on the day, and hold walk-forward**: right on 38 and 37 of 57 graded (67%, 65%). The first
+answers by kind that pass every bar. On all history 13 answers against 4.3 by chance; the yields'
+rise stays over the week, untested walk-forward; nothing answers over the month. VIX falls on a
+report's day whatever it says, the release's doing, not the kind's.
+
 ## What comes next
 
 Chosen 2026-10-13: keep score ([rung 4](steps/rung-4-keep-score.md)), done above with the live path
