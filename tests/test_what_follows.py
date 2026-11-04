@@ -325,14 +325,15 @@ def _store_reports(surprises: list[tuple[date, str, float]]) -> None:
 
 
 def test_a_report_s_kind_is_read_from_its_consensus_surprise(tmp_db: Path) -> None:
-    # given reports 50k, 49.9k, -50k and -49.9k off the consensus, and one with only a trend
-    # surprise of 200k
+    # given reports 50k, 49.9k, -50k and -49.9k off the consensus, one with only a trend surprise
+    # of 200k, and one whose consensus surprise is missing
     days = [
         date(2024, 1, 5),
         date(2024, 2, 2),
         date(2024, 3, 8),
         date(2024, 4, 5),
         date(2024, 5, 3),
+        date(2024, 6, 7),
     ]
     _store_reports(
         [
@@ -341,18 +342,23 @@ def test_a_report_s_kind_is_read_from_its_consensus_surprise(tmp_db: Path) -> No
             (days[2], "nasdaq_consensus", -50.0),
             (days[3], "nasdaq_consensus", -49.9),
             (days[4], "trend_12m", 200.0),
+            (days[5], "nasdaq_consensus", 0.0),
         ]
+    )
+    db.get_connection().execute(
+        "UPDATE surprises SET surprise = NULL WHERE event_id = ?", [flows.event_id(NFP, days[5])]
     )
 
     # when the kinds are read
     kinds = study.release_kinds(NFP)
 
-    # then above, as expected, below, as expected, and the trend-only report has none
+    # then above, as expected, below, as expected, and the last two have none
     assert [kinds.get(flows.event_id(NFP, day)) for day in days] == [
         ABOVE,
         AS_EXPECTED,
         BELOW,
         AS_EXPECTED,
+        None,
         None,
     ]
 

@@ -579,6 +579,9 @@ def _follows(args: argparse.Namespace) -> int:
     except (sources.FredError, ValueError) as exc:
         print(f"follows: {exc}", file=sys.stderr)
         return 1
+    if not events:
+        print(f"follows: no {noun} with a kind yet", file=sys.stderr)
+        return 1
     for line in describe_follows(events, kinds, cells, order, noun):
         print(line)
     return 0
