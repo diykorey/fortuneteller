@@ -124,6 +124,12 @@ this by splitting the results by era.
 | Merge method | Merge commit or squash; with a rebase merge GitHub's merge commit is the pull request's last commit, so a guess counts only if that commit added the file | Matching any commit the pull request brought in | A rebased guess pull request |
 | The handle | Chosen by the player, unchecked: one person can play under two | The pull request author's GitHub login | A handle whose record looks hedged |
 
+## Step 17 — what follows, by kind
+
+| Choice | Now | More precise | Trigger |
+| --- | --- | --- | --- |
+| Retail sales' kind | Read from the month-on-month change computed from stored levels, unrounded, against the consensus at ±0.3pp ([part 1c](steps/what-follows-retail.md)); CPI's is read from the headline rounded to 0.1 ([part 1d](steps/what-follows-cpi.md)) | Retail sales' kind from its headline rounded to 0.1 too, as a dated rerun beside part 1c's | Retail sales is shown to a reader by kind, or a retail answer sits near a bar |
+
 ## Steps 1–2 — choices already built in
 
 | Choice | Now | More precise | Trigger |
