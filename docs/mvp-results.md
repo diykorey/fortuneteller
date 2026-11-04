@@ -486,6 +486,17 @@ yield down and gold up on the day, among them. Every one turns to *can't say* wi
 shares with retail sales or the Fed. A hotter print, the headline that worries a reader, answers
 nothing.
 
+## What follows from the next close
+
+Measured 2026-11-04. Detail in [what follows from the next close](steps/after-the-day.md#results).
+
+Step 17's method on spans that start at the reaction close, the only ones a trigger dated by its
+merge can be graded on, for the Fed, the jobs report, retail sales and CPI. **Nothing holds
+walk-forward, on any flow.** On all history there are 20 answers, against about 17 by chance, 13
+of them *about the same*. VIX rises the day after a jobs report above or as expected, mostly a Monday:
+the release. After a strong report, Europe's stocks fall the next day and the yields say nothing.
+Once the market has reacted, what follows is mostly no direction.
+
 ## What comes next
 
 Chosen 2026-10-13: keep score ([rung 4](steps/rung-4-keep-score.md)), done above with the live path

@@ -8,14 +8,11 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-What follows, part 1d, step 2 *(PR #249)*: CPI by kind, read from its headline, holds nothing
-walk-forward; 6 answers on all history against 4.3 by chance, all after a cooler print and all
-*can't say* without its shared days.
+A trigger arrives, part 1, step 2 *(PR #252)*: what follows from the reaction close holds nothing
+walk-forward on any flow; 20 answers on all history against about 17 by chance, 13 of them
+*about the same*.
 
 ## In progress
-
-Step 18, part 1: what follows from the next close ([the spec](steps/after-the-day.md)), the spans a
-trigger can answer, measured before any trigger exists.
 
 Waiting: the scoreboard's first release day on the published page (step 3); release-day job step
 3, evening score step 2 and rung 6 step 2: the first release the morning job logs, pops up and the
@@ -29,12 +26,13 @@ jobs report on 2026-11-06 is the first.
 
 ## Next
 
-Step 18, part 2: the trigger file and its log, once part 1's results are in.
+Step 18, part 2: the trigger file and its log ([part 1](steps/after-the-day.md) fixed what it must do).
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-04 | A trigger arrives, part 1, step 2: results — nothing holds from the next close; what follows the reaction is mostly no direction | PR #252 |
 | 2026-11-04 | A trigger arrives, part 1, step 1: `follows --after-the-day` | PR #251 |
 | 2026-11-04 | A trigger arrives, part 1: spec, what follows from the next close | PR #250 |
 | 2026-11-04 | What follows, part 1d, step 2: results — CPI by kind holds nothing; a cooler print's answers lean on shared days | PR #249 |
