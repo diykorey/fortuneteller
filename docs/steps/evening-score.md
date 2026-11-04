@@ -60,7 +60,8 @@ the worktree, the report and the push, and take `flock` on a lock file beside th
 Each run starts by discarding the worktree's changes, since a pending evening leaves
 `data/score.txt` changed. The
 evening service has `EnvironmentFile=` the main checkout's `.env` (plain `KEY=value`), never the key
-in a committed unit, and `TimeoutStartSec=20min`. `score` runs with a relative `FT_CALLS_PATH`, so
+in a committed unit, and `TimeoutStartSec=20min` (*40min since 2026-11-04*, when [the markets people feel](markets-people-feel.md)
+made the scoreboard rebuild take up to 14 minutes). `score` runs with a relative `FT_CALLS_PATH`, so
 `data/score.txt` names no home directory. Installing, like the morning's:
 
 ```bash

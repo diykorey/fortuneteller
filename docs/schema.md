@@ -312,7 +312,7 @@ Example rows:
 | `UST10Y / ZN` | 2022-09-13 | 3.422 | `yahoo:^TNX` |
 
 **How much data.** Counted from the live source on 2026-09-28, after the empty and weekend rows are
-dropped. It grows by about sixteen rows per trading day, one per instrument; 144,077 rows for the
+dropped. It grows by about 23 rows per trading day, one per instrument; 144,077 rows for the
 sixteen on 2026-10-27; 177,692 for the 23 on 2026-11-04.
 
 | Instrument | Rows | From |

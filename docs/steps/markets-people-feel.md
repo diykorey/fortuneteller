@@ -96,7 +96,8 @@ the triggers show them. No call is made on them yet.
   cells) without the seven and the chance lines.
 - Each fund's daily close, on 2026-10-29 to 11-03, is within 0.25% of its last 5-minute bar,
   15:55 to 16:00, so the 16:00 close stands.
-- The scoreboard was rebuilt in 829 s beside a second rebuild, against 492 s at sixteen markets.
+- The scoreboard was rebuilt in 772 s alone (829 s beside a second rebuild), against 492 s at sixteen
+  markets: under the 15-minute bar. The evening job's `TimeoutStartSec` goes from 20 to 40 minutes.
 
 ## How you know it is right
 
