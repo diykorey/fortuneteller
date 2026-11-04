@@ -76,7 +76,7 @@ class PriceSeries(NamedTuple):
 
 # Every market measured: the five MVP instruments, Europe's two stock indices
 # (docs/steps/cross-country.md) and the nine more outcomes (docs/steps/more-outcomes.md), keyed by
-# the exact symbol in data/seed/instruments.csv, with the Yahoo ticker each is read from, the unit
+# the exact symbol in data/seed/instruments.csv, with the Yahoo ticker (or FRED series) each is read from, the unit
 # its move is measured in (pct for prices, bps for a yield) and the local time and zone of its
 # daily close: the intraday price Yahoo's close matches, measured on 2026-09 and 2026-10 data.
 # Gold's and Brent's are their settlements; a stock index's the closing auction after its last

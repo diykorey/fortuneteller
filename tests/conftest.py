@@ -34,14 +34,21 @@ def no_calendars(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
         raise AssertionError(f"a test asked {what}")
 
     monkeypatch.setattr(sources, "_calendar_get", refuse)
+
+    # No FRED series is fetched either, unless a test serves it (the breakeven: fred_breakeven).
+    def refuse_fred(api_key: str, series_id: str, timeout: float = 30.0) -> bytes:
+        raise AssertionError(f"a test asked FRED for {series_id}")
+
+    monkeypatch.setattr(sources, "fetch_series", refuse_fred)
+
     # No statement is ahead on a test's day unless the test says so.
     monkeypatch.setattr(flows.StatementFlow, "ahead", lambda self, cache_dir, now: None)
 
 
 @pytest.fixture
 def fred_breakeven(monkeypatch: pytest.MonkeyPatch) -> None:
-    # FRED answers the breakeven with four closes around 2022-09-13, the Yahoo fixtures' days, and
-    # a key is set; every other FRED series is refused, so no test reaches FRED
+    # FRED answers the breakeven on five days around 2022-09-13, the Yahoo fixtures', one without a
+    # value, and a key is set; every other FRED series is refused, so no test reaches FRED
     monkeypatch.setattr(settings, "fred_api_key", SecretStr("test-key"))
     observations = [
         {"date": "2022-09-09", "value": "2.54"},

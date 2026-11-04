@@ -60,8 +60,17 @@ triggers show it. No call is made on it.
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | The breakeven: a seed row, an `MVP_PRICE_SERIES` row read from FRED, a 0 sign, `load-prices` stores it, with the FRED key | The tests below pass. On a copy of the store the procedure gives an empty diff, the counts are in `docs/schema.md` and the rebuild time here |
+| 1 | ~~The breakeven: a seed row, an `MVP_PRICE_SERIES` row read from FRED, a 0 sign, `load-prices` stores it, with the FRED key~~ **done** 2026-11-04 (PR #263) | The tests below pass. On a copy of the store the procedure gives an empty diff, the counts are in `docs/schema.md` and the rebuild time here |
 | 2 | Results here and in [MVP results](../mvp-results.md) | Its *does it move?* verdict for every flow and its `follows` answers, against the expected outcome |
+
+*Step 1, 2026-11-04 (PR #263):*
+- On a copy of the store `load-prices` stored the breakeven's 5,964 closes, 2003-01-02 to
+  2026-11-03 (the 4th not yet published that evening); 190,387 for the 25.
+- The procedure gave an empty diff: `follows` for its four flows with and without the flag, `score`,
+  `raw-move` and `surprise` for every flow, and the scoreboard's whole `data.json`, without the
+  breakeven and the chance lines.
+- The scoreboard was rebuilt in 826 s alone (990 s beside a second rebuild), under the 15-minute
+  bar, now with 74 s to spare: the next market may not fit without making the rebuild faster.
 
 ## How you know it is right
 

@@ -8,12 +8,12 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Coffee, step 2 *(PR #261)*: coffee moves on no flow, unclear on the ISM survey's day; no `follows`
-answer.
+The breakeven, step 1 *(PR #263)*: FRED's `T5YIE` stored and shown, unsigned, the first series
+not from Yahoo; every existing output unchanged.
 
 ## In progress
 
-Step 19, part 2b: the breakeven ([the spec](steps/breakeven.md)).
+Step 19, part 2b, step 2: the breakeven's results ([the spec](steps/breakeven.md)).
 
 Step 18, part 2, step 3: the first triggers graded ([the spec](steps/trigger-file.md)). It waits for
 the owner's first trigger, a file under `data/triggers/` merged before a market's reaction close.
@@ -36,6 +36,7 @@ Step 19, part 2c: signs for the markets people feel, held until after the jobs r
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-04 | The breakeven, step 1: FRED's `T5YIE`, unsigned | PR #263 |
 | 2026-11-04 | Coffee, step 2: results | PR #261 |
 | 2026-11-04 | Coffee, step 1: `KC=F`, unsigned | PR #260 |
 | 2026-11-04 | The markets people feel, part 1, step 2: results | PR #258 |
