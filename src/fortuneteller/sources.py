@@ -730,7 +730,7 @@ def calendar_rows(payload: bytes) -> list[tuple[datetime, str, str]]:
     country and its title."""
     try:
         return [
-            (_utc(row["date"]), row.get("country", ""), row["title"])
+            (_utc(row["date"]), row.get("country") or "", row["title"])
             for row in _tradingview_rows(payload)
         ]
     except MALFORMED_REPLY as exc:

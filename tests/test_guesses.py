@@ -271,6 +271,7 @@ def test_the_scoreboard_shows_the_guesses_as_score_prints_them(
     out_dir = tmp_path / "scoreboard"
     monkeypatch.setattr(settings, "scoreboard_dir", out_dir)
     monkeypatch.setattr(cli, "week_ahead", lambda con, today, cache_dir: [])
+    monkeypatch.setattr(cli, "week_watch", lambda today, cache_dir: [])
 
     # when the log is scored and the scoreboard written
     assert main(["score"]) == 0

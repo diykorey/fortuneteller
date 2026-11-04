@@ -826,14 +826,18 @@ def scheduled_rows(
     """The rows of TradingView's ``calendar`` (US, EU or DE) that ``keep`` takes by their day in
     ``zone``, country and title, held or still ahead, from ``start`` to ``end``: one a day, the
     earliest, with its time (UTC) and title (docs/steps/watch-ahead.md)."""
+    # A reply holds whole UTC days, so the days either side are read too; a quarter is kept only
+    # once over by the day before ``start``.
     rows = []
-    quarter = sources.quarter_start(start)
-    while quarter <= end:
-        payload = sources.fetch_tradingview_quarter(quarter, cache_dir, start, country=calendar)
+    quarter = sources.quarter_start(start - timedelta(days=1))
+    while quarter <= end + timedelta(days=1):
+        payload = sources.fetch_tradingview_quarter(
+            quarter, cache_dir, start - timedelta(days=1), country=calendar
+        )
         rows += sources.calendar_rows(payload)
         quarter = date(quarter.year + quarter.month // 10, (quarter.month + 2) % 12 + 1, 1)
     by_day: dict[date, tuple[datetime, str]] = {}
-    for at, country, title in sorted(rows):
+    for at, country, title in sorted(rows, key=lambda row: (row[0], row[2])):
         day = at.astimezone(zone).date()
         if start <= day <= end and keep(day, country, title):
             by_day.setdefault(day, (at, title))

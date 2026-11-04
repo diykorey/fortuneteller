@@ -35,6 +35,9 @@ def _calendars(
     def fetch(
         start: date, cache_dir: Path, today: date | None = None, country: str = "US"
     ) -> bytes:
+        assert today is not None and today < date(
+            start.year + start.month // 10, (start.month + 2) % 12 + 1, 1
+        )
         asked.append((start, country))
         return replies.get((start, country), NO_DATA)
 
@@ -49,7 +52,8 @@ def test_the_scheduled_events_not_called_are_listed_from_rows_not_yet_held(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     # given, in the week after 2026-11-12, a Fed decision, claims, the chair's speech and a former
-    # chair's, an ECB decision, the ECB president's speech and ZEW, and a ZEW a day past the week
+    # chair's, an ECB decision, the ECB president's speech and ZEW, a ZEW a day past the week, and
+    # Ifo on the day itself
     _calendars(
         monkeypatch,
         {
@@ -69,6 +73,7 @@ def test_the_scheduled_events_not_called_are_listed_from_rows_not_yet_held(
                 "DE",
                 ("ZEW Economic Sentiment Index", "2026-11-17T10:00:00.000Z"),
                 ("ZEW Economic Sentiment Index", "2026-11-20T10:00:00.000Z"),
+                ("Ifo Business Climate", "2026-11-12T09:00:00.000Z"),
             ),
         },
     )
@@ -126,7 +131,8 @@ def test_a_release_s_two_rows_and_a_second_statement_are_one_entry_a_day(
     # when the week is read
     watch = cli.week_watch(TODAY, Path("cache"))
 
-    # then the flash is one entry titled by its first row, and the day's earliest statement is kept
+    # then the flash is one entry titled by its first row at that time, alphabetically, and the
+    # day's earliest statement is kept
     assert [(w["event"], w["title"]) for w in watch] == [
         ("ecbchief", "ECB President Lagarde Testimony"),
         ("hicp", "Core Inflation Rate YoY Flash"),

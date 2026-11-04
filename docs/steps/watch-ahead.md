@@ -49,8 +49,9 @@ At the end: *The week ahead* has a second table, *Also on the calendar*.
   itself. `StatementFlow.ahead`, the `live` preview, is rewritten on `scheduled`, so the two cannot
   disagree. The dated shocks are left out: their seed files hold only events that have happened.
 - **One event per flow per day,** the earliest, as each flow's `events` counts them. The euro-area
-  flash's core and headline rows are one entry, titled by the first. The window is step 15's: from
-  the day after the page is written to seven days after, New York time.
+  flash's core and headline rows are one entry, titled by the first at that time, alphabetically.
+  The window is step 15's: from the day after the page is written to seven days after, New York
+  time.
 - **Its own calendar error.** `week_watch` also reads the EU and DE calendars, so it gets its own
   `try`. A `CalendarError` leaves `watch` `null`, the table reading "The calendar could not be read
   on <written>.", while `ahead` is unchanged.

@@ -1362,6 +1362,8 @@ def week_watch(today: date, cache_dir: Path) -> list[dict[str, object]]:
             continue
         for at, title in flow.scheduled(cache_dir, start, end):
             local = at.astimezone(sources.NEW_YORK)
+            if not start <= local.date() <= end:
+                continue
             watch.append(
                 {
                     "day": local.date().isoformat(),
