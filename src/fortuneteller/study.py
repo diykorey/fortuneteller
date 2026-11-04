@@ -1403,6 +1403,9 @@ KINDS = (CUT, HOLD, HIKE)
 UP, SAME, DOWN = "up", "about the same", "down"
 OUTCOMES = (UP, SAME, DOWN)
 CANT_SAY = "can't say"
+# A release's kinds, from its surprise against the consensus (docs/steps/what-follows-jobs.md).
+ABOVE, AS_EXPECTED, BELOW = "above", "as expected", "below"
+SURPRISE_KINDS = (ABOVE, AS_EXPECTED, BELOW)
 # A placebo decision sits this many closes before, and after, the real one, and never less than
 # the span, so the two spans share no move (docs/steps/what-follows.md, amended 2026-11-04).
 PLACEBO_SHIFT = 10
@@ -1526,7 +1529,11 @@ class Follow:
 
 
 def follow_market(
-    decisions: Sequence[tuple[date, str]], closes: Sequence[DailyClosingPrice], unit: str, c: int
+    decisions: Sequence[tuple[date, str]],
+    closes: Sequence[DailyClosingPrice],
+    unit: str,
+    c: int,
+    order: Sequence[str] = KINDS,
 ) -> dict[str, Follow]:
     """Each kind's record on one market over spans of ``c`` closes.
 
@@ -1535,9 +1542,9 @@ def follow_market(
     """
     spans = span_moves(closes, unit, c)
     index = {close.day: i for i, close in enumerate(closes)}
-    keys: dict[str, list[date]] = {kind: [] for kind in KINDS}
-    overlapped = dict.fromkeys(KINDS, 0)
-    holes = dict.fromkeys(KINDS, 0)
+    keys: dict[str, list[date]] = {kind: [] for kind in order}
+    overlapped = dict.fromkeys(order, 0)
+    holes = dict.fromkeys(order, 0)
     reacted: set[date] = set()
     last_end: date | None = None
     for day, kind in decisions:
@@ -1563,7 +1570,7 @@ def follow_market(
         kind: _follow(
             keys[kind], spans, by_end, closes, index, reacted, overlapped[kind], holes[kind], c
         )
-        for kind in KINDS
+        for kind in order
     }
 
 
@@ -1648,27 +1655,52 @@ def _follow(
     )
 
 
+def release_kinds(flow: EventFlow, con: duckdb.DuckDBPyConnection | None = None) -> dict[int, str]:
+    """Each stored release's kind by event id: its surprise on the rule's first measure against the
+    rule's ``predicted_from``, *above* at ``noticeable`` or more, *below* at minus that or less,
+    *as expected* between; a release with no such surprise has none."""
+    rule = flow.surprise_rule
+    if rule is None:
+        raise ValueError(f"{flow.cli_name} has no surprise rule")
+    connection = con if con is not None else db.get_connection()
+    rows = connection.execute(
+        "SELECT s.event_id, s.surprise FROM surprises s "
+        "JOIN event_instances e ON e.event_id = s.event_id "
+        "WHERE e.event_type = ? AND e.country = ? AND s.measure = ? AND s.baseline = ? "
+        "AND s.surprise IS NOT NULL",
+        [flow.event_type, flow.country, rule.combinations[0][0], rule.predicted_from],
+    ).fetchall()
+    return {
+        event_id: ABOVE
+        if surprise >= rule.noticeable
+        else BELOW
+        if surprise <= -rule.noticeable
+        else AS_EXPECTED
+        for event_id, surprise in rows
+    }
+
+
 def follow_decisions(
-    flow: EventFlow, rates: Mapping[date, float], con: duckdb.DuckDBPyConnection | None = None
-) -> tuple[list[EventInstance], dict[int, str], list[tuple[str, str, str, Follow]]]:
-    """Every stored decision of ``flow``, its kinds, and a record per kind, span and market, in that
-    order."""
-    events = stored_events(flow, con=con)
-    kinds = fed_kinds(events, rates)
-    cells = []
+    flow: EventFlow,
+    kinds: Mapping[int, str],
+    order: Sequence[str],
+    con: duckdb.DuckDBPyConnection | None = None,
+) -> tuple[list[EventInstance], list[tuple[str, str, str, Follow]]]:
+    """The flow's stored events with a kind, oldest first, and a record per kind, span and market,
+    in that order."""
+    events = [e for e in stored_events(flow, con=con) if e.event_id in kinds]
     by_market = {}
     for instrument, series in MVP_PRICE_SERIES.items():
         closes = stored_closes(instrument, con=con)
-        decisions = [
-            (first_reaction_day(e, series), kinds[e.event_id])
-            for e in events
-            if e.event_id in kinds
-        ]
+        decisions = [(first_reaction_day(e, series), kinds[e.event_id]) for e in events]
         by_market[instrument] = {
-            span: follow_market(decisions, closes, series.unit, c) for span, c in SPANS.items()
+            span: follow_market(decisions, closes, series.unit, c, order)
+            for span, c in SPANS.items()
         }
-    for kind in KINDS:
-        for span in SPANS:
-            for instrument in MVP_PRICE_SERIES:
-                cells.append((kind, span, instrument, by_market[instrument][span][kind]))
-    return events, kinds, cells
+    cells = [
+        (kind, span, instrument, by_market[instrument][span][kind])
+        for kind in order
+        for span in SPANS
+        for instrument in MVP_PRICE_SERIES
+    ]
+    return events, cells

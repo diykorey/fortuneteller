@@ -69,6 +69,9 @@ At the end: `fortuneteller follows --event nfp` prints part 1's table for the jo
 | 1 | `release_kinds`; the kinds passed through; `follows --event nfp` | The tests below pass; on a copy of the store the header reads `follows: 222 jobs reports 2008-03-07 … 2026-10-02: 68 above, 104 as expected, 50 below` and 144 cells print |
 | 2 | Results here and in [MVP results](../mvp-results.md), the expected outcome checked, the roadmap row; each answer's counts also without 2020-03 … 2021-12, as a reading aid | Each kind's answers, release marks and walk-forward records recorded against the expected outcome |
 
+*Step 1, 2026-11-04 (PR #242):* on a copy of the store the header reads as written above and 144
+cells print; the Fed's table is byte for byte the one part 1 recorded.
+
 ## How you know it is right
 
 - Surprises of +50, +49.9, −50 and −49.9 are *above*, *as expected*, *below*, *as expected*; a
