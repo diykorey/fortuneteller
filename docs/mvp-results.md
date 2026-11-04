@@ -520,6 +520,17 @@ ISM survey's day (ratio 1.17, p 0.037), where corn, soybeans and gasoline move; 
 said it would move there. In `follows` it gets no answer in any run. The Legend's "the coffee market
 rose" has a market to read now, and history says no release moves it.
 
+## The breakeven
+
+Measured 2026-11-04. Detail in [the breakeven](steps/breakeven.md#results).
+
+The 5-year breakeven, the bond market's expected inflation, from FRED and unsigned. **After a CPI
+above consensus it rises on the day, and that holds walk-forward:** up after 43 of 61 such releases
+since 2003, 23 of 30 graded right in order (77%), where about none would hold by chance. The first
+market people feel with a link that holds; the expected outcome said none would. It moves on CPI's
+days, not on the Fed's, against the expected outcome. Part 2c may sign it, once the evening grade can
+wait a day for FRED's close.
+
 ## What comes next
 
 Chosen 2026-10-13: keep score ([rung 4](steps/rung-4-keep-score.md)), done above with the live path
