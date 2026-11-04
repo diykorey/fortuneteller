@@ -35,6 +35,7 @@ Step 18, part 2: the trigger file and its log, once part 1's results are in.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-04 | A trigger arrives, part 1, step 1: `follows --after-the-day` | PR #251 |
 | 2026-11-04 | A trigger arrives, part 1: spec, what follows from the next close | PR #250 |
 | 2026-11-04 | What follows, part 1d, step 2: results — CPI by kind holds nothing; a cooler print's answers lean on shared days | PR #249 |
 | 2026-11-04 | What follows, part 1d, step 1: `follows --event cpi`, kinds from the headline | PR #248 |

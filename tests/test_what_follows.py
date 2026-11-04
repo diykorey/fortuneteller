@@ -578,3 +578,143 @@ def test_follows_for_cpi_prints_its_table(
         out[0] == "follows: 3 CPI releases 2001-01-29 … 2001-05-21: 1 above, 1 as expected, 1 below"
     )
     assert out[2].startswith("above       day    SPY / ES       1   ")
+
+
+def _rise_then_fall(n: int, keys: list[int]) -> list[DailyClosingPrice]:
+    # closes alternating 1% either way, rising 3% on each key and falling 3% the close after
+    steps = _alternating(n)
+    for i in keys:
+        steps[i], steps[i + 1] = 0.03, -0.03
+    return _closes(steps)
+
+
+def test_after_the_day_reads_the_close_after_the_reaction() -> None:
+    # given 12 events whose day rises 3% and whose next day falls 3%
+    keys = list(range(100, 1300, 100))
+    closes = _rise_then_fall(1400, keys)
+    decisions = [(closes[i].day, CUT) for i in keys]
+
+    # when the day is followed from the close before, and from the reaction close
+    on = study.follow_market(decisions, closes, "pct", 1)[CUT]
+    after = study.follow_market(decisions, closes, "pct", 1, after=True)[CUT]
+
+    # then the day itself is up, and the day after is down
+    assert (on.answer, after.answer) == (UP, DOWN)
+    assert after.counts == {UP: 0, SAME: 0, DOWN: 12}
+
+
+def test_an_event_on_the_last_close_has_no_span_after_its_day_yet() -> None:
+    # given closes and one event on the last of them
+    closes = _closes(_alternating(100))
+
+    # when the day after is followed
+    follow = study.follow_market([(closes[-1].day, HOLD)], closes, "pct", 1, after=True)[HOLD]
+
+    # then it is counted nowhere, not even as a hole
+    assert sum(follow.counts.values()) == 0
+    assert (follow.overlapped, follow.holes) == (0, 0)
+
+
+def test_a_placebo_after_the_day_never_lands_on_another_event_s_day_after() -> None:
+    # given day moves of about 0.1% either way, and a 3% rise on the close after each of 15 events,
+    # ten closes apart
+    steps = [s / 10 for s in _gaussian(400, 3)]
+    keys = list(range(100, 250, 10))
+    for i in keys:
+        steps[i + 1] = 0.03
+    closes = _closes(steps)
+
+    # when the day after is followed
+    follow = study.follow_market(
+        [(closes[i].day, HOLD) for i in keys], closes, "pct", 1, after=True
+    )[HOLD]
+
+    # then it is up and not the period: a placebo ten closes away would be the next event's day
+    # after, and is skipped
+    assert follow.answer == UP
+    assert not follow.period
+
+
+def test_a_month_placebo_after_the_day_holds_no_reaction_close() -> None:
+    # given closes alternating 0.1% either way, 12 events 101 closes apart whose day rises 5% and
+    # whose next month rises 3% more
+    steps = [s / 10 for s in _alternating(1500)]
+    keys = list(range(100, 1300, 101))
+    for i in keys:
+        steps[i] = 0.05
+        for k in range(i + 1, i + 22):
+            steps[k] += 0.03 / 21
+    closes = _closes(steps)
+
+    # when the month after the day is followed
+    follow = study.follow_market(
+        [(closes[i].day, HOLD) for i in keys], closes, "pct", 21, after=True
+    )[HOLD]
+
+    # then it is up and not the period: a placebo 21 closes back would end on the reaction close
+    # and read its 5% rise as up
+    assert follow.answer == UP
+    assert not follow.period
+
+
+def test_the_walk_forward_answer_after_the_day_reads_nothing_after_the_reaction_close() -> None:
+    # given 12 events whose next month rises, keyed on the close after each reaction
+    steps = _alternating(900)
+    keys = list(range(200, 800, 50))
+    for i in keys:
+        for k in range(i + 1, i + 22):
+            steps[k] += 0.03 / 21
+    closes = _closes(steps)
+    last = keys[-1]
+
+    def answer(cl: list[DailyClosingPrice]) -> tuple[str, study.Base] | None:
+        spans = study.span_moves(cl, "pct", 21)
+        by_end = sorted(spans.items(), key=lambda item: item[1].end)
+        return study.answer_before([cl[i + 1].day for i in keys], len(keys) - 1, spans, by_end)
+
+    # when every close after the last reaction close is changed, and then that close itself
+    later = closes[: last + 1] + [
+        DailyClosingPrice(c.day, c.price * (1 + (k % 7 + 1) / 10))
+        for k, c in enumerate(closes[last + 1 :])
+    ]
+    itself = [*closes[:last], DailyClosingPrice(closes[last].day, closes[last].price * 1.5)]
+    itself += closes[last + 1 :]
+
+    # then the later closes change nothing, and the reaction close changes the base
+    before = answer(closes)
+    assert before is not None and before == answer(later)
+    changed = answer(itself)
+    assert changed is not None and changed[1] != before[1]
+
+
+def test_follows_after_the_day_says_so_in_its_header(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given no FRED key, one market's closes, and three retail sales releases with surprises
+    monkeypatch.setattr(settings, "fred_api_key", None)
+    monkeypatch.setattr(study, "MVP_PRICE_SERIES", {"SPY / ES": study.MVP_PRICE_SERIES["SPY / ES"]})
+    closes = _closes(_alternating(300))
+    days = [closes[i].day for i in (20, 60, 100)]
+    db.init_db()
+    db.get_connection().executemany(
+        "INSERT INTO daily_bars (instrument, day, close, source) VALUES ('SPY / ES', ?, ?, 'test')",
+        [[c.day, c.price] for c in closes],
+    )
+    _store_reports(
+        [(days[0], "nasdaq_consensus", 0.4), (days[1], "nasdaq_consensus", 0.0)]
+        + [(days[2], "nasdaq_consensus", -0.4)],
+        RETAIL,
+        "retail_sales",
+    )
+
+    # when run with the flag
+    code = main(["follows", "--event", "retail", "--after-the-day"])
+
+    # then the header says the spans start at the reaction close
+    out = capsys.readouterr().out.splitlines()
+    assert code == 0
+    assert out[0] == (
+        "follows: 3 retail sales releases 2001-01-29 … 2001-05-21: 1 above, 1 as expected, "
+        "1 below, spans from the reaction close"
+    )
+    assert out[2].startswith("above       day    SPY / ES       1   ")
