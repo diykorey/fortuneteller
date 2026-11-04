@@ -9,8 +9,8 @@ Where the work is and what comes next. Two rules keep it current:
 ## Last completed
 
 The Fed statement's sentiment, step 2 *(PR #230)*: results. The dictionary reads every statement
-and passes the paper's checks, but a stronger statement moves neither yields nor the dollar the
-expected way: all four signed links *doesn't*, no call.
+and passes the paper's checks, but no signed market passes the test: all four *doesn't*, no
+call.
 
 ## In progress
 
