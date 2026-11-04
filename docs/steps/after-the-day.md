@@ -89,10 +89,76 @@ Part 2 (the file and the log) has its own spec. For it to grade what this part r
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~`follows --after-the-day`~~ **done** 2026-11-04 (PR #251) | The tests below pass. On a copy of the store, each of the four flows prints 144 cells with the flag, and its first line ends `, spans from the reaction close`. Without the flag, each flow's output equals the one before the change: the diff is empty |
-| 2 | Write the results here and in [MVP results](../mvp-results.md), check the expected outcome, and update the roadmap row | Each flow's answers, release marks and walk-forward records are recorded against the expected outcome |
+| 2 | ~~Write the results here and in [MVP results](../mvp-results.md), check the expected outcome, and update the roadmap row~~ **done** 2026-11-04, [below](#results) | Each flow's answers, release marks and walk-forward records are recorded against the expected outcome |
 
 *Step 1, 2026-11-04 (PR #251):* on a copy of the store each flow prints 144 cells with the flag and
 the header as written; without it, the four tables are byte for byte the ones before the change.
+
+## Results
+
+Measured 2026-11-04 on a copy of the store, with the same kinds as step 17: 276 Fed decisions, 222
+jobs reports, 222 retail sales releases and 221 CPI releases.
+
+**Nothing holds walk-forward, on any flow.** Ten cells reach 30 graded, and none is right on
+60%: the best are the DAX *about the same* the week after retail sales above (17 of 32) and the
+day after retail sales as expected (52 of 98), and the FTSE 100 *about the same* the day after a
+jobs report above (17 of 33). VIX *up* the day after an *as expected* jobs report is right on 28
+of 73.
+
+**On all history, 20 answers**, against about 4.3 by chance on each flow (17 in all). None is
+marked by the placebo.
+
+| Flow | Kind | Span | Market | Up / same / down | Answer | Chance |
+| --- | --- | --- | --- | --- | --- | --- |
+| Fed | cut | day | BRN | 4 / 3 / 14 | down | 0.0086 |
+| Fed | cut | week | SXXP | 2 / 7 / 11 | down | 0.0029 |
+| Fed | hike | month | BTC | 1 / 13 / 7 | about the same | 0.0068 |
+| jobs | above | day | VIX | 35 / 22 / 11 | up | under 0.0001 |
+| jobs | above | day | DAX | 13 / 29 / 26 | down | 0.0080 |
+| jobs | above | day | SX5E | 12 / 27 / 29 | down | 0.0017 |
+| jobs | above | day | UKX | 13 / 36 / 19 | about the same | 0.0007 |
+| jobs | above | month | DXY | 8 / 21 / 10 | about the same | 0.0066 |
+| jobs | as expected | day | VIX | 43 / 40 / 21 | up | 0.0003 |
+| jobs | below | day | UST10Y / ZN | 16 / 25 / 9 | about the same | 0.0095 |
+| retail | above | week | DAX | 12 / 28 / 9 | about the same | 0.0005 |
+| retail | above | week | SXXP | 11 / 25 / 13 | about the same | 0.0078 |
+| retail | as expected | day | UST10Y / ZN | 29 / 49 / 31 | about the same | 0.0067 |
+| retail | as expected | day | DAX | 32 / 53 / 23 | about the same | 0.0005 |
+| retail | as expected | day | ITA | 30 / 49 / 30 | about the same | 0.0077 |
+| retail | below | day | ITA | 18 / 13 / 31 | down | 0.0099 |
+| retail | below | week | VIX | 12 / 32 / 18 | about the same | 0.0023 |
+| CPI | below | week | BRN | 20 / 37 / 20 | about the same | 0.0052 |
+| CPI | below | week | COMP | 29 / 37 / 12 | about the same | 0.0068 |
+| CPI | below | week | UKX | 26 / 36 / 13 | about the same | 0.0060 |
+
+VIX rises the day after a jobs report, above or as expected. By part 1b's release rule that is the
+release, not the kind. The report comes on a Friday, so the day after is mostly a Monday, and VIX
+often rises over a weekend; the placebo ten closes away, also mostly a Monday, does not mark it,
+so the release reads first. On the report's own day VIX falls (part 1b); the next day it gives part
+of that back.
+
+After a jobs report above the consensus, Europe's stocks fall the next day (the DAX and the Euro
+Stoxx 50) while both Treasury yields say nothing: the 10-year 24 / 25 / 19, the 5-year 25 / 20 /
+23, and over the week 24 / 18 / 26 and 22 / 18 / 28.
+
+**Against the expected outcome, written first:**
+
+- Nothing holds walk-forward, on any flow: **right**.
+- Each flow's answers at most its chance line plus 3 (7.3): **right**: the Fed 3, the jobs report
+  7, retail sales 7, CPI 3. 13 of the 20 are *about the same*, a quieter span than usual, which a
+  trigger can show but which is no direction.
+- After a jobs report above the consensus, neither yield answers on the day after or over the week
+  after: **right**.
+- Each month cell within 2 of its step 17 count: **wrong** for 5 of 192 cells, each 3 apart: the
+  Fed's holds on the DAX, the Euro Stoxx 50, the FTSE 100 and the STOXX 600, and the jobs report's
+  *above* on the FTSE 100. The holes in their Yahoo histories fall one close differently.
+
+**What it means.** Once the market has reacted, what follows over the next day, week or month is
+mostly no direction. That is what a liquid market should do. A trigger in part 2 will therefore
+answer *can't say* on most spans, and *about the same* on a few. Part 2 is still built, as fixed
+first: the answers are honest, they are graded, and they are what step 20 will read news into. The
+reaction itself, the yields rising on a strong jobs report, stays with `live`, which calls it
+before the close.
 
 ## How you know it is right
 
