@@ -505,7 +505,8 @@ Seven markets a reader feels: corn, wheat, soybeans, gasoline and natural gas th
 that hold their futures, utilities and homebuilders, all unsigned. **Homebuilders and utilities move
 on the Fed's days**, utilities on CPI's too; homebuilders do not on the jobs report or CPI, against
 the expected outcome. **Corn, soybeans and gasoline move on the ISM survey's day** in both eras,
-and gasoline and natural gas on the ECB chief's speeches, likely the Thursday gas storage report:
+and gasoline and natural gas on the ECB chief's speeches (natural gas likely through the Thursday
+gas storage report; *corrected 2026-11-04:* not gasoline, whose weekly report is on Wednesdays):
 6 of the funds' 95 cells against about one by chance, where none was expected. In `follows`, no new
 market holds walk-forward; 10 answers against about 15 by chance. They move on some days, in no
 direction history can name yet.
