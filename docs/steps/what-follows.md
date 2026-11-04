@@ -122,10 +122,12 @@ FRED is read, nothing is stored.
 
 - `study.py`: `SPANS = {"day": 1, "week": 5, "month": 21}`; `FOLLOW_P_BAR = 0.01`;
   `fed_kinds(events, rates: Mapping[date, float]) -> dict[int, str]` by event id, `"cut"`,
-  `"hold"`, `"hike"`, from `release_date`; `span_moves(closes, unit, c) -> dict[date, tuple[date,
-  float]]`, key close → (end close, signed move); `span_answer(counts, same_rate, up_share) ->
-  tuple[str, float]`; `follow_cell(...)` for one kind, span and market: counts, rates, answer,
-  placebo, walk-forward grade (`HOLDS`, `DOESNT_HOLD`, `TOO_FEW` reused).
+  `"hold"`, `"hike"`, from `release_date`; `span_moves(closes, unit, c) -> dict[date, Span]`, key
+  close → (close before, end close, signed move); `span_answer(counts, same_rate, up_share) ->
+  tuple[str, float]`; `answer_before(...)`, the walk-forward answer at one decision;
+  `follow_market(decisions, closes, unit, c)`, each kind's `Follow` on one market and span: counts,
+  base, answer, placebo, walk-forward grade (`HOLDS`, `DOESNT_HOLD`, `TOO_FEW` reused);
+  `follow_decisions(flow, rates)` over every market and span.
 - `stats.py`: `binomial_tail(k, n, rate)`, summing `_binomial_chance`;
   `poisson_binomial_tail(right, rates)`, by dynamic programming over the tries.
 - `__main__.py`: `follows --event fomc` (the one choice, the default), the key by `_fred_key`;
