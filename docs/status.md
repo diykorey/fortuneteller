@@ -14,7 +14,8 @@ walk-forward on any flow; 20 answers on all history against about 17 by chance, 
 
 ## In progress
 
-Step 18, part 2: the trigger file and its log ([the spec](steps/trigger-file.md)).
+Step 18, part 2, step 3: the first triggers graded ([the spec](steps/trigger-file.md)). It waits for
+the owner's first trigger, a file under `data/triggers/` merged before a market's reaction close.
 
 Waiting: the scoreboard's first release day on the published page (step 3); release-day job step
 3, evening score step 2 and rung 6 step 2: the first release the morning job logs, pops up and the
@@ -34,6 +35,7 @@ Not yet chosen: step 19 (the markets people feel) is the next in the roadmap tha
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-04 | A trigger arrives, part 2, step 2: the evening score answers and logs the triggers | PR #255 |
 | 2026-11-04 | A trigger arrives, part 2, step 1: `triggers`, answered from the reaction close, logged and graded | PR #254 |
 | 2026-11-04 | A trigger arrives, part 2: spec, the trigger file and its log | PR #253 |
 | 2026-11-04 | A trigger arrives, part 1, step 2: results — nothing holds from the next close; what follows the reaction is mostly no direction | PR #252 |

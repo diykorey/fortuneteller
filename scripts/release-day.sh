@@ -63,6 +63,7 @@ export FT_CACHE_DIR="$main_checkout/data/cache"
 open_pr() {
     # shellcheck disable=SC2086
     git -C "$job_tree" switch -q -C "$2" &&
+        git -C "$job_tree" add -- $files &&
         git -C "$job_tree" commit -q -m "$1" -- $files &&
         git -C "$job_tree" -c credential.helper= -c credential.helper='!gh auth git-credential' \
             push -q "https://github.com/$repo.git" "$2" &&
@@ -118,7 +119,7 @@ fi
 
 file=data/score.txt
 waiting=$(gh pr list -R "$repo" --state open --json headRefName \
-    --jq '.[].headRefName | select(startswith("calls-") or startswith("score-"))') ||
+    --jq '.[].headRefName | select(startswith("calls-") or startswith("score-") or startswith("triggers-"))') ||
     report "gh pr list"
 if [ -n "$waiting" ]; then
     printf 'score: waiting for %s to be merged\n' "$waiting"
@@ -136,11 +137,21 @@ if grep -q '^pending: ' "$job_tree/$file"; then
     echo "score: rows pending; nothing committed"
     exit 0
 fi
+# The owner's triggers (docs/steps/trigger-file.md) are answered and graded; their log goes into
+# the score's pull request, or a pull request of its own when the score did not change.
+uv run --directory "$job_tree" fortuneteller triggers || report "fortuneteller triggers exited $?"
+log=data/trigger-log.csv
+log_changed=$(git -C "$job_tree" status --porcelain -- "$log")
 if ! git -C "$job_tree" diff --quiet -- "$file"; then
     # The scoreboard (docs/steps/scoreboard.md) is rewritten into the same pull request.
     FT_CALLS_PATH=data/calls.csv uv run --directory "$job_tree" fortuneteller scoreboard ||
         report "fortuneteller scoreboard exited $?"
     files="$file docs/scoreboard"
+    [ -z "$log_changed" ] || files="$files $log"
     open_pr "Score the calls on $day" "score-$day" \
         "Graded by the evening score at $(date -u +%H:%M:%SZ), after the closes."
+elif [ -n "$log_changed" ]; then
+    files=$log
+    open_pr "Grade the triggers on $day" "triggers-$day" \
+        "Answered and graded by the evening score at $(date -u +%H:%M:%SZ), after the closes."
 fi
