@@ -262,6 +262,9 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **Up / down / about the same / can't say** — *added 2026-11-04*: a span's four answers against
   its base rate, by the rule in [what follows](steps/what-follows.md); under ten events, *too few*.
   *Can't say* is shown and counted, never graded.
+- **Above / as expected / below** — *added 2026-11-04*: a release's kind for a reader of the
+  headline, its surprise against the consensus at least the rule's noticeable size either way, or
+  between ([what follows a jobs report](steps/what-follows-jobs.md)).
 - **Breakeven inflation** — *added 2026-11-04*: the inflation bond markets expect, a Treasury
   yield less the inflation-protected yield of the same maturity; FRED's 5-year series `T5YIE`.
 - **Vintage / new-and-revised view** — a series' values as they stood on one release day. FRED's
