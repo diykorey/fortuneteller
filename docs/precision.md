@@ -131,6 +131,14 @@ this by splitting the results by era.
 | Retail sales' kind | Read from the month-on-month change computed from stored levels, unrounded, against the consensus at ±0.3pp ([part 1c](steps/what-follows-retail.md)); CPI's is read from the headline rounded to 0.1 ([part 1d](steps/what-follows-cpi.md)) | Retail sales' kind from its headline rounded to 0.1 too, as a dated rerun beside part 1c's | Retail sales is shown to a reader by kind, or a retail answer sits near a bar |
 | CPI's headline | The actual rounded half up from the change computed from stored index levels; 26 of 221 releases lie within 0.005 of a rounding line, where the computed change could round apart from the Bureau's own figure | The published headline itself, from the Bureau's release archive | A CPI answer that turns to *can't say* without those 26 |
 
+## Step 18 — a trigger arrives
+
+| Choice | Now | More precise | Trigger |
+| --- | --- | --- | --- |
+| What is filed | The owner chooses which events to file, after seeing the reaction day; `triggers` lists the events not filed since a flow's first trigger | Every event of a kind answered, with no choice: news read into triggers | Step 20, where news replaces the owner |
+| The deadline | A market's usual close time on its first reaction day; on a half-day the real close is earlier, so a trigger merged between the two sees part of the next span's trading | Each exchange's calendar of early closes | A trigger merged on a half-day |
+| An open span before the trigger | Counted as kept when the trigger is answered, so the trigger is left out as the replay will leave it out; if that span later turns out to have a hole, the replay would have kept the trigger | Waiting until every earlier span has ended | A logged *left out* the replay answers |
+
 ## Steps 1–2 — choices already built in
 
 | Choice | Now | More precise | Trigger |

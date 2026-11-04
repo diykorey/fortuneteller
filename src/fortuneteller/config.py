@@ -21,6 +21,9 @@ class Settings(BaseSettings):
     calls_path: Path = Path("data/calls.csv")
     # Step 12's guesses, one file per player and day, each added through a pull request.
     guesses_dir: Path = Path("data/guesses")
+    # Step 18's triggers, one file per pull request, and the log of their answers.
+    triggers_dir: Path = Path("data/triggers")
+    trigger_log_path: Path = Path("data/trigger-log.csv")
     # The scoreboard's data and page, written by `scoreboard` and served by GitHub Pages.
     scoreboard_dir: Path = Path("docs/scoreboard")
     # SecretStr so the value cannot print itself in a traceback or repr; read it with

@@ -1529,6 +1529,61 @@ class Follow:
     verdict: str
 
 
+class Kept(NamedTuple):
+    """A decision in the non-overlap walk: ``status`` kept, left out, a hole, or none when it has
+    no reaction close in ``closes``; ``reaction`` the index of its reaction close; ``open`` when its
+    span's last close is not in ``closes`` yet; ``overlaps`` when a span with a hole starts before the
+    end of the last one kept."""
+
+    status: str
+    reaction: int | None = None
+    open: bool = False
+    overlaps: bool = False
+
+
+KEPT, LEFT_OUT, HOLE, NO_CLOSE = "kept", "left out", "hole", "none"
+
+
+def kept_keys(
+    decisions: Sequence[tuple[date, str]],
+    closes: Sequence[DailyClosingPrice],
+    spans: Mapping[date, Span],
+    c: int,
+    after: bool = False,
+) -> tuple[list[Kept], set[date]]:
+    """Part 1's non-overlap walk over ``decisions``, oldest first: a decision is left out if its
+    span starts before the end of the last one kept, whatever its kind; one whose span is still open
+    counts as kept, ending ``c`` closes on (docs/steps/trigger-file.md). Also every reaction close,
+    and with ``after`` every close after one, for the placebo to skip."""
+    index = {close.day: i for i, close in enumerate(closes)}
+    walk: list[Kept] = []
+    reacted: set[date] = set()
+    last_end: int | None = None
+    for day, _kind in decisions:
+        pair = closing_price_before_after(closes, day)
+        if pair == BEFORE_HISTORY or day > closes[-1].day:
+            walk.append(Kept(NO_CLOSE))
+            continue
+        if isinstance(pair, str):
+            walk.append(Kept(HOLE))
+            continue
+        r = index[pair[1].day]
+        reacted.add(closes[r].day)
+        k = r + 1 if after else r
+        if k < len(closes):
+            reacted.add(closes[k].day)
+        is_open = k + c > len(closes)
+        if not is_open and closes[k].day not in spans:
+            walk.append(Kept(HOLE, r, overlaps=last_end is not None and k - 1 < last_end))
+            continue
+        if last_end is not None and k - 1 < last_end:
+            walk.append(Kept(LEFT_OUT, r, is_open))
+            continue
+        walk.append(Kept(KEPT, r, is_open))
+        last_end = k + c - 1
+    return walk, reacted
+
+
 def follow_market(
     decisions: Sequence[tuple[date, str]],
     closes: Sequence[DailyClosingPrice],
@@ -1542,38 +1597,23 @@ def follow_market(
     ``decisions`` are (first reaction day on this market, kind), oldest first. A decision is left
     out if its span starts before the end of the last one kept, whatever its kind, or has a hole.
     With ``after``, a decision's span is keyed on the close after its reaction close, so it starts
-    at that close (docs/steps/after-the-day.md).
+    at that close (docs/steps/after-the-day.md). A decision whose span is still open is not counted.
     """
     spans = span_moves(closes, unit, c)
     index = {close.day: i for i, close in enumerate(closes)}
     keys: dict[str, list[date]] = {kind: [] for kind in order}
     overlapped = dict.fromkeys(order, 0)
     holes = dict.fromkeys(order, 0)
-    reacted: set[date] = set()
-    last_end: date | None = None
-    for day, kind in decisions:
-        pair = closing_price_before_after(closes, day)
-        if pair == BEFORE_HISTORY or day > closes[-1].day:
-            continue
-        if isinstance(pair, str):
+    walk, reacted = kept_keys(decisions, closes, spans, c, after)
+    for (_day, kind), kept in zip(decisions, walk, strict=True):
+        if kept.status == HOLE:
             holes[kind] += 1
+        elif kept.open or kept.reaction is None:
             continue
-        key = pair[1].day
-        reacted.add(key)
-        if after:
-            if index[key] + 1 >= len(closes):
-                continue
-            key = closes[index[key] + 1].day
-            reacted.add(key)
-        if key not in spans:
-            if index[key] + c <= len(closes):
-                holes[kind] += 1
-            continue
-        if last_end is not None and spans[key].start < last_end:
+        elif kept.status == LEFT_OUT:
             overlapped[kind] += 1
-            continue
-        keys[kind].append(key)
-        last_end = spans[key].end
+        else:
+            keys[kind].append(closes[kept.reaction + (1 if after else 0)].day)
     by_end = sorted(spans.items(), key=lambda item: item[1].end)
     return {
         kind: _follow(
@@ -1591,6 +1631,28 @@ def follow_market(
     }
 
 
+def answer_as_of(
+    earlier: Sequence[date],
+    before: date,
+    spans: Mapping[date, Span],
+    by_end: Sequence[tuple[date, Span]],
+    first: date,
+    ends: Sequence[date] | None = None,
+) -> tuple[str, float, dict[str, int], Base] | None:
+    """The answer from the spans keyed on ``earlier`` that ended on or before ``before``, against the
+    base spans keyed on or after ``first`` that ended by then, with its chance, counts and base;
+    none under ``MIN_EVENT_DAYS`` such spans."""
+    ended = [spans[k] for k in earlier if spans[k].end <= before]
+    if len(ended) < MIN_EVENT_DAYS:
+        return None
+    upto = bisect_right(ends if ends is not None else [span.end for _, span in by_end], before)
+    base = base_of([span.move for k, span in by_end[:upto] if k >= first])
+    if base is None:
+        return None
+    answer, chance, counts = _answer(ended, base)
+    return answer, chance, counts, base
+
+
 def answer_before(
     keys: Sequence[date],
     j: int,
@@ -1601,15 +1663,8 @@ def answer_before(
     """The walk-forward answer at the ``j``-th decision, and the base it used: from the decisions
     and the base spans that ended on or before its close before, never anything later; none under
     ``MIN_EVENT_DAYS`` earlier decisions."""
-    before = spans[keys[j]].start
-    earlier = [spans[k] for k in keys[:j] if spans[k].end <= before]
-    if len(earlier) < MIN_EVENT_DAYS:
-        return None
-    upto = bisect_right(ends if ends is not None else [span.end for _, span in by_end], before)
-    base = base_of([span.move for k, span in by_end[:upto] if k >= keys[0]])
-    if base is None:
-        return None
-    return _answer(earlier, base)[0], base
+    then = answer_as_of(keys[:j], spans[keys[j]].start, spans, by_end, keys[0], ends)
+    return None if then is None else (then[0], then[3])
 
 
 def _follow(
@@ -1729,3 +1784,262 @@ def follow_decisions(
         for instrument in MVP_PRICE_SERIES
     ]
     return events, cells
+
+
+# Step 18, part 2: a trigger arrives (docs/steps/trigger-file.md).
+TRIGGER_COLUMNS = ("flow", "day", "kind")
+TRIGGER_KINDS = {
+    "fomc": KINDS,
+    "nfp": SURPRISE_KINDS,
+    "retail": SURPRISE_KINDS,
+    "cpi": SURPRISE_KINDS,
+}
+TRIGGER_LOG_COLUMNS = (
+    "file",
+    "line",
+    "flow",
+    "day",
+    "kind",
+    "market",
+    "span",
+    "merged_at",
+    "answer",
+    "chance",
+    "up",
+    "same",
+    "down",
+    "cut",
+    "outcome",
+    "result",
+)
+
+
+@dataclass(frozen=True)
+class Trigger:
+    """One row of a trigger file: ``line`` its line in the file; ``sha`` the commit that added it."""
+
+    path: str
+    line: int
+    sha: str
+    flow: str
+    day: date
+    kind: str
+
+
+def read_triggers(
+    files: Sequence[tuple[str, str, bytes | None]],
+) -> tuple[list[Trigger], list[str]]:
+    """The triggers in ``files``, and a note for each file that cannot be read; its rows are void,
+    and no file can stop the others."""
+    triggers: list[Trigger] = []
+    bad: list[str] = []
+    for path, sha, content in files:
+        try:
+            if not path.endswith(".csv"):
+                raise ValueError("its name does not end .csv")
+            if content is None:
+                raise ValueError("it cannot be read from its commit")
+            reader = csv.DictReader(io.StringIO(content.decode("utf-8-sig")))
+            if tuple(reader.fieldnames or ()) != TRIGGER_COLUMNS:
+                raise ValueError(f"its header is not {','.join(TRIGGER_COLUMNS)}")
+            rows = []
+            for r in reader:
+                if None in r or None in r.values():
+                    raise ValueError(f"line {reader.line_num}: not three columns")
+                try:
+                    day = date.fromisoformat(r["day"])
+                except ValueError:
+                    raise ValueError(f"line {reader.line_num}: day {r['day']!r}") from None
+                rows.append(Trigger(path, reader.line_num, sha, r["flow"], day, r["kind"]))
+        except (ValueError, csv.Error) as exc:
+            bad.append(f"{path}: void, {exc}")
+            continue
+        triggers.extend(rows)
+    return triggers, bad
+
+
+def _span_move(
+    spans: Mapping[date, Span], closes: Sequence[DailyClosingPrice], k: int, c: int
+) -> float | str | None:
+    """The span keyed on close ``k``: its move, ``HOLE`` when it has a hole, none while open."""
+    if k + c > len(closes):
+        return None
+    span = spans.get(closes[k].day)
+    return HOLE if span is None else span.move
+
+
+def answer_triggers(
+    triggers: Sequence[Trigger],
+    merged: Callable[[str], datetime | None],
+    events: Mapping[str, Sequence[EventInstance]],
+    kinds: Mapping[str, Mapping[int, str]],
+    closes: Mapping[str, Sequence[DailyClosingPrice]],
+    log: Sequence[Mapping[str, str]],
+) -> tuple[list[dict[str, str]], list[str]]:
+    """The log with each trigger's new rows added and empty outcomes filled, and the lines
+    ``triggers`` prints. ``events`` and ``kinds`` are by flow name, the events oldest first;
+    ``closes`` by market."""
+    times = {t.sha: merged(t.sha) for t in triggers}
+    order = sorted(
+        triggers,
+        key=lambda t: (times[t.sha] or datetime.max.replace(tzinfo=UTC), t.path, t.line),
+    )
+    by_key = {(r["file"], r["line"], r["market"], r["span"]): dict(r) for r in log}
+    cache: dict[
+        tuple[str, str, str, int],
+        tuple[dict[date, Span], list[tuple[date, Span]], list[Kept], list[date]],
+    ] = {}
+    lines: list[str] = []
+    seen: set[tuple[str, date]] = set()
+    filed: dict[str, set[date]] = {}
+    for t in order:
+        at = times[t.sha]
+        head = f"{t.path}:{t.line} {t.flow} {t.day} {t.kind}"
+        reason = None
+        if t.flow not in TRIGGER_KINDS:
+            reason = f"{t.flow} is not one of {', '.join(TRIGGER_KINDS)}"
+        elif t.kind not in TRIGGER_KINDS[t.flow]:
+            reason = f"{t.kind!r} is not a kind of {t.flow}"
+        elif at is None:
+            reason = "not merged through a pull request"
+        elif (t.flow, t.day) in seen:
+            reason = f"repeats {t.flow} {t.day}, filed earlier"
+        if reason is not None or at is None:
+            lines.append(f"{head}: void, {reason}")
+            continue
+        seen.add((t.flow, t.day))
+        flow_events = events.get(t.flow, [])
+        event = next((e for e in flow_events if release_date(e) == t.day), None)
+        if event is None:
+            if any(release_date(e) > t.day for e in flow_events):
+                lines.append(f"{head}: void, {t.flow} had no event on {t.day}")
+            else:
+                lines.append(f"{head}: waiting, the event is not stored")
+            continue
+        stored = kinds.get(t.flow, {}).get(event.event_id)
+        if stored is None:
+            lines.append(f"{head}: waiting, its kind is not stored")
+            continue
+        if stored != t.kind:
+            lines.append(f"{head}: void, the stored kind is {stored}, not {t.kind}")
+            continue
+        lines.append(f"{head}, merged {at.astimezone(NEW_YORK):%Y-%m-%d %H:%M} New York")
+        decided = [e for e in flow_events if e.event_id in kinds[t.flow]]
+        position = decided.index(event)
+        for market, series in MVP_PRICE_SERIES.items():
+            deadline = datetime.combine(
+                first_reaction_day(event, series), series.close, tzinfo=series.zone
+            )
+            if at >= deadline:
+                lines.append(
+                    f"  {market}: late, merged {at.astimezone(deadline.tzinfo):%Y-%m-%d %H:%M}, "
+                    f"its reaction close {deadline:%Y-%m-%d %H:%M %Z}"
+                )
+                continue
+            market_closes = closes[market]
+            decisions = [
+                (first_reaction_day(e, series), kinds[t.flow][e.event_id]) for e in decided
+            ]
+            for span, c in SPANS.items():
+                if (t.flow, t.kind, market, c) not in cache:
+                    spans = span_moves(market_closes, series.unit, c)
+                    walk, _ = kept_keys(decisions, market_closes, spans, c, after=True)
+                    by_kind = [
+                        market_closes[kept.reaction + 1].day
+                        for (_, kind), kept in zip(decisions, walk, strict=True)
+                        if kind == t.kind
+                        and kept.status == KEPT
+                        and not kept.open
+                        and kept.reaction is not None
+                    ]
+                    by_end = sorted(spans.items(), key=lambda item: item[1].end)
+                    cache[(t.flow, t.kind, market, c)] = (spans, by_end, walk, by_kind)
+                spans, by_end, walk, by_kind = cache[(t.flow, t.kind, market, c)]
+                kept = walk[position]
+                if kept.reaction is None:
+                    state = "waiting" if kept.status == NO_CLOSE else "a hole before its reaction"
+                    lines.append(f"  {market} {span}: {state}")
+                    continue
+                filed.setdefault(t.flow, set()).add(t.day)
+                key = (t.path, str(t.line), market, span)
+                row = by_key.get(key)
+                if row is None:
+                    row = dict.fromkeys(TRIGGER_LOG_COLUMNS, "")
+                    row.update(
+                        file=t.path,
+                        line=str(t.line),
+                        flow=t.flow,
+                        day=t.day.isoformat(),
+                        kind=t.kind,
+                        market=market,
+                        span=span,
+                        merged_at=at.astimezone(UTC).isoformat(timespec="seconds"),
+                    )
+                    if kept.status == LEFT_OUT or kept.overlaps:
+                        row["answer"] = LEFT_OUT
+                    else:
+                        before = market_closes[kept.reaction].day
+                        then = (
+                            answer_as_of(by_kind, before, spans, by_end, by_kind[0])
+                            if by_kind
+                            else None
+                        )
+                        if then is None:
+                            row["answer"] = TOO_FEW
+                        else:
+                            answer, chance, counts, base = then
+                            row.update(
+                                answer=answer,
+                                chance="" if math.isnan(chance) else repr(chance),
+                                up=str(counts[UP]),
+                                same=str(counts[SAME]),
+                                down=str(counts[DOWN]),
+                                cut=repr(base.cut),
+                            )
+                    by_key[key] = row
+                if row["cut"] and not row["outcome"]:
+                    move = _span_move(spans, market_closes, kept.reaction + 1, c)
+                    if move == HOLE:
+                        row["outcome"] = HOLE
+                    elif isinstance(move, float):
+                        row["outcome"] = outcome(move, float(row["cut"]))
+                        if row["answer"] in OUTCOMES:
+                            row["result"] = RIGHT if row["outcome"] == row["answer"] else WRONG
+                graded = f", {row['outcome']}" + (f", {row['result']}" if row["result"] else "")
+                lines.append(
+                    f"  {market} {span}: {row['answer']}"
+                    + (f" ({row['up']}/{row['same']}/{row['down']})" if row["up"] else "")
+                    + (graded if row["outcome"] else "")
+                )
+    for flow, days in sorted(filed.items()):
+        start = min(days)
+        for e in events.get(flow, []):
+            if (day := release_date(e)) >= start and day not in days:
+                lines.append(f"not filed: {flow} {day}")
+    markets = list(MVP_PRICE_SERIES)
+    spans_order = list(SPANS)
+    rows = sorted(
+        by_key.values(),
+        key=lambda r: (
+            r["file"],
+            int(r["line"]),
+            markets.index(r["market"]) if r["market"] in markets else len(markets),
+            spans_order.index(r["span"]) if r["span"] in spans_order else len(spans_order),
+        ),
+    )
+    return rows, lines
+
+
+def read_trigger_log(path: Path) -> list[dict[str, str]]:
+    """The trigger log at ``path``, none when it does not exist yet."""
+    if not path.exists():
+        return []
+    with path.open(newline="") as f:
+        return list(csv.DictReader(f))
+
+
+def write_trigger_log(path: Path, rows: Sequence[Mapping[str, str]]) -> None:
+    with path.open("w", newline="") as f:
+        writer = csv.DictWriter(f, TRIGGER_LOG_COLUMNS, lineterminator="\n")
+        writer.writeheader()
+        writer.writerows(rows)

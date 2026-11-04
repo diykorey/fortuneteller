@@ -67,8 +67,8 @@ grades, and keeps them in `data/trigger-log.csv`.
   - `line` the trigger's line in its file; `merged_at` UTC, ISO 8601; `chance` empty when there is
     none; `up`, `same`, `down` the earlier events' counts and `cut` the base's cut in the market's
     unit, all empty for *too few* and *left out*;
-  - `outcome` (`up`, `about the same`, `down`, or `hole`) filled when the span's last close is
-    stored, by the cut in the row; `result` `right` or `wrong` for an answer of the three, else
+  - `outcome` (`up`, `about the same`, `down`, or `hole`) filled, for a row with a cut, when the
+    span's last close is stored, by the cut in the row; `result` `right` or `wrong` for an answer of the three, else
     empty;
   - a row is added only for a (`file`, `line`, `market`, `span`) not yet in the log, and a run
     fills only empty `outcome` and `result` fields: a filled field is never changed;
@@ -96,9 +96,16 @@ grades, and keeps them in `data/trigger-log.csv`.
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | `triggers`: read, void, wait, answer, log, grade | The tests below pass. On a copy of the store, `answer_triggers` given a trigger for the jobs report of 2026-10-02, merged 2026-10-02 at 12:00 UTC, returns 48 rows, 16 markets by 3 spans, every one graded or *can't say*, *too few* or *left out* |
+| 1 | ~~`triggers`: read, void, wait, answer, log, grade~~ **done** 2026-11-04 (PR #254) | The tests below pass. On a copy of the store, `answer_triggers` given a trigger for the jobs report of 2026-10-02, merged 2026-10-02 at 12:00 UTC, returns 48 rows, 16 markets by 3 spans, every one graded or *can't say*, *too few* or *left out* |
 | 2 | The evening job runs `triggers`, and commits the log when it or the score changed | A run of the job on a copy commits the log |
 | 3 | Results: the first triggers graded, recorded here and in [MVP results](../mvp-results.md) | Waits for the owner's first trigger and its spans to end |
+
+*Step 1, 2026-11-04 (PR #254):* on a copy of the store, the jobs report of 2026-10-02 (*below*)
+merged at 12:00 UTC that day gives 48 rows: 47 *can't say* and one *about the same* (the 10-year
+yield the day after, graded *wrong*). The build settled two things this spec left open. A
+row's outcome is filled only where it has a cut, so *too few* and *left out* are never graded. A
+reaction close with a hole before it is printed, not logged. The tests caught an answer cached by
+flow and market but not by kind.
 
 ## How you know it is right
 

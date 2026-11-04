@@ -34,6 +34,7 @@ Not yet chosen: step 19 (the markets people feel) is the next in the roadmap tha
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-04 | A trigger arrives, part 2, step 1: `triggers`, answered from the reaction close, logged and graded | PR #254 |
 | 2026-11-04 | A trigger arrives, part 2: spec, the trigger file and its log | PR #253 |
 | 2026-11-04 | A trigger arrives, part 1, step 2: results — nothing holds from the next close; what follows the reaction is mostly no direction | PR #252 |
 | 2026-11-04 | A trigger arrives, part 1, step 1: `follows --after-the-day` | PR #251 |

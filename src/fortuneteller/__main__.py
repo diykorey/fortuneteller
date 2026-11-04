@@ -596,6 +596,52 @@ def _follows(args: argparse.Namespace) -> int:
     return 0
 
 
+def _triggers(_args: argparse.Namespace) -> int:
+    con = db.get_connection()
+    db.init_db(con=con)
+    try:
+        triggers, bad = study.read_triggers(study.guess_files(settings.triggers_dir))
+    except (OSError, subprocess.CalledProcessError) as exc:
+        print(f"triggers: the files cannot be read: {exc}", file=sys.stderr)
+        return 1
+    for note in bad:
+        print(note)
+    if not triggers:
+        print("triggers: none filed")
+        return 0
+    names = {t.flow for t in triggers if t.flow in study.TRIGGER_KINDS}
+    events: dict[str, list[EventInstance]] = {}
+    kinds: dict[str, dict[int, str]] = {}
+    try:
+        for name in sorted(names):
+            flow = flows.flow_named(name)
+            events[name] = flows.stored_events(flow, con=con)
+            if flow is flows.FED_FLOW:
+                api_key = _fred_key("triggers")
+                if not api_key:
+                    return 1
+                kinds[name] = study.fed_kinds(events[name], dict(flows.target_rates(api_key)))
+            else:
+                kinds[name] = study.release_kinds(flow, con=con)
+        closes = {m: study.stored_closes(m, con=con) for m in study.MVP_PRICE_SERIES}
+        times: dict[str, datetime | None] = {}
+
+        def merged(sha: str) -> datetime | None:
+            if sha not in times:
+                times[sha] = study.merged_at(settings.triggers_dir, sha)
+            return times[sha]
+
+        log = study.read_trigger_log(settings.trigger_log_path)
+        rows, lines = study.answer_triggers(triggers, merged, events, kinds, closes, log)
+    except (sources.FredError, ValueError, subprocess.CalledProcessError) as exc:
+        print(f"triggers: {exc}", file=sys.stderr)
+        return 1
+    for line in lines:
+        print(line)
+    study.write_trigger_log(settings.trigger_log_path, rows)
+    return 0
+
+
 def describe_grades(
     grades: dict[str, study.LinkGrade], expected_sign: dict[str, int], scope: str
 ) -> list[str]:
@@ -1590,6 +1636,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="spans from the close of the reaction day, the ones a trigger can be graded on",
     )
     p_follows.set_defaults(func=_follows)
+
+    p_triggers = sub.add_parser(
+        "triggers",
+        help="answer each trigger in data/triggers/ from the reaction close, and log and grade it",
+    )
+    p_triggers.set_defaults(func=_triggers)
 
     p_raw = sub.add_parser(
         "raw-move", help="compare each instrument's moves on an event's days with ordinary days"
