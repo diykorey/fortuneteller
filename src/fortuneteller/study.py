@@ -29,6 +29,7 @@ import subprocess
 from bisect import bisect_left, bisect_right
 from collections.abc import Callable, Iterable, Mapping, Sequence
 from dataclasses import dataclass
+from decimal import ROUND_HALF_UP, Decimal
 from datetime import UTC, date, datetime, time, timedelta
 from pathlib import Path
 from statistics import median, quantiles
@@ -1658,26 +1659,34 @@ def _follow(
 def release_kinds(flow: EventFlow, con: duckdb.DuckDBPyConnection | None = None) -> dict[int, str]:
     """Each stored release's kind by event id: its surprise on the rule's first measure against the
     rule's ``predicted_from``, *above* at ``noticeable`` or more, *below* at minus that or less,
-    *as expected* between; a release with no such surprise has none."""
+    *as expected* between; a release with no such surprise has none. With the rule's
+    ``kind_decimals`` the surprise is the actual rounded half up to its headline, less the
+    consensus (docs/steps/what-follows-cpi.md)."""
     rule = flow.surprise_rule
     if rule is None:
         raise ValueError(f"{flow.cli_name} has no surprise rule")
     connection = con if con is not None else db.get_connection()
     rows = connection.execute(
-        "SELECT s.event_id, s.surprise FROM surprises s "
+        "SELECT s.event_id, s.surprise, s.actual_mom, s.expected_mom FROM surprises s "
         "JOIN event_instances e ON e.event_id = s.event_id "
         "WHERE e.event_type = ? AND e.country = ? AND s.measure = ? AND s.baseline = ? "
         "AND s.surprise IS NOT NULL",
         [flow.event_type, flow.country, rule.combinations[0][0], rule.predicted_from],
     ).fetchall()
-    return {
-        event_id: ABOVE
-        if surprise >= rule.noticeable
-        else BELOW
-        if surprise <= -rule.noticeable
-        else AS_EXPECTED
-        for event_id, surprise in rows
-    }
+    decimals = rule.kind_decimals
+    kinds = {}
+    for event_id, surprise, actual, expected in rows:
+        if decimals is not None:
+            headline = Decimal(repr(actual)).quantize(Decimal(1).scaleb(-decimals), ROUND_HALF_UP)
+            surprise = round(float(headline) - expected, 6)
+        kinds[event_id] = (
+            ABOVE
+            if surprise >= rule.noticeable
+            else BELOW
+            if surprise <= -rule.noticeable
+            else AS_EXPECTED
+        )
+    return kinds
 
 
 def follow_decisions(

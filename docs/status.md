@@ -25,7 +25,7 @@ merged pull request ([the spec](steps/beat-the-fortune-teller.md)). It waits for
 jobs report on 2026-11-06 is the first.
 
 What follows, part 1d: CPI by kind, read from its headline ([the spec](steps/what-follows-cpi.md));
-step 1, `follows --event cpi`, next.
+step 2, the results, next.
 
 ## Next
 
@@ -35,6 +35,7 @@ Not yet chosen: part 2 (the quarter and the year), or step 18 (a trigger file).
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-04 | What follows, part 1d, step 1: `follows --event cpi`, kinds from the headline | PR #248 |
 | 2026-11-04 | What follows, part 1d: spec, CPI by kind from its headline | PR #247 |
 | 2026-11-04 | What follows, part 1c, step 2: results — retail sales by kind holds nothing; the yields fall after a release below | PR #246 |
 | 2026-11-04 | What follows, part 1c, step 1: `follows --event retail` | PR #245 |

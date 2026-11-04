@@ -81,7 +81,7 @@ At the end: `fortuneteller follows --event cpi` prints part 1b's table for CPI.
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | `follows --event cpi`, its kinds read from the headline | The tests below pass. On a copy of the store, the header reads `follows: 221 CPI releases 2008-02-20 … 2026-10-14: 61 above, 82 as expected, 78 below`, and 144 cells print |
+| 1 | ~~`follows --event cpi`, its kinds read from the headline~~ **done** 2026-11-04 (PR #248) | The tests below pass. On a copy of the store, the header reads `follows: 221 CPI releases 2008-02-20 … 2026-10-14: 61 above, 82 as expected, 78 below`, and 144 cells print |
 | 2 | Write the results here and in [MVP results](../mvp-results.md), check the expected outcome, and update the roadmap row. Add each answer's counts without the shared days | Each kind's answers, release marks and walk-forward records are recorded against the expected outcome |
 
 ## How you know it is right
