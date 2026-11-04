@@ -15,22 +15,20 @@ rose". This part adds coffee. At the end, `load-prices` stores it, and `raw-move
 
 - **The front month, as gold and Brent are read.** Coffee has no fund left on Yahoo (`JO` closed in
   2023), so it is read through `KC=F`, ICE's arabica front-month future, daily since 2000-01-03.
-  Its daily close is the settlement, set at the 13:30 New York close: on 2026-10-30 and 11-03 it is
-  within 0.15 cents of the last 5-minute bars, on 11-02 2.05 cents (0.7%) below the last one, as a
-  settlement can be.
-- **Its roll, measured.** Yahoo moves `KC=F` to the next contract on the first trading day after
-  the expiring one's last trading day (ICE: one business day before the last notice day, itself
-  seven business days before the month's last business day; March, May, July, September,
-  December). On 2026-09-21, `KC=F` fell 6.2% while the December contract fell 1.5%.
-  - Over 134 roll days since 2000, found by that rule from `KC=F`'s own trading days, the median
-    move is 1.92%, against 1.23% on all days and 1.31% to 1.42% on the days either side. So the
-    rule finds the roll and a roll day's move is partly the spread.
-  - About five days a year: a day's median barely changes, but a month's span holds a roll about
-    four times in ten. [Precision](../precision.md) records it beside gold's and Brent's, with
-    taking out each roll day's move as the better approach.
-  - Of coffee's 15 largest day moves, one falls on a roll day: 2000-07-20 (−12.1%), in a week of
-    10% swings either way. The second largest, 2026-07-06 (+15.3%), is no roll: the December
-    contract rose 17.1% too.
+  Its daily close is ICE's settlement at the 13:30 New York close: on 31 days since 2026-09-22 it
+  is a median 0.48% from the last 5-minute bar before 13:30 (−1.3% to +0.7%), the settlement being
+  set from the closing minutes' trades, not the last one.
+- **Its roll, measured and recorded, not removed.** The daily series stays on the expiring contract
+  until its last trading day, then rolls; a roll day's move is partly the spread between the two
+  contracts (on 2026-09-21, −6.2% against the next contract's −1.5%). The figures are in
+  [Precision](../precision.md)'s coffee row. Removing them for coffee alone would treat the third
+  front month unlike the first two, and for all three would change gold's and Brent's cells, which
+  this part forbids; Yahoo serves no prices for expired contracts either. It waits for a step of
+  its own. Release days rarely fall on a roll day: none of the ISM
+  survey's, the jobs report's or retail sales'; 5 of 937 CPI-type; 14 of 392 central-bank decisions.
+- **Its gaps.** 19 of more than four days: 14 around Thanksgiving, Christmas and New Year, two
+  around 4 July, 2003-02-14 to 02-19 (Presidents' Day and that week's blizzard), 2001-09-10 to
+  09-17 (9/11) and 2012-10-26 to 10-31 (Hurricane Sandy).
 - **No sign, so no call.** Coffee's sign is 0 in `with_more_outcomes`, as the seven's are.
 
 | Symbol | Market | Yahoo | Venue | Daily since |
@@ -48,36 +46,46 @@ rose". This part adds coffee. At the end, `load-prices` stores it, and `raw-move
     on no other flow.
   - `follows`: coffee holds walk-forward for no flow, and gets at most 2 answers in any run.
   - The scoreboard is rebuilt in under 15 minutes alone (772 s at 23 markets).
+  - `live`'s statement previews: a preview gains `KC` only if coffee *moves* on that statement's
+    flow; under this outcome none does.
+- **Chance, counted:** each command's chance line, as it prints it, now over 24 markets.
 
 ## The steps
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | Coffee: a seed row, an `MVP_PRICE_SERIES` row, a 0 sign in `with_more_outcomes`, `load-prices` stores it | The tests below pass. On a copy of the store the procedure gives an empty diff and the scoreboard's rebuild time is written here |
+| 1 | Coffee: a seed row, an `MVP_PRICE_SERIES` row, a 0 sign in `with_more_outcomes`, `load-prices` stores it | The tests below pass. On a copy of the store the procedure gives an empty diff, the store's counts are written in `docs/schema.md` and the scoreboard's rebuild time here |
 | 2 | Results here and in [MVP results](../mvp-results.md) | Coffee's *does it move?* verdict for every flow and its `follows` answers, against the expected outcome |
 
 ## How you know it is right
 
-- `MVP_PRICE_SERIES` lists 24 markets, coffee last, and `with_more_outcomes` lists it last at 0.
-- An 08:30 New York release falls on the same day's close for coffee (the parametrized test in
-  `tests/test_event_flows.py`), and a 14:00 Fed decision on the next day's, after its 13:30
-  settlement (the 14:00 test there gains coffee).
-- The tests that count 23 markets count 24: `test_study_prices.py`, `test_study_observations.py`,
-  `test_study_raw_move.py`, `test_study_surprise.py` and `test_scoreboard.py`. Their other values
-  are unchanged.
+- `MVP_PRICE_SERIES` lists 24 markets, coffee last, and `with_more_outcomes` lists it last at 0
+  (`test_the_more_outcomes_take_their_signs_by_analogy` gains `"KC": 0`).
+- In `tests/test_event_flows.py`: an 08:30 New York release falls on the same day's close for
+  coffee (the parametrized test's list gains `"KC"`), and a 14:00 Fed decision on the next day's,
+  after its 13:30 settlement (the 14:00 test gains `"KC": date(2022, 9, 22)` and says so in its name).
+- The tests that count markets count one more: `test_study_prices.py` (its bars too),
+  `test_study_observations.py`, `test_study_raw_move.py` (its output slice too),
+  `test_study_surprise.py` (context rows 69 → 72 and 46 → 48) and `test_scoreboard.py` (chance over
+  24; walk-forward unchanged, coffee being unsigned; the seven's random stream gains coffee).
+  Values that do not count markets are unchanged.
 
 ## What this part does not do
 
-- No roll-day exclusion: one market would be its only case.
+- No roll-day exclusion (above).
 - No robusta, no shelf price. No breakeven (part 2b) and no signs (part 2c).
 
 ## Technical details
 
 - **`data/seed/instruments.csv`:** after `ITB`:
   `KC,Coffee (arabica front month),commodity,global,ICE US,Front-month future; rolls five times a year.`
-- **`study.py`:** `"KC": PriceSeries("KC=F", "pct", time(13, 30), NEW_YORK)` after `ITB`, and the
-  comment above it.
-- **`flows.py`:** `with_more_outcomes` gains `"KC": 0` and its docstring.
-- **Docs:** this spec; row 19 (amended: part 2 split into 2a coffee, 2b the breakeven, 2c signs);
-  `docs/precision.md` (coffee's roll); `docs/schema.md` (the seed's rows, the market count); the
-  glossary (`KC`); `README.md` where it counts markets; `docs/mvp-results.md`; `docs/status.md`.
+- **`study.py`:** `"KC": PriceSeries("KC=F", "pct", time(13, 30), NEW_YORK)` after `ITB`; the
+  comment above gains "Coffee (docs/steps/coffee.md) is `KC=F`, ICE's arabica front month, at its
+  13:30 settlement."
+- **`flows.py`:** `with_more_outcomes` gains `"KC": 0`; its docstring "…, nor coffee
+  (docs/steps/coffee.md)".
+- **Docs, step 1:** this spec's step 1 note; `docs/schema.md` (30 seed rows, 24 measured, the rows per trading day, a `KC` row in the
+  per-instrument table, the totals); the glossary (a `KC` entry, and `KC=F` beside `GC=F` under
+  front-month futures); `README.md` (24 markets, coffee in its list); `docs/status.md`. Row 19 and `docs/precision.md`'s coffee row are written with this spec. `docs/legacy/data/` is not edited.
+- **Docs, step 2:** this spec's results, `docs/mvp-results.md`, `docs/status.md`; the scoreboard as
+  rebuilt by the evening job.
