@@ -1,3 +1,4 @@
+import random
 from datetime import date, timedelta
 from pathlib import Path
 
@@ -41,8 +42,15 @@ def _decision(day: date) -> flows.EventInstance:
 
 
 def test_a_decision_s_kind_is_read_from_the_target_rate_either_side() -> None:
-    # given four decisions: the target unchanged, lower, higher, and one with no rate after
-    days = [date(2019, 6, 19), date(2019, 7, 31), date(2022, 3, 16), date(2026, 10, 28)]
+    # given five decisions: the target unchanged, lower, higher, one with no rate after and one
+    # with none before
+    days = [
+        date(2019, 6, 19),
+        date(2019, 7, 31),
+        date(2022, 3, 16),
+        date(2026, 10, 28),
+        date(2023, 1, 4),
+    ]
     rates = {
         date(2019, 6, 18): 2.5,
         date(2019, 6, 22): 2.5,
@@ -51,12 +59,13 @@ def test_a_decision_s_kind_is_read_from_the_target_rate_either_side() -> None:
         date(2022, 3, 15): 0.25,
         date(2022, 3, 19): 0.5,
         date(2026, 10, 27): 4.0,
+        date(2023, 1, 7): 4.5,
     }
 
     # when each is given its kind
     kinds = study.fed_kinds([_decision(day) for day in days], rates)
 
-    # then a hold, a cut and a hike, and the last has none
+    # then a hold, a cut and a hike, and the last two have none
     assert list(kinds.values()) == [HOLD, CUT, HIKE]
     assert len(kinds) == 3
 
@@ -64,9 +73,9 @@ def test_a_decision_s_kind_is_read_from_the_target_rate_either_side() -> None:
 def test_a_span_with_a_hole_is_skipped_and_a_decision_s_span_is_the_base_span() -> None:
     # given closes with a five-day gap after the tenth
     closes = _closes(_alternating(20))
-    closes = closes[:10] + [
-        DailyClosingPrice(c.day + timedelta(days=7), c.price) for c in closes[10:]
-    ]
+    shift = timedelta(days=5 - (closes[10].day - closes[9].day).days)
+    closes = closes[:10] + [DailyClosingPrice(c.day + shift, c.price) for c in closes[10:]]
+    assert (closes[10].day - closes[9].day).days == 5
 
     # when the week spans are read
     spans = study.span_moves(closes, "pct", 5)
@@ -79,33 +88,48 @@ def test_a_span_with_a_hole_is_skipped_and_a_decision_s_span_is_the_base_span() 
 
 
 def test_a_decision_is_left_out_only_if_it_overlaps_the_last_one_kept() -> None:
-    # given three month decisions, the second overlapping the first and the third only the
-    # second, and a fourth starting on the last kept span's end close
+    # given month decisions: a cut overlapping a hold, a hold overlapping only the cut, a hold
+    # starting on the last kept span's end close, and one after the last close
     closes = _closes(_alternating(200))
     days = [c.day for c in closes]
-    decisions = [(days[10], HOLD), (days[20], HOLD), (days[35], HOLD), (days[56], HOLD)]
+    decisions = [
+        (days[10], HOLD),
+        (days[20], CUT),
+        (days[35], HOLD),
+        (days[56], HOLD),
+        (days[-1] + timedelta(days=1), HOLD),
+    ]
 
     # when the month is followed
-    follow = study.follow_market(decisions, closes, "pct", 21)[HOLD]
+    follows = study.follow_market(decisions, closes, "pct", 21)
 
-    # then the second is left out and the third and fourth counted
-    assert follow.overlapped == 1
-    assert sum(follow.counts.values()) == 3
+    # then the cut is left out for overlapping a hold, the third and fourth are counted, and the
+    # one after the last close is neither counted nor a hole
+    assert (follows[CUT].overlapped, follows[HOLD].overlapped) == (1, 0)
+    assert sum(follows[HOLD].counts.values()) == 3
+    assert follows[HOLD].holes == 0
+
+
+def _gaussian(n: int, seed: int) -> list[float]:
+    rng = random.Random(seed)
+    return [rng.gauss(0, 0.01) for _ in range(n)]
 
 
 def test_a_market_that_only_moves_more_after_decisions_has_no_direction() -> None:
-    # given day moves of 1% either way, and twenty decisions on which it moves 2%, as often up as
-    # down
-    steps = _alternating(600)
-    keys = list(range(100, 500, 20))
+    # given day moves of about 1% either way, and sixty decisions on which it moves 2.5%, up on 33
+    steps = _gaussian(3000, 1)
+    keys = list(range(100, 2900, 46))[:60]
     for n, i in enumerate(keys):
-        steps[i] = 0.02 if n % 2 == 0 else -0.02
+        steps[i] = 0.025 if n < 33 else -0.025
     closes = _closes(steps)
 
     # when the day is followed
     follow = study.follow_market([(closes[i].day, HIKE) for i in keys], closes, "pct", 1)[HIKE]
 
-    # then the answer is no direction
+    # then there is no direction, though testing up on all sixty against up's base rate would say
+    # up
+    assert follow.base is not None
+    assert stats.binomial_tail(33, 60, follow.base.rates[UP]) < study.FOLLOW_P_BAR
     assert follow.answer == CANT_SAY
 
 
@@ -159,12 +183,18 @@ def test_the_walk_forward_answer_uses_nothing_after_the_decision() -> None:
         by_end = sorted(spans.items(), key=lambda item: item[1].end)
         return study.answer_before([cl[i].day for i in keys], len(keys) - 1, spans, by_end)
 
-    # when every close from the last decision's reaction on is changed
-    changed = closes[:last] + [DailyClosingPrice(c.day, c.price * 3) for c in closes[last:]]
+    # when every close from the last decision's reaction on is changed, unevenly
+    changed = closes[:last] + [
+        DailyClosingPrice(c.day, c.price * (1 + (k % 7) / 10)) for k, c in enumerate(closes[last:])
+    ]
 
-    # then its answer, cut and rates are the same
+    # then its answer, cut and rates are the same, and the tenth decision, with nine before it,
+    # has none
     before, after = answer(closes), answer(changed)
     assert before is not None and before == after
+    spans = study.span_moves(closes, "pct", 21)
+    by_end = sorted(spans.items(), key=lambda item: item[1].end)
+    assert study.answer_before([closes[i].day for i in keys], 9, spans, by_end) is None
 
 
 def test_decisions_that_stand_for_their_period_are_marked_by_the_placebo() -> None:
@@ -182,6 +212,22 @@ def test_decisions_that_stand_for_their_period_are_marked_by_the_placebo() -> No
     # then the answer is up, and the placebo says it is the period's
     assert follow.answer == UP
     assert follow.period
+
+
+def test_decisions_whose_own_day_moves_are_not_the_period() -> None:
+    # given day moves of about 1% either way, and a 2% rise on each of 70 decisions' days
+    steps = _gaussian(3000, 2)
+    keys = list(range(100, 2900, 40))[:70]
+    for i in keys:
+        steps[i] = 0.02
+    closes = _closes(steps)
+
+    # when the day is followed
+    follow = study.follow_market([(closes[i].day, HOLD) for i in keys], closes, "pct", 1)[HOLD]
+
+    # then the answer is up, and the placebo does not say it
+    assert follow.answer == UP
+    assert not follow.period
 
 
 def test_the_chance_with_its_own_rates_is_the_binomial_when_they_are_equal() -> None:

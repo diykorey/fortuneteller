@@ -1403,7 +1403,8 @@ KINDS = (CUT, HOLD, HIKE)
 UP, SAME, DOWN = "up", "about the same", "down"
 OUTCOMES = (UP, SAME, DOWN)
 CANT_SAY = "can't say"
-# A placebo decision sits this many closes before, and after, the real one.
+# A placebo decision sits this many closes before, and after, the real one, and never less than
+# the span, so the two spans share no move (docs/steps/what-follows.md, amended 2026-11-04).
 PLACEBO_SHIFT = 10
 # A walk-forward record holds only this far above the mean base rate of its answers.
 ABOVE_BASE = 0.10
@@ -1541,7 +1542,7 @@ def follow_market(
     last_end: date | None = None
     for day, kind in decisions:
         pair = closing_price_before_after(closes, day)
-        if pair == BEFORE_HISTORY:
+        if pair == BEFORE_HISTORY or day > closes[-1].day:
             continue
         if isinstance(pair, str):
             holes[kind] += 1
@@ -1560,14 +1561,18 @@ def follow_market(
     by_end = sorted(spans.items(), key=lambda item: item[1].end)
     return {
         kind: _follow(
-            keys[kind], spans, by_end, closes, index, reacted, overlapped[kind], holes[kind]
+            keys[kind], spans, by_end, closes, index, reacted, overlapped[kind], holes[kind], c
         )
         for kind in KINDS
     }
 
 
 def answer_before(
-    keys: Sequence[date], j: int, spans: Mapping[date, Span], by_end: Sequence[tuple[date, Span]]
+    keys: Sequence[date],
+    j: int,
+    spans: Mapping[date, Span],
+    by_end: Sequence[tuple[date, Span]],
+    ends: Sequence[date] | None = None,
 ) -> tuple[str, Base] | None:
     """The walk-forward answer at the ``j``-th decision, and the base it used: from the decisions
     and the base spans that ended on or before its close before, never anything later; none under
@@ -1576,7 +1581,7 @@ def answer_before(
     earlier = [spans[k] for k in keys[:j] if spans[k].end <= before]
     if len(earlier) < MIN_EVENT_DAYS:
         return None
-    upto = bisect_right([span.end for _, span in by_end], before)
+    upto = bisect_right(ends if ends is not None else [span.end for _, span in by_end], before)
     base = base_of([span.move for k, span in by_end[:upto] if k >= keys[0]])
     if base is None:
         return None
@@ -1592,6 +1597,7 @@ def _follow(
     reacted: set[date],
     overlapped: int,
     holes: int,
+    c: int,
 ) -> Follow:
     empty = {o: 0 for o in OUTCOMES}
     if not keys:
@@ -1607,7 +1613,8 @@ def _follow(
     answer, chance, counts = _answer((spans[key] for key in keys), base)
     period = False
     if answer in OUTCOMES:
-        for shift in (-PLACEBO_SHIFT, PLACEBO_SHIFT):
+        reach = max(PLACEBO_SHIFT, c)
+        for shift in (-reach, reach):
             moved = []
             for key in keys:
                 i = index[key] + shift
@@ -1617,8 +1624,9 @@ def _follow(
                 period = True
     rates: list[float] = []
     right = 0
+    ends = [span.end for _, span in by_end]
     for j, key in enumerate(keys):
-        then = answer_before(keys, j, spans, by_end)
+        then = answer_before(keys, j, spans, by_end, ends)
         if then is not None and then[0] in OUTCOMES:
             said, base_then = then
             rates.append(base_then.rates[said])

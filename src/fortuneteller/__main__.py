@@ -511,7 +511,7 @@ def describe_follows(
     lines = [
         f"follows: {len(events)} Fed decisions {first} … {last}: "
         + ", ".join(f"{counted.count(kind)} {kind}s" for kind in study.KINDS),
-        "kind  span   market        n  up same down  out  base up/same/down  answer          "
+        "kind  span   market        n  up same down  out/hole  base up/same/down  answer          "
         "chance  placebo  walk-forward",
     ]
     for kind, span, market, f in cells:
@@ -522,7 +522,7 @@ def describe_follows(
         walk = f"{f.graded}: {f.right} right, {f.verdict}"
         lines.append(
             f"{kind:<5} {span:<6} {market:<12} {n:>3} {f.counts[study.UP]:>3} "
-            f"{f.counts[study.SAME]:>4} {f.counts[study.DOWN]:>4} {f.overlapped + f.holes:>4}  "
+            f"{f.counts[study.SAME]:>4} {f.counts[study.DOWN]:>4} {f'{f.overlapped}/{f.holes}':>8}  "
             f"{base:<18} {f.answer:<15} {chance:<7} {placebo:<8} {walk}"
         )
     answered = sum(f.answer != study.TOO_FEW for *_, f in cells)
