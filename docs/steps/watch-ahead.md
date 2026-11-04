@@ -8,7 +8,8 @@
 **In plain words:** the week ahead also lists the scheduled events the fortune teller does not
 call, and says how markets moved on such days before. For example: "Tuesday 2026-11-17 05:00 New
 York, Germany's ZEW survey. No call. On its days before, no market moved more than on ordinary
-days." Or, for an ECB decision: "the euro moved 1.68 times its ordinary day, the dollar index 1.49 times".
+days." Or, for an ECB decision, on the store of 2026-11-04: "No call. On its days before, the
+euro moved 1.68 times as much as on an ordinary day, the dollar index 1.49 times."
 
 Step 15 previews only the releases `live` calls, six US releases. The calendar holds more that a
 reader can watch: the Fed's and the ECB's decisions, the Fed chair's and the ECB president's
