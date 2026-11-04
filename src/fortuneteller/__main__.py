@@ -506,6 +506,7 @@ def describe_follows(
     cells: Sequence[tuple[str, str, str, study.Follow]],
     order: Sequence[str] = study.KINDS,
     noun: str = "Fed decisions",
+    after: bool = False,
 ) -> list[str]:
     """``follows``' table: a row per kind, span and market, then what chance alone would give."""
     counted = [kinds[e.event_id] for e in events if e.event_id in kinds]
@@ -514,7 +515,8 @@ def describe_follows(
     width = max(5, *(len(kind) for kind in order))
     lines = [
         f"follows: {len(events)} {noun} {first} … {last}: "
-        + ", ".join(f"{counted.count(kind)} {kind}{plural}" for kind in order),
+        + ", ".join(f"{counted.count(kind)} {kind}{plural}" for kind in order)
+        + (", spans from the reaction close" if after else ""),
         f"{'kind':<{width}} span   market        n  up same down  out/hole  base up/same/down  "
         "answer          chance  placebo  walk-forward",
     ]
@@ -580,14 +582,16 @@ def _follows(args: argparse.Namespace) -> int:
                     file=sys.stderr,
                 )
                 return 1
-        events, cells = study.follow_decisions(flow, kinds, order, con=con)
+        events, cells = study.follow_decisions(
+            flow, kinds, order, con=con, after=args.after_the_day
+        )
     except (sources.FredError, ValueError) as exc:
         print(f"follows: {exc}", file=sys.stderr)
         return 1
     if not events:
         print(f"follows: no {noun} with a kind yet", file=sys.stderr)
         return 1
-    for line in describe_follows(events, kinds, cells, order, noun):
+    for line in describe_follows(events, kinds, cells, order, noun, args.after_the_day):
         print(line)
     return 0
 
@@ -1579,6 +1583,11 @@ def build_parser() -> argparse.ArgumentParser:
     )
     p_follows.add_argument(
         "--event", choices=list(FOLLOWS_NOUNS), default="fomc", help="the events (default: fomc)"
+    )
+    p_follows.add_argument(
+        "--after-the-day",
+        action="store_true",
+        help="spans from the close of the reaction day, the ones a trigger can be graded on",
     )
     p_follows.set_defaults(func=_follows)
 

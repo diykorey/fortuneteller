@@ -88,8 +88,11 @@ Part 2 (the file and the log) has its own spec. For it to grade what this part r
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | `follows --after-the-day` | The tests below pass. On a copy of the store, each of the four flows prints 144 cells with the flag, and its first line ends `, spans from the reaction close`. Without the flag, each flow's output equals the one before the change: the diff is empty |
+| 1 | ~~`follows --after-the-day`~~ **done** 2026-11-04 (PR #251) | The tests below pass. On a copy of the store, each of the four flows prints 144 cells with the flag, and its first line ends `, spans from the reaction close`. Without the flag, each flow's output equals the one before the change: the diff is empty |
 | 2 | Write the results here and in [MVP results](../mvp-results.md), check the expected outcome, and update the roadmap row | Each flow's answers, release marks and walk-forward records are recorded against the expected outcome |
+
+*Step 1, 2026-11-04 (PR #251):* on a copy of the store each flow prints 144 cells with the flag and
+the header as written; without it, the four tables are byte for byte the ones before the change.
 
 ## How you know it is right
 

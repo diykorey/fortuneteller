@@ -1535,11 +1535,14 @@ def follow_market(
     unit: str,
     c: int,
     order: Sequence[str] = KINDS,
+    after: bool = False,
 ) -> dict[str, Follow]:
     """Each kind's record on one market over spans of ``c`` closes.
 
     ``decisions`` are (first reaction day on this market, kind), oldest first. A decision is left
     out if its span starts before the end of the last one kept, whatever its kind, or has a hole.
+    With ``after``, a decision's span is keyed on the close after its reaction close, so it starts
+    at that close (docs/steps/after-the-day.md).
     """
     spans = span_moves(closes, unit, c)
     index = {close.day: i for i, close in enumerate(closes)}
@@ -1557,6 +1560,11 @@ def follow_market(
             continue
         key = pair[1].day
         reacted.add(key)
+        if after:
+            if index[key] + 1 >= len(closes):
+                continue
+            key = closes[index[key] + 1].day
+            reacted.add(key)
         if key not in spans:
             if index[key] + c <= len(closes):
                 holes[kind] += 1
@@ -1569,7 +1577,15 @@ def follow_market(
     by_end = sorted(spans.items(), key=lambda item: item[1].end)
     return {
         kind: _follow(
-            keys[kind], spans, by_end, closes, index, reacted, overlapped[kind], holes[kind], c
+            keys[kind],
+            spans,
+            by_end,
+            closes,
+            index,
+            reacted,
+            overlapped[kind],
+            holes[kind],
+            max(PLACEBO_SHIFT, c + 1 if after else c),
         )
         for kind in order
     }
@@ -1605,7 +1621,7 @@ def _follow(
     reacted: set[date],
     overlapped: int,
     holes: int,
-    c: int,
+    reach: int,
 ) -> Follow:
     empty = {o: 0 for o in OUTCOMES}
     if not keys:
@@ -1621,7 +1637,6 @@ def _follow(
     answer, chance, counts = _answer((spans[key] for key in keys), base)
     period = False
     if answer in OUTCOMES:
-        reach = max(PLACEBO_SHIFT, c)
         for shift in (-reach, reach):
             moved = []
             for key in keys:
@@ -1694,16 +1709,17 @@ def follow_decisions(
     kinds: Mapping[int, str],
     order: Sequence[str],
     con: duckdb.DuckDBPyConnection | None = None,
+    after: bool = False,
 ) -> tuple[list[EventInstance], list[tuple[str, str, str, Follow]]]:
     """The flow's stored events with a kind, oldest first, and a record per kind, span and market,
-    in that order."""
+    in that order; with ``after``, on the spans from each reaction close."""
     events = [e for e in stored_events(flow, con=con) if e.event_id in kinds]
     by_market = {}
     for instrument, series in MVP_PRICE_SERIES.items():
         closes = stored_closes(instrument, con=con)
         decisions = [(first_reaction_day(e, series), kinds[e.event_id]) for e in events]
         by_market[instrument] = {
-            span: follow_market(decisions, closes, series.unit, c, order)
+            span: follow_market(decisions, closes, series.unit, c, order, after)
             for span, c in SPANS.items()
         }
     cells = [
