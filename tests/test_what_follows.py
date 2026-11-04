@@ -1,15 +1,28 @@
 import random
-from datetime import date, timedelta
+from datetime import UTC, date, datetime, time, timedelta
 from pathlib import Path
 
 import pytest
 from pydantic import SecretStr
 
 from fortuneteller import db, flows, sources, stats, study
-from fortuneteller.__main__ import main
+from fortuneteller.__main__ import describe_follows, main
 from fortuneteller.config import settings
+from fortuneteller.models import Surprise
 from fortuneteller.sources import DailyClosingPrice
-from fortuneteller.study import CANT_SAY, CUT, DOWN, HIKE, HOLD, SAME, TOO_FEW, UP
+from fortuneteller.study import (
+    ABOVE,
+    AS_EXPECTED,
+    BELOW,
+    CANT_SAY,
+    CUT,
+    DOWN,
+    HIKE,
+    HOLD,
+    SAME,
+    TOO_FEW,
+    UP,
+)
 
 START = date(2001, 1, 1)
 
@@ -265,10 +278,170 @@ def test_follows_prints_the_table_and_needs_the_key(
     monkeypatch.setattr(settings, "fred_api_key", SecretStr("key"))
     code = main(["follows"])
 
-    # then the first fails, and the second prints the header, a cut's day and the chance line
+    # then the first fails, and the second prints the header of the decision with a kind, a cut's
+    # day and the chance line
     out = capsys.readouterr().out.splitlines()
     assert (without, code) == (1, 0)
-    assert out[0] == "follows: 2 Fed decisions 2001-03-20 … 2001-05-15: 1 cuts, 0 holds, 0 hikes"
+    assert out[0] == "follows: 1 Fed decisions 2001-03-20 … 2001-03-20: 1 cuts, 0 holds, 0 hikes"
     assert out[2].startswith("cut   day    SPY / ES       1   ")
     assert out[2].endswith("too few")
     assert out[-1] == "by chance: about 0.0 answers on all history, 0.0 holds walk-forward"
+
+
+NFP = flows.flow_named("nfp")
+
+
+def _report(day: date) -> flows.EventInstance:
+    # a jobs report released at 08:30 New York on ``day``
+    at = datetime.combine(day, time(8, 30), tzinfo=sources.NEW_YORK)
+    return _decision(day).model_copy(
+        update={
+            "event_id": flows.event_id(NFP, day),
+            "event_type": NFP.event_type,
+            "event_ts": at.astimezone(UTC).replace(tzinfo=None),
+        }
+    )
+
+
+def _store_reports(surprises: list[tuple[date, str, float]]) -> None:
+    # each report with one surprise row: (day, baseline, surprise in thousands)
+    db.init_db()
+    reports = {day: _report(day) for day, _, _ in surprises}
+    db.insert_models("event_instances", list(reports.values()))
+    db.insert_models(
+        "surprises",
+        [
+            Surprise(
+                event_id=reports[day].event_id,
+                measure="payrolls",
+                baseline=baseline,
+                actual_mom=0.0,
+                expected_mom=0.0,
+                surprise=surprise,
+            )
+            for day, baseline, surprise in surprises
+        ],
+    )
+
+
+def test_a_report_s_kind_is_read_from_its_consensus_surprise(tmp_db: Path) -> None:
+    # given reports 50k, 49.9k, -50k and -49.9k off the consensus, one with only a trend surprise
+    # of 200k, and one whose consensus surprise is missing
+    days = [
+        date(2024, 1, 5),
+        date(2024, 2, 2),
+        date(2024, 3, 8),
+        date(2024, 4, 5),
+        date(2024, 5, 3),
+        date(2024, 6, 7),
+    ]
+    _store_reports(
+        [
+            (days[0], "nasdaq_consensus", 50.0),
+            (days[1], "nasdaq_consensus", 49.9),
+            (days[2], "nasdaq_consensus", -50.0),
+            (days[3], "nasdaq_consensus", -49.9),
+            (days[4], "trend_12m", 200.0),
+            (days[5], "nasdaq_consensus", 0.0),
+        ]
+    )
+    db.get_connection().execute(
+        "UPDATE surprises SET surprise = NULL WHERE event_id = ?", [flows.event_id(NFP, days[5])]
+    )
+
+    # when the kinds are read
+    kinds = study.release_kinds(NFP)
+
+    # then above, as expected, below, as expected, and the last two have none
+    assert [kinds.get(flows.event_id(NFP, day)) for day in days] == [
+        ABOVE,
+        AS_EXPECTED,
+        BELOW,
+        AS_EXPECTED,
+        None,
+        None,
+    ]
+
+
+def test_a_release_that_moves_a_market_whatever_it_says_answers_for_every_kind() -> None:
+    # given day moves of about 1% either way, and a 3% fall on every report's day, fifteen of each
+    # kind
+    steps = _gaussian(3000, 3)
+    keys = list(range(100, 2900, 60))[:45]
+    for i in keys:
+        steps[i] = -0.03
+    closes = _closes(steps)
+    order = [ABOVE, AS_EXPECTED, BELOW]
+    reports = [(closes[i].day, order[n % 3]) for n, i in enumerate(keys)]
+
+    # when the day is followed
+    follows = study.follow_market(reports, closes, "pct", 1, study.SURPRISE_KINDS)
+
+    # then every kind answers down: the release's, not the kind's
+    assert [follows[kind].answer for kind in order] == [DOWN, DOWN, DOWN]
+
+
+def test_the_fed_table_is_unchanged() -> None:
+    # given three made-up Fed decisions, a cut, a hold and a hike, on one market's closes
+    closes = _closes(_alternating(300))
+    events = [_decision(closes[i].day) for i in (20, 60, 100)]
+    kinds = dict(zip((e.event_id for e in events), (CUT, HOLD, HIKE), strict=True))
+    series = study.MVP_PRICE_SERIES["SPY / ES"]
+    decisions = [(study.first_reaction_day(e, series), kinds[e.event_id]) for e in events]
+    by_span = {
+        span: study.follow_market(decisions, closes, series.unit, c)
+        for span, c in study.SPANS.items()
+    }
+    cells = [
+        (kind, span, "SPY / ES", by_span[span][kind])
+        for kind in study.KINDS
+        for span in study.SPANS
+    ]
+
+    # when the table is described
+    lines = describe_follows(events, kinds, cells)
+
+    # then its first lines are those printed before the release kinds were added
+    assert lines[:3] == [
+        "follows: 3 Fed decisions 2001-01-29 … 2001-05-21: 1 cuts, 1 holds, 1 hikes",
+        "kind  span   market        n  up same down  out/hole  base up/same/down  answer          "
+        "chance  placebo  walk-forward",
+        "cut   day    SPY / ES       1   1    0    0      0/0  0.50/0.07/0.42     too few         "
+        "—       -        0: 0 right, too few",
+    ]
+
+
+def test_follows_for_the_jobs_report_needs_no_key_but_its_surprises(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given no FRED key, one market's closes, and three reports, then their surprises
+    monkeypatch.setattr(settings, "fred_api_key", None)
+    monkeypatch.setattr(study, "MVP_PRICE_SERIES", {"SPY / ES": study.MVP_PRICE_SERIES["SPY / ES"]})
+    closes = _closes(_alternating(300))
+    days = [closes[i].day for i in (20, 60, 100)]
+    db.init_db()
+    db.insert_models("event_instances", [_report(day) for day in days])
+    db.get_connection().executemany(
+        "INSERT INTO daily_bars (instrument, day, close, source) VALUES ('SPY / ES', ?, ?, 'test')",
+        [[c.day, c.price] for c in closes],
+    )
+
+    # when run before the surprises are stored, then after
+    before = main(["follows", "--event", "nfp"])
+    err = capsys.readouterr().err
+    db.get_connection().execute("DELETE FROM event_instances")
+    _store_reports(
+        [(days[0], "nasdaq_consensus", 60.0), (days[1], "nasdaq_consensus", 0.0)]
+        + [(days[2], "nasdaq_consensus", -60.0)]
+    )
+    after = main(["follows", "--event", "nfp"])
+
+    # then the first asks for the surprises, and the second prints the jobs reports' table
+    out = capsys.readouterr().out.splitlines()
+    assert (before, after) == (1, 0)
+    assert "follows: no surprises for nfp yet; run `fortuneteller load-surprises` first" in err
+    assert out[0] == (
+        "follows: 3 jobs reports 2001-01-29 … 2001-05-21: 1 above, 1 as expected, 1 below"
+    )
+    assert out[1].startswith("kind        span   market")
+    assert out[2].startswith("above       day    SPY / ES       1   ")

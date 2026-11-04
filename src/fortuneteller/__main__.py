@@ -20,7 +20,7 @@ import subprocess
 import sys
 import textwrap
 import time
-from collections.abc import Callable, Iterable, Sequence
+from collections.abc import Callable, Iterable, Mapping, Sequence
 from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 from importlib.resources import files
@@ -502,17 +502,21 @@ def _raw_move(args: argparse.Namespace) -> int:
 
 def describe_follows(
     events: Sequence[EventInstance],
-    kinds: dict[int, str],
+    kinds: Mapping[int, str],
     cells: Sequence[tuple[str, str, str, study.Follow]],
+    order: Sequence[str] = study.KINDS,
+    noun: str = "Fed decisions",
 ) -> list[str]:
     """``follows``' table: a row per kind, span and market, then what chance alone would give."""
     counted = [kinds[e.event_id] for e in events if e.event_id in kinds]
     first, last = (flows.release_date(e) for e in (events[0], events[-1]))
+    plural = "s" if tuple(order) == study.KINDS else ""
+    width = max(5, *(len(kind) for kind in order))
     lines = [
-        f"follows: {len(events)} Fed decisions {first} … {last}: "
-        + ", ".join(f"{counted.count(kind)} {kind}s" for kind in study.KINDS),
-        "kind  span   market        n  up same down  out/hole  base up/same/down  answer          "
-        "chance  placebo  walk-forward",
+        f"follows: {len(events)} {noun} {first} … {last}: "
+        + ", ".join(f"{counted.count(kind)} {kind}{plural}" for kind in order),
+        f"{'kind':<{width}} span   market        n  up same down  out/hole  base up/same/down  "
+        "answer          chance  placebo  walk-forward",
     ]
     for kind, span, market, f in cells:
         n = sum(f.counts.values())
@@ -521,7 +525,7 @@ def describe_follows(
         placebo = "period" if f.period else "-"
         walk = f"{f.graded}: {f.right} right, {f.verdict}"
         lines.append(
-            f"{kind:<5} {span:<6} {market:<12} {n:>3} {f.counts[study.UP]:>3} "
+            f"{kind:<{width}} {span:<6} {market:<12} {n:>3} {f.counts[study.UP]:>3} "
             f"{f.counts[study.SAME]:>4} {f.counts[study.DOWN]:>4} {f'{f.overlapped}/{f.holes}':>8}  "
             f"{base:<18} {f.answer:<15} {chance:<7} {placebo:<8} {walk}"
         )
@@ -534,14 +538,18 @@ def describe_follows(
     return [line.rstrip() for line in lines]
 
 
+# What ``follows`` calls each flow's events in its header.
+FOLLOWS_NOUNS = {"fomc": "Fed decisions", "nfp": "jobs reports"}
+
+
 def _follows(args: argparse.Namespace) -> int:
     flow = flows.flow_named(args.event)
+    noun = FOLLOWS_NOUNS[args.event]
     con = db.get_connection()
     db.init_db(con=con)
     if not flows.stored_events(flow, con=con):
         print(
-            "follows: no Fed decisions stored; run `fortuneteller load-releases` first",
-            file=sys.stderr,
+            f"follows: no {noun} stored; run `fortuneteller load-releases` first", file=sys.stderr
         )
         return 1
     if db.count_rows("daily_bars", con=con) == 0:
@@ -549,16 +557,32 @@ def _follows(args: argparse.Namespace) -> int:
             "follows: no daily_bars stored; run `fortuneteller load-prices` first", file=sys.stderr
         )
         return 1
-    api_key = _fred_key("follows")
-    if not api_key:
-        return 1
     try:
-        rates = dict(flows.target_rates(api_key))
-        events, kinds, cells = study.follow_decisions(flow, rates, con=con)
+        if flow is flows.FED_FLOW:
+            api_key = _fred_key("follows")
+            if not api_key:
+                return 1
+            stored = flows.stored_events(flow, con=con)
+            kinds = study.fed_kinds(stored, dict(flows.target_rates(api_key)))
+            order: Sequence[str] = study.KINDS
+        else:
+            kinds = study.release_kinds(flow, con=con)
+            order = study.SURPRISE_KINDS
+            if not kinds:
+                print(
+                    f"follows: no surprises for {args.event} yet; "
+                    "run `fortuneteller load-surprises` first",
+                    file=sys.stderr,
+                )
+                return 1
+        events, cells = study.follow_decisions(flow, kinds, order, con=con)
     except (sources.FredError, ValueError) as exc:
         print(f"follows: {exc}", file=sys.stderr)
         return 1
-    for line in describe_follows(events, kinds, cells):
+    if not events:
+        print(f"follows: no {noun} with a kind yet", file=sys.stderr)
+        return 1
+    for line in describe_follows(events, kinds, cells, order, noun):
         print(line)
     return 0
 
@@ -1546,10 +1570,10 @@ def build_parser() -> argparse.ArgumentParser:
 
     p_follows = sub.add_parser(
         "follows",
-        help="what each market did over a day, a week and a month after each kind of Fed decision",
+        help="what each market did over a day, a week and a month after each kind of event",
     )
     p_follows.add_argument(
-        "--event", choices=["fomc"], default="fomc", help="the decisions (default: fomc)"
+        "--event", choices=list(FOLLOWS_NOUNS), default="fomc", help="the events (default: fomc)"
     )
     p_follows.set_defaults(func=_follows)
 

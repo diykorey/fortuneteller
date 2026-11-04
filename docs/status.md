@@ -27,14 +27,17 @@ jobs report on 2026-11-06 is the first.
 What follows, part 1b ([the spec](steps/what-follows-jobs.md)): the jobs report above, as
 expected or below its consensus, each market over a day, a week and a month.
 
+What follows, part 1b, step 1: `follows --event nfp`.
+
 ## Next
 
-What follows, part 1b, step 1: `follows --event nfp`.
+What follows, part 1b, step 2: the results on the store.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-04 | What follows, part 1b, step 1: `follows --event nfp` | PR #242 |
 | 2026-11-04 | What follows, part 1b: spec, the jobs report by kind | PR #241 |
 | 2026-11-04 | What follows, part 1, step 2: results — nothing holds; four answers near chance; VIX on hold days the nearest | PR #240 |
 | 2026-11-04 | What follows, part 1, step 1: `follows` | PR #239 |
