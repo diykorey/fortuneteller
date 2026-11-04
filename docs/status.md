@@ -14,6 +14,8 @@ walk-forward on any flow; 20 answers on all history against about 17 by chance, 
 
 ## In progress
 
+Step 19, part 1: the markets people feel ([the spec](steps/markets-people-feel.md)).
+
 Step 18, part 2, step 3: the first triggers graded ([the spec](steps/trigger-file.md)). It waits for
 the owner's first trigger, a file under `data/triggers/` merged before a market's reaction close.
 
@@ -29,12 +31,13 @@ jobs report on 2026-11-06 is the first.
 
 ## Next
 
-Not yet chosen: step 19 (the markets people feel) is the next in the roadmap that needs no trigger.
+Step 19, part 2: coffee, the 5-year breakeven and signs, once part 1's results are in.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-04 | The markets people feel, part 1: spec | PR #256 |
 | 2026-11-04 | A trigger arrives, part 2, step 2: the evening score answers and logs the triggers | PR #255 |
 | 2026-11-04 | A trigger arrives, part 2, step 1: `triggers`, answered from the reaction close, logged and graded | PR #254 |
 | 2026-11-04 | A trigger arrives, part 2: spec, the trigger file and its log | PR #253 |
