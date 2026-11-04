@@ -26,11 +26,16 @@ def scoreboard_dir(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     return out
 
 
+PEOPLE_FEEL = list(study.MVP_PRICE_SERIES)[16:]
+
+
 def _history(con: duckdb.DuckDBPyConnection) -> None:
     # 60 monthly CPI releases, 2017 to 2021, each with a consensus surprise, the trend given the
     # same one; every market's closes move 0.5% a day, and on a release day the surprise's way 85%
     # of the time, so the moves and surprises come from one set of prices
     rng = random.Random(7)
+    # the markets people feel draw from a stream of their own, so the sixteen keep their prices
+    later = random.Random(8)
     releases = []
     for i in range(60):
         year, month = 2017 + i // 12, i % 12 + 1
@@ -47,9 +52,10 @@ def _history(con: duckdb.DuckDBPyConnection) -> None:
             surprise, way = surprises.get(day), 1 if rng.random() < 0.85 else -1
             for instrument, series in study.MVP_PRICE_SERIES.items():
                 sign = flows.EXPECTED_SIGN[instrument] or 1
-                move = rng.gauss(0, 0.005)
+                draw = later if instrument in PEOPLE_FEEL else rng
+                move = draw.gauss(0, 0.005)
                 if surprise is not None:
-                    move = sign * way * 0.05 * surprise + rng.gauss(0, 0.002)
+                    move = sign * way * 0.05 * surprise + draw.gauss(0, 0.002)
                 price = prices[instrument]
                 prices[instrument] = (
                     price + move * 10 if series.unit == "bps" else price * (1 + move)
@@ -130,8 +136,8 @@ def test_the_scoreboard_holds_what_the_commands_print(
         assert " ".join(tokens[7:]) == link["verdict"]
     assert "GC / XAU" not in cpi["walk_forward"]["links"]
     assert data["chance"] == {
-        "raw_move": {"cells": 16, "p": 0.01, "by_chance": 0.16},
-        "surprise": {"cells": 16, "p": 0.01, "by_chance": 0.16},
+        "raw_move": {"cells": 23, "p": 0.01, "by_chance": 0.23},
+        "surprise": {"cells": 23, "p": 0.01, "by_chance": 0.23},
         "walk_forward": {"cells": 11, "p": 0.01, "by_chance": 0.11},
     }
     assert data["rules"]["raw_move"] == reports["raw-move"][-1]

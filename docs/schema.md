@@ -87,12 +87,13 @@ MVP uses exactly one row, `CPI / inflation surprise`.
 
 ## instruments
 
-The instruments whose prices can be measured. Source: `data/seed/instruments.csv`, 22 rows: a
-representative 15-row subset of 55 from the Notion export, and 7 added 2026-10-27. The MVP uses
+The instruments whose prices can be measured. Source: `data/seed/instruments.csv`, 29 rows: a
+representative 15-row subset of 55 from the Notion export, 7 added 2026-10-27 and 7 added 2026-11-04. The MVP uses
 five: `SPY / ES`, `UST10Y / ZN`, `DXY`, `GC / XAU`, `VIX`; [cross-country
 effects](steps/cross-country.md) adds `DAX` and `SX5E` (2026-10-21); [more
 outcomes](steps/more-outcomes.md) adds `BRN`, `EURUSD`, `COMP`, `UST5Y / ZF`, `UKX`, `SXXP`,
-`BTC`, `ITA` and `XLE` (2026-10-27), so sixteen are measured.
+`BTC`, `ITA` and `XLE` (2026-10-27); [the markets people feel](steps/markets-people-feel.md) adds
+`CORN`, `WEAT`, `SOYB`, `UGA`, `UNG`, `XLU` and `ITB` (2026-11-04), so 23 are measured.
 
 | Column | Type | Meaning |
 | --- | --- | --- |
@@ -312,7 +313,7 @@ Example rows:
 
 **How much data.** Counted from the live source on 2026-09-28, after the empty and weekend rows are
 dropped. It grows by about sixteen rows per trading day, one per instrument; 144,077 rows for the
-sixteen on 2026-10-27.
+sixteen on 2026-10-27; 177,692 for the 23 on 2026-11-04.
 
 | Instrument | Rows | From |
 | --- | --- | --- |
@@ -333,10 +334,18 @@ sixteen on 2026-10-27.
 | `ITA` | 5,151 | 2006-05-05 (counted 2026-10-27) |
 | `BRN` | 4,790 | 2007-07-30 (counted 2026-10-27) |
 | `BTC` | 3,159 | 2014-09-17 (counted 2026-10-27) |
+| `XLU` | 7,009 | 1998-12-22 (counted 2026-11-04) |
+| `ITB` | 5,157 | 2006-05-05 (counted 2026-11-04) |
+| `UNG` | 4,919 | 2007-04-18 (counted 2026-11-04) |
+| `UGA` | 4,701 | 2008-02-28 (counted 2026-11-04) |
+| `CORN` | 4,127 | 2010-06-09 (counted 2026-11-04) |
+| `WEAT` | 3,804 | 2011-09-19 (counted 2026-11-04) |
+| `SOYB` | 3,804 | 2011-09-19 (counted 2026-11-04) |
 
 A few megabytes in all. `observations` is these same days thinned down to the release days —
 about 2,700 rows for CPI and the five; 45,773 for ten events and sixteen markets on 2026-10-27;
-57,050 with the two statement flows on 2026-10-29.
+57,050 with the two statement flows on 2026-10-29; 100,993 for every flow and the 23 markets on
+2026-11-04.
 
 | Column | Type | Meaning |
 | --- | --- | --- |

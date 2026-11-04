@@ -85,8 +85,18 @@ the triggers show them. No call is made on them yet.
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | The seven markets: seed rows, `MVP_PRICE_SERIES` rows, a 0 sign in `with_more_outcomes`, `load-prices` stores them | The tests below pass. On a copy of the store, `load-prices` stores the seven, the procedure above gives an empty diff, the closes check out, and the scoreboard's rebuild time is written here |
+| 1 | ~~The seven markets: seed rows, `MVP_PRICE_SERIES` rows, a 0 sign in `with_more_outcomes`, `load-prices` stores them~~ **done** 2026-11-04 (PR #257) | The tests below pass. On a copy of the store, `load-prices` stores the seven, the procedure above gives an empty diff, the closes check out, and the scoreboard's rebuild time is written here |
 | 2 | Results here and in [MVP results](../mvp-results.md) | Each new market's *does it move?* verdict for every flow and its `follows` answers, against the expected outcome |
+
+*Step 1, 2026-11-04 (PR #257):*
+- On a copy of the store `load-prices` stored the seven: 33,521 closes, from `XLU`'s 7,009 to the
+  3,804 each of wheat and soybeans, and 177,692 for the 23.
+- The procedure gave an empty diff: `follows` for its four flows with and without the flag, `score`,
+  and the scoreboard's whole `data.json` (every flow's `raw-move`, `surprise` and walk-forward
+  cells) without the seven and the chance lines.
+- Each fund's daily close, on 2026-10-29 to 11-03, is within 0.25% of its last 5-minute bar,
+  15:55 to 16:00, so the 16:00 close stands.
+- The scoreboard was rebuilt in 829 s beside a second rebuild, against 492 s at sixteen markets.
 
 ## How you know it is right
 

@@ -37,6 +37,7 @@ Step 19, part 2: coffee, the 5-year breakeven and signs, once part 1's results a
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-04 | The markets people feel, part 1, step 1: seven markets, unsigned | PR #257 |
 | 2026-11-04 | The markets people feel, part 1: spec | PR #256 |
 | 2026-11-04 | A trigger arrives, part 2, step 2: the evening score answers and logs the triggers | PR #255 |
 | 2026-11-04 | A trigger arrives, part 2, step 1: `triggers`, answered from the reaction close, logged and graded | PR #254 |

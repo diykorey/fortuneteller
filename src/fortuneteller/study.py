@@ -79,7 +79,8 @@ class PriceSeries(NamedTuple):
 # daily close: the intraday price Yahoo's close matches, measured on 2026-09 and 2026-10 data.
 # Gold's and Brent's are their settlements; a stock index's the closing auction after its last
 # 5-minute bar; EUR/USD's the price at 00:00 London of the bar's own day, which is how Yahoo
-# stamps a currency pair, so the next London day's bar is the first to follow a US release.
+# stamps a currency pair, so the next London day's bar is the first to follow a US release. The
+# seven markets people feel (docs/steps/markets-people-feel.md) are US-listed funds closing at 16:00.
 MVP_PRICE_SERIES = {
     "SPY / ES": PriceSeries("^GSPC", "pct", time(16, 0), NEW_YORK),
     "UST10Y / ZN": PriceSeries("^TNX", "bps", time(15, 0), NEW_YORK),
@@ -97,6 +98,13 @@ MVP_PRICE_SERIES = {
     "BTC": PriceSeries("BTC-USD", "pct", time(23, 59), UTC_ZONE),
     "ITA": PriceSeries("ITA", "pct", time(16, 0), NEW_YORK),
     "XLE": PriceSeries("XLE", "pct", time(16, 0), NEW_YORK),
+    "CORN": PriceSeries("CORN", "pct", time(16, 0), NEW_YORK),
+    "WEAT": PriceSeries("WEAT", "pct", time(16, 0), NEW_YORK),
+    "SOYB": PriceSeries("SOYB", "pct", time(16, 0), NEW_YORK),
+    "UGA": PriceSeries("UGA", "pct", time(16, 0), NEW_YORK),
+    "UNG": PriceSeries("UNG", "pct", time(16, 0), NEW_YORK),
+    "XLU": PriceSeries("XLU", "pct", time(16, 0), NEW_YORK),
+    "ITB": PriceSeries("ITB", "pct", time(16, 0), NEW_YORK),
 }
 
 
