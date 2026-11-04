@@ -24,8 +24,8 @@ Beat the fortune teller, step 3: the first live round, a release `live` calls gu
 merged pull request ([the spec](steps/beat-the-fortune-teller.md)). It waits for a release; the
 jobs report on 2026-11-06 is the first.
 
-What follows, part 1c: retail sales by kind ([the spec](steps/what-follows-retail.md)); step 1,
-`follows --event retail`, next.
+What follows, part 1c: retail sales by kind ([the spec](steps/what-follows-retail.md)); step 2,
+the results, next.
 
 ## Next
 
@@ -36,6 +36,7 @@ year), or step 18 (a trigger file).
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-04 | What follows, part 1c, step 1: `follows --event retail` | PR #245 |
 | 2026-11-04 | What follows, part 1c: spec, retail sales by kind | PR #244 |
 | 2026-11-04 | What follows, part 1b, step 2: results — after a report above the consensus, both yields rise on the day and hold | PR #243 |
 | 2026-11-04 | What follows, part 1b, step 1: `follows --event nfp` | PR #242 |

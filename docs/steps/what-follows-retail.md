@@ -88,7 +88,7 @@ day.
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | `follows --event retail` | The tests below pass. On a copy of the store, the header reads `follows: 222 retail sales releases 2008-03-13 … 2026-10-15: 51 above, 109 as expected, 62 below`, and 144 cells print |
+| 1 | ~~`follows --event retail`~~ **done** 2026-11-04 (PR #245) | The tests below pass. On a copy of the store, the header reads `follows: 222 retail sales releases 2008-03-13 … 2026-10-15: 51 above, 109 as expected, 62 below`, and 144 cells print |
 | 2 | Write the results here and in [MVP results](../mvp-results.md), check the expected outcome, and update the roadmap row. Add each answer's counts without the shared days, as a reading aid | Each kind's answers, release marks and walk-forward records are recorded against the expected outcome |
 
 ## How you know it is right
