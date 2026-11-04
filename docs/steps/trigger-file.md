@@ -97,7 +97,7 @@ grades, and keeps them in `data/trigger-log.csv`.
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~`triggers`: read, void, wait, answer, log, grade~~ **done** 2026-11-04 (PR #254) | The tests below pass. On a copy of the store, `answer_triggers` given a trigger for the jobs report of 2026-10-02, merged 2026-10-02 at 12:00 UTC, returns 48 rows, 16 markets by 3 spans, every one graded or *can't say*, *too few* or *left out* |
-| 2 | The evening job runs `triggers`, and commits the log when it or the score changed | A run of the job on a copy commits the log |
+| 2 | ~~The evening job runs `triggers`, and commits the log when it or the score changed~~ **done** 2026-11-04 (PR #255) | A run of the job on a copy commits the log |
 | 3 | Results: the first triggers graded, recorded here and in [MVP results](../mvp-results.md) | Waits for the owner's first trigger and its spans to end |
 
 *Step 1, 2026-11-04 (PR #254):* on a copy of the store, the jobs report of 2026-10-02 (*below*)
@@ -106,6 +106,14 @@ yield the day after, graded *wrong*). The build settled two things this spec lef
 row's outcome is filled only where it has a cut, so *too few* and *left out* are never graded. A
 reaction close with a hole before it is printed, not logged. The tests caught an answer cached by
 flow and market but not by kind.
+
+*Step 2, 2026-11-04 (PR #255):* the evening score runs `triggers` after `score`. It puts the log
+into the score's pull request, or opens `triggers-<day>` when only the log changed. It waits, as the
+score does, while a `calls-`, `score-` or `triggers-` pull request is open. A run with rows pending
+commits nothing, the log included; the next evening adds the same rows, since an answer reads only
+closes up to its reaction close. The job's pull requests reach GitHub, so it was not run on a copy.
+It was checked with `bash -n`, and its first run with a trigger is the owner's first trigger: until
+then `triggers` prints `triggers: none filed` and writes nothing.
 
 ## How you know it is right
 
