@@ -30,6 +30,45 @@ cadence, and being seen. A reaction record graded after the fact, and a preview 
 statement, count as fortunes; a direction right six times in ten is content when the four are
 shown too.
 
+*Amended 2026-11-04, by the owner.* **What a reader reads in the news, turned into what it means
+for the things they pay for.** The reader is someone who reads a headline ("floods in Colombia",
+"the ECB cuts rates") and wonders what follows. The tool finds the event in the news itself,
+recognises its kind, looks up what followed every past event of that kind, and says it with the
+figures (the numbers below are an illustration, not a measurement):
+
+```
+ECB cuts rates → EUR/USD
+  next week    down       14 of 22 past cuts, median −0.6%; down in 48% of ordinary weeks
+  next month   can't say  11 of 22
+```
+
+- **The outcome is a market, not a shelf price.** Each everyday thing is read through the traded
+  market behind it: fuel through gasoline and Brent, coffee through arabica, food through wheat,
+  corn and soybeans, electricity and utilities through natural gas and utilities stocks, mortgages
+  through Treasury yields, housing through homebuilders, inflation through what bond markets expect
+  it to be, stocks through indices and single companies, crypto through its own prices. "The
+  coffee market rose" is enough; shelf prices come later, if ever.
+- **Every forecast has spans** — a day, a week, a month, a quarter, a year — and for each says
+  *up*, *down*, *about the same* or *can't say*, judged against what the market does over an
+  ordinary span of that length. *Can't say* is an answer, and will be the common one at a year.
+- **The guess is arithmetic on history, never a model's opinion.** A language model may read the
+  news into a trigger and turn figures into sentences; the middle stays counts. Free throughout: a
+  model, when it comes, runs on this machine.
+- **Bare figures first, words later.** For now each answer is its counts, its base rate and its
+  typical move. Grouping into *most probably*, *could* and *will not*, with 60% as the line a
+  decision needs, is the page's job once the figures exist, and 60% must hold above chance, not on
+  four cases.
+- **Collecting and predicting are separate.** The prediction is built and graded on hand-written
+  triggers first; real news replaces them once it works, and is checked against a list of known
+  events before any forecast rests on it.
+- **What has no past is a story, not a record.** "Quantum computing could break crypto" has never
+  happened, so nothing can be counted; such a what-if, if shown, is labelled as reasoning and never
+  sits beside a graded record.
+
+The way below still holds: the bars, the walk-forward, the negative results. The
+surprise stays the trigger's number where it has one; where it has none, the direction comes from
+what followed past events of the kind, against the market's own drift.
+
 ## The idea
 
 The bet, in one sentence:

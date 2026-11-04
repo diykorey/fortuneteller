@@ -103,6 +103,25 @@ scheduled statement a preview. Counts checked 2026-10-23 on the calendars alread
 | 15 | **[The week ahead](steps/week-ahead.md)** — the scoreboard opens with each release `live` calls in the next seven days: the consensus, the threshold either side, and what each signed link will call, with its replay record; never a call before the number. *Added 2026-11-04* toward the owner's restated goal, a tool ordinary people can read. **Done** 2026-11-04: the jobs report's four links preview with *holds* records, CPI's with *too few* | Everything shown so far is the past; a reader cannot see what is coming or what a call hinges on. Needs no new data or model |
 | 16 | **[The week ahead, without a call](steps/watch-ahead.md)** — the scheduled events `live` does not call (Fed and ECB decisions, their heads' statements, the euro-area, ISM and German releases) listed in the week ahead with how markets moved on such days before; no direction. *Added 2026-11-04* by the owner after step 15. **Done** 2026-11-04: the table lists ZEW, Ifo and the rest with their record, no direction | A reader can watch more than six US releases; the record already exists |
 
+Decided 2026-11-04 by the owner, with the target amended ([Legend](legend.md#the-target)): a
+reader of the news, told what follows for the things they pay for, over spans from a day to a
+year. Build on what exists before collecting anything new: central bank decisions first, then the
+markets ordinary people feel, then real news. Collecting is kept apart from predicting; the
+prediction is built on hand-written triggers. Each step below gets its own spec, bars written
+first.
+
+| # | Step | Why now |
+| --- | --- | --- |
+| 17 | **What follows, over spans** — for each stored flow without a surprise rule, and each market, the signed move after every past event over a day, a week, a month, a quarter and a year, against how often the market moves that way over an ordinary span of that length; *up*, *down*, *about the same* or *can't say*, with the counts. Fed and ECB decisions first. Spans that overlap (two decisions six weeks apart share most of a year) are tested as such, not as independent cases | Today a direction comes only from a surprise, and a move is measured only over a day or a week. Every later step needs both. Needs no new data |
+| 18 | **A trigger arrives** — a hand-written file of triggers (kind, place, time, and the number where it has one) stands in for the news; each trigger is matched to its flow and answered with step 17's figures for every span, logged, and graded when each span ends | Separates predicting from collecting, as the owner chose, so the prediction is right before any news is read |
+| 19 | **The markets people feel** — coffee, wheat, corn, soybeans, sugar, cocoa, gasoline, natural gas, utilities and homebuilder stocks, the 5-year expected inflation and the 30-year mortgage rate, each with its close, zone and source; measured under the same bars on the flows that exist | The reader's things, mapped to free daily markets: Yahoo's futures and ETFs, FRED's breakeven and mortgage series |
+| 20 | **News into triggers** — a free news source read into step 18's triggers, by rules first and a model on this machine if rules fall short; checked against a hand-made list of known events before any forecast rests on it. Step 11 found GDELT unable to date one speaker's posts; this asks only for kinds of events, places and days | The owner's flow: the tool finds the event itself. Last of the four, because a forecast it feeds must already be right |
+| 21 | **New kinds of events** — floods and droughts in growing regions, OPEC decisions, earnings reports for single companies, crypto's own news (exchange failures, approvals): each a dated history from a free archive first, then a flow | Where the reader's headlines are; each needs its own history before step 17 can answer for it |
+
+Later, not planned in detail: the page's words for the figures (*most probably* at 60% held above
+chance, *could*, *will not*); what-if stories for what has no past (a new technology), labelled
+as reasoning and kept apart from graded records.
+
 Later, not planned in detail: a statement's text read for its direction (hawkish or dovish), the
 first use of a language model, graded like a surprise; and prediction-market prices as an election's
 expected value. ("Beat the fortune teller" is now step 12. *Amended 2026-11-03:* the statement's
