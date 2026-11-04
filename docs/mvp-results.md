@@ -497,6 +497,19 @@ of them *about the same*. VIX rises the day after a jobs report above or as expe
 the release. After a strong report, Europe's stocks fall the next day and the yields say nothing.
 Once the market has reacted, what follows is mostly no direction.
 
+## The markets people feel
+
+Measured 2026-11-04. Detail in [the markets people feel](steps/markets-people-feel.md#results).
+
+Seven markets a reader feels: corn, wheat, soybeans, gasoline and natural gas through the funds
+that hold their futures, utilities and homebuilders, all unsigned. **Homebuilders and utilities move
+on the Fed's days**, utilities on CPI's too; homebuilders do not on the jobs report or CPI, against
+the expected outcome. **Corn, soybeans and gasoline move on the ISM survey's day** in both eras,
+and gasoline and natural gas on the ECB chief's speeches, likely the Thursday gas storage report:
+6 of the funds' 95 cells against about one by chance, where none was expected. In `follows`, no new
+market holds walk-forward; 10 answers against about 15 by chance. They move on some days, in no
+direction history can name yet.
+
 ## What comes next
 
 Chosen 2026-10-13: keep score ([rung 4](steps/rung-4-keep-score.md)), done above with the live path

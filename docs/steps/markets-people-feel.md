@@ -86,7 +86,7 @@ the triggers show them. No call is made on them yet.
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~The seven markets: seed rows, `MVP_PRICE_SERIES` rows, a 0 sign in `with_more_outcomes`, `load-prices` stores them~~ **done** 2026-11-04 (PR #257) | The tests below pass. On a copy of the store, `load-prices` stores the seven, the procedure above gives an empty diff, the closes check out, and the scoreboard's rebuild time is written here |
-| 2 | Results here and in [MVP results](../mvp-results.md) | Each new market's *does it move?* verdict for every flow and its `follows` answers, against the expected outcome |
+| 2 | ~~Results here and in [MVP results](../mvp-results.md)~~ **done** 2026-11-04 (PR #258) | Each new market's *does it move?* verdict for every flow and its `follows` answers, against the expected outcome |
 
 *Step 1, 2026-11-04 (PR #257):*
 - On a copy of the store `load-prices` stored the seven: 33,521 closes, from `XLU`'s 7,009 to the
@@ -98,6 +98,50 @@ the triggers show them. No call is made on them yet.
   15:55 to 16:00, so the 16:00 close stands.
 - The scoreboard was rebuilt in 772 s alone (829 s beside a second rebuild), against 492 s at sixteen
   markets: under the 15-minute bar. The evening job's `TimeoutStartSec` goes from 20 to 40 minutes.
+
+## Results
+
+Measured 2026-11-04 on a copy of the store with the 23 markets loaded, at PR #257.
+
+**Does it move?** (`raw-move`, every flow with enough days). Of the five funds' 95 cells, 6 move,
+19 are unclear and 70 don't; at p < 0.01 about one would move by chance. Of utilities' and
+homebuilders' 41 cells, 4 move.
+
+| Market | Moves on | Expected |
+| --- | --- | --- |
+| `ITB` homebuilders | the Fed's decisions (ratio 1.33) | the Fed's, the jobs report and CPI: **the jobs report (1.10, p 0.14) and CPI (1.04) don't** |
+| `XLU` utilities | the Fed's (1.27), CPI (1.17), US elections (2.55, 11 days) | the Fed's: **CPI and elections are more** |
+| `CORN`, `SOYB`, `UGA` | the ISM survey (1.30, 1.39, 1.43; `UNG` unclear at 1.24) | none beyond chance: **wrong** |
+| `UGA`, `UNG` | the ECB chief's speeches (1.21, 1.37) | none: **wrong** |
+| `SOYB` | posts (1.42, 103 days) | none: **wrong** |
+| `WEAT` | nothing | — |
+
+The ISM survey's link is the same in both eras (each fund 1.17 to 1.47 in 2008–2019 and since
+2020), so it is not one stretch of history. It is the first business day of the month, and the
+survey's prices and new orders are about the goods these funds hold. The ECB chief's speeches fall
+mostly on Thursdays, the day of the weekly US gas storage report at 10:30; that likely explains
+natural gas and is not tested here. The funds' 6 against about one by chance says the expected
+outcome was too sure that farm and fuel funds ignore releases. `surprise` gives none of the seven a
+verdict beyond *unclear*, as it can't without a sign.
+
+**What follows** (`follows`, four flows, from the day and from the reaction close). No new market
+holds walk-forward on any flow, as expected. Across the eight runs the seven get 10 answers, at most
+3 in one run (the jobs report's and retail sales'), against about 1.9 each by their share of the
+chance line (6.2 × 7/23, so about 15 in all); the bar was that plus 2 in each run. One reaches 30
+graded and doesn't hold. They are:
+
+- after a Fed hike, homebuilders *about the same* over the week from the reaction close (23 events);
+- after a jobs report as expected, natural gas *about the same* on the day (104; the period placebo
+  gives it too, so it is the years, not the report); below, gasoline down on the day (50)
+  and corn up over the week (42);
+- after retail sales as expected, wheat down on the day (90) and homebuilders *about the same* over
+  the month (77); below, homebuilders *about the same* on the day (62);
+- after CPI above, corn up on the day (52); below, corn *about the same* over the week (69), and natural
+  gas down the day after (78; 14 of 37 right walk-forward, doesn't hold).
+
+In plain words: the farm and fuel funds jump on the day of the monthly factory survey more than on
+other days, and utilities and homebuilders on the Fed's days. Which way they go after an event is
+not something history answers yet, for any of the seven.
 
 ## How you know it is right
 
