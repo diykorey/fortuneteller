@@ -29,7 +29,7 @@ import duckdb
 
 from . import db, expectations, flows, seed, sources, study
 from .config import settings
-from .models import Surprise
+from .models import EventInstance, Surprise
 
 Handler = Callable[[argparse.Namespace], int]
 
@@ -496,6 +496,69 @@ def _raw_move(args: argparse.Namespace) -> int:
             f"over a week: the move from the close before each day to the {study.WEEK_CLOSES}th close"
         )
     for line in describe_raw_moves(results, label=flow.label):
+        print(line)
+    return 0
+
+
+def describe_follows(
+    events: Sequence[EventInstance],
+    kinds: dict[int, str],
+    cells: Sequence[tuple[str, str, str, study.Follow]],
+) -> list[str]:
+    """``follows``' table: a row per kind, span and market, then what chance alone would give."""
+    counted = [kinds[e.event_id] for e in events if e.event_id in kinds]
+    first, last = (flows.release_date(e) for e in (events[0], events[-1]))
+    lines = [
+        f"follows: {len(events)} Fed decisions {first} … {last}: "
+        + ", ".join(f"{counted.count(kind)} {kind}s" for kind in study.KINDS),
+        "kind  span   market        n  up same down  out/hole  base up/same/down  answer          "
+        "chance  placebo  walk-forward",
+    ]
+    for kind, span, market, f in cells:
+        n = sum(f.counts.values())
+        base = "/".join(f"{f.base.rates[o]:.2f}" for o in study.OUTCOMES) if f.base else "—"
+        chance = f"{f.chance:.4f}" if not math.isnan(f.chance) else "—"
+        placebo = "period" if f.period else "-"
+        walk = f"{f.graded}: {f.right} right, {f.verdict}"
+        lines.append(
+            f"{kind:<5} {span:<6} {market:<12} {n:>3} {f.counts[study.UP]:>3} "
+            f"{f.counts[study.SAME]:>4} {f.counts[study.DOWN]:>4} {f'{f.overlapped}/{f.holes}':>8}  "
+            f"{base:<18} {f.answer:<15} {chance:<7} {placebo:<8} {walk}"
+        )
+    answered = sum(f.answer != study.TOO_FEW for *_, f in cells)
+    walked = sum(f.graded >= study.MIN_PREDICTIONS for *_, f in cells)
+    lines.append(
+        f"by chance: about {answered * len(study.OUTCOMES) * study.FOLLOW_P_BAR:.1f} answers on "
+        f"all history, {walked * study.FOLLOW_P_BAR:.1f} holds walk-forward"
+    )
+    return [line.rstrip() for line in lines]
+
+
+def _follows(args: argparse.Namespace) -> int:
+    flow = flows.flow_named(args.event)
+    con = db.get_connection()
+    db.init_db(con=con)
+    if not flows.stored_events(flow, con=con):
+        print(
+            "follows: no Fed decisions stored; run `fortuneteller load-releases` first",
+            file=sys.stderr,
+        )
+        return 1
+    if db.count_rows("daily_bars", con=con) == 0:
+        print(
+            "follows: no daily_bars stored; run `fortuneteller load-prices` first", file=sys.stderr
+        )
+        return 1
+    api_key = _fred_key("follows")
+    if not api_key:
+        return 1
+    try:
+        rates = dict(flows.target_rates(api_key))
+        events, kinds, cells = study.follow_decisions(flow, rates, con=con)
+    except (sources.FredError, ValueError) as exc:
+        print(f"follows: {exc}", file=sys.stderr)
+        return 1
+    for line in describe_follows(events, kinds, cells):
         print(line)
     return 0
 
@@ -1480,6 +1543,15 @@ def build_parser() -> argparse.ArgumentParser:
         "--event", choices=event_names, default="cpi", help="the event (default: cpi)"
     )
     p_surprise.set_defaults(func=_surprise)
+
+    p_follows = sub.add_parser(
+        "follows",
+        help="what each market did over a day, a week and a month after each kind of Fed decision",
+    )
+    p_follows.add_argument(
+        "--event", choices=["fomc"], default="fomc", help="the decisions (default: fomc)"
+    )
+    p_follows.set_defaults(func=_follows)
 
     p_raw = sub.add_parser(
         "raw-move", help="compare each instrument's moves on an event's days with ordinary days"

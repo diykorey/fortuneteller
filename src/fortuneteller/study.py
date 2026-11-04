@@ -12,6 +12,9 @@ with its moves on ordinary days, the days no stored event reacted on.
 
 Step 4 (see ``docs/steps/step-4-surprise.md``): whether each instrument's release-day move follows
 the event's surprise.
+
+Roadmap step 17 (see ``docs/steps/what-follows.md``): what each market did over a day, a week and
+a month after each kind of Fed decision, against its own spans of that length.
 """
 
 from __future__ import annotations
@@ -23,8 +26,8 @@ import math
 import random
 import re
 import subprocess
-from bisect import bisect_left
-from collections.abc import Callable, Iterable, Sequence
+from bisect import bisect_left, bisect_right
+from collections.abc import Callable, Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from datetime import UTC, date, datetime, time, timedelta
 from pathlib import Path
@@ -39,6 +42,7 @@ from .models import DailyBar, EventInstance, Observation
 from .flows import (
     EVENT_FLOWS,
     RELEASE_TIME,
+    TARGET_EFFECT_DAYS,
     DatedShockFlow,
     EventFlow,
     called_live,
@@ -1387,3 +1391,284 @@ def score_guesses(
             continue
         graded.append(GradedGuess(g, RIGHT if g.direction * move[0] > 0 else WRONG))
     return graded
+
+
+# Step 17 — what follows a Fed decision, over spans (docs/steps/what-follows.md).
+
+
+SPANS = {"day": 1, "week": 5, "month": 21}
+FOLLOW_P_BAR = 0.01
+CUT, HOLD, HIKE = "cut", "hold", "hike"
+KINDS = (CUT, HOLD, HIKE)
+UP, SAME, DOWN = "up", "about the same", "down"
+OUTCOMES = (UP, SAME, DOWN)
+CANT_SAY = "can't say"
+# A placebo decision sits this many closes before, and after, the real one, and never less than
+# the span, so the two spans share no move (docs/steps/what-follows.md, amended 2026-11-04).
+PLACEBO_SHIFT = 10
+# A walk-forward record holds only this far above the mean base rate of its answers.
+ABOVE_BASE = 0.10
+
+
+def fed_kinds(events: Iterable[EventInstance], rates: Mapping[date, float]) -> dict[int, str]:
+    """Each decision's kind by event id, from the target rate ``TARGET_EFFECT_DAYS`` after its New
+    York day against the day before; a decision with either rate missing has none."""
+    kinds = {}
+    for event in events:
+        day = release_date(event)
+        before = rates.get(day - timedelta(days=1))
+        after = rates.get(day + timedelta(days=TARGET_EFFECT_DAYS))
+        if before is not None and after is not None:
+            kinds[event.event_id] = HOLD if after == before else CUT if after < before else HIKE
+    return kinds
+
+
+class Span(NamedTuple):
+    start: date
+    end: date
+    move: float
+
+
+def span_moves(closes: Sequence[DailyClosingPrice], unit: str, c: int) -> dict[date, Span]:
+    """Every span of ``c`` closes keyed on its first close: from the close before it to the
+    ``c``-th close from it, signed; a span with a hole in the data is skipped, as in
+    ``weekly_moves``."""
+    spans = {}
+    for i in range(1, len(closes) - c + 1):
+        window = closes[i - 1 : i + c]
+        if all(
+            (after.day - before.day).days <= MAX_CLOSE_GAP_DAYS
+            for before, after in zip(window, window[1:], strict=False)
+        ):
+            spans[closes[i].day] = Span(
+                window[0].day, window[-1].day, release_move(window[0], window[-1], unit)
+            )
+    return spans
+
+
+def outcome(move: float, cut: float) -> str:
+    if move == 0 or abs(move) < cut:
+        return SAME
+    return UP if move > 0 else DOWN
+
+
+@dataclass(frozen=True)
+class Base:
+    """A market's spans of one length: the cut under which a move is about the same, and each
+    outcome's share."""
+
+    cut: float
+    rates: dict[str, float]
+
+    @property
+    def up_share(self) -> float:
+        moved = self.rates[UP] + self.rates[DOWN]
+        return self.rates[UP] / moved if moved else math.nan
+
+
+def base_of(moves: Sequence[float]) -> Base | None:
+    """The cut at the lower third of absolute moves and each outcome's share; none under two."""
+    if len(moves) < 2:
+        return None
+    cut = quantiles([abs(move) for move in moves], n=3, method="inclusive")[0]
+    counts = {o: 0 for o in OUTCOMES}
+    for move in moves:
+        counts[outcome(move, cut)] += 1
+    return Base(cut, {o: counts[o] / len(moves) for o in OUTCOMES})
+
+
+def span_answer(counts: Mapping[str, int], same_rate: float, up_share: float) -> tuple[str, float]:
+    """The outcome after a kind of event, with its chance: *about the same* against its rate on all
+    events, *up* and *down* only on the events that moved, against the base's share of up among
+    its spans that moved, so a market that only moves more reads as no direction."""
+    n = sum(counts[o] for o in OUTCOMES)
+    if n < MIN_EVENT_DAYS:
+        return TOO_FEW, math.nan
+    chances = {}
+    if 0 < same_rate < 1:
+        chances[SAME] = stats.binomial_tail(counts[SAME], n, same_rate)
+    moved = counts[UP] + counts[DOWN]
+    if moved and 0 < up_share < 1:
+        chances[UP] = stats.binomial_tail(counts[UP], moved, up_share)
+        chances[DOWN] = stats.binomial_tail(counts[DOWN], moved, 1 - up_share)
+    if not chances:
+        return CANT_SAY, math.nan
+    best = min(chances.values())
+    winners = [o for o, chance in chances.items() if chance == best]
+    if best < FOLLOW_P_BAR and len(winners) == 1:
+        return winners[0], best
+    return CANT_SAY, best
+
+
+def _answer(spans: Iterable[Span], base: Base) -> tuple[str, float, dict[str, int]]:
+    counts = {o: 0 for o in OUTCOMES}
+    for span in spans:
+        counts[outcome(span.move, base.cut)] += 1
+    answer, chance = span_answer(counts, base.rates[SAME], base.up_share)
+    return answer, chance, counts
+
+
+@dataclass(frozen=True)
+class Follow:
+    """One kind's record on one market over one span length."""
+
+    counts: dict[str, int]
+    overlapped: int
+    holes: int
+    base: Base | None
+    answer: str
+    chance: float
+    period: bool
+    graded: int
+    right: int
+    walk_chance: float
+    verdict: str
+
+
+def follow_market(
+    decisions: Sequence[tuple[date, str]], closes: Sequence[DailyClosingPrice], unit: str, c: int
+) -> dict[str, Follow]:
+    """Each kind's record on one market over spans of ``c`` closes.
+
+    ``decisions`` are (first reaction day on this market, kind), oldest first. A decision is left
+    out if its span starts before the end of the last one kept, whatever its kind, or has a hole.
+    """
+    spans = span_moves(closes, unit, c)
+    index = {close.day: i for i, close in enumerate(closes)}
+    keys: dict[str, list[date]] = {kind: [] for kind in KINDS}
+    overlapped = dict.fromkeys(KINDS, 0)
+    holes = dict.fromkeys(KINDS, 0)
+    reacted: set[date] = set()
+    last_end: date | None = None
+    for day, kind in decisions:
+        pair = closing_price_before_after(closes, day)
+        if pair == BEFORE_HISTORY or day > closes[-1].day:
+            continue
+        if isinstance(pair, str):
+            holes[kind] += 1
+            continue
+        key = pair[1].day
+        reacted.add(key)
+        if key not in spans:
+            if index[key] + c <= len(closes):
+                holes[kind] += 1
+            continue
+        if last_end is not None and spans[key].start < last_end:
+            overlapped[kind] += 1
+            continue
+        keys[kind].append(key)
+        last_end = spans[key].end
+    by_end = sorted(spans.items(), key=lambda item: item[1].end)
+    return {
+        kind: _follow(
+            keys[kind], spans, by_end, closes, index, reacted, overlapped[kind], holes[kind], c
+        )
+        for kind in KINDS
+    }
+
+
+def answer_before(
+    keys: Sequence[date],
+    j: int,
+    spans: Mapping[date, Span],
+    by_end: Sequence[tuple[date, Span]],
+    ends: Sequence[date] | None = None,
+) -> tuple[str, Base] | None:
+    """The walk-forward answer at the ``j``-th decision, and the base it used: from the decisions
+    and the base spans that ended on or before its close before, never anything later; none under
+    ``MIN_EVENT_DAYS`` earlier decisions."""
+    before = spans[keys[j]].start
+    earlier = [spans[k] for k in keys[:j] if spans[k].end <= before]
+    if len(earlier) < MIN_EVENT_DAYS:
+        return None
+    upto = bisect_right(ends if ends is not None else [span.end for _, span in by_end], before)
+    base = base_of([span.move for k, span in by_end[:upto] if k >= keys[0]])
+    if base is None:
+        return None
+    return _answer(earlier, base)[0], base
+
+
+def _follow(
+    keys: Sequence[date],
+    spans: Mapping[date, Span],
+    by_end: Sequence[tuple[date, Span]],
+    closes: Sequence[DailyClosingPrice],
+    index: Mapping[date, int],
+    reacted: set[date],
+    overlapped: int,
+    holes: int,
+    c: int,
+) -> Follow:
+    empty = {o: 0 for o in OUTCOMES}
+    if not keys:
+        return Follow(
+            empty, overlapped, holes, None, TOO_FEW, math.nan, False, 0, 0, math.nan, TOO_FEW
+        )
+    start = keys[0]
+    base = base_of([span.move for key, span in spans.items() if key >= start])
+    if base is None:
+        return Follow(
+            empty, overlapped, holes, None, TOO_FEW, math.nan, False, 0, 0, math.nan, TOO_FEW
+        )
+    answer, chance, counts = _answer((spans[key] for key in keys), base)
+    period = False
+    if answer in OUTCOMES:
+        reach = max(PLACEBO_SHIFT, c)
+        for shift in (-reach, reach):
+            moved = []
+            for key in keys:
+                i = index[key] + shift
+                if 0 <= i < len(closes) and (day := closes[i].day) in spans and day not in reacted:
+                    moved.append(spans[day])
+            if _answer(moved, base)[0] == answer:
+                period = True
+    rates: list[float] = []
+    right = 0
+    ends = [span.end for _, span in by_end]
+    for j, key in enumerate(keys):
+        then = answer_before(keys, j, spans, by_end, ends)
+        if then is not None and then[0] in OUTCOMES:
+            said, base_then = then
+            rates.append(base_then.rates[said])
+            right += outcome(spans[key].move, base_then.cut) == said
+    graded = len(rates)
+    walk_chance = stats.poisson_binomial_tail(right, rates) if rates else math.nan
+    if graded < MIN_PREDICTIONS:
+        verdict = TOO_FEW
+    elif (
+        right / graded >= HIT_RATE_BAR
+        and right / graded >= sum(rates) / graded + ABOVE_BASE
+        and walk_chance < FOLLOW_P_BAR
+    ):
+        verdict = HOLDS
+    else:
+        verdict = DOESNT_HOLD
+    return Follow(
+        counts, overlapped, holes, base, answer, chance, period, graded, right, walk_chance, verdict
+    )
+
+
+def follow_decisions(
+    flow: EventFlow, rates: Mapping[date, float], con: duckdb.DuckDBPyConnection | None = None
+) -> tuple[list[EventInstance], dict[int, str], list[tuple[str, str, str, Follow]]]:
+    """Every stored decision of ``flow``, its kinds, and a record per kind, span and market, in that
+    order."""
+    events = stored_events(flow, con=con)
+    kinds = fed_kinds(events, rates)
+    cells = []
+    by_market = {}
+    for instrument, series in MVP_PRICE_SERIES.items():
+        closes = stored_closes(instrument, con=con)
+        decisions = [
+            (first_reaction_day(e, series), kinds[e.event_id])
+            for e in events
+            if e.event_id in kinds
+        ]
+        by_market[instrument] = {
+            span: follow_market(decisions, closes, series.unit, c) for span, c in SPANS.items()
+        }
+    for kind in KINDS:
+        for span in SPANS:
+            for instrument in MVP_PRICE_SERIES:
+                cells.append((kind, span, instrument, by_market[instrument][span][kind]))
+    return events, kinds, cells

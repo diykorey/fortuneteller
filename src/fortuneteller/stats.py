@@ -187,3 +187,21 @@ def sign_flip_p(
         return sum(d if rng.random() < 0.5 else -d for d in differences)
 
     return permutation_p(sum(differences), draw, permutations, seed)
+
+
+def binomial_tail(k: int, n: int, rate: float) -> float:
+    """The chance of ``k`` or more successes in ``n`` tries, each at ``rate``: one-sided."""
+    return min(1.0, sum(_binomial_chance(n, j, rate) for j in range(max(k, 0), n + 1)))
+
+
+def poisson_binomial_tail(right: int, rates: Sequence[float]) -> float:
+    """The chance of ``right`` or more successes when each try has its own rate, exactly: the
+    distribution of the count built up one try at a time."""
+    counts = [1.0]
+    for rate in rates:
+        step = [0.0] * (len(counts) + 1)
+        for i, chance in enumerate(counts):
+            step[i] += chance * (1 - rate)
+            step[i + 1] += chance * rate
+        counts = step
+    return min(1.0, sum(counts[max(right, 0) :]))

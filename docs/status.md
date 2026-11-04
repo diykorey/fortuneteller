@@ -27,14 +27,17 @@ jobs report on 2026-11-06 is the first.
 What follows, over spans, part 1 ([the spec](steps/what-follows.md)): after a Fed cut, hold or
 hike, each market over a day, a week and a month against its base rate, replayed walk-forward.
 
+What follows, part 1, step 1: `follows`, the kinds, spans, answers, placebo and walk-forward.
+
 ## Next
 
-What follows, part 1, step 1: `follows --event fomc`.
+What follows, part 1, step 2: the results on the store.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-04 | What follows, part 1, step 1: `follows` | PR #239 |
 | 2026-11-04 | What follows, part 1: spec | PR #238 |
 | 2026-11-04 | The target: many countries, the US first | PR #237 |
 | 2026-11-04 | The target amended: news triggers, the markets people feel, spans from a day to a year; roadmap steps 17–20 | PR #236 |

@@ -34,7 +34,7 @@ rates, the answer on all history, a placebo's answer and the walk-forward record
 - **No two counted spans overlap.** Per market and span, walking the decisions oldest first, a
   decision is left out if its close before is earlier than the end close of the last decision
   *kept*, whatever its kind; sharing that close is allowed. `follows` prints how many each cell
-  left out, for overlap and for holes.
+  left out, for overlap and for holes; a decision after a market's last close is neither.
 - **Three outcomes, from the market's own spans.** The *base* is every span of that length keyed
   on or after the kind's first counted reaction close on that market. Its cut is the lower third
   of absolute moves (`quantiles(..., n=3, method="inclusive")[0]`), one per kind, span and market;
@@ -49,8 +49,11 @@ rates, the answer on all history, a placebo's answer and the walk-forward record
   rate is 0 or 1 is not tested.
 - **A placebo, for the period.** Holds sit in the bull years 2009–15 and 2020–21, cuts in 2001,
   2008 and 2020: a kind can stand in for its years. Each counted decision's key close is moved 10
-  closes earlier, and separately 10 later, skipping any that lands on a Fed reaction close, and
-  the same rule answers. If either placebo gives the same answer under 0.01, the cell is printed
+  closes earlier, and separately 10 later, or the span's length if longer (21 for the month), so
+  a placebo span shares no move with the real one; any that lands on a Fed reaction close is
+  skipped, and the same rule answers. (*Amended 2026-11-04, in the build's review, before any
+  result was read:* 10 alone let a month's placebo share half its closes with the real one, so
+  every month answer would have read as the period.) If either placebo gives the same answer under 0.01, the cell is printed
   as *the period*, not the decision.
 - **Walk-forward, with nothing from the future.** At each counted decision, with its close
   before *b*: the earlier decisions are this cell's counted ones whose end close is on or before
@@ -122,10 +125,12 @@ FRED is read, nothing is stored.
 
 - `study.py`: `SPANS = {"day": 1, "week": 5, "month": 21}`; `FOLLOW_P_BAR = 0.01`;
   `fed_kinds(events, rates: Mapping[date, float]) -> dict[int, str]` by event id, `"cut"`,
-  `"hold"`, `"hike"`, from `release_date`; `span_moves(closes, unit, c) -> dict[date, tuple[date,
-  float]]`, key close → (end close, signed move); `span_answer(counts, same_rate, up_share) ->
-  tuple[str, float]`; `follow_cell(...)` for one kind, span and market: counts, rates, answer,
-  placebo, walk-forward grade (`HOLDS`, `DOESNT_HOLD`, `TOO_FEW` reused).
+  `"hold"`, `"hike"`, from `release_date`; `span_moves(closes, unit, c) -> dict[date, Span]`, key
+  close → (close before, end close, signed move); `span_answer(counts, same_rate, up_share) ->
+  tuple[str, float]`; `answer_before(...)`, the walk-forward answer at one decision;
+  `follow_market(decisions, closes, unit, c)`, each kind's `Follow` on one market and span: counts,
+  base, answer, placebo, walk-forward grade (`HOLDS`, `DOESNT_HOLD`, `TOO_FEW` reused);
+  `follow_decisions(flow, rates)` over every market and span.
 - `stats.py`: `binomial_tail(k, n, rate)`, summing `_binomial_chance`;
   `poisson_binomial_tail(right, rates)`, by dynamic programming over the tries.
 - `__main__.py`: `follows --event fomc` (the one choice, the default), the key by `_fred_key`;
@@ -134,8 +139,8 @@ FRED is read, nothing is stored.
 
   ```
   follows: 276 Fed decisions 1994-02-04 … 2026-10-28: 40 cuts, 184 holds, 52 hikes
-  kind  span   market        n  up same down  out  base up/same/down  answer  chance  placebo  walk-forward
-  cut   month  UST5Y / ZF   34  25    4    5    6   0.34/0.33/0.33     down    0.0004  -        24: 15 right, too few
+  kind  span   market        n  up same down  out/hole  base up/same/down  answer  chance  placebo  walk-forward
+  cut   month  UST5Y / ZF   34  25    4    5       6/0  0.34/0.33/0.33     down    0.0004  -        24: 15 right, too few
   ```
   then `by chance: about N answers on all history, M holds walk-forward`.
 - Tests: `tests/test_what_follows.py`, `tmp_db`, given/when/then.
