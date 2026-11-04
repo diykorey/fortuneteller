@@ -3,7 +3,7 @@
 Subcommands: ``init`` creates the store (M0-05 ``db.init_db``); ``seed`` / ``query-demo`` load and
 read the seed data (M0-07 ``seed``); ``load-releases`` loads the CPI and jobs-report release
 histories from FRED (MVP step 1 ``study``) and the Fed's decisions (rung 1); ``load-prices`` loads
-the five instruments' daily closes and measures their move around each release (MVP step 2);
+every market's daily closes, from Yahoo and FRED, and measures their move around each release (MVP step 2);
 ``raw-move`` compares each instrument's moves on an event's days with ordinary days, which no
 stored event touched (MVP step 3); ``load-surprises`` stores each release's CPI and payroll surprise
 and ``surprise`` measures how the moves follow it (MVP step 4, rung 1); ``scoreboard`` writes what
@@ -106,10 +106,13 @@ def _load_prices(_args: argparse.Namespace) -> int:
             file=sys.stderr,
         )
         return 1
+    api_key = _fred_key("load-prices")
+    if not api_key:
+        return 1
     try:
-        study.load_daily_bars(con=con)
+        study.load_daily_bars(api_key, con=con)
         release_counts = study.store_observations(con=con)
-    except (sources.YahooError, ValueError) as exc:
+    except (sources.YahooError, sources.FredError, ValueError) as exc:
         print(f"load-prices: {exc}", file=sys.stderr)
         return 1
     for flow, by_instrument in release_counts.items():
@@ -1596,7 +1599,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_releases.set_defaults(func=_load_releases)
 
     p_prices = sub.add_parser(
-        "load-prices", help="load daily closes from Yahoo and measure each release's move"
+        "load-prices", help="load daily closes from Yahoo and FRED and measure each release's move"
     )
     p_prices.set_defaults(func=_load_prices)
 

@@ -58,11 +58,13 @@ from .sources import (
     UTC_ZONE,
     ZURICH,
     DailyClosingPrice,
+    FredError,
     YahooError,
 )
 
 
-# Step 2 — each instrument's daily closes from Yahoo (docs/steps/step-2-prices.md).
+# Step 2 — each instrument's daily closes from Yahoo, and the breakeven's from FRED
+# (docs/steps/step-2-prices.md, docs/steps/breakeven.md).
 
 
 class PriceSeries(NamedTuple):
@@ -74,7 +76,7 @@ class PriceSeries(NamedTuple):
 
 # Every market measured: the five MVP instruments, Europe's two stock indices
 # (docs/steps/cross-country.md) and the nine more outcomes (docs/steps/more-outcomes.md), keyed by
-# the exact symbol in data/seed/instruments.csv, with the Yahoo ticker each is read from, the unit
+# the exact symbol in data/seed/instruments.csv, with the Yahoo ticker (or FRED series) each is read from, the unit
 # its move is measured in (pct for prices, bps for a yield) and the local time and zone of its
 # daily close: the intraday price Yahoo's close matches, measured on 2026-09 and 2026-10 data.
 # Gold's and Brent's are their settlements; a stock index's the closing auction after its last
@@ -82,6 +84,8 @@ class PriceSeries(NamedTuple):
 # stamps a currency pair, so the next London day's bar is the first to follow a US release. The
 # seven markets people feel (docs/steps/markets-people-feel.md) are US-listed funds closing at 16:00.
 # Coffee (docs/steps/coffee.md) is `KC=F`, ICE's arabica front month, at its 13:30 settlement.
+# A `fred:` ticker is FRED's series: the breakeven (docs/steps/breakeven.md), read at 15:30, the
+# time of the bid quotes the Treasury builds its daily curve from.
 MVP_PRICE_SERIES = {
     "SPY / ES": PriceSeries("^GSPC", "pct", time(16, 0), NEW_YORK),
     "UST10Y / ZN": PriceSeries("^TNX", "bps", time(15, 0), NEW_YORK),
@@ -107,6 +111,7 @@ MVP_PRICE_SERIES = {
     "XLU": PriceSeries("XLU", "pct", time(16, 0), NEW_YORK),
     "ITB": PriceSeries("ITB", "pct", time(16, 0), NEW_YORK),
     "KC": PriceSeries("KC=F", "pct", time(13, 30), NEW_YORK),
+    "T5YIE": PriceSeries("fred:T5YIE", "bps", time(15, 30), NEW_YORK),
 }
 
 
@@ -121,21 +126,28 @@ def store_daily_bars(
     Every earlier row of the instrument goes, so closes from a previous ticker can never mix with
     the new ones.
     """
-    source = f"yahoo:{ticker}"
+    source = ticker if ticker.startswith(FRED_PREFIX) else f"{YAHOO}:{ticker}"
     bars = [
         DailyBar(instrument=instrument, day=c.day, close=c.price, source=source) for c in closes
     ]
     return db.replace_rows("daily_bars", bars, "instrument = ?", [instrument], con=con)
 
 
-def load_daily_bars(con: duckdb.DuckDBPyConnection | None = None) -> dict[str, int]:
+def load_daily_bars(api_key: str, con: duckdb.DuckDBPyConnection | None = None) -> dict[str, int]:
     """Fetch, parse and store every MVP instrument's daily closes; return the count per instrument.
 
     All are fetched and parsed before any is stored, so a failure on one leaves ``daily_bars``
-    as it was rather than half-refreshed.
+    as it was rather than half-refreshed. A ``fred:`` ticker is read from FRED with ``api_key``.
     """
     fetched: dict[str, tuple[str, list[DailyClosingPrice]]] = {}
     for instrument, (ticker, *_rest) in MVP_PRICE_SERIES.items():
+        if ticker.startswith(FRED_PREFIX):
+            series_id = ticker.removeprefix(FRED_PREFIX)
+            values = sources.parse_series(sources.fetch_series(api_key, series_id))
+            if not values:
+                raise FredError(f"FRED sent no usable closes for {series_id}")
+            fetched[instrument] = (ticker, [DailyClosingPrice(d, v) for d, v in values])
+            continue
         payload = sources.fetch_daily_bars(ticker)
         try:
             closes = sources.parse_daily_bars(payload)
@@ -159,6 +171,8 @@ MAX_CLOSE_GAP_DAYS = 4
 BEFORE_HISTORY = "before_history"
 NO_CLOSE_NEARBY = "no_close_nearby"
 YAHOO = "yahoo"
+FRED = "fred"
+FRED_PREFIX = f"{FRED}:"
 DAILY_CLOSE = "daily_close"
 
 
@@ -281,7 +295,7 @@ def _observe(
                 peak_move=None,
                 half_life_min=None,
                 realized_dir=None,
-                data_source=YAHOO,
+                data_source=FRED if series.ticker.startswith(FRED_PREFIX) else YAHOO,
                 quality=DAILY_CLOSE,
             )
         )

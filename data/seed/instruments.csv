@@ -29,3 +29,4 @@ UNG,Natural gas (United States Natural Gas Fund),commodity,us,NYSE Arca,Holds na
 XLU,US utilities sector ETF,sector_etf,us,NYSE Arca,Utilities Select Sector SPDR; household bills and rates.
 ITB,US homebuilders ETF,sector_etf,us,Cboe BZX,iShares U.S. Home Construction; housing and mortgages.
 KC,Coffee (arabica front month),commodity,global,ICE US,Front-month future; rolls five times a year.
+T5YIE,US 5-year breakeven inflation,rates_bond,us,OTC cash (Treasury curve),5-year Treasury yield less 5-year TIPS yield.

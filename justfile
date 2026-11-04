@@ -45,7 +45,7 @@ seed:
 load-releases:
     uv run fortuneteller load-releases
 
-# load daily closes from Yahoo and measure each release's move (after load-releases)
+# load daily closes from Yahoo and FRED and measure each release's move (after load-releases)
 load-prices:
     uv run fortuneteller load-prices
 

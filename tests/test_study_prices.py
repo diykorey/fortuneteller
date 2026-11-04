@@ -20,6 +20,7 @@ from fortuneteller.config import settings
 from fortuneteller.models import DailyBar
 from fortuneteller.sources import (
     DailyClosingPrice,
+    FredError,
     YahooError,
     parse_daily_bars,
 )
@@ -269,15 +270,15 @@ def test_day_round_trips_unchanged_under_a_non_utc_session() -> None:
 
 
 def test_loading_every_instrument_twice_changes_no_row_count(
-    monkeypatch: pytest.MonkeyPatch,
+    monkeypatch: pytest.MonkeyPatch, fred_breakeven: None
 ) -> None:
-    # given Yahoo answering from the saved responses
+    # given Yahoo answering from the saved responses, and FRED with the breakeven's four closes
     _answer_from_fixtures(monkeypatch)
     con = _store()
 
     # when every MVP instrument is loaded twice
-    first = load_daily_bars(con=con)
-    second = load_daily_bars(con=con)
+    first = load_daily_bars("test-key", con=con)
+    second = load_daily_bars("test-key", con=con)
 
     # then each run reports the same counts per instrument, and the second adds nothing
     assert (
@@ -308,9 +309,13 @@ def test_loading_every_instrument_twice_changes_no_row_count(
             "XLU": 4,
             "ITB": 4,
             "KC": 4,
+            "T5YIE": 4,
         }
     )
-    assert db.count_rows("daily_bars", con=con) == 98
+    assert db.count_rows("daily_bars", con=con) == 102
+    assert con.execute(
+        "SELECT DISTINCT source FROM daily_bars WHERE instrument = 'T5YIE'"
+    ).fetchall() == [("fred:T5YIE",)]
 
 
 def test_tickers_cover_the_mvp_instruments_by_exact_symbol() -> None:
@@ -319,7 +324,7 @@ def test_tickers_cover_the_mvp_instruments_by_exact_symbol() -> None:
         symbols = {row["symbol"] for row in csv.DictReader(handle)}
 
     # when the MVP ticker table is compared with it
-    # then all 24 instruments are there, each spelled exactly as the join key
+    # then all 25 instruments are there, each spelled exactly as the join key
     assert list(MVP_PRICE_SERIES) == [
         "SPY / ES",
         "UST10Y / ZN",
@@ -345,6 +350,7 @@ def test_tickers_cover_the_mvp_instruments_by_exact_symbol() -> None:
         "XLU",
         "ITB",
         "KC",
+        "T5YIE",
     ]
     assert set(MVP_PRICE_SERIES) <= symbols
 
@@ -416,7 +422,30 @@ def test_a_bad_ticker_stores_nothing_for_any_instrument(monkeypatch: pytest.Monk
 
     # when the five instruments are loaded
     with pytest.raises(YahooError, match=r"no usable closes for \^VIX"):
-        load_daily_bars(con=con)
+        load_daily_bars("test-key", con=con)
 
     # then no instrument was stored, so the table is never left half-refreshed
+    assert db.count_rows("daily_bars", con=con) == 0
+
+
+@pytest.mark.parametrize("failure", ["error", "empty"])
+def test_a_fred_failure_stores_nothing_for_any_instrument(
+    monkeypatch: pytest.MonkeyPatch, failure: str
+) -> None:
+    # given Yahoo answering normally, and FRED failing or sending the breakeven without a value
+    _answer_from_fixtures(monkeypatch)
+
+    def fetch(api_key: str, series_id: str, timeout: float = 30.0) -> bytes:
+        if failure == "error":
+            raise FredError("FRED request failed")
+        return b'{"observations": [{"date": "2022-09-13", "value": "."}]}'
+
+    monkeypatch.setattr(sources, "fetch_series", fetch)
+    con = _store()
+
+    # when every instrument is loaded
+    with pytest.raises(FredError):
+        load_daily_bars("test-key", con=con)
+
+    # then no instrument was stored, Yahoo's included
     assert db.count_rows("daily_bars", con=con) == 0

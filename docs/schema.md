@@ -87,14 +87,14 @@ MVP uses exactly one row, `CPI / inflation surprise`.
 
 ## instruments
 
-The instruments whose prices can be measured. Source: `data/seed/instruments.csv`, 30 rows: a
-representative 15-row subset of 55 from the Notion export, 7 added 2026-10-27 and 8 added 2026-11-04. The MVP uses
+The instruments whose prices can be measured. Source: `data/seed/instruments.csv`, 31 rows: a
+representative 15-row subset of 55 from the Notion export, 7 added 2026-10-27 and 9 added 2026-11-04. The MVP uses
 five: `SPY / ES`, `UST10Y / ZN`, `DXY`, `GC / XAU`, `VIX`; [cross-country
 effects](steps/cross-country.md) adds `DAX` and `SX5E` (2026-10-21); [more
 outcomes](steps/more-outcomes.md) adds `BRN`, `EURUSD`, `COMP`, `UST5Y / ZF`, `UKX`, `SXXP`,
 `BTC`, `ITA` and `XLE` (2026-10-27); [the markets people feel](steps/markets-people-feel.md) adds
-`CORN`, `WEAT`, `SOYB`, `UGA`, `UNG`, `XLU` and `ITB` (2026-11-04), and [coffee](steps/coffee.md)
-`KC` (2026-11-04), so 24 are measured.
+`CORN`, `WEAT`, `SOYB`, `UGA`, `UNG`, `XLU` and `ITB` (2026-11-04), [coffee](steps/coffee.md)
+`KC` and [the breakeven](steps/breakeven.md) `T5YIE` (2026-11-04), so 25 are measured.
 
 | Column | Type | Meaning |
 | --- | --- | --- |
@@ -313,8 +313,9 @@ Example rows:
 | `UST10Y / ZN` | 2022-09-13 | 3.422 | `yahoo:^TNX` |
 
 **How much data.** Counted from the live source on 2026-09-28, after the empty and weekend rows are
-dropped. It grows by about 24 rows per trading day, one per instrument; 144,077 rows for the
-sixteen on 2026-10-27; 177,692 for the 23 on 2026-11-04; 184,423 for the 24 the same day.
+dropped. It grows by about 25 rows per trading day, one per instrument; 144,077 rows for the
+sixteen on 2026-10-27; 177,692 for the 23 on 2026-11-04; 184,423 for the 24 and 190,387 for the 25
+the same day.
 
 | Instrument | Rows | From |
 | --- | --- | --- |
@@ -343,22 +344,25 @@ sixteen on 2026-10-27; 177,692 for the 23 on 2026-11-04; 184,423 for the 24 the 
 | `WEAT` | 3,804 | 2011-09-19 (counted 2026-11-04) |
 | `SOYB` | 3,804 | 2011-09-19 (counted 2026-11-04) |
 | `KC` | 6,729 | 2000-01-03 (counted 2026-11-04) |
+| `T5YIE` | 5,964 | 2003-01-02 (counted 2026-11-04) |
 
 A few megabytes in all. `observations` is these same days thinned down to the release days —
 about 2,700 rows for CPI and the five; 45,773 for ten events and sixteen markets on 2026-10-27;
 57,050 with the two statement flows on 2026-10-29; 100,993 for every flow and the 23 markets on
-2026-11-04; 105,408 with coffee the same day.
+2026-11-04; 105,408 with coffee and 109,656 with the
+breakeven the same day.
 
 | Column | Type | Meaning |
 | --- | --- | --- |
 | `instrument` | TEXT, **PK** | An `instruments.symbol`, e.g. `SPY / ES` — the project's key, not the data vendor's ticker. |
 | `day` | DATE, **PK** | The trading date, **as a calendar date in the exchange's own time zone**. A DATE rather than a TIMESTAMP, so no session or machine time zone can move a price onto the neighbouring day. |
-| `close` | DOUBLE | The closing value that day. A price for four instruments; for `UST10Y / ZN` it is the **yield in percent** (`3.422` means 3.422%), because bonds are measured by yield. Today's bar is never stored: while the market is open its close is not final, so the latest row is the last finished trading day. |
+| `close` | DOUBLE | The closing value that day. A price for four instruments; for `UST10Y / ZN` it is the **yield in percent** (`3.422` means 3.422%), because bonds are measured by yield, and for `T5YIE` the breakeven in percent. Today's bar is never stored: while the market is open its close is not final, so the latest row is the last finished trading day. |
 | `source` | TEXT | Where the value came from, as `<provider>:<vendor ticker>`, so any number can be traced back. |
 
 ### Values
 
-**`source`** — today always `yahoo:` followed by the vendor ticker:
+**`source`** — `yahoo:` followed by the vendor ticker, or for the breakeven `fred:` followed by
+FRED's series id ([the breakeven](steps/breakeven.md)), for example:
 
 | Value | Instrument | What it is |
 | --- | --- | --- |
@@ -369,6 +373,7 @@ about 2,700 rows for CPI and the five; 45,773 for ten events and sixteen markets
 | `yahoo:^VIX` | `VIX` | The Cboe Volatility Index |
 | `yahoo:^GDAXI` | `DAX` | The DAX index, Frankfurt; its day is Frankfurt's |
 | `yahoo:^STOXX50E` | `SX5E` | The Euro Stoxx 50 index; its day is Frankfurt's |
+| `fred:T5YIE` | `T5YIE` | The 5-year breakeven inflation, in percent: the 5-year Treasury yield less the 5-year TIPS yield, from the Treasury's daily curve |
 
 ## observations
 
@@ -424,7 +429,7 @@ daily prices, so the intraday ones stay empty.
 | Value | Meaning |
 | --- | --- |
 | `pct` | Relative change: `price₁ / price₀ − 1`, so `0.01` is a 1% rise. For prices and index levels. |
-| `bps` | Basis points of yield: `(yield₁ − yield₀) × 100`, so 4.20% → 4.30% is `10`. For bonds, which are measured by yield. |
+| `bps` | Basis points of yield: `(yield₁ − yield₀) × 100`, so 4.20% → 4.30% is `10`. For bonds, which are measured by yield, and the breakeven, a spread of two yields. |
 
 **`realized_dir`** (not filled yet): intended values `up`, `down`, `flat`, per the legacy design.
 
@@ -433,6 +438,7 @@ daily prices, so the intraday ones stay empty.
 | Value | Meaning |
 | --- | --- |
 | `yahoo` | Daily closes from Yahoo Finance, via `daily_bars` (whose `source` names the exact ticker). |
+| `fred` | The breakeven's daily values from FRED, via `daily_bars` (`fred:T5YIE`). |
 
 **`quality`** — how the move was measured.
 

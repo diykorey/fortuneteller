@@ -9,6 +9,7 @@ import pytest
 
 from fortuneteller import db, flows, sources
 from fortuneteller.__main__ import describe_release_counts, main
+from fortuneteller.config import settings
 from fortuneteller.models import DailyBar
 from fortuneteller.sources import (
     FirstRelease,
@@ -246,7 +247,7 @@ def test_rebuilding_removes_a_row_that_no_longer_applies() -> None:
     assert release_counts[CPI_FLOW]["SPY / ES"] == ReleaseCounts(skipped_before_history=1)
     rows = con.execute("SELECT count(*) FROM observations WHERE instrument = 'SPY / ES'").fetchone()
     assert rows == (0,)
-    assert db.count_rows("observations", con=con) == 23
+    assert db.count_rows("observations", con=con) == 24
 
 
 def test_rerunning_changes_no_count_and_events_can_still_be_reloaded() -> None:
@@ -259,7 +260,7 @@ def test_rerunning_changes_no_count_and_events_can_still_be_reloaded() -> None:
     store_releases(CPI_FLOW, [HOT_PRINT], con=con)
 
     # then nothing is duplicated and the foreign key does not block the event reload
-    assert db.count_rows("observations", con=con) == 24
+    assert db.count_rows("observations", con=con) == 25
     assert db.count_rows("event_instances", con=con) == 1
 
 
@@ -290,7 +291,10 @@ def _yahoo_answers(monkeypatch: pytest.MonkeyPatch, gold: Path = GSPC_2022) -> N
 
 
 def test_load_prices_prints_counts_per_instrument_and_in_total(
-    tmp_db: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+    tmp_db: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    fred_breakeven: None,
 ) -> None:
     # given the hot print loaded, and gold's saved prices ending decades before it
     store_releases(CPI_FLOW, [HOT_PRINT])
@@ -328,10 +332,16 @@ def test_load_prices_prints_counts_per_instrument_and_in_total(
         "XLU          1 observations\n"
         "ITB          1 observations\n"
         "KC           1 observations\n"
-        "24 instruments × 1 releases = 23 observations\n"
+        "T5YIE        1 observations\n"
+        "25 instruments × 1 releases = 24 observations\n"
     )
     assert capsys.readouterr().out == report * 2
-    assert db.count_rows("observations") == 23
+    assert db.count_rows("observations") == 24
+    sources_by_market = db.get_connection().execute(
+        "SELECT instrument, data_source FROM observations WHERE instrument IN ('KC', 'T5YIE')"
+        " ORDER BY instrument"
+    )
+    assert sources_by_market.fetchall() == [("KC", "yahoo"), ("T5YIE", "fred")]
 
 
 def test_load_prices_needs_the_releases_first(
@@ -352,7 +362,10 @@ def test_load_prices_needs_the_releases_first(
 
 
 def test_load_prices_reports_a_yahoo_failure(
-    tmp_db: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+    tmp_db: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    fred_breakeven: None,
 ) -> None:
     # given the releases loaded and Yahoo rejecting the request
     store_releases(CPI_FLOW, [HOT_PRINT])
@@ -386,7 +399,10 @@ def test_each_skip_reason_is_named() -> None:
 
 
 def test_load_prices_reports_a_malformed_reply(
-    tmp_db: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+    tmp_db: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    fred_breakeven: None,
 ) -> None:
     # given the releases loaded and Yahoo answering with a page that is not JSON
     store_releases(CPI_FLOW, [HOT_PRINT])
@@ -398,4 +414,49 @@ def test_load_prices_reports_a_malformed_reply(
     # then it exits non-zero with a message instead of a traceback, and stores nothing
     assert code == 1
     assert "load-prices:" in capsys.readouterr().err
+    assert db.count_rows("daily_bars") == 0
+
+
+def test_load_prices_needs_the_fred_key(
+    tmp_db: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    # given the releases loaded and no FRED key
+    store_releases(CPI_FLOW, [HOT_PRINT])
+    monkeypatch.setattr(settings, "fred_api_key", None)
+
+    def fetch(_ticker: str) -> NoReturn:
+        raise AssertionError("fetched prices with no FRED key")
+
+    monkeypatch.setattr(sources, "fetch_daily_bars", fetch)
+
+    # when the command runs
+    code = main(["load-prices"])
+
+    # then it stops before fetching anything and names the key
+    assert code == 1
+    assert "FT_FRED_API_KEY is not set" in capsys.readouterr().err
+    assert db.count_rows("daily_bars") == 0
+
+
+def test_load_prices_stores_nothing_when_fred_fails(
+    tmp_db: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+    fred_breakeven: None,
+) -> None:
+    # given the releases loaded, Yahoo answering, and FRED failing for the breakeven
+    store_releases(CPI_FLOW, [HOT_PRINT])
+    _yahoo_answers(monkeypatch)
+
+    def fetch(api_key: str, series_id: str, timeout: float = 30.0) -> NoReturn:
+        raise sources.FredError("FRED returned HTTP 500")
+
+    monkeypatch.setattr(sources, "fetch_series", fetch)
+
+    # when the command runs
+    code = main(["load-prices"])
+
+    # then it exits non-zero with the reason instead of a traceback, and stores nothing
+    assert code == 1
+    assert "load-prices: FRED returned HTTP 500" in capsys.readouterr().err
     assert db.count_rows("daily_bars") == 0
