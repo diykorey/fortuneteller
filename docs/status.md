@@ -8,12 +8,13 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-The breakeven, step 1 *(PR #263)*: FRED's `T5YIE` stored and shown, unsigned, the first series
-not from Yahoo; every existing output unchanged.
+The breakeven, step 2 *(PR #264)*: after a CPI above consensus the breakeven rises on the day and
+holds walk-forward, 23 of 30; it moves on CPI's days, not the Fed's.
 
 ## In progress
 
-Step 19, part 2b, step 2: the breakeven's results ([the spec](steps/breakeven.md)).
+Step 19, part 2c: signs for the markets people feel (spec to write; its merge waits until after
+the jobs report on 2026-11-06 unless it makes no call).
 
 Step 18, part 2, step 3: the first triggers graded ([the spec](steps/trigger-file.md)). It waits for
 the owner's first trigger, a file under `data/triggers/` merged before a market's reaction close.
@@ -30,12 +31,14 @@ jobs report on 2026-11-06 is the first.
 
 ## Next
 
-Step 19, part 2c: signs for the markets people feel, held until after the jobs report on 2026-11-06.
+Not chosen: the scoreboard's rebuild is 826 s against a 15-minute bar, so a faster rebuild comes
+before any further market.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-04 | The breakeven, step 2: results | PR #264 |
 | 2026-11-04 | The breakeven, step 1: FRED's `T5YIE`, unsigned | PR #263 |
 | 2026-11-04 | Coffee, step 2: results | PR #261 |
 | 2026-11-04 | Coffee, step 1: `KC=F`, unsigned | PR #260 |

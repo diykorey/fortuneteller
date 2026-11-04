@@ -61,7 +61,7 @@ triggers show it. No call is made on it.
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~The breakeven: a seed row, an `MVP_PRICE_SERIES` row read from FRED, a 0 sign, `load-prices` stores it, with the FRED key~~ **done** 2026-11-04 (PR #263) | The tests below pass. On a copy of the store the procedure gives an empty diff, the counts are in `docs/schema.md` and the rebuild time here |
-| 2 | Results here and in [MVP results](../mvp-results.md) | Its *does it move?* verdict for every flow and its `follows` answers, against the expected outcome |
+| 2 | ~~Results here and in [MVP results](../mvp-results.md)~~ **done** 2026-11-04 (PR #264) | Its *does it move?* verdict for every flow and its `follows` answers, against the expected outcome |
 
 *Step 1, 2026-11-04 (PR #263):*
 - On a copy of the store `load-prices` stored the breakeven's 5,964 closes, 2003-01-02 to
@@ -71,6 +71,42 @@ triggers show it. No call is made on it.
   breakeven and the chance lines.
 - The scoreboard was rebuilt in 826 s alone (990 s beside a second rebuild), under the 15-minute
   bar, now with 74 s to spare: the next market may not fit without making the rebuild faster.
+
+## Results
+
+Measured 2026-11-04 on a copy of the store with the 25 markets loaded, at PR #263.
+
+**Does it move?** The breakeven *moves* on `cpi`'s days (median 3 bp against 2 bp, ratio 1.50,
+p 0.0001), and on US elections' (4.5 bp, 10 days). It is *unclear* on Germany's Ifo (1.50, p 0.017)
+and the second term's posts; five flows have too few days; on the other 16 it *doesn't*. The
+expected outcome said `cpi` and `fomc`: **`fomc` is wrong**, its median is the ordinary day's 2 bp
+(ratio 1.00), and the elections are more. On a 1 bp grid most medians tie at 2 bp, as precision
+warned, so a ratio here moves in steps of a half. `surprise` gives it nothing beyond *unclear*, as it
+can't without a sign.
+
+**What follows** (`follows`, four flows, from the day and from the reaction close). **After a CPI
+above consensus, the breakeven rises on the day, and it holds walk-forward:** up after 43 of 61 such
+releases since 2003 (the base 35%), chance 0.0000, neither placebo giving it, and replayed in order
+23 of 30 graded right (77%). Thirty graded is the bar itself: one fewer and it would be *too few*.
+It is the first market people feel with a link that holds, against an expected outcome of none, and
+by chance about 0.0 would. Where the 10-year and 5-year yields *can't say* after the same releases,
+the breakeven, the inflation they carry, rises. Its other answers:
+
+- after CPI above, up over the week too (61 events; 12 of 22 right, too few); below, down on the day
+  (78; 17 of 34 right walk-forward, doesn't hold);
+- after CPI as expected, *about the same* over the month from the reaction close (51; 14 of 30,
+  doesn't hold);
+- after a jobs report above consensus, up on the day (68; 15 of 22, too few).
+
+Five answers, three in `cpi`'s run, against an expected outcome of at most 2 in any run: **wrong**,
+and for the same reason as the hold.
+
+In plain words: when US inflation comes in hotter than economists expected, the bond market's guess
+at the next five years' inflation goes up that day, 43 times in 61, and the record says it
+would have called it right ahead of time. It is the market's own "things will get dearer".
+
+Part 2c may sign it (+1 on a hotter CPI). Before it can be called live, the evening grade must
+learn to wait a day for FRED's close, as above.
 
 ## How you know it is right
 
