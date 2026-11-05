@@ -13,8 +13,8 @@ evening job on 2026-11-03 and 2026-11-04 ([jobless claims](steps/jobless-claims.
 
 ## In progress
 
-Step 19, part 2c: signs for the markets people feel (spec to write; its merge waits until after
-the jobs report on 2026-11-06 unless it makes no call).
+The scoreboard, faster ([the spec](steps/scoreboard-faster.md)): step 1, the permutation tests on
+the machine's cores, every output identical.
 
 Step 18, part 2, step 3: the first triggers graded ([the spec](steps/trigger-file.md)). It waits for
 the owner's first trigger, a file under `data/triggers/` merged before a market's reaction close.
@@ -31,13 +31,14 @@ jobs report on 2026-11-06 is the first.
 
 ## Next
 
-Not chosen: the scoreboard's rebuild is 826 s against a 15-minute bar, so a faster rebuild comes
-before any further market.
+Step 19, part 2c: signs for the markets people feel (spec to write; its merge waits until after
+the jobs report on 2026-11-06 unless it makes no call).
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-05 | The scoreboard, faster: spec | PR #267 |
 | 2026-11-05 | The claims' actual is FRED's first print; the evening job runs again | PR #266 |
 | 2026-11-04 | The breakeven, step 2: results | PR #264 |
 | 2026-11-04 | The breakeven, step 1: FRED's `T5YIE`, unsigned | PR #263 |
