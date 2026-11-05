@@ -37,12 +37,13 @@ three times faster without changing a single number anything prints.
   If it is not, the step stops and says so.
 - **Expected outcome, written first** (from the prototype, 2026-11-04): every output identical,
   the scoreboard 271 s; `predict` for a flow at most a few seconds slower for starting the pool.
+  *Right:* identical, 270 s, about a second.
 
 ## The steps
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | `stats.parallel_map` and the three loops | The tests pass unchanged, plus one that `parallel_map` keeps order and equals `map`; every output in the rule identical; the scoreboard under 300 s, its time and `predict`'s written here |
+| 1 | ~~`stats.parallel_map` and the three loops~~ **done** 2026-11-05: on a copy of the store, base at #267 and this branch side by side, all 110 outputs identical (`raw-move`, `raw-move --week`, `surprise` and `predict` for the 25 flows, `follows` and `follows --after-the-day` for four, `score`), and `data.json` identical whole, `written`, `ahead` and `watch` too; `fortuneteller scoreboard` alone 270 s against the base's 603 s that morning; `predict` for a flow about a second slower where it has little to test (claims 2.1 s against 1.2 s), faster where it has much (the jobs report 10.1 s against 34.4 s), timed while both ran | The tests pass unchanged, plus one that `parallel_map` keeps order and equals `map`; every output in the rule identical; the scoreboard under 300 s, its time and `predict`'s written here |
 
 ## What this step does not do
 

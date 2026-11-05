@@ -465,7 +465,7 @@ def measure_raw_moves(
     every_event = [
         e for each in EVENT_FLOWS if not each.lesser for e in stored_events(each, con=con)
     ]
-    results: dict[str, RawMove] = {}
+    measured: dict[str, tuple[str, list[float], list[float], dict[str, EraRatio]]] = {}
     for instrument, series in MVP_PRICE_SERIES.items():
         closes = stored_closes(instrument, con=con)
         days = reaction_days(closes, [first_reaction_day(event, series) for event in events])
@@ -483,18 +483,27 @@ def measure_raw_moves(
                 on_event.append(move)
             elif day not in busy:
                 other.append(move)
-        overall = compare_moves(
-            [move for on_event, _ in by_era.values() for move in on_event],
-            [move for _, other in by_era.values() for move in other],
-        )
         eras = {
             label: EraRatio(
                 len(on_event), median(on_event) / median(other) if on_event and other else None
             )
             for label, (on_event, other) in by_era.items()
         }
-        results[instrument] = RawMove(series.unit, overall, eras)
-    return results
+        measured[instrument] = (
+            series.unit,
+            [move for on_event, _ in by_era.values() for move in on_event],
+            [move for _, other in by_era.values() for move in other],
+            eras,
+        )
+    overall = stats.parallel_map(
+        compare_moves, [m[1] for m in measured.values()], [m[2] for m in measured.values()]
+    )
+    return {
+        instrument: RawMove(unit, comparison, eras)
+        for (instrument, (unit, _event, _other, eras)), comparison in zip(
+            measured.items(), overall, strict=True
+        )
+    }
 
 
 # Step 4's rule for "tracks", fixed before any move was measured; see docs/steps/step-4-surprise.md.
@@ -665,16 +674,20 @@ def track_surprises(
         raise ValueError(f"{flow.event_type} in {flow.country} has no surprise rule")
     verdict_combination = rule.combinations[0]
     return {
-        combination: {
-            instrument: track_pairs(
-                surprises,
-                moves,
-                rule.expected_sign[instrument],
-                combination == verdict_combination,
-                rule.noticeable,
+        combination: dict(
+            zip(
+                by_instrument,
+                stats.parallel_map(
+                    track_pairs,
+                    [surprises for surprises, _moves in by_instrument.values()],
+                    [moves for _surprises, moves in by_instrument.values()],
+                    [rule.expected_sign[instrument] for instrument in by_instrument],
+                    [combination == verdict_combination] * len(by_instrument),
+                    [rule.noticeable] * len(by_instrument),
+                ),
+                strict=True,
             )
-            for instrument, (surprises, moves) in by_instrument.items()
-        }
+        )
         for combination, by_instrument in surprise_pairs(flow, rule.combinations, con=con).items()
         if combination == verdict_combination
         or any(surprises for surprises, _moves in by_instrument.values())
@@ -729,12 +742,18 @@ def walk_forward(
     At each release with a noticeable surprise the link predicts only if it is open on the releases
     before it; the prediction is the expected sign times the surprise's sign.
     """
+    noticeable = [i for i, pair in enumerate(pairs) if not abs(pair[2]) < step]
+    opens = stats.parallel_map(
+        is_open,
+        [[e[2] for e in pairs[:i]] for i in noticeable],
+        [[e[3] for e in pairs[:i]] for i in noticeable],
+        [expected_sign] * len(noticeable),
+        [step] * len(noticeable),
+    )
     predictions: list[Prediction] = []
-    for i, (event_id, month, surprise, move) in enumerate(pairs):
-        if abs(surprise) < step:
-            continue
-        earlier = pairs[:i]
-        if is_open([e[2] for e in earlier], [e[3] for e in earlier], expected_sign, step):
+    for i, open_before in zip(noticeable, opens, strict=True):
+        event_id, month, surprise, move = pairs[i]
+        if open_before:
             direction = expected_sign if surprise > 0 else -expected_sign
             predictions.append(Prediction(event_id, month, surprise, direction, move))
     return predictions
