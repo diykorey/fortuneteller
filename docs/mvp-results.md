@@ -532,6 +532,18 @@ market people feel with a link that holds; the expected outcome said none would.
 days, not on the Fed's, against the expected outcome. Part 2c may sign it, once the evening grade can
 wait a day for FRED's close.
 
+## The signs
+
+Measured 2026-11-05. Detail in [the signs](steps/signs.md#results).
+
+Utilities and homebuilders were given a direction from reasons written first: utilities compete
+with bonds, so they take the 10-year yield's sign reversed; homebuilders fall on hotter inflation.
+Ten new links. **None holds and none is open, so no new call.** The nearest is utilities on CPI:
+they follow the surprise far beyond chance (p 0.0003), but go the expected way on 53% of 105
+noticeable surprises, short of 60%. The expected outcome was right, but for utilities on GDP
+(*unclear*, on 13 surprises). The breakeven stays unsigned until the evening grade can wait a day
+for FRED's close.
+
 ## What comes next
 
 Chosen 2026-10-13: keep score ([rung 4](steps/rung-4-keep-score.md)), done above with the live path
