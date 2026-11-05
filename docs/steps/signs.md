@@ -123,8 +123,7 @@ Against the expected outcome:
   correlation.
 
 The nearest is `XLU` on CPI: a hotter print does go with weaker utilities, far beyond chance (p
-0.0003), but the direction is right about as often as a coin. It is the same real but faint shape
-the S&P 500 has. On retail sales utilities lean the other way, against the reason given for the sign;
+0.0003), but the direction is right about as often as a coin. On retail sales utilities lean the other way, against the reason given for the sign;
 a sign is not changed for that. With no link holding, the ex-dividend days are not counted.
 
 In plain words: the reasons sound right and history does not back them enough to call. Utilities
