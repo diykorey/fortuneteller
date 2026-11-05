@@ -290,9 +290,11 @@ def test_an_actual_predicts_each_open_link_s_close_and_a_closed_one_is_silent(
         "UST5Y / ZF   —      silent: the link does not pass on the releases so far",
         "UKX          —      silent: the link does not pass on the releases so far",
         "SXXP         —      silent: the link does not pass on the releases so far",
+        "XLU          —      silent: the link does not pass on the releases so far",
+        "ITB          —      silent: the link does not pass on the releases so far",
         "record = the link's calls so far, walk-forward; band = where half its moves land; "
         "both graded by `fortuneteller predict --event cpi`",
-        f"logged 11 rows to {settings.calls_path}",
+        f"logged 13 rows to {settings.calls_path}",
     ]
 
 
@@ -313,7 +315,7 @@ def test_without_nasdaq_s_consensus_tradingview_s_forecast_is_taken_and_named(
         "core on 2026-11-12: actual 0.3, TradingView's forecast (Nasdaq has none) 0.2, "
         "surprise +0.1"
     )
-    assert out[-1] == f"logged 11 rows to {settings.calls_path}"
+    assert out[-1] == f"logged 13 rows to {settings.calls_path}"
 
 
 def _tradingview_reads(
@@ -357,8 +359,8 @@ def test_fetch_waits_for_tradingview_s_actual_and_calls_on_it(
         "actual 0.3 from TradingView at 08:30:30 New York",
         "core on 2026-11-12: actual 0.3, Nasdaq's consensus 0.2, surprise +0.1",
     ]
-    assert out[-1] == f"logged 11 rows to {settings.calls_path}"
-    assert [row.actual for row in study.read_calls(settings.calls_path)] == [0.3] * 11
+    assert out[-1] == f"logged 13 rows to {settings.calls_path}"
+    assert [row.actual for row in study.read_calls(settings.calls_path)] == [0.3] * 13
 
 
 def test_fetch_gives_up_half_an_hour_after_the_release(
@@ -543,7 +545,7 @@ def test_a_small_surprise_predicts_nothing(
     assert code == 0
     assert out[1:] == [
         "no prediction: the surprise is under 0.1pp",
-        f"logged 11 rows to {settings.calls_path}",
+        f"logged 13 rows to {settings.calls_path}",
     ]
 
 
@@ -627,7 +629,7 @@ def test_predict_grades_each_link_s_stated_confidence(
     start = out.index("confidence (without 2020-03 … 2021-04)")
     assert all(row.endswith(" honest") for row in out[start + 2 : start + 6])
     start = out.index("confidence verdict (honest only if honest with and without COVID)")
-    assert out[start + 1 : start + 12] == [
+    assert out[start + 1 : start + 14] == [
         "SPY / ES     honest",
         "UST10Y / ZN  honest",
         "DXY          honest",
@@ -639,8 +641,10 @@ def test_predict_grades_each_link_s_stated_confidence(
         "UST5Y / ZF   too few",
         "UKX          too few",
         "SXXP         too few",
+        "XLU          too few",
+        "ITB          too few",
     ]
-    assert out[start + 13].startswith("honest = on at least 30 calls with a probability")
+    assert out[start + 15].startswith("honest = on at least 30 calls with a probability")
 
 
 def test_an_open_link_with_too_few_calls_so_far_calls_without_a_probability(
@@ -668,9 +672,11 @@ def test_an_open_link_with_too_few_calls_so_far_calls_without_a_probability(
         "UST5Y / ZF   —      silent: the link does not pass on the releases so far",
         "UKX          —      silent: the link does not pass on the releases so far",
         "SXXP         —      silent: the link does not pass on the releases so far",
+        "XLU          —      silent: the link does not pass on the releases so far",
+        "ITB          —      silent: the link does not pass on the releases so far",
         "record = the link's calls so far, walk-forward; band = where half its moves land; "
         "both graded by `fortuneteller predict --event cpi`",
-        f"logged 11 rows to {settings.calls_path}",
+        f"logged 13 rows to {settings.calls_path}",
     ]
 
 
@@ -690,8 +696,8 @@ def test_an_actual_logs_each_link_s_line_as_printed(
     # then the log holds one row per link with what was printed, and says so
     calls = study.read_calls(settings.calls_path)
     assert code == 0
-    assert capsys.readouterr().out.splitlines()[-1] == f"logged 11 rows to {settings.calls_path}"
-    assert [(c.flow, c.day, c.actual) for c in calls] == [("cpi", date(2026, 11, 12), 0.3)] * 11
+    assert capsys.readouterr().out.splitlines()[-1] == f"logged 13 rows to {settings.calls_path}"
+    assert [(c.flow, c.day, c.actual) for c in calls] == [("cpi", date(2026, 11, 12), 0.3)] * 13
     assert [(c.instrument, c.outcome, c.direction) for c in calls] == [
         ("SPY / ES", study.CALLED, -1),
         ("UST10Y / ZN", study.CALLED, 1),
@@ -704,6 +710,8 @@ def test_an_actual_logs_each_link_s_line_as_printed(
         ("UST5Y / ZF", study.SILENT, None),
         ("UKX", study.SILENT, None),
         ("SXXP", study.SILENT, None),
+        ("XLU", study.SILENT, None),
+        ("ITB", study.SILENT, None),
     ]
     yield_call = calls[1]
     assert yield_call.probability is not None and round(yield_call.probability, 2) == 0.88
@@ -737,6 +745,8 @@ def test_a_small_surprise_logs_every_link_as_small(
         ("UST5Y / ZF", study.SMALL, None),
         ("UKX", study.SMALL, None),
         ("SXXP", study.SMALL, None),
+        ("XLU", study.SMALL, None),
+        ("ITB", study.SMALL, None),
     ]
 
 
@@ -758,6 +768,8 @@ def test_a_call_with_too_few_calls_before_is_logged_with_its_direction(
         (study.TOO_FEW_CALLS, 1),
         (study.TOO_FEW_CALLS, 1),
         (study.TOO_FEW_CALLS, 1),
+        (study.SILENT, None),
+        (study.SILENT, None),
         (study.SILENT, None),
         (study.SILENT, None),
         (study.SILENT, None),
@@ -805,7 +817,7 @@ def test_another_flow_logged_that_day_leaves_the_release_its_entry(
     # then CPI's rows are logged after the jobs report's
     calls = study.read_calls(settings.calls_path)
     assert code == 0
-    assert [c.flow for c in calls] == ["nfp"] + ["cpi"] * 11
+    assert [c.flow for c in calls] == ["nfp"] + ["cpi"] * 13
 
 
 def test_the_log_reads_back_what_was_written(tmp_path: Path) -> None:

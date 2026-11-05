@@ -139,7 +139,7 @@ def test_the_scoreboard_holds_what_the_commands_print(
     assert data["chance"] == {
         "raw_move": {"cells": 25, "p": 0.01, "by_chance": 0.25},
         "surprise": {"cells": 25, "p": 0.01, "by_chance": 0.25},
-        "walk_forward": {"cells": 11, "p": 0.01, "by_chance": 0.11},
+        "walk_forward": {"cells": 13, "p": 0.01, "by_chance": 0.13},
     }
     assert data["rules"]["raw_move"] == reports["raw-move"][-1]
     assert (data["data_until"], data["calls"], data["missed"]) == ("2022-01-31", [], [])
