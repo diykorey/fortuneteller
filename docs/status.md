@@ -8,12 +8,10 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-The signs, step 1: utilities and homebuilders signed; ten new links, none opens today, so no new
-call ([the spec](steps/signs.md)).
+The signs, step 2: results; of utilities' and homebuilders' ten new links none holds or is open, so
+no new call ([the spec](steps/signs.md)).
 
 ## In progress
-
-Step 19, part 2c, step 2: the signs' results ([the spec](steps/signs.md)).
 
 Step 18, part 2, step 3: the first triggers graded ([the spec](steps/trigger-file.md)). It waits for
 the owner's first trigger, a file under `data/triggers/` merged before a market's reaction close.
@@ -37,6 +35,7 @@ so it can be called live.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-07 | The signs, step 2: results — no link holds, no new call | PR #271 |
 | 2026-11-07 | The signs, step 1: `XLU` on every rule the yield has, `ITB` on CPI and core PCE; no new call | PR #270 |
 | 2026-11-05 | The signs: spec, utilities and homebuilders; the breakeven's waits for the evening grade | PR #269 |
 | 2026-11-05 | The scoreboard, faster, step 1: every output identical, the rebuild 270 s | PR #268 |

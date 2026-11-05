@@ -70,7 +70,7 @@ At the end, `surprise` gives utilities and homebuilders real verdicts where they
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~The signs in `flows.py`; on a copy of the store, what each new link would do~~ **done** 2026-11-05 (PR #270) | The tests below pass; the procedure gives an empty diff; a table here lists each of the ten links, whether it opens, its record, and what `live` would log at that flow's next release (nothing for ISM and the Fed's statement); the rebuild time is here. Merged after 01:00 EET on 2026-11-07 |
-| 2 | Results here and in [MVP results](../mvp-results.md) | Each link's verdicts against the expected outcome; ex-dividend days counted if a link holds |
+| 2 | ~~Results here and in [MVP results](../mvp-results.md)~~ **done** 2026-11-05 (PR #271) | Each link's verdicts against the expected outcome; ex-dividend days counted if a link holds |
 
 *Step 1, 2026-11-05 (PR #270), on a copy of the store of that morning, closes to 2026-11-04:*
 
@@ -94,6 +94,42 @@ At the end, `surprise` gives utilities and homebuilders real verdicts where they
   with its two thresholds. That is Nasdaq's live calendar, which no sign reads. The walk-forward
   chance line goes from 70 cells to 80, 0.7 to 0.8 by chance.
 - The scoreboard was rebuilt in 268 s alone, against 316 s at the base beside the test suite.
+
+## Results
+
+Measured 2026-11-05 on a copy of the store, closes to 2026-11-04, at PR #270.
+
+**No new link holds, and none is open, so no new call.** Written down first, the signs fail by the
+same bars every other market faces.
+
+| Link | Against | `surprise` | Rank corr, p | Right on noticeable surprises |
+| --- | --- | --- | --- | --- |
+| `XLU`, CPI | The trend | *unclear* | 0.20, 0.0003 | 53% of 105 |
+| `ITB`, CPI | The trend | *doesn't* | 0.09, 0.083 | 51% of 74 |
+| `XLU`, core PCE | The consensus | *unclear* | −0.10, 0.90 | 60% of 15 |
+| `ITB`, core PCE | The consensus | *doesn't* | −0.15, 0.97 | 53% of 15 |
+| `XLU`, the jobs report | The trend | *doesn't* | 0.04, 0.22 | 48% of 201 |
+| `XLU`, retail sales | The consensus | *doesn't* | −0.15, 0.98 | 45% of 91 |
+| `XLU`, GDP | The consensus | *unclear* | −0.02, 0.54 | 62% of 13 |
+| `XLU`, ISM | TradingView's forecast | *doesn't* | 0.09, 0.18 | 55% of 55 |
+| `XLU`, claims | The consensus | *doesn't* | 0.00, 0.47 | 48% of 307 |
+| `XLU`, the Fed's statement | The previous statement | *doesn't* | −0.02, 0.59 | 47% of 55 |
+
+Against the expected outcome:
+
+- **Met:** `XLU` and `ITB` at most *unclear* on CPI and core PCE; no link holds; one opens, `XLU` on
+  claims in 2014, right on 1 of 2 and then closed; the rebuild, 268 s.
+- **Wrong, one cell:** `XLU` on GDP is *unclear*, not *doesn't*, on a hit rate of 13 surprises and no
+  correlation.
+
+The nearest is `XLU` on CPI: a hotter print does go with weaker utilities, far beyond chance (p
+0.0003), but the direction is right about as often as a coin. It is the same real but faint shape
+the S&P 500 has. On retail sales utilities lean the other way, against the reason given for the sign;
+a sign is not changed for that. With no link holding, the ex-dividend days are not counted.
+
+In plain words: the reasons sound right and history does not back them enough to call. Utilities
+and homebuilders stay what they were, markets whose moves are shown, and they join the links tested
+at every release, so one can open later on its own record.
 
 ## How you know it is right
 
