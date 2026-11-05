@@ -146,6 +146,15 @@ this by splitting the results by era.
 | Commodities through funds | Corn, wheat, soybeans, gasoline and natural gas read through the US funds holding their futures, whose price has no roll jump; the fund less the front month over 21 closes, median, measured 2026-11-04: corn −0.7%, wheat −0.8%, soybeans −0.3%, gasoline +0.5%, natural gas −1.6% (mean −2.6%) | The front month with each roll day's move taken out, from each contract's own prices | A month or longer answer for natural gas, or a quarter or a year for any fund |
 | Dividends | Yahoo's close is split-adjusted, not dividend-adjusted: `XLU` drops about 0.7% each quarter's ex-dividend day, as `XLE` and `ITA` do | The total-return close, or ex-dividend days left out | An answer for utilities whose events fall on ex-dividend days |
 
+## TradingView's calendar since 2026-10
+
+Its fourth quarter of 2026 comes from a new feed ([jobless claims](steps/jobless-claims.md#the-first-print-from-fred)).
+
+| Choice | Now | More precise | Trigger |
+| --- | --- | --- | --- |
+| Revised figures | A week's claims are revised once the next week is out; the actual is FRED's `ICSA` first print where FRED has the same week on the same day, else TradingView's. Other flows' actuals are still TradingView's as shown | Each flow's first print from its own agency, or TradingView's figure kept as first seen | Another flow's stored actual differs from its first print |
+| Forecasts after the release | ISM's forecast for 2026-11-02 was 54.6 that evening and 54.5 on 2026-11-05; each rebuild takes the forecast as shown that day | The forecast kept as first seen before the release | A second forecast changes after its release, or one changes a graded call |
+
 ## Steps 1–2 — choices already built in
 
 | Choice | Now | More precise | Trigger |

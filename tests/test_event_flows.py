@@ -856,6 +856,51 @@ def test_a_german_release_is_stored_at_its_frankfurt_time_with_its_surprise(
     ]
 
 
+def _claims_first_prints(
+    monkeypatch: pytest.MonkeyPatch, prints: list[tuple[str, str, str]]
+) -> None:
+    """FRED answering ``prints`` (week, release day, people) for the claims' first prints."""
+    observations = [
+        {"date": week, "realtime_start": day, "realtime_end": day, "value": value}
+        for week, day, value in prints
+    ]
+    reply = json.dumps({"count": len(observations), "observations": observations}).encode()
+
+    def fetch(api_key: str, series_id: str = sources.CPI_SERIES_ID) -> bytes:
+        assert series_id == sources.CLAIMS_SERIES_ID
+        return reply
+
+    monkeypatch.setattr(sources, "fetch_first_releases", fetch)
+
+
+def test_a_claims_actual_is_freds_first_print_of_its_week_not_tradingviews_revision(
+    tmp_db: Path, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # given TradingView showing two Thursdays' weeks as revised, 199k and 198k, and FRED the first
+    # print of the first on its day, 197k, and of the second only for another week
+    title = sources.TRADINGVIEW_ROWS[sources.INITIAL_CLAIMS].title
+    rows = [
+        _flash_row(title, "2025-02-06T13:30:00.000Z", 199.0, 200.0, country="US"),
+        _flash_row(title, "2025-02-13T13:30:00.000Z", 198.0, 200.0, country="US"),
+    ]
+    for row, week in zip(rows, ("2025-02-01", "2025-02-08"), strict=True):
+        row["referenceDate"] = f"{week}T00:00:00Z"
+    _tradingview_quarter(monkeypatch, tmp_path, "US", rows)
+    _claims_first_prints(
+        monkeypatch,
+        [("2025-02-01", "2025-02-06", "197000"), ("2025-02-01", "2025-02-13", "205000")],
+    )
+
+    # when the flow's events are stored and their actuals read
+    _, actuals, _ = _stored_with_surprises(flows.CLAIMS_FLOW)
+
+    # then the first week's actual is FRED's first print, the second TradingView's
+    assert [(a.period, a.value) for a in actuals] == [
+        (date(2025, 2, 1), 197.0),
+        (date(2025, 2, 8), 198.0),
+    ]
+
+
 def test_a_claims_report_is_stored_on_its_thursday_with_its_week_and_surprise(
     tmp_db: Path, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
@@ -872,6 +917,7 @@ def test_a_claims_report_is_stored_on_its_thursday_with_its_week_and_surprise(
     for row, week in zip(rows, weeks, strict=True):
         row["referenceDate"] = f"{week}T00:00:00Z"
     _tradingview_quarter(monkeypatch, tmp_path, "US", rows)
+    _claims_first_prints(monkeypatch, [])
 
     # when the flow's events are stored and its actual paired with TradingView's forecast
     report = flows.CLAIMS_FLOW.events("unused").report

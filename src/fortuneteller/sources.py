@@ -304,6 +304,8 @@ EURO_HEADLINE = "euro_headline"
 # The US manufacturing survey's index (docs/steps/ism-manufacturing.md), in index points.
 ISM_PMI = "ism_pmi"
 INITIAL_CLAIMS = "initial_claims"
+# FRED's initial claims, seasonally adjusted, in people; its first prints are the actuals.
+CLAIMS_SERIES_ID = "ICSA"
 # Germany's calendar (docs/steps/germany-calendar.md): the two surveys in index points, the flash
 # CPI year on year in percent.
 DE_ZEW = "de_zew"

@@ -8,8 +8,8 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-The breakeven, step 2 *(PR #264)*: after a CPI above consensus the breakeven rises on the day and
-holds walk-forward, 23 of 30; it moves on CPI's days, not the Fed's.
+The claims' first print from FRED: TradingView's new feed shows revised weeks, which stopped the
+evening job on 2026-11-03 and 2026-11-04 ([jobless claims](steps/jobless-claims.md#the-first-print-from-fred)).
 
 ## In progress
 
@@ -38,6 +38,7 @@ before any further market.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-05 | The claims' actual is FRED's first print; the evening job runs again | PR #266 |
 | 2026-11-04 | The breakeven, step 2: results | PR #264 |
 | 2026-11-04 | The breakeven, step 1: FRED's `T5YIE`, unsigned | PR #263 |
 | 2026-11-04 | Coffee, step 2: results | PR #261 |
