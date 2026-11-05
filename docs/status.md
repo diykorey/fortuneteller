@@ -13,8 +13,8 @@ identical, the rebuild 270 s alone against 603 s ([the spec](steps/scoreboard-fa
 
 ## In progress
 
-Step 19, part 2c: signs for the markets people feel (spec to write; its merge waits until after
-the jobs report on 2026-11-06 unless it makes no call).
+Step 19, part 2c: the signs, utilities and homebuilders ([the spec](steps/signs.md)). Step 1's
+merge waits for the jobs report's evening run, 01:00 EET on 2026-11-07.
 
 Step 18, part 2, step 3: the first triggers graded ([the spec](steps/trigger-file.md)). It waits for
 the owner's first trigger, a file under `data/triggers/` merged before a market's reaction close.
@@ -31,13 +31,14 @@ jobs report on 2026-11-06 is the first.
 
 ## Next
 
-Not chosen: after part 2c, the evening grade waiting a day for FRED's close, so the breakeven can
-be called live.
+After part 2c, the evening grade waiting a day for FRED's close, and with it the breakeven's sign,
+so it can be called live.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-05 | The signs: spec, utilities and homebuilders; the breakeven's waits for the evening grade | PR #269 |
 | 2026-11-05 | The scoreboard, faster, step 1: every output identical, the rebuild 270 s | PR #268 |
 | 2026-11-05 | The scoreboard, faster: spec | PR #267 |
 | 2026-11-05 | The claims' actual is FRED's first print; the evening job runs again | PR #266 |
