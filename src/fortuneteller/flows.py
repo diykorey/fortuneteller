@@ -1161,6 +1161,9 @@ class TradingViewFlow:
     noun: str
     surprise_rule: SurpriseRule | None = None
     lesser: bool = False
+    # A FRED series of the same releases, as first printed, and its units per the flow's unit:
+    # TradingView shows a week's revised figure once the next is out (claims, since 2026-10).
+    first_prints: tuple[str, float] | None = None
 
     @property
     def weekly(self) -> bool:
@@ -1210,13 +1213,28 @@ class TradingViewFlow:
         return EventBatch(events, report)
 
     def actuals(self, events: Sequence[EventInstance], api_key: str) -> list[Actual]:
+        """Each event's actual from TradingView, or FRED's first print of the same week on the
+        same day where the flow has ``first_prints`` and FRED published one."""
         ids = {(release_date(event), event_month(event)): event.event_id for event in events}
+        first: dict[tuple[date, date], float] = {}
+        if self.first_prints is not None:
+            series_id, per_unit = self.first_prints
+            releases, _ = sources.parse_first_releases(
+                sources.fetch_first_releases(api_key, series_id), series_id
+            )
+            first = {(r.released, r.reference_month): r.value / per_unit for r in releases}
         return [
-            Actual(event_id, release.measure, release.period, release.actual, self.unit)
+            Actual(
+                event_id,
+                release.measure,
+                release.period,
+                first.get((day, release.period), release.actual),
+                self.unit,
+            )
             for release in sources.tradingview_releases(settings.cache_dir, self.measures)
             if (
                 event_id := ids.get(
-                    (release.announced.astimezone(self.zone).date(), release.period)
+                    (day := release.announced.astimezone(self.zone).date(), release.period)
                 )
             )
             is not None
@@ -1314,6 +1332,7 @@ CLAIMS_FLOW = TradingViewFlow(
     "jobless claims reports",
     surprise_rule=CLAIMS_SURPRISE_RULE,
     lesser=True,
+    first_prints=(sources.CLAIMS_SERIES_ID, 1000.0),
 )
 ZEW_FLOW = TradingViewFlow(
     INVESTOR_SURVEY_EVENT_TYPE,

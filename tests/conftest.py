@@ -40,6 +40,16 @@ def no_calendars(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
         raise AssertionError(f"a test asked FRED for {series_id}")
 
     monkeypatch.setattr(sources, "fetch_series", refuse_fred)
+    fetch_first_releases = sources.fetch_first_releases
+
+    def refuse_claims(
+        api_key: str, series_id: str = sources.CPI_SERIES_ID, timeout: float = 30.0
+    ) -> bytes:
+        if series_id == sources.CLAIMS_SERIES_ID:
+            raise AssertionError("a test asked FRED for the claims' first prints")
+        return fetch_first_releases(api_key, series_id, timeout)
+
+    monkeypatch.setattr(sources, "fetch_first_releases", refuse_claims)
 
     # No statement is ahead on a test's day unless the test says so.
     monkeypatch.setattr(flows.StatementFlow, "ahead", lambda self, cache_dir, now: None)

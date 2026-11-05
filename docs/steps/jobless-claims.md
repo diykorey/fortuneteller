@@ -139,6 +139,17 @@ both bars (p 0.02). *The rest nothing:* right. *No link holds walk-forward at fi
 opens. *No other flow's row or verdict changes:* right. *CPI's and the jobs report's yield ratios
 move by under 0.02:* right, by under 0.001.
 
+## The first print from FRED
+
+*Amended 2026-11-05.* TradingView's calendar for 2026's fourth quarter comes from a new feed that
+shows each week's revised figure once the next week is out (2026-10-01: 199 now, 197 first printed).
+Nasdaq's rows hold the first print, so no row matched and `load-surprises` refused the evening job
+on 2026-11-03 and 2026-11-04 (issues #231, #265). The claims' actual is now FRED's `ICSA` first
+print (`output_type` 4) where FRED published the same week on the same day, else TradingView's. On
+the 709 weeks to 2026-09-24 the two agree on all 635 where FRED has the same week that day. The 74
+others keep TradingView's figure: 65 in 2013–14 and one on 2018-11-15 whose week TradingView labels
+differently (the figures equal), six weeks published at once on 2025-11-20, and two days FRED lacks. On a copy of the store every stored claims row is unchanged.
+
 ## Technical details
 
 A `TradingViewFlow` instance, type code 10, cli `claims`, label `CLM`, unit thousands, with the
