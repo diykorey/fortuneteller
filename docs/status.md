@@ -8,13 +8,13 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-The claims' first print from FRED: TradingView's new feed shows revised weeks, which stopped the
-evening job on 2026-11-03 and 2026-11-04 ([jobless claims](steps/jobless-claims.md#the-first-print-from-fred)).
+The scoreboard, faster, step 1: the permutation tests on the machine's cores; every output
+identical, the rebuild 270 s alone against 603 s ([the spec](steps/scoreboard-faster.md)).
 
 ## In progress
 
-The scoreboard, faster ([the spec](steps/scoreboard-faster.md)): step 1, the permutation tests on
-the machine's cores, every output identical.
+Step 19, part 2c: signs for the markets people feel (spec to write; its merge waits until after
+the jobs report on 2026-11-06 unless it makes no call).
 
 Step 18, part 2, step 3: the first triggers graded ([the spec](steps/trigger-file.md)). It waits for
 the owner's first trigger, a file under `data/triggers/` merged before a market's reaction close.
@@ -31,13 +31,14 @@ jobs report on 2026-11-06 is the first.
 
 ## Next
 
-Step 19, part 2c: signs for the markets people feel (spec to write; its merge waits until after
-the jobs report on 2026-11-06 unless it makes no call).
+Not chosen: after part 2c, the evening grade waiting a day for FRED's close, so the breakeven can
+be called live.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-05 | The scoreboard, faster, step 1: every output identical, the rebuild 270 s | PR #268 |
 | 2026-11-05 | The scoreboard, faster: spec | PR #267 |
 | 2026-11-05 | The claims' actual is FRED's first print; the evening job runs again | PR #266 |
 | 2026-11-04 | The breakeven, step 2: results | PR #264 |

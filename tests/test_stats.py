@@ -1,6 +1,7 @@
 """Shared statistics: ranks, rank correlation, robust slope, least squares and the permutation
 test."""
 
+import operator
 import random
 
 import pytest
@@ -8,6 +9,7 @@ import pytest
 from fortuneteller.stats import (
     PERMUTATIONS,
     least_squares,
+    parallel_map,
     permutation_p,
     ranks,
     spearman,
@@ -138,3 +140,16 @@ def test_least_squares_refuses_a_column_that_is_a_mix_of_the_others() -> None:
     # when / then the fit is refused
     with pytest.raises(ValueError, match="singular"):
         least_squares(rows, y)
+
+
+def test_parallel_map_gives_what_map_gives_in_order() -> None:
+    # given more pairs than the machine has cores
+    left, right = list(range(100)), list(range(100, 200))
+
+    # when a top-level function is mapped across the pool
+    mapped = parallel_map(pow, left, [2] * 100)
+    summed = parallel_map(operator.add, left, right)
+
+    # then each list is a plain map's, in order
+    assert mapped == list(map(pow, left, [2] * 100))
+    assert summed == list(map(operator.add, left, right))

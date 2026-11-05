@@ -6,8 +6,13 @@ No dependency beyond the standard library.
 
 from __future__ import annotations
 
+import multiprocessing
+import os
 import random
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Iterable, Sequence
+from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures.process import BrokenProcessPool
+from functools import cache
 from math import comb, exp, lgamma, log, sqrt
 from operator import mul
 from statistics import median
@@ -15,6 +20,26 @@ from statistics import median
 # 10,000 draws put the smallest possible p at about 0.0001; the fixed seed makes every run identical.
 PERMUTATIONS = 10_000
 PERMUTATION_SEED = 3
+
+
+@cache
+def _pool() -> ProcessPoolExecutor:
+    # Fresh workers, not forked ones: the store's threads make fork unsafe.
+    return ProcessPoolExecutor(mp_context=multiprocessing.get_context("forkserver"))
+
+
+def parallel_map[T](function: Callable[..., T], *arguments: Iterable[object]) -> list[T]:
+    """``map`` across the machine's cores, in order, in batches of about a quarter of each core's
+    share. Each permutation test seeds its own generator, so the results are the ones a plain
+    ``map`` gives. A pool that breaks is dropped, so the next call makes a new one."""
+    columns = [list(column) for column in arguments]
+    size = min(map(len, columns), default=0)
+    batch = max(1, size // (4 * (os.cpu_count() or 1)))
+    try:
+        return list(_pool().map(function, *columns, chunksize=batch))
+    except BrokenProcessPool:
+        _pool.cache_clear()
+        raise
 
 
 def permutation_p(
