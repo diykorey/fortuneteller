@@ -278,6 +278,7 @@ def test_a_live_release_on_a_shared_day_logs_every_link_silent(
         ("retail", "DXY", study.SILENT),
         ("retail", "EURUSD", study.SILENT),
         ("retail", "UST5Y / ZF", study.SILENT),
+        ("retail", "XLU", study.SILENT),
     ]
 
 

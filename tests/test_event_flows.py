@@ -432,8 +432,8 @@ def test_the_more_outcomes_take_their_signs_by_analogy() -> None:
     signs = flows.with_more_outcomes(seven)
 
     # then the euro mirrors the dollar index, the 5-year yield follows the 10-year's, the Nasdaq the
-    # S&P 500's, the FTSE 100 and the STOXX 600 the DAX's, the rest, the seven markets people feel
-    # and coffee and the breakeven have none, in the markets' order
+    # S&P 500's, the FTSE 100 and the STOXX 600 the DAX's, utilities the 10-year's reversed, the
+    # others have none, in the markets' order
     assert {k: v for k, v in signs.items() if k not in seven} == {
         "BRN": 0,
         "EURUSD": -1,
@@ -449,12 +449,43 @@ def test_the_more_outcomes_take_their_signs_by_analogy() -> None:
         "SOYB": 0,
         "UGA": 0,
         "UNG": 0,
-        "XLU": 0,
+        "XLU": -1,
         "ITB": 0,
         "KC": 0,
         "T5YIE": 0,
     }
     assert list(signs) == list(study.MVP_PRICE_SERIES)
+
+
+def test_utilities_and_homebuilders_take_their_signs_on_each_rule() -> None:
+    # given every rule's signs
+    fed = flows.FED_SENTIMENT_RULE.expected_sign
+    rules = {
+        "cpi": flows.EXPECTED_SIGN,
+        "jobs": flows.NFP_EXPECTED_SIGN,
+        "claims": flows.CLAIMS_EXPECTED_SIGN,
+        "fed": fed,
+        "euro": flows.EURO_EXPECTED_SIGN,
+        "german": flows.GERMAN_SURVEY_EXPECTED_SIGN,
+    }
+
+    # when utilities', homebuilders' and the breakeven's are read
+    signs = {name: (r["XLU"], r["ITB"], r["T5YIE"]) for name, r in rules.items()}
+
+    # then utilities reverse the yield, homebuilders are signed on inflation news only, and the
+    # breakeven, whose close comes a day late, has none anywhere
+    assert signs == {
+        "cpi": (-1, -1, 0),
+        "jobs": (-1, 0, 0),
+        "claims": (1, 0, 0),
+        "fed": (-1, 0, 0),
+        "euro": (0, 0, 0),
+        "german": (0, 0, 0),
+    }
+    assert flows.PCE_SURPRISE_RULE.expected_sign is flows.EXPECTED_SIGN
+    assert flows.RETAIL_SURPRISE_RULE.expected_sign is flows.NFP_EXPECTED_SIGN
+    assert flows.GDP_SURPRISE_RULE.expected_sign is flows.NFP_EXPECTED_SIGN
+    assert flows.ISM_SURPRISE_RULE.expected_sign is flows.NFP_EXPECTED_SIGN
 
 
 def test_a_day_only_value_is_known_at_the_end_of_its_own_zones_day() -> None:
