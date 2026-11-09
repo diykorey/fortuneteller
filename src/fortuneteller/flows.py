@@ -485,7 +485,9 @@ def with_more_outcomes(signs: dict[str, int]) -> dict[str, int]:
 # The direction a hotter-than-expected CPI should move each instrument; gold has no agreed one.
 # Europe's stock indices take the S&P 500's sign, here and below (docs/steps/cross-country.md).
 # Homebuilders only here: dearer mortgages with nothing good to offset them; on growth news higher
-# rates and a stronger economy pull opposite ways (docs/steps/signs.md).
+# rates and a stronger economy pull opposite ways (docs/steps/signs.md). The breakeven only here
+# too: it is expected inflation, and growth news and the Fed pull it both ways
+# (docs/steps/breakeven-sign.md).
 EXPECTED_SIGN = with_more_outcomes(
     {
         "SPY / ES": -1,
@@ -496,7 +498,7 @@ EXPECTED_SIGN = with_more_outcomes(
         "DAX": -1,
         "SX5E": -1,
     }
-) | {"ITB": -1}
+) | {"ITB": -1, "T5YIE": 1}
 # Core against the trend gives the verdict; the other three are context (decided 2026-10-05).
 VERDICT_COMBINATION = (sources.CORE, TREND_12M)
 COMBINATIONS = (

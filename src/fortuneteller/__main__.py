@@ -1133,7 +1133,11 @@ def _score(_args: argparse.Namespace) -> int:
         }
         for line in describe_confidence(confidence, "live", rule.step):
             print(line)
-        for label, notes in (("void", live.void), ("pending", live.pending)):
+        for label, notes in (
+            ("void", live.void),
+            ("pending", live.pending),
+            ("waiting", live.waiting),
+        ):
             if notes:
                 print()
                 print(f"{label}: {len(notes)}")
@@ -1270,7 +1274,11 @@ def _grade(row: study.LoggedCall, live: study.LiveScore) -> tuple[str, str | Non
         if flows.event_date(c.call.event_id) == row.day:
             return ("right" if c.call.right else "wrong"), None
     where = f"{row.flow} {row.day}"
-    for grade, notes in (("void", live.void), ("pending", live.pending)):
+    for grade, notes in (
+        ("void", live.void),
+        ("pending", live.pending),
+        ("pending", live.waiting),
+    ):
         prefixes = (f"{where}:", f"{where} {row.instrument}:")
         note = next((n for n in notes if n.startswith(prefixes)), None)
         if note is not None:

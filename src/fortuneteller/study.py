@@ -1127,11 +1127,13 @@ def read_calls(path: Path) -> list[LoggedCall]:
 @dataclass(frozen=True)
 class LiveScore:
     """One flow's logged calls: each link's graded calls, and the rows left ungraded, with why.
-    A void row is never graded; a pending one is once its release, surprise and move are loaded."""
+    A void row is never graded; a pending one is once its release, surprise and move are loaded; a
+    waiting one is once a close published a day late arrives, and holds up nothing meanwhile."""
 
     calls: dict[str, list[ConfidentCall]]
     void: list[str]
     pending: list[str]
+    waiting: list[str]
 
 
 def score_calls(
@@ -1157,6 +1159,7 @@ def score_calls(
     calls: dict[str, list[ConfidentCall]] = {instrument: [] for instrument in pairs}
     void: list[str] = []
     pending: list[str] = []
+    waiting: list[str] = []
     made = [r for r in rows if r.flow == flow.cli_name and r.direction is not None]
     for day in sorted({r.day for r in made}):
         where = f"{flow.cli_name} {day}"
@@ -1212,7 +1215,10 @@ def score_calls(
         for r in in_time:
             move = moves.get(r.instrument)
             if move is None or r.direction is None:
-                pending.append(f"{where} {r.instrument}: its move is not loaded")
+                late = MVP_PRICE_SERIES[r.instrument].ticker.startswith("fred:")
+                (waiting if late else pending).append(
+                    f"{where} {r.instrument}: its move is not loaded"
+                )
                 continue
             earlier = [
                 p
@@ -1226,7 +1232,7 @@ def score_calls(
                     call, r.probability, drift if r.probability is not None else None, r.band
                 )
             )
-    return LiveScore(calls, void, pending)
+    return LiveScore(calls, void, pending, waiting)
 
 
 def missed_releases(
