@@ -1,6 +1,6 @@
 {
  "written": "2026-11-09",
- "data_until": "2026-11-06",
+ "data_until": "2026-11-09",
  "markets": [
   "SPY / ES",
   "UST10Y / ZN",
@@ -45,9 +45,9 @@
    "by_chance": 3.0
   },
   "walk_forward": {
-   "cells": 70,
+   "cells": 80,
    "p": 0.01,
-   "by_chance": 0.7
+   "by_chance": 0.8
   }
  },
  "events": [
@@ -456,21 +456,21 @@
       "verdict": "doesn't"
      },
      "XLU": {
-      "expected": "either",
+      "expected": "down",
       "n": 332,
       "rank_corr": 0.2,
-      "p": 0.0004,
-      "hit_rate": null,
-      "hit_n": 0,
+      "p": 0.0003,
+      "hit_rate": 0.53,
+      "hit_n": 105,
       "verdict": "unclear"
      },
      "ITB": {
-      "expected": "either",
+      "expected": "down",
       "n": 244,
       "rank_corr": 0.09,
-      "p": 0.1653,
-      "hit_rate": null,
-      "hit_n": 0,
+      "p": 0.083,
+      "hit_rate": 0.51,
+      "hit_n": 74,
       "verdict": "doesn't"
      },
      "KC": {
@@ -588,6 +588,24 @@
       "verdict": "too few"
      },
      "SXXP": {
+      "expected": "down",
+      "first": null,
+      "predictions": 0,
+      "right": 0,
+      "p": 1.0,
+      "always_right": 0,
+      "verdict": "too few"
+     },
+     "XLU": {
+      "expected": "down",
+      "first": null,
+      "predictions": 0,
+      "right": 0,
+      "p": 1.0,
+      "always_right": 0,
+      "verdict": "too few"
+     },
+     "ITB": {
       "expected": "down",
       "first": null,
       "predictions": 0,
@@ -805,7 +823,7 @@
      "median_event": "2.0 bp",
      "median_other": "2.0 bp",
      "ratio": 1.0,
-     "p": 0.9999,
+     "p": 1.0,
      "verdict": "doesn't"
     }
    },
@@ -1004,12 +1022,12 @@
       "verdict": "doesn't"
      },
      "XLU": {
-      "expected": "either",
+      "expected": "down",
       "n": 334,
       "rank_corr": 0.05,
-      "p": 0.4068,
-      "hit_rate": null,
-      "hit_n": 0,
+      "p": 0.208,
+      "hit_rate": 0.48,
+      "hit_n": 202,
       "verdict": "doesn't"
      },
      "ITB": {
@@ -1080,6 +1098,15 @@
       "p": 0.0,
       "always_right": 58,
       "verdict": "holds"
+     },
+     "XLU": {
+      "expected": "down",
+      "first": null,
+      "predictions": 0,
+      "right": 0,
+      "p": 1.0,
+      "always_right": 0,
+      "verdict": "too few"
      }
     }
    }
@@ -1290,7 +1317,7 @@
      "median_event": "2.0 bp",
      "median_other": "2.0 bp",
      "ratio": 1.0,
-     "p": 0.9994,
+     "p": 0.9992,
      "verdict": "doesn't"
     }
    },
@@ -1489,12 +1516,12 @@
       "verdict": "doesn't"
      },
      "XLU": {
-      "expected": "either",
+      "expected": "down",
       "n": 113,
-      "rank_corr": 0.02,
-      "p": 0.8204,
-      "hit_rate": null,
-      "hit_n": 0,
+      "rank_corr": -0.02,
+      "p": 0.5898,
+      "hit_rate": 0.47,
+      "hit_n": 55,
       "verdict": "doesn't"
      },
      "ITB": {
@@ -1559,6 +1586,15 @@
      },
      "UST5Y / ZF": {
       "expected": "up",
+      "first": null,
+      "predictions": 0,
+      "right": 0,
+      "p": 1.0,
+      "always_right": 0,
+      "verdict": "too few"
+     },
+     "XLU": {
+      "expected": "down",
       "first": null,
       "predictions": 0,
       "right": 0,
@@ -1775,7 +1811,7 @@
      "median_event": "2.0 bp",
      "median_other": "2.0 bp",
      "ratio": 1.0,
-     "p": 1.0,
+     "p": 0.9999,
      "verdict": "doesn't"
     }
    },
@@ -1974,12 +2010,12 @@
       "verdict": "doesn't"
      },
      "XLU": {
-      "expected": "either",
+      "expected": "down",
       "n": 179,
-      "rank_corr": 0.15,
-      "p": 0.0419,
-      "hit_rate": null,
-      "hit_n": 0,
+      "rank_corr": -0.15,
+      "p": 0.9791,
+      "hit_rate": 0.45,
+      "hit_n": 91,
       "verdict": "doesn't"
      },
      "ITB": {
@@ -2050,6 +2086,15 @@
       "p": 0.0035,
       "always_right": 33,
       "verdict": "holds"
+     },
+     "XLU": {
+      "expected": "down",
+      "first": null,
+      "predictions": 0,
+      "right": 0,
+      "p": 1.0,
+      "always_right": 0,
+      "verdict": "too few"
      }
     }
    }
@@ -2260,7 +2305,7 @@
      "median_event": "2.0 bp",
      "median_other": "2.0 bp",
      "ratio": 1.0,
-     "p": 0.9997,
+     "p": 0.9996,
      "verdict": "doesn't"
     }
    },
@@ -2459,21 +2504,21 @@
       "verdict": "doesn't"
      },
      "XLU": {
-      "expected": "either",
+      "expected": "down",
       "n": 160,
-      "rank_corr": 0.1,
-      "p": 0.2002,
-      "hit_rate": null,
-      "hit_n": 0,
-      "verdict": "doesn't"
+      "rank_corr": -0.1,
+      "p": 0.9021,
+      "hit_rate": 0.6,
+      "hit_n": 15,
+      "verdict": "unclear"
      },
      "ITB": {
-      "expected": "either",
+      "expected": "down",
       "n": 160,
-      "rank_corr": 0.15,
-      "p": 0.0541,
-      "hit_rate": null,
-      "hit_n": 0,
+      "rank_corr": -0.15,
+      "p": 0.9723,
+      "hit_rate": 0.53,
+      "hit_n": 15,
       "verdict": "doesn't"
      },
      "KC": {
@@ -2591,6 +2636,24 @@
       "verdict": "too few"
      },
      "SXXP": {
+      "expected": "down",
+      "first": null,
+      "predictions": 0,
+      "right": 0,
+      "p": 1.0,
+      "always_right": 0,
+      "verdict": "too few"
+     },
+     "XLU": {
+      "expected": "down",
+      "first": null,
+      "predictions": 0,
+      "right": 0,
+      "p": 1.0,
+      "always_right": 0,
+      "verdict": "too few"
+     },
+     "ITB": {
       "expected": "down",
       "first": null,
       "predictions": 0,
@@ -2808,7 +2871,7 @@
      "median_event": "2.0 bp",
      "median_other": "2.0 bp",
      "ratio": 1.0,
-     "p": 0.9798,
+     "p": 0.9791,
      "verdict": "doesn't"
     }
    },
@@ -3007,13 +3070,13 @@
       "verdict": "doesn't"
      },
      "XLU": {
-      "expected": "either",
+      "expected": "down",
       "n": 46,
-      "rank_corr": 0.02,
-      "p": 0.911,
-      "hit_rate": null,
-      "hit_n": 0,
-      "verdict": "doesn't"
+      "rank_corr": -0.02,
+      "p": 0.5422,
+      "hit_rate": 0.62,
+      "hit_n": 13,
+      "verdict": "unclear"
      },
      "ITB": {
       "expected": "either",
@@ -3077,6 +3140,15 @@
      },
      "UST5Y / ZF": {
       "expected": "up",
+      "first": null,
+      "predictions": 0,
+      "right": 0,
+      "p": 1.0,
+      "always_right": 0,
+      "verdict": "too few"
+     },
+     "XLU": {
+      "expected": "down",
       "first": null,
       "predictions": 0,
       "right": 0,
@@ -3293,7 +3365,7 @@
      "median_event": "2.0 bp",
      "median_other": "2.0 bp",
      "ratio": 1.0,
-     "p": 0.9738,
+     "p": 0.9746,
      "verdict": "doesn't"
     }
    },
@@ -3506,7 +3578,7 @@
      "median_event": "2.0 bp",
      "median_other": "2.0 bp",
      "ratio": 1.0,
-     "p": 0.98,
+     "p": 0.981,
      "verdict": "doesn't"
     }
    },
@@ -4009,7 +4081,7 @@
      "median_event": "2.0 bp",
      "median_other": "2.0 bp",
      "ratio": 1.0,
-     "p": 0.9909,
+     "p": 0.9915,
      "verdict": "doesn't"
     }
    },
@@ -4208,12 +4280,12 @@
       "verdict": "doesn't"
      },
      "XLU": {
-      "expected": "either",
+      "expected": "down",
       "n": 111,
       "rank_corr": 0.09,
-      "p": 0.3512,
-      "hit_rate": null,
-      "hit_n": 0,
+      "p": 0.1775,
+      "hit_rate": 0.54,
+      "hit_n": 56,
       "verdict": "doesn't"
      },
      "ITB": {
@@ -4284,6 +4356,15 @@
       "p": 0.012,
       "always_right": 27,
       "verdict": "doesn't hold"
+     },
+     "XLU": {
+      "expected": "down",
+      "first": null,
+      "predictions": 0,
+      "right": 0,
+      "p": 1.0,
+      "always_right": 0,
+      "verdict": "too few"
      }
     }
    }
@@ -4693,12 +4774,12 @@
       "verdict": "doesn't"
      },
      "XLU": {
-      "expected": "either",
+      "expected": "up",
       "n": 449,
       "rank_corr": 0.01,
-      "p": 0.9059,
-      "hit_rate": null,
-      "hit_n": 0,
+      "p": 0.453,
+      "hit_rate": 0.48,
+      "hit_n": 308,
       "verdict": "doesn't"
      },
      "ITB": {
@@ -4767,6 +4848,15 @@
       "predictions": 0,
       "right": 0,
       "p": 1.0,
+      "always_right": 0,
+      "verdict": "too few"
+     },
+     "XLU": {
+      "expected": "up",
+      "first": "2014-09-13",
+      "predictions": 2,
+      "right": 1,
+      "p": 0.75,
       "always_right": 0,
       "verdict": "too few"
      }
@@ -4979,7 +5069,7 @@
      "median_event": "2.0 bp",
      "median_other": "2.0 bp",
      "ratio": 1.0,
-     "p": 0.9923,
+     "p": 0.9905,
      "verdict": "doesn't"
     }
    },
@@ -5192,7 +5282,7 @@
      "median_event": "2.0 bp",
      "median_other": "2.0 bp",
      "ratio": 1.0,
-     "p": 0.9998,
+     "p": 0.9999,
      "verdict": "doesn't"
     }
    },
@@ -5405,7 +5495,7 @@
      "median_event": "2.0 bp",
      "median_other": "2.0 bp",
      "ratio": 1.0,
-     "p": 0.9722,
+     "p": 0.9713,
      "verdict": "doesn't"
     }
    },
@@ -5908,7 +5998,7 @@
      "median_event": "3.0 bp",
      "median_other": "2.0 bp",
      "ratio": 1.5,
-     "p": 0.0172,
+     "p": 0.0165,
      "verdict": "unclear"
     }
    },
@@ -6411,7 +6501,7 @@
      "median_event": "2.0 bp",
      "median_other": "2.0 bp",
      "ratio": 1.0,
-     "p": 0.9788,
+     "p": 0.9782,
      "verdict": "doesn't"
     }
    },
@@ -6874,7 +6964,7 @@
      "median_event": "4.5 bp",
      "median_other": "2.0 bp",
      "ratio": 2.25,
-     "p": 0.0074,
+     "p": 0.0079,
      "verdict": "moves"
     }
    },
@@ -7619,7 +7709,7 @@
      "median_event": "2.0 bp",
      "median_other": "2.0 bp",
      "ratio": 1.0,
-     "p": 0.8897,
+     "p": 0.8899,
      "verdict": "doesn't"
     }
    },
@@ -7989,7 +8079,7 @@
      "median_event": "2.0 bp",
      "median_other": "2.0 bp",
      "ratio": 1.0,
-     "p": 0.863,
+     "p": 0.8626,
      "verdict": "doesn't"
     }
    },
@@ -8921,6 +9011,22 @@
      "predictions": 0,
      "always_right": 0,
      "verdict": "too few"
+    },
+    "XLU": {
+     "above": null,
+     "below": null,
+     "right": 0,
+     "predictions": 0,
+     "always_right": 0,
+     "verdict": "too few"
+    },
+    "ITB": {
+     "above": null,
+     "below": null,
+     "right": 0,
+     "predictions": 0,
+     "always_right": 0,
+     "verdict": "too few"
     }
    }
   },
@@ -8966,6 +9072,14 @@
      "below": null,
      "right": 0,
      "predictions": 0,
+     "always_right": 0,
+     "verdict": "too few"
+    },
+    "XLU": {
+     "above": null,
+     "below": null,
+     "right": 1,
+     "predictions": 2,
      "always_right": 0,
      "verdict": "too few"
     }
