@@ -1,4 +1,4 @@
-25 rows in data/calls.csv, each call graded on its market's close that day beside the replay of every stored release
+29 rows in data/calls.csv, each call graded on its market's close that day beside the replay of every stored release
 
 cpi: core against Nasdaq's consensus
 
@@ -222,4 +222,5 @@ DXY          —               —
 EURUSD       —               —
 UST5Y / ZF   —               —
 
-missed: 0 releases since 2026-10-13 with no rows (claims since 2026-10-29)
+missed: 1 releases since 2026-10-13 with no rows (claims since 2026-10-29)
+  nfp 2026-11-06
