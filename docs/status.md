@@ -8,13 +8,10 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-The signs, step 2: results; of utilities' and homebuilders' ten new links none holds or is open, so
-no new call ([the spec](steps/signs.md)).
+The breakeven's sign: +1 on inflation news; on CPI it holds, 35 of 42, a new live call; the evening
+grades the other markets while FRED's close is due ([the spec](steps/breakeven-sign.md)).
 
 ## In progress
-
-Step 19, part 2d: the breakeven's sign, and the evening grading the other markets while FRED's close
-is due ([the spec](steps/breakeven-sign.md)). Its build merges after CPI's evening run of 2026-11-10.
 
 Step 18, part 2, step 3: the first triggers graded ([the spec](steps/trigger-file.md)). It waits for
 the owner's first trigger, a file under `data/triggers/` merged before a market's reaction close.
@@ -38,6 +35,7 @@ of 2026-11-06 was lost so.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-11 | The breakeven's sign: on CPI it holds, 35 of 42, a new live call; a close published a day late waits and stops nothing | PR #275 |
 | 2026-11-09 | The signs, step 2: results — no link holds, no new call | PR #271 |
 | 2026-11-09 | The signs, step 1: `XLU` on every rule the yield has, `ITB` on CPI and core PCE; no new call | PR #270 |
 | 2026-11-05 | The signs: spec, utilities and homebuilders; the breakeven's waits for the evening grade | PR #269 |
