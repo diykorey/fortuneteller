@@ -455,9 +455,10 @@ NOTICEABLE_SURPRISE_PP = 0.1
 def with_more_outcomes(signs: dict[str, int]) -> dict[str, int]:
     """The nine more outcomes' signs by analogy (docs/steps/more-outcomes.md): the euro the dollar
     index's reversed, the 5-year yield the 10-year's, the Nasdaq the S&P 500's, the FTSE 100 and
-    the STOXX 600 the DAX's; oil, bitcoin and the two sector ETFs none, nor the seven markets people
-    feel (docs/steps/markets-people-feel.md), nor coffee (docs/steps/coffee.md), nor the breakeven
-    (docs/steps/breakeven.md)."""
+    the STOXX 600 the DAX's; oil, bitcoin and the two sector ETFs none, nor the markets people feel
+    (docs/steps/markets-people-feel.md), coffee (docs/steps/coffee.md) or the breakeven
+    (docs/steps/breakeven.md), except utilities, which compete with bonds: the 10-year yield's sign
+    reversed (docs/steps/signs.md)."""
     return {
         **signs,
         "BRN": 0,
@@ -474,7 +475,7 @@ def with_more_outcomes(signs: dict[str, int]) -> dict[str, int]:
         "SOYB": 0,
         "UGA": 0,
         "UNG": 0,
-        "XLU": 0,
+        "XLU": -signs["UST10Y / ZN"],
         "ITB": 0,
         "KC": 0,
         "T5YIE": 0,
@@ -483,6 +484,8 @@ def with_more_outcomes(signs: dict[str, int]) -> dict[str, int]:
 
 # The direction a hotter-than-expected CPI should move each instrument; gold has no agreed one.
 # Europe's stock indices take the S&P 500's sign, here and below (docs/steps/cross-country.md).
+# Homebuilders only here: dearer mortgages with nothing good to offset them; on growth news higher
+# rates and a stronger economy pull opposite ways (docs/steps/signs.md).
 EXPECTED_SIGN = with_more_outcomes(
     {
         "SPY / ES": -1,
@@ -493,7 +496,7 @@ EXPECTED_SIGN = with_more_outcomes(
         "DAX": -1,
         "SX5E": -1,
     }
-)
+) | {"ITB": -1}
 # Core against the trend gives the verdict; the other three are context (decided 2026-10-05).
 VERDICT_COMBINATION = (sources.CORE, TREND_12M)
 COMBINATIONS = (

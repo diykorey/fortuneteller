@@ -69,8 +69,31 @@ At the end, `surprise` gives utilities and homebuilders real verdicts where they
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | The signs in `flows.py`; on a copy of the store, what each new link would do | The tests below pass; the procedure gives an empty diff; a table here lists each of the ten links, whether it opens, its record, and what `live` would log at that flow's next release (nothing for ISM and the Fed's statement); the rebuild time is here. Merged after 01:00 EET on 2026-11-07 |
+| 1 | ~~The signs in `flows.py`; on a copy of the store, what each new link would do~~ **done** 2026-11-05 (PR #270) | The tests below pass; the procedure gives an empty diff; a table here lists each of the ten links, whether it opens, its record, and what `live` would log at that flow's next release (nothing for ISM and the Fed's statement); the rebuild time is here. Merged after 01:00 EET on 2026-11-07 |
 | 2 | Results here and in [MVP results](../mvp-results.md) | Each link's verdicts against the expected outcome; ex-dividend days counted if a link holds |
+
+*Step 1, 2026-11-05 (PR #270), on a copy of the store of that morning, closes to 2026-11-04:*
+
+| Link | Sign | Opens? | Record | `live` at its next release |
+| --- | --- | --- | --- | --- |
+| `XLU`, CPI | down | never | 0 calls | Silent, 2026-11-10 |
+| `ITB`, CPI | down | never | 0 calls | Silent, 2026-11-10 |
+| `XLU`, core PCE | down | never | 0 calls | Silent, unless it opens first |
+| `ITB`, core PCE | down | never | 0 calls | Silent, unless it opens first |
+| `XLU`, jobs report | down | never | 0 calls | Silent, 2026-11-06 |
+| `XLU`, retail sales | down | never | 0 calls | Silent, unless it opens first |
+| `XLU`, GDP | down | never | 0 calls | Silent, unless it opens first |
+| `XLU`, claims | up | 2014-09-13, then closed | 1 of 2 | Silent, 2026-11-05 |
+| `XLU`, ISM | down | never | 0 calls | Nothing; `live` does not call ISM |
+| `XLU`, the Fed's statement | down | never | 0 calls | Nothing; `live` does not call the Fed |
+
+- "Silent" with a date is `predict --actual` run with a throwaway log, on a surprise far from zero;
+  the other three have no consensus for their next release yet.
+- The procedure gave an empty diff on all 85 printed outputs and on `data.json`, but for one thing:
+  `ahead`'s jobs-report consensus read 63 at the base's run and 65 at the branch's, a little later,
+  with its two thresholds. That is Nasdaq's live calendar, which no sign reads. The walk-forward
+  chance line goes from 70 cells to 80, 0.7 to 0.8 by chance.
+- The scoreboard was rebuilt in 268 s alone, against 316 s at the base beside the test suite.
 
 ## How you know it is right
 
