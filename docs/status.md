@@ -13,6 +13,9 @@ no new call ([the spec](steps/signs.md)).
 
 ## In progress
 
+Step 19, part 2d: the breakeven's sign, and the evening grading the other markets while FRED's close
+is due ([the spec](steps/breakeven-sign.md)). Its build merges after CPI's evening run of 2026-11-10.
+
 Step 18, part 2, step 3: the first triggers graded ([the spec](steps/trigger-file.md)). It waits for
 the owner's first trigger, a file under `data/triggers/` merged before a market's reaction close.
 
@@ -28,8 +31,8 @@ merged pull request ([the spec](steps/beat-the-fortune-teller.md)). It waits for
 
 ## Next
 
-After part 2c, the evening grade waiting a day for FRED's close, and with it the breakeven's sign,
-so it can be called live.
+A release the laptop sleeps through: the morning job runs only when it is awake, and the jobs report
+of 2026-11-06 was lost so.
 
 ## Done
 
