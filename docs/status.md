@@ -20,7 +20,8 @@ Waiting: the scoreboard's first release day on the published page (step 3); rele
 3, evening score step 2 and rung 6 step 2: the first release the morning job logs, pops up and the
 evening grades. The jobs report of 2026-11-06, the first with the euro and the 5-year yield called,
 was missed: the laptop slept from that morning to 2026-11-09, so `live` never ran at the release.
-CPI on 2026-11-10 is the next release.
+A closed lid suspends it even on power; the owner keeps it open (decided 2026-11-10). CPI on
+2026-11-10 is the next release.
 
 Beat the fortune teller, step 3: the first live round, a release `live` calls guessed through a
 merged pull request ([the spec](steps/beat-the-fortune-teller.md)). It waits for a release; CPI on
@@ -28,8 +29,9 @@ merged pull request ([the spec](steps/beat-the-fortune-teller.md)). It waits for
 
 ## Next
 
-A release the laptop sleeps through: the morning job runs only when it is awake, and the jobs report
-of 2026-11-06 was lost so.
+Not chosen yet. Step 17, part 2, the quarter and the year, was weighed 2026-11-10 and set aside: the
+history is too short for any cell to hold over either (no kind reaches 10 events over a year, without
+overlap), so it could only show answers on all history.
 
 ## Done
 
