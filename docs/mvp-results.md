@@ -486,6 +486,16 @@ yield down and gold up on the day, among them. Every one turns to *can't say* wi
 shares with retail sales or the Fed. A hotter print, the headline that worries a reader, answers
 nothing.
 
+## What follows a jobless claims report
+
+Measured 2026-11-11. Detail in [what follows a jobless claims report](steps/what-follows-claims.md#results).
+
+Part 1b's method on 703 weekly claims reports since 2013, the kind read from initial claims against
+the consensus, 5k either side. **Nothing holds walk-forward.** On all history there are 8 answers,
+against 6.8 by chance: the 10-year and 5-year yields fall on the day after more claims than
+expected and rise after fewer, and rise over the week after fewer. Six of the eight turn to *can't
+say* without the days claims share with another release.
+
 ## What follows from the next close
 
 Measured 2026-11-04. Detail in [what follows from the next close](steps/after-the-day.md#results).

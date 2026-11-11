@@ -65,8 +65,52 @@ and ISM 39 below, at most 29 graded once ten come before.
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~`follows --event claims`; `claims` in `TRIGGER_KINDS`~~ **done** 2026-11-11 (PR #284) | Tests: `follows --event claims` prints a header with the three kinds; a claims trigger is read and answered, not refused. On a copy of the store of 2026-11-11 the header reads `follows: 703 jobless claims reports 2013-03-14 … 2026-11-05: 206 above, 216 as expected, 281 below`, and the other four tables are unchanged |
-| 2 | Write the results here and in [MVP results](../mvp-results.md), check the expected outcome, and update the roadmap row. Give each answer's counts without the shared days | Each kind's answers and walk-forward records are recorded against the expected outcome |
+| 2 | ~~Write the results here and in [MVP results](../mvp-results.md), check the expected outcome, and update the roadmap row. Give each answer's counts without the shared days~~ **done** 2026-11-11, [below](#results) | Each kind's answers and walk-forward records are recorded against the expected outcome |
 
 *Step 1, 2026-11-11 (PR #284):* on a copy of the store the header reads as written above and 225
 cells print; the Fed's, the jobs report's, retail sales' and CPI's tables are byte for byte the
 ones before.
+
+## Results
+
+Measured 2026-11-11 on a copy of the store: 703 reports, 206 above, 216 as expected, 281 below;
+257 of them on a day with another stored release (73 above, 75 as expected, 106 below).
+
+**Nothing holds walk-forward.** The nearest are on the day: the 10-year yield down after *above*,
+right on 20 of 37 graded (54%), and the 5-year yield up after *below*, 22 of 51 (43%).
+
+**On all history, 8 answers**, against about 6.8 by chance for the 225 cells. None is marked by the
+placebo. The yields' day answers go opposite ways for opposite kinds, so they are read as the kind:
+
+| Kind | Span | Market | Up / same / down | Answer | Chance | Without the shared days |
+| --- | --- | --- | --- | --- | --- | --- |
+| above | day | UST10Y / ZN | 51 / 70 / 85 | down | 0.0017 | *can't say*, 34 / 47 / 52 |
+| above | day | UST5Y / ZF | 51 / 78 / 77 | down | 0.0036 | *can't say*, 35 / 52 / 46 |
+| as expected | day | XLU | 92 / 74 / 50 | up | 0.0094 | *can't say*, 55 / 53 / 33 |
+| below | day | UST10Y / ZN | 116 / 84 / 81 | up | 0.0097 | *can't say*, 67 / 55 / 53 |
+| below | day | UST5Y / ZF | 122 / 85 / 74 | up | 0.0025 | *can't say*, 73 / 56 / 46 |
+| below | week | UST10Y / ZN | 108 / 62 / 69 | up | 0.0098 | *can't say*, 72 / 42 / 45 |
+| below | week | UST5Y / ZF | 109 / 67 / 63 | up | 0.0056 | up, 72 / 49 / 38 |
+| below | week | UGA | 77 / 98 / 65 | about the same | 0.0090 | about the same, 53 / 69 / 37 |
+
+Without the shared days two new answers appear, VIX *about the same* on the day after *above* and
+the dollar index *up* on the day after *below*; neither holds walk-forward. Nothing answers over the
+month.
+
+**Against the expected outcome:**
+
+- The arithmetic: the day, **right**. The week, **wrong**: it leaves out 34 to 41 of each kind,
+  about one in six, not "nearly none": a holiday week moves a release, and the next span then
+  overlaps. The month counts 41 above, 43 as expected and 57 below, about one in five: **right**.
+- At most one day answer on each yield, *down* after *above* and *up* after *below*: the directions
+  **right**, the count **wrong**, two on each, one per kind.
+- No answer on a stock index, VIX or gold: **right**.
+- Answers no more than the chance line plus 3, 9.8: **right**, 8.
+- Nothing holds: **right**.
+- *As expected* answers nothing: **wrong**, utilities rise on the day, and turn to *can't say*
+  without the shared days.
+- Without the shared days, at most half keep their direction: **right**, 2 of 8.
+
+**What it says.** Jobless claims by kind repeat what the number said: the yields lean the expected
+way on the day, and the lean is mostly the days claims share with the Fed, the jobs report or
+retail sales. A claims trigger will be answered *can't say* almost everywhere. No new call.
