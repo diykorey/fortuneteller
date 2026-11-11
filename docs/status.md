@@ -16,14 +16,18 @@ no new call ([the spec](steps/signs.md)).
 Step 19, part 2d: the breakeven's sign, and the evening grading the other markets while FRED's close
 is due ([the spec](steps/breakeven-sign.md)). Its build merges after CPI's evening run of 2026-11-10.
 
-Step 18, part 2, step 3: the first triggers graded ([the spec](steps/trigger-file.md)). It waits for
-the owner's first trigger, a file under `data/triggers/` merged before a market's reaction close.
+Step 18, part 2, step 3: the first triggers graded ([the spec](steps/trigger-file.md)). The owner's
+first, CPI of 2026-11-10 *as expected*, was filed that evening but merged 2026-11-11 10:33, after
+every reaction close: it counts on no market and is logged late. It waits for the next one.
 
 Waiting: the scoreboard's first release day on the published page (step 3); release-day job step
 3, evening score step 2 and rung 6 step 2: the first release the morning job logs, pops up and the
 evening grades. The jobs report of 2026-11-06, the first with the euro and the 5-year yield called,
 was missed: the laptop slept from that morning to 2026-11-09, so `live` never ran at the release.
-CPI on 2026-11-10 is the next release.
+CPI on 2026-11-10 was logged 49 minutes late: Nasdaq answered the job's Python 3.14 with HTTP 403
+(issues #277–279), and the rerun on 3.12 logged it (PR #280), every row silent or *too few*;
+`EURUSD`, logged after its release, is void. The evening of 2026-11-10 found three closes not yet
+on Yahoo and committed nothing; the next evening grades it. Python is now pinned to 3.12.
 
 Beat the fortune teller, step 3: the first live round, a release `live` calls guessed through a
 merged pull request ([the spec](steps/beat-the-fortune-teller.md)). It waits for a release; CPI on
@@ -38,6 +42,7 @@ of 2026-11-06 was lost so.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-11 | Python pinned to 3.12: Nasdaq refuses 3.14's requests | PR #282 |
 | 2026-11-09 | The signs, step 2: results — no link holds, no new call | PR #271 |
 | 2026-11-09 | The signs, step 1: `XLU` on every rule the yield has, `ITB` on CPI and core PCE; no new call | PR #270 |
 | 2026-11-05 | The signs: spec, utilities and homebuilders; the breakeven's waits for the evening grade | PR #269 |
