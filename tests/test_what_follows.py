@@ -292,6 +292,7 @@ def test_follows_prints_the_table_and_needs_the_key(
 NFP = flows.flow_named("nfp")
 RETAIL = flows.flow_named("retail")
 CPI = flows.flow_named("cpi")
+CLAIMS = flows.flow_named("claims")
 
 
 def _report(day: date, flow: flows.EventFlow = NFP) -> flows.EventInstance:
@@ -716,5 +717,37 @@ def test_follows_after_the_day_says_so_in_its_header(
     assert out[0] == (
         "follows: 3 retail sales releases 2001-01-29 … 2001-05-21: 1 above, 1 as expected, "
         "1 below, spans from the reaction close"
+    )
+    assert out[2].startswith("above       day    SPY / ES       1   ")
+
+
+def test_follows_for_jobless_claims_prints_its_table_at_its_own_threshold(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given no FRED key, one market's closes, and claims reports 5k, 4k and -5k off the consensus
+    monkeypatch.setattr(settings, "fred_api_key", None)
+    monkeypatch.setattr(study, "MVP_PRICE_SERIES", {"SPY / ES": study.MVP_PRICE_SERIES["SPY / ES"]})
+    closes = _closes(_alternating(300))
+    days = [closes[i].day for i in (20, 60, 100)]
+    db.init_db()
+    db.get_connection().executemany(
+        "INSERT INTO daily_bars (instrument, day, close, source) VALUES ('SPY / ES', ?, ?, 'test')",
+        [[c.day, c.price] for c in closes],
+    )
+    _store_reports(
+        [(days[0], "nasdaq_consensus", 5.0), (days[1], "nasdaq_consensus", 4.0)]
+        + [(days[2], "nasdaq_consensus", -5.0)],
+        CLAIMS,
+        sources.INITIAL_CLAIMS,
+    )
+
+    # when run
+    code = main(["follows", "--event", "claims"])
+
+    # then it prints the claims reports' table, the 5k line separating the kinds
+    out = capsys.readouterr().out.splitlines()
+    assert code == 0
+    assert out[0] == (
+        "follows: 3 jobless claims reports 2001-01-29 … 2001-05-21: 1 above, 1 as expected, 1 below"
     )
     assert out[2].startswith("above       day    SPY / ES       1   ")

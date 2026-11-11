@@ -13,15 +13,19 @@ grades the other markets while FRED's close is due ([the spec](steps/breakeven-s
 
 ## In progress
 
-Step 18, part 2, step 3: the first triggers graded ([the spec](steps/trigger-file.md)). It waits for
-the owner's first trigger, a file under `data/triggers/` merged before a market's reaction close.
+Step 18, part 2, step 3: the first triggers graded ([the spec](steps/trigger-file.md)). The owner's
+first, CPI of 2026-11-10 *as expected*, was filed that evening but merged 2026-11-11 10:33, after
+every reaction close: it counts on no market and is logged late. It waits for the next one.
 
 Waiting: the scoreboard's first release day on the published page (step 3); release-day job step
 3, evening score step 2 and rung 6 step 2: the first release the morning job logs, pops up and the
 evening grades. The jobs report of 2026-11-06, the first with the euro and the 5-year yield called,
 was missed: the laptop slept from that morning to 2026-11-09, so `live` never ran at the release.
-A closed lid suspends it even on power; the owner keeps it open (decided 2026-11-10). CPI on
-2026-11-10 is the next release.
+A closed lid suspends it even on power; the owner keeps it open (decided 2026-11-10).
+CPI on 2026-11-10 was logged 49 minutes late: Nasdaq answered the job's Python 3.14 with HTTP 403
+(issues #277–279), and the rerun on 3.12 logged it (PR #280), every row silent or *too few*;
+`EURUSD`, logged after its release, is void. The evening of 2026-11-10 found three closes not yet
+on Yahoo and committed nothing; the next evening grades it. Python is now pinned to 3.12.
 
 Beat the fortune teller, step 3: the first live round, a release `live` calls guessed through a
 merged pull request ([the spec](steps/beat-the-fortune-teller.md)). It waits for a release; CPI on
@@ -29,15 +33,20 @@ merged pull request ([the spec](steps/beat-the-fortune-teller.md)). It waits for
 
 ## Next
 
-Not chosen yet. Step 17, part 2, the quarter and the year, was weighed 2026-11-10 and set aside: the
-history is too short for any cell to hold over either (no kind reaches 10 events over a year, without
-overlap), so it could only show answers on all history.
+Not chosen yet. Step 17's US flows are measured by kind as far as their counts allow (PCE, GDP and
+ISM fall short of 30 graded on some kind); its last part is the ECB's decisions with the euro area.
+Step 17, part 2, the quarter and the year, was weighed 2026-11-10 and set aside: the history is
+too short for any cell to hold over either (no kind reaches 10 events over a year, without overlap).
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-11-11 | The breakeven's sign: on CPI it holds, 35 of 42, a new live call; a close published a day late waits and stops nothing | PR #275 |
+| 2026-11-12 | The breakeven's sign: on CPI it holds, 35 of 42, a new live call; a close published a day late waits and stops nothing | PR #275 |
+| 2026-11-11 | What follows, part 1e, step 2: results — claims by kind holds nothing; the yields' day answers lean on shared days | PR #285 |
+| 2026-11-11 | What follows, part 1e, step 1: `follows --event claims`; claims triggers | PR #284 |
+| 2026-11-11 | What follows, part 1e: spec, jobless claims by kind | PR #283 |
+| 2026-11-11 | Python pinned to 3.12: Nasdaq refuses 3.14's requests | PR #282 |
 | 2026-11-09 | The signs, step 2: results — no link holds, no new call | PR #271 |
 | 2026-11-09 | The signs, step 1: `XLU` on every rule the yield has, `ITB` on CPI and core PCE; no new call | PR #270 |
 | 2026-11-05 | The signs: spec, utilities and homebuilders; the breakeven's waits for the evening grade | PR #269 |

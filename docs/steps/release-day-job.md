@@ -40,6 +40,10 @@ release day it opens the pull request, and on a failure it opens an issue.
   runs the job when the user next logs in that day (`Persistent=true`, *added 2026-10-16*): the
   call is logged late, from the actual already out; a later day's login misses it, and nothing is
   reported: this is a job on one laptop, not a service.
+  *Amended 2026-11-11:* the job's venv had been built on Python 3.14, and on 2026-11-10 Nasdaq
+  answered its requests with HTTP 403 while answering 3.12's (issues #277–279), so CPI was logged
+  49 minutes late. `.python-version` pins 3.12, the version CI runs, so `uv run` builds every venv
+  on it.
 - **Typing stays possible.** A release the job missed or failed is still logged with
   `predict --actual` on its day, as now.
 
