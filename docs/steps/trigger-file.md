@@ -25,7 +25,8 @@ grades, and keeps them in `data/trigger-log.csv`.
 
 - **The file.** A CSV under `data/triggers/`, any name ending `.csv`, header `flow,day,kind`, one
   row per trigger:
-  - `flow`: `fomc`, `nfp`, `retail` or `cpi`, the flows `follows` answers;
+  - `flow`: `fomc`, `nfp`, `retail` or `cpi`, the flows `follows` answers (*amended 2026-11-11:* and
+    `claims`, [part 1e](what-follows-claims.md));
   - `day`: the event's day in New York, `YYYY-MM-DD`;
   - `kind`: `cut`, `hold` or `hike` for the Fed, `above`, `as expected` or `below` for a release.
 

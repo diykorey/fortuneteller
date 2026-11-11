@@ -549,6 +549,7 @@ FOLLOWS_NOUNS = {
     "nfp": "jobs reports",
     "retail": "retail sales releases",
     "cpi": "CPI releases",
+    "claims": "jobless claims reports",
 }
 
 

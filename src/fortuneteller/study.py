@@ -1836,6 +1836,7 @@ TRIGGER_KINDS = {
     "nfp": SURPRISE_KINDS,
     "retail": SURPRISE_KINDS,
     "cpi": SURPRISE_KINDS,
+    "claims": SURPRISE_KINDS,
 }
 TRIGGER_LOG_COLUMNS = (
     "file",
