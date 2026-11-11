@@ -970,3 +970,38 @@ def test_a_claims_report_is_stored_on_its_thursday_with_its_week_and_surprise(
     assert [(r.measure, r.baseline, round(r.surprise, 2)) for r in rows_out] == [
         (sources.INITIAL_CLAIMS, expectations.TRADINGVIEW_FORECAST, 6.0)
     ]
+
+
+def test_an_ecb_decision_s_rate_is_the_deposit_rate_from_its_first_listing(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given decisions with only the refinancing rate, then with the deposit rate under both of the
+    # calendar's spellings, and one held later with no deposit row
+    replies = {
+        date(2015, 10, 1): _euro_quarter(
+            (sources.ECB_DECISION, "2015-10-22T11:45:00.000Z", 0.05),
+            (sources.ECB_DECISION, "2015-12-03T12:45:00.000Z", 0.05),
+            ("Deposit Facilty Rate", "2015-12-03T12:45:00.000Z", -0.3),
+        ),
+        date(2016, 1, 1): _euro_quarter(
+            (sources.ECB_DECISION, "2016-03-10T12:45:00.000Z", 0.0),
+            ("Deposit Facility Rate", "2016-03-10T12:45:00.000Z", -0.4),
+            (sources.ECB_DECISION, "2016-03-31T11:45:00.000Z", 0.0),
+            ("Deposit Facility Rate", "2016-04-21T11:45:00.000Z", None),
+        ),
+    }
+    monkeypatch.setattr(
+        sources,
+        "fetch_tradingview_quarter",
+        lambda start, cache_dir, today=None, country="US": replies.get(
+            start, b'{"status": "no_data"}'
+        ),
+    )
+    monkeypatch.setattr(flows, "ECB_FROM", date(2015, 10, 1))
+
+    # when the rates are loaded
+    rates = flows.load_ecb_rates(tmp_path, today=date(2016, 6, 30))
+
+    # then the refinancing rate stands before the deposit rate's first listing, the deposit rate
+    # after it, and a day with no deposit rate after it has none
+    assert rates == {date(2015, 10, 22): 0.05, date(2015, 12, 3): -0.3, date(2016, 3, 10): -0.4}

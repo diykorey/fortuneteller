@@ -1470,6 +1470,21 @@ def fed_kinds(events: Iterable[EventInstance], rates: Mapping[date, float]) -> d
     return kinds
 
 
+def ecb_kinds(events: Iterable[EventInstance], rates: Mapping[date, float]) -> dict[int, str]:
+    """Each ECB decision's kind by event id, its rate against the last earlier decision's that has
+    one; a decision with no rate, or with none before it, has none."""
+    kinds = {}
+    before = None
+    for event in sorted(events, key=lambda e: e.event_ts):
+        rate = rates.get(release_date(event))
+        if rate is None:
+            continue
+        if before is not None:
+            kinds[event.event_id] = HOLD if rate == before else CUT if rate < before else HIKE
+        before = rate
+    return kinds
+
+
 class Span(NamedTuple):
     start: date
     end: date
@@ -1837,6 +1852,7 @@ TRIGGER_KINDS = {
     "retail": SURPRISE_KINDS,
     "cpi": SURPRISE_KINDS,
     "claims": SURPRISE_KINDS,
+    "ecb": KINDS,
 }
 TRIGGER_LOG_COLUMNS = (
     "file",
