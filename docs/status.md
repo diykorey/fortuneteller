@@ -8,8 +8,8 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-What follows, part 1f: the spec for the ECB's decisions by kind; only a hold can reach 30 graded
-([the spec](steps/what-follows-ecb.md)).
+What follows, part 1f, step 1: `follows --event ecb` prints the ECB's decisions by kind, read from
+the calendar's rates, and a trigger may name the ECB ([the spec](steps/what-follows-ecb.md)).
 
 ## In progress
 
@@ -36,13 +36,14 @@ merged pull request ([the spec](steps/beat-the-fortune-teller.md)). It waits for
 
 ## Next
 
-Step 17, part 1f, step 1: `follows --event ecb`, its kinds from the calendar's rates, and ECB
-triggers ([the spec](steps/what-follows-ecb.md)).
+Step 17, part 1f, step 2: the results of the ECB's decisions by kind
+([the spec](steps/what-follows-ecb.md)).
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-11 | What follows, part 1f, step 1: `follows --event ecb`; ECB triggers | PR #287 |
 | 2026-11-11 | What follows, part 1f: spec, the ECB's decisions by kind | PR #286 |
 | 2026-11-11 | What follows, part 1e, step 2: results — claims by kind holds nothing; the yields' day answers lean on shared days | PR #285 |
 | 2026-11-11 | What follows, part 1e, step 1: `follows --event claims`; claims triggers | PR #284 |

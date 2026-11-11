@@ -26,9 +26,9 @@ grades, and keeps them in `data/trigger-log.csv`.
 - **The file.** A CSV under `data/triggers/`, any name ending `.csv`, header `flow,day,kind`, one
   row per trigger:
   - `flow`: `fomc`, `nfp`, `retail` or `cpi`, the flows `follows` answers (*amended 2026-11-11:* and
-    `claims`, [part 1e](what-follows-claims.md));
+    `claims`, [part 1e](what-follows-claims.md), and `ecb`, [part 1f](what-follows-ecb.md));
   - `day`: the event's day in New York, `YYYY-MM-DD`;
-  - `kind`: `cut`, `hold` or `hike` for the Fed, `above`, `as expected` or `below` for a release.
+  - `kind`: `cut`, `hold` or `hike` for the Fed and the ECB, `above`, `as expected` or `below` for a release.
 
   Each row is dated by GitHub's `merged_at` for the pull request that added its file, found as a
   guess's is (`guess_files`, `merged_at`); a file edited later is read as it was added. A file that
