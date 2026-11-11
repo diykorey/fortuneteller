@@ -751,3 +751,48 @@ def test_follows_for_jobless_claims_prints_its_table_at_its_own_threshold(
         "follows: 3 jobless claims reports 2001-01-29 … 2001-05-21: 1 above, 1 as expected, 1 below"
     )
     assert out[2].startswith("above       day    SPY / ES       1   ")
+
+
+def _ecb(day: date) -> flows.EventInstance:
+    # an ECB decision at 14:15 Frankfurt on ``day``
+    return flows.ecb_event_instance(
+        datetime.combine(day, time(14, 15), tzinfo=sources.FRANKFURT).astimezone(UTC)
+    )
+
+
+def test_an_ecb_decision_s_kind_is_its_rate_against_the_previous_decision_s() -> None:
+    # given four decisions, the third with no rate
+    days = [date(2024, 4, 11), date(2024, 6, 6), date(2024, 7, 18), date(2024, 9, 12)]
+    rates = {days[0]: 4.0, days[1]: 3.75, days[3]: 3.75}
+
+    # when their kinds are read
+    kinds = study.ecb_kinds([_ecb(d) for d in reversed(days)], rates)
+
+    # then the first has none, the second is a cut, the third none, and the fourth a hold against
+    # the last decision with a rate
+    assert kinds == {_ecb(days[1]).event_id: CUT, _ecb(days[3]).event_id: HOLD}
+
+
+def test_follows_for_the_ecb_prints_its_table(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given three ECB decisions, one market's closes, and the calendar's rates patched
+    monkeypatch.setattr(study, "MVP_PRICE_SERIES", {"SPY / ES": study.MVP_PRICE_SERIES["SPY / ES"]})
+    closes = _closes(_alternating(300))
+    days = [closes[i].day for i in (20, 60, 100)]
+    db.init_db()
+    db.get_connection().executemany(
+        "INSERT INTO daily_bars (instrument, day, close, source) VALUES ('SPY / ES', ?, ?, 'test')",
+        [[c.day, c.price] for c in closes],
+    )
+    db.insert_models("event_instances", [_ecb(d) for d in days])
+    rates = {days[0]: 1.0, days[1]: 1.25, days[2]: 1.25}
+    monkeypatch.setattr(flows, "load_ecb_rates", lambda _cache_dir: rates)
+
+    # when run
+    code = main(["follows", "--event", "ecb"])
+
+    # then it prints the ECB decisions' table, the first decision having no kind
+    out = capsys.readouterr().out.splitlines()
+    assert code == 0
+    assert out[0] == (f"follows: 2 ECB decisions {days[1]} … {days[2]}: 0 cuts, 1 holds, 1 hikes")

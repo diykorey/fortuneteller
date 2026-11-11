@@ -550,7 +550,21 @@ FOLLOWS_NOUNS = {
     "retail": "retail sales releases",
     "cpi": "CPI releases",
     "claims": "jobless claims reports",
+    "ecb": "ECB decisions",
 }
+
+
+def _decision_kinds(
+    flow: flows.EventFlow, events: list[EventInstance], command: str
+) -> dict[int, str] | None:
+    """A central bank's decisions' kinds: the Fed's from FRED's target rate, ``None`` without a
+    key; the ECB's from the calendar's rates."""
+    if flow is flows.ECB_FLOW:
+        return study.ecb_kinds(events, flows.load_ecb_rates(settings.cache_dir))
+    api_key = _fred_key(command)
+    if not api_key:
+        return None
+    return study.fed_kinds(events, dict(flows.target_rates(api_key)))
 
 
 def _follows(args: argparse.Namespace) -> int:
@@ -569,12 +583,11 @@ def _follows(args: argparse.Namespace) -> int:
         )
         return 1
     try:
-        if flow is flows.FED_FLOW:
-            api_key = _fred_key("follows")
-            if not api_key:
+        if flow is flows.FED_FLOW or flow is flows.ECB_FLOW:
+            decided = _decision_kinds(flow, flows.stored_events(flow, con=con), "follows")
+            if decided is None:
                 return 1
-            stored = flows.stored_events(flow, con=con)
-            kinds = study.fed_kinds(stored, dict(flows.target_rates(api_key)))
+            kinds = decided
             order: Sequence[str] = study.KINDS
         else:
             kinds = study.release_kinds(flow, con=con)
@@ -589,7 +602,7 @@ def _follows(args: argparse.Namespace) -> int:
         events, cells = study.follow_decisions(
             flow, kinds, order, con=con, after=args.after_the_day
         )
-    except (sources.FredError, ValueError) as exc:
+    except (sources.FredError, sources.CalendarError, ValueError) as exc:
         print(f"follows: {exc}", file=sys.stderr)
         return 1
     if not events:
@@ -620,11 +633,11 @@ def _triggers(_args: argparse.Namespace) -> int:
         for name in sorted(names):
             flow = flows.flow_named(name)
             events[name] = flows.stored_events(flow, con=con)
-            if flow is flows.FED_FLOW:
-                api_key = _fred_key("triggers")
-                if not api_key:
+            if flow is flows.FED_FLOW or flow is flows.ECB_FLOW:
+                decided = _decision_kinds(flow, events[name], "triggers")
+                if decided is None:
                     return 1
-                kinds[name] = study.fed_kinds(events[name], dict(flows.target_rates(api_key)))
+                kinds[name] = decided
             else:
                 kinds[name] = study.release_kinds(flow, con=con)
         closes = {m: study.stored_closes(m, con=con) for m in study.MVP_PRICE_SERIES}
@@ -637,7 +650,12 @@ def _triggers(_args: argparse.Namespace) -> int:
 
         log = study.read_trigger_log(settings.trigger_log_path)
         rows, lines = study.answer_triggers(triggers, merged, events, kinds, closes, log)
-    except (sources.FredError, ValueError, subprocess.CalledProcessError) as exc:
+    except (
+        sources.FredError,
+        sources.CalendarError,
+        ValueError,
+        subprocess.CalledProcessError,
+    ) as exc:
         print(f"triggers: {exc}", file=sys.stderr)
         return 1
     for line in lines:

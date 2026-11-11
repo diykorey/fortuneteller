@@ -8,7 +8,7 @@ from fortuneteller.__main__ import main
 from fortuneteller.config import settings
 from fortuneteller.models import Surprise
 from fortuneteller.sources import DailyClosingPrice
-from fortuneteller.study import ABOVE, BELOW, CUT, HOLE, LEFT_OUT, TOO_FEW
+from fortuneteller.study import ABOVE, BELOW, CUT, HOLD, HOLE, LEFT_OUT, TOO_FEW
 
 START = date(2001, 1, 1)
 NFP = flows.flow_named("nfp")
@@ -403,6 +403,25 @@ def test_a_claims_trigger_is_answered_not_refused(one_market: None) -> None:
         closes,
         merged,
         flow="claims",
+    )
+
+    # then it is answered on the market, not refused for its flow
+    assert {r["market"] for r in rows} == {SPY}
+    assert not any("is not one of" in line for line in lines)
+
+
+def test_an_ecb_trigger_is_answered_not_refused(one_market: None) -> None:
+    # given an ECB hold at 14:15 Frankfurt
+    closes = _closes(_wavy(300))
+    day = closes[200].day
+    hold = flows.ecb_event_instance(
+        datetime.combine(day, time(14, 15), tzinfo=sources.FRANKFURT).astimezone(UTC)
+    )
+    merged = datetime.combine(day, time(14, 30), tzinfo=sources.FRANKFURT)
+
+    # when filed as a hold before the close
+    rows, lines = _answer(
+        [_trigger(day, HOLD, "ecb")], [hold], {hold.event_id: HOLD}, closes, merged, flow="ecb"
     )
 
     # then it is answered on the market, not refused for its flow

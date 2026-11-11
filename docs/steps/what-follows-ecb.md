@@ -62,5 +62,11 @@ nothing above was changed after it.*
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | The ECB's rates from the calendar; `follows --event ecb`; `ecb` in `TRIGGER_KINDS` | Tests: a decision's kind comes from the deposit rate where listed and the refinancing rate before; `follows --event ecb` prints a header with the three kinds; an ECB trigger is answered, not refused. On a copy of the store the header gives the counts by kind, and the other five tables are unchanged |
+| 1 | ~~The ECB's rates from the calendar; `follows --event ecb`; `ecb` in `TRIGGER_KINDS`~~ **done** 2026-11-11 (PR #287) | Tests: a decision's kind comes from the deposit rate where listed and the refinancing rate before; `follows --event ecb` prints a header with the three kinds; an ECB trigger is answered, not refused. On a copy of the store the header gives the counts by kind, and the other five tables are unchanged |
 | 2 | Write the results here and in [MVP results](../mvp-results.md), check the expected outcome, and update the roadmap row | Each kind's answers and walk-forward records are recorded against the expected outcome |
+
+*Step 1, 2026-11-11 (PR #287):* on a copy of the store the header reads `follows: 115 ECB decisions
+2013-05-02 … 2026-10-29: 15 cuts, 88 holds, 12 hikes`; the calendar's current quarter adds the
+hold of 2026-10-29. 225 cells print. The other five tables and the answer to the trigger filed so
+far are byte for byte the ones before. `follows` and `triggers` now share one function for a
+central bank's kinds, `_decision_kinds`.
