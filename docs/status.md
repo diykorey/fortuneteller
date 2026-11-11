@@ -8,8 +8,9 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-What follows, part 1e, step 1: `follows --event claims` prints jobless claims by kind, and a trigger
-may name claims ([the spec](steps/what-follows-claims.md)).
+What follows, part 1e, step 2: results. Jobless claims by kind hold nothing walk-forward; 8 answers
+against 6.8 by chance, six of them *can't say* without the shared days; no new call
+([the spec](steps/what-follows-claims.md#results)).
 
 ## In progress
 
@@ -35,13 +36,14 @@ merged pull request ([the spec](steps/beat-the-fortune-teller.md)). It waits for
 
 ## Next
 
-Step 17, part 1e, step 2: the results of jobless claims by kind
-([the spec](steps/what-follows-claims.md)).
+Not chosen yet. Step 17's US flows are measured by kind as far as their counts allow (PCE, GDP and
+ISM fall short of 30 graded on some kind); its last part is the ECB's decisions with the euro area.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-11 | What follows, part 1e, step 2: results — claims by kind holds nothing; the yields' day answers lean on shared days | PR #285 |
 | 2026-11-11 | What follows, part 1e, step 1: `follows --event claims`; claims triggers | PR #284 |
 | 2026-11-11 | What follows, part 1e: spec, jobless claims by kind | PR #283 |
 | 2026-11-11 | Python pinned to 3.12: Nasdaq refuses 3.14's requests | PR #282 |
