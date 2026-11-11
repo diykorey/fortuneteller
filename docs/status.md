@@ -18,7 +18,8 @@ is due ([the spec](steps/breakeven-sign.md)). Its build merges after CPI's eveni
 
 Step 18, part 2, step 3: the first triggers graded ([the spec](steps/trigger-file.md)). The owner's
 first, CPI of 2026-11-10 *as expected*, was filed that evening but merged 2026-11-11 10:33, after
-every reaction close: it counts on no market and is logged late. It waits for the next one.
+every reaction close, and its kind was wrong: CPI's kind is read from the core print, 0.3 against
+0.2, *above*, not from the headline. It is void and counts on no market. It waits for the next one.
 
 Waiting: the scoreboard's first release day on the published page (step 3); release-day job step
 3, evening score step 2 and rung 6 step 2: the first release the morning job logs, pops up and the
