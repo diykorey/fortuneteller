@@ -63,10 +63,37 @@ nothing above was changed after it.*
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~The ECB's rates from the calendar; `follows --event ecb`; `ecb` in `TRIGGER_KINDS`~~ **done** 2026-11-11 (PR #287) | Tests: a decision's kind comes from the deposit rate where listed and the refinancing rate before; `follows --event ecb` prints a header with the three kinds; an ECB trigger is answered, not refused. On a copy of the store the header gives the counts by kind, and the other five tables are unchanged |
-| 2 | Write the results here and in [MVP results](../mvp-results.md), check the expected outcome, and update the roadmap row | Each kind's answers and walk-forward records are recorded against the expected outcome |
+| 2 | ~~Write the results here and in [MVP results](../mvp-results.md), check the expected outcome, and update the roadmap row~~ **done** 2026-11-11, [below](#results) | Each kind's answers and walk-forward records are recorded against the expected outcome |
 
 *Step 1, 2026-11-11 (PR #287):* on a copy of the store the header reads `follows: 115 ECB decisions
 2013-05-02 … 2026-10-29: 15 cuts, 88 holds, 12 hikes`; the calendar's current quarter adds the
 hold of 2026-10-29. 225 cells print. The other five tables and the answer to the trigger filed so
 far are byte for byte the ones before. `follows` and `triggers` now share one function for a
 central bank's kinds, `_decision_kinds`.
+
+## Results
+
+Measured 2026-11-11 on a copy of the store: 115 decisions with a kind, 2013-05-02 … 2026-10-29,
+15 cuts, 88 holds and 12 hikes. 30 of them fell on a day with another stored release: 21 holds, 5
+hikes and 4 cuts, most often with US GDP (10), retail sales (9) or CPI (8).
+
+**Nothing answers.** On all history no cell of the 225 gives *up*, *down* or *about the same*,
+against about 6.8 by chance; so nothing holds walk-forward either. The smallest chance is 0.015,
+the 10-year yield over the week after a cut, 9 / 5 / 1 of 15. On the day of a hold, VIX falls on
+35 of 88 against a base of 36%, and EUR/USD on 42 of 88 against 34%; neither is an answer (chance
+0.18 and 0.20). After a hike EUR/USD rose on 5 of 12 days and fell on 7.
+
+**Against the expected outcome:**
+
+- Cuts and hikes too few to hold: **right**, every walk-forward cell for them is *too few*.
+- Nothing holds: **right**.
+- Answers no more than the chance line plus 2: **right**, none against 6.8.
+- EUR/USD *up* on the day after a hike: **wrong**, 5 up and 7 down.
+- VIX *down* on the day of a hold: **wrong**, *can't say*.
+- Every existing output unchanged: **right**.
+
+**What it says.** An ECB decision, read as cut, hold or hike, tells nothing about what these markets
+did next, on the day, the week or the month: fewer answers than chance alone would give. The kind is
+known before the day: the calendar's forecast equals the decision at almost every meeting, which is
+why the flow has no surprise rule ([ECB decisions](ecb-decisions.md)). An ECB trigger will be
+answered *can't say* on every market. No new call.

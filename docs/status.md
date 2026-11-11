@@ -8,8 +8,8 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-What follows, part 1f, step 1: `follows --event ecb` prints the ECB's decisions by kind, read from
-the calendar's rates, and a trigger may name the ECB ([the spec](steps/what-follows-ecb.md)).
+What follows, part 1f, step 2: results. The ECB's decisions by kind answer nothing, none of 225
+cells against 6.8 by chance; no new call ([the spec](steps/what-follows-ecb.md#results)).
 
 ## In progress
 
@@ -36,13 +36,15 @@ merged pull request ([the spec](steps/beat-the-fortune-teller.md)). It waits for
 
 ## Next
 
-Step 17, part 1f, step 2: the results of the ECB's decisions by kind
-([the spec](steps/what-follows-ecb.md)).
+Not chosen yet. Step 17's part 1 is measured on every flow whose counts allow it: the Fed, the jobs
+report, retail sales, CPI, claims and the ECB. Its part 2, the quarter and the year, was set aside
+2026-11-10. Step 18 waits for triggers filed on time; step 20 waits for step 18's grades.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-11 | What follows, part 1f, step 2: results — the ECB's decisions by kind answer nothing | PR #288 |
 | 2026-11-11 | What follows, part 1f, step 1: `follows --event ecb`; ECB triggers | PR #287 |
 | 2026-11-11 | What follows, part 1f: spec, the ECB's decisions by kind | PR #286 |
 | 2026-11-11 | What follows, part 1e, step 2: results — claims by kind holds nothing; the yields' day answers lean on shared days | PR #285 |
