@@ -64,5 +64,9 @@ and ISM 39 below, at most 29 graded once ten come before.
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | `follows --event claims`; `claims` in `TRIGGER_KINDS` | Tests: `follows --event claims` prints a header with the three kinds; a claims trigger is read and answered, not refused. On a copy of the store of 2026-11-11 the header reads `follows: 703 jobless claims reports 2013-03-14 … 2026-11-05: 206 above, 216 as expected, 281 below`, and the other four tables are unchanged |
+| 1 | ~~`follows --event claims`; `claims` in `TRIGGER_KINDS`~~ **done** 2026-11-11 (PR #284) | Tests: `follows --event claims` prints a header with the three kinds; a claims trigger is read and answered, not refused. On a copy of the store of 2026-11-11 the header reads `follows: 703 jobless claims reports 2013-03-14 … 2026-11-05: 206 above, 216 as expected, 281 below`, and the other four tables are unchanged |
 | 2 | Write the results here and in [MVP results](../mvp-results.md), check the expected outcome, and update the roadmap row. Give each answer's counts without the shared days | Each kind's answers and walk-forward records are recorded against the expected outcome |
+
+*Step 1, 2026-11-11 (PR #284):* on a copy of the store the header reads as written above and 225
+cells print; the Fed's, the jobs report's, retail sales' and CPI's tables are byte for byte the
+ones before.

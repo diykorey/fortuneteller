@@ -383,3 +383,28 @@ def test_triggers_prints_and_logs_a_trigger_s_answers(
     ]
     assert log.read_text().splitlines()[0] == ",".join(study.TRIGGER_LOG_COLUMNS)
     assert len(log.read_text().splitlines()) == 4
+
+
+def test_a_claims_trigger_is_answered_not_refused(one_market: None) -> None:
+    # given a claims report below the consensus at 08:30 New York
+    claims = flows.flow_named("claims")
+    closes = _closes(_wavy(300))
+    day = closes[200].day
+    report = _report(day).model_copy(
+        update={"event_id": flows.event_id(claims, day), "event_type": claims.event_type}
+    )
+    merged = datetime.combine(day, time(9, 0), tzinfo=sources.NEW_YORK)
+
+    # when filed as below before the close
+    rows, lines = _answer(
+        [_trigger(day, BELOW, "claims")],
+        [report],
+        {report.event_id: BELOW},
+        closes,
+        merged,
+        flow="claims",
+    )
+
+    # then it is answered on the market, not refused for its flow
+    assert {r["market"] for r in rows} == {SPY}
+    assert not any("is not one of" in line for line in lines)

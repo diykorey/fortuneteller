@@ -8,8 +8,8 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-What follows, part 1e: the spec for jobless claims by kind, the only flow left whose every kind can
-reach 30 graded; claims triggers come with it ([the spec](steps/what-follows-claims.md)).
+What follows, part 1e, step 1: `follows --event claims` prints jobless claims by kind, and a trigger
+may name claims ([the spec](steps/what-follows-claims.md)).
 
 ## In progress
 
@@ -35,13 +35,14 @@ merged pull request ([the spec](steps/beat-the-fortune-teller.md)). It waits for
 
 ## Next
 
-Step 17, part 1e, step 1: `follows --event claims`, and claims triggers
+Step 17, part 1e, step 2: the results of jobless claims by kind
 ([the spec](steps/what-follows-claims.md)).
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-11 | What follows, part 1e, step 1: `follows --event claims`; claims triggers | PR #284 |
 | 2026-11-11 | What follows, part 1e: spec, jobless claims by kind | PR #283 |
 | 2026-11-11 | Python pinned to 3.12: Nasdaq refuses 3.14's requests | PR #282 |
 | 2026-11-09 | The signs, step 2: results — no link holds, no new call | PR #271 |
