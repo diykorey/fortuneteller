@@ -494,7 +494,7 @@ Part 1b's method on 703 weekly claims reports since 2013, the kind read from ini
 the consensus, 5k either side. **Nothing holds walk-forward.** On all history there are 8 answers,
 against 6.8 by chance: the 10-year and 5-year yields fall on the day after more claims than
 expected and rise after fewer, and rise over the week after fewer. Six of the eight turn to *can't
-say* without the days claims share with another release.
+say* without the days claims share with another release, an ECB decision most often.
 
 ## What follows from the next close
 

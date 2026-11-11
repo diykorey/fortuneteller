@@ -38,7 +38,8 @@ and ISM 39 below, at most 29 graded once ten come before.
   five.
 - **Shared days are kept**, as for retail sales and for the same reasons. Claims' rule has `alone`,
   and 256 of 706 reports fell on a day with another stored release (most often the Fed's, the jobs
-  report's, retail sales' or ISM's). Each answer is also given without the shared days, and an
+  report's, retail sales' or ISM's; *amended 2026-11-11:* counted in the results, mostly the ECB's,
+  then US CPI's, PCE's and retail sales'). Each answer is also given without the shared days, and an
   answer that turns to *can't say* without them is read as "maybe the other release".
 - **Triggers.** `TRIGGER_KINDS` gains `claims` with the surprise kinds, so a claims trigger is
   answered with these figures, as the other flows' triggers are.
@@ -74,7 +75,9 @@ ones before.
 ## Results
 
 Measured 2026-11-11 on a copy of the store: 703 reports, 206 above, 216 as expected, 281 below;
-257 of them on a day with another stored release (73 above, 75 as expected, 106 below).
+254 of them on a day with another stored release (73 above, 75 as expected, 106 below): an ECB
+decision on 109, US CPI on 39, PCE on 38, retail sales on 36, GDP on 29, ISM on 22, the euro area's
+flash on 17, the jobs report and the Fed on 5 each (a day can hold two).
 
 **Nothing holds walk-forward.** The nearest are on the day: the 10-year yield down after *above*,
 right on 20 of 37 graded (54%), and the 5-year yield up after *below*, 22 of 51 (43%).
@@ -100,8 +103,10 @@ month.
 **Against the expected outcome:**
 
 - The arithmetic: the day, **right**. The week, **wrong**: it leaves out 34 to 41 of each kind,
-  about one in six, not "nearly none": a holiday week moves a release, and the next span then
-  overlaps. The month counts 41 above, 43 as expected and 57 below, about one in five: **right**.
+  about one in six, not "nearly none". A market holiday inside the Thursday-to-Wednesday window
+  leaves the span a close short, so its fifth close lands on the next release's reaction close:
+  the S&P 500 has 127 weekday holidays in the range against 114 week spans left out, while only 25
+  releases moved off a Thursday. The month counts 41 above, 43 as expected and 57 below, about one in five: **right**.
 - At most one day answer on each yield, *down* after *above* and *up* after *below*: the directions
   **right**, the count **wrong**, two on each, one per kind.
 - No answer on a stock index, VIX or gold: **right**.
@@ -112,5 +117,5 @@ month.
 - Without the shared days, at most half keep their direction: **right**, 2 of 8.
 
 **What it says.** Jobless claims by kind repeat what the number said: the yields lean the expected
-way on the day, and the lean is mostly the days claims share with the Fed, the jobs report or
-retail sales. A claims trigger will be answered *can't say* almost everywhere. No new call.
+way on the day, and the lean is mostly the days claims share with another release, an ECB
+decision most often, then US CPI, PCE or retail sales. A claims trigger will be answered *can't say* almost everywhere. No new call.
