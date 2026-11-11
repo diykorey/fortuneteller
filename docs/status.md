@@ -8,9 +8,8 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-What follows, part 1e, step 2: results. Jobless claims by kind hold nothing walk-forward; 8 answers
-against 6.8 by chance, six of them *can't say* without the shared days; no new call
-([the spec](steps/what-follows-claims.md#results)).
+What follows, part 1f: the spec for the ECB's decisions by kind; only a hold can reach 30 graded
+([the spec](steps/what-follows-ecb.md)).
 
 ## In progress
 
@@ -36,13 +35,14 @@ merged pull request ([the spec](steps/beat-the-fortune-teller.md)). It waits for
 
 ## Next
 
-Not chosen yet. Step 17's US flows are measured by kind as far as their counts allow (PCE, GDP and
-ISM fall short of 30 graded on some kind); its last part is the ECB's decisions with the euro area.
+Step 17, part 1f, step 1: `follows --event ecb`, its kinds from the calendar's rates, and ECB
+triggers ([the spec](steps/what-follows-ecb.md)).
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-11 | What follows, part 1f: spec, the ECB's decisions by kind | PR #286 |
 | 2026-11-11 | What follows, part 1e, step 2: results — claims by kind holds nothing; the yields' day answers lean on shared days | PR #285 |
 | 2026-11-11 | What follows, part 1e, step 1: `follows --event claims`; claims triggers | PR #284 |
 | 2026-11-11 | What follows, part 1e: spec, jobless claims by kind | PR #283 |
