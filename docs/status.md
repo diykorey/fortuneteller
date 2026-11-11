@@ -8,8 +8,8 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-The signs, step 2: results; of utilities' and homebuilders' ten new links none holds or is open, so
-no new call ([the spec](steps/signs.md)).
+What follows, part 1e: the spec for jobless claims by kind, the only flow left whose every kind can
+reach 30 graded; claims triggers come with it ([the spec](steps/what-follows-claims.md)).
 
 ## In progress
 
@@ -35,13 +35,14 @@ merged pull request ([the spec](steps/beat-the-fortune-teller.md)). It waits for
 
 ## Next
 
-A release the laptop sleeps through: the morning job runs only when it is awake, and the jobs report
-of 2026-11-06 was lost so.
+Step 17, part 1e, step 1: `follows --event claims`, and claims triggers
+([the spec](steps/what-follows-claims.md)).
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-11 | What follows, part 1e: spec, jobless claims by kind | PR #283 |
 | 2026-11-11 | Python pinned to 3.12: Nasdaq refuses 3.14's requests | PR #282 |
 | 2026-11-09 | The signs, step 2: results — no link holds, no new call | PR #271 |
 | 2026-11-09 | The signs, step 1: `XLU` on every rule the yield has, `ITB` on CPI and core PCE; no new call | PR #270 |
