@@ -496,6 +496,15 @@ against 6.8 by chance: the 10-year and 5-year yields fall on the day after more 
 expected and rise after fewer, and rise over the week after fewer. Six of the eight turn to *can't
 say* without the days claims share with another release, an ECB decision most often.
 
+## What follows an ECB decision
+
+Measured 2026-11-11. Detail in [what follows an ECB decision](steps/what-follows-ecb.md#results).
+
+Part 1's method on 115 ECB decisions since 2013, the kind read from the deposit rate where the
+calendar lists it and the refinancing rate before: 15 cuts, 88 holds, 12 hikes. **Nothing answers**:
+none of 225 cells, against 6.8 by chance, so nothing holds. The kind is known before the day, and
+the markets move after an ECB decision as on any other day.
+
 ## What follows from the next close
 
 Measured 2026-11-04. Detail in [what follows from the next close](steps/after-the-day.md#results).

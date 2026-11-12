@@ -755,6 +755,30 @@ def parse_ecb_decisions(payload: bytes) -> list[datetime]:
         raise CalendarError(f"TradingView sent an unexpected reply: {exc!r}") from None
 
 
+DEPOSIT_RATE = "Deposit Facility Rate"
+# The calendar's spelling of the deposit rate until 2017.
+DEPOSIT_RATE_TITLES = (DEPOSIT_RATE, "Deposit Facilty Rate")
+
+
+def parse_ecb_rates(payload: bytes) -> list[tuple[datetime, str, float]]:
+    """Each ECB rate set in a TradingView euro-area calendar reply: when, in UTC, which rate
+    (``ECB_DECISION`` for the main refinancing rate, ``DEPOSIT_RATE``) and its value; a meeting not
+    yet held is left out."""
+    try:
+        return [
+            (
+                _utc(row["date"]),
+                DEPOSIT_RATE if row["title"] in DEPOSIT_RATE_TITLES else ECB_DECISION,
+                float(row["actual"]),
+            )
+            for row in _tradingview_rows(payload)
+            if row["title"] in (ECB_DECISION, *DEPOSIT_RATE_TITLES)
+            and row.get("actual") is not None
+        ]
+    except MALFORMED_REPLY as exc:
+        raise CalendarError(f"TradingView sent an unexpected reply: {exc!r}") from None
+
+
 # A speech or a testimony, as the calendar writes them (once "Testymony").
 STATEMENT_WORDS = re.compile(r"speech|speaks|testi|testy", re.IGNORECASE)
 

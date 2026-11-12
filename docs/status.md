@@ -15,7 +15,8 @@ grades the other markets while FRED's close is due ([the spec](steps/breakeven-s
 
 Step 18, part 2, step 3: the first triggers graded ([the spec](steps/trigger-file.md)). The owner's
 first, CPI of 2026-11-10 *as expected*, was filed that evening but merged 2026-11-11 10:33, after
-every reaction close: it counts on no market and is logged late. It waits for the next one.
+every reaction close, and its kind was wrong: CPI's kind is read from the core print, 0.3 against
+0.2, *above*, not from the headline. It is void and counts on no market. It waits for the next one.
 
 Waiting: the scoreboard's first release day on the published page (step 3); release-day job step
 3, evening score step 2 and rung 6 step 2: the first release the morning job logs, pops up and the
@@ -33,16 +34,18 @@ merged pull request ([the spec](steps/beat-the-fortune-teller.md)). It waits for
 
 ## Next
 
-Not chosen yet. Step 17's US flows are measured by kind as far as their counts allow (PCE, GDP and
-ISM fall short of 30 graded on some kind); its last part is the ECB's decisions with the euro area.
-Step 17, part 2, the quarter and the year, was weighed 2026-11-10 and set aside: the history is
-too short for any cell to hold over either (no kind reaches 10 events over a year, without overlap).
+Not chosen yet. Step 17's part 1 is measured on every flow whose counts allow it: the Fed, the jobs
+report, retail sales, CPI, claims and the ECB. Its part 2, the quarter and the year, was set aside
+2026-11-10. Step 18 waits for triggers filed on time; step 20 waits for step 18's grades.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
 | 2026-11-12 | The breakeven's sign: on CPI it holds, 35 of 42, a new live call; a close published a day late waits and stops nothing | PR #275 |
+| 2026-11-11 | What follows, part 1f, step 2: results — the ECB's decisions by kind answer nothing | PR #288 |
+| 2026-11-11 | What follows, part 1f, step 1: `follows --event ecb`; ECB triggers | PR #287 |
+| 2026-11-11 | What follows, part 1f: spec, the ECB's decisions by kind | PR #286 |
 | 2026-11-11 | What follows, part 1e, step 2: results — claims by kind holds nothing; the yields' day answers lean on shared days | PR #285 |
 | 2026-11-11 | What follows, part 1e, step 1: `follows --event claims`; claims triggers | PR #284 |
 | 2026-11-11 | What follows, part 1e: spec, jobless claims by kind | PR #283 |

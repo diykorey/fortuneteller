@@ -871,6 +871,22 @@ def load_ecb_decisions(cache_dir: Path, today: date | None = None) -> list[datet
     return sorted({d for payload in payloads for d in sources.parse_ecb_decisions(payload)})
 
 
+def load_ecb_rates(cache_dir: Path, today: date | None = None) -> dict[date, float]:
+    """Each ECB decision's rate by its Frankfurt day: the deposit facility rate from the calendar's
+    first listing of it (2015-12-03), the main refinancing rate before; a later day with no deposit
+    rate has none (docs/steps/what-follows-ecb.md)."""
+    today = today if today is not None else datetime.now(FRANKFURT).date()
+    refinancing: dict[date, float] = {}
+    deposit: dict[date, float] = {}
+    for payload in sources.fetch_tradingview_since(ECB_FROM, cache_dir, today, "EU"):
+        for at, which, value in sources.parse_ecb_rates(payload):
+            day = at.astimezone(FRANKFURT).date()
+            (deposit if which == sources.DEPOSIT_RATE else refinancing)[day] = value
+    first = min(deposit, default=None)
+    rates = {d: v for d, v in refinancing.items() if first is None or d < first}
+    return rates | deposit
+
+
 class EcbFlow:
     """The ECB's rate decisions from TradingView's calendar, at the time each was announced. No
     surprise: the calendar's forecast equals the decision at almost every meeting."""

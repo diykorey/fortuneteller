@@ -60,6 +60,10 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **ECB** (European Central Bank) — sets the euro area's interest rates; its Governing Council
   decides eight times a year (monthly until 2015). Its decisions are the first non-US event
   ([ECB decisions](steps/ecb-decisions.md)). **Euro area** — the countries that use the euro.
+  **Deposit facility rate** — what the ECB pays banks on overnight deposits, the rate it has steered
+  by since its rates went negative; **main refinancing rate** — what it charges on its weekly loans.
+  A decision's kind is read from the first where the calendar lists it, from 2015-12-03
+  ([what follows an ECB decision](steps/what-follows-ecb.md)).
 - **Fed / FOMC** (Federal Open Market Committee) — the committee that sets the US policy interest
   rate, meeting eight times a year with a decision at 2:00 p.m. New York time.
 - **Flash estimate** — Eurostat's first print of the month's euro-area inflation, around the first
