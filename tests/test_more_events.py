@@ -271,7 +271,10 @@ def test_a_live_release_on_a_shared_day_logs_every_link_silent(
     # then no call is made, and both of its links are logged silent
     out = capsys.readouterr().out.splitlines()
     assert code == 0
-    assert out[1] == "no prediction: 2026-11-17 also holds Core Inflation Rate MoM"
+    assert out[1:3] == [
+        "trigger: retail,2026-11-17,above",
+        "no prediction: 2026-11-17 also holds Core Inflation Rate MoM",
+    ]
     calls = study.read_calls(settings.calls_path)
     assert [(c.flow, c.instrument, c.outcome) for c in calls] == [
         ("retail", "UST10Y / ZN", study.SILENT),

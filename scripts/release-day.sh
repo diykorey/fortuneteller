@@ -107,7 +107,7 @@ if [ "$step" = live ]; then
             kept="open for review"
         fi
         popup "Log the live $flows call of $day" \
-            "$(grep -E ': actual |^.{12} (up|down|—) |^no prediction: ' "$out")
+            "$(grep -E ': actual |^.{12} (up|down|—) |^no prediction: |^trigger: ' "$out")
 $kept"
     fi
     # A statement later today pops up on its own, also on a day with no call (scheduled-statements.md).

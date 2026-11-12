@@ -897,6 +897,8 @@ def _predict_release(
         f"{measure} on {upcoming.day}: actual {actual:g}, {label} {expected:g}, "
         f"surprise {surprise:+g}"
     )
+    if (line := _trigger_line(flow, rule, upcoming, actual)) is not None:
+        print(line)
     links = [instrument for instrument, sign in rule.expected_sign.items() if sign]
 
     def logged(
@@ -1071,6 +1073,25 @@ def _sleep(seconds: float) -> None:
 # How often, and for how long from the release time, --fetch reads the calendar (rung 5's spec).
 FETCH_EVERY_S = 15
 FETCH_FOR = timedelta(minutes=30)
+
+
+def _trigger_line(
+    flow: flows.EventFlow,
+    rule: flows.SurpriseRule,
+    upcoming: expectations.NextConsensus,
+    actual: float,
+) -> str | None:
+    """The row a trigger for this release is filed with, its kind read as ``release_kinds`` will
+    read it from the store, or why it has none; nothing for a flow no trigger may name."""
+    if study.TRIGGER_KINDS.get(flow.cli_name) != study.SURPRISE_KINDS:
+        return None
+    nasdaq = rule.predicted_from == expectations.NASDAQ_CONSENSUS
+    expected = upcoming.nasdaq if nasdaq else upcoming.tradingview
+    if expected is None:
+        label = _source_label(rule.predicted_from)
+        return f"trigger: none, {label} has none to read the kind against"
+    kind = study.surprise_kind(rule, actual, expected)
+    return f"trigger: {flow.cli_name},{upcoming.day},{kind}"
 
 
 def _fetch_actual(measure: str, day: date, live: bool, released: datetime) -> float | None:

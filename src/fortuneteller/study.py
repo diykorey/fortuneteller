@@ -46,6 +46,7 @@ from .flows import (
     TARGET_EFFECT_DAYS,
     DatedShockFlow,
     EventFlow,
+    SurpriseRule,
     called_live,
     event_date,
     release_date,
@@ -1807,20 +1808,32 @@ def release_kinds(flow: EventFlow, con: duckdb.DuckDBPyConnection | None = None)
         "AND s.surprise IS NOT NULL",
         [flow.event_type, flow.country, rule.combinations[0][0], rule.predicted_from],
     ).fetchall()
-    decimals = rule.kind_decimals
-    kinds = {}
-    for event_id, surprise, actual, expected in rows:
-        if decimals is not None:
-            headline = Decimal(repr(actual)).quantize(Decimal(1).scaleb(-decimals), ROUND_HALF_UP)
-            surprise = round(float(headline) - expected, 6)
-        kinds[event_id] = (
-            ABOVE
-            if surprise >= rule.noticeable
-            else BELOW
-            if surprise <= -rule.noticeable
-            else AS_EXPECTED
-        )
-    return kinds
+    return {
+        event_id: surprise_kind(rule, actual, expected, surprise)
+        for event_id, surprise, actual, expected in rows
+    }
+
+
+def surprise_kind(
+    rule: SurpriseRule, actual: float, expected: float, surprise: float | None = None
+) -> str:
+    """A release's kind by the rule: *above* at ``noticeable`` or more, *below* at minus that or
+    less, *as expected* between; the surprise ``surprise`` if given, else the actual less the
+    expected, and with the rule's ``kind_decimals`` the actual rounded half up to its headline less
+    the expected."""
+    if rule.kind_decimals is not None:
+        unit = Decimal(1).scaleb(-rule.kind_decimals)
+        headline = Decimal(repr(actual)).quantize(unit, ROUND_HALF_UP)
+        surprise = round(float(headline) - expected, 6)
+    elif surprise is None:
+        surprise = round(actual - expected, 9)
+    return (
+        ABOVE
+        if surprise >= rule.noticeable
+        else BELOW
+        if surprise <= -rule.noticeable
+        else AS_EXPECTED
+    )
 
 
 def follow_decisions(

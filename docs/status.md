@@ -8,8 +8,9 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-The breakeven's sign: +1 on inflation news; on CPI it holds, 35 of 42, a new live call; the evening
-grades the other markets while FRED's close is due ([the spec](steps/breakeven-sign.md)).
+The trigger's row at the release: `predict` and `live` print `trigger: <flow>,<day>,<kind>`, the kind
+read as the store will read it (CPI's from the core print), and the popup shows it
+([the spec](steps/trigger-file.md), step 2b). On every release `live` logged it equals the stored kind.
 
 ## In progress
 
@@ -44,6 +45,7 @@ report, retail sales, CPI, claims and the ECB. Its part 2, the quarter and the y
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-12 | A trigger's row printed at the release, its kind read as the store reads it | PR #292 |
 | 2026-11-12 | The breakeven's sign: on CPI it holds, 35 of 42, a new live call; a close published a day late waits and stops nothing | PR #275 |
 | 2026-11-11 | What follows, part 1f, step 2: results — the ECB's decisions by kind answer nothing | PR #288 |
 | 2026-11-11 | What follows, part 1f, step 1: `follows --event ecb`; ECB triggers | PR #287 |

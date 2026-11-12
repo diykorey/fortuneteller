@@ -37,7 +37,8 @@ At the end: a desktop popup on this laptop for every logged call, and for every 
 
 ## Technical details
 
-The popup's body is the lines of the run's output (`$out`) that hold `: actual ` or a link's line;
+The popup's body is the lines of the run's output (`$out`) that hold `: actual ` or a link's line
+(*amended 2026-11-12:* and the `trigger: ` line, the row a trigger on the release is filed with);
 its title is the pull request's (`Log the live cpi call of 2026-11-12`) or the failure's. The user
 service already has `DISPLAY` and `DBUS_SESSION_BUS_ADDRESS` (checked 2026-10-21: a popup from
 `systemd-run --user` showed). No new unit, no daemon-reload.
