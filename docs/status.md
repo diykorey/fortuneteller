@@ -26,7 +26,9 @@ A closed lid suspends it even on power; the owner keeps it open (decided 2026-11
 CPI on 2026-11-10 was logged 49 minutes late: Nasdaq answered the job's Python 3.14 with HTTP 403
 (issues #277–279), and the rerun on 3.12 logged it (PR #280), every row silent or *too few*;
 `EURUSD`, logged after its release, is void. The evening of 2026-11-10 found three closes not yet
-on Yahoo and committed nothing; the next evening grades it. Python is now pinned to 3.12.
+on Yahoo and committed nothing; the next failed on FRED's HTTP 502 (#289), and its rerun on
+2026-11-12 graded it (PR #290): of the three *too few* rows the dollar index and the 5-year yield
+were right, the DAX wrong. Python is now pinned to 3.12.
 
 Beat the fortune teller, step 3: the first live round, a release `live` calls guessed through a
 merged pull request ([the spec](steps/beat-the-fortune-teller.md)). It waits for a release; CPI on
