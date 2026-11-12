@@ -62,12 +62,44 @@ year, with a column for the answer counting each cycle once.
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~`fed_cycles`, `LONG_SPANS` and the cycle column in `study.py`; `follows --long`~~ **done** 2026-11-12 (PR #294) | Tests: the cycles of a cut, hold, cut, hike, hike, hold, hold sequence are one cut cycle, one hike cycle and two runs of holds; an answer from three cuts of one cycle, ten times over, prints *too few cycles*; an answer the cycles repeat stands; `follows --long --event nfp` exits 1. On a copy of the store the run prints 150 cells, and the other outputs are unchanged |
-| 2 | The results, here and in [MVP results](../mvp-results.md); the expected outcome checked; roadmap row 17 | Each kind's answers, cycle column and walk-forward recorded against the expected outcome |
+| 2 | ~~The results, here and in [MVP results](../mvp-results.md); the expected outcome checked; roadmap row 17~~ **done** 2026-11-12, [below](#results) | Each kind's answers, cycle column and walk-forward recorded against the expected outcome |
 
 *Step 1, 2026-11-12 (PR #294):* on a copy of the store `follows --long` prints the 150 cells and
 the chance line in about 25 seconds. The twelve `follows` tables, each flow with and without
 `--after-the-day`, are byte for byte `main`'s. The span column widens to fit *quarter* only under
 `--long`.
+
+## Results
+
+Measured 2026-11-12 on a copy of the store, the target rate from FRED that day: 276 decisions,
+1994-02-04 … 2026-10-28, 40 cuts, 184 holds and 52 hikes.
+
+**Nothing holds, and no answer stands counting each cycle once.** No cell reaches 30 graded
+walk-forward; the most is 5, gold over a quarter after a hold. On all history one cell of 150
+answers, against about 2.0 by chance: over a quarter after a hike, the S&P 500 moved *about the
+same* 13 times in 21, against a base of 33% (chance 0.0068). Those 21 hikes come from 6 cycles, so
+it is *too few cycles*. Every other answered cell is *can't say*: 67 of them.
+
+The holds come closest to counting: 71 kept on the quarter from 25 runs, 19 on the year from 13.
+Stocks rose a year after 10 of 19 holds and fell after 2. But the year rises as often anyway (a
+base of 56% up and 11% down), so that is *can't say* (chance 0.46).
+
+**Against the expected outcome:**
+
+- Nothing can hold: **right**, every cell *too few* walk-forward.
+- The European indices' year *too few*: **right**. The DAX and the Euro STOXX 50 keep one hold each,
+  the FTSE 100 and the STOXX 600 none, 116 to 178 holes a cell.
+- No more answers than chance plus 2: **right**, one against 2.0.
+- Stocks *up* a year after a hold, *the period*: **wrong**, *can't say*.
+- Gold *up* a quarter after a cut, *too few cycles*: **wrong** as an answer. Only 9 cuts are kept,
+  under 10, so *too few*. It is 4 cycles, as expected.
+- Nothing else: **wrong**, the S&P 500 *about the same* a quarter after a hike, *too few cycles*.
+- Every existing output unchanged: **right**.
+
+**What it says.** Over a quarter or a year, a Fed decision read as cut, hold or hike tells nothing
+about what these markets did: the year rises in most years whatever the Fed did, and its cuts and
+hikes come in too few cycles to count. A trigger on a quarter or a year would be answered
+*can't say* everywhere. No new call.
 
 ## What this part does not do
 

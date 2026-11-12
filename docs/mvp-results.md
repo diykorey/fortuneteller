@@ -505,6 +505,16 @@ calendar lists it and the refinancing rate before: 15 cuts, 88 holds, 12 hikes. 
 none of 225 cells, against 6.8 by chance, so nothing holds. The kind is known before the day, and
 the markets move after an ECB decision as on any other day.
 
+## What follows a Fed decision over a quarter and a year
+
+Measured 2026-11-12. Detail in [over a quarter and a year](steps/what-follows-long.md#results).
+
+Part 1's method over 63 and 252 closes on 276 Fed decisions. An answer stands only if it also holds
+counting each cut cycle, hike cycle and run of holds once. **Nothing holds, and no answer stands**:
+one of 150 cells answers, against 2.0 by chance. It is the S&P 500 *about the same* a quarter after
+a hike, and it comes from only 6 hike cycles. Stocks rose a year after 10 of 19 holds, as they
+do over most years.
+
 ## What follows from the next close
 
 Measured 2026-11-04. Detail in [what follows from the next close](steps/after-the-day.md#results).

@@ -8,14 +8,11 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-The trigger's row at the release: `predict` and `live` print `trigger: <flow>,<day>,<kind>`, the kind
-read as the store will read it (CPI's from the core print), and the popup shows it
-([the spec](steps/trigger-file.md), step 2b). On every release `live` logged it equals the stored kind.
+Step 17, part 2: the Fed's decisions over a quarter and a year. Nothing holds and no answer stands
+counting each cycle once; one answer of 150 cells against 2.0 by chance
+([the spec](steps/what-follows-long.md#results)).
 
 ## In progress
-
-Step 17, part 2: the Fed's decisions over a quarter and a year, each cycle counted once as well
-as each decision ([the spec](steps/what-follows-long.md)). Step 1, `follows --long`, is built; step 2, the results, is next.
 
 Step 18, part 2, step 3: the first triggers graded ([the spec](steps/trigger-file.md)). The owner's
 first, CPI of 2026-11-10 *as expected*, was filed that evening but merged 2026-11-11 10:33, after
@@ -40,13 +37,14 @@ merged pull request ([the spec](steps/beat-the-fortune-teller.md)). It waits for
 
 ## Next
 
-Step 17, part 2, step 2: the results of the quarter and the year, against the expected outcome.
-Step 18 waits for triggers filed on time; step 20 waits for step 18's grades.
+Not chosen yet. Step 17 is measured on every flow and span its counts allow. Step 18 waits for
+triggers filed on time; step 20 waits for step 18's grades.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-12 | What follows, part 2, step 2: results — nothing holds over a quarter or a year; no answer stands by cycle | PR #295 |
 | 2026-11-12 | What follows, part 2, step 1: `follows --long`, the quarter and the year with each cycle once | PR #294 |
 | 2026-11-12 | What follows, part 2: spec, the Fed's decisions over a quarter and a year, each cycle once | PR #293 |
 | 2026-11-12 | A trigger's row printed at the release, its kind read as the store reads it | PR #292 |
