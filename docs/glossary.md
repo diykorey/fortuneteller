@@ -271,6 +271,10 @@ Terms are grouped by what they are about, alphabetical within each group.
   in a kind's own years, events or not. Unlike an *ordinary day*, a span is never "alone": other
   events fall inside a month or a year by design. Unlike the *drift probability*, it counts every
   span, not earlier releases.
+- **Cycle** — *added 2026-11-12* ([part 2](steps/what-follows-long.md)): Fed decisions taken as one
+  story. A cut cycle runs from a cut to the last cut before the next hike, holds between included;
+  a hike cycle likewise; a run of holds is consecutive holds. Over a quarter or a year an answer
+  stands only if it also holds counting each cycle once.
 - **Kind (of event)** — *added 2026-11-04*: what a reader names ("the Fed cuts rates"); in the
   code an event flow, and for a decision what was decided (cut, hold or hike).
 - **Trigger** (news) — *added 2026-11-04*: an event that has happened, as a record of its flow,
