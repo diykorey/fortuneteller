@@ -61,8 +61,13 @@ year, with a column for the answer counting each cycle once.
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | `fed_cycles`, `LONG_SPANS` and the cycle column in `study.py`; `follows --long` | Tests: the cycles of a cut, hold, cut, hike, hike, hold, hold sequence are one cut cycle, one hike cycle and two runs of holds; an answer from three cuts of one cycle, ten times over, prints *too few cycles*; an answer the cycles repeat stands; `follows --long --event nfp` exits 1. On a copy of the store the run prints 150 cells, and the other outputs are unchanged |
+| 1 | ~~`fed_cycles`, `LONG_SPANS` and the cycle column in `study.py`; `follows --long`~~ **done** 2026-11-12 (PR #294) | Tests: the cycles of a cut, hold, cut, hike, hike, hold, hold sequence are one cut cycle, one hike cycle and two runs of holds; an answer from three cuts of one cycle, ten times over, prints *too few cycles*; an answer the cycles repeat stands; `follows --long --event nfp` exits 1. On a copy of the store the run prints 150 cells, and the other outputs are unchanged |
 | 2 | The results, here and in [MVP results](../mvp-results.md); the expected outcome checked; roadmap row 17 | Each kind's answers, cycle column and walk-forward recorded against the expected outcome |
+
+*Step 1, 2026-11-12 (PR #294):* on a copy of the store `follows --long` prints the 150 cells and
+the chance line in about 25 seconds. The twelve `follows` tables, each flow with and without
+`--after-the-day`, are byte for byte `main`'s. The span column widens to fit *quarter* only under
+`--long`.
 
 ## What this part does not do
 

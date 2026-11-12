@@ -796,3 +796,111 @@ def test_follows_for_the_ecb_prints_its_table(
     out = capsys.readouterr().out.splitlines()
     assert code == 0
     assert out[0] == (f"follows: 2 ECB decisions {days[1]} … {days[2]}: 0 cuts, 1 holds, 1 hikes")
+
+
+def test_cycles_join_cuts_across_holds_and_split_holds_at_any_move() -> None:
+    # given a cut, a hold, a cut, a hike, a hike, a hold, a hold, and a cut
+    kinds = [CUT, HOLD, CUT, HIKE, HIKE, HOLD, HOLD, CUT]
+
+    # when the cycles are read
+    cycles = study.fed_cycles(kinds)
+
+    # then both first cuts are one cycle, both hikes one, each run of holds its own, and the last
+    # cut, after a hike, a new cycle
+    assert cycles == [0, 1, 0, 2, 2, 3, 3, 4]
+
+
+def _rising_after(keys: list[int], c: int) -> list[DailyClosingPrice]:
+    # closes alternating 1% either way, rising 3% more over the c closes from each key
+    steps = _alternating(keys[-1] + c + 200)
+    for i in keys:
+        for k in range(i, i + c):
+            steps[k] += 0.03 / c
+    return _closes(steps)
+
+
+def test_an_answer_from_too_few_cycles_does_not_stand() -> None:
+    # given 12 cuts whose quarter rises, from three cycles of four
+    keys = list(range(200, 200 + 12 * 400, 400))
+    closes = _rising_after(keys, 63)
+    decisions = [(closes[i].day, CUT) for i in keys]
+    cycles = [i // 4 for i in range(12)]
+
+    # when the quarter is followed with the cycles
+    follow = study.follow_market(decisions, closes, "pct", 63, cycles=cycles)[CUT]
+
+    # then the cell answers up, but counting each cycle once there are three: too few cycles
+    assert follow.answer == UP
+    assert follow.by_cycle == (3, study.TOO_FEW_CYCLES)
+
+
+def test_an_answer_every_cycle_repeats_stands() -> None:
+    # given 12 cuts whose quarter rises, each its own cycle
+    keys = list(range(200, 200 + 12 * 400, 400))
+    closes = _rising_after(keys, 63)
+    decisions = [(closes[i].day, CUT) for i in keys]
+
+    # when the quarter is followed with the cycles, and without
+    with_cycles = study.follow_market(decisions, closes, "pct", 63, cycles=list(range(12)))[CUT]
+    without = study.follow_market(decisions, closes, "pct", 63)[CUT]
+
+    # then counting each cycle once gives the same answer, and nothing else changes
+    assert with_cycles.by_cycle == (12, UP)
+    assert without.by_cycle is None
+    assert without == study.Follow(**{**with_cycles.__dict__, "by_cycle": None})
+
+
+def test_a_held_cell_whose_cycles_do_not_repeat_it_does_not_hold() -> None:
+    # given a cell that holds walk-forward, and its answer counting each cycle once
+    held = study.Follow(
+        {UP: 40, SAME: 0, DOWN: 0}, 0, 0, None, UP, 0.0, False, 30, 30, 0.0, study.HOLDS
+    )
+    base = study.base_of([0.01, -0.01, 0.0] * 10)
+    assert base is not None
+    flat = [study.Span(START, START, -0.01)] * 12
+
+    # when its cycles answer down
+    follow = study._by_cycle(study.replace(held, base=base), flat)
+
+    # then the answer is one cycle's, and the cell does not hold
+    assert follow.by_cycle == (12, study.ONE_CYCLE)
+    assert follow.verdict == study.DOESNT_HOLD
+
+
+def test_follows_long_is_the_fed_s_alone(tmp_db: Path, capsys: pytest.CaptureFixture[str]) -> None:
+    # given nothing stored
+
+    # when the quarter and the year are asked for the jobs report
+    code = main(["follows", "--long", "--event", "nfp"])
+
+    # then it refuses
+    assert code == 1
+    assert "measured on the Fed's decisions only" in capsys.readouterr().err
+
+
+def test_follows_long_prints_the_quarter_and_the_year_with_the_cycles(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given one Fed cut, one market's closes, and FRED's target rate patched
+    db.init_db()
+    flows.store_fomc_decisions([sources.FomcDecision(date(2001, 3, 20), True)])
+    closes = _closes(_alternating(600))
+    db.get_connection().executemany(
+        "INSERT INTO daily_bars (instrument, day, close, source) VALUES ('SPY / ES', ?, ?, 'test')",
+        [[c.day, c.price] for c in closes],
+    )
+    monkeypatch.setattr(study, "MVP_PRICE_SERIES", {"SPY / ES": study.MVP_PRICE_SERIES["SPY / ES"]})
+    rates = {date(2001, 3, 19): 5.5, date(2001, 3, 23): 5.0}
+    monkeypatch.setattr(flows, "target_rates", lambda api_key: list(rates.items()))
+    monkeypatch.setattr(settings, "fred_api_key", SecretStr("key"))
+
+    # when the quarter and the year are followed
+    code = main(["follows", "--long"])
+
+    # then a row per kind and span, each with its cycle column
+    out = capsys.readouterr().out.splitlines()
+    assert code == 0
+    assert "cycles" in out[1]
+    assert [line.split()[1] for line in out[2:-1]] == ["quarter", "year"] * 3
+    assert out[2].startswith("cut   quarter  SPY / ES       1")
+    assert "1: too few cycles" in out[2]

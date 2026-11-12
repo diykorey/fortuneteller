@@ -28,7 +28,7 @@ import re
 import subprocess
 from bisect import bisect_left, bisect_right
 from collections.abc import Callable, Iterable, Mapping, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from decimal import ROUND_HALF_UP, Decimal
 from datetime import UTC, date, datetime, time, timedelta
 from pathlib import Path
@@ -1448,6 +1448,9 @@ def score_guesses(
 
 
 SPANS = {"day": 1, "week": 5, "month": 21}
+# Step 17, part 2 (docs/steps/what-follows-long.md): `follows --long` alone reads these.
+LONG_SPANS = {"quarter": 63, "year": 252}
+ONE_CYCLE, TOO_FEW_CYCLES = "one cycle", "too few cycles"
 FOLLOW_P_BAR = 0.01
 CUT, HOLD, HIKE = "cut", "hold", "hike"
 KINDS = (CUT, HOLD, HIKE)
@@ -1475,6 +1478,27 @@ def fed_kinds(events: Iterable[EventInstance], rates: Mapping[date, float]) -> d
         if before is not None and after is not None:
             kinds[event.event_id] = HOLD if after == before else CUT if after < before else HIKE
     return kinds
+
+
+def fed_cycles(kinds: Sequence[str]) -> list[int]:
+    """A cycle number for each decision, in date order: a cut cycle runs from a cut to the last cut
+    before the next hike, holds between them not ending it; a hike cycle likewise; a run of holds is
+    consecutive holds, ended by any cut or hike."""
+    cycles: list[int] = []
+    number, previous, last_move, move_cycle = -1, None, None, -1
+    for kind in kinds:
+        if kind == HOLD:
+            if previous != HOLD:
+                number += 1
+            cycles.append(number)
+        else:
+            if kind != last_move:
+                number += 1
+                move_cycle = number
+            cycles.append(move_cycle)
+            last_move = kind
+        previous = kind
+    return cycles
 
 
 def ecb_kinds(events: Iterable[EventInstance], rates: Mapping[date, float]) -> dict[int, str]:
@@ -1592,6 +1616,7 @@ class Follow:
     right: int
     walk_chance: float
     verdict: str
+    by_cycle: tuple[int, str] | None = None
 
 
 class Kept(NamedTuple):
@@ -1656,8 +1681,10 @@ def follow_market(
     c: int,
     order: Sequence[str] = KINDS,
     after: bool = False,
+    cycles: Sequence[int] | None = None,
 ) -> dict[str, Follow]:
-    """Each kind's record on one market over spans of ``c`` closes.
+    """Each kind's record on one market over spans of ``c`` closes; with ``cycles``, a cycle
+    number per decision, also its answer counting each cycle once (``by_cycle``).
 
     ``decisions`` are (first reaction day on this market, kind), oldest first. A decision is left
     out if its span starts before the end of the last one kept, whatever its kind, or has a hole.
@@ -1669,8 +1696,10 @@ def follow_market(
     keys: dict[str, list[date]] = {kind: [] for kind in order}
     overlapped = dict.fromkeys(order, 0)
     holes = dict.fromkeys(order, 0)
+    firsts: dict[str, dict[int, date]] = {kind: {} for kind in order}
     walk, reacted = kept_keys(decisions, closes, spans, c, after)
-    for (_day, kind), kept in zip(decisions, walk, strict=True):
+    numbers = cycles if cycles is not None else [0] * len(decisions)
+    for (_day, kind), kept, cycle in zip(decisions, walk, numbers, strict=True):
         if kept.status == HOLE:
             holes[kind] += 1
         elif kept.open or kept.reaction is None:
@@ -1679,8 +1708,9 @@ def follow_market(
             overlapped[kind] += 1
         else:
             keys[kind].append(closes[kept.reaction + (1 if after else 0)].day)
+            firsts[kind].setdefault(cycle, keys[kind][-1])
     by_end = sorted(spans.items(), key=lambda item: item[1].end)
-    return {
+    follows = {
         kind: _follow(
             keys[kind],
             spans,
@@ -1694,6 +1724,27 @@ def follow_market(
         )
         for kind in order
     }
+    if cycles is None:
+        return follows
+    return {
+        kind: _by_cycle(f, [spans[key] for key in firsts[kind].values()])
+        for kind, f in follows.items()
+    }
+
+
+def _by_cycle(f: Follow, firsts: Sequence[Span]) -> Follow:
+    """``f`` with its answer counting each cycle once, from the first kept decision of each
+    (``firsts``), on the same base: the same answer, ``ONE_CYCLE`` where the cell's answer is not
+    repeated, ``TOO_FEW_CYCLES`` under ``MIN_EVENT_DAYS``. A cell holds only if its answer stands."""
+    if len(firsts) < MIN_EVENT_DAYS or f.base is None:
+        said = TOO_FEW_CYCLES
+    else:
+        said = _answer(firsts, f.base)[0]
+        if f.answer in OUTCOMES and said != f.answer:
+            said = ONE_CYCLE
+    stands = f.answer not in OUTCOMES or said == f.answer
+    verdict = f.verdict if stands or f.verdict != HOLDS else DOESNT_HOLD
+    return replace(f, verdict=verdict, by_cycle=(len(firsts), said))
 
 
 def answer_as_of(
@@ -1842,22 +1893,26 @@ def follow_decisions(
     order: Sequence[str],
     con: duckdb.DuckDBPyConnection | None = None,
     after: bool = False,
+    long: bool = False,
 ) -> tuple[list[EventInstance], list[tuple[str, str, str, Follow]]]:
     """The flow's stored events with a kind, oldest first, and a record per kind, span and market,
-    in that order; with ``after``, on the spans from each reaction close."""
+    in that order; with ``after``, on the spans from each reaction close; with ``long``, over the
+    quarter and the year, each cell also answered counting each cycle once."""
     events = [e for e in stored_events(flow, con=con) if e.event_id in kinds]
+    spans = LONG_SPANS if long else SPANS
+    cycles = fed_cycles([kinds[e.event_id] for e in events]) if long else None
     by_market = {}
     for instrument, series in MVP_PRICE_SERIES.items():
         closes = stored_closes(instrument, con=con)
         decisions = [(first_reaction_day(e, series), kinds[e.event_id]) for e in events]
         by_market[instrument] = {
-            span: follow_market(decisions, closes, series.unit, c, order, after)
-            for span, c in SPANS.items()
+            span: follow_market(decisions, closes, series.unit, c, order, after, cycles)
+            for span, c in spans.items()
         }
     cells = [
         (kind, span, instrument, by_market[instrument][span][kind])
         for kind in order
-        for span in SPANS
+        for span in spans
         for instrument in MVP_PRICE_SERIES
     ]
     return events, cells

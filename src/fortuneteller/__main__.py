@@ -510,18 +510,23 @@ def describe_follows(
     order: Sequence[str] = study.KINDS,
     noun: str = "Fed decisions",
     after: bool = False,
+    long: bool = False,
 ) -> list[str]:
-    """``follows``' table: a row per kind, span and market, then what chance alone would give."""
+    """``follows``' table: a row per kind, span and market, then what chance alone would give;
+    with ``long``, each cell's answer counting each cycle once."""
     counted = [kinds[e.event_id] for e in events if e.event_id in kinds]
     first, last = (flows.release_date(e) for e in (events[0], events[-1]))
     plural = "s" if tuple(order) == study.KINDS else ""
     width = max(5, *(len(kind) for kind in order))
+    span_width = max(6, *(len(span) + 1 for _, span, _, _ in cells))
     lines = [
         f"follows: {len(events)} {noun} {first} … {last}: "
         + ", ".join(f"{counted.count(kind)} {kind}{plural}" for kind in order)
         + (", spans from the reaction close" if after else ""),
-        f"{'kind':<{width}} span   market        n  up same down  out/hole  base up/same/down  "
-        "answer          chance  placebo  walk-forward",
+        f"{'kind':<{width}} {'span':<{span_width}} market        n  up same down  out/hole  base up/same/down  "
+        "answer          chance  placebo  "
+        + ("cycles             " if long else "")
+        + "walk-forward",
     ]
     for kind, span, market, f in cells:
         n = sum(f.counts.values())
@@ -529,8 +534,10 @@ def describe_follows(
         chance = f"{f.chance:.4f}" if not math.isnan(f.chance) else "—"
         placebo = "period" if f.period else "-"
         walk = f"{f.graded}: {f.right} right, {f.verdict}"
+        if long and f.by_cycle is not None:
+            walk = f"{f'{f.by_cycle[0]}: {f.by_cycle[1]}':<18} {walk}"
         lines.append(
-            f"{kind:<{width}} {span:<6} {market:<12} {n:>3} {f.counts[study.UP]:>3} "
+            f"{kind:<{width}} {span:<{span_width}} {market:<12} {n:>3} {f.counts[study.UP]:>3} "
             f"{f.counts[study.SAME]:>4} {f.counts[study.DOWN]:>4} {f'{f.overlapped}/{f.holes}':>8}  "
             f"{base:<18} {f.answer:<15} {chance:<7} {placebo:<8} {walk}"
         )
@@ -568,6 +575,12 @@ def _decision_kinds(
 
 
 def _follows(args: argparse.Namespace) -> int:
+    if args.long and args.event != "fomc":
+        print(
+            "follows: the quarter and the year are measured on the Fed's decisions only",
+            file=sys.stderr,
+        )
+        return 1
     flow = flows.flow_named(args.event)
     noun = FOLLOWS_NOUNS[args.event]
     con = db.get_connection()
@@ -600,7 +613,7 @@ def _follows(args: argparse.Namespace) -> int:
                 )
                 return 1
         events, cells = study.follow_decisions(
-            flow, kinds, order, con=con, after=args.after_the_day
+            flow, kinds, order, con=con, after=args.after_the_day, long=args.long
         )
     except (sources.FredError, sources.CalendarError, ValueError) as exc:
         print(f"follows: {exc}", file=sys.stderr)
@@ -608,7 +621,7 @@ def _follows(args: argparse.Namespace) -> int:
     if not events:
         print(f"follows: no {noun} with a kind yet", file=sys.stderr)
         return 1
-    for line in describe_follows(events, kinds, cells, order, noun, args.after_the_day):
+    for line in describe_follows(events, kinds, cells, order, noun, args.after_the_day, args.long):
         print(line)
     return 0
 
@@ -1685,6 +1698,11 @@ def build_parser() -> argparse.ArgumentParser:
         "--after-the-day",
         action="store_true",
         help="spans from the close of the reaction day, the ones a trigger can be graded on",
+    )
+    p_follows.add_argument(
+        "--long",
+        action="store_true",
+        help="over a quarter and a year, each answer also counting each cycle once (Fed only)",
     )
     p_follows.set_defaults(func=_follows)
 
