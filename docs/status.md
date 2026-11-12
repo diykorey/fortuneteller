@@ -14,6 +14,9 @@ read as the store will read it (CPI's from the core print), and the popup shows 
 
 ## In progress
 
+Step 17, part 2: the Fed's decisions over a quarter and a year, each cycle counted once as well
+as each decision ([the spec](steps/what-follows-long.md)). Step 1, `follows --long`, is next.
+
 Step 18, part 2, step 3: the first triggers graded ([the spec](steps/trigger-file.md)). The owner's
 first, CPI of 2026-11-10 *as expected*, was filed that evening but merged 2026-11-11 10:33, after
 every reaction close, and its kind was wrong: CPI's kind is read from the core print, 0.3 against
@@ -37,14 +40,14 @@ merged pull request ([the spec](steps/beat-the-fortune-teller.md)). It waits for
 
 ## Next
 
-Not chosen yet. Step 17's part 1 is measured on every flow whose counts allow it: the Fed, the jobs
-report, retail sales, CPI, claims and the ECB. Its part 2, the quarter and the year, was set aside
-2026-11-10. Step 18 waits for triggers filed on time; step 20 waits for step 18's grades.
+Step 17, part 2, step 2: the results of the quarter and the year, against the expected outcome.
+Step 18 waits for triggers filed on time; step 20 waits for step 18's grades.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-12 | What follows, part 2: spec, the Fed's decisions over a quarter and a year, each cycle once | this PR |
 | 2026-11-12 | A trigger's row printed at the release, its kind read as the store reads it | PR #292 |
 | 2026-11-12 | The breakeven's sign: on CPI it holds, 35 of 42, a new live call; a close published a day late waits and stops nothing | PR #275 |
 | 2026-11-11 | What follows, part 1f, step 2: results — the ECB's decisions by kind answer nothing | PR #288 |
