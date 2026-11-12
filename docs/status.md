@@ -47,7 +47,7 @@ Step 18 waits for triggers filed on time; step 20 waits for step 18's grades.
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-11-12 | What follows, part 2: spec, the Fed's decisions over a quarter and a year, each cycle once | this PR |
+| 2026-11-12 | What follows, part 2: spec, the Fed's decisions over a quarter and a year, each cycle once | PR #293 |
 | 2026-11-12 | A trigger's row printed at the release, its kind read as the store reads it | PR #292 |
 | 2026-11-12 | The breakeven's sign: on CPI it holds, 35 of 42, a new live call; a close published a day late waits and stops nothing | PR #275 |
 | 2026-11-11 | What follows, part 1f, step 2: results — the ECB's decisions by kind answer nothing | PR #288 |
