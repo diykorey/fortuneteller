@@ -99,6 +99,7 @@ grades, and keeps them in `data/trigger-log.csv`.
 | --- | --- | --- |
 | 1 | ~~`triggers`: read, void, wait, answer, log, grade~~ **done** 2026-11-04 (PR #254) | The tests below pass. On a copy of the store, `answer_triggers` given a trigger for the jobs report of 2026-10-02, merged 2026-10-02 at 12:00 UTC, returns 48 rows, 16 markets by 3 spans, every one graded or *can't say*, *too few* or *left out* |
 | 2 | ~~The evening job runs `triggers`, and commits the log when it or the score changed~~ **done** 2026-11-04 (PR #255) | A run of the job on a copy commits the log |
+| 2b | ~~*Amended 2026-11-12:* `predict` prints the trigger's row for a release, `trigger: cpi,2026-11-10,above`, its kind read by `surprise_kind`, the function `release_kinds` reads the store with; the popup shows it~~ **done** 2026-11-12 | The owner's first trigger, CPI of 2026-11-10, was filed *as expected* from the headline print, where the store reads core, and was void. On every release `live` logged, the printed kind equals the stored one |
 | 3 | Results: the first triggers graded, recorded here and in [MVP results](../mvp-results.md) | Waits for the owner's first trigger and its spans to end |
 
 *Step 1, 2026-11-04 (PR #254):* on a copy of the store, the jobs report of 2026-10-02 (*below*)

@@ -279,6 +279,7 @@ def test_an_actual_predicts_each_open_link_s_close_and_a_closed_one_is_silent(
     assert code == 0
     assert capsys.readouterr().out.splitlines() == [
         "core on 2026-11-12: actual 0.3, Nasdaq's consensus 0.2, surprise +0.1",
+        "trigger: cpi,2026-11-12,above",
         "SPY / ES     down   closes down today: right on 70 of 79 calls before, -0.11% to -0.08%",
         "UST10Y / ZN  up     closes up today: right on 70 of 79 calls before, +8.6 bp to +11.2 bp",
         "DXY          up     closes up today: right on 70 of 79 calls before, +0.08% to +0.11%",
@@ -309,13 +310,15 @@ def test_without_nasdaq_s_consensus_tradingview_s_forecast_is_taken_and_named(
     # when the release comes in at 0.3
     code = main(["predict", "--event", "cpi", "--actual", "0.3"])
 
-    # then the surprise is against TradingView's forecast, named, and the rows are logged
+    # then the surprise is against TradingView's forecast, named, and the rows are logged; a
+    # trigger has no kind, the store reading it against Nasdaq's consensus alone
     out = capsys.readouterr().out.splitlines()
     assert code == 0
-    assert out[0] == (
+    assert out[:2] == [
         "core on 2026-11-12: actual 0.3, TradingView's forecast (Nasdaq has none) 0.2, "
-        "surprise +0.1"
-    )
+        "surprise +0.1",
+        "trigger: none, Nasdaq's consensus has none to read the kind against",
+    ]
     assert out[-1] == f"logged 14 rows to {settings.calls_path}"
 
 
@@ -541,10 +544,11 @@ def test_a_small_surprise_predicts_nothing(
     # when the release comes in at 0.25
     code = main(["predict", "--event", "cpi", "--actual", "0.25"])
 
-    # then it says why there is no prediction
+    # then it says why there is no prediction; the trigger's kind rounds 0.25 to its headline, 0.3
     out = capsys.readouterr().out.splitlines()
     assert code == 0
     assert out[1:] == [
+        "trigger: cpi,2026-11-12,above",
         "no prediction: the surprise is under 0.1pp",
         f"logged 14 rows to {settings.calls_path}",
     ]
@@ -662,7 +666,7 @@ def test_an_open_link_with_too_few_calls_so_far_calls_without_a_probability(
 
     # then each link calls its direction and says why there is no probability
     assert code == 0
-    assert capsys.readouterr().out.splitlines()[1:] == [
+    assert capsys.readouterr().out.splitlines()[2:] == [
         "SPY / ES     down   closes down today; too few calls so far",
         "UST10Y / ZN  up     closes up today; too few calls so far",
         "DXY          up     closes up today; too few calls so far",
@@ -1200,3 +1204,27 @@ def test_live_never_asks_for_a_release_after_its_run(
     assert code == 0
     assert "core" in asked
     assert set(sources.TRADINGVIEW_ROWS) & set(asked) == {sources.INITIAL_CLAIMS}
+
+
+@pytest.mark.parametrize(
+    ("rule", "actual", "expected", "kind"),
+    [
+        (flows.CPI_SURPRISE_RULE, 0.3, 0.2, study.ABOVE),
+        (flows.CPI_SURPRISE_RULE, 0.249, 0.2, study.AS_EXPECTED),
+        (flows.CPI_SURPRISE_RULE, 0.25, 0.2, study.ABOVE),
+        (flows.CPI_SURPRISE_RULE, 0.1, 0.2, study.BELOW),
+        (flows.CLAIMS_SURPRISE_RULE, 205.0, 200.0, study.ABOVE),
+        (flows.CLAIMS_SURPRISE_RULE, 204.0, 200.0, study.AS_EXPECTED),
+        (flows.CLAIMS_SURPRISE_RULE, 195.0, 200.0, study.BELOW),
+    ],
+)
+def test_a_release_s_kind_is_read_as_the_store_reads_it(
+    rule: flows.SurpriseRule, actual: float, expected: float, kind: str
+) -> None:
+    # given a release's actual on its rule's first measure and the consensus
+
+    # when its kind is read
+    read = study.surprise_kind(rule, actual, expected)
+
+    # then CPI's actual is rounded to its headline first, and the kind is from noticeable on
+    assert read == kind
