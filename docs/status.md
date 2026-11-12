@@ -8,13 +8,10 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-What follows, part 1f, step 2: results. The ECB's decisions by kind answer nothing, none of 225
-cells against 6.8 by chance; no new call ([the spec](steps/what-follows-ecb.md#results)).
+The breakeven's sign: +1 on inflation news; on CPI it holds, 35 of 42, a new live call; the evening
+grades the other markets while FRED's close is due ([the spec](steps/breakeven-sign.md)).
 
 ## In progress
-
-Step 19, part 2d: the breakeven's sign, and the evening grading the other markets while FRED's close
-is due ([the spec](steps/breakeven-sign.md)). Its build merges after CPI's evening run of 2026-11-10.
 
 Step 18, part 2, step 3: the first triggers graded ([the spec](steps/trigger-file.md)). The owner's
 first, CPI of 2026-11-10 *as expected*, was filed that evening but merged 2026-11-11 10:33, after
@@ -25,10 +22,13 @@ Waiting: the scoreboard's first release day on the published page (step 3); rele
 3, evening score step 2 and rung 6 step 2: the first release the morning job logs, pops up and the
 evening grades. The jobs report of 2026-11-06, the first with the euro and the 5-year yield called,
 was missed: the laptop slept from that morning to 2026-11-09, so `live` never ran at the release.
+A closed lid suspends it even on power; the owner keeps it open (decided 2026-11-10).
 CPI on 2026-11-10 was logged 49 minutes late: Nasdaq answered the job's Python 3.14 with HTTP 403
 (issues #277–279), and the rerun on 3.12 logged it (PR #280), every row silent or *too few*;
 `EURUSD`, logged after its release, is void. The evening of 2026-11-10 found three closes not yet
-on Yahoo and committed nothing; the next evening grades it. Python is now pinned to 3.12.
+on Yahoo and committed nothing; the next failed on FRED's HTTP 502 (#289), and its rerun on
+2026-11-12 graded it (PR #290): of the three *too few* rows the dollar index and the 5-year yield
+were right, the DAX wrong. Python is now pinned to 3.12.
 
 Beat the fortune teller, step 3: the first live round, a release `live` calls guessed through a
 merged pull request ([the spec](steps/beat-the-fortune-teller.md)). It waits for a release; CPI on
@@ -44,6 +44,7 @@ report, retail sales, CPI, claims and the ECB. Its part 2, the quarter and the y
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-12 | The breakeven's sign: on CPI it holds, 35 of 42, a new live call; a close published a day late waits and stops nothing | PR #275 |
 | 2026-11-11 | What follows, part 1f, step 2: results — the ECB's decisions by kind answer nothing | PR #288 |
 | 2026-11-11 | What follows, part 1f, step 1: `follows --event ecb`; ECB triggers | PR #287 |
 | 2026-11-11 | What follows, part 1f: spec, the ECB's decisions by kind | PR #286 |

@@ -33,7 +33,8 @@ shows it, and on a failure an issue.
   (its release, surprise or close not loaded yet), nothing is committed. The next run picks either
   up. *Amended 2026-10-28*: a day whose rows are all
   silent is merged by the morning job itself ([jobless claims](jobless-claims.md)), so the evening
-  waits only on a day with a call.
+  waits only on a day with a call. *Amended 2026-11-09*: a row on a close FRED publishes a day late
+  is *waiting*, not pending, and commits go on without it ([the breakeven's sign](breakeven-sign.md)).
 - **Weekdays at 18:00 New York**, well after the 16:15 VIX close. A run missed while the laptop was
   off runs at the next login (`Persistent=true`). Both jobs take one lock, so a late evening run
   and the morning's `live` never hold the database at once.

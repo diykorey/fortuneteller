@@ -544,6 +544,9 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **Handle** — the name a player picks in a guess file's name, lowercase, unchecked.
 - **Void guess** — a guess listed with why and never graded: not a flow `live` calls, not one of its
   links, not merged through a pull request before the release, no release that day, or a repeat.
+- **Waiting** — a logged call whose close FRED publishes a day late and has not published yet; `score`
+  lists it under `waiting:` and, unlike a *pending* row, it stops nothing
+  ([the breakeven's sign](steps/breakeven-sign.md)).
 - **Trigger** — an event the owner files after it happens, a row `flow,day,kind` in a CSV under
   `data/triggers/` added through a pull request; answered from the reaction close on each market it
   was merged in time for, logged in `data/trigger-log.csv` and graded when the span ends

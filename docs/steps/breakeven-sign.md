@@ -57,8 +57,51 @@ holds is called by the morning job, and a call on it no longer holds up any othe
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | The two signs, `waiting`, and a table of each link: opens, record, what `live` would log at its next release | The tests below pass, the procedure gives an empty diff, the job's check below is here. Merged after CPI's evening run of 2026-11-10 |
-| 2 | Results here and in [MVP results](../mvp-results.md) | Each link's verdicts against the expected outcome |
+| 1 | ~~The two signs, `waiting`, and a table of each link: opens, record, what `live` would log at its next release~~ **done** 2026-11-09 (PR #275) | The tests below pass, the procedure gives an empty diff, the job's check below is here. Merged after CPI's evening run of 2026-11-10 |
+| 2 | ~~Results here and in [MVP results](../mvp-results.md)~~ **done** 2026-11-09 (PR #275) | Each link's verdicts against the expected outcome |
+
+*Step 1, 2026-11-09, on a copy of the store of that afternoon:*
+
+| Link | Sign | Opens? | Record | `live` at its next release |
+| --- | --- | --- | --- | --- |
+| `T5YIE`, CPI | up | 2015-09, open | 35 of 42 | A call, if the surprise is noticeable and the build has merged. On a 0.4 against 0.2 it reads: up, right on 35 of 42 before, +1.8 to +5.4 bp |
+| `T5YIE`, core PCE | up | never | 0 calls | Silent |
+
+- The procedure gave an empty diff on all 85 printed outputs and on `data.json`. The walk-forward
+  chance line goes from 80 cells to 82, 0.80 to 0.82 by chance.
+- The scoreboard was rebuilt in 268 s, against 204 s at the base, the two run one after the other.
+- The job's check, `release-day.sh score` twice on throwaway copies of the repository and the store,
+  the loaders and GitHub stubbed: with the row on CPI of 2026-10-14 and its close held back, the first
+  evening exited 0, listed one row as waiting, printed no `pending:`, rebuilt the scoreboard and opened
+  its pull request. With that merged and the close restored, the second exited 0, graded the row
+  (right, the link's record 35 of 42 from 34 of 41) and opened a new pull request.
+
+## Results
+
+Measured 2026-11-09 on a copy of the store, at PR #275.
+
+**The breakeven on CPI holds, so it is called: the first market people feel with a live call.**
+
+| Link | Against | `surprise` | Rank corr, p | Right on noticeable surprises |
+| --- | --- | --- | --- | --- |
+| `T5YIE`, CPI | The trend | *tracks* | 0.38, 0.0001 | 76% of 88 |
+| `T5YIE`, core PCE | The consensus | *doesn't* | −0.04, 0.68 | 40% of 15 |
+
+Replayed in order against Nasdaq's consensus, from 2015-09, the CPI link was right on 35 of 42
+(83%), where always saying *up* was right on 45%, and it *holds* without the COVID months too, 30 of
+32. Its stated probability has too few calls to be graded (22 of the 30 needed), so a call carries
+its record and band only.
+
+Against the expected outcome:
+
+- **Wrong:** `surprise` said at most *unclear* on CPI, it *tracks*; `predict` said no link holds, CPI
+  does. Part 2b's count of 30 was the same bar on a narrower test, and the signed surprise uses
+  every noticeable print, in both directions.
+- **Met:** core PCE *doesn't*; the rebuild, 268 s against the 15-minute bar.
+
+In plain words: when core inflation beats the forecast, the market's guess at the next five years'
+inflation has gone up that same day about five times in six. The move is small, a few basis points,
+on a series quoted to the nearest one.
 
 ## How you know it is right
 

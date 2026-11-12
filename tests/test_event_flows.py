@@ -472,10 +472,10 @@ def test_utilities_and_homebuilders_take_their_signs_on_each_rule() -> None:
     # when utilities', homebuilders' and the breakeven's are read
     signs = {name: (r["XLU"], r["ITB"], r["T5YIE"]) for name, r in rules.items()}
 
-    # then utilities reverse the yield, homebuilders are signed on inflation news only, and the
-    # breakeven, whose close comes a day late, has none anywhere
+    # then utilities reverse the yield, and homebuilders and the breakeven are signed on inflation
+    # news only
     assert signs == {
-        "cpi": (-1, -1, 0),
+        "cpi": (-1, -1, 1),
         "jobs": (-1, 0, 0),
         "claims": (1, 0, 0),
         "fed": (-1, 0, 0),

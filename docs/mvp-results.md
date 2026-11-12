@@ -563,6 +563,16 @@ noticeable surprises, short of 60%. The expected outcome was right, but for util
 (*unclear*, on 13 surprises). The breakeven stays unsigned until the evening grade can wait a day
 for FRED's close.
 
+## The breakeven's sign
+
+[Signed](steps/breakeven-sign.md) on inflation news, +1 on CPI and core PCE, because it *is* expected
+inflation. **On CPI it holds:** a core print above Nasdaq's consensus went with a higher breakeven
+that day on 35 of 42 calls replayed in order from 2015-09 (83%; 30 of 32 without the COVID months),
+where always saying *up* was right on 45%. It is the first market people feel with a call. The expected
+outcome, written first, said it would not hold; that was wrong. On core PCE it *doesn't*, on 15
+noticeable surprises. The move is a few basis points. Its close comes from FRED a day late, so the
+call is graded an evening or more after the other markets, which are graded on time.
+
 ## What comes next
 
 Chosen 2026-10-13: keep score ([rung 4](steps/rung-4-keep-score.md)), done above with the live path
