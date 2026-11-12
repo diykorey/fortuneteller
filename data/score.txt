@@ -1,4 +1,4 @@
-29 rows in data/calls.csv, each call graded on its market's close that day beside the replay of every stored release
+42 rows in data/calls.csv, each call graded on its market's close that day beside the replay of every stored release
 
 cpi: core against Nasdaq's consensus
 
@@ -6,13 +6,13 @@ walk-forward (live)
 instrument   expected  from     predicted  right  hit rate  p       always expected  verdict
 SPY / ES     down      —        0          0      —         —       —                too few
 UST10Y / ZN  up        2026-09  1          0      0%        1.0000  0%               too few
-DXY          up        2026-09  1          1      100%      0.5000  100%             too few
+DXY          up        2026-09  2          2      100%      0.2500  100%             too few
 VIX          up        —        0          0      —         —       —                too few
-DAX          down      —        0          0      —         —       —                too few
+DAX          down      2026-10  1          0      0%        1.0000  0%               too few
 SX5E         down      —        0          0      —         —       —                too few
 EURUSD       down      —        0          0      —         —       —                too few
 COMP         down      —        0          0      —         —       —                too few
-UST5Y / ZF   up        —        0          0      —         —       —                too few
+UST5Y / ZF   up        2026-10  1          1      100%      0.5000  100%             too few
 UKX          down      —        0          0      —         —       —                too few
 SXXP         down      —        0          0      —         —       —                too few
 XLU          down      —        0          0      —         —       —                too few
@@ -68,6 +68,9 @@ UKX          —               —
 SXXP         —               —
 XLU          —               —
 ITB          —               —
+
+void: 1
+  cpi 2026-11-10 EURUSD: logged 09:19 New York, not from the release at 08:30 until its close at 00:00
 
 retail: retail_sales against Nasdaq's consensus
 
