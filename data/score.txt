@@ -1,4 +1,4 @@
-42 rows in data/calls.csv, each call graded on its market's close that day beside the replay of every stored release
+47 rows in data/calls.csv, each call graded on its market's close that day beside the replay of every stored release
 
 cpi: core against Nasdaq's consensus
 
@@ -17,6 +17,7 @@ UKX          down      —        0          0      —         —       —   
 SXXP         down      —        0          0      —         —       —                too few
 XLU          down      —        0          0      —         —       —                too few
 ITB          down      —        0          0      —         —       —                too few
+T5YIE        up        —        0          0      —         —       —                too few
 
 walk-forward (replay)
 instrument   expected  from     predicted  right  hit rate  p       always expected  verdict
@@ -33,6 +34,7 @@ UKX          down      2014-07  2          1      50%       0.7500  0%          
 SXXP         down      —        0          0      —         —       —                too few
 XLU          down      —        0          0      —         —       —                too few
 ITB          down      —        0          0      —         —       —                too few
+T5YIE        up        2015-09  42         35     83%       0.0000  45%              holds
 
 confidence (live)
 instrument   calls  stated  right  Brier   coin p  drift Brier  drift p  in band (allowed)  verdict
@@ -49,6 +51,7 @@ UKX          0      —       —      —       —       —            —   
 SXXP         0      —       —      —       —       —            —        —                  too few
 XLU          0      —       —      —       —       —            —        —                  too few
 ITB          0      —       —      —       —       —            —        —                  too few
+T5YIE        0      —       —      —       —       —            —        —                  too few
 
 calibration (live)
 instrument   group          calls  stated  right  allowed
@@ -68,6 +71,7 @@ UKX          —               —
 SXXP         —               —
 XLU          —               —
 ITB          —               —
+T5YIE        —               —
 
 void: 1
   cpi 2026-11-10 EURUSD: logged 09:19 New York, not from the release at 08:30 until its close at 00:00
@@ -127,6 +131,7 @@ UKX          down      —        0          0      —         —       —   
 SXXP         down      —        0          0      —         —       —                too few
 XLU          down      —        0          0      —         —       —                too few
 ITB          down      —        0          0      —         —       —                too few
+T5YIE        up        —        0          0      —         —       —                too few
 
 walk-forward (replay)
 instrument   expected  from     predicted  right  hit rate  p       always expected  verdict
@@ -143,6 +148,7 @@ UKX          down      —        0          0      —         —       —   
 SXXP         down      —        0          0      —         —       —                too few
 XLU          down      —        0          0      —         —       —                too few
 ITB          down      —        0          0      —         —       —                too few
+T5YIE        up        —        0          0      —         —       —                too few
 
 confidence (live)
 instrument   calls  stated  right  Brier   coin p  drift Brier  drift p  in band (allowed)  verdict
@@ -159,6 +165,7 @@ UKX          0      —       —      —       —       —            —   
 SXXP         0      —       —      —       —       —            —        —                  too few
 XLU          0      —       —      —       —       —            —        —                  too few
 ITB          0      —       —      —       —       —            —        —                  too few
+T5YIE        0      —       —      —       —       —            —        —                  too few
 
 calibration (live)
 instrument   group          calls  stated  right  allowed
@@ -178,6 +185,7 @@ UKX          —               —
 SXXP         —               —
 XLU          —               —
 ITB          —               —
+T5YIE        —               —
 
 gdp: gdp against Nasdaq's consensus
 
