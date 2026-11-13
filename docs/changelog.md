@@ -6,6 +6,7 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-14 | Docs: the roadmap one line per step, status back to its three sections, this changelog split out | PR #302 |
 | 2026-11-14 | Docs: decisions.md, the choices that set direction, newest first, with why and where | PR #301 |
 | 2026-11-14 | Docs: the entry points made true; docs/README.md the onboarding path; glossary adds link, step, part, rung | PR #300 |
 | 2026-11-14 | News into triggers, part 1, step 2: `follows --event ceo`, each company against the S&P 500 on its own base; the companies' closes by `load-prices --companies` | PR #299 |
