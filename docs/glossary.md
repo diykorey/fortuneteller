@@ -520,6 +520,10 @@ Terms are grouped by what they are about, alphabetical within each group.
   the surprise was. MVP step 1 fills it.
 - **Episode** (legacy) — a JSON file describing a pre-detected event, fed to the replay harness.
   Appears in legacy docs only.
+- **Elephant, goldfish** — the author of a spec, who carries the whole conversation behind it, and
+  a reviewer who has seen none of it and reads only the page and its links. Every spec is read by
+  a goldfish before measuring and again when its results are in
+  ([Legend](legend.md#how-a-step-is-reviewed-the-elephant-and-the-goldfish)).
 - **Feature ladder** — the ordered list of what gets built after the MVP, in
   [the roadmap](roadmap.md).
 - **Step** — a word with three uses, told apart by what comes with it:

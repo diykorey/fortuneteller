@@ -27,7 +27,9 @@ what to run, and which document answers which question.
 
 **3. Study one spec.** [A CEO's conduct in question](steps/ceo-scandals.md) shows the shape every
 step takes: the goal, the obstacle, the rule fixed before anything is measured, steps you can
-check, how you know it is right, what it does not do, and the technical details last.
+check, how you know it is right, what it does not do, and the technical details last. Then read
+the Legend's "How a step is reviewed": every spec is checked by a reader who, like you now, has
+seen none of the conversation behind it.
 
 **4. Read the working rules.** [CLAUDE.md](../CLAUDE.md) holds the agreements for anyone changing
 the repo, human or agent: the 2026-08-05 reset and the three rules it left.

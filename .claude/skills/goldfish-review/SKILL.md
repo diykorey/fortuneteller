@@ -1,0 +1,45 @@
+---
+name: goldfish-review
+description: Review a FortuneTeller step spec with a fresh-context reviewer (the goldfish) before measuring or after results land. Use when a spec's pull request is opened, when Results are added to a spec, or when asked for a goldfish review.
+---
+
+# Goldfish review
+
+The Legend's "How a step is reviewed" defines this. You are the elephant: you know too much to
+review your own spec. So you do not review it; a fresh subagent does.
+
+## Steps
+
+1. **Pick the stage.** *Before measuring* if the spec has no Results section yet; *results* if it
+   has one.
+2. **Spawn one fresh subagent** (general-purpose), giving it only the paths below and the prompt
+   for the stage. Do not summarise the spec, explain the background, or say what you expect: any
+   of that defeats the review.
+   - The spec: docs/steps/NAME.md
+   - docs/legend.md, docs/glossary.md
+   - Every document the spec links to, which it may open itself
+3. **Act on each finding.** Fix the spec, or write in the pull request why the finding stands.
+4. **Record one line in the pull request:** "Goldfish review (STAGE): N findings, M fixed."
+
+## Prompt, before measuring
+
+> You have never seen this project. Read docs/steps/NAME.md, then docs/legend.md and
+> docs/glossary.md, and open any document the spec links to if you need it. Use nothing else.
+> Answer, numbered:
+> 1. The step's goal in one sentence.
+> 2. The bars and the expected outcome, as numbers. If any is missing or vague, say so.
+> 3. Each "done when" in The steps that you could not check without judgement, and why.
+> 4. One plausible wrong answer the checks in "How you know it is right" would not catch.
+> 5. Every term, number or claim you could not understand from these documents alone.
+> Then list your findings, most serious first, each in one sentence with the section it is in.
+> Say "none" where you found nothing; do not invent findings.
+
+## Prompt, results
+
+> You have never seen this project. Read docs/steps/NAME.md, then docs/legend.md and
+> docs/glossary.md. Use nothing else. Answer, numbered:
+> 1. Is each verdict in Results judged against the rule fixed before measuring? Name any that is not.
+> 2. Did any bar, test or expected outcome change without a dated amendment?
+> 3. Does each plain-words summary say what its numbers say, no more and no less?
+> Then list your findings, most serious first, each in one sentence. Say "none" where you found
+> nothing; do not invent findings.

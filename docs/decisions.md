@@ -11,6 +11,18 @@ amended there with a date.
 Each entry: **what** was decided, **why**, what it **retires**, and **where** the detail is. *By the
 owner* marks a choice the owner made over another on the table.
 
+## 2026-11-14: Every spec is read twice by a fresh reviewer
+
+- **What:** each step's spec gets a goldfish review before anything is measured, and another when
+  its results are in. The goldfish sees only the spec, the documents it links, the Legend and the
+  Glossary; the author fixes each finding or says why it stands. The template gains two sections
+  practice had already added: the rule fixed before measuring, and the results. Specs are named
+  for their subject.
+- **Why:** the author of a spec carries the conversation that led to it and can no longer see what
+  the page leaves out; bars written first protect the result only if a stranger can read them.
+- **Retires:** the step-N file naming for steps after the MVP, and step 1 as the worked example.
+- **Where:** [Legend](legend.md#how-a-step-is-reviewed-the-elephant-and-the-goldfish).
+
 ## 2026-11-14: Docs have one way in, and decisions one home
 
 - **What:** a newcomer, human or agent, starts at [docs/README.md](README.md). Choices that set
