@@ -12,8 +12,7 @@ match the DuckDB tables in `schema.sql`; enum columns use the M0-03 enum *values
 | `effect_size_seed.csv` | effect_size_seed | 15 | **Placeholder seeds** — directionally consistent with the specs, *numbers not authoritative*. |
 | `news_sources.csv` | news_sources | 25 | Full ranked stack (Notion DB has ~27). |
 | `countries.csv` | countries | 10 | Representative subset of 50; GDP figures approximate; `platforms_in_list`/`coverage_gap` blank. |
-| `ceo_scandals.csv` | (read by the `ceo` flow) | 26 | Full for its rule: every S&P 1500 CEO departure the dataset below codes *legal*, kept by [step 20, part 1](../../docs/steps/ceo-scandals.md)'s rule, each with its source. |
-| `ceo_dismissals_coded.csv` | none (an audit) | 237 | Every departure coded *legal* (code 4) in Gentry, Harrison, Quigley & Boivie, "A database of CEO turnover and dismissal in S&P 1500 firms", *Strategic Management Journal* 42(5), 2021; release of 2025-11-26, doi:10.5281/zenodo.23328926, Open Data Commons Attribution. Its decision and reason by `dismissal_dataset_id`. |
+| `ceo_scandals.csv` | (read by the `ceo` flow) | 26 | Full for its rule: every S&P 1500 CEO departure the dataset below codes *legal*, kept by [step 20, part 1](../../docs/steps/ceo-scandals.md)'s rule, each with its source. The coding of the dataset's 237 departures is in [`docs/steps/ceo-scandals-coding.csv`](../../docs/steps/ceo-scandals-coding.csv), from Gentry, Harrison, Quigley & Boivie, "A database of CEO turnover and dismissal in S&P 1500 firms", *Strategic Management Journal* 42(5), 2021; release of 2025-11-26, doi:10.5281/zenodo.23328926, Open Data Commons Attribution. |
 
 ## Why some tables are partial
 
