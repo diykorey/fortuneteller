@@ -30,8 +30,18 @@ the S&P 500 after past scandals, with part 1's counts, answer, placebo and walk-
   - a misstated credential or expenses.
 
   Fraud at the company, antitrust and product cases are left out: they are another kind.
+
+  *Amended 2026-11-13, in step 1, before any price was read:* the newer release (1992 to 2023,
+  [doi:10.5281/zenodo.23328926](https://doi.org/10.5281/zenodo.23328926), November 2025) is the
+  source. A row is kept only if its notes or a cited source tie the departure to the conduct; one
+  the dataset codes on suspicion alone is left out. A company is left out with fewer than 504
+  closes before its event, or when those closes are not its own (a blank-check shell before a
+  merger, a ticker that now names another company).
 - **The day is the first public word.** That is the earlier of the departure announcement and the
-  first report of the conduct, from a source cited in the seed row, at its New York time. A word
+  first report of the conduct, from a source cited in the seed row, at its New York time.
+  *Amended 2026-11-13:* the time is the latest the word is known to be out: a release's stamp, or
+  else its 8-K's acceptance, which can follow the release. Where a source says only *before close*
+  or *after close*, that is the time; *unknown* reacts at the next close. A word
   after 16:00 or on a closed day reacts at the next close, as every flow does
   (`first_reaction_day`).
 - **The market is the company against the market.** The move is the company's span move less the
@@ -68,9 +78,18 @@ the S&P 500 after past scandals, with part 1's counts, answer, placebo and walk-
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | The dataset read and coded by the rule; the seed `data/seed/ceo_scandals.csv` with each row's day, time, ticker, CEO, conduct and source; each company's closes loaded | Every kept row cites its source; the coding is listed row by row in this spec; the left-out rows are counted by reason |
+| 1 | ~~The dataset read and coded by the rule; the seed `data/seed/ceo_scandals.csv` with each row's day, time, ticker, CEO, conduct and source; each company's closes loaded | Every kept row cites its source; the coding is listed row by row in this spec; the left-out rows are counted by reason~~ **done** 2026-11-13. *Amended:* the coding is in `data/seed/ceo_dismissals_coded.csv`, not this spec, and the closes load in step 2 |
 | 2 | `follows --event ceo` with the excess move and each company's base; `ceo` in `TRIGGER_KINDS` (kind `scandal`, with the company's ticker in the trigger) | Tests: the excess move of a stock that moves exactly as the index is zero; a base never reads a close after the event's close before; with ten events all down against a base of a third, the answer is *down* |
 | 3 | Results here and in [MVP results](../mvp-results.md), checked against the expected outcome; the answer for Nvidia's 2026-11-08 printed beside them | Each span's answer and walk-forward recorded |
+
+*Step 1, 2026-11-13:* of the dataset's 237 departures coded *legal*, 58 name the CEO's own
+conduct and 26 are kept, 2005 to 2023. Left out: 179 not the CEO's own conduct; 19 with no Yahoo
+history; 4 whose ticker now names another company; 1 whose history restarts after the event; 1
+with under 504 closes before it; 1 a blank-check shell; and 6 that no source ties to the conduct
+(Johnson Controls, MGM, ADP, Crocs, Unifi, Planet Fitness). Twenty-three keep a stamped time; three
+say only *before close*, *after close* or *unknown*. The first public word was earlier than the
+dataset's date for five: Horace Mann (the drunk-driving disclosure), Wynn (the WSJ report), Apollo
+(the NYT report), F5 and Visteon (the dataset's date was wrong). No price was read.
 
 If the dataset is not reachable, or gives fewer than 10 kept events, step 1 stops and says so.
 A hand-made list is then the owner's call, labelled as picked.
