@@ -2417,6 +2417,9 @@ def _ceo_trigger(
     stock, index = companies.get(t.ticker), closes[EXCESS_OVER]
     if stock is None:
         return [f"{head}: waiting, {t.ticker}'s closes are not loaded"]
+    missing = {e.detail or "" for e in events} - set(companies)
+    if missing:
+        return [f"{head}: waiting, {len(missing)} scandals' companies have no closes loaded"]
     shared = _shared(stock, index)[0]
     if not shared or t.day > shared[-1].day:
         return [f"{head}: waiting, no close on or after its day"]

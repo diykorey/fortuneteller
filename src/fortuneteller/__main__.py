@@ -655,19 +655,25 @@ def _trigger_companies(
     con: duckdb.DuckDBPyConnection,
 ) -> dict[str, list[sources.DailyClosingPrice]]:
     """For `ceo` triggers alone: each named company's closes fetched from Yahoo and stored, and the
-    stored scandals' companies' closes, by ticker; a company Yahoo fails on is reported."""
+    stored scandals' companies' closes, fetched only when none are stored, by ticker; a company
+    Yahoo fails on is reported."""
     named = sorted({t.ticker for t in triggers if t.flow == flows.CEO_FLOW.cli_name and t.ticker})
     if not named:
         return {}
-    for note in study.load_company_bars(named, con=con)[1]:
+
+    def load() -> dict[str, list[sources.DailyClosingPrice]]:
+        companies = {}
+        for ticker in {*named, *(e.detail or "" for e in events)}:
+            try:
+                companies[ticker] = study.stored_closes(ticker, con=con)
+            except ValueError:
+                continue
+        return companies
+
+    unloaded = {e.detail or "" for e in events} - set(load())
+    for note in study.load_company_bars(sorted({*named, *unloaded}), con=con)[1]:
         print(f"triggers: {note}")
-    companies = {}
-    for ticker in {*named, *(e.detail or "" for e in events)}:
-        try:
-            companies[ticker] = study.stored_closes(ticker, con=con)
-        except ValueError:
-            continue
-    return companies
+    return load()
 
 
 def _triggers(_args: argparse.Namespace) -> int:

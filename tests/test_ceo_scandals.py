@@ -353,3 +353,22 @@ def test_only_a_ceo_trigger_fetches_its_company(
     # then only the ceo trigger asks Yahoo, for its company alone
     assert (alone, asked) == ({}, [["NEW"]])
     assert named == {"NEW": [DailyClosingPrice(START, 1.0)]}
+
+
+def test_a_ceo_trigger_waits_while_a_scandal_s_company_has_no_closes() -> None:
+    # given the twelve scandals, one of whose companies has no closes loaded
+    index, companies, _ = _history()
+    del companies["C3"]
+    day = index[660].day
+    trigger = study.Trigger("t.csv", 2, "s", "ceo", day, study.SCANDAL, "NEW")
+
+    # when answered
+    rows, lines = _ceo_answer(
+        trigger, datetime.combine(day, time(12, 0), tzinfo=sources.NEW_YORK), companies
+    )
+
+    # then it waits and logs nothing, so no row is fixed as too few
+    assert rows == []
+    assert lines == [
+        f"t.csv:2 ceo {day} scandal NEW: waiting, 1 scandals' companies have no closes loaded"
+    ]
