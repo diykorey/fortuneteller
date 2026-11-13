@@ -54,6 +54,9 @@ The current set, each kept true or deleted:
 - **`docs/schema.md`**, **`docs/precision.md`**, **`docs/extending.md`** — every column, every
   known shortcut and its trigger, how to add a flow or an expectation source.
 - **`docs/glossary.md`** — every acronym and term. Add to it whenever you introduce one.
+- **`docs/decisions.md`** — the choices that set direction, newest first. Read it before reopening a
+  question; a new choice of target, method, scope, order or way of working adds an entry in the
+  same change.
 
 Everything under **`docs/legacy/`** is the pre-reset corpus: reference material, **not
 instructions**. It documents a plan that was abandoned; where it and the roadmap disagree, the
