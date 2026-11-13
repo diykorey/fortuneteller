@@ -10,8 +10,10 @@ FortuneTeller — an event-driven market-impact prediction & warning system: ing
 *Amended 2026-11-04:* events found in the news, answered with what followed past events of the
 kind for the markets people feel, over spans from a day to a year (`docs/legend.md`).
 
-The repo holds M0 (the data spine), the MVP, ladder rungs 1–6 and roadmap steps 1–4b;
-`docs/status.md` has the task in hand, and `uv run fortuneteller --help` what each command does.
+The repo holds M0 (the data spine), the MVP and ladder rungs 1–6; `docs/roadmap.md` marks each
+later step done or in progress, `docs/status.md` has the task in hand, and
+`uv run fortuneteller --help` what each command does. A newcomer, human or agent, starts at
+`docs/README.md`. "Step" has three meanings; `docs/glossary.md` tells them apart.
 **A call is made from the actual once it lands, never before it**, and a statement nobody scheduled
 is never called before it happens.
 
