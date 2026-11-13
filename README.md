@@ -42,7 +42,7 @@ is in the [Legend](docs/legend.md); what comes next is in the [Roadmap](docs/roa
 
 ## New here?
 
-Start at **[docs/README.md](docs/README.md)**. It gives a reading path of four documents, three
+Start at **[docs/README.md](docs/README.md)**. It gives a reading path of five documents, three
 commands to run, and one spec to study, and maps every other document.
 
 ## Repository layout

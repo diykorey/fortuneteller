@@ -8,7 +8,7 @@ what to run, and which document answers which question.
 
 ## Your first hour
 
-**1. Read four documents, in this order.**
+**1. Read five documents, in this order.**
 
 | # | Read | To learn | Time |
 | --- | --- | --- | --- |
@@ -16,6 +16,7 @@ what to run, and which document answers which question.
 | 2 | [Roadmap](roadmap.md) | What gets built, in what order, and which steps are done | 15 min |
 | 3 | [Status](status.md), its first three sections | The last task finished, the one in progress, the next one | 5 min |
 | 4 | [Glossary](glossary.md), "The product" and "Project shorthand" | The words the other documents lean on: flow, link, kind, trigger, step, rung | 10 min |
+| 5 | [Decisions](decisions.md), the first few | What was settled on purpose, and why, so it is not argued again | 10 min |
 
 **2. Run three commands** from the repo root.
 
@@ -74,6 +75,7 @@ drive nothing.
 | See what gets built and what is done | [Roadmap](roadmap.md) |
 | Know what is being worked on now | [Status](status.md) |
 | Write the spec for a new step | [Legend](legend.md), what every step document must say |
+| Know why something was decided, and whether it is settled | [Decisions](decisions.md), newest first |
 | Know what the findings are | [MVP results](mvp-results.md), then each spec's Results |
 | Add an event flow or an expectation source | [Extending](extending.md) |
 | Know what a table or column means | [Schema](schema.md) |
@@ -106,11 +108,10 @@ drive nothing.
 ## How this folder grows
 
 Flat until it needs not to be. A subfolder appears when a second document of the same kind exists,
-not in advance; steps/ appeared that way. The likely next ones:
+not in advance; steps/ appeared that way. The likely next one:
 
 - concepts/: one file per idea that needs more than a glossary line (surprise, base rate,
   walk-forward).
-- decisions/: short records of choices that would otherwise be argued again.
 
 Two rules, both learned the hard way: **a document is written when something real needs it**, and
 **deleted when it stops being true**. legacy/ exists because the last corpus drifted into describing
