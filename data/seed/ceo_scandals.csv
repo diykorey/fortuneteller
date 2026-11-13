@@ -1,0 +1,27 @@
+day,time,ticker,company,ceo,conduct,source
+2005-03-07,08:43,BA,Boeing,Harry C. Stonecipher,relationship with an employee,https://www.sec.gov/Archives/edgar/data/0000012927/000119312505046669/dex991.htm
+2005-08-11,16:54,RRGB,Red Robin Gourmet Burgers,Michael Snyder,personal expenses charged to the company,https://www.sec.gov/Archives/edgar/data/1171759/000119312505165278/0001193125-05-165278-index.htm
+2006-04-24,unknown,MMS,Maximus,Lynn Davenport,conduct towards a female employee,https://www.sec.gov/Archives/edgar/data/1032220/000110465906027965/a06-10517_1ex99d1.htm
+2010-08-06,16:26,HPQ,HP,Mark V. Hurd,expense reports after a harassment claim,https://www.sec.gov/Archives/edgar/data/47217/000104746910007177/0001047469-10-007177-index.htm
+2010-09-13,20:01,HMN,Horace Mann Educators,Louis G. Lower II,drunk-driving jail sentence,https://www.sec.gov/Archives/edgar/data/850141/000119312510209185/0001193125-10-209185-index.htm
+2012-02-08,17:58,SYK,Stryker,Stephen P. MacMillan,relationship with an employee,https://investors.stryker.com/press-releases/news-details/2012/Stephen-P-MacMillan-Resigns-as-Chairman-President-and-CEO-of-Stryker-Corporation/default.aspx
+2012-04-10,before close,BBY,Best Buy,Brian J. Dunn,relationship with an employee,https://www.startribune.com/best-buy-ceo-resigns-under-cloud/146811365
+2015-06-10,16:48,VC,Visteon,Timothy D. Leuliette,misconduct revealed in arbitration,https://www.sec.gov/Archives/edgar/data/1111335/000119312515092521/0001193125-15-092521-index.htm
+2015-12-14,16:22,FFIV,F5 Networks,Manuel F. Rivelo,personal conduct,https://www.sec.gov/Archives/edgar/data/1048695/000119312515402550/0001193125-15-402550-index.htm
+2016-04-28,08:05,BKNG,Priceline Group,Darren R. Huston,relationship with an employee,https://www.sec.gov/Archives/edgar/data/1075531/000107553116000093/0001075531-16-000093-index.htm
+2018-01-25,16:21,EQIX,Equinix,Stephen M. Smith,poor judgment with respect to an employee matter,https://www.sec.gov/Archives/edgar/data/1101239/000114420418003688/0001144204-18-003688-index.htm
+2018-01-26,before close,WYNN,Wynn Resorts,Stephen A. Wynn,sexual misconduct reported,https://www.pbs.org/newshour/nation/dozens-of-women-accuse-hotel-magnate-steve-wynn-of-sexual-misconduct-wall-street-journal-reports
+2018-02-05,16:04,LULU,Lululemon Athletica,Laurent Potdevin,conduct short of standards,https://www.cnbc.com/2018/02/05/lululemon-ceo-laurent-potdevin-to-resign.html
+2018-06-21,09:25,INTC,Intel,Brian M. Krzanich,relationship with an employee,https://www.bnnbloomberg.ca/intel-ceo-krzanich-resigns-after-relationship-with-employee-1.1096638
+2018-06-28,16:55,RMBS,Rambus,Ronald Black,conduct short of standards,https://www.sec.gov/Archives/edgar/data/917273/000119312518207771/0001193125-18-207771-index.htm
+2018-07-17,after close,TXN,Texas Instruments,Brian T. Crutcher,violation of the code of conduct,https://prnewswire.com/news-releases/rich-templeton-to-reassume-president-and-ceo-roles-in-addition-to-his-current-role-as-chairman-brian-crutcher-resigned-as-ceo-300682515.html
+2018-12-05,17:10,LRCX,Lam Research,Martin B. Anstice,misconduct allegations,https://www.sec.gov/Archives/edgar/data/707549/000070754918000153/0000707549-18-000153-index.htm
+2019-11-03,19:55,MCD,McDonald's,Stephen J. Easterbrook,relationship with an employee,https://fortune.com/2019/11/03/mcdonalds-ceo-steve-easterbrook-out-relationship-employee/
+2020-01-21,08:09,TILE,Interface,Jay D. Gould,abusive behavior at a company event,https://www.sec.gov/Archives/edgar/data/715787/000143774920000839/0001437749-20-000839-index.htm
+2020-02-20,16:29,NGVT,Ingevity,D. Michael Wilson,personal conduct,https://www.sec.gov/Archives/edgar/data/1653477/000110465920023403/0001104659-20-023403-index.htm
+2020-07-21,06:45,TPR,Tapestry,Jide J. Zeitlin,misconduct allegation,https://www.sec.gov/Archives/edgar/data/1116132/000115752320001004/0001157523-20-001004-index.htm
+2020-10-12,08:31,APO,Apollo Global Management,Leon Black,payments to Jeffrey Epstein reported,https://www.nytimes.com/2020/10/12/business/leon-black-jeffrey-epstein.html
+2022-06-15,09:15,TBI,TrueBlue,A. Patrick Beharelle,conduct investigation,https://www.sec.gov/Archives/edgar/data/768899/000076889922000099/0000768899-22-000099-index.htm
+2022-11-10,08:40,KDP,Keurig Dr Pepper,Ozan Dokmecioglu,code of conduct violations,https://www.sec.gov/Archives/edgar/data/1418135/000119312522282016/0001193125-22-282016-index.htm
+2023-09-12,07:03,OFIX,Orthofix Medical,Keith C. Valentine,repeated offensive conduct,https://stocks.observer-reporter.com/observerreporter/article/bizwire-2023-9-12-orthofix-announces-leadership-changes
+2023-09-19,08:18,CBOE,Cboe Global Markets,Edward T. Tilly,undisclosed personal relationships,https://www.sec.gov/Archives/edgar/data/1374310/000110465923101775/0001104659-23-101775-index.htm

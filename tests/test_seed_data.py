@@ -97,6 +97,7 @@ def test_seed_dir_has_no_unexpected_csvs() -> None:
         "summits.csv",
         "presidential_posts.csv",
         "presidential_posts_2.csv",
+        "ceo_scandals.csv",
         "fomc_sentiment_dictionary.csv",
     }
     # then exactly those files are present

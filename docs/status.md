@@ -16,7 +16,8 @@ counting each cycle once; one answer of 150 cells against 2.0 by chance
 
 Step 20, part 1: a CEO's conduct in question, the company against the S&P 500, from a published
 dataset of CEO dismissals ([the spec](steps/ceo-scandals.md)), taken 2026-11-13 by the owner ahead
-of step 18's grades. Step 1, the coded list and the closes, is next.
+of step 18's grades. Step 1, the coded list, is done: 26 events, 2005 to 2023. Step 2, the closes and
+`follows --event ceo`, is next.
 
 Step 18, part 2, step 3: the first triggers graded ([the spec](steps/trigger-file.md)). The owner's
 first, CPI of 2026-11-10 *as expected*, was filed that evening but merged 2026-11-11 10:33, after
@@ -47,6 +48,7 @@ Step 20, part 1, step 2: `follows --event ceo`. Then part 2, a pasted article re
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-13 | News into triggers, part 1, step 1: 26 CEO scandals coded from the dismissal dataset, each with its source | PR #298 |
 | 2026-11-13 | News into triggers, part 1: spec, a CEO's conduct in question; step 20 taken now by the owner | PR #297 |
 | 2026-11-12 | What follows, part 2, step 2: results — nothing holds over a quarter or a year; no answer stands by cycle | PR #295 |
 | 2026-11-12 | What follows, part 2, step 1: `follows --long`, the quarter and the year with each cycle once | PR #294 |

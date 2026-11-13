@@ -1,0 +1,238 @@
+dismissal_dataset_id,company,ceo,own_conduct,decision,reason
+49,Worldcom Inc,Bernard John Ebbers,no,left out,not the CEO's own conduct
+162,American International Group,Maurice R. Greenberg,no,left out,not the CEO's own conduct
+255,Archer-Daniels-Midland Co,Dwayne O. Andreas,no,left out,not the CEO's own conduct
+307,Automatic Data Processing,Gary C. Butler,yes,left out,no source ties the departure to the conduct
+375,Bard (C.R.) Inc,George T. Maloney,no,left out,not the CEO's own conduct
+399,Bausch & Lomb Hldgs -Redh,Daniel E. Gill,no,left out,not the CEO's own conduct
+443,Best Buy Co Inc,Brian J. Dunn,yes,kept,in data/seed/ceo_scandals.csv
+498,Boeing Co,Harry C. Stonecipher,yes,kept,in data/seed/ceo_scandals.csv
+504,Officemax Inc,Christopher C. Milliken,no,left out,not the CEO's own conduct
+536,Bristol-Myers Squibb Co,Peter R. Dolan,no,left out,not the CEO's own conduct
+540,Keyspan Energy Corp,William J. Catacosinos,no,left out,not the CEO's own conduct
+702,Cavco Industries Inc,Joseph H. Stegmayer,no,left out,not the CEO's own conduct
+720,Cleco Corp,Darren J. Olagues,yes,left out,ticker now another company's
+842,El Paso Cgp Co,"Oscar Sherman Wyatt, Jr.",no,left out,not the CEO's own conduct
+912,Ca Inc,Sanjay Kumar,no,left out,not the CEO's own conduct
+919,Dxc Technology Company,Van B. Honeycutt,no,left out,not the CEO's own conduct
+957,Cms Energy Corp,"William T. McCormick, Jr.",no,left out,not the CEO's own conduct
+1041,Dana Inc,Gary L. Convis,no,left out,not the CEO's own conduct
+1053,Datascope Corp,Lawrence Saper,no,left out,not the CEO's own conduct
+1062,Dpl Inc,"Stephen F. Koziar, Jr.",no,left out,not the CEO's own conduct
+1087,Adtalem Global Education Inc,Daniel M. Hamburger,no,left out,not the CEO's own conduct
+1101,Diebold Nixdorf Inc,Walden W. O'Dell,no,left out,not the CEO's own conduct
+1253,Electro Scientific Inds Inc,James Dooley,no,left out,not the CEO's own conduct
+1354,Federal Signal Corp,Joseph J. Ross,no,left out,not the CEO's own conduct
+1361,Macy'S Inc,James M. Zimmerman,no,left out,not the CEO's own conduct
+1471,Franklin Resources Inc,Charles B. Johnson,no,left out,not the CEO's own conduct
+1513,Genentech Inc,G. Kirk Raab,yes,left out,ticker now another company's
+1597,Grace (W R) & Co,J. P. Bolduc,yes,left out,no Yahoo history
+1687,Hecla Mining Co,"Phillips S. Baker, Jr.",no,left out,not the CEO's own conduct
+1713,Hp Inc,Mark Vincent Hurd,yes,kept,in data/seed/ceo_scandals.csv
+1732,Pinnacle Entertainment Inc,R. D. Hubbard,yes,left out,no Yahoo history
+1733,Pinnacle Entertainment Inc,Paul R. Alanis,no,left out,not the CEO's own conduct
+1734,Pinnacle Entertainment Inc,Daniel R. Lee,no,left out,not the CEO's own conduct
+1748,Hooper Holmes Inc,James M. McNamee,no,left out,not the CEO's own conduct
+1857,Intel Corp,Brian Matthew Krzanich,yes,kept,in data/seed/ceo_scandals.csv
+1869,Interface Inc,Jay D. Gould,yes,kept,in data/seed/ceo_scandals.csv
+1878,American Banknote Corp,Morris Weissman,no,left out,not the CEO's own conduct
+1891,Navistar International Corp,Daniel C. Ustian,no,left out,not the CEO's own conduct
+1911,Intl Rectifier Corp,"Alexander Lidow, Ph.D.",no,left out,not the CEO's own conduct
+1982,Johnson Controls Intl Plc,Alex A. Molinaroli,yes,left out,no source ties the departure to the conduct
+1997,Kla-Tencor Corp,Kenneth L. Schroeder,no,left out,not the CEO's own conduct
+2001,Sears Holdings Corp,Charles C. Conaway,no,left out,not the CEO's own conduct
+2026,Evergy Inc,David C. Wittig,no,left out,not the CEO's own conduct
+2043,Keane Inc,Brian T. Keane,yes,left out,no Yahoo history
+2103,Lam Research Corp,Martin B. Anstice,yes,kept,in data/seed/ceo_scandals.csv
+2187,Louisiana-Pacific Corp,Harry A. Merlo,no,left out,not the CEO's own conduct
+2221,Mts Systems Corp,Laura B. Hamilton,no,left out,not the CEO's own conduct
+2245,Marsh & Mclennan Cos,Jeffrey W. Greenberg,no,left out,not the CEO's own conduct
+2301,Mcdonald'S Corp,Stephen J. Easterbrook,yes,kept,in data/seed/ceo_scandals.csv
+2353,Merrill Lynch & Co Inc,David H. Komansky,no,left out,not the CEO's own conduct
+2483,Nui Corp,"John Kean, Jr.",no,left out,not the CEO's own conduct
+2494,Nash Finch Co,Ronald Marshall,no,left out,not the CEO's own conduct
+2539,Natures Sunshine Prods Inc,Douglas Faggioli,no,left out,not the CEO's own conduct
+2643,Northwestern Corp,Merle D. Lewis,no,left out,not the CEO's own conduct
+2651,Wells Fargo & Co,John G. Stumpf,no,left out,not the CEO's own conduct
+2691,Firstenergy Corp,"Charles E. Jones, Jr.",no,left out,not the CEO's own conduct
+2838,Peoples Energy Corp,Thomas M. Patrick,no,left out,not the CEO's own conduct
+2853,Pdc Energy Inc,Richard W. McCullough,no,left out,not the CEO's own conduct
+3058,Reynolds & Reynolds -Cl A,Lloyd G. Waterhouse,no,left out,not the CEO's own conduct
+3064,Riggs National Corp,Joe L. Allbritton,no,left out,not the CEO's own conduct
+3065,Riggs National Corp,Robert L. Allbritton,no,left out,not the CEO's own conduct
+3138,Valeant Pharmaceuticals -Old,J. Michael Pearson,no,left out,not the CEO's own conduct
+3179,Schering-Plough,Richard Jay Kogan,no,left out,not the CEO's own conduct
+3185,Schulman (A.) Inc,Terry L. Haines,no,left out,not the CEO's own conduct
+3210,Seitel Inc,Paul A. Frame,no,left out,not the CEO's own conduct
+3360,Enesco Group Inc,Cynthia Passmore,yes,left out,no Yahoo history
+3378,Stewart & Stevenson Services,Bob H. O'Neal,no,left out,not the CEO's own conduct
+3407,Stryker Corp,Stephen P. MacMillan,yes,kept,in data/seed/ceo_scandals.csv
+3412,Navient Corp,Thomas J. Fitzpatrick,no,left out,not the CEO's own conduct
+3454,Symbol Technologies,Tomo Razmilovic,no,left out,not the CEO's own conduct
+3455,Symbol Technologies,Jerome Swartz,no,left out,not the CEO's own conduct
+3456,Symbol Technologies,Richard Bravman,no,left out,not the CEO's own conduct
+3495,Rs Legacy Corp,David J. Edmondson,yes,left out,no Yahoo history
+3537,Telxon Corp,Frank E. Brick,no,left out,not the CEO's own conduct
+3557,Texaco Inc,Peter I. Bijur,yes,left out,ticker now another company's
+3563,Texas Instruments Inc,Brian T. Crutcher,yes,kept,in data/seed/ceo_scandals.csv
+3649,Tyco International Plc,L. Dennis Kozlowski,no,left out,not the CEO's own conduct
+3668,United Continental Hldgs Inc,Jeffery A. Smisek,no,left out,not the CEO's own conduct
+3682,Unifi Inc,William L. Jasper,yes,left out,no source ties the departure to the conduct
+3712,Unitedhealth Group Inc,William W. McGuire,no,left out,not the CEO's own conduct
+3751,Sprint Corp,William T. Esrey,no,left out,not the CEO's own conduct
+3811,Volt Info Sciences Inc,Steven A. Shaw,no,left out,not the CEO's own conduct
+3982,Foot Locker Inc,William K. Lavin,no,left out,not the CEO's own conduct
+4234,Watts Water Technologies Inc,Timothy P. Horne,no,left out,not the CEO's own conduct
+4283,Ascential Software Corp,Phillip Elliott White,no,left out,not the CEO's own conduct
+4319,Kb Home,Bruce Karatz,no,left out,not the CEO's own conduct
+4344,Pilgrim'S Pride Corp,Jayson J. Penn,no,left out,not the CEO's own conduct
+4377,Comverse Technology Inc,Kobi Alexander,no,left out,not the CEO's own conduct
+4378,Comverse Technology Inc,Andre Dahan,no,left out,not the CEO's own conduct
+4475,Organogenesis Inc,Philip M. Laughlin,no,left out,not the CEO's own conduct
+4552,Advanced Marketing Services,Michael M. Nicita,no,left out,not the CEO's own conduct
+4610,Dentsply Sirona Inc,"Donald M. Casey, Jr.",no,left out,not the CEO's own conduct
+4621,Cbs Corp,"Leslie Moonves, II",yes,left out,ticker now another company's
+4644,Bally Total Fitness Hldg Cp,Lee S. Hillman,no,left out,not the CEO's own conduct
+4646,Tile Shop Holdings Inc,Robert A. Rucker,no,left out,not the CEO's own conduct
+4756,Sotheby'S,Diana D. Brooks,no,left out,not the CEO's own conduct
+4759,Mgm Resorts International,J. Terrence Lanni,yes,left out,no source ties the departure to the conduct
+4804,Office Depot Inc,Stephen A. Odland,no,left out,not the CEO's own conduct
+4824,Presidential Life Corp,Herbert Kurz,no,left out,not the CEO's own conduct
+4856,Merisel Inc,Timothy N. Jenson,no,left out,not the CEO's own conduct
+4940,Enterasys Networks Inc,Craig R. Benson,no,left out,not the CEO's own conduct
+5006,Cirrus Logic Inc,David Damian French,no,left out,not the CEO's own conduct
+5038,Lattice Semiconductor Corp,Cyrus Y. Tsui,no,left out,not the CEO's own conduct
+5054,Bbx Capital Corp,Alan B. Levan,no,left out,not the CEO's own conduct
+5063,Digi International Inc,"Ervin F. Kamm, Jr.",no,left out,not the CEO's own conduct
+5079,Commerce Bancorp Inc/Nj,"Vernon W. Hill, Jr.",no,left out,not the CEO's own conduct
+5082,First Bancorp P R,Angel Alvarez-Perez,no,left out,not the CEO's own conduct
+5083,First Bancorp P R,Luis M. Beauchamp,no,left out,not the CEO's own conduct
+5092,Elah Holdings Inc,Louis J. Rampino,no,left out,not the CEO's own conduct
+5210,Brixmor Property Group Inc,Michael A. Carroll,no,left out,not the CEO's own conduct
+5287,Mid Atlantic Medical Svcs,George T. Jochum,no,left out,not the CEO's own conduct
+5298,Iconix Brand Group Inc,Neil Cole,no,left out,not the CEO's own conduct
+5462,Integral Systems Inc,Peter J. Gaffney,no,left out,not the CEO's own conduct
+5475,Trueblue Inc,A. Patrick Beharelle,yes,kept,in data/seed/ceo_scandals.csv
+5478,Hca Healthcare Inc,Richard L. Scott,no,left out,not the CEO's own conduct
+5490,Par Pacific Holdings Inc,Roger A. Parker,no,left out,not the CEO's own conduct
+5502,Swift Transportation Co Inc,Jerry C. Moyes,no,left out,not the CEO's own conduct
+5586,Biolase Inc,Federico Pignatelli,no,left out,not the CEO's own conduct
+5615,Atmel Corp,George Perlegos,yes,left out,no Yahoo history
+5877,Checkers Drive-In Restaurant,"James F. White, Jr.",no,left out,not the CEO's own conduct
+5884,Horace Mann Educators Corp,"Louis Gordon Lower, II",yes,kept,in data/seed/ceo_scandals.csv
+5905,World Acceptance Corp/De,Janet Lewis Matricciani,no,left out,not the CEO's own conduct
+5931,Vitesse Semiconductor Corp,Louis R. Tomasetta,no,left out,not the CEO's own conduct
+6020,Bisys Group Inc,Russell P. Fradin,no,left out,not the CEO's own conduct
+6190,Asgn Inc,Peter T. Dameris,yes,left out,no Yahoo history
+6196,Mcafee Inc,George Samenuk,no,left out,not the CEO's own conduct
+6201,Gtech Holdings Corp,Guy B. Snowden,no,left out,not the CEO's own conduct
+6209,Kemet Corp,Per-Olof Loof,yes,left out,no Yahoo history
+6210,Epicor Software Corp -Old,Gerald R. Blackie,no,left out,not the CEO's own conduct
+6239,Patterson Cos Inc,Mark S. Walchirk,yes,left out,no Yahoo history
+6254,Peoplesoft Inc,Craig A. Conway,no,left out,not the CEO's own conduct
+6278,Black Box Corp,Fred C. Young,no,left out,not the CEO's own conduct
+6290,Hayes Lemmerz Intl Inc,Ranko Cucuz,no,left out,not the CEO's own conduct
+6304,Gulfport Energy Corp,Michael G. Moore,yes,left out,history restarts after the event
+6325,Ingevity Corp,D. Michael Wilson,yes,kept,in data/seed/ceo_scandals.csv
+6347,Site Centers Corp,David John Oakes,no,left out,not the CEO's own conduct
+6350,Chesapeake Energy Corp,Aubrey K. McClendon,no,left out,not the CEO's own conduct
+6352,Cree Inc,F. Neal Hunter,no,left out,not the CEO's own conduct
+6390,Avid Technology Inc,"Louis Hernandez, Jr.",yes,left out,no Yahoo history
+6466,Arconic Inc,"Klaus-Christian Kleinfeld, Dipl.-Kfm., rer. pol.",no,left out,not the CEO's own conduct
+6483,Blanch E W Holdings Inc,"Edgar W. Blanch, Jr.",no,left out,not the CEO's own conduct
+6523,Papa Johns International Inc,John H. Schnatter,no,left out,not the CEO's own conduct
+6550,Simon Worldwide Inc,Allan I. Brown,no,left out,not the CEO's own conduct
+6554,Stone Energy Corp,D. Peter Canty,no,left out,not the CEO's own conduct
+6628,Barnes & Noble Inc,Demos Parneros,yes,left out,no Yahoo history
+6659,Mercury Interactive Corp,Amnon Landan,no,left out,not the CEO's own conduct
+6879,Investment Technology Gp Inc,Robert Christian Gasser,no,left out,not the CEO's own conduct
+6954,Affiliated Computer Services,Jeffrey A. Rich,no,left out,not the CEO's own conduct
+6955,Affiliated Computer Services,Mark A. King,no,left out,not the CEO's own conduct
+6969,Aspen Technology Inc,Lawrence B. Evans,no,left out,not the CEO's own conduct
+6970,Aspen Technology Inc,David L. McQuillin,no,left out,not the CEO's own conduct
+7011,Itt Educational Services Inc,Kevin M. Modany,no,left out,not the CEO's own conduct
+7032,Brooks Automation Inc,Robert J. Therrien,no,left out,not the CEO's own conduct
+7033,Brooks Automation Inc,Edward C. Grady,no,left out,not the CEO's own conduct
+7167,Graftech International Ltd,Robert P. Krass,no,left out,not the CEO's own conduct
+7334,Arthrocare Corp,Michael A. Baker,no,left out,not the CEO's own conduct
+7336,Sizmek Inc,Scott K. Ginsburg,no,left out,not the CEO's own conduct
+7344,Impath Inc,Anu D. Saad,no,left out,not the CEO's own conduct
+7348,Alexion Pharmaceuticals Inc,David L. Hallal,no,left out,not the CEO's own conduct
+7394,Sapient Corp,Jerry A. Greenberg,no,left out,not the CEO's own conduct
+7411,Carbo Ceramics Inc,C. Mark Pearson,yes,left out,no Yahoo history
+7421,Polycom Inc,Andrew M. Miller,yes,left out,no Yahoo history
+7471,Boston Communications Group,Edward H. Snowden,no,left out,not the CEO's own conduct
+7510,Guess Inc,Paul Marciano,no,left out,not the CEO's own conduct
+7572,Navigant Consulting Inc,Robert P. Maher,no,left out,not the CEO's own conduct
+7657,Monster Worldwide Inc,Andrew J. McKelvey,no,left out,not the CEO's own conduct
+7665,Igate Corp,Phaneesh Murthy,yes,left out,no Yahoo history
+7734,Take-Two Interactive Sftwr,Ryan A. Brant,no,left out,not the CEO's own conduct
+7735,Take-Two Interactive Sftwr,Kelly Sumner,no,left out,not the CEO's own conduct
+7747,Rambus Inc,"Ronald D. Black, Ph.D.",yes,kept,in data/seed/ceo_scandals.csv
+7763,Maximus Inc,Lynn P. Davenport,yes,kept,in data/seed/ceo_scandals.csv
+7802,Equity Office Properties Tr,Timothy H. Callahan,no,left out,not the CEO's own conduct
+7852,Childrens Place Inc,Ezra Dabah,no,left out,not the CEO's own conduct
+7956,Verisign Inc,Stratton D. Sclavos,no,left out,not the CEO's own conduct
+7990,Waddell&Reed Finl Inc -Cl A,Keith A. Tucker,no,left out,not the CEO's own conduct
+8012,Norwegian Cruise Line Hldgs,Kevin M. Sheehan,yes,left out,under 504 closes before the event
+8038,Innospec Inc,Paul Jennings,no,left out,not the CEO's own conduct
+8069,Rh,Gary G. Friedman,no,left out,not the CEO's own conduct
+8074,King Pharmaceuticals Inc,Jefferson J. Gregory,no,left out,not the CEO's own conduct
+8085,Mannatech Inc,Samuel L. Caster,no,left out,not the CEO's own conduct
+8086,Mannatech Inc,Wayne L. Badovinus,no,left out,not the CEO's own conduct
+8132,Ucbh Holdings Inc,Thomas S. Wu,no,left out,not the CEO's own conduct
+8139,Sprint Pcs Group,William T. Esrey,no,left out,not the CEO's own conduct
+8155,Blucora Inc,James F. Voelker,no,left out,not the CEO's own conduct
+8205,Booking Holdings Inc,Darren Richard Huston,yes,kept,in data/seed/ceo_scandals.csv
+8247,Brocade Communications Sys,Gregory L. Reyes,no,left out,not the CEO's own conduct
+8257,F5 Networks Inc,Manuel F. Rivelo,yes,kept,in data/seed/ceo_scandals.csv
+8261,Ditech Networks Inc,Timothy K. Montgomery,no,left out,not the CEO's own conduct
+8289,Juniper Networks Inc,Shaygan Kheradpir,no,left out,not the CEO's own conduct
+8370,World Wrestling Entmt Inc,Vincent K. McMahon,yes,left out,no Yahoo history
+8397,Retek Inc,John Buchanan,no,left out,not the CEO's own conduct
+8426,Utstarcom Holdings Corp,Hong Liang Lu,no,left out,not the CEO's own conduct
+8456,Krispy Kreme Doughnuts Inc,Scott A. Livengood,no,left out,not the CEO's own conduct
+8486,Visteon Corp,Timothy D. Leuliette,yes,kept,in data/seed/ceo_scandals.csv
+8496,Janus Capital Group Inc,Gary Douglas Black,no,left out,not the CEO's own conduct
+8500,Berkshire Hills Bancorp Inc,Michael P. Daly,yes,left out,no Yahoo history
+8517,Equinix Inc,Stephen M. Smith,yes,kept,in data/seed/ceo_scandals.csv
+8540,Tapestry Inc,Jide J. Zeitlin,yes,kept,in data/seed/ceo_scandals.csv
+8547,Ixia,Victor Alston,no,left out,not the CEO's own conduct
+8578,Massey Energy Co,Donald L. Blankenship,no,left out,not the CEO's own conduct
+8585,Odyssey Healthcare Inc,David C. Gasmire,no,left out,not the CEO's own conduct
+8601,Arbitron Inc,Michael P. Skarzynski,no,left out,not the CEO's own conduct
+8664,Gamestop Corp,Michael K. Mauler,no,left out,not the CEO's own conduct
+8701,Medicor Ltd,Theodore R. Maloney,no,left out,not the CEO's own conduct
+8746,Red Robin Gourmet Burgers,Michael J. Snyder,yes,kept,in data/seed/ceo_scandals.csv
+8761,Wynn Resorts Ltd,Stephen A. Wynn,yes,kept,in data/seed/ceo_scandals.csv
+8793,Ipayment Inc,Gregory S. Daily,no,left out,not the CEO's own conduct
+8820,Xperi Corporation,"Robert A. Young, Ph.D.",no,left out,not the CEO's own conduct
+8894,Symmetry Medical Inc,Brian S. Moore,no,left out,not the CEO's own conduct
+8966,Diamond Foods Inc,Michael J. Mendes,no,left out,not the CEO's own conduct
+9005,Tronox Holdings Plc,Jeffry N. Quinn,no,left out,not the CEO's own conduct
+9024,Crocs Inc,John H. Duerden,yes,left out,no source ties the departure to the conduct
+9072,Synchronoss Technologies,Glenn Lurie,yes,left out,no Yahoo history
+9181,Comscore Inc,Serge Matta,no,left out,not the CEO's own conduct
+9199,Mimedx Group Inc,Parker H. Petit,no,left out,not the CEO's own conduct
+9201,Vitamin Shoppe Inc,Thomas A. Tolworthy,yes,left out,no Yahoo history
+9379,Cboe Global Markets Inc,Edward T. Tilly,yes,kept,in data/seed/ceo_scandals.csv
+9386,Tangoe Inc,"Albert R. Subbloie, Jr.",no,left out,not the CEO's own conduct
+9399,Whitestone Reit,James C. Mastandrea,no,left out,not the CEO's own conduct
+9400,Global Brokerage Inc,Dror Niv,no,left out,not the CEO's own conduct
+9423,Wageworks Inc,Joseph L. Jackson,no,left out,not the CEO's own conduct
+9484,Wellcare Health Plans Inc,Todd Suhayl Farha,no,left out,not the CEO's own conduct
+9491,Nuvasive Inc,Alexis V. Lukianov,yes,left out,no Yahoo history
+9786,Franklin Bsp Realty Trust In,Nicholas S. Schorsch,no,left out,not the CEO's own conduct
+9943,Firstenergy Corp,Steven E. Strah,no,left out,not the CEO's own conduct
+10037,Chemours Co,Mark E. Newman,no,left out,not the CEO's own conduct
+10065,Trident Microsystems Inc,Frank C. Lin,no,left out,not the CEO's own conduct
+10192,Sterling Bancorp,Thomas Lopp,no,left out,not the CEO's own conduct
+10213,Keurig Dr Pepper Inc,Ozan Dokmecioglu,yes,kept,in data/seed/ceo_scandals.csv
+10360,Adapthealth Corp,Luke McGee,yes,left out,base window before the company listed (a blank-check shell)
+10421,Encompass Health Corp,Richard M. Scrushy,no,left out,not the CEO's own conduct
+10500,Lululemon Athletica Inc,Laurent Potdevin,yes,kept,in data/seed/ceo_scandals.csv
+10625,Unitedhealth Group Inc,Andrew Philip Witty,no,left out,not the CEO's own conduct
+10679,Ezcorp Inc -Cl A,Mark E. Kuchenrither,no,left out,not the CEO's own conduct
+10685,Planet Fitness Inc,Christopher J. Rondeau,yes,left out,no source ties the departure to the conduct
+10708,Orthofix Medical Inc,Keith C. Valentine,yes,kept,in data/seed/ceo_scandals.csv
+10809,Apollo Global Mgmt Inc,Leon David Black,yes,kept,in data/seed/ceo_scandals.csv
