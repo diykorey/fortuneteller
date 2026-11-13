@@ -111,8 +111,10 @@ Five principles. They are the residue of one failed attempt, not abstractions.
 
 The vocabulary, so the words stay load-bearing:
 
-- **Step** — one unit of MVP work. Ends in a runnable command printing a real number. There are
-  four, and they are sequential: each one's output is the next one's input.
+- **Step** — one unit of work that ends in a runnable command printing a real number. The word has
+  three uses, told apart in the [Glossary](glossary.md): the MVP's four sequential steps, the
+  roadmap's numbered steps after the ladder (each split into parts when too big for one spec), and
+  the rows of a spec's own "The steps" table.
 - **Rung** — one feature after the MVP, on the ladder in the roadmap. Ordered, and each is worth
   building *only because the one below it worked*.
 - **Graduation trigger** — a named condition that must actually fire before a heavier piece of
@@ -120,31 +122,53 @@ The vocabulary, so the words stay load-bearing:
 - **Milestone** — **retired.** The old M0–M7 scheme planned seven milestones ahead of a single
   measurement, and most of it was discarded. M0 is kept as a historical label for what shipped.
   Do not reintroduce the scheme.
-- **Release** — the [scoreboard](steps/scoreboard.md): the page in `docs/scoreboard/`, rewritten
-  by the evening job on the days the score changes and served by GitHub Pages from `main` at
-  <https://diykorey.github.io/fortuneteller/scoreboard/> (*rewritten 2026-10-26*, when the page and the
-  job's line were built, the setting on since 2026-10-27; rung 6 had delivered a popup to one
-  laptop first). Nothing is versioned or packaged for
+- **Release** — the [scoreboard](steps/scoreboard.md): the page in docs/scoreboard/, rewritten
+  by the evening job on the days the score changes and served by GitHub Pages from main at
+  <https://diykorey.github.io/fortuneteller/scoreboard/>. Nothing is versioned or packaged for
   anyone else's use, and nothing is planned to be.
 
 ## What every step document must say
 
-One document per step, named `step-N-<name>.md`, in this order. [Step 1](steps/step-1-releases.md) is the
-worked example.
+One document per step or part, in steps/, named for its subject in a few words
+(ceo-scandals.md). The MVP's steps and the ladder's rungs keep their numbers in the name
+(step-1-releases.md, rung-2-predict.md). [A CEO's conduct in question](steps/ceo-scandals.md) is the
+worked example. The sections, in this order:
 
 | Section | Must answer | Test of whether it is done |
 | --- | --- | --- |
-| **The goal** | What exists at the end that did not exist before — and why it matters to the steps after it | A reader can state the deliverable in one sentence |
+| **The goal** | What exists at the end that did not exist before, and why it matters to the steps after it | A reader can state the deliverable in one sentence |
 | **The way to reach it** | What makes this hard, and the approach that handles it | The non-obvious obstacle is named, not assumed |
+| **The rule, fixed before measuring** | The bars, the test and the expected outcome, written before any number is seen; amended only with a date. A step that measures nothing (a page, a job, a fix) says so here in one line | Someone could grade the result without asking the author |
 | **The steps** | The ordered sequence, each with a "done when" | Each row is checkable without judgement |
 | **How you know it is right** | The checks that would catch a *plausible wrong answer*, not just a crash | At least one check could actually fail |
 | **What this step does not do** | The boundary | Scope creep has a named edge to cross |
-| **Technical details** | Sources, mappings, file placement, tests — last, because it changes most | Someone else could implement it |
+| **Technical details** | Sources, mappings, file placement, tests; last, because it changes most | Someone else could implement it |
+| **Results** | Added when measured: each verdict against the rule written first, and whether the expected outcome held | Every number traces to a command; a wrong expectation is said plainly |
 
-Two rules about these documents:
+Three rules about these documents:
 
 - **Why before how.** If a reader cannot say why the step exists before reaching the technical
   section, the document is in the wrong order.
 - **A document is written when something real needs it**, and deleted when it stops being true.
-  The `legacy/` folder exists because the last corpus described code that did not exist. That is a
+  The legacy/ folder exists because the last corpus described code that did not exist. That is a
   liability, not an archive.
+- **A fresh reader checks it twice**: once before anything is measured, once when the results are
+  in. See below.
+
+## How a step is reviewed: the elephant and the goldfish
+
+The author of a spec, human or agent, is the **elephant**: they carry the whole conversation that
+led to it, so they can no longer see what the page leaves out. A **goldfish** is a reviewer who
+has seen none of it: only the spec, the documents it links, this Legend and the
+[Glossary](glossary.md). If the goldfish cannot grade the step from the page, neither can anyone
+next month. (The pattern is the elephant-goldfish model; here it is two reviews, nothing more.)
+
+| When | The goldfish is given | It must answer | The elephant then |
+| --- | --- | --- | --- |
+| **Before measuring**, the spec's pull request | The spec and its links | 1. The goal in one sentence. 2. The bars and the expected outcome, as numbers. 3. Each "done when" it could not check without judgement. 4. A plausible wrong answer the checks would miss. 5. Every term or claim that needs the conversation to understand | Fixes the spec, or says in the pull request why a finding stands |
+| **When the results are in**, the results' pull request | The spec with its Results | 1. Is each verdict judged against the rule written first? 2. Did any bar move without a dated amendment? 3. Does the plain-words summary say what the numbers say, no more? | Fixes the Results, or says why not |
+
+The pull request carries one line per review: how many findings, how many fixed. An agent runs the
+goldfish as a fresh subagent with only those files; the [goldfish-review
+skill](../.claude/skills/goldfish-review/SKILL.md) holds the prompt. A person can be the goldfish
+too: anyone who has not followed the work.

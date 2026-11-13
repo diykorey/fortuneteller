@@ -92,7 +92,10 @@ just check                           # the full local gate = lint + typecheck + 
 ## Where things live
 
 - **The plan:** `docs/roadmap.md` — the MVP, the ladder and the numbered steps after it. Work goes
-  spec → one branch → one PR per step, `docs/status.md` updated in the same change. M0 shipped
+  spec → goldfish review → measure → results → goldfish review, one branch and one PR at a time,
+  `docs/status.md` updated in the same change. The goldfish is a fresh subagent that sees only the
+  spec and what it links (`docs/legend.md`, "How a step is reviewed"; the `goldfish-review` skill
+  in `.claude/skills/` holds the prompt). Never review your own spec in the same context. M0 shipped
   as tickets M0-01…09 (issues #2–#10, milestone closed); its ticket doc is now
   `docs/legacy/m0-tickets.md`. There is no ticket set for the MVP steps and none is needed yet.
 - **The data spine:** Pydantic v2 models + a thin SQL helper over DuckDB — **no ORM**. Schema is plain
