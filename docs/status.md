@@ -51,6 +51,7 @@ read into a trigger.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-14 | News into triggers, part 1, step 2: `follows --event ceo`, each company against the S&P 500 on its own base; the companies' closes by `load-prices --companies` | PR #299 |
 | 2026-11-13 | News into triggers, part 1, step 1: 26 CEO scandals coded from the dismissal dataset, each with its source | PR #298 |
 | 2026-11-13 | News into triggers, part 1: spec, a CEO's conduct in question; step 20 taken now by the owner | PR #297 |
 | 2026-11-12 | What follows, part 2, step 2: results — nothing holds over a quarter or a year; no answer stands by cycle | PR #295 |
