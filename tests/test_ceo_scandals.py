@@ -1,12 +1,12 @@
 import math
 import random
-from datetime import UTC, date, datetime, timedelta
+from datetime import UTC, date, datetime, time, timedelta
 from pathlib import Path
 
 import pytest
 
 from fortuneteller import db, flows, sources, study
-from fortuneteller.__main__ import main
+from fortuneteller.__main__ import _trigger_companies, main
 from fortuneteller.sources import DailyClosingPrice
 from fortuneteller.study import CANT_SAY, DOWN, SAME, TOO_FEW, UP, Base
 
@@ -235,3 +235,121 @@ def test_a_company_yahoo_fails_on_is_reported_and_the_others_load(
     assert counts == {"GOOD": 1}
     assert failed == ["BAD: Yahoo returned HTTP 404 for BAD"]
     assert study.stored_closes("GOOD") == [DailyClosingPrice(START, 10.0)]
+
+
+def test_a_trigger_file_may_name_a_company_read_for_ceo_alone() -> None:
+    # given a file with a ticker column, holding a ceo row and a jobs report row
+    files = [
+        (
+            "t.csv",
+            "s",
+            b"flow,day,kind,ticker\nceo,2026-11-08,scandal,NVDA\nnfp,2001-01-05,above,X\n",
+        )
+    ]
+
+    # when read
+    triggers, bad = study.read_triggers(files)
+
+    # then the ceo row carries its ticker, the other none
+    assert bad == []
+    assert [(t.flow, t.ticker) for t in triggers] == [("ceo", "NVDA"), ("nfp", "")]
+
+
+def _history() -> tuple[
+    list[DailyClosingPrice], dict[str, list[DailyClosingPrice]], list[flows.EventInstance]
+]:
+    # a flat index, and twelve companies each 6% down the day after its event's reaction close
+    index = _closes([0.0] * 700)
+    companies, events = {}, []
+    for n in range(12):
+        ticker, i = f"C{n}", 520 + 10 * n
+        companies[ticker] = _company(n, i + 1, -0.06)
+        at = datetime.combine(index[i].day, time(10, 0), tzinfo=sources.NEW_YORK)
+        events.append(flows.CEO_FLOW.event_instance(at, ticker))
+    companies["NEW"] = _company(99, 661, -0.06)
+    return index, companies, events
+
+
+def _ceo_answer(
+    trigger: study.Trigger, merged: datetime, companies: dict[str, list[DailyClosingPrice]]
+) -> tuple[list[dict[str, str]], list[str]]:
+    index, _, events = _history()
+    return study.answer_triggers(
+        [trigger],
+        lambda _sha: merged,
+        {"ceo": events},
+        {"ceo": {}},
+        {"SPY / ES": index},
+        [],
+        companies,
+    )
+
+
+def test_a_ceo_trigger_is_answered_from_the_scandals_before_it_and_graded_on_its_company() -> None:
+    # given twelve scandals each followed by a fall the day after, and a new one at another
+    # company, merged before its reaction close and falling the day after
+    index, companies, _ = _history()
+    day = index[660].day
+    trigger = study.Trigger("t.csv", 2, "s", "ceo", day, study.SCANDAL, "NEW")
+    merged = datetime.combine(day, time(12, 0), tzinfo=sources.NEW_YORK)
+
+    # when answered
+    rows, lines = _ceo_answer(trigger, merged, companies)
+
+    # then the day after reads down from the twelve, and the company's own fall grades it right
+    day_row = next(r for r in rows if r["span"] == "day")
+    assert (day_row["market"], day_row["answer"], day_row["down"]) == ("NEW", DOWN, "12")
+    assert (day_row["outcome"], day_row["result"]) == (DOWN, study.RIGHT)
+    assert lines[1] == "  NEW vs S&P 500 day: down (0/0/12), down, right"
+    assert len(rows) == 3
+
+
+def test_a_ceo_trigger_late_unnamed_or_without_closes_counts_nowhere() -> None:
+    # given a trigger merged after its reaction close, one with no ticker, one with no closes
+    index, companies, _ = _history()
+    day = index[660].day
+    late = datetime.combine(day, time(16, 0), tzinfo=sources.NEW_YORK)
+    early = datetime.combine(day, time(9, 0), tzinfo=sources.NEW_YORK)
+
+    # when answered
+    _, on_late = _ceo_answer(
+        study.Trigger("t.csv", 2, "s", "ceo", day, "scandal", "NEW"), late, companies
+    )
+    _, unnamed = _ceo_answer(
+        study.Trigger("t.csv", 2, "s", "ceo", day, "scandal"), early, companies
+    )
+    _, gone = _ceo_answer(
+        study.Trigger("t.csv", 2, "s", "ceo", day, "scandal", "GONE"), early, companies
+    )
+
+    # then each says why, and none is logged
+    assert on_late[0].startswith(f"t.csv:2 ceo {day} scandal NEW: late, merged {day} 16:00")
+    assert unnamed == [
+        f"t.csv:2 ceo {day} scandal: void, a ceo trigger names its company in a ticker column"
+    ]
+    assert gone == [f"t.csv:2 ceo {day} scandal GONE: waiting, GONE's closes are not loaded"]
+
+
+def test_only_a_ceo_trigger_fetches_its_company(
+    tmp_db: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given Yahoo watched, a jobs report trigger, and a ceo trigger naming a company
+    asked: list[list[str]] = []
+
+    def load(tickers: list[str], con: object = None) -> tuple[dict[str, int], list[str]]:
+        asked.append(list(tickers))
+        study.store_daily_bars(tickers[0], tickers[0], [DailyClosingPrice(START, 1.0)])
+        return {tickers[0]: 1}, []
+
+    monkeypatch.setattr(study, "load_company_bars", load)
+    nfp = study.Trigger("t.csv", 2, "s", "nfp", START, "above")
+    ceo = study.Trigger("t.csv", 3, "s", "ceo", START, "scandal", "NEW")
+    con = db.get_connection()
+
+    # when each is prepared
+    alone = _trigger_companies([nfp], [], con)
+    named = _trigger_companies([nfp, ceo], [], con)
+
+    # then only the ceo trigger asks Yahoo, for its company alone
+    assert (alone, asked) == ({}, [["NEW"]])
+    assert named == {"NEW": [DailyClosingPrice(START, 1.0)]}

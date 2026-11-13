@@ -18,7 +18,8 @@ day answers ([the results](steps/ceo-scandals.md#results)).
 Step 20, part 1: a CEO's conduct in question, the company against the S&P 500, from a published
 dataset of CEO dismissals ([the spec](steps/ceo-scandals.md)), taken 2026-11-13 by the owner ahead
 of step 18's grades. Steps 1 to 3 are done: 26 events, 2005 to 2023, `follows --event ceo` and the
-results. Step 2b, a `ceo` trigger with the company's ticker, graded on that company alone, is next.
+results. Step 2b, a `ceo` trigger with the company's ticker, graded on that company alone, is in this
+change.
 
 Step 18, part 2, step 3: the first triggers graded ([the spec](steps/trigger-file.md)). The owner's
 first, CPI of 2026-11-10 *as expected*, was filed that evening but merged 2026-11-11 10:33, after
@@ -43,8 +44,7 @@ merged pull request ([the spec](steps/beat-the-fortune-teller.md)). It waits for
 
 ## Next
 
-Step 20, part 1, step 2b: a `ceo` trigger with its company's ticker. Then part 2, a pasted article
-read into a trigger.
+Step 20, part 2: a pasted article read into a trigger, by rules first; its own spec.
 
 ## Done
 

@@ -30,6 +30,13 @@ grades, and keeps them in `data/trigger-log.csv`.
   - `day`: the event's day in New York, `YYYY-MM-DD`;
   - `kind`: `cut`, `hold` or `hike` for the Fed and the ECB, `above`, `as expected` or `below` for a release.
 
+  *Amended 2026-11-14, [CEO scandals](ceo-scandals.md), step 2b:* a file may add a fourth column,
+  `ticker`, read for `ceo` alone (kind `scandal`): `flow,day,kind,ticker`, e.g.
+  `ceo,2026-11-08,scandal,NVDA`. A `ceo` trigger is not matched to a stored event; it is answered
+  from the stored scandals whose spans ended by its reaction close, the first close on or after its
+  day, and graded on its company against the S&P 500 from that close. Its log rows have the ticker
+  as `market`; `triggers` fetches its company's closes from Yahoo.
+
   Each row is dated by GitHub's `merged_at` for the pull request that added its file, found as a
   guess's is (`guess_files`, `merged_at`); a file edited later is read as it was added. A file that
   cannot be read, or has another header, voids its own rows only, as `read_guesses` does.
