@@ -14,6 +14,10 @@ counting each cycle once; one answer of 150 cells against 2.0 by chance
 
 ## In progress
 
+Step 20, part 1: a CEO's conduct in question, the company against the S&P 500, from a published
+dataset of CEO dismissals ([the spec](steps/ceo-scandals.md)), taken 2026-11-13 by the owner ahead
+of step 18's grades. Step 1, the coded list and the closes, is next.
+
 Step 18, part 2, step 3: the first triggers graded ([the spec](steps/trigger-file.md)). The owner's
 first, CPI of 2026-11-10 *as expected*, was filed that evening but merged 2026-11-11 10:33, after
 every reaction close, and its kind was wrong: CPI's kind is read from the core print, 0.3 against
@@ -37,13 +41,13 @@ merged pull request ([the spec](steps/beat-the-fortune-teller.md)). It waits for
 
 ## Next
 
-Not chosen yet. Step 17 is measured on every flow and span its counts allow. Step 18 waits for
-triggers filed on time; step 20 waits for step 18's grades.
+Step 20, part 1, step 2: `follows --event ceo`. Then part 2, a pasted article read into a trigger.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-13 | News into triggers, part 1: spec, a CEO's conduct in question; step 20 taken now by the owner | PR #297 |
 | 2026-11-12 | What follows, part 2, step 2: results — nothing holds over a quarter or a year; no answer stands by cycle | PR #295 |
 | 2026-11-12 | What follows, part 2, step 1: `follows --long`, the quarter and the year with each cycle once | PR #294 |
 | 2026-11-12 | What follows, part 2: spec, the Fed's decisions over a quarter and a year, each cycle once | PR #293 |
