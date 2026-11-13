@@ -17,7 +17,8 @@ counting each cycle once; one answer of 150 cells against 2.0 by chance
 Step 20, part 1: a CEO's conduct in question, the company against the S&P 500, from a published
 dataset of CEO dismissals ([the spec](steps/ceo-scandals.md)), taken 2026-11-13 by the owner ahead
 of step 18's grades. Step 1, the coded list, is done: 26 events, 2005 to 2023. Step 2, the closes and
-`follows --event ceo`, is next.
+`follows --event ceo`, is in this change; step 2b, the trigger with the company's ticker, and step 3,
+the results and Nvidia's answer, are next.
 
 Step 18, part 2, step 3: the first triggers graded ([the spec](steps/trigger-file.md)). The owner's
 first, CPI of 2026-11-10 *as expected*, was filed that evening but merged 2026-11-11 10:33, after
@@ -42,12 +43,15 @@ merged pull request ([the spec](steps/beat-the-fortune-teller.md)). It waits for
 
 ## Next
 
-Step 20, part 1, step 2: `follows --event ceo`. Then part 2, a pasted article read into a trigger.
+Step 20, part 1, step 3: the results, checked against the expected outcome, with Nvidia's answer for
+2026-11-08; then step 2b, a `ceo` trigger with its company's ticker. Then part 2, a pasted article
+read into a trigger.
 
 ## Done
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-14 | News into triggers, part 1, step 2: `follows --event ceo`, each company against the S&P 500 on its own base; the companies' closes by `load-prices --companies` | PR #299 |
 | 2026-11-13 | News into triggers, part 1, step 1: 26 CEO scandals coded from the dismissal dataset, each with its source | PR #298 |
 | 2026-11-13 | News into triggers, part 1: spec, a CEO's conduct in question; step 20 taken now by the owner | PR #297 |
 | 2026-11-12 | What follows, part 2, step 2: results — nothing holds over a quarter or a year; no answer stands by cycle | PR #295 |

@@ -79,7 +79,8 @@ the S&P 500 after past scandals, with part 1's counts, answer, placebo and walk-
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~The dataset read and coded by the rule; the seed `data/seed/ceo_scandals.csv` with each row's day, time, ticker, CEO, conduct and source; each company's closes loaded | Every kept row cites its source; the coding is listed row by row in this spec; the left-out rows are counted by reason~~ **done** 2026-11-13. *Amended:* the coding is in [`ceo-scandals-coding.csv`](ceo-scandals-coding.csv), not this spec, and the closes load in step 2 |
-| 2 | `follows --event ceo` with the excess move and each company's base; `ceo` in `TRIGGER_KINDS` (kind `scandal`, with the company's ticker in the trigger) | Tests: the excess move of a stock that moves exactly as the index is zero; a base never reads a close after the event's close before; with ten events all down against a base of a third, the answer is *down* |
+| 2 | ~~`follows --event ceo` with the excess move and each company's base; `ceo` in `TRIGGER_KINDS` (kind `scandal`, with the company's ticker in the trigger)~~ `follows --event ceo` with the excess move and each company's base; the companies' closes by `load-prices --companies` | Tests: the excess move of a stock that moves exactly as the index is zero; a base never reads a close after the event's close before; with ten events all down against a base of a third, the answer is *down* |
+| 2b | `ceo` in `TRIGGER_KINDS` (kind `scandal`, with the company's ticker in the trigger) and its grading on the company against the S&P 500; NVDA's closes loaded | A `ceo` trigger is answered from the events before it and graded on its company alone; every other flow's trigger file reads as today |
 | 3 | Results here and in [MVP results](../mvp-results.md), checked against the expected outcome; the answer for Nvidia's 2026-11-08 printed beside them | Each span's answer and walk-forward recorded |
 
 *Step 1, 2026-11-13:* of the dataset's 237 departures coded *legal*, 58 name the CEO's own
@@ -90,6 +91,11 @@ with under 504 closes before it; 1 a blank-check shell; and 6 that no source tie
 say only *before close*, *after close* or *unknown*. The first public word was earlier than the
 dataset's date for five: Horace Mann (the drunk-driving disclosure), Wynn (the WSJ report), Apollo
 (the NYT report), F5 and Visteon (the dataset's date was wrong). No price was read.
+
+*Amended 2026-11-14, before step 2's results were read:* the trigger is its own step, 2b. A trigger
+file's three columns and its grading on every market are what the evening job reads, and a `ceo`
+trigger is graded on one company, so it changes that path and goes alone. The companies' closes load
+by `load-prices --companies`, not on every `load-prices`, so the release-day job fetches none.
 
 If the dataset is not reachable, or gives fewer than 10 kept events, step 1 stops and says so.
 A hand-made list is then the owner's call, labelled as picked.
@@ -113,16 +119,18 @@ call and no row in `data/calls.csv`.
 ## Technical details
 
 - **Seed:** `data/seed/ceo_scandals.csv`, columns `day,time,ticker,company,ceo,conduct,source`,
-  documented in `docs/legacy/data/`. `event_types.csv` already holds `Corporate scandal / fraud /
+  documented in `data/seed/README.md`. `event_types.csv` already holds `Corporate scandal / fraud /
   bankruptcy`.
-- **Flows:** a `DatedShockFlow`, `ceo`, unscheduled, with the row's time. Each event's ticker is
-  read from its row.
+- **Flows:** a `DatedShockFlow`, `ceo`, unscheduled, with the row's time; *before close* is stored at
+  15:59 New York, *after close* and *unknown* at 20:00 (`flows.TIME_WORDS`). Each event's ticker is
+  its `detail`.
 - **Prices:** the companies' closes from Yahoo into `daily_bars` under their tickers, each a row in
-  `data/seed/instruments.csv` (`asset_class` equity). They are not in `MVP_PRICE_SERIES`: they are
-  not markets every event is measured on.
-- **Study:** `excess_spans(stock, index, c)` and a per-event base, beside `follow_market`, which
-  gains per-event rates. Part 1's other functions are reused unchanged.
-- **Triggers:** a fourth column, `ticker`, read only for `ceo`. Every other flow's file is read as
-  today.
+  `data/seed/instruments.csv` (`asset_class` `single_stock`, the enum's value), loaded by
+  `load-prices --companies`; a company Yahoo fails on is reported and the others load. They are not
+  in `MVP_PRICE_SERIES`: they are not markets every event is measured on.
+- **Study:** `excess_spans(stock, index, c)`, `event_base`, `rates_answer` and `follow_scandals`
+  beside `follow_market`, which is left unchanged; part 1's non-overlap walk and base are reused.
+- **Triggers (step 2b):** a fourth column, `ticker`, read only for `ceo`. Every other flow's file is
+  read as today.
 - **Docs:** this spec, the glossary (*excess move*), `docs/schema.md` if a column is added,
   `docs/status.md`, and roadmap row 20.

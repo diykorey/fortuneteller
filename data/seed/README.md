@@ -8,7 +8,7 @@ match the DuckDB tables in `schema.sql`; enum columns use the M0-03 enum *values
 | File | Table | Rows | Status |
 | --- | --- | --- | --- |
 | `event_types.csv` | event_types | 31 | Full. Polarity authoritative; **tier inferred** from the 8-tier scheme. |
-| `instruments.csv` | instruments | 12 | Representative subset of 55 — real Notion rows, mapped to the asset-class enum. |
+| `instruments.csv` | instruments | 57 | Every market measured, some of Notion's 55 rows, and the 26 companies of the CEO scandals (`single_stock`), mapped to the asset-class enum. |
 | `effect_size_seed.csv` | effect_size_seed | 15 | **Placeholder seeds** — directionally consistent with the specs, *numbers not authoritative*. |
 | `news_sources.csv` | news_sources | 25 | Full ranked stack (Notion DB has ~27). |
 | `countries.csv` | countries | 10 | Representative subset of 50; GDP figures approximate; `platforms_in_list`/`coverage_gap` blank. |

@@ -123,6 +123,18 @@ def test_mvp_instrument_resolves_by_exact_symbol(symbol: str) -> None:
     assert symbol in symbols
 
 
+def test_every_ceo_scandal_s_company_is_a_single_stock_instrument() -> None:
+    # given the committed CEO scandals and instruments
+    with (settings.seed_dir / "ceo_scandals.csv").open(newline="", encoding="utf-8") as handle:
+        tickers = [row["ticker"] for row in csv.DictReader(handle)]
+    with (settings.seed_dir / "instruments.csv").open(newline="", encoding="utf-8") as handle:
+        classes = {row["symbol"]: row["asset_class"] for row in csv.DictReader(handle)}
+    # when each scandal's ticker is looked up
+    # then it is there exactly as written, a single stock, and no company is listed twice
+    assert all(classes.get(ticker) == "single_stock" for ticker in tickers)
+    assert len(set(tickers)) == len(tickers)
+
+
 def test_tariff_rows_are_federal_register_documents_since_2018() -> None:
     # given the committed tariff actions
     with (settings.seed_dir / "tariffs.csv").open(newline="", encoding="utf-8") as handle:

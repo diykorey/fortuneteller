@@ -1054,12 +1054,20 @@ DEBT_LIMIT_EVENT_TYPE = "Fiscal: debt-ceiling / shutdown"
 SUMMIT_EVENT_TYPE = "Leaders' summit"
 POST_EVENT_TYPE = "Presidential post"
 POST_2_EVENT_TYPE = "Presidential post (second term)"
+CEO_EVENT_TYPE = "Corporate scandal / fraud / bankruptcy"
 UNITED_KINGDOM = "United Kingdom"
 FRANCE = "France"
 EUROPEAN_UNION = "European Union"
 G7_G20 = "G7 / G20"
 # After every market's close, VIX's 16:15 and bitcoin's midnight UTC among them; the US polls'.
 AFTER_EVERY_CLOSE = time(20, 0)
+# A seed time a source gives only in words (docs/steps/ceo-scandals.md): *before close* reacts at that
+# day's 16:00 close, a minute before it; *after close* and *unknown* at the next.
+TIME_WORDS = {
+    "before close": time(15, 59),
+    "after close": AFTER_EVERY_CLOSE,
+    "unknown": AFTER_EVERY_CLOSE,
+}
 
 
 @dataclass(eq=False)
@@ -1106,7 +1114,7 @@ class DatedShockFlow:
         for row in rows:
             at = datetime.combine(
                 date.fromisoformat(row[self.day_column]),
-                time.fromisoformat(row[self.time_column]) if self.time_column else self.fixed_time,
+                _row_time(row[self.time_column]) if self.time_column else self.fixed_time,
                 tzinfo=self.zone,
             )
             if seen.setdefault(at.date(), at) != at:
@@ -1144,6 +1152,10 @@ class DatedShockFlow:
             rate_regime=None,
             quality=HAND_WRITTEN,
         )
+
+
+def _row_time(text: str) -> time:
+    return TIME_WORDS.get(text) or time.fromisoformat(text)
 
 
 def election_flow(
@@ -1526,6 +1538,21 @@ POSTS_2_FLOW = DatedShockFlow(
     scheduled=False,
     ordinary_until=date(2026, 10, 30),
 )
+# Step 20, part 1 (docs/steps/ceo-scandals.md): each event's detail is its company's ticker.
+CEO_FLOW = DatedShockFlow(
+    CEO_EVENT_TYPE,
+    UNITED_STATES,
+    NEW_YORK,
+    26,
+    "ceo",
+    "CEO",
+    seed_file="ceo_scandals.csv",
+    noun="CEO scandals",
+    day_column="day",
+    detail_column="ticker",
+    time_column="time",
+    scheduled=False,
+)
 EVENT_FLOWS: list[EventFlow] = [
     CPI_FLOW,
     NFP_FLOW,
@@ -1552,6 +1579,7 @@ EVENT_FLOWS: list[EventFlow] = [
     SUMMIT_FLOW,
     POSTS_FLOW,
     POSTS_2_FLOW,
+    CEO_FLOW,
 ]
 
 
