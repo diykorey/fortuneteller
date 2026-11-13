@@ -51,6 +51,7 @@ read into a trigger.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-14 | Docs: decisions.md, the choices that set direction, newest first, with why and where | PR #301 |
 | 2026-11-14 | Docs: the entry points made true; docs/README.md the onboarding path; glossary adds link, step, part, rung | PR #300 |
 | 2026-11-14 | News into triggers, part 1, step 2: `follows --event ceo`, each company against the S&P 500 on its own base; the companies' closes by `load-prices --companies` | PR #299 |
 | 2026-11-13 | News into triggers, part 1, step 1: 26 CEO scandals coded from the dismissal dataset, each with its source | PR #298 |
