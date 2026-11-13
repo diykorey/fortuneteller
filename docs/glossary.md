@@ -275,6 +275,9 @@ Terms are grouped by what they are about, alphabetical within each group.
   story. A cut cycle runs from a cut to the last cut before the next hike, holds between included;
   a hike cycle likewise; a run of holds is consecutive holds. Over a quarter or a year an answer
   stands only if it also holds counting each cycle once.
+- **Excess move** — *added 2026-11-13* ([step 20, part 1](steps/ceo-scandals.md)): a company's
+  move over a span less the S&P 500's over the same closes, in percent: what the company did
+  beyond the market.
 - **Kind (of event)** — *added 2026-11-04*: what a reader names ("the Fed cuts rates"); in the
   code an event flow, and for a decision what was decided (cut, hold or hike).
 - **Trigger** (news) — *added 2026-11-04*: an event that has happened, as a record of its flow,
