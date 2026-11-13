@@ -592,7 +592,8 @@ dismissals, each company against the S&P 500 and against its own two years befor
 falls on the day**: 17 of 26, a median 2.1% below the market, chance 0.004. **After that close
 there is no direction.** The week and the month read *down* only because they hold the day.
 Nothing holds walk-forward. Nvidia on 2026-11-09, the Monday after its CEO's admission, fell 6.6%
-against the market, as the day answers.
+against the market, as the day answers; read after the fact, not a call, and no trigger was filed.
+From the reaction close, the span a trigger is graded on, the answer is *can't say*.
 
 ## What comes next
 
