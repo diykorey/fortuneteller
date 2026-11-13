@@ -14,11 +14,13 @@ owner* marks a choice the owner made over another on the table.
 ## 2026-11-14: Docs have one way in, and decisions one home
 
 - **What:** a newcomer, human or agent, starts at [docs/README.md](README.md). Choices that set
-  direction are recorded here, newest first; the notes inside specs stay where they are.
+  direction are recorded here, newest first; the notes inside specs stay where they are. Each fact
+  has one home: the roadmap carries one line per step, its spec the bars and the results,
+  [status](status.md) only the task in hand, and the [changelog](changelog.md) every finished task.
 - **Why:** the documents had grown by appending. A reader had to work through the history to learn
   what was true today, and 91 notes of what was decided or chosen were spread over 43 files.
-- **Retires:** the root README's pre-reset design summary, and the frozen "Current state" in
-  docs/README.md.
+- **Retires:** the root README's pre-reset design summary, the frozen "Current state" in
+  docs/README.md, the results and amendments inside roadmap rows, and the done table in status.
 - **Where:** [docs/README.md](README.md), [CLAUDE.md](../CLAUDE.md).
 
 ## 2026-11-13: News into triggers now, company news first (by the owner)
