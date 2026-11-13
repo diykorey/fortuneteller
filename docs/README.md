@@ -74,6 +74,7 @@ drive nothing.
 | Know why the plan is ordered this way | [Legend](legend.md), the way and the four claims |
 | See what gets built and what is done | [Roadmap](roadmap.md) |
 | Know what is being worked on now | [Status](status.md) |
+| See every finished task, with its pull request | [Changelog](changelog.md) |
 | Write the spec for a new step | [Legend](legend.md), what every step document must say |
 | Know why something was decided, and whether it is settled | [Decisions](decisions.md), newest first |
 | Know what the findings are | [MVP results](mvp-results.md), then each spec's Results |

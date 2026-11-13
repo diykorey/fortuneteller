@@ -6,6 +6,30 @@
 > the [Glossary](glossary.md). Measured on data loaded 2026-10-05; the rung 1 section on
 > 2026-10-06, with [its own document](steps/rung-1-more-events.md).
 
+## At a glance
+
+The verdicts in one place; each section below says what they mean.
+
+### The MVP, step by step
+
+| Step | State |
+| --- | --- |
+| 1 Releases | Done |
+| 2 Prices | Done |
+| 3 Raw move | Done — moves: UST 10Y, DXY, VIX; doesn't: S&P 500, gold |
+| 4 Surprise | Done — tracks: UST 10Y; unclear: DXY; doesn't: VIX, S&P 500, gold |
+
+### Rung 1, event by event
+
+| Event | Step 3 (moves?) | Step 4 (follows the surprise?) |
+| --- | --- | --- |
+| CPI (clean baseline) | moves: UST 10Y, DXY, VIX; doesn't: S&P 500, gold | as the MVP |
+| NFP | moves: all five | unclear: UST 10Y, DXY, gold; doesn't: S&P 500, VIX. Since 2014: UST 10Y and DXY track, against the forecast and the trend alike |
+| Fed | moves: S&P 500, gold, VIX; unclear: UST 10Y, DXY (moves, borderline, until own years) | none: no free expected value |
+| Retail sales (step 4) | moves: UST 10Y; unclear: DXY (moves until own years) | against the consensus: UST 10Y tracks; DXY doesn't |
+| Core PCE (step 4) | none; VIX unclear (moves until own years) | none track: too few noticeable surprises |
+| GDP (step 4) | moves: UST 10Y, DXY | none track; DXY unclear |
+
 ## What we set out to prove
 
 FortuneTeller is meant to warn which markets will move, and how, when an event happens. That only

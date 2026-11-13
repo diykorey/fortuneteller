@@ -41,7 +41,9 @@ Three rules follow from the reset. They are checkable, so check them:
 
 **`docs/status.md`** holds the last completed task, the one in progress, and the next one. Answer
 "where are we / what's next" from it. When starting a task, move it to *In progress* and add the
-task expected after it as the new *Next*; when finishing one, record it in the same change.
+task expected after it as the new *Next*; when finishing one, move it to *Last completed* and add a
+row to `docs/changelog.md`, in the same change. Keep status short: incident detail goes to the
+spec, the PR or an issue, never into status.
 
 ## The documents
 
@@ -50,7 +52,9 @@ The current set, each kept true or deleted:
 - **`docs/legend.md`** — the target and the way; the template every step document follows.
 - **`docs/roadmap.md`** — the MVP, the ladder and the numbered steps after it. **Build from this.**
 - **`docs/status.md`**, **`docs/mvp-results.md`**, **`docs/steps/*.md`** — the task in hand, the
-  findings in plain words, one spec per step.
+  findings in plain words, one spec per step. A step's results live in its spec; the roadmap row
+  carries one line of them.
+- **`docs/changelog.md`** — every finished task, newest first, with its PR.
 - **`docs/schema.md`**, **`docs/precision.md`**, **`docs/extending.md`** — every column, every
   known shortcut and its trigger, how to add a flow or an expectation source.
 - **`docs/glossary.md`** — every acronym and term. Add to it whenever you introduce one.
