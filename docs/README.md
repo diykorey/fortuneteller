@@ -1,69 +1,55 @@
 # FortuneTeller documentation
 
-**Start here.** This is the single entry point: what the project is, which document answers which
-question, and how they fit together.
+**Start here.** This page is the way in for a new person or a fresh agent session: what to read,
+what to run, and which document answers which question.
 
-> Given an event, say which instruments move, by how much, in which direction — with confidence that
-> means something, in time to act on it. A warning product, not a trading system.
+> Given an event, say what followed past events of its kind, for the markets people feel, with the
+> record beside every answer. An entertainment tool with a realistic approach, not financial advice.
+
+## Your first hour
+
+**1. Read four documents, in this order.**
+
+| # | Read | To learn | Time |
+| --- | --- | --- | --- |
+| 1 | [Legend](legend.md) | The target, the bet behind it, the four claims that must hold, and the template every step document follows | 15 min |
+| 2 | [Roadmap](roadmap.md) | What gets built, in what order, and which steps are done | 15 min |
+| 3 | [Status](status.md), its first three sections | The last task finished, the one in progress, the next one | 5 min |
+| 4 | [Glossary](glossary.md), "The product" and "Project shorthand" | The words the other documents lean on: flow, link, kind, trigger, step, rung | 10 min |
+
+**2. Run three commands** from the repo root.
+
+- **uv sync** installs Python 3.12 and every dependency.
+- **just check** runs lint, type checks and tests, the same gate as CI. It needs no keys.
+- **uv run fortuneteller --help** lists every command and what it prints. Loading real data needs
+  a free FRED key; [Accounts](accounts.md) lists every key and where to get it.
+
+**3. Study one spec.** [A CEO's conduct in question](steps/ceo-scandals.md) shows the shape every
+step takes: the goal, the obstacle, the rule fixed before anything is measured, steps you can
+check, how you know it is right, what it does not do, and the technical details last.
+
+**4. Read the working rules.** [CLAUDE.md](../CLAUDE.md) holds the agreements for anyone changing
+the repo, human or agent: the 2026-08-05 reset and the three rules it left.
 
 ## The chain
 
-The documents are one argument, narrowing from *why* to *what exactly*. Each answers the question
-the one before it raises, so read them in this order the first time.
+The core documents are one argument, narrowing from why to what exactly. Each answers the question
+the one before it raises.
 
-**1. Why does this project exist, and why could it work?** → **[Legend](legend.md)**
-The target, the bet being made, and the principles that follow from it. It states the idea so that
-it can *fail*: three things must be true, and each is tested by a specific part of the plan.
-
-**2. So what do we build, in what order?** → **[Roadmap](roadmap.md)**
-The MVP — four steps that test the first two of those three things — then a feature ladder. Each
-step ends in a runnable command that prints a real number. "No edge" is a permitted answer.
-
-**3. So what exactly are we doing right now?** → **[Status](status.md)**, then the step documents
-One document per step: its goal, the obstacle in the way, the sequence, how you know the result is
-right, and the implementation detail. The shape of these documents is fixed by the Legend. They
-live in [`steps/`](steps/): [Step 1 — Releases](steps/step-1-releases.md),
-[Step 2 — Prices](steps/step-2-prices.md), [Step 3 — Raw move](steps/step-3-raw-move.md) and
-[Step 4 — Surprise](steps/step-4-surprise.md), all done.
-
-**So what did the MVP find?** → **[MVP results](mvp-results.md)**
-The outcome in plain words: which of the Legend's claims held, for which markets, what it means,
-and the options for what comes next.
-
-**Where are we, and what's next?** → **[Status](status.md)**
-The last completed task and the next one, kept current as work lands.
-
-**What should it eventually warn about?** → **[Scenarios](scenarios.md)**
-Ten real shock → aftershock episodes, with verified moves. Hypotheses to measure, not predictions.
-
-**What is in the database?** → **[Schema](schema.md)**
-Every table and column: what it means, who fills it, and whether anything fills it yet.
-
-**What did we simplify, and what would be more precise?** → **[Precision](precision.md)**
-Each measurement's current shortcut, the more precise way, and what would make it worth building.
-
-**How do I add an event type or an expectation source?** → **[Extending](extending.md)**
-One class and one line in a list, for either; what then happens on its own.
-
-**Which free data sources exist, and which would help?** → **[Data sources](data-sources.md)**
-About 250 free sources, from an analysis of FinceptTerminal, graded useful, could be useful or
-useless, with what each gives and what it would take.
-
-**4. What does this word mean?** → **[Glossary](glossary.md)**
-Every acronym, ticker, and piece of jargon. Read it alongside any of the above, not before them.
-
-Off to the side: **[legacy/](legacy/README.md)** — everything written before the 2026-09-11 rewrite.
-Reference material, **not instructions**. Where it and the documents above disagree, the above win.
-Its one live exception is [`legacy/data/`](legacy/data/README.md), which still describes the seed
-CSVs the code loads today.
-
-## The map
+1. **Why does this exist, and why could it work?** The [Legend](legend.md) states the idea so that
+   it can fail: four claims must hold, and each is tested by a named part of the plan.
+2. **So what do we build, in what order?** The [Roadmap](roadmap.md): the MVP, the feature ladder,
+   then the numbered steps. Each ends in a command that prints a real number.
+3. **So what are we doing right now?** [Status](status.md) names the task, and its spec in
+   [steps/](steps/) says exactly what it is.
+4. **What did we find?** Each spec's Results section; [MVP results](mvp-results.md) gathers them
+   in plain words.
 
 ```mermaid
 flowchart TD
     L["<b>Legend</b><br/>target · idea · way<br/>+ the step template"]
-    R["<b>Roadmap</b><br/>the MVP, then the ladder"]
-    S["<b>Step docs</b><br/>step-N-name.md"]
+    R["<b>Roadmap</b><br/>the MVP, the ladder, the steps"]
+    S["<b>Step specs</b><br/>steps/*.md"]
     C["<b>The code</b><br/>src/ · schema.sql · data/seed/"]
     G["<b>Glossary</b><br/>every term"]
     Y["<b>legacy/</b><br/>pre-reset corpus"]
@@ -76,66 +62,56 @@ flowchart TD
     Y -.->|"reference only"| R
 ```
 
-Read it top to bottom: each document constrains the one below it. The Legend fixes what counts as
-progress, the Roadmap turns that into an order, a step document turns one entry of that order into
-something implementable, and the code is the result. The Glossary and `legacy/` are consulted from
-anywhere and drive nothing.
+Each document constrains the one below it. The Glossary and legacy/ are consulted from anywhere and
+drive nothing.
 
 ## Find what you need
 
 | If you want to… | Read |
 | --- | --- |
-| Understand the point of the project | [Legend](legend.md) — the target and the idea |
-| Know why the plan is ordered this way | [Legend](legend.md) — the way, and the three conditions |
-| See what gets built and when | [Roadmap](roadmap.md) |
-| Start working on the current step | [Status](status.md) names it; step documents are in [`steps/`](steps/) |
-| Write the document for a new step | [Legend](legend.md) — what every step document must say |
-| Look up a term or ticker | [Glossary](glossary.md) |
-| Know which external services and keys are needed | [Accounts](accounts.md) |
-| See what kinds of events the product should handle, and how markets reacted | [Scenarios](scenarios.md) |
+| Understand the point of the project | [Legend](legend.md), the target and the idea |
+| Know why the plan is ordered this way | [Legend](legend.md), the way and the four claims |
+| See what gets built and what is done | [Roadmap](roadmap.md) |
+| Know what is being worked on now | [Status](status.md) |
+| Write the spec for a new step | [Legend](legend.md), what every step document must say |
+| Know what the findings are | [MVP results](mvp-results.md), then each spec's Results |
+| Add an event flow or an expectation source | [Extending](extending.md) |
 | Know what a table or column means | [Schema](schema.md) |
-| Know what the reference CSVs contain | [legacy/data/](legacy/data/README.md) — still accurate |
+| Know what was simplified, and what would be more precise | [Precision](precision.md) |
+| Know which external services and keys are needed | [Accounts](accounts.md) |
+| Find a free data source | [Data sources](data-sources.md), about 250, graded |
+| See the kinds of shocks the product should one day answer | [Scenarios](scenarios.md), hypotheses to measure |
+| Look up a term or ticker | [Glossary](glossary.md) |
+| Know what the reference CSVs contain | [legacy/data/](legacy/data/README.md), still accurate |
 | Understand what was abandoned, and why | [legacy/](legacy/README.md) |
 
 ## Where things are
 
 | Path | Holds |
 | --- | --- |
-| `docs/` | The current documents — the four in the chain above. |
-| `docs/steps/` | One document per MVP step. |
-| `docs/legacy/` | The pre-reset design corpus. Reference, not instructions. |
-| `data/seed/` | The committed reference CSVs the code actually reads. |
-| `schema.sql` | The table definitions, as plain SQL. Their meaning is in [schema.md](schema.md). |
-| `src/fortuneteller/` | The package: config, models, store, seed loader, CLI. |
-| [`../CLAUDE.md`](../CLAUDE.md) | Working agreements for this repo, including the reset note. |
+| docs/ | The current documents, listed above. |
+| docs/steps/ | One spec per step: the MVP's, the ladder's rungs and the numbered roadmap steps. |
+| docs/scoreboard/ | The published page, rewritten by the evening job and served by GitHub Pages. |
+| docs/legacy/ | The pre-reset design corpus. Reference, not instructions. |
+| data/seed/ | The committed reference CSVs the code reads. |
+| data/triggers/, data/guesses/ | Triggers and guesses, each added through a pull request. |
+| schema.sql | The table definitions as plain SQL; their meaning is in [Schema](schema.md). |
+| src/fortuneteller/ | The package: config, models, store, flows, study, CLI. |
+| [../CLAUDE.md](../CLAUDE.md) | Working agreements for this repo, including the reset note. |
 
-## Current state
+## Where we are
 
-**M0 — the data spine — is shipped**: typed models, the DuckDB schema, the seed reference tables,
-and a working `init | seed | query-demo` CLI. **[MVP step 1](steps/step-1-releases.md) is done**:
-`load-releases` fills `event_instances` with every US CPI release since 1972. **[MVP step
-2](steps/step-2-prices.md) is done**: `load-prices` stores the five instruments' daily closes and
-measures their move around each release — 2,698 observations. **No prediction code exists.**
-
-**[MVP step 3](steps/step-3-raw-move.md) is done**: `raw-move` compares each instrument's moves on
-CPI days with all other days. CPI moves the 10-year yield, the dollar and VIX; the S&P 500 and gold
-show no clear effect.
-
-**[MVP step 4](steps/step-4-surprise.md) is done, and with it the MVP**: `load-surprises` and
-`surprise` relate each move to the CPI surprise. The 10-year yield follows the surprise, weakly;
-the dollar is unclear; VIX, the S&P 500 and gold do not. **[MVP results](mvp-results.md)** says
-what that means and lays out the options for what comes next.
-[Status](status.md) always has the current task.
+[Status](status.md) always has it. This page does not repeat it, so it cannot go stale.
 
 ## How this folder grows
 
-Flat until it needs not to be. A subfolder appears when a *second* document of the same kind exists
-— not in advance. `steps/` appeared that way, with step 2's document. The natural next splits:
+Flat until it needs not to be. A subfolder appears when a second document of the same kind exists,
+not in advance; steps/ appeared that way. The likely next ones:
 
-- `concepts/` — one file per idea needing more than a glossary line (surprise, abnormal return,
-  calibration).
-- `decisions/` — short records of choices that would otherwise be re-litigated.
+- concepts/: one file per idea that needs more than a glossary line (surprise, base rate,
+  walk-forward).
+- decisions/: short records of choices that would otherwise be argued again.
 
 Two rules, both learned the hard way: **a document is written when something real needs it**, and
-**deleted when it stops being true**. `legacy/` exists because the last corpus drifted into
-describing code that did not exist — which is worse than having no documentation at all.
+**deleted when it stops being true**. legacy/ exists because the last corpus drifted into describing
+code that did not exist, which is worse than having no documentation at all.

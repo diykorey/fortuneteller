@@ -311,6 +311,10 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **Walk-forward** — replaying history one release at a time, each decision made only from the
   releases before it, so that what is graded was never seen when deciding
   ([rung 2](steps/rung-2-predict.md)).
+- **Link** — one event flow and one market, as a pair whose move is measured against the flow's
+  surprise. A **signed link** has a direction written down first (a hotter CPI lifts the yield);
+  a link **holds** when its direction is right walk-forward by the bar in
+  [rung 2](steps/rung-2-predict.md). Only links that hold are called live.
 - **Open link** — in rung 2, an event × market link allowed to predict at a release because it
   passes the surprise test on earlier releases; a closed link stays silent.
 - **Payroll model** — the jobs report's free forecast, the `payroll_model` expectation source
@@ -518,6 +522,18 @@ Terms are grouped by what they are about, alphabetical within each group.
   Appears in legacy docs only.
 - **Feature ladder** — the ordered list of what gets built after the MVP, in
   [the roadmap](roadmap.md).
+- **Step** — a word with three uses, told apart by what comes with it:
+  - **MVP step 1 to 4**: the four sequential experiments of the MVP, files step-1-releases.md to
+    step-4-surprise.md.
+  - **Roadmap step N** (1 to 20, with 1a, 4a, 4b, 8a): one numbered entry in the roadmap's "Next
+    steps" tables, planned after the ladder's rungs 1 to 6. Its spec is named for its subject, as
+    in ceo-scandals.md; step-4-more-events.md is roadmap step 4, not MVP step 4.
+  - **A step inside a spec**: one row of that spec's "The steps" table, each with its own "done
+    when". "Step 18, part 2, step 3" means roadmap step 18, its part 2 spec, that spec's third row.
+- **Part** — one spec of a roadmap step too big for one: roadmap step 17 has parts 1 to 2, with
+  1b to 1f between. Each part has its own spec, bars and pull requests.
+- **Rung** — one entry of the feature ladder, 1 to 7; each is built only because the one below it
+  worked. Specs are named rung-N-name.md.
 - **Legacy docs** — everything under [`docs/legacy/`](legacy/README.md): the pre-reset design
   corpus, kept for reference, not authoritative.
 - **M0 … M7** — the superseded milestone scheme from the old roadmap. **M0 (the data spine) shipped
