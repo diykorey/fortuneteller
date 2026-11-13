@@ -13,6 +13,7 @@ they print, and the graded calls, as the page's data (roadmap step 5).
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 import math
 import statistics
@@ -97,9 +98,11 @@ def describe_release_counts(instrument: str, counts: study.ReleaseCounts) -> str
     return ", ".join(parts)
 
 
-def _load_prices(_args: argparse.Namespace) -> int:
+def _load_prices(args: argparse.Namespace) -> int:
     con = db.get_connection()
     db.init_db(con=con)
+    if args.companies:
+        return _load_companies(con)
     if db.count_rows("event_instances", con=con) == 0:
         print(
             "load-prices: no releases stored; run `fortuneteller load-releases` first",
@@ -124,6 +127,19 @@ def _load_prices(_args: argparse.Namespace) -> int:
         total = sum(counts.measured for counts in by_instrument.values())
         print(f"{len(by_instrument)} instruments × {releases} releases = {total} observations")
     return 0
+
+
+def _load_companies(con: duckdb.DuckDBPyConnection) -> int:
+    """The CEO flow's companies' closes; a company Yahoo fails on is reported, the rest load."""
+    with (settings.seed_dir / flows.CEO_FLOW.seed_file).open(newline="") as file:
+        tickers = list(dict.fromkeys(row["ticker"] for row in csv.DictReader(file)))
+    counts, failed = study.load_company_bars(tickers, con=con)
+    for ticker, n in counts.items():
+        print(f"{ticker}: {n} closes")
+    for note in failed:
+        print(f"load-prices: {note}", file=sys.stderr)
+    print(f"{len(counts)} of {len(tickers)} companies loaded")
+    return 1 if failed else 0
 
 
 def describe_surprises(rows: Sequence[Surprise]) -> list[str]:
@@ -516,7 +532,7 @@ def describe_follows(
     with ``long``, each cell's answer counting each cycle once."""
     counted = [kinds[e.event_id] for e in events if e.event_id in kinds]
     first, last = (flows.release_date(e) for e in (events[0], events[-1]))
-    plural = "s" if tuple(order) == study.KINDS else ""
+    plural = "s" if tuple(order) in (study.KINDS, (study.SCANDAL,)) else ""
     width = max(5, *(len(kind) for kind in order))
     span_width = max(6, *(len(span) + 1 for _, span, _, _ in cells))
     lines = [
@@ -558,6 +574,7 @@ FOLLOWS_NOUNS = {
     "cpi": "CPI releases",
     "claims": "jobless claims reports",
     "ecb": "ECB decisions",
+    "ceo": "CEO scandals",
 }
 
 
@@ -596,25 +613,31 @@ def _follows(args: argparse.Namespace) -> int:
         )
         return 1
     try:
-        if flow is flows.FED_FLOW or flow is flows.ECB_FLOW:
-            decided = _decision_kinds(flow, flows.stored_events(flow, con=con), "follows")
-            if decided is None:
-                return 1
-            kinds = decided
-            order: Sequence[str] = study.KINDS
+        if flow is flows.CEO_FLOW:
+            events = flows.stored_events(flow, con=con)
+            kinds = dict.fromkeys((e.event_id for e in events), study.SCANDAL)
+            order: Sequence[str] = (study.SCANDAL,)
+            cells = study.follow_ceo(events, con=con, after=args.after_the_day)
         else:
-            kinds = study.release_kinds(flow, con=con)
-            order = study.SURPRISE_KINDS
-            if not kinds:
-                print(
-                    f"follows: no surprises for {args.event} yet; "
-                    "run `fortuneteller load-surprises` first",
-                    file=sys.stderr,
-                )
-                return 1
-        events, cells = study.follow_decisions(
-            flow, kinds, order, con=con, after=args.after_the_day, long=args.long
-        )
+            if flow is flows.FED_FLOW or flow is flows.ECB_FLOW:
+                decided = _decision_kinds(flow, flows.stored_events(flow, con=con), "follows")
+                if decided is None:
+                    return 1
+                kinds = decided
+                order = study.KINDS
+            else:
+                kinds = study.release_kinds(flow, con=con)
+                order = study.SURPRISE_KINDS
+                if not kinds:
+                    print(
+                        f"follows: no surprises for {args.event} yet; "
+                        "run `fortuneteller load-surprises` first",
+                        file=sys.stderr,
+                    )
+                    return 1
+            events, cells = study.follow_decisions(
+                flow, kinds, order, con=con, after=args.after_the_day, long=args.long
+            )
     except (sources.FredError, sources.CalendarError, ValueError) as exc:
         print(f"follows: {exc}", file=sys.stderr)
         return 1
@@ -1661,6 +1684,11 @@ def build_parser() -> argparse.ArgumentParser:
 
     p_prices = sub.add_parser(
         "load-prices", help="load daily closes from Yahoo and FRED and measure each release's move"
+    )
+    p_prices.add_argument(
+        "--companies",
+        action="store_true",
+        help="load only the companies of the CEO scandals (step 20), each under its ticker",
     )
     p_prices.set_defaults(func=_load_prices)
 

@@ -163,6 +163,25 @@ def load_daily_bars(api_key: str, con: duckdb.DuckDBPyConnection | None = None) 
     }
 
 
+def load_company_bars(
+    tickers: Iterable[str], con: duckdb.DuckDBPyConnection | None = None
+) -> tuple[dict[str, int], list[str]]:
+    """Fetch and store each company's daily closes from Yahoo, under its ticker
+    (docs/steps/ceo-scandals.md); one that fails is reported and the others still load."""
+    counts: dict[str, int] = {}
+    failed: list[str] = []
+    for ticker in tickers:
+        try:
+            closes = sources.parse_daily_bars(sources.fetch_daily_bars(ticker))
+            if not closes:
+                raise YahooError("Yahoo sent no usable closes")
+        except YahooError as exc:
+            failed.append(f"{ticker}: {exc}")
+            continue
+        counts[ticker] = store_daily_bars(ticker, ticker, closes, con=con)
+    return counts, failed
+
+
 # Step 2 — each instrument's move around each release, into observations.
 
 
@@ -1916,6 +1935,192 @@ def follow_decisions(
         for instrument in MVP_PRICE_SERIES
     ]
     return events, cells
+
+
+# Step 20, part 1 — what follows a CEO's conduct in question (docs/steps/ceo-scandals.md).
+SCANDAL = "scandal"
+EXCESS_OVER = "SPY / ES"
+EXCESS_MARKET = "vs S&P 500"
+# Each event's base: its company's spans in this many closes up to its close before.
+BASE_CLOSES = 504
+STOCK = PriceSeries("", "pct", time(16, 0), NEW_YORK)
+
+
+def _shared(
+    stock: Sequence[DailyClosingPrice], index: Sequence[DailyClosingPrice]
+) -> tuple[list[DailyClosingPrice], list[DailyClosingPrice]]:
+    on_index = {close.day: close for close in index}
+    shared = [close for close in stock if close.day in on_index]
+    return shared, [on_index[close.day] for close in shared]
+
+
+def excess_spans(
+    stock: Sequence[DailyClosingPrice], index: Sequence[DailyClosingPrice], c: int
+) -> dict[date, Span]:
+    """The stock's spans of ``c`` closes less the index's over the same closes, on the days both
+    have, keyed as ``span_moves`` keys them: the excess move, a fraction."""
+    shared, on_index = _shared(stock, index)
+    index_spans = span_moves(on_index, "pct", c)
+    return {
+        key: Span(span.start, span.end, span.move - index_spans[key].move)
+        for key, span in span_moves(shared, "pct", c).items()
+    }
+
+
+def event_base(
+    spans: Mapping[date, Span], closes: Sequence[DailyClosingPrice], r: int
+) -> Base | None:
+    """The base of an event whose reaction close is ``closes[r]``: its company's spans that lie in
+    the ``BASE_CLOSES`` closes ending at its close before; none with fewer closes before it."""
+    if r < BASE_CLOSES:
+        return None
+    first, last = closes[r - BASE_CLOSES].day, closes[r - 1].day
+    return base_of([s.move for s in spans.values() if s.start >= first and s.end <= last])
+
+
+def rates_answer(
+    outcomes: Sequence[str], bases: Sequence[Base]
+) -> tuple[str, float, dict[str, int]]:
+    """Part 1's answer with a base per event: *about the same* against each event's rate, *up* and
+    *down* on the events that moved against each one's up share, each chance by
+    ``stats.poisson_binomial_tail``."""
+    counts = {o: 0 for o in OUTCOMES}
+    for o in outcomes:
+        counts[o] += 1
+    if len(outcomes) < MIN_EVENT_DAYS:
+        return TOO_FEW, math.nan, counts
+    chances = {SAME: stats.poisson_binomial_tail(counts[SAME], [b.rates[SAME] for b in bases])}
+    shares = [b.up_share for o, b in zip(outcomes, bases, strict=True) if o != SAME]
+    if shares and not any(math.isnan(share) for share in shares):
+        chances[UP] = stats.poisson_binomial_tail(counts[UP], shares)
+        chances[DOWN] = stats.poisson_binomial_tail(counts[DOWN], [1 - s for s in shares])
+    best = min(chances.values())
+    winners = [o for o, chance in chances.items() if chance == best]
+    if best < FOLLOW_P_BAR and len(winners) == 1:
+        return winners[0], best, counts
+    return CANT_SAY, best, counts
+
+
+class Scandal(NamedTuple):
+    """A kept event: its company's closes and excess spans, its span's key close and its base."""
+
+    closes: Sequence[DailyClosingPrice]
+    spans: Mapping[date, Span]
+    reacted: set[date]
+    k: int
+    base: Base
+
+    @property
+    def span(self) -> Span:
+        return self.spans[self.closes[self.k].day]
+
+    @property
+    def outcome(self) -> str:
+        return outcome(self.span.move, self.base.cut)
+
+
+def follow_scandals(
+    events: Sequence[tuple[date, str]],
+    closes: Mapping[str, Sequence[DailyClosingPrice]],
+    index: Sequence[DailyClosingPrice],
+    c: int,
+    after: bool = False,
+) -> Follow:
+    """The record of ``events``, (first reaction day, ticker) oldest first, on each company's
+    excess spans of ``c`` closes, each against its own base. A second event at a company inside its
+    first's span is left out; one with a hole, no closes or too short a history is a hole."""
+    tickers: dict[str, list[date]] = {}
+    for day, ticker in events:
+        tickers.setdefault(ticker, []).append(day)
+    kept: list[Scandal] = []
+    overlapped = holes = 0
+    for ticker, days in tickers.items():
+        if ticker not in closes:
+            holes += len(days)
+            continue
+        stock = _shared(closes[ticker], index)[0]
+        spans = excess_spans(closes[ticker], index, c)
+        walk, reacted = kept_keys([(day, SCANDAL) for day in days], stock, spans, c, after)
+        for each in walk:
+            if each.status == HOLE:
+                holes += 1
+            elif each.open or each.reaction is None:
+                continue
+            elif each.status == LEFT_OUT:
+                overlapped += 1
+            elif (base := event_base(spans, stock, each.reaction)) is None:
+                holes += 1
+            else:
+                kept.append(
+                    Scandal(stock, spans, reacted, each.reaction + (1 if after else 0), base)
+                )
+    kept.sort(key=lambda s: s.span.start)
+    if not kept:
+        empty = {o: 0 for o in OUTCOMES}
+        return Follow(
+            empty, overlapped, holes, None, TOO_FEW, math.nan, False, 0, 0, math.nan, TOO_FEW
+        )
+    answer, chance, counts = rates_answer([s.outcome for s in kept], [s.base for s in kept])
+    period = False
+    if answer in OUTCOMES:
+        reach = max(PLACEBO_SHIFT, c + 1 if after else c)
+        for shift in (-reach, reach):
+            moved = [
+                s._replace(k=i)
+                for s in kept
+                if 0 <= (i := s.k + shift) < len(s.closes)
+                and (day := s.closes[i].day) in s.spans
+                and day not in s.reacted
+            ]
+            if rates_answer([s.outcome for s in moved], [s.base for s in moved])[0] == answer:
+                period = True
+    rates: list[float] = []
+    right = 0
+    for s in kept:
+        earlier = [e for e in kept if e.span.end <= s.span.start]
+        said = rates_answer([e.outcome for e in earlier], [e.base for e in earlier])[0]
+        if said in OUTCOMES:
+            rates.append(s.base.rates[said])
+            right += s.outcome == said
+    graded = len(rates)
+    walk_chance = stats.poisson_binomial_tail(right, rates) if rates else math.nan
+    if graded < MIN_PREDICTIONS:
+        verdict = TOO_FEW
+    elif (
+        right / graded >= HIT_RATE_BAR
+        and right / graded >= sum(rates) / graded + ABOVE_BASE
+        and walk_chance < FOLLOW_P_BAR
+    ):
+        verdict = HOLDS
+    else:
+        verdict = DOESNT_HOLD
+    mean = Base(math.nan, {o: sum(s.base.rates[o] for s in kept) / len(kept) for o in OUTCOMES})
+    return Follow(
+        counts, overlapped, holes, mean, answer, chance, period, graded, right, walk_chance, verdict
+    )
+
+
+def follow_ceo(
+    events: Sequence[EventInstance],
+    con: duckdb.DuckDBPyConnection | None = None,
+    after: bool = False,
+) -> list[tuple[str, str, str, Follow]]:
+    """The CEO flow's record per span, its events' companies against the S&P 500; a company with
+    no closes stored counts as a hole."""
+    if any(";" in (e.detail or "") for e in events):
+        raise ValueError("two CEO events on one day: give each its own day")
+    closes = {}
+    for ticker in {e.detail or "" for e in events}:
+        try:
+            closes[ticker] = stored_closes(ticker, con=con)
+        except ValueError:
+            continue
+    index = stored_closes(EXCESS_OVER, con=con)
+    decisions = [(first_reaction_day(e, STOCK), e.detail or "") for e in events]
+    return [
+        (SCANDAL, span, EXCESS_MARKET, follow_scandals(decisions, closes, index, c, after))
+        for span, c in SPANS.items()
+    ]
 
 
 # Step 18, part 2: a trigger arrives (docs/steps/trigger-file.md).

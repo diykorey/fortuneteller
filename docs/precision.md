@@ -146,6 +146,14 @@ this by splitting the results by era.
 | Commodities through funds | Corn, wheat, soybeans, gasoline and natural gas read through the US funds holding their futures, whose price has no roll jump; the fund less the front month over 21 closes, median, measured 2026-11-04: corn −0.7%, wheat −0.8%, soybeans −0.3%, gasoline +0.5%, natural gas −1.6% (mean −2.6%) | The front month with each roll day's move taken out, from each contract's own prices | A month or longer answer for natural gas, or a quarter or a year for any fund |
 | Dividends | Yahoo's close is split-adjusted, not dividend-adjusted: `XLU` drops about 0.7% each quarter's ex-dividend day, as `XLE` and `ITA` do | The total-return close, or ex-dividend days left out | An answer for utilities whose events fall on ex-dividend days |
 
+## Step 20 — a CEO's conduct in question
+
+| Choice | Now | More precise | Trigger |
+| --- | --- | --- | --- |
+| A time given in words | *Before close* stored at 15:59 New York, reacting at that day's close; *after close* and *unknown* at 20:00, reacting at the next ([CEO scandals](steps/ceo-scandals.md)) | The stamp of the first wire report, for the three rows that lack one (Best Buy, Wynn, Texas Instruments; Maximus is *unknown*) | A day answer that turns on those four |
+| The company's close | Yahoo's close, split-adjusted, not dividend-adjusted, less the S&P 500 index's, which pays none: an ex-dividend day in an event's span reads the company that much lower | The total-return close | A *down* that an ex-dividend day inside the span could make |
+| Survivors | Only companies Yahoo still lists under their own ticker: 19 of the 58 conduct cases have no history there, 4 have a ticker now another company's | Delisted companies' closes, from a paid source (CRSP) | A *down* answer read as the whole kind's |
+
 ## TradingView's calendar since 2026-10
 
 Its fourth quarter of 2026 comes from a new feed ([jobless claims](steps/jobless-claims.md#the-first-print-from-fred)).
