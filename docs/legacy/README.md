@@ -4,8 +4,8 @@ Everything in this folder was written **before 2026-09-11**, when the current do
 rewritten. It is kept for reference and for the research in it. **None of it is authoritative** —
 with one exception, `data/`, noted below.
 
-The current documents are [`docs/roadmap.md`](../roadmap.md) and
-[`docs/glossary.md`](../glossary.md). Where this folder and those disagree, those win.
+The current documents are listed in [`docs/README.md`](../README.md), the way in. Where this
+folder and those disagree, those win.
 
 ## Why it was set aside
 

@@ -12,8 +12,19 @@ It ends with the one thing that governs every future document: the template each
 
 ## The target
 
-Given an event, say which instruments move, by how much, in which direction — with confidence that
-means something, in time to act on it.
+**Today, in one paragraph.** A reader sees a headline; the tool names the kind of event and answers
+with what followed every past event of that kind, for the markets behind what people pay for, over
+a day, a week, a month, a quarter and a year: *up*, *down*, *about the same* or *can't say* against
+the base rate, with the counts, never a percentage. On a scheduled release with a surprise it also
+makes a call, for the links that hold walk-forward, shown with its record. An entertainment tool
+with a realistic approach, not financial advice. The paragraphs below are the target as first
+written and the two amendments that brought it here
+([Decisions](decisions.md#2026-11-04-a-headline-answered-with-what-followed-by-the-owner)): where
+they disagree, the later one wins; the first one's bar, confidence that means something, still
+stands.
+
+*As first written:* given an event, say which instruments move, by how much, in which direction —
+with confidence that means something, in time to act on it.
 
 A **warning** product, not a trading system. The latency budget is seconds to minutes, which means
 we are never competing with HFT and never need to.
@@ -132,7 +143,8 @@ The vocabulary, so the words stay load-bearing:
 One document per step or part, in steps/, named for its subject in a few words
 (ceo-scandals.md). The MVP's steps and the ladder's rungs keep their numbers in the name
 (step-1-releases.md, rung-2-predict.md). [A CEO's conduct in question](steps/ceo-scandals.md) is the
-worked example. The sections, in this order:
+worked example. The sections, in this order; a heading may fit its step ("before anything is
+shown", "what this part does not do") as long as it answers the same question:
 
 | Section | Must answer | Test of whether it is done |
 | --- | --- | --- |
@@ -143,7 +155,7 @@ worked example. The sections, in this order:
 | **How you know it is right** | The checks that would catch a *plausible wrong answer*, not just a crash | At least one check could actually fail |
 | **What this step does not do** | The boundary | Scope creep has a named edge to cross |
 | **Technical details** | Sources, mappings, file placement, tests; last, because it changes most | Someone else could implement it |
-| **Results** | Added when measured: each verdict against the rule written first, and whether the expected outcome held | Every number traces to a command; a wrong expectation is said plainly |
+| **Results** | Added when measured: each verdict against the rule written first, and whether the expected outcome held. [What follows a jobs report](steps/what-follows-jobs.md#results) is a worked example | Each number names the command that prints it; a wrong expectation is said plainly |
 
 Three rules about these documents:
 
@@ -165,8 +177,8 @@ next month. (The pattern is the elephant-goldfish model; here it is two reviews,
 
 | When | The goldfish is given | It must answer | The elephant then |
 | --- | --- | --- | --- |
-| **Before measuring**, the spec's pull request | The spec and its links | 1. The goal in one sentence. 2. The bars and the expected outcome, as numbers. 3. Each "done when" it could not check without judgement. 4. A plausible wrong answer the checks would miss. 5. Every term or claim that needs the conversation to understand | Fixes the spec, or says in the pull request why a finding stands |
-| **When the results are in**, the results' pull request | The spec with its Results | 1. Is each verdict judged against the rule written first? 2. Did any bar move without a dated amendment? 3. Does the plain-words summary say what the numbers say, no more? | Fixes the Results, or says why not |
+| **Before measuring**, the spec's pull request | The spec, the documents it links or names, this Legend and the Glossary | 1. The goal in one sentence. 2. The bars and the expected outcome, as numbers. 3. Each "done when" it could not check without judgement. 4. A plausible wrong answer the checks would miss. 5. Every term or claim that needs the conversation to understand | Fixes the spec, or says in the pull request why a finding stands |
+| **When the results are in**, the results' pull request | The same, with the spec's Results, and the spec's git history to check dates | 1. Is each verdict judged against the rule written first, with every number its bar needs? 2. Did any bar move without a dated amendment? 3. Does each plain-words summary say what its numbers say, no more and no less? | Fixes the Results, or says why not |
 
 The pull request carries one line per review: how many findings, how many fixed. An agent runs the
 goldfish as a fresh subagent with only those files; the [goldfish-review

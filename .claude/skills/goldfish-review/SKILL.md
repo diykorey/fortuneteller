@@ -17,14 +17,17 @@ review your own spec. So you do not review it; a fresh subagent does.
    of that defeats the review.
    - The spec: docs/steps/NAME.md
    - docs/legend.md, docs/glossary.md
-   - Every document the spec links to, which it may open itself
+   - Every document the spec links to or names (a spec it cites by name, such as "step 4's
+     *tracks*", counts), which it may open itself
+   - For the results stage, the spec's history: git log -p --follow docs/steps/NAME.md
 3. **Act on each finding.** Fix the spec, or write in the pull request why the finding stands.
 4. **Record one line in the pull request:** "Goldfish review (STAGE): N findings, M fixed."
 
 ## Prompt, before measuring
 
 > You have never seen this project. Read docs/steps/NAME.md, then docs/legend.md and
-> docs/glossary.md, and open any document the spec links to if you need it. Use nothing else.
+> docs/glossary.md, and open any document the spec links to or names if you need it. Use nothing
+> else, and change nothing.
 > Answer, numbered:
 > 1. The step's goal in one sentence.
 > 2. The bars and the expected outcome, as numbers. If any is missing or vague, say so.
@@ -37,9 +40,13 @@ review your own spec. So you do not review it; a fresh subagent does.
 ## Prompt, results
 
 > You have never seen this project. Read docs/steps/NAME.md, then docs/legend.md and
-> docs/glossary.md. Use nothing else. Answer, numbered:
-> 1. Is each verdict in Results judged against the rule fixed before measuring? Name any that is not.
+> docs/glossary.md. Open any document the spec links to or names when you need a bar it refers to,
+> and read the spec's history with git log -p --follow docs/steps/NAME.md to check dates. Use
+> nothing else, and change nothing. Answer, numbered:
+> 1. Is each verdict in Results judged against the rule fixed before measuring, with every number
+>    its bar needs stated? Name any that is not.
 > 2. Did any bar, test or expected outcome change without a dated amendment?
 > 3. Does each plain-words summary say what its numbers say, no more and no less?
+> 4. Does each number name the command that prints it?
 > Then list your findings, most serious first, each in one sentence. Say "none" where you found
 > nothing; do not invent findings.

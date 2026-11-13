@@ -54,7 +54,7 @@ owner* marks a choice the owner made over another on the table.
 
 - **What:** the laptop that runs the release-day and evening jobs is kept open on release days.
 - **Why:** a closed lid suspends it even on power; the jobs report of 2026-11-06 was missed that way.
-- **Where:** [status](status.md).
+- **Where:** this entry is the record; it was first noted in status on 2026-11-10.
 
 ## 2026-11-04: A headline, answered with what followed (by the owner)
 
