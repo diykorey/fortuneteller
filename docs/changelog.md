@@ -6,6 +6,7 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-14 | Docs: fixes from two goldfish reads, onboarding and results review; verdict words in the glossary | PR #304 |
 | 2026-11-14 | Docs: the goldfish review before measuring and after results; the step template matches practice | PR #303 |
 | 2026-11-14 | Docs: the roadmap one line per step, status back to its three sections, this changelog split out | PR #302 |
 | 2026-11-14 | Docs: decisions.md, the choices that set direction, newest first, with why and where | PR #301 |

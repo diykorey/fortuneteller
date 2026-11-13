@@ -1,6 +1,6 @@
 # FortuneTeller task runner — the canonical command surface.
-# Requires `just` (https://just.systems) and `uv`. Recipes assume the M0 scaffold
-# (pyproject.toml + src/fortuneteller) exists; see docs/legacy/m0-tickets.md.
+# Requires `just` (https://just.systems) and `uv`. New here? Start at docs/README.md.
+# `uv run fortuneteller --help` lists every command; the recipes below wrap the common ones.
 
 # list available recipes
 default:
@@ -41,7 +41,7 @@ init:
 seed:
     uv run fortuneteller seed
 
-# load the CPI release history from FRED (needs FT_FRED_API_KEY)
+# load every event's history from FRED, the Fed and TradingView (needs FT_FRED_API_KEY)
 load-releases:
     uv run fortuneteller load-releases
 
@@ -49,14 +49,14 @@ load-releases:
 load-prices:
     uv run fortuneteller load-prices
 
-# load each CPI release's surprise against both expected values (after load-releases)
+# load each release's surprise against every expected value (after load-releases)
 load-surprises:
     uv run fortuneteller load-surprises
 
-# compare each instrument's moves on CPI days with all other days (after load-prices)
+# compare each instrument's moves on CPI days with ordinary days; any event: uv run fortuneteller raw-move --event NAME (after load-prices)
 raw-move:
     uv run fortuneteller raw-move
 
-# does each instrument's release-day move follow the CPI surprise? (after load-surprises)
+# does each instrument's release-day move follow CPI's surprise? any event: uv run fortuneteller surprise --event NAME (after load-surprises)
 surprise:
     uv run fortuneteller surprise

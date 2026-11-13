@@ -39,7 +39,7 @@ Three rules follow from the reset. They are checkable, so check them:
 
 ## Where we are
 
-**`docs/status.md`** holds the last completed task, the one in progress, and the next one. Answer
+**`docs/status.md`** holds the last completed task, the ones in progress, and the next one. Answer
 "where are we / what's next" from it. When starting a task, move it to *In progress* and add the
 task expected after it as the new *Next*; when finishing one, move it to *Last completed* and add a
 row to `docs/changelog.md`, in the same change. Keep status short: incident detail goes to the
@@ -69,8 +69,8 @@ roadmap wins. `docs/legacy/README.md` says what in there is still worth reading 
 
 ## Scope discipline — the provable core
 
-The core is measured: ten events × sixteen markets from free sources, three links that hold
-walk-forward. Widening is planned in `docs/roadmap.md` steps 5–20 and goes one flow or one set of
+The core is measured, from free sources only: the events and markets the README's Status lists,
+and the few links that hold walk-forward, named there too. Widening is planned in `docs/roadmap.md` steps 5–20 and goes one flow or one set of
 markets per PR, each with a spec whose bars and expected outcome are written before anything is
 measured and amended only with a date. News is read into triggers only for kinds already measured
 (step 20); wider detection (rung 7) and paid data stay deferred.

@@ -83,7 +83,8 @@ uv run fortuneteller scoreboard             # the page: every call graded, every
 **What it predicts:** the direction of the 10-year and 5-year yields, the dollar index and the euro
 on the six links that hold walk-forward at 08:30 (the jobs report's dollar and euro, its two
 yields, retail sales' two yields; ISM's 5-year yield holds too, but ISM lands at 10:00, after the
-morning job), each printed with its record as counts and its band, never a probability: none has
+morning job), and the 5-year breakeven on CPI, graded a day late because FRED publishes its close
+the next day; each printed with its record as counts and its band, never a probability: none has
 proved honest yet. On release days the calls are made, graded and delivered as a desktop popup
 unattended ([the release-day job](docs/steps/release-day-job.md), [the evening
 score](docs/steps/evening-score.md)), and the [scoreboard](https://diykorey.github.io/fortuneteller/scoreboard/) shows

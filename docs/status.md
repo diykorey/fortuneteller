@@ -1,6 +1,6 @@
 # Status
 
-Where the work is and what comes next. Three sections, kept short; history lives elsewhere.
+Where the work is and what comes next: the task last finished, the tasks in progress, and the next one. Kept short; history lives elsewhere.
 
 - **Starting a task:** move it from *Next* to *In progress*, and write the task expected after it
   as the new *Next*, so there is always one step queued ahead.
@@ -20,8 +20,8 @@ counting each cycle once; one answer of 150 cells against 2.0 by chance
 
 - **Step 20, part 1: a CEO's conduct in question** ([the spec](steps/ceo-scandals.md)), the company
   against the S&P 500, from a published dataset of CEO dismissals. Steps 1 and 2 are done: 26
-  events, 2005 to 2023, and follows --event ceo. Step 2b, the trigger with the company's ticker, and
-  step 3, the results and Nvidia's answer, are next.
+  events, 2005 to 2023, and follows --event ceo. Steps 2b (the trigger with the company's
+  ticker) and 3 (the results and Nvidia's answer) remain, in the order *Next* gives.
 - **Step 18, part 2, step 3: the first triggers graded** ([the spec](steps/trigger-file.md)). The
   first trigger, CPI of 2026-11-10, is void: merged after every reaction close, and its kind read
   from the headline instead of the core print. It waits for the next one.
