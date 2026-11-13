@@ -1,6 +1,6 @@
 {
- "written": "2026-11-12",
- "data_until": "2026-11-11",
+ "written": "2026-11-13",
+ "data_until": "2026-11-12",
  "markets": [
   "SPY / ES",
   "UST10Y / ZN",
@@ -45,9 +45,9 @@
    "by_chance": 3.0
   },
   "walk_forward": {
-   "cells": 80,
+   "cells": 82,
    "p": 0.01,
-   "by_chance": 0.8
+   "by_chance": 0.82
   }
  },
  "events": [
@@ -65,7 +65,7 @@
      "median_event": "0.55%",
      "median_other": "0.51%",
      "ratio": 1.08,
-     "p": 0.0809,
+     "p": 0.0851,
      "verdict": "doesn't"
     },
     "UST10Y / ZN": {
@@ -73,7 +73,7 @@
      "median_event": "4.0 bp",
      "median_other": "3.1 bp",
      "ratio": 1.29,
-     "p": 0.0013,
+     "p": 0.0014,
      "verdict": "moves"
     },
     "DXY": {
@@ -81,7 +81,7 @@
      "median_event": "0.29%",
      "median_other": "0.25%",
      "ratio": 1.15,
-     "p": 0.0046,
+     "p": 0.0054,
      "verdict": "moves"
     },
     "GC / XAU": {
@@ -89,7 +89,7 @@
      "median_event": "0.58%",
      "median_other": "0.55%",
      "ratio": 1.06,
-     "p": 0.2202,
+     "p": 0.2229,
      "verdict": "doesn't"
     },
     "VIX": {
@@ -97,7 +97,7 @@
      "median_event": "4.21%",
      "median_other": "3.41%",
      "ratio": 1.24,
-     "p": 0.0004,
+     "p": 0.0005,
      "verdict": "moves"
     },
     "DAX": {
@@ -105,7 +105,7 @@
      "median_event": "0.63%",
      "median_other": "0.66%",
      "ratio": 0.95,
-     "p": 0.7851,
+     "p": 0.7896,
      "verdict": "doesn't"
     },
     "SX5E": {
@@ -113,7 +113,7 @@
      "median_event": "0.60%",
      "median_other": "0.62%",
      "ratio": 0.98,
-     "p": 0.5835,
+     "p": 0.5799,
      "verdict": "doesn't"
     },
     "BRN": {
@@ -121,7 +121,7 @@
      "median_event": "1.07%",
      "median_other": "1.12%",
      "ratio": 0.95,
-     "p": 0.7148,
+     "p": 0.7129,
      "verdict": "doesn't"
     },
     "EURUSD": {
@@ -129,7 +129,7 @@
      "median_event": "0.38%",
      "median_other": "0.30%",
      "ratio": 1.29,
-     "p": 0.0006,
+     "p": 0.0009,
      "verdict": "moves"
     },
     "COMP": {
@@ -137,7 +137,7 @@
      "median_event": "0.60%",
      "median_other": "0.55%",
      "ratio": 1.1,
-     "p": 0.0392,
+     "p": 0.041,
      "verdict": "doesn't"
     },
     "UST5Y / ZF": {
@@ -145,7 +145,7 @@
      "median_event": "4.0 bp",
      "median_other": "3.1 bp",
      "ratio": 1.29,
-     "p": 0.0007,
+     "p": 0.0003,
      "verdict": "moves"
     },
     "UKX": {
@@ -153,7 +153,7 @@
      "median_event": "0.57%",
      "median_other": "0.53%",
      "ratio": 1.08,
-     "p": 0.076,
+     "p": 0.0735,
      "verdict": "doesn't"
     },
     "SXXP": {
@@ -161,15 +161,15 @@
      "median_event": "0.50%",
      "median_other": "0.50%",
      "ratio": 0.99,
-     "p": 0.5264,
+     "p": 0.5267,
      "verdict": "doesn't"
     },
     "BTC": {
      "days": 145,
      "median_event": "1.82%",
      "median_other": "1.71%",
-     "ratio": 1.07,
-     "p": 0.2948,
+     "ratio": 1.06,
+     "p": 0.2951,
      "verdict": "doesn't"
     },
     "ITA": {
@@ -177,7 +177,7 @@
      "median_event": "0.63%",
      "median_other": "0.69%",
      "ratio": 0.92,
-     "p": 0.8758,
+     "p": 0.8726,
      "verdict": "doesn't"
     },
     "XLE": {
@@ -185,7 +185,7 @@
      "median_event": "0.94%",
      "median_other": "0.91%",
      "ratio": 1.03,
-     "p": 0.3631,
+     "p": 0.3632,
      "verdict": "doesn't"
     },
     "CORN": {
@@ -193,7 +193,7 @@
      "median_event": "0.71%",
      "median_other": "0.73%",
      "ratio": 0.98,
-     "p": 0.5663,
+     "p": 0.5694,
      "verdict": "doesn't"
     },
     "WEAT": {
@@ -201,7 +201,7 @@
      "median_event": "0.81%",
      "median_other": "0.98%",
      "ratio": 0.82,
-     "p": 0.9586,
+     "p": 0.9584,
      "verdict": "doesn't"
     },
     "SOYB": {
@@ -209,7 +209,7 @@
      "median_event": "0.50%",
      "median_other": "0.62%",
      "ratio": 0.81,
-     "p": 0.9787,
+     "p": 0.9797,
      "verdict": "doesn't"
     },
     "UGA": {
@@ -217,7 +217,7 @@
      "median_event": "1.17%",
      "median_other": "1.20%",
      "ratio": 0.97,
-     "p": 0.6378,
+     "p": 0.6401,
      "verdict": "doesn't"
     },
     "UNG": {
@@ -225,7 +225,7 @@
      "median_event": "1.60%",
      "median_other": "1.79%",
      "ratio": 0.9,
-     "p": 0.9057,
+     "p": 0.9115,
      "verdict": "doesn't"
     },
     "XLU": {
@@ -233,23 +233,23 @@
      "median_event": "0.70%",
      "median_other": "0.60%",
      "ratio": 1.16,
-     "p": 0.01,
-     "verdict": "moves"
+     "p": 0.0105,
+     "verdict": "unclear"
     },
     "ITB": {
      "days": 246,
      "median_event": "1.12%",
      "median_other": "1.08%",
      "ratio": 1.04,
-     "p": 0.3431,
+     "p": 0.3369,
      "verdict": "doesn't"
     },
     "KC": {
      "days": 322,
      "median_event": "1.20%",
      "median_other": "1.24%",
-     "ratio": 0.98,
-     "p": 0.6487,
+     "ratio": 0.97,
+     "p": 0.6543,
      "verdict": "doesn't"
     },
     "T5YIE": {
@@ -483,13 +483,13 @@
       "verdict": "doesn't"
      },
      "T5YIE": {
-      "expected": "either",
+      "expected": "up",
       "n": 285,
       "rank_corr": 0.38,
       "p": 0.0001,
-      "hit_rate": null,
-      "hit_n": 0,
-      "verdict": "unclear"
+      "hit_rate": 0.76,
+      "hit_n": 88,
+      "verdict": "tracks"
      }
     }
    },
@@ -613,6 +613,15 @@
       "p": 1.0,
       "always_right": 0,
       "verdict": "too few"
+     },
+     "T5YIE": {
+      "expected": "up",
+      "first": "2015-09",
+      "predictions": 42,
+      "right": 35,
+      "p": 0.0,
+      "always_right": 19,
+      "verdict": "holds"
      }
     }
    }
@@ -631,7 +640,7 @@
      "median_event": "0.60%",
      "median_other": "0.50%",
      "ratio": 1.2,
-     "p": 0.0005,
+     "p": 0.0004,
      "verdict": "moves"
     },
     "UST10Y / ZN": {
@@ -655,7 +664,7 @@
      "median_event": "0.70%",
      "median_other": "0.54%",
      "ratio": 1.28,
-     "p": 0.0007,
+     "p": 0.0003,
      "verdict": "moves"
     },
     "VIX": {
@@ -671,7 +680,7 @@
      "median_event": "0.73%",
      "median_other": "0.66%",
      "ratio": 1.11,
-     "p": 0.0605,
+     "p": 0.0606,
      "verdict": "unclear"
     },
     "SX5E": {
@@ -679,15 +688,15 @@
      "median_event": "0.87%",
      "median_other": "0.62%",
      "ratio": 1.41,
-     "p": 0.0001,
+     "p": 0.0002,
      "verdict": "moves"
     },
     "BRN": {
      "days": 231,
      "median_event": "1.23%",
      "median_other": "1.12%",
-     "ratio": 1.1,
-     "p": 0.1763,
+     "ratio": 1.09,
+     "p": 0.1778,
      "verdict": "doesn't"
     },
     "EURUSD": {
@@ -695,7 +704,7 @@
      "median_event": "0.35%",
      "median_other": "0.30%",
      "ratio": 1.17,
-     "p": 0.0213,
+     "p": 0.0188,
      "verdict": "unclear"
     },
     "COMP": {
@@ -703,7 +712,7 @@
      "median_event": "0.64%",
      "median_other": "0.54%",
      "ratio": 1.18,
-     "p": 0.0016,
+     "p": 0.0013,
      "verdict": "moves"
     },
     "UST5Y / ZF": {
@@ -735,7 +744,7 @@
      "median_event": "1.46%",
      "median_other": "1.71%",
      "ratio": 0.85,
-     "p": 0.8945,
+     "p": 0.8988,
      "verdict": "doesn't"
     },
     "ITA": {
@@ -743,7 +752,7 @@
      "median_event": "0.71%",
      "median_other": "0.69%",
      "ratio": 1.03,
-     "p": 0.3715,
+     "p": 0.3672,
      "verdict": "doesn't"
     },
     "XLE": {
@@ -751,7 +760,7 @@
      "median_event": "0.91%",
      "median_other": "0.91%",
      "ratio": 1.0,
-     "p": 0.5109,
+     "p": 0.5151,
      "verdict": "doesn't"
     },
     "CORN": {
@@ -759,7 +768,7 @@
      "median_event": "0.73%",
      "median_other": "0.72%",
      "ratio": 1.01,
-     "p": 0.4309,
+     "p": 0.4398,
      "verdict": "doesn't"
     },
     "WEAT": {
@@ -767,7 +776,7 @@
      "median_event": "0.84%",
      "median_other": "0.98%",
      "ratio": 0.85,
-     "p": 0.9299,
+     "p": 0.928,
      "verdict": "doesn't"
     },
     "SOYB": {
@@ -775,7 +784,7 @@
      "median_event": "0.70%",
      "median_other": "0.62%",
      "ratio": 1.13,
-     "p": 0.092,
+     "p": 0.0953,
      "verdict": "unclear"
     },
     "UGA": {
@@ -783,7 +792,7 @@
      "median_event": "1.29%",
      "median_other": "1.20%",
      "ratio": 1.07,
-     "p": 0.2266,
+     "p": 0.2247,
      "verdict": "doesn't"
     },
     "UNG": {
@@ -791,7 +800,7 @@
      "median_event": "1.44%",
      "median_other": "1.79%",
      "ratio": 0.81,
-     "p": 0.9948,
+     "p": 0.9947,
      "verdict": "doesn't"
     },
     "XLU": {
@@ -799,7 +808,7 @@
      "median_event": "0.61%",
      "median_other": "0.60%",
      "ratio": 1.02,
-     "p": 0.4187,
+     "p": 0.4097,
      "verdict": "doesn't"
     },
     "ITB": {
@@ -807,15 +816,15 @@
      "median_event": "1.19%",
      "median_other": "1.08%",
      "ratio": 1.1,
-     "p": 0.1164,
+     "p": 0.1177,
      "verdict": "unclear"
     },
     "KC": {
      "days": 321,
      "median_event": "1.29%",
-     "median_other": "1.23%",
+     "median_other": "1.24%",
      "ratio": 1.04,
-     "p": 0.2832,
+     "p": 0.2823,
      "verdict": "doesn't"
     },
     "T5YIE": {
@@ -1125,7 +1134,7 @@
      "median_event": "0.65%",
      "median_other": "0.51%",
      "ratio": 1.28,
-     "p": 0.0022,
+     "p": 0.0019,
      "verdict": "moves"
     },
     "UST10Y / ZN": {
@@ -1133,7 +1142,7 @@
      "median_event": "3.7 bp",
      "median_other": "3.2 bp",
      "ratio": 1.16,
-     "p": 0.0238,
+     "p": 0.0247,
      "verdict": "unclear"
     },
     "DXY": {
@@ -1141,7 +1150,7 @@
      "median_event": "0.30%",
      "median_other": "0.25%",
      "ratio": 1.18,
-     "p": 0.0183,
+     "p": 0.0184,
      "verdict": "unclear"
     },
     "GC / XAU": {
@@ -1157,7 +1166,7 @@
      "median_event": "4.23%",
      "median_other": "3.50%",
      "ratio": 1.21,
-     "p": 0.0061,
+     "p": 0.0056,
      "verdict": "moves"
     },
     "DAX": {
@@ -1181,7 +1190,7 @@
      "median_event": "1.32%",
      "median_other": "1.12%",
      "ratio": 1.17,
-     "p": 0.0747,
+     "p": 0.0732,
      "verdict": "unclear"
     },
     "EURUSD": {
@@ -1197,7 +1206,7 @@
      "median_event": "0.75%",
      "median_other": "0.70%",
      "ratio": 1.07,
-     "p": 0.2238,
+     "p": 0.2226,
      "verdict": "doesn't"
     },
     "UST5Y / ZF": {
@@ -1229,7 +1238,7 @@
      "median_event": "1.65%",
      "median_other": "1.71%",
      "ratio": 0.96,
-     "p": 0.5616,
+     "p": 0.5734,
      "verdict": "doesn't"
     },
     "ITA": {
@@ -1237,7 +1246,7 @@
      "median_event": "0.80%",
      "median_other": "0.69%",
      "ratio": 1.16,
-     "p": 0.0543,
+     "p": 0.055,
      "verdict": "unclear"
     },
     "XLE": {
@@ -1245,7 +1254,7 @@
      "median_event": "0.95%",
      "median_other": "0.91%",
      "ratio": 1.04,
-     "p": 0.3203,
+     "p": 0.317,
      "verdict": "doesn't"
     },
     "CORN": {
@@ -1253,7 +1262,7 @@
      "median_event": "0.60%",
      "median_other": "0.73%",
      "ratio": 0.82,
-     "p": 0.9708,
+     "p": 0.9715,
      "verdict": "doesn't"
     },
     "WEAT": {
@@ -1261,7 +1270,7 @@
      "median_event": "1.05%",
      "median_other": "0.98%",
      "ratio": 1.07,
-     "p": 0.2636,
+     "p": 0.2634,
      "verdict": "doesn't"
     },
     "SOYB": {
@@ -1269,7 +1278,7 @@
      "median_event": "0.59%",
      "median_other": "0.62%",
      "ratio": 0.94,
-     "p": 0.7023,
+     "p": 0.7029,
      "verdict": "doesn't"
     },
     "UGA": {
@@ -1277,7 +1286,7 @@
      "median_event": "1.41%",
      "median_other": "1.20%",
      "ratio": 1.18,
-     "p": 0.0644,
+     "p": 0.0635,
      "verdict": "unclear"
     },
     "UNG": {
@@ -1285,7 +1294,7 @@
      "median_event": "1.41%",
      "median_other": "1.79%",
      "ratio": 0.79,
-     "p": 0.9897,
+     "p": 0.9906,
      "verdict": "doesn't"
     },
     "XLU": {
@@ -1293,7 +1302,7 @@
      "median_event": "0.76%",
      "median_other": "0.60%",
      "ratio": 1.27,
-     "p": 0.0016,
+     "p": 0.0011,
      "verdict": "moves"
     },
     "ITB": {
@@ -1301,7 +1310,7 @@
      "median_event": "1.44%",
      "median_other": "1.08%",
      "ratio": 1.33,
-     "p": 0.0011,
+     "p": 0.001,
      "verdict": "moves"
     },
     "KC": {
@@ -1309,7 +1318,7 @@
      "median_event": "1.27%",
      "median_other": "1.24%",
      "ratio": 1.02,
-     "p": 0.4011,
+     "p": 0.4044,
      "verdict": "doesn't"
     },
     "T5YIE": {
@@ -1317,7 +1326,7 @@
      "median_event": "2.0 bp",
      "median_other": "2.0 bp",
      "ratio": 1.0,
-     "p": 0.9992,
+     "p": 0.9993,
      "verdict": "doesn't"
     }
    },
@@ -1619,7 +1628,7 @@
      "median_event": "0.56%",
      "median_other": "0.51%",
      "ratio": 1.1,
-     "p": 0.1515,
+     "p": 0.155,
      "verdict": "doesn't"
     },
     "UST10Y / ZN": {
@@ -1627,7 +1636,7 @@
      "median_event": "4.0 bp",
      "median_other": "3.2 bp",
      "ratio": 1.25,
-     "p": 0.0003,
+     "p": 0.0006,
      "verdict": "moves"
     },
     "DXY": {
@@ -1635,7 +1644,7 @@
      "median_event": "0.30%",
      "median_other": "0.25%",
      "ratio": 1.19,
-     "p": 0.0133,
+     "p": 0.0115,
      "verdict": "unclear"
     },
     "GC / XAU": {
@@ -1643,7 +1652,7 @@
      "median_event": "0.54%",
      "median_other": "0.55%",
      "ratio": 0.98,
-     "p": 0.6149,
+     "p": 0.6189,
      "verdict": "doesn't"
     },
     "VIX": {
@@ -1651,7 +1660,7 @@
      "median_event": "3.69%",
      "median_other": "3.63%",
      "ratio": 1.02,
-     "p": 0.4127,
+     "p": 0.4124,
      "verdict": "doesn't"
     },
     "DAX": {
@@ -1659,7 +1668,7 @@
      "median_event": "0.62%",
      "median_other": "0.64%",
      "ratio": 0.97,
-     "p": 0.6128,
+     "p": 0.6127,
      "verdict": "doesn't"
     },
     "SX5E": {
@@ -1667,7 +1676,7 @@
      "median_event": "0.63%",
      "median_other": "0.62%",
      "ratio": 1.02,
-     "p": 0.384,
+     "p": 0.3788,
      "verdict": "doesn't"
     },
     "BRN": {
@@ -1675,7 +1684,7 @@
      "median_event": "1.07%",
      "median_other": "1.12%",
      "ratio": 0.95,
-     "p": 0.7183,
+     "p": 0.7216,
      "verdict": "doesn't"
     },
     "EURUSD": {
@@ -1683,7 +1692,7 @@
      "median_event": "0.34%",
      "median_other": "0.30%",
      "ratio": 1.15,
-     "p": 0.0359,
+     "p": 0.0369,
      "verdict": "unclear"
     },
     "COMP": {
@@ -1691,7 +1700,7 @@
      "median_event": "0.67%",
      "median_other": "0.67%",
      "ratio": 1.0,
-     "p": 0.4849,
+     "p": 0.4827,
      "verdict": "doesn't"
     },
     "UST5Y / ZF": {
@@ -1699,7 +1708,7 @@
      "median_event": "3.8 bp",
      "median_other": "3.1 bp",
      "ratio": 1.23,
-     "p": 0.0003,
+     "p": 0.0011,
      "verdict": "moves"
     },
     "UKX": {
@@ -1707,7 +1716,7 @@
      "median_event": "0.52%",
      "median_other": "0.49%",
      "ratio": 1.06,
-     "p": 0.2243,
+     "p": 0.2244,
      "verdict": "doesn't"
     },
     "SXXP": {
@@ -1715,7 +1724,7 @@
      "median_event": "0.51%",
      "median_other": "0.50%",
      "ratio": 1.02,
-     "p": 0.4198,
+     "p": 0.4141,
      "verdict": "doesn't"
     },
     "BTC": {
@@ -1723,7 +1732,7 @@
      "median_event": "1.51%",
      "median_other": "1.71%",
      "ratio": 0.88,
-     "p": 0.847,
+     "p": 0.8413,
      "verdict": "doesn't"
     },
     "ITA": {
@@ -1731,7 +1740,7 @@
      "median_event": "0.73%",
      "median_other": "0.69%",
      "ratio": 1.07,
-     "p": 0.2246,
+     "p": 0.227,
      "verdict": "doesn't"
     },
     "XLE": {
@@ -1739,7 +1748,7 @@
      "median_event": "0.94%",
      "median_other": "0.89%",
      "ratio": 1.05,
-     "p": 0.2598,
+     "p": 0.2613,
      "verdict": "doesn't"
     },
     "CORN": {
@@ -1747,7 +1756,7 @@
      "median_event": "0.72%",
      "median_other": "0.73%",
      "ratio": 1.0,
-     "p": 0.517,
+     "p": 0.5185,
      "verdict": "doesn't"
     },
     "WEAT": {
@@ -1755,7 +1764,7 @@
      "median_event": "1.04%",
      "median_other": "0.98%",
      "ratio": 1.06,
-     "p": 0.2687,
+     "p": 0.2677,
      "verdict": "doesn't"
     },
     "SOYB": {
@@ -1763,7 +1772,7 @@
      "median_event": "0.63%",
      "median_other": "0.62%",
      "ratio": 1.02,
-     "p": 0.4221,
+     "p": 0.4243,
      "verdict": "doesn't"
     },
     "UGA": {
@@ -1771,7 +1780,7 @@
      "median_event": "1.29%",
      "median_other": "1.20%",
      "ratio": 1.07,
-     "p": 0.2398,
+     "p": 0.2392,
      "verdict": "doesn't"
     },
     "UNG": {
@@ -1779,7 +1788,7 @@
      "median_event": "1.71%",
      "median_other": "1.79%",
      "ratio": 0.95,
-     "p": 0.6775,
+     "p": 0.6724,
      "verdict": "doesn't"
     },
     "XLU": {
@@ -1787,7 +1796,7 @@
      "median_event": "0.60%",
      "median_other": "0.59%",
      "ratio": 1.02,
-     "p": 0.3682,
+     "p": 0.3654,
      "verdict": "doesn't"
     },
     "ITB": {
@@ -1795,7 +1804,7 @@
      "median_event": "1.00%",
      "median_other": "1.08%",
      "ratio": 0.93,
-     "p": 0.8176,
+     "p": 0.8187,
      "verdict": "doesn't"
     },
     "KC": {
@@ -1803,7 +1812,7 @@
      "median_event": "1.13%",
      "median_other": "1.24%",
      "ratio": 0.92,
-     "p": 0.8739,
+     "p": 0.8767,
      "verdict": "doesn't"
     },
     "T5YIE": {
@@ -1811,7 +1820,7 @@
      "median_event": "2.0 bp",
      "median_other": "2.0 bp",
      "ratio": 1.0,
-     "p": 0.9999,
+     "p": 1.0,
      "verdict": "doesn't"
     }
    },
@@ -2113,7 +2122,7 @@
      "median_event": "0.57%",
      "median_other": "0.51%",
      "ratio": 1.12,
-     "p": 0.0853,
+     "p": 0.0834,
      "verdict": "unclear"
     },
     "UST10Y / ZN": {
@@ -2121,7 +2130,7 @@
      "median_event": "3.3 bp",
      "median_other": "3.2 bp",
      "ratio": 1.03,
-     "p": 0.4242,
+     "p": 0.4231,
      "verdict": "doesn't"
     },
     "DXY": {
@@ -2129,7 +2138,7 @@
      "median_event": "0.27%",
      "median_other": "0.26%",
      "ratio": 1.05,
-     "p": 0.2628,
+     "p": 0.2632,
      "verdict": "doesn't"
     },
     "GC / XAU": {
@@ -2137,7 +2146,7 @@
      "median_event": "0.60%",
      "median_other": "0.55%",
      "ratio": 1.11,
-     "p": 0.0851,
+     "p": 0.0896,
      "verdict": "unclear"
     },
     "VIX": {
@@ -2145,7 +2154,7 @@
      "median_event": "4.22%",
      "median_other": "3.62%",
      "ratio": 1.17,
-     "p": 0.0167,
+     "p": 0.0136,
      "verdict": "unclear"
     },
     "DAX": {
@@ -2153,7 +2162,7 @@
      "median_event": "0.73%",
      "median_other": "0.65%",
      "ratio": 1.12,
-     "p": 0.0754,
+     "p": 0.0798,
      "verdict": "unclear"
     },
     "SX5E": {
@@ -2161,7 +2170,7 @@
      "median_event": "0.70%",
      "median_other": "0.62%",
      "ratio": 1.14,
-     "p": 0.0747,
+     "p": 0.0744,
      "verdict": "unclear"
     },
     "BRN": {
@@ -2169,7 +2178,7 @@
      "median_event": "0.92%",
      "median_other": "1.12%",
      "ratio": 0.82,
-     "p": 0.9817,
+     "p": 0.9846,
      "verdict": "doesn't"
     },
     "EURUSD": {
@@ -2177,7 +2186,7 @@
      "median_event": "0.29%",
      "median_other": "0.30%",
      "ratio": 0.98,
-     "p": 0.6042,
+     "p": 0.6034,
      "verdict": "doesn't"
     },
     "COMP": {
@@ -2185,7 +2194,7 @@
      "median_event": "0.74%",
      "median_other": "0.69%",
      "ratio": 1.07,
-     "p": 0.2378,
+     "p": 0.2355,
      "verdict": "doesn't"
     },
     "UST5Y / ZF": {
@@ -2193,15 +2202,15 @@
      "median_event": "2.9 bp",
      "median_other": "3.1 bp",
      "ratio": 0.94,
-     "p": 0.8107,
+     "p": 0.8118,
      "verdict": "doesn't"
     },
     "UKX": {
      "days": 308,
      "median_event": "0.57%",
      "median_other": "0.50%",
-     "ratio": 1.14,
-     "p": 0.0406,
+     "ratio": 1.15,
+     "p": 0.0386,
      "verdict": "unclear"
     },
     "SXXP": {
@@ -2209,7 +2218,7 @@
      "median_event": "0.60%",
      "median_other": "0.50%",
      "ratio": 1.21,
-     "p": 0.0063,
+     "p": 0.0065,
      "verdict": "moves"
     },
     "BTC": {
@@ -2217,7 +2226,7 @@
      "median_event": "1.69%",
      "median_other": "1.71%",
      "ratio": 0.99,
-     "p": 0.5228,
+     "p": 0.5236,
      "verdict": "doesn't"
     },
     "ITA": {
@@ -2225,7 +2234,7 @@
      "median_event": "0.72%",
      "median_other": "0.69%",
      "ratio": 1.04,
-     "p": 0.3042,
+     "p": 0.3026,
      "verdict": "doesn't"
     },
     "XLE": {
@@ -2233,7 +2242,7 @@
      "median_event": "0.90%",
      "median_other": "0.90%",
      "ratio": 1.0,
-     "p": 0.503,
+     "p": 0.5049,
      "verdict": "doesn't"
     },
     "CORN": {
@@ -2241,7 +2250,7 @@
      "median_event": "0.76%",
      "median_other": "0.73%",
      "ratio": 1.05,
-     "p": 0.2724,
+     "p": 0.2736,
      "verdict": "doesn't"
     },
     "WEAT": {
@@ -2249,7 +2258,7 @@
      "median_event": "0.94%",
      "median_other": "0.98%",
      "ratio": 0.96,
-     "p": 0.6598,
+     "p": 0.6648,
      "verdict": "doesn't"
     },
     "SOYB": {
@@ -2257,7 +2266,7 @@
      "median_event": "0.68%",
      "median_other": "0.62%",
      "ratio": 1.09,
-     "p": 0.183,
+     "p": 0.1828,
      "verdict": "doesn't"
     },
     "UGA": {
@@ -2265,7 +2274,7 @@
      "median_event": "1.18%",
      "median_other": "1.20%",
      "ratio": 0.98,
-     "p": 0.5767,
+     "p": 0.5825,
      "verdict": "doesn't"
     },
     "UNG": {
@@ -2273,7 +2282,7 @@
      "median_event": "1.70%",
      "median_other": "1.79%",
      "ratio": 0.95,
-     "p": 0.7085,
+     "p": 0.7054,
      "verdict": "doesn't"
     },
     "XLU": {
@@ -2281,7 +2290,7 @@
      "median_event": "0.64%",
      "median_other": "0.59%",
      "ratio": 1.09,
-     "p": 0.1094,
+     "p": 0.1078,
      "verdict": "doesn't"
     },
     "ITB": {
@@ -2289,7 +2298,7 @@
      "median_event": "1.06%",
      "median_other": "1.08%",
      "ratio": 0.98,
-     "p": 0.5804,
+     "p": 0.578,
      "verdict": "doesn't"
     },
     "KC": {
@@ -2297,7 +2306,7 @@
      "median_event": "1.24%",
      "median_other": "1.24%",
      "ratio": 1.0,
-     "p": 0.4975,
+     "p": 0.4969,
      "verdict": "doesn't"
     },
     "T5YIE": {
@@ -2531,12 +2540,12 @@
       "verdict": "doesn't"
      },
      "T5YIE": {
-      "expected": "either",
+      "expected": "up",
       "n": 160,
-      "rank_corr": 0.04,
-      "p": 0.6223,
-      "hit_rate": null,
-      "hit_n": 0,
+      "rank_corr": -0.04,
+      "p": 0.6842,
+      "hit_rate": 0.4,
+      "hit_n": 15,
       "verdict": "doesn't"
      }
     }
@@ -2661,6 +2670,15 @@
       "p": 1.0,
       "always_right": 0,
       "verdict": "too few"
+     },
+     "T5YIE": {
+      "expected": "up",
+      "first": null,
+      "predictions": 0,
+      "right": 0,
+      "p": 1.0,
+      "always_right": 0,
+      "verdict": "too few"
      }
     }
    }
@@ -2679,7 +2697,7 @@
      "median_event": "0.62%",
      "median_other": "0.49%",
      "ratio": 1.25,
-     "p": 0.0256,
+     "p": 0.0286,
      "verdict": "unclear"
     },
     "UST10Y / ZN": {
@@ -2695,7 +2713,7 @@
      "median_event": "0.35%",
      "median_other": "0.26%",
      "ratio": 1.36,
-     "p": 0.0023,
+     "p": 0.0021,
      "verdict": "moves"
     },
     "GC / XAU": {
@@ -2703,7 +2721,7 @@
      "median_event": "0.60%",
      "median_other": "0.55%",
      "ratio": 1.09,
-     "p": 0.2388,
+     "p": 0.2426,
      "verdict": "doesn't"
     },
     "VIX": {
@@ -2711,7 +2729,7 @@
      "median_event": "3.75%",
      "median_other": "3.42%",
      "ratio": 1.1,
-     "p": 0.1954,
+     "p": 0.1936,
      "verdict": "doesn't"
     },
     "DAX": {
@@ -2719,7 +2737,7 @@
      "median_event": "0.63%",
      "median_other": "0.65%",
      "ratio": 0.97,
-     "p": 0.5987,
+     "p": 0.5986,
      "verdict": "doesn't"
     },
     "SX5E": {
@@ -2727,7 +2745,7 @@
      "median_event": "0.59%",
      "median_other": "0.62%",
      "ratio": 0.95,
-     "p": 0.6175,
+     "p": 0.6211,
      "verdict": "doesn't"
     },
     "BRN": {
@@ -2735,7 +2753,7 @@
      "median_event": "1.09%",
      "median_other": "1.12%",
      "ratio": 0.97,
-     "p": 0.5721,
+     "p": 0.5711,
      "verdict": "doesn't"
     },
     "EURUSD": {
@@ -2743,15 +2761,15 @@
      "median_event": "0.36%",
      "median_other": "0.30%",
      "ratio": 1.2,
-     "p": 0.0898,
+     "p": 0.0915,
      "verdict": "unclear"
     },
     "COMP": {
      "days": 140,
      "median_event": "0.71%",
-     "median_other": "0.68%",
+     "median_other": "0.67%",
      "ratio": 1.06,
-     "p": 0.3258,
+     "p": 0.3238,
      "verdict": "doesn't"
     },
     "UST5Y / ZF": {
@@ -2767,7 +2785,7 @@
      "median_event": "0.60%",
      "median_other": "0.51%",
      "ratio": 1.18,
-     "p": 0.0719,
+     "p": 0.0673,
      "verdict": "unclear"
     },
     "SXXP": {
@@ -2775,7 +2793,7 @@
      "median_event": "0.50%",
      "median_other": "0.50%",
      "ratio": 1.0,
-     "p": 0.5066,
+     "p": 0.5038,
      "verdict": "doesn't"
     },
     "BTC": {
@@ -2783,7 +2801,7 @@
      "median_event": "1.00%",
      "median_other": "1.71%",
      "ratio": 0.58,
-     "p": 0.9912,
+     "p": 0.9927,
      "verdict": "doesn't"
     },
     "ITA": {
@@ -2791,7 +2809,7 @@
      "median_event": "0.63%",
      "median_other": "0.69%",
      "ratio": 0.91,
-     "p": 0.7653,
+     "p": 0.7621,
      "verdict": "doesn't"
     },
     "XLE": {
@@ -2799,7 +2817,7 @@
      "median_event": "0.91%",
      "median_other": "0.91%",
      "ratio": 1.0,
-     "p": 0.5168,
+     "p": 0.517,
      "verdict": "doesn't"
     },
     "CORN": {
@@ -2807,7 +2825,7 @@
      "median_event": "0.66%",
      "median_other": "0.72%",
      "ratio": 0.91,
-     "p": 0.7605,
+     "p": 0.7659,
      "verdict": "doesn't"
     },
     "WEAT": {
@@ -2815,7 +2833,7 @@
      "median_event": "1.08%",
      "median_other": "0.98%",
      "ratio": 1.1,
-     "p": 0.2846,
+     "p": 0.2807,
      "verdict": "unclear"
     },
     "SOYB": {
@@ -2823,7 +2841,7 @@
      "median_event": "0.48%",
      "median_other": "0.62%",
      "ratio": 0.76,
-     "p": 0.9394,
+     "p": 0.9403,
      "verdict": "doesn't"
     },
     "UGA": {
@@ -2831,7 +2849,7 @@
      "median_event": "1.28%",
      "median_other": "1.21%",
      "ratio": 1.06,
-     "p": 0.3592,
+     "p": 0.3646,
      "verdict": "doesn't"
     },
     "UNG": {
@@ -2839,7 +2857,7 @@
      "median_event": "1.94%",
      "median_other": "1.79%",
      "ratio": 1.08,
-     "p": 0.2525,
+     "p": 0.2518,
      "verdict": "doesn't"
     },
     "XLU": {
@@ -2847,7 +2865,7 @@
      "median_event": "0.67%",
      "median_other": "0.60%",
      "ratio": 1.11,
-     "p": 0.1888,
+     "p": 0.1839,
      "verdict": "unclear"
     },
     "ITB": {
@@ -2855,7 +2873,7 @@
      "median_event": "1.17%",
      "median_other": "1.08%",
      "ratio": 1.09,
-     "p": 0.2856,
+     "p": 0.29,
      "verdict": "doesn't"
     },
     "KC": {
@@ -2863,7 +2881,7 @@
      "median_event": "1.17%",
      "median_other": "1.24%",
      "ratio": 0.95,
-     "p": 0.6632,
+     "p": 0.6633,
      "verdict": "doesn't"
     },
     "T5YIE": {
@@ -2871,7 +2889,7 @@
      "median_event": "2.0 bp",
      "median_other": "2.0 bp",
      "ratio": 1.0,
-     "p": 0.9791,
+     "p": 0.9818,
      "verdict": "doesn't"
     }
    },
@@ -3173,7 +3191,7 @@
      "median_event": "0.53%",
      "median_other": "0.45%",
      "ratio": 1.18,
-     "p": 0.1035,
+     "p": 0.1039,
      "verdict": "unclear"
     },
     "UST10Y / ZN": {
@@ -3181,7 +3199,7 @@
      "median_event": "3.3 bp",
      "median_other": "2.9 bp",
      "ratio": 1.14,
-     "p": 0.1222,
+     "p": 0.1192,
      "verdict": "unclear"
     },
     "DXY": {
@@ -3189,31 +3207,31 @@
      "median_event": "0.34%",
      "median_other": "0.23%",
      "ratio": 1.49,
-     "p": 0.0002,
+     "p": 0.0004,
      "verdict": "moves"
     },
     "GC / XAU": {
      "days": 116,
      "median_event": "0.50%",
      "median_other": "0.48%",
-     "ratio": 1.04,
-     "p": 0.4049,
+     "ratio": 1.03,
+     "p": 0.405,
      "verdict": "doesn't"
     },
     "VIX": {
      "days": 116,
      "median_event": "4.05%",
-     "median_other": "3.83%",
+     "median_other": "3.84%",
      "ratio": 1.06,
-     "p": 0.3361,
+     "p": 0.3397,
      "verdict": "doesn't"
     },
     "DAX": {
      "days": 116,
      "median_event": "0.65%",
      "median_other": "0.55%",
-     "ratio": 1.17,
-     "p": 0.1181,
+     "ratio": 1.18,
+     "p": 0.1158,
      "verdict": "unclear"
     },
     "SX5E": {
@@ -3221,7 +3239,7 @@
      "median_event": "0.65%",
      "median_other": "0.55%",
      "ratio": 1.18,
-     "p": 0.0753,
+     "p": 0.0787,
      "verdict": "unclear"
     },
     "BRN": {
@@ -3229,7 +3247,7 @@
      "median_event": "1.09%",
      "median_other": "1.12%",
      "ratio": 0.97,
-     "p": 0.5793,
+     "p": 0.5785,
      "verdict": "doesn't"
     },
     "EURUSD": {
@@ -3245,7 +3263,7 @@
      "median_event": "0.68%",
      "median_other": "0.61%",
      "ratio": 1.11,
-     "p": 0.1957,
+     "p": 0.1943,
      "verdict": "unclear"
     },
     "UST5Y / ZF": {
@@ -3253,7 +3271,7 @@
      "median_event": "2.8 bp",
      "median_other": "2.7 bp",
      "ratio": 1.04,
-     "p": 0.3688,
+     "p": 0.3704,
      "verdict": "doesn't"
     },
     "UKX": {
@@ -3261,7 +3279,7 @@
      "median_event": "0.56%",
      "median_other": "0.41%",
      "ratio": 1.36,
-     "p": 0.0054,
+     "p": 0.0045,
      "verdict": "moves"
     },
     "SXXP": {
@@ -3269,7 +3287,7 @@
      "median_event": "0.58%",
      "median_other": "0.46%",
      "ratio": 1.26,
-     "p": 0.0213,
+     "p": 0.0226,
      "verdict": "unclear"
     },
     "BTC": {
@@ -3277,7 +3295,7 @@
      "median_event": "1.39%",
      "median_other": "1.71%",
      "ratio": 0.81,
-     "p": 0.9217,
+     "p": 0.9227,
      "verdict": "doesn't"
     },
     "ITA": {
@@ -3285,7 +3303,7 @@
      "median_event": "0.65%",
      "median_other": "0.66%",
      "ratio": 0.98,
-     "p": 0.5886,
+     "p": 0.5879,
      "verdict": "doesn't"
     },
     "XLE": {
@@ -3293,7 +3311,7 @@
      "median_event": "0.65%",
      "median_other": "0.83%",
      "ratio": 0.78,
-     "p": 0.9776,
+     "p": 0.977,
      "verdict": "doesn't"
     },
     "CORN": {
@@ -3301,7 +3319,7 @@
      "median_event": "0.72%",
      "median_other": "0.69%",
      "ratio": 1.04,
-     "p": 0.375,
+     "p": 0.3796,
      "verdict": "doesn't"
     },
     "WEAT": {
@@ -3309,7 +3327,7 @@
      "median_event": "0.97%",
      "median_other": "0.97%",
      "ratio": 1.0,
-     "p": 0.5071,
+     "p": 0.5064,
      "verdict": "doesn't"
     },
     "SOYB": {
@@ -3317,7 +3335,7 @@
      "median_event": "0.51%",
      "median_other": "0.61%",
      "ratio": 0.83,
-     "p": 0.9208,
+     "p": 0.9197,
      "verdict": "doesn't"
     },
     "UGA": {
@@ -3325,7 +3343,7 @@
      "median_event": "1.12%",
      "median_other": "1.20%",
      "ratio": 0.93,
-     "p": 0.7109,
+     "p": 0.7117,
      "verdict": "doesn't"
     },
     "UNG": {
@@ -3333,7 +3351,7 @@
      "median_event": "1.74%",
      "median_other": "1.77%",
      "ratio": 0.98,
-     "p": 0.5456,
+     "p": 0.5486,
      "verdict": "doesn't"
     },
     "XLU": {
@@ -3341,7 +3359,7 @@
      "median_event": "0.66%",
      "median_other": "0.59%",
      "ratio": 1.12,
-     "p": 0.1579,
+     "p": 0.1618,
      "verdict": "unclear"
     },
     "ITB": {
@@ -3349,7 +3367,7 @@
      "median_event": "1.08%",
      "median_other": "0.91%",
      "ratio": 1.19,
-     "p": 0.0803,
+     "p": 0.0783,
      "verdict": "unclear"
     },
     "KC": {
@@ -3357,7 +3375,7 @@
      "median_event": "1.18%",
      "median_other": "1.31%",
      "ratio": 0.9,
-     "p": 0.8062,
+     "p": 0.8069,
      "verdict": "doesn't"
     },
     "T5YIE": {
@@ -3365,7 +3383,7 @@
      "median_event": "2.0 bp",
      "median_other": "2.0 bp",
      "ratio": 1.0,
-     "p": 0.9746,
+     "p": 0.9759,
      "verdict": "doesn't"
     }
    },
@@ -3394,7 +3412,7 @@
      "median_event": "3.1 bp",
      "median_other": "3.0 bp",
      "ratio": 1.03,
-     "p": 0.3471,
+     "p": 0.3368,
      "verdict": "doesn't"
     },
     "DXY": {
@@ -3402,7 +3420,7 @@
      "median_event": "0.28%",
      "median_other": "0.23%",
      "ratio": 1.2,
-     "p": 0.0273,
+     "p": 0.0278,
      "verdict": "unclear"
     },
     "GC / XAU": {
@@ -3410,7 +3428,7 @@
      "median_event": "0.62%",
      "median_other": "0.48%",
      "ratio": 1.29,
-     "p": 0.0136,
+     "p": 0.0127,
      "verdict": "unclear"
     },
     "VIX": {
@@ -3418,7 +3436,7 @@
      "median_event": "4.94%",
      "median_other": "3.88%",
      "ratio": 1.27,
-     "p": 0.0194,
+     "p": 0.017,
      "verdict": "unclear"
     },
     "DAX": {
@@ -3426,7 +3444,7 @@
      "median_event": "0.66%",
      "median_other": "0.56%",
      "ratio": 1.18,
-     "p": 0.0932,
+     "p": 0.0938,
      "verdict": "unclear"
     },
     "SX5E": {
@@ -3434,15 +3452,15 @@
      "median_event": "0.56%",
      "median_other": "0.55%",
      "ratio": 1.02,
-     "p": 0.4039,
+     "p": 0.3921,
      "verdict": "doesn't"
     },
     "BRN": {
      "days": 144,
      "median_event": "1.05%",
-     "median_other": "1.25%",
+     "median_other": "1.26%",
      "ratio": 0.84,
-     "p": 0.9383,
+     "p": 0.9377,
      "verdict": "doesn't"
     },
     "EURUSD": {
@@ -3450,7 +3468,7 @@
      "median_event": "0.31%",
      "median_other": "0.26%",
      "ratio": 1.21,
-     "p": 0.0307,
+     "p": 0.032,
      "verdict": "unclear"
     },
     "COMP": {
@@ -3458,15 +3476,15 @@
      "median_event": "0.83%",
      "median_other": "0.63%",
      "ratio": 1.32,
-     "p": 0.0111,
-     "verdict": "unclear"
+     "p": 0.01,
+     "verdict": "moves"
     },
     "UST5Y / ZF": {
      "days": 144,
      "median_event": "3.2 bp",
      "median_other": "2.8 bp",
      "ratio": 1.14,
-     "p": 0.0945,
+     "p": 0.0953,
      "verdict": "unclear"
     },
     "UKX": {
@@ -3474,15 +3492,15 @@
      "median_event": "0.54%",
      "median_other": "0.42%",
      "ratio": 1.29,
-     "p": 0.0154,
+     "p": 0.0152,
      "verdict": "unclear"
     },
     "SXXP": {
      "days": 144,
      "median_event": "0.52%",
      "median_other": "0.47%",
-     "ratio": 1.12,
-     "p": 0.1532,
+     "ratio": 1.13,
+     "p": 0.1475,
      "verdict": "unclear"
     },
     "BTC": {
@@ -3490,7 +3508,7 @@
      "median_event": "1.65%",
      "median_other": "1.71%",
      "ratio": 0.97,
-     "p": 0.5694,
+     "p": 0.5678,
      "verdict": "doesn't"
     },
     "ITA": {
@@ -3498,7 +3516,7 @@
      "median_event": "0.73%",
      "median_other": "0.67%",
      "ratio": 1.09,
-     "p": 0.1996,
+     "p": 0.2031,
      "verdict": "doesn't"
     },
     "XLE": {
@@ -3506,7 +3524,7 @@
      "median_event": "0.85%",
      "median_other": "0.89%",
      "ratio": 0.96,
-     "p": 0.6285,
+     "p": 0.6345,
      "verdict": "doesn't"
     },
     "CORN": {
@@ -3514,7 +3532,7 @@
      "median_event": "0.82%",
      "median_other": "0.67%",
      "ratio": 1.23,
-     "p": 0.0138,
+     "p": 0.014,
      "verdict": "unclear"
     },
     "WEAT": {
@@ -3522,7 +3540,7 @@
      "median_event": "1.12%",
      "median_other": "0.97%",
      "ratio": 1.16,
-     "p": 0.0883,
+     "p": 0.0882,
      "verdict": "unclear"
     },
     "SOYB": {
@@ -3530,23 +3548,23 @@
      "median_event": "0.70%",
      "median_other": "0.60%",
      "ratio": 1.17,
-     "p": 0.0472,
+     "p": 0.0464,
      "verdict": "unclear"
     },
     "UGA": {
      "days": 144,
      "median_event": "1.44%",
-     "median_other": "1.31%",
+     "median_other": "1.32%",
      "ratio": 1.09,
-     "p": 0.1659,
+     "p": 0.1692,
      "verdict": "doesn't"
     },
     "UNG": {
      "days": 144,
      "median_event": "1.74%",
-     "median_other": "1.85%",
+     "median_other": "1.86%",
      "ratio": 0.94,
-     "p": 0.6975,
+     "p": 0.705,
      "verdict": "doesn't"
     },
     "XLU": {
@@ -3554,7 +3572,7 @@
      "median_event": "0.69%",
      "median_other": "0.60%",
      "ratio": 1.15,
-     "p": 0.072,
+     "p": 0.0674,
      "verdict": "unclear"
     },
     "ITB": {
@@ -3562,7 +3580,7 @@
      "median_event": "0.96%",
      "median_other": "0.92%",
      "ratio": 1.05,
-     "p": 0.3487,
+     "p": 0.3488,
      "verdict": "doesn't"
     },
     "KC": {
@@ -3578,7 +3596,7 @@
      "median_event": "2.0 bp",
      "median_other": "2.0 bp",
      "ratio": 1.0,
-     "p": 0.981,
+     "p": 0.9818,
      "verdict": "doesn't"
     }
    },
@@ -3889,7 +3907,7 @@
      "median_event": "0.59%",
      "median_other": "0.45%",
      "ratio": 1.32,
-     "p": 0.0061,
+     "p": 0.006,
      "verdict": "moves"
     },
     "UST10Y / ZN": {
@@ -3913,7 +3931,7 @@
      "median_event": "0.67%",
      "median_other": "0.49%",
      "ratio": 1.38,
-     "p": 0.0011,
+     "p": 0.0021,
      "verdict": "moves"
     },
     "VIX": {
@@ -3921,7 +3939,7 @@
      "median_event": "4.12%",
      "median_other": "3.84%",
      "ratio": 1.07,
-     "p": 0.2851,
+     "p": 0.2844,
      "verdict": "doesn't"
     },
     "DAX": {
@@ -3937,7 +3955,7 @@
      "median_event": "0.78%",
      "median_other": "0.55%",
      "ratio": 1.42,
-     "p": 0.0005,
+     "p": 0.0003,
      "verdict": "moves"
     },
     "BRN": {
@@ -3953,7 +3971,7 @@
      "median_event": "0.29%",
      "median_other": "0.25%",
      "ratio": 1.15,
-     "p": 0.0798,
+     "p": 0.0817,
      "verdict": "unclear"
     },
     "COMP": {
@@ -3961,7 +3979,7 @@
      "median_event": "0.82%",
      "median_other": "0.61%",
      "ratio": 1.34,
-     "p": 0.0032,
+     "p": 0.0026,
      "verdict": "moves"
     },
     "UST5Y / ZF": {
@@ -3969,7 +3987,7 @@
      "median_event": "4.0 bp",
      "median_other": "2.7 bp",
      "ratio": 1.48,
-     "p": 0.0001,
+     "p": 0.0002,
      "verdict": "moves"
     },
     "UKX": {
@@ -3977,7 +3995,7 @@
      "median_event": "0.58%",
      "median_other": "0.41%",
      "ratio": 1.41,
-     "p": 0.0009,
+     "p": 0.0008,
      "verdict": "moves"
     },
     "SXXP": {
@@ -3985,7 +4003,7 @@
      "median_event": "0.67%",
      "median_other": "0.46%",
      "ratio": 1.46,
-     "p": 0.0001,
+     "p": 0.0002,
      "verdict": "moves"
     },
     "BTC": {
@@ -3993,7 +4011,7 @@
      "median_event": "2.08%",
      "median_other": "1.71%",
      "ratio": 1.22,
-     "p": 0.051,
+     "p": 0.0521,
      "verdict": "unclear"
     },
     "ITA": {
@@ -4001,7 +4019,7 @@
      "median_event": "0.78%",
      "median_other": "0.66%",
      "ratio": 1.17,
-     "p": 0.0468,
+     "p": 0.051,
      "verdict": "unclear"
     },
     "XLE": {
@@ -4017,7 +4035,7 @@
      "median_event": "0.90%",
      "median_other": "0.69%",
      "ratio": 1.3,
-     "p": 0.0028,
+     "p": 0.0025,
      "verdict": "moves"
     },
     "WEAT": {
@@ -4025,7 +4043,7 @@
      "median_event": "1.10%",
      "median_other": "0.97%",
      "ratio": 1.13,
-     "p": 0.1196,
+     "p": 0.1198,
      "verdict": "unclear"
     },
     "SOYB": {
@@ -4033,7 +4051,7 @@
      "median_event": "0.85%",
      "median_other": "0.61%",
      "ratio": 1.39,
-     "p": 0.0003,
+     "p": 0.0002,
      "verdict": "moves"
     },
     "UGA": {
@@ -4049,7 +4067,7 @@
      "median_event": "2.20%",
      "median_other": "1.77%",
      "ratio": 1.24,
-     "p": 0.0124,
+     "p": 0.0142,
      "verdict": "unclear"
     },
     "XLU": {
@@ -4057,7 +4075,7 @@
      "median_event": "0.66%",
      "median_other": "0.59%",
      "ratio": 1.12,
-     "p": 0.12,
+     "p": 0.1218,
      "verdict": "unclear"
     },
     "ITB": {
@@ -4065,7 +4083,7 @@
      "median_event": "0.94%",
      "median_other": "0.91%",
      "ratio": 1.04,
-     "p": 0.3888,
+     "p": 0.3911,
      "verdict": "doesn't"
     },
     "KC": {
@@ -4073,7 +4091,7 @@
      "median_event": "1.53%",
      "median_other": "1.31%",
      "ratio": 1.17,
-     "p": 0.0333,
+     "p": 0.0359,
      "verdict": "unclear"
     },
     "T5YIE": {
@@ -4081,7 +4099,7 @@
      "median_event": "2.0 bp",
      "median_other": "2.0 bp",
      "ratio": 1.0,
-     "p": 0.9915,
+     "p": 0.9914,
      "verdict": "doesn't"
     }
    },
@@ -4374,72 +4392,72 @@
    "label": "CLM",
    "event_type": "Jobless claims",
    "country": "United States",
-   "releases": 708,
+   "releases": 709,
    "first": "2013-03-07",
-   "last": "2026-11-05",
+   "last": "2026-11-12",
    "raw_move": {
     "SPY / ES": {
-     "days": 451,
-     "median_event": "0.47%",
+     "days": 452,
+     "median_event": "0.46%",
      "median_other": "0.44%",
-     "ratio": 1.06,
-     "p": 0.2431,
+     "ratio": 1.04,
+     "p": 0.3148,
      "verdict": "doesn't"
     },
     "UST10Y / ZN": {
-     "days": 451,
+     "days": 452,
      "median_event": "3.1 bp",
      "median_other": "2.8 bp",
      "ratio": 1.11,
-     "p": 0.0374,
+     "p": 0.0346,
      "verdict": "unclear"
     },
     "DXY": {
-     "days": 451,
+     "days": 452,
      "median_event": "0.26%",
      "median_other": "0.22%",
-     "ratio": 1.17,
-     "p": 0.0032,
+     "ratio": 1.16,
+     "p": 0.0035,
      "verdict": "moves"
     },
     "GC / XAU": {
-     "days": 451,
+     "days": 452,
      "median_event": "0.60%",
      "median_other": "0.48%",
      "ratio": 1.26,
-     "p": 0.0001,
+     "p": 0.0005,
      "verdict": "moves"
     },
     "VIX": {
-     "days": 451,
-     "median_event": "3.40%",
+     "days": 452,
+     "median_event": "3.41%",
      "median_other": "3.96%",
      "ratio": 0.86,
-     "p": 0.9889,
+     "p": 0.9894,
      "verdict": "doesn't"
     },
     "DAX": {
-     "days": 445,
+     "days": 446,
      "median_event": "0.64%",
      "median_other": "0.54%",
      "ratio": 1.19,
-     "p": 0.0105,
+     "p": 0.0114,
      "verdict": "unclear"
     },
     "SX5E": {
-     "days": 443,
-     "median_event": "0.62%",
+     "days": 444,
+     "median_event": "0.61%",
      "median_other": "0.54%",
-     "ratio": 1.15,
-     "p": 0.0148,
+     "ratio": 1.14,
+     "p": 0.0227,
      "verdict": "unclear"
     },
     "BRN": {
-     "days": 451,
+     "days": 452,
      "median_event": "1.09%",
      "median_other": "1.12%",
      "ratio": 0.97,
-     "p": 0.6653,
+     "p": 0.6373,
      "verdict": "doesn't"
     },
     "EURUSD": {
@@ -4451,127 +4469,127 @@
      "verdict": "moves"
     },
     "COMP": {
-     "days": 451,
-     "median_event": "0.63%",
+     "days": 452,
+     "median_event": "0.62%",
      "median_other": "0.60%",
      "ratio": 1.04,
-     "p": 0.2969,
+     "p": 0.3088,
      "verdict": "doesn't"
     },
     "UST5Y / ZF": {
-     "days": 451,
+     "days": 452,
      "median_event": "3.1 bp",
      "median_other": "2.6 bp",
      "ratio": 1.19,
-     "p": 0.0046,
+     "p": 0.0032,
      "verdict": "moves"
     },
     "UKX": {
-     "days": 450,
+     "days": 451,
      "median_event": "0.47%",
      "median_other": "0.41%",
      "ratio": 1.16,
-     "p": 0.0095,
-     "verdict": "moves"
+     "p": 0.0101,
+     "verdict": "unclear"
     },
     "SXXP": {
-     "days": 443,
+     "days": 444,
      "median_event": "0.52%",
      "median_other": "0.45%",
      "ratio": 1.16,
-     "p": 0.0158,
+     "p": 0.0163,
      "verdict": "unclear"
     },
     "BTC": {
-     "days": 402,
-     "median_event": "1.88%",
+     "days": 403,
+     "median_event": "1.89%",
      "median_other": "1.66%",
      "ratio": 1.14,
-     "p": 0.0701,
+     "p": 0.0674,
      "verdict": "unclear"
     },
     "ITA": {
-     "days": 451,
+     "days": 452,
      "median_event": "0.70%",
      "median_other": "0.65%",
      "ratio": 1.07,
-     "p": 0.0975,
+     "p": 0.095,
      "verdict": "doesn't"
     },
     "XLE": {
-     "days": 451,
+     "days": 452,
      "median_event": "0.77%",
      "median_other": "0.85%",
      "ratio": 0.91,
-     "p": 0.9162,
+     "p": 0.9096,
      "verdict": "doesn't"
     },
     "CORN": {
-     "days": 451,
+     "days": 452,
      "median_event": "0.65%",
      "median_other": "0.70%",
      "ratio": 0.93,
-     "p": 0.9185,
+     "p": 0.916,
      "verdict": "doesn't"
     },
     "WEAT": {
-     "days": 451,
+     "days": 452,
      "median_event": "1.01%",
      "median_other": "0.97%",
      "ratio": 1.04,
-     "p": 0.2783,
+     "p": 0.2689,
      "verdict": "doesn't"
     },
     "SOYB": {
-     "days": 451,
-     "median_event": "0.60%",
+     "days": 452,
+     "median_event": "0.61%",
      "median_other": "0.61%",
      "ratio": 0.99,
-     "p": 0.5775,
+     "p": 0.5561,
      "verdict": "doesn't"
     },
     "UGA": {
-     "days": 451,
+     "days": 452,
      "median_event": "1.13%",
      "median_other": "1.21%",
      "ratio": 0.93,
-     "p": 0.8424,
+     "p": 0.844,
      "verdict": "doesn't"
     },
     "UNG": {
-     "days": 451,
-     "median_event": "1.79%",
+     "days": 452,
+     "median_event": "1.80%",
      "median_other": "1.76%",
      "ratio": 1.02,
-     "p": 0.4255,
+     "p": 0.4022,
      "verdict": "doesn't"
     },
     "XLU": {
-     "days": 451,
+     "days": 452,
      "median_event": "0.61%",
      "median_other": "0.57%",
-     "ratio": 1.07,
-     "p": 0.1335,
+     "ratio": 1.06,
+     "p": 0.1401,
      "verdict": "doesn't"
     },
     "ITB": {
-     "days": 451,
+     "days": 452,
      "median_event": "0.93%",
      "median_other": "0.90%",
      "ratio": 1.03,
-     "p": 0.3511,
+     "p": 0.3215,
      "verdict": "doesn't"
     },
     "KC": {
-     "days": 451,
+     "days": 452,
      "median_event": "1.25%",
      "median_other": "1.32%",
      "ratio": 0.95,
-     "p": 0.8464,
+     "p": 0.8475,
      "verdict": "doesn't"
     },
     "T5YIE": {
-     "days": 451,
+     "days": 452,
      "median_event": "2.0 bp",
      "median_other": "2.0 bp",
      "ratio": 1.0,
@@ -4586,72 +4604,72 @@
     "links": {
      "SPY / ES": {
       "expected": "either",
-      "n": 449,
+      "n": 450,
       "rank_corr": 0.02,
-      "p": 0.6636,
+      "p": 0.6362,
       "hit_rate": null,
       "hit_n": 0,
       "verdict": "doesn't"
      },
      "UST10Y / ZN": {
       "expected": "down",
-      "n": 449,
-      "rank_corr": 0.14,
-      "p": 0.0017,
+      "n": 450,
+      "rank_corr": 0.13,
+      "p": 0.0019,
       "hit_rate": 0.56,
-      "hit_n": 308,
+      "hit_n": 309,
       "verdict": "unclear"
      },
      "DXY": {
       "expected": "down",
-      "n": 449,
+      "n": 450,
       "rank_corr": 0.1,
-      "p": 0.0207,
+      "p": 0.0203,
       "hit_rate": 0.56,
-      "hit_n": 308,
+      "hit_n": 309,
       "verdict": "doesn't"
      },
      "GC / XAU": {
       "expected": "either",
-      "n": 449,
+      "n": 450,
       "rank_corr": 0.07,
-      "p": 0.1139,
+      "p": 0.1356,
       "hit_rate": null,
       "hit_n": 0,
       "verdict": "doesn't"
      },
      "VIX": {
       "expected": "either",
-      "n": 449,
+      "n": 450,
       "rank_corr": 0.05,
-      "p": 0.2841,
+      "p": 0.2708,
       "hit_rate": null,
       "hit_n": 0,
       "verdict": "doesn't"
      },
      "DAX": {
       "expected": "either",
-      "n": 446,
+      "n": 447,
       "rank_corr": 0.03,
-      "p": 0.549,
+      "p": 0.5686,
       "hit_rate": null,
       "hit_n": 0,
       "verdict": "doesn't"
      },
      "SX5E": {
       "expected": "either",
-      "n": 444,
+      "n": 445,
       "rank_corr": 0.01,
-      "p": 0.8544,
+      "p": 0.8565,
       "hit_rate": null,
       "hit_n": 0,
       "verdict": "doesn't"
      },
      "BRN": {
       "expected": "either",
-      "n": 449,
+      "n": 450,
       "rank_corr": 0.03,
-      "p": 0.5257,
+      "p": 0.4915,
       "hit_rate": null,
       "hit_n": 0,
       "verdict": "doesn't"
@@ -4667,144 +4685,144 @@
      },
      "COMP": {
       "expected": "either",
-      "n": 449,
-      "rank_corr": 0.01,
-      "p": 0.9046,
+      "n": 450,
+      "rank_corr": 0.0,
+      "p": 0.9277,
       "hit_rate": null,
       "hit_n": 0,
       "verdict": "doesn't"
      },
      "UST5Y / ZF": {
       "expected": "down",
-      "n": 449,
+      "n": 450,
       "rank_corr": 0.14,
-      "p": 0.0011,
+      "p": 0.0012,
       "hit_rate": 0.54,
-      "hit_n": 308,
+      "hit_n": 309,
       "verdict": "unclear"
      },
      "UKX": {
       "expected": "either",
-      "n": 449,
+      "n": 450,
       "rank_corr": 0.02,
-      "p": 0.6922,
+      "p": 0.6749,
       "hit_rate": null,
       "hit_n": 0,
       "verdict": "doesn't"
      },
      "SXXP": {
       "expected": "either",
-      "n": 444,
+      "n": 445,
       "rank_corr": 0.01,
-      "p": 0.8574,
+      "p": 0.8383,
       "hit_rate": null,
       "hit_n": 0,
       "verdict": "doesn't"
      },
      "BTC": {
       "expected": "either",
-      "n": 402,
+      "n": 403,
       "rank_corr": 0.03,
-      "p": 0.5638,
+      "p": 0.6019,
       "hit_rate": null,
       "hit_n": 0,
       "verdict": "doesn't"
      },
      "ITA": {
       "expected": "either",
-      "n": 449,
-      "rank_corr": 0.06,
-      "p": 0.1788,
+      "n": 450,
+      "rank_corr": 0.07,
+      "p": 0.167,
       "hit_rate": null,
       "hit_n": 0,
       "verdict": "doesn't"
      },
      "XLE": {
       "expected": "either",
-      "n": 449,
+      "n": 450,
       "rank_corr": 0.0,
-      "p": 0.9793,
+      "p": 0.9753,
       "hit_rate": null,
       "hit_n": 0,
       "verdict": "doesn't"
      },
      "CORN": {
       "expected": "either",
-      "n": 449,
+      "n": 450,
       "rank_corr": 0.02,
-      "p": 0.6437,
+      "p": 0.6099,
       "hit_rate": null,
       "hit_n": 0,
       "verdict": "doesn't"
      },
      "WEAT": {
       "expected": "either",
-      "n": 449,
+      "n": 450,
       "rank_corr": 0.01,
-      "p": 0.8978,
+      "p": 0.8409,
       "hit_rate": null,
       "hit_n": 0,
       "verdict": "doesn't"
      },
      "SOYB": {
       "expected": "either",
-      "n": 449,
+      "n": 450,
       "rank_corr": 0.06,
-      "p": 0.2317,
+      "p": 0.2174,
       "hit_rate": null,
       "hit_n": 0,
       "verdict": "doesn't"
      },
      "UGA": {
       "expected": "either",
-      "n": 449,
-      "rank_corr": 0.0,
-      "p": 0.9204,
+      "n": 450,
+      "rank_corr": 0.01,
+      "p": 0.8837,
       "hit_rate": null,
       "hit_n": 0,
       "verdict": "doesn't"
      },
      "UNG": {
       "expected": "either",
-      "n": 449,
+      "n": 450,
       "rank_corr": 0.05,
-      "p": 0.2496,
+      "p": 0.2622,
       "hit_rate": null,
       "hit_n": 0,
       "verdict": "doesn't"
      },
      "XLU": {
       "expected": "up",
-      "n": 449,
-      "rank_corr": 0.01,
-      "p": 0.453,
+      "n": 450,
+      "rank_corr": 0.0,
+      "p": 0.4644,
       "hit_rate": 0.48,
-      "hit_n": 308,
+      "hit_n": 309,
       "verdict": "doesn't"
      },
      "ITB": {
       "expected": "either",
-      "n": 449,
+      "n": 450,
       "rank_corr": 0.05,
-      "p": 0.271,
+      "p": 0.2879,
       "hit_rate": null,
       "hit_n": 0,
       "verdict": "doesn't"
      },
      "KC": {
       "expected": "either",
-      "n": 449,
+      "n": 450,
       "rank_corr": 0.02,
-      "p": 0.7193,
+      "p": 0.6901,
       "hit_rate": null,
       "hit_n": 0,
       "verdict": "doesn't"
      },
      "T5YIE": {
       "expected": "either",
-      "n": 449,
+      "n": 450,
       "rank_corr": 0.09,
-      "p": 0.0526,
+      "p": 0.0562,
       "hit_rate": null,
       "hit_n": 0,
       "verdict": "doesn't"
@@ -4877,7 +4895,7 @@
      "median_event": "0.41%",
      "median_other": "0.45%",
      "ratio": 0.92,
-     "p": 0.7383,
+     "p": 0.7289,
      "verdict": "doesn't"
     },
     "UST10Y / ZN": {
@@ -4885,7 +4903,7 @@
      "median_event": "3.4 bp",
      "median_other": "2.8 bp",
      "ratio": 1.23,
-     "p": 0.012,
+     "p": 0.0127,
      "verdict": "unclear"
     },
     "DXY": {
@@ -4893,7 +4911,7 @@
      "median_event": "0.26%",
      "median_other": "0.22%",
      "ratio": 1.16,
-     "p": 0.0388,
+     "p": 0.0369,
      "verdict": "unclear"
     },
     "GC / XAU": {
@@ -4901,7 +4919,7 @@
      "median_event": "0.56%",
      "median_other": "0.48%",
      "ratio": 1.16,
-     "p": 0.096,
+     "p": 0.0931,
      "verdict": "unclear"
     },
     "VIX": {
@@ -4909,7 +4927,7 @@
      "median_event": "4.14%",
      "median_other": "3.82%",
      "ratio": 1.08,
-     "p": 0.2363,
+     "p": 0.2375,
      "verdict": "doesn't"
     },
     "DAX": {
@@ -4917,7 +4935,7 @@
      "median_event": "0.60%",
      "median_other": "0.54%",
      "ratio": 1.11,
-     "p": 0.2009,
+     "p": 0.1946,
      "verdict": "unclear"
     },
     "SX5E": {
@@ -4925,7 +4943,7 @@
      "median_event": "0.52%",
      "median_other": "0.55%",
      "ratio": 0.95,
-     "p": 0.708,
+     "p": 0.7072,
      "verdict": "doesn't"
     },
     "BRN": {
@@ -4933,7 +4951,7 @@
      "median_event": "1.14%",
      "median_other": "1.11%",
      "ratio": 1.03,
-     "p": 0.3854,
+     "p": 0.3863,
      "verdict": "doesn't"
     },
     "EURUSD": {
@@ -4941,7 +4959,7 @@
      "median_event": "0.29%",
      "median_other": "0.25%",
      "ratio": 1.17,
-     "p": 0.0497,
+     "p": 0.0514,
      "verdict": "unclear"
     },
     "COMP": {
@@ -4949,7 +4967,7 @@
      "median_event": "0.60%",
      "median_other": "0.61%",
      "ratio": 0.98,
-     "p": 0.5631,
+     "p": 0.5531,
      "verdict": "doesn't"
     },
     "UST5Y / ZF": {
@@ -4957,7 +4975,7 @@
      "median_event": "3.3 bp",
      "median_other": "2.7 bp",
      "ratio": 1.2,
-     "p": 0.0176,
+     "p": 0.0166,
      "verdict": "unclear"
     },
     "UKX": {
@@ -4965,7 +4983,7 @@
      "median_event": "0.41%",
      "median_other": "0.42%",
      "ratio": 0.99,
-     "p": 0.549,
+     "p": 0.5437,
      "verdict": "doesn't"
     },
     "SXXP": {
@@ -4973,7 +4991,7 @@
      "median_event": "0.49%",
      "median_other": "0.46%",
      "ratio": 1.07,
-     "p": 0.2943,
+     "p": 0.2954,
      "verdict": "doesn't"
     },
     "BTC": {
@@ -4981,7 +4999,7 @@
      "median_event": "1.80%",
      "median_other": "1.71%",
      "ratio": 1.05,
-     "p": 0.3203,
+     "p": 0.3237,
      "verdict": "doesn't"
     },
     "ITA": {
@@ -4989,7 +5007,7 @@
      "median_event": "0.62%",
      "median_other": "0.66%",
      "ratio": 0.94,
-     "p": 0.7588,
+     "p": 0.7573,
      "verdict": "doesn't"
     },
     "XLE": {
@@ -4997,7 +5015,7 @@
      "median_event": "0.87%",
      "median_other": "0.83%",
      "ratio": 1.05,
-     "p": 0.3158,
+     "p": 0.3179,
      "verdict": "doesn't"
     },
     "CORN": {
@@ -5005,7 +5023,7 @@
      "median_event": "0.70%",
      "median_other": "0.69%",
      "ratio": 1.02,
-     "p": 0.4064,
+     "p": 0.4033,
      "verdict": "doesn't"
     },
     "WEAT": {
@@ -5013,7 +5031,7 @@
      "median_event": "0.96%",
      "median_other": "0.97%",
      "ratio": 0.99,
-     "p": 0.5381,
+     "p": 0.5307,
      "verdict": "doesn't"
     },
     "SOYB": {
@@ -5021,7 +5039,7 @@
      "median_event": "0.65%",
      "median_other": "0.60%",
      "ratio": 1.08,
-     "p": 0.1965,
+     "p": 0.1966,
      "verdict": "doesn't"
     },
     "UGA": {
@@ -5029,7 +5047,7 @@
      "median_event": "1.14%",
      "median_other": "1.21%",
      "ratio": 0.95,
-     "p": 0.6977,
+     "p": 0.6897,
      "verdict": "doesn't"
     },
     "UNG": {
@@ -5037,7 +5055,7 @@
      "median_event": "1.48%",
      "median_other": "1.79%",
      "ratio": 0.83,
-     "p": 0.9703,
+     "p": 0.9711,
      "verdict": "doesn't"
     },
     "XLU": {
@@ -5053,7 +5071,7 @@
      "median_event": "0.81%",
      "median_other": "0.91%",
      "ratio": 0.89,
-     "p": 0.8702,
+     "p": 0.8679,
      "verdict": "doesn't"
     },
     "KC": {
@@ -5061,7 +5079,7 @@
      "median_event": "1.25%",
      "median_other": "1.31%",
      "ratio": 0.95,
-     "p": 0.7212,
+     "p": 0.7231,
      "verdict": "doesn't"
     },
     "T5YIE": {
@@ -5069,7 +5087,7 @@
      "median_event": "2.0 bp",
      "median_other": "2.0 bp",
      "ratio": 1.0,
-     "p": 0.9905,
+     "p": 0.992,
      "verdict": "doesn't"
     }
    },
@@ -5090,7 +5108,7 @@
      "median_event": "0.47%",
      "median_other": "0.44%",
      "ratio": 1.08,
-     "p": 0.1768,
+     "p": 0.1776,
      "verdict": "doesn't"
     },
     "UST10Y / ZN": {
@@ -5098,7 +5116,7 @@
      "median_event": "2.7 bp",
      "median_other": "2.9 bp",
      "ratio": 0.93,
-     "p": 0.8323,
+     "p": 0.8408,
      "verdict": "doesn't"
     },
     "DXY": {
@@ -5106,15 +5124,15 @@
      "median_event": "0.25%",
      "median_other": "0.22%",
      "ratio": 1.1,
-     "p": 0.0543,
+     "p": 0.057,
      "verdict": "unclear"
     },
     "GC / XAU": {
      "days": 332,
      "median_event": "0.55%",
      "median_other": "0.48%",
-     "ratio": 1.15,
-     "p": 0.0626,
+     "ratio": 1.14,
+     "p": 0.0647,
      "verdict": "unclear"
     },
     "VIX": {
@@ -5122,7 +5140,7 @@
      "median_event": "4.18%",
      "median_other": "3.81%",
      "ratio": 1.1,
-     "p": 0.1334,
+     "p": 0.1361,
      "verdict": "doesn't"
     },
     "DAX": {
@@ -5130,7 +5148,7 @@
      "median_event": "0.64%",
      "median_other": "0.54%",
      "ratio": 1.17,
-     "p": 0.0377,
+     "p": 0.0363,
      "verdict": "unclear"
     },
     "SX5E": {
@@ -5138,7 +5156,7 @@
      "median_event": "0.67%",
      "median_other": "0.54%",
      "ratio": 1.25,
-     "p": 0.0015,
+     "p": 0.0012,
      "verdict": "moves"
     },
     "BRN": {
@@ -5146,7 +5164,7 @@
      "median_event": "1.38%",
      "median_other": "1.08%",
      "ratio": 1.28,
-     "p": 0.0007,
+     "p": 0.0006,
      "verdict": "moves"
     },
     "EURUSD": {
@@ -5154,7 +5172,7 @@
      "median_event": "0.29%",
      "median_other": "0.25%",
      "ratio": 1.16,
-     "p": 0.023,
+     "p": 0.0227,
      "verdict": "unclear"
     },
     "COMP": {
@@ -5162,7 +5180,7 @@
      "median_event": "0.69%",
      "median_other": "0.59%",
      "ratio": 1.16,
-     "p": 0.0303,
+     "p": 0.0276,
      "verdict": "unclear"
     },
     "UST5Y / ZF": {
@@ -5170,7 +5188,7 @@
      "median_event": "2.8 bp",
      "median_other": "2.7 bp",
      "ratio": 1.04,
-     "p": 0.3426,
+     "p": 0.3432,
      "verdict": "doesn't"
     },
     "UKX": {
@@ -5178,7 +5196,7 @@
      "median_event": "0.47%",
      "median_other": "0.41%",
      "ratio": 1.17,
-     "p": 0.0202,
+     "p": 0.0219,
      "verdict": "unclear"
     },
     "SXXP": {
@@ -5186,7 +5204,7 @@
      "median_event": "0.50%",
      "median_other": "0.46%",
      "ratio": 1.1,
-     "p": 0.1413,
+     "p": 0.1372,
      "verdict": "doesn't"
     },
     "BTC": {
@@ -5194,7 +5212,7 @@
      "median_event": "1.84%",
      "median_other": "1.66%",
      "ratio": 1.11,
-     "p": 0.1288,
+     "p": 0.1237,
      "verdict": "unclear"
     },
     "ITA": {
@@ -5202,15 +5220,15 @@
      "median_event": "0.71%",
      "median_other": "0.66%",
      "ratio": 1.07,
-     "p": 0.1217,
+     "p": 0.1252,
      "verdict": "doesn't"
     },
     "XLE": {
      "days": 339,
      "median_event": "0.92%",
-     "median_other": "0.81%",
-     "ratio": 1.13,
-     "p": 0.0524,
+     "median_other": "0.82%",
+     "ratio": 1.12,
+     "p": 0.0511,
      "verdict": "unclear"
     },
     "CORN": {
@@ -5218,7 +5236,7 @@
      "median_event": "0.70%",
      "median_other": "0.69%",
      "ratio": 1.02,
-     "p": 0.3746,
+     "p": 0.3743,
      "verdict": "doesn't"
     },
     "WEAT": {
@@ -5226,7 +5244,7 @@
      "median_event": "0.92%",
      "median_other": "0.99%",
      "ratio": 0.93,
-     "p": 0.8482,
+     "p": 0.8538,
      "verdict": "doesn't"
     },
     "SOYB": {
@@ -5234,7 +5252,7 @@
      "median_event": "0.59%",
      "median_other": "0.61%",
      "ratio": 0.97,
-     "p": 0.6589,
+     "p": 0.6558,
      "verdict": "doesn't"
     },
     "UGA": {
@@ -5242,7 +5260,7 @@
      "median_event": "1.42%",
      "median_other": "1.17%",
      "ratio": 1.21,
-     "p": 0.0048,
+     "p": 0.0045,
      "verdict": "moves"
     },
     "UNG": {
@@ -5258,7 +5276,7 @@
      "median_event": "0.63%",
      "median_other": "0.58%",
      "ratio": 1.09,
-     "p": 0.1058,
+     "p": 0.1073,
      "verdict": "doesn't"
     },
     "ITB": {
@@ -5266,7 +5284,7 @@
      "median_event": "1.02%",
      "median_other": "0.90%",
      "ratio": 1.13,
-     "p": 0.0538,
+     "p": 0.0518,
      "verdict": "unclear"
     },
     "KC": {
@@ -5274,7 +5292,7 @@
      "median_event": "1.28%",
      "median_other": "1.31%",
      "ratio": 0.98,
-     "p": 0.6417,
+     "p": 0.6435,
      "verdict": "doesn't"
     },
     "T5YIE": {
@@ -5303,7 +5321,7 @@
      "median_event": "0.34%",
      "median_other": "0.45%",
      "ratio": 0.76,
-     "p": 0.9784,
+     "p": 0.9762,
      "verdict": "doesn't"
     },
     "UST10Y / ZN": {
@@ -5311,7 +5329,7 @@
      "median_event": "3.3 bp",
      "median_other": "2.8 bp",
      "ratio": 1.18,
-     "p": 0.1007,
+     "p": 0.094,
      "verdict": "unclear"
     },
     "DXY": {
@@ -5319,7 +5337,7 @@
      "median_event": "0.23%",
      "median_other": "0.22%",
      "ratio": 1.0,
-     "p": 0.4887,
+     "p": 0.4854,
      "verdict": "doesn't"
     },
     "GC / XAU": {
@@ -5327,7 +5345,7 @@
      "median_event": "0.44%",
      "median_other": "0.48%",
      "ratio": 0.91,
-     "p": 0.7992,
+     "p": 0.7997,
      "verdict": "doesn't"
     },
     "VIX": {
@@ -5335,7 +5353,7 @@
      "median_event": "4.20%",
      "median_other": "3.83%",
      "ratio": 1.1,
-     "p": 0.2518,
+     "p": 0.2467,
      "verdict": "doesn't"
     },
     "DAX": {
@@ -5343,7 +5361,7 @@
      "median_event": "0.56%",
      "median_other": "0.55%",
      "ratio": 1.02,
-     "p": 0.4645,
+     "p": 0.4607,
      "verdict": "doesn't"
     },
     "SX5E": {
@@ -5351,7 +5369,7 @@
      "median_event": "0.51%",
      "median_other": "0.55%",
      "ratio": 0.92,
-     "p": 0.7479,
+     "p": 0.7487,
      "verdict": "doesn't"
     },
     "BRN": {
@@ -5359,7 +5377,7 @@
      "median_event": "1.09%",
      "median_other": "1.15%",
      "ratio": 0.95,
-     "p": 0.6359,
+     "p": 0.6441,
      "verdict": "doesn't"
     },
     "EURUSD": {
@@ -5367,7 +5385,7 @@
      "median_event": "0.25%",
      "median_other": "0.25%",
      "ratio": 0.99,
-     "p": 0.5278,
+     "p": 0.5339,
      "verdict": "doesn't"
     },
     "COMP": {
@@ -5375,7 +5393,7 @@
      "median_event": "0.50%",
      "median_other": "0.62%",
      "ratio": 0.81,
-     "p": 0.9336,
+     "p": 0.9314,
      "verdict": "doesn't"
     },
     "UST5Y / ZF": {
@@ -5383,7 +5401,7 @@
      "median_event": "3.0 bp",
      "median_other": "2.7 bp",
      "ratio": 1.11,
-     "p": 0.1865,
+     "p": 0.1743,
      "verdict": "unclear"
     },
     "UKX": {
@@ -5391,7 +5409,7 @@
      "median_event": "0.40%",
      "median_other": "0.41%",
      "ratio": 0.98,
-     "p": 0.5631,
+     "p": 0.5677,
      "verdict": "doesn't"
     },
     "SXXP": {
@@ -5399,7 +5417,7 @@
      "median_event": "0.52%",
      "median_other": "0.46%",
      "ratio": 1.12,
-     "p": 0.1997,
+     "p": 0.1975,
      "verdict": "unclear"
     },
     "BTC": {
@@ -5407,7 +5425,7 @@
      "median_event": "1.61%",
      "median_other": "1.72%",
      "ratio": 0.94,
-     "p": 0.6308,
+     "p": 0.6301,
      "verdict": "doesn't"
     },
     "ITA": {
@@ -5415,7 +5433,7 @@
      "median_event": "0.65%",
      "median_other": "0.67%",
      "ratio": 0.98,
-     "p": 0.5796,
+     "p": 0.5794,
      "verdict": "doesn't"
     },
     "XLE": {
@@ -5423,7 +5441,7 @@
      "median_event": "0.83%",
      "median_other": "0.86%",
      "ratio": 0.96,
-     "p": 0.5885,
+     "p": 0.5865,
      "verdict": "doesn't"
     },
     "CORN": {
@@ -5431,7 +5449,7 @@
      "median_event": "0.73%",
      "median_other": "0.68%",
      "ratio": 1.07,
-     "p": 0.25,
+     "p": 0.2563,
      "verdict": "doesn't"
     },
     "WEAT": {
@@ -5439,7 +5457,7 @@
      "median_event": "1.05%",
      "median_other": "0.98%",
      "ratio": 1.07,
-     "p": 0.2825,
+     "p": 0.2816,
      "verdict": "doesn't"
     },
     "SOYB": {
@@ -5447,7 +5465,7 @@
      "median_event": "0.62%",
      "median_other": "0.61%",
      "ratio": 1.03,
-     "p": 0.3834,
+     "p": 0.3765,
      "verdict": "doesn't"
     },
     "UGA": {
@@ -5455,7 +5473,7 @@
      "median_event": "1.00%",
      "median_other": "1.23%",
      "ratio": 0.81,
-     "p": 0.9582,
+     "p": 0.9563,
      "verdict": "doesn't"
     },
     "UNG": {
@@ -5463,7 +5481,7 @@
      "median_event": "1.80%",
      "median_other": "1.80%",
      "ratio": 1.0,
-     "p": 0.517,
+     "p": 0.5147,
      "verdict": "doesn't"
     },
     "XLU": {
@@ -5471,7 +5489,7 @@
      "median_event": "0.67%",
      "median_other": "0.59%",
      "ratio": 1.15,
-     "p": 0.1073,
+     "p": 0.1103,
      "verdict": "unclear"
     },
     "ITB": {
@@ -5479,7 +5497,7 @@
      "median_event": "1.02%",
      "median_other": "0.90%",
      "ratio": 1.13,
-     "p": 0.1724,
+     "p": 0.177,
      "verdict": "unclear"
     },
     "KC": {
@@ -5487,7 +5505,7 @@
      "median_event": "1.33%",
      "median_other": "1.32%",
      "ratio": 1.01,
-     "p": 0.4829,
+     "p": 0.4781,
      "verdict": "doesn't"
     },
     "T5YIE": {
@@ -5495,7 +5513,7 @@
      "median_event": "2.0 bp",
      "median_other": "2.0 bp",
      "ratio": 1.0,
-     "p": 0.9713,
+     "p": 0.9711,
      "verdict": "doesn't"
     }
    },
@@ -5806,7 +5824,7 @@
      "median_event": "0.47%",
      "median_other": "0.52%",
      "ratio": 0.91,
-     "p": 0.6927,
+     "p": 0.6896,
      "verdict": "doesn't"
     },
     "UST10Y / ZN": {
@@ -5814,7 +5832,7 @@
      "median_event": "3.5 bp",
      "median_other": "3.1 bp",
      "ratio": 1.13,
-     "p": 0.1718,
+     "p": 0.1741,
      "verdict": "unclear"
     },
     "DXY": {
@@ -5822,7 +5840,7 @@
      "median_event": "0.22%",
      "median_other": "0.23%",
      "ratio": 0.97,
-     "p": 0.5711,
+     "p": 0.5784,
      "verdict": "doesn't"
     },
     "GC / XAU": {
@@ -5830,7 +5848,7 @@
      "median_event": "0.46%",
      "median_other": "0.50%",
      "ratio": 0.93,
-     "p": 0.7309,
+     "p": 0.7268,
      "verdict": "doesn't"
     },
     "VIX": {
@@ -5838,15 +5856,15 @@
      "median_event": "4.21%",
      "median_other": "3.88%",
      "ratio": 1.09,
-     "p": 0.2772,
+     "p": 0.2767,
      "verdict": "doesn't"
     },
     "DAX": {
      "days": 97,
      "median_event": "0.51%",
      "median_other": "0.56%",
-     "ratio": 0.91,
-     "p": 0.7277,
+     "ratio": 0.92,
+     "p": 0.7213,
      "verdict": "doesn't"
     },
     "SX5E": {
@@ -5854,7 +5872,7 @@
      "median_event": "0.39%",
      "median_other": "0.55%",
      "ratio": 0.71,
-     "p": 0.9918,
+     "p": 0.9925,
      "verdict": "doesn't"
     },
     "BRN": {
@@ -5862,7 +5880,7 @@
      "median_event": "1.31%",
      "median_other": "1.24%",
      "ratio": 1.06,
-     "p": 0.3176,
+     "p": 0.318,
      "verdict": "doesn't"
     },
     "EURUSD": {
@@ -5870,7 +5888,7 @@
      "median_event": "0.25%",
      "median_other": "0.24%",
      "ratio": 1.05,
-     "p": 0.3506,
+     "p": 0.3507,
      "verdict": "doesn't"
     },
     "COMP": {
@@ -5878,7 +5896,7 @@
      "median_event": "0.69%",
      "median_other": "0.73%",
      "ratio": 0.94,
-     "p": 0.6296,
+     "p": 0.6261,
      "verdict": "doesn't"
     },
     "UST5Y / ZF": {
@@ -5886,7 +5904,7 @@
      "median_event": "3.2 bp",
      "median_other": "2.9 bp",
      "ratio": 1.1,
-     "p": 0.2258,
+     "p": 0.2315,
      "verdict": "unclear"
     },
     "UKX": {
@@ -5894,7 +5912,7 @@
      "median_event": "0.35%",
      "median_other": "0.42%",
      "ratio": 0.84,
-     "p": 0.903,
+     "p": 0.9021,
      "verdict": "doesn't"
     },
     "SXXP": {
@@ -5902,7 +5920,7 @@
      "median_event": "0.36%",
      "median_other": "0.46%",
      "ratio": 0.77,
-     "p": 0.9558,
+     "p": 0.9573,
      "verdict": "doesn't"
     },
     "BTC": {
@@ -5910,7 +5928,7 @@
      "median_event": "1.94%",
      "median_other": "1.72%",
      "ratio": 1.13,
-     "p": 0.2012,
+     "p": 0.2015,
      "verdict": "unclear"
     },
     "ITA": {
@@ -5918,7 +5936,7 @@
      "median_event": "0.69%",
      "median_other": "0.74%",
      "ratio": 0.93,
-     "p": 0.7114,
+     "p": 0.7108,
      "verdict": "doesn't"
     },
     "XLE": {
@@ -5926,7 +5944,7 @@
      "median_event": "1.03%",
      "median_other": "0.95%",
      "ratio": 1.08,
-     "p": 0.2579,
+     "p": 0.2632,
      "verdict": "doesn't"
     },
     "CORN": {
@@ -5934,7 +5952,7 @@
      "median_event": "0.68%",
      "median_other": "0.68%",
      "ratio": 1.01,
-     "p": 0.4868,
+     "p": 0.485,
      "verdict": "doesn't"
     },
     "WEAT": {
@@ -5942,7 +5960,7 @@
      "median_event": "1.17%",
      "median_other": "1.01%",
      "ratio": 1.16,
-     "p": 0.1547,
+     "p": 0.1564,
      "verdict": "unclear"
     },
     "SOYB": {
@@ -5950,7 +5968,7 @@
      "median_event": "0.63%",
      "median_other": "0.61%",
      "ratio": 1.03,
-     "p": 0.3603,
+     "p": 0.3619,
      "verdict": "doesn't"
     },
     "UGA": {
@@ -5958,7 +5976,7 @@
      "median_event": "1.25%",
      "median_other": "1.30%",
      "ratio": 0.96,
-     "p": 0.6131,
+     "p": 0.6164,
      "verdict": "doesn't"
     },
     "UNG": {
@@ -5966,15 +5984,15 @@
      "median_event": "1.88%",
      "median_other": "1.96%",
      "ratio": 0.96,
-     "p": 0.6189,
+     "p": 0.6208,
      "verdict": "doesn't"
     },
     "XLU": {
      "days": 97,
      "median_event": "0.66%",
-     "median_other": "0.64%",
+     "median_other": "0.63%",
      "ratio": 1.03,
-     "p": 0.3747,
+     "p": 0.3591,
      "verdict": "doesn't"
     },
     "ITB": {
@@ -5982,7 +6000,7 @@
      "median_event": "1.04%",
      "median_other": "1.02%",
      "ratio": 1.02,
-     "p": 0.4207,
+     "p": 0.4201,
      "verdict": "doesn't"
     },
     "KC": {
@@ -5990,7 +6008,7 @@
      "median_event": "1.42%",
      "median_other": "1.39%",
      "ratio": 1.02,
-     "p": 0.4297,
+     "p": 0.4355,
      "verdict": "doesn't"
     },
     "T5YIE": {
@@ -5998,7 +6016,7 @@
      "median_event": "3.0 bp",
      "median_other": "2.0 bp",
      "ratio": 1.5,
-     "p": 0.0165,
+     "p": 0.0167,
      "verdict": "unclear"
     }
    },
@@ -6309,7 +6327,7 @@
      "median_event": "0.46%",
      "median_other": "0.45%",
      "ratio": 1.03,
-     "p": 0.436,
+     "p": 0.4384,
      "verdict": "doesn't"
     },
     "UST10Y / ZN": {
@@ -6317,7 +6335,7 @@
      "median_event": "2.7 bp",
      "median_other": "3.0 bp",
      "ratio": 0.9,
-     "p": 0.7576,
+     "p": 0.7523,
      "verdict": "doesn't"
     },
     "DXY": {
@@ -6325,7 +6343,7 @@
      "median_event": "0.32%",
      "median_other": "0.23%",
      "ratio": 1.35,
-     "p": 0.0067,
+     "p": 0.0071,
      "verdict": "moves"
     },
     "GC / XAU": {
@@ -6333,7 +6351,7 @@
      "median_event": "0.61%",
      "median_other": "0.48%",
      "ratio": 1.27,
-     "p": 0.0619,
+     "p": 0.0631,
      "verdict": "unclear"
     },
     "VIX": {
@@ -6341,7 +6359,7 @@
      "median_event": "4.10%",
      "median_other": "3.88%",
      "ratio": 1.06,
-     "p": 0.3721,
+     "p": 0.374,
      "verdict": "doesn't"
     },
     "DAX": {
@@ -6349,7 +6367,7 @@
      "median_event": "0.68%",
      "median_other": "0.55%",
      "ratio": 1.22,
-     "p": 0.101,
+     "p": 0.1084,
      "verdict": "unclear"
     },
     "SX5E": {
@@ -6357,7 +6375,7 @@
      "median_event": "0.66%",
      "median_other": "0.55%",
      "ratio": 1.22,
-     "p": 0.0852,
+     "p": 0.0827,
      "verdict": "unclear"
     },
     "BRN": {
@@ -6365,7 +6383,7 @@
      "median_event": "1.23%",
      "median_other": "1.26%",
      "ratio": 0.98,
-     "p": 0.5545,
+     "p": 0.5561,
      "verdict": "doesn't"
     },
     "EURUSD": {
@@ -6373,15 +6391,15 @@
      "median_event": "0.29%",
      "median_other": "0.26%",
      "ratio": 1.14,
-     "p": 0.1705,
+     "p": 0.1727,
      "verdict": "unclear"
     },
     "COMP": {
      "days": 85,
      "median_event": "0.65%",
      "median_other": "0.62%",
-     "ratio": 1.04,
-     "p": 0.3583,
+     "ratio": 1.05,
+     "p": 0.3504,
      "verdict": "doesn't"
     },
     "UST5Y / ZF": {
@@ -6389,7 +6407,7 @@
      "median_event": "2.6 bp",
      "median_other": "2.8 bp",
      "ratio": 0.93,
-     "p": 0.7738,
+     "p": 0.7666,
      "verdict": "doesn't"
     },
     "UKX": {
@@ -6397,15 +6415,15 @@
      "median_event": "0.50%",
      "median_other": "0.42%",
      "ratio": 1.2,
-     "p": 0.1256,
+     "p": 0.1246,
      "verdict": "unclear"
     },
     "SXXP": {
      "days": 83,
      "median_event": "0.49%",
      "median_other": "0.46%",
-     "ratio": 1.06,
-     "p": 0.3685,
+     "ratio": 1.07,
+     "p": 0.361,
      "verdict": "doesn't"
     },
     "BTC": {
@@ -6413,7 +6431,7 @@
      "median_event": "1.26%",
      "median_other": "1.72%",
      "ratio": 0.73,
-     "p": 0.9772,
+     "p": 0.9779,
      "verdict": "doesn't"
     },
     "ITA": {
@@ -6421,7 +6439,7 @@
      "median_event": "0.69%",
      "median_other": "0.67%",
      "ratio": 1.02,
-     "p": 0.4148,
+     "p": 0.4155,
      "verdict": "doesn't"
     },
     "XLE": {
@@ -6429,7 +6447,7 @@
      "median_event": "1.02%",
      "median_other": "0.89%",
      "ratio": 1.15,
-     "p": 0.1556,
+     "p": 0.1582,
      "verdict": "unclear"
     },
     "CORN": {
@@ -6437,7 +6455,7 @@
      "median_event": "0.67%",
      "median_other": "0.67%",
      "ratio": 1.0,
-     "p": 0.4848,
+     "p": 0.486,
      "verdict": "doesn't"
     },
     "WEAT": {
@@ -6445,15 +6463,15 @@
      "median_event": "1.03%",
      "median_other": "0.97%",
      "ratio": 1.06,
-     "p": 0.338,
+     "p": 0.3349,
      "verdict": "doesn't"
     },
     "SOYB": {
      "days": 85,
      "median_event": "0.57%",
      "median_other": "0.60%",
-     "ratio": 0.95,
-     "p": 0.6458,
+     "ratio": 0.94,
+     "p": 0.6504,
      "verdict": "doesn't"
     },
     "UGA": {
@@ -6461,7 +6479,7 @@
      "median_event": "1.31%",
      "median_other": "1.32%",
      "ratio": 0.99,
-     "p": 0.5206,
+     "p": 0.5255,
      "verdict": "doesn't"
     },
     "UNG": {
@@ -6469,7 +6487,7 @@
      "median_event": "1.95%",
      "median_other": "1.86%",
      "ratio": 1.05,
-     "p": 0.3605,
+     "p": 0.3607,
      "verdict": "doesn't"
     },
     "XLU": {
@@ -6477,7 +6495,7 @@
      "median_event": "0.71%",
      "median_other": "0.60%",
      "ratio": 1.19,
-     "p": 0.0735,
+     "p": 0.072,
      "verdict": "unclear"
     },
     "ITB": {
@@ -6485,7 +6503,7 @@
      "median_event": "0.88%",
      "median_other": "0.92%",
      "ratio": 0.96,
-     "p": 0.6319,
+     "p": 0.6383,
      "verdict": "doesn't"
     },
     "KC": {
@@ -6493,7 +6511,7 @@
      "median_event": "1.07%",
      "median_other": "1.34%",
      "ratio": 0.8,
-     "p": 0.9426,
+     "p": 0.9436,
      "verdict": "doesn't"
     },
     "T5YIE": {
@@ -6501,7 +6519,7 @@
      "median_event": "2.0 bp",
      "median_other": "2.0 bp",
      "ratio": 1.0,
-     "p": 0.9782,
+     "p": 0.9806,
      "verdict": "doesn't"
     }
    },
@@ -6820,7 +6838,7 @@
      "median_event": "4.5 bp",
      "median_other": "3.0 bp",
      "ratio": 1.5,
-     "p": 0.0762,
+     "p": 0.075,
      "verdict": "unclear"
     },
     "DXY": {
@@ -6828,7 +6846,7 @@
      "median_event": "0.23%",
      "median_other": "0.26%",
      "ratio": 0.92,
-     "p": 0.62,
+     "p": 0.6231,
      "verdict": "doesn't"
     },
     "GC / XAU": {
@@ -6836,7 +6854,7 @@
      "median_event": "0.74%",
      "median_other": "0.55%",
      "ratio": 1.36,
-     "p": 0.1948,
+     "p": 0.1987,
      "verdict": "unclear"
     },
     "VIX": {
@@ -6844,7 +6862,7 @@
      "median_event": "6.05%",
      "median_other": "3.40%",
      "ratio": 1.78,
-     "p": 0.0183,
+     "p": 0.018,
      "verdict": "unclear"
     },
     "DAX": {
@@ -6852,7 +6870,7 @@
      "median_event": "1.13%",
      "median_other": "0.66%",
      "ratio": 1.71,
-     "p": 0.0285,
+     "p": 0.0259,
      "verdict": "unclear"
     },
     "SX5E": {
@@ -6868,14 +6886,14 @@
      "median_event": "0.57%",
      "median_other": "0.30%",
      "ratio": 1.94,
-     "p": 0.0271,
+     "p": 0.0268,
      "verdict": "unclear"
     },
     "COMP": {
      "days": 25,
      "median_event": "1.11%",
      "median_other": "0.55%",
-     "ratio": 2.0,
+     "ratio": 2.01,
      "p": 0.0027,
      "verdict": "moves"
     },
@@ -6884,7 +6902,7 @@
      "median_event": "5.0 bp",
      "median_other": "3.1 bp",
      "ratio": 1.61,
-     "p": 0.042,
+     "p": 0.0425,
      "verdict": "unclear"
     },
     "UKX": {
@@ -6892,7 +6910,7 @@
      "median_event": "0.54%",
      "median_other": "0.52%",
      "ratio": 1.03,
-     "p": 0.4588,
+     "p": 0.4637,
      "verdict": "doesn't"
     },
     "SXXP": {
@@ -6900,7 +6918,7 @@
      "median_event": "1.06%",
      "median_other": "0.50%",
      "ratio": 2.12,
-     "p": 0.0152,
+     "p": 0.0156,
      "verdict": "unclear"
     },
     "BTC": {
@@ -6916,7 +6934,7 @@
      "median_event": "1.76%",
      "median_other": "0.90%",
      "ratio": 1.96,
-     "p": 0.0224,
+     "p": 0.0246,
      "verdict": "unclear"
     },
     "CORN": {
@@ -6944,7 +6962,7 @@
      "median_event": "1.50%",
      "median_other": "0.59%",
      "ratio": 2.55,
-     "p": 0.0014,
+     "p": 0.0016,
      "verdict": "moves"
     },
     "ITB": {
@@ -6956,7 +6974,7 @@
      "median_event": "0.94%",
      "median_other": "1.24%",
      "ratio": 0.76,
-     "p": 0.7596,
+     "p": 0.7605,
      "verdict": "doesn't"
     },
     "T5YIE": {
@@ -6964,7 +6982,7 @@
      "median_event": "4.5 bp",
      "median_other": "2.0 bp",
      "ratio": 2.25,
-     "p": 0.0079,
+     "p": 0.0073,
      "verdict": "moves"
     }
    },
@@ -7098,7 +7116,7 @@
      "median_event": "0.38%",
      "median_other": "0.51%",
      "ratio": 0.74,
-     "p": 0.7939,
+     "p": 0.7943,
      "verdict": "doesn't"
     },
     "UST10Y / ZN": {
@@ -7106,7 +7124,7 @@
      "median_event": "2.7 bp",
      "median_other": "3.1 bp",
      "ratio": 0.87,
-     "p": 0.7291,
+     "p": 0.7335,
      "verdict": "doesn't"
     },
     "DXY": {
@@ -7114,7 +7132,7 @@
      "median_event": "0.27%",
      "median_other": "0.26%",
      "ratio": 1.07,
-     "p": 0.4211,
+     "p": 0.4214,
      "verdict": "doesn't"
     },
     "GC / XAU": {
@@ -7126,7 +7144,7 @@
      "median_event": "4.96%",
      "median_other": "3.40%",
      "ratio": 1.46,
-     "p": 0.1477,
+     "p": 0.1458,
      "verdict": "unclear"
     },
     "DAX": {
@@ -7134,7 +7152,7 @@
      "median_event": "1.15%",
      "median_other": "0.65%",
      "ratio": 1.76,
-     "p": 0.0669,
+     "p": 0.0685,
      "verdict": "unclear"
     },
     "SX5E": {
@@ -7154,7 +7172,7 @@
      "median_event": "0.61%",
      "median_other": "0.55%",
      "ratio": 1.11,
-     "p": 0.3871,
+     "p": 0.3819,
      "verdict": "unclear"
     },
     "UST5Y / ZF": {
@@ -7162,7 +7180,7 @@
      "median_event": "2.6 bp",
      "median_other": "3.2 bp",
      "ratio": 0.81,
-     "p": 0.7805,
+     "p": 0.783,
      "verdict": "doesn't"
     },
     "UKX": {
@@ -7170,7 +7188,7 @@
      "median_event": "0.59%",
      "median_other": "0.52%",
      "ratio": 1.13,
-     "p": 0.3716,
+     "p": 0.3691,
      "verdict": "unclear"
     },
     "SXXP": {
@@ -7243,7 +7261,7 @@
      "median_event": "0.65%",
      "median_other": "0.51%",
      "ratio": 1.29,
-     "p": 0.2008,
+     "p": 0.2002,
      "verdict": "unclear"
     },
     "UST10Y / ZN": {
@@ -7251,7 +7269,7 @@
      "median_event": "2.0 bp",
      "median_other": "3.3 bp",
      "ratio": 0.62,
-     "p": 0.9293,
+     "p": 0.9251,
      "verdict": "doesn't"
     },
     "DXY": {
@@ -7259,15 +7277,15 @@
      "median_event": "0.22%",
      "median_other": "0.26%",
      "ratio": 0.87,
-     "p": 0.6872,
+     "p": 0.6848,
      "verdict": "doesn't"
     },
     "GC / XAU": {
      "days": 10,
      "median_event": "0.28%",
-     "median_other": "0.55%",
+     "median_other": "0.56%",
      "ratio": 0.5,
-     "p": 0.9458,
+     "p": 0.9437,
      "verdict": "doesn't"
     },
     "VIX": {
@@ -7275,7 +7293,7 @@
      "median_event": "7.80%",
      "median_other": "3.50%",
      "ratio": 2.23,
-     "p": 0.0042,
+     "p": 0.0051,
      "verdict": "moves"
     },
     "DAX": {
@@ -7283,7 +7301,7 @@
      "median_event": "0.45%",
      "median_other": "0.66%",
      "ratio": 0.68,
-     "p": 0.8463,
+     "p": 0.8449,
      "verdict": "doesn't"
     },
     "SX5E": {
@@ -7303,7 +7321,7 @@
      "median_event": "0.67%",
      "median_other": "0.55%",
      "ratio": 1.21,
-     "p": 0.2592,
+     "p": 0.2607,
      "verdict": "unclear"
     },
     "UST5Y / ZF": {
@@ -7311,7 +7329,7 @@
      "median_event": "2.3 bp",
      "median_other": "3.2 bp",
      "ratio": 0.7,
-     "p": 0.8853,
+     "p": 0.884,
      "verdict": "doesn't"
     },
     "UKX": {
@@ -7319,7 +7337,7 @@
      "median_event": "0.55%",
      "median_other": "0.51%",
      "ratio": 1.06,
-     "p": 0.4329,
+     "p": 0.4313,
      "verdict": "doesn't"
     },
     "SXXP": {
@@ -7339,7 +7357,7 @@
      "median_event": "0.65%",
      "median_other": "0.89%",
      "ratio": 0.73,
-     "p": 0.7923,
+     "p": 0.7927,
      "verdict": "doesn't"
     },
     "CORN": {
@@ -7367,7 +7385,7 @@
      "median_event": "0.61%",
      "median_other": "0.58%",
      "ratio": 1.05,
-     "p": 0.4525,
+     "p": 0.4579,
      "verdict": "doesn't"
     },
     "ITB": {
@@ -7379,7 +7397,7 @@
      "median_event": "1.08%",
      "median_other": "1.24%",
      "ratio": 0.87,
-     "p": 0.635,
+     "p": 0.636,
      "verdict": "doesn't"
     },
     "T5YIE": {
@@ -7517,7 +7535,7 @@
      "median_event": "0.48%",
      "median_other": "0.52%",
      "ratio": 0.91,
-     "p": 0.6343,
+     "p": 0.6364,
      "verdict": "doesn't"
     },
     "UST10Y / ZN": {
@@ -7525,7 +7543,7 @@
      "median_event": "2.4 bp",
      "median_other": "3.1 bp",
      "ratio": 0.77,
-     "p": 0.9414,
+     "p": 0.939,
      "verdict": "doesn't"
     },
     "DXY": {
@@ -7533,7 +7551,7 @@
      "median_event": "0.18%",
      "median_other": "0.23%",
      "ratio": 0.76,
-     "p": 0.94,
+     "p": 0.9409,
      "verdict": "doesn't"
     },
     "GC / XAU": {
@@ -7541,7 +7559,7 @@
      "median_event": "0.66%",
      "median_other": "0.48%",
      "ratio": 1.36,
-     "p": 0.075,
+     "p": 0.0753,
      "verdict": "unclear"
     },
     "VIX": {
@@ -7549,7 +7567,7 @@
      "median_event": "5.22%",
      "median_other": "3.89%",
      "ratio": 1.34,
-     "p": 0.0525,
+     "p": 0.0565,
      "verdict": "unclear"
     },
     "DAX": {
@@ -7557,15 +7575,15 @@
      "median_event": "0.89%",
      "median_other": "0.54%",
      "ratio": 1.64,
-     "p": 0.004,
+     "p": 0.0038,
      "verdict": "moves"
     },
     "SX5E": {
      "days": 44,
      "median_event": "0.88%",
      "median_other": "0.54%",
-     "ratio": 1.61,
-     "p": 0.0029,
+     "ratio": 1.62,
+     "p": 0.004,
      "verdict": "moves"
     },
     "BRN": {
@@ -7573,7 +7591,7 @@
      "median_event": "1.04%",
      "median_other": "1.24%",
      "ratio": 0.84,
-     "p": 0.8055,
+     "p": 0.8096,
      "verdict": "doesn't"
     },
     "EURUSD": {
@@ -7581,7 +7599,7 @@
      "median_event": "0.24%",
      "median_other": "0.24%",
      "ratio": 1.01,
-     "p": 0.4866,
+     "p": 0.4915,
      "verdict": "doesn't"
     },
     "COMP": {
@@ -7589,7 +7607,7 @@
      "median_event": "0.74%",
      "median_other": "0.73%",
      "ratio": 1.01,
-     "p": 0.4841,
+     "p": 0.4812,
      "verdict": "doesn't"
     },
     "UST5Y / ZF": {
@@ -7597,7 +7615,7 @@
      "median_event": "2.0 bp",
      "median_other": "2.9 bp",
      "ratio": 0.71,
-     "p": 0.9687,
+     "p": 0.9653,
      "verdict": "doesn't"
     },
     "UKX": {
@@ -7605,7 +7623,7 @@
      "median_event": "0.53%",
      "median_other": "0.42%",
      "ratio": 1.28,
-     "p": 0.1087,
+     "p": 0.1055,
      "verdict": "unclear"
     },
     "SXXP": {
@@ -7613,15 +7631,15 @@
      "median_event": "0.65%",
      "median_other": "0.46%",
      "ratio": 1.42,
-     "p": 0.0204,
+     "p": 0.0226,
      "verdict": "unclear"
     },
     "BTC": {
      "days": 45,
      "median_event": "1.95%",
      "median_other": "1.74%",
-     "ratio": 1.13,
-     "p": 0.2798,
+     "ratio": 1.12,
+     "p": 0.2904,
      "verdict": "unclear"
     },
     "ITA": {
@@ -7629,7 +7647,7 @@
      "median_event": "0.68%",
      "median_other": "0.74%",
      "ratio": 0.91,
-     "p": 0.6998,
+     "p": 0.7032,
      "verdict": "doesn't"
     },
     "XLE": {
@@ -7637,7 +7655,7 @@
      "median_event": "0.97%",
      "median_other": "0.95%",
      "ratio": 1.02,
-     "p": 0.4663,
+     "p": 0.467,
      "verdict": "doesn't"
     },
     "CORN": {
@@ -7645,7 +7663,7 @@
      "median_event": "0.74%",
      "median_other": "0.67%",
      "ratio": 1.1,
-     "p": 0.2652,
+     "p": 0.2684,
      "verdict": "doesn't"
     },
     "WEAT": {
@@ -7653,7 +7671,7 @@
      "median_event": "1.17%",
      "median_other": "1.02%",
      "ratio": 1.15,
-     "p": 0.2437,
+     "p": 0.247,
      "verdict": "unclear"
     },
     "SOYB": {
@@ -7661,7 +7679,7 @@
      "median_event": "0.78%",
      "median_other": "0.60%",
      "ratio": 1.3,
-     "p": 0.0417,
+     "p": 0.043,
      "verdict": "unclear"
     },
     "UGA": {
@@ -7669,7 +7687,7 @@
      "median_event": "1.03%",
      "median_other": "1.31%",
      "ratio": 0.79,
-     "p": 0.8921,
+     "p": 0.8904,
      "verdict": "doesn't"
     },
     "UNG": {
@@ -7677,7 +7695,7 @@
      "median_event": "1.61%",
      "median_other": "1.96%",
      "ratio": 0.82,
-     "p": 0.8588,
+     "p": 0.8568,
      "verdict": "doesn't"
     },
     "XLU": {
@@ -7685,7 +7703,7 @@
      "median_event": "0.55%",
      "median_other": "0.64%",
      "ratio": 0.85,
-     "p": 0.8166,
+     "p": 0.8121,
      "verdict": "doesn't"
     },
     "ITB": {
@@ -7693,7 +7711,7 @@
      "median_event": "0.76%",
      "median_other": "1.02%",
      "ratio": 0.74,
-     "p": 0.9374,
+     "p": 0.9334,
      "verdict": "doesn't"
     },
     "KC": {
@@ -7701,7 +7719,7 @@
      "median_event": "1.56%",
      "median_other": "1.39%",
      "ratio": 1.12,
-     "p": 0.2334,
+     "p": 0.2369,
      "verdict": "unclear"
     },
     "T5YIE": {
@@ -7709,7 +7727,7 @@
      "median_event": "2.0 bp",
      "median_other": "2.0 bp",
      "ratio": 1.0,
-     "p": 0.8899,
+     "p": 0.8916,
      "verdict": "doesn't"
     }
    },
@@ -7730,7 +7748,7 @@
      "median_event": "0.55%",
      "median_other": "0.50%",
      "ratio": 1.11,
-     "p": 0.2762,
+     "p": 0.2783,
      "verdict": "unclear"
     },
     "UST10Y / ZN": {
@@ -7738,7 +7756,7 @@
      "median_event": "5.9 bp",
      "median_other": "3.0 bp",
      "ratio": 1.97,
-     "p": 0.0003,
+     "p": 0.0002,
      "verdict": "moves"
     },
     "DXY": {
@@ -7746,7 +7764,7 @@
      "median_event": "0.28%",
      "median_other": "0.24%",
      "ratio": 1.13,
-     "p": 0.2606,
+     "p": 0.2593,
      "verdict": "unclear"
     },
     "GC / XAU": {
@@ -7758,7 +7776,7 @@
      "median_event": "4.01%",
      "median_other": "3.40%",
      "ratio": 1.18,
-     "p": 0.274,
+     "p": 0.2787,
      "verdict": "unclear"
     },
     "DAX": {
@@ -7766,7 +7784,7 @@
      "median_event": "0.68%",
      "median_other": "0.66%",
      "ratio": 1.03,
-     "p": 0.4574,
+     "p": 0.4527,
      "verdict": "doesn't"
     },
     "SX5E": {
@@ -7786,7 +7804,7 @@
      "median_event": "0.60%",
      "median_other": "0.54%",
      "ratio": 1.11,
-     "p": 0.2784,
+     "p": 0.2813,
      "verdict": "unclear"
     },
     "UST5Y / ZF": {
@@ -7794,7 +7812,7 @@
      "median_event": "6.0 bp",
      "median_other": "3.1 bp",
      "ratio": 1.94,
-     "p": 0.0003,
+     "p": 0.0001,
      "verdict": "moves"
     },
     "UKX": {
@@ -7802,7 +7820,7 @@
      "median_event": "0.62%",
      "median_other": "0.52%",
      "ratio": 1.19,
-     "p": 0.2232,
+     "p": 0.2216,
      "verdict": "unclear"
     },
     "SXXP": {
@@ -7810,7 +7828,7 @@
      "median_event": "0.92%",
      "median_other": "0.50%",
      "ratio": 1.83,
-     "p": 0.0409,
+     "p": 0.0419,
      "verdict": "unclear"
     },
     "BTC": {
@@ -7826,7 +7844,7 @@
      "median_event": "0.76%",
      "median_other": "0.89%",
      "ratio": 0.86,
-     "p": 0.6547,
+     "p": 0.6566,
      "verdict": "doesn't"
     },
     "CORN": {
@@ -7854,7 +7872,7 @@
      "median_event": "1.10%",
      "median_other": "0.57%",
      "ratio": 1.94,
-     "p": 0.0244,
+     "p": 0.025,
      "verdict": "unclear"
     },
     "ITB": {
@@ -7887,7 +7905,7 @@
      "median_event": "0.47%",
      "median_other": "0.50%",
      "ratio": 0.95,
-     "p": 0.6067,
+     "p": 0.6074,
      "verdict": "doesn't"
     },
     "UST10Y / ZN": {
@@ -7895,7 +7913,7 @@
      "median_event": "2.7 bp",
      "median_other": "3.3 bp",
      "ratio": 0.82,
-     "p": 0.8906,
+     "p": 0.8856,
      "verdict": "doesn't"
     },
     "DXY": {
@@ -7911,7 +7929,7 @@
      "median_event": "0.36%",
      "median_other": "0.55%",
      "ratio": 0.65,
-     "p": 0.9419,
+     "p": 0.9376,
      "verdict": "doesn't"
     },
     "VIX": {
@@ -7919,7 +7937,7 @@
      "median_event": "4.28%",
      "median_other": "3.40%",
      "ratio": 1.26,
-     "p": 0.124,
+     "p": 0.1263,
      "verdict": "unclear"
     },
     "DAX": {
@@ -7927,7 +7945,7 @@
      "median_event": "0.49%",
      "median_other": "0.66%",
      "ratio": 0.74,
-     "p": 0.9112,
+     "p": 0.9122,
      "verdict": "doesn't"
     },
     "SX5E": {
@@ -7935,7 +7953,7 @@
      "median_event": "0.41%",
      "median_other": "0.62%",
      "ratio": 0.66,
-     "p": 0.9309,
+     "p": 0.9345,
      "verdict": "doesn't"
     },
     "BRN": {
@@ -7943,7 +7961,7 @@
      "median_event": "0.93%",
      "median_other": "1.12%",
      "ratio": 0.84,
-     "p": 0.7423,
+     "p": 0.7367,
      "verdict": "doesn't"
     },
     "EURUSD": {
@@ -7951,7 +7969,7 @@
      "median_event": "0.34%",
      "median_other": "0.30%",
      "ratio": 1.16,
-     "p": 0.2776,
+     "p": 0.2778,
      "verdict": "unclear"
     },
     "COMP": {
@@ -7959,7 +7977,7 @@
      "median_event": "0.74%",
      "median_other": "0.55%",
      "ratio": 1.35,
-     "p": 0.0507,
+     "p": 0.0522,
      "verdict": "unclear"
     },
     "UST5Y / ZF": {
@@ -7967,7 +7985,7 @@
      "median_event": "3.0 bp",
      "median_other": "3.2 bp",
      "ratio": 0.94,
-     "p": 0.8209,
+     "p": 0.8171,
      "verdict": "doesn't"
     },
     "UKX": {
@@ -7975,7 +7993,7 @@
      "median_event": "0.39%",
      "median_other": "0.53%",
      "ratio": 0.75,
-     "p": 0.9316,
+     "p": 0.9349,
      "verdict": "doesn't"
     },
     "SXXP": {
@@ -7983,15 +8001,15 @@
      "median_event": "0.35%",
      "median_other": "0.50%",
      "ratio": 0.7,
-     "p": 0.9209,
+     "p": 0.9216,
      "verdict": "doesn't"
     },
     "BTC": {
      "days": 16,
      "median_event": "2.52%",
-     "median_other": "1.70%",
-     "ratio": 1.48,
-     "p": 0.1231,
+     "median_other": "1.71%",
+     "ratio": 1.47,
+     "p": 0.1233,
      "verdict": "unclear"
     },
     "ITA": {
@@ -7999,7 +8017,7 @@
      "median_event": "0.76%",
      "median_other": "0.69%",
      "ratio": 1.11,
-     "p": 0.343,
+     "p": 0.3465,
      "verdict": "unclear"
     },
     "XLE": {
@@ -8007,7 +8025,7 @@
      "median_event": "1.02%",
      "median_other": "0.91%",
      "ratio": 1.12,
-     "p": 0.3265,
+     "p": 0.3231,
      "verdict": "unclear"
     },
     "CORN": {
@@ -8015,7 +8033,7 @@
      "median_event": "0.75%",
      "median_other": "0.72%",
      "ratio": 1.05,
-     "p": 0.4229,
+     "p": 0.4269,
      "verdict": "doesn't"
     },
     "WEAT": {
@@ -8023,7 +8041,7 @@
      "median_event": "1.16%",
      "median_other": "0.97%",
      "ratio": 1.2,
-     "p": 0.2736,
+     "p": 0.2791,
      "verdict": "unclear"
     },
     "SOYB": {
@@ -8031,7 +8049,7 @@
      "median_event": "0.98%",
      "median_other": "0.62%",
      "ratio": 1.59,
-     "p": 0.0423,
+     "p": 0.0407,
      "verdict": "unclear"
     },
     "UGA": {
@@ -8039,7 +8057,7 @@
      "median_event": "1.10%",
      "median_other": "1.20%",
      "ratio": 0.91,
-     "p": 0.6485,
+     "p": 0.6463,
      "verdict": "doesn't"
     },
     "UNG": {
@@ -8047,7 +8065,7 @@
      "median_event": "2.44%",
      "median_other": "1.79%",
      "ratio": 1.36,
-     "p": 0.0897,
+     "p": 0.0908,
      "verdict": "unclear"
     },
     "XLU": {
@@ -8055,7 +8073,7 @@
      "median_event": "0.50%",
      "median_other": "0.60%",
      "ratio": 0.83,
-     "p": 0.7831,
+     "p": 0.7814,
      "verdict": "doesn't"
     },
     "ITB": {
@@ -8063,7 +8081,7 @@
      "median_event": "1.18%",
      "median_other": "1.08%",
      "ratio": 1.09,
-     "p": 0.3645,
+     "p": 0.3698,
      "verdict": "doesn't"
     },
     "KC": {
@@ -8071,7 +8089,7 @@
      "median_event": "1.51%",
      "median_other": "1.23%",
      "ratio": 1.23,
-     "p": 0.1808,
+     "p": 0.1825,
      "verdict": "unclear"
     },
     "T5YIE": {
@@ -8079,7 +8097,7 @@
      "median_event": "2.0 bp",
      "median_other": "2.0 bp",
      "ratio": 1.0,
-     "p": 0.8626,
+     "p": 0.8633,
      "verdict": "doesn't"
     }
    },
@@ -9080,6 +9098,71 @@
    "band": null,
    "grade": null,
    "note": null
+  },
+  {
+   "day": "2026-11-12",
+   "event": "claims",
+   "label": "CLM",
+   "actual": 200.0,
+   "market": "UST10Y / ZN",
+   "outcome": "silent",
+   "direction": null,
+   "record": null,
+   "band": null,
+   "grade": null,
+   "note": null
+  },
+  {
+   "day": "2026-11-12",
+   "event": "claims",
+   "label": "CLM",
+   "actual": 200.0,
+   "market": "DXY",
+   "outcome": "silent",
+   "direction": null,
+   "record": null,
+   "band": null,
+   "grade": null,
+   "note": null
+  },
+  {
+   "day": "2026-11-12",
+   "event": "claims",
+   "label": "CLM",
+   "actual": 200.0,
+   "market": "EURUSD",
+   "outcome": "silent",
+   "direction": null,
+   "record": null,
+   "band": null,
+   "grade": null,
+   "note": null
+  },
+  {
+   "day": "2026-11-12",
+   "event": "claims",
+   "label": "CLM",
+   "actual": 200.0,
+   "market": "UST5Y / ZF",
+   "outcome": "silent",
+   "direction": null,
+   "record": null,
+   "band": null,
+   "grade": null,
+   "note": null
+  },
+  {
+   "day": "2026-11-12",
+   "event": "claims",
+   "label": "CLM",
+   "actual": 200.0,
+   "market": "XLU",
+   "outcome": "silent",
+   "direction": null,
+   "record": null,
+   "band": null,
+   "grade": null,
+   "note": null
   }
  ],
  "missed": [
@@ -9098,8 +9181,8 @@
    "event": "retail",
    "label": "RET",
    "measure": "retail_sales",
-   "consensus": 0,
-   "consensus_from": "TradingView",
+   "consensus": 0.0,
+   "consensus_from": "Nasdaq",
    "below": -0.3,
    "above": 0.3,
    "step": "0.3pp",
