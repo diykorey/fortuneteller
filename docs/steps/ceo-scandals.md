@@ -81,7 +81,7 @@ the S&P 500 after past scandals, with part 1's counts, answer, placebo and walk-
 | 1 | ~~The dataset read and coded by the rule; the seed `data/seed/ceo_scandals.csv` with each row's day, time, ticker, CEO, conduct and source; each company's closes loaded | Every kept row cites its source; the coding is listed row by row in this spec; the left-out rows are counted by reason~~ **done** 2026-11-13. *Amended:* the coding is in [`ceo-scandals-coding.csv`](ceo-scandals-coding.csv), not this spec, and the closes load in step 2 |
 | 2 | ~~`follows --event ceo` with the excess move and each company's base; `ceo` in `TRIGGER_KINDS` (kind `scandal`, with the company's ticker in the trigger)~~ `follows --event ceo` with the excess move and each company's base; the companies' closes by `load-prices --companies` | Tests: the excess move of a stock that moves exactly as the index is zero; a base never reads a close after the event's close before; with ten events all down against a base of a third, the answer is *down* |
 | 2b | `ceo` in `TRIGGER_KINDS` (kind `scandal`, with the company's ticker in the trigger) and its grading on the company against the S&P 500; NVDA's closes loaded | A `ceo` trigger is answered from the events before it and graded on its company alone; every other flow's trigger file reads as today |
-| 3 | Results here and in [MVP results](../mvp-results.md), checked against the expected outcome; the answer for Nvidia's 2026-11-08 printed beside them | Each span's answer and walk-forward recorded |
+| 3 | ~~Results here and in [MVP results](../mvp-results.md), checked against the expected outcome; the answer for Nvidia's 2026-11-08 printed beside them | Each span's answer and walk-forward recorded~~ **done** 2026-11-14, [below](#results) |
 
 *Step 1, 2026-11-13:* of the dataset's 237 departures coded *legal*, 58 name the CEO's own
 conduct and 26 are kept, 2005 to 2023. Left out: 179 not the CEO's own conduct; 19 with no Yahoo
@@ -99,6 +99,52 @@ by `load-prices --companies`, not on every `load-prices`, so the release-day job
 
 If the dataset is not reachable, or gives fewer than 10 kept events, step 1 stops and says so.
 A hand-made list is then the owner's call, labelled as picked.
+
+## Results
+
+Measured 2026-11-14 on a copy of the store, each company's closes from Yahoo that day: 26 events,
+2005-03-07 … 2023-09-19, none left out or a hole on any span.
+
+| Span | Up / same / down | Answer | Chance | Median excess | Walk-forward |
+| --- | --- | --- | --- | --- | --- |
+| Day | 4 / 5 / 17 | **down** | 0.0040 | −2.1% | 6 graded, 4 right, *too few* |
+| Week | 5 / 4 / 17 | **down** | 0.0074 | −3.1% | 4 graded, 2 right, *too few* |
+| Month | 4 / 5 / 17 | **down** | 0.0013 | −5.3% | 10 graded, 6 right, *too few* |
+| Day, from the reaction close | 8 / 8 / 10 | *can't say* | 0.40 | −0.1% | 0 graded |
+| Week, from the reaction close | 4 / 10 / 12 | *can't say* | 0.023 | −0.6% | 1 graded, 0 right |
+| Month, from the reaction close | 4 / 11 / 11 | *can't say* | 0.058 | −1.9% | 2 graded, 0 right |
+
+The base is about a third each way on every span. The placebo, the same spans 10 or more closes
+away on each company's own closes, never gives the answer. Three of the six cells answer, against
+about 0.2 by chance, and they are one fall seen three times: the week and the month start at the
+same close as the day.
+
+**Against the expected outcome:**
+
+- Nothing can hold: **right**, *too few* walk-forward on every span.
+- Count 20 to 40: **right**, 26. Up to a third left out with no history of their own: **wrong**,
+  24 of the 52 tied to their conduct (19 not on Yahoo, 4 tickers now another company's, 1 restarted).
+- The day *down*: **right**, 17 of 26, chance 0.004.
+- The week and the month *can't say*: **wrong**, both *down*. From the reaction close they are
+  *can't say*, so the day's fall carries them, not a further fall.
+- From the reaction close *can't say* on every span: **right**.
+- Every existing output unchanged: **right**, checked in step 2.
+
+**What it says.** When a CEO goes over personal conduct, the company's stock falls against the
+market on the day the word is out: a median 2.1%, and 17 times in 26. After that close there is no
+direction: the next day, week and month are *can't say*. It is a record of counts. Nothing holds
+walk-forward, so it is not a call, and the list leans to companies that survived.
+
+**Nvidia, 2026-11-08.** The board's investigation and the CEO's admission came out on a Sunday, so
+the first reaction close is Monday 2026-11-09. From the 26 events before it, all ended by then: the
+day *down*, the week *down*, the month *down*; from the reaction close *can't say*. Computed
+2026-11-14, after the day's close was in, from nothing of Nvidia's but its base:
+
+- The day: Nvidia −4.3% and the S&P 500 +2.3%, an excess of −6.6% against a cut of 0.77%:
+  *down*, as answered. From the reaction close the day after: −5.1%, *down*, where the answer was
+  *can't say*.
+- The week ends on 2026-11-13's close and the month on 2026-12-08's; neither was in. The CEO has
+  not left, unlike every event in the history, so it is a neighbour of the kind, not one of it.
 
 ## How you know it is right
 

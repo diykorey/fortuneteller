@@ -8,17 +8,17 @@ Where the work is and what comes next. Two rules keep it current:
 
 ## Last completed
 
-Step 17, part 2: the Fed's decisions over a quarter and a year. Nothing holds and no answer stands
-counting each cycle once; one answer of 150 cells against 2.0 by chance
-([the spec](steps/what-follows-long.md#results)).
+Step 20, part 1, step 3: what follows a CEO's conduct in question. The company falls against the
+S&P 500 on the day, 17 of 26, a median 2.1%, chance 0.004; from the reaction close there is no
+direction; nothing holds walk-forward. Nvidia fell 6.6% against the market on 2026-11-09, as the
+day answers ([the results](steps/ceo-scandals.md#results)).
 
 ## In progress
 
 Step 20, part 1: a CEO's conduct in question, the company against the S&P 500, from a published
 dataset of CEO dismissals ([the spec](steps/ceo-scandals.md)), taken 2026-11-13 by the owner ahead
-of step 18's grades. Step 1, the coded list, is done: 26 events, 2005 to 2023. Step 2, the closes and
-`follows --event ceo`, is in this change; step 2b, the trigger with the company's ticker, and step 3,
-the results and Nvidia's answer, are next.
+of step 18's grades. Steps 1 to 3 are done: 26 events, 2005 to 2023, `follows --event ceo` and the
+results. Step 2b, a `ceo` trigger with the company's ticker, graded on that company alone, is next.
 
 Step 18, part 2, step 3: the first triggers graded ([the spec](steps/trigger-file.md)). The owner's
 first, CPI of 2026-11-10 *as expected*, was filed that evening but merged 2026-11-11 10:33, after
@@ -43,8 +43,7 @@ merged pull request ([the spec](steps/beat-the-fortune-teller.md)). It waits for
 
 ## Next
 
-Step 20, part 1, step 3: the results, checked against the expected outcome, with Nvidia's answer for
-2026-11-08; then step 2b, a `ceo` trigger with its company's ticker. Then part 2, a pasted article
+Step 20, part 1, step 2b: a `ceo` trigger with its company's ticker. Then part 2, a pasted article
 read into a trigger.
 
 ## Done
