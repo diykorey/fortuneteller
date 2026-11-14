@@ -547,7 +547,8 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **Workflow, runner, artifact, cache** — GitHub Actions' words: a workflow is a job file in
   `.github/workflows/`, run on a runner (a fresh GitHub machine) on a schedule or on demand; an
   artifact is a file a run uploads, kept 90 days; a cache is a saved directory a later run restores,
-  evicted when unused (step 21).
+  evicted when unused (step 21). A release asset is a file attached to a GitHub release; step 21
+  keeps the encrypted store as one.
 - **Shadow run** — a new way of running a job beside the old one, both logging, every row compared,
   before the old one is retired (roadmap step 21).
 - **The gate** — a dated check of several steps together against bars fixed in advance; a miss is

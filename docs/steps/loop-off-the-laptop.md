@@ -29,6 +29,15 @@ logged within 15 minutes, none missed.
   neither rebuilds from empty (`init`, `seed`, every `load-*`) and says so. Whether a rebuild
   reproduces the laptop is measured in step 1, not assumed: the cache holds calendars that may not
   be fetchable again.
+  - *Amended 2026-11-14, after step 1, before step 2:* the rebuild does not reproduce (below), and
+    an artifact of a public repository can be downloaded by anyone signed in to GitHub, which
+    would republish Nasdaq's and TradingView's replies. So the store and the cache travel as one
+    encrypted file instead: a `tar` of both, encrypted with `gpg --symmetric` (AES-256) under a
+    key held as the repository secret `FT_STORE_KEY` and in the laptop's `.env`, kept as the asset
+    `store.tar.gpg` of a prerelease named `store`. A run downloads and decrypts it; an evening that
+    loaded anything uploads the new one. The laptop seeds the first from its own store. No
+    `actions/cache`, no artifact of the store, and no rebuild: a run that cannot restore the file
+    fails and opens an issue.
 - **Started early, by New York's clock.** GitHub's schedule is in UTC and often starts late. The
   morning is scheduled at 11:30 and 12:30 UTC on weekdays, 06:30 or 07:30 New York in winter,
   07:30 or 08:30 in summer. A run goes on unless it starts before 07:00 New York or another of
@@ -85,9 +94,30 @@ logged within 15 minutes, none missed.
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | `.github/workflows/jobs.yml`, run on demand: the store rebuilt from empty and each source fetched once; the rebuild timed; `score` against the laptop's | The step 1 rule's verdicts written here |
-| 2 | The schedule and the cache added; the shadow run on two release days | The three bars, per day, written here |
+| 1 | ~~`.github/workflows/jobs.yml`, run on demand: the store rebuilt from empty and each source fetched once; the rebuild timed; `score` against the laptop's | The step 1 rule's verdicts written here~~ **done** 2026-11-14, [below](#results) |
+| 2 | The schedule and the encrypted store (*amended 2026-11-14*, was the cache) added; the shadow run on two release days | The three bars, per day, written here |
 | 3 | Only if step 2 passes: the workflow opens the pull requests and issues; the laptop's timers disabled | The first release day on the runner alone logged on time, and a decisions entry retiring 2026-11-10's |
+
+## Results
+
+**Step 1, 2026-11-14** (runs [43628949150](https://github.com/diykorey/fortuneteller/actions/runs/43628949150)
+and [43630076184](https://github.com/diykorey/fortuneteller/actions/runs/43630076184) of `jobs.yml`,
+on `main` at #312 and #313; each run's `sources.txt` and `timings.txt` are its `rebuild-<run>`
+artifact):
+
+- **The sources: every one answers the runner**, so step 2 goes on. Yahoo gave the S&P 500's close
+  of 2026-11-13, FRED the series `T5YIE`, the Fed its calendar page, TradingView the current
+  quarter's 1,466 rows, Nasdaq 74 rows for 2026-11-12. The expected outcome, Nasdaq refusing with
+  403, was **wrong**.
+- **The rebuild does not reproduce the laptop.** From empty, `load-releases` stops in 9 to 25
+  seconds: `jobless claims reports at two times or for two months on 2025-11-18, 2025-11-20`, and
+  every later load has nothing to build on. TradingView has rewritten its 2025 shutdown weeks: the
+  laptop's copy of that quarter, fetched once it was over, has seven weeks of claims published
+  together on 2025-11-20 at 13:30 UTC; the same quarter fetched now spreads them over 2025-11-18
+  and 2025-11-20 at half-hourly times, with other forecasts. The same stop happens on the laptop
+  from an empty store, so it is the source, not the runner. The laptop's cache is therefore the
+  only copy of that history, and no `score.txt` from a rebuild could be compared. The store's
+  carrying is amended above.
 
 ## How you know it is right
 
@@ -96,8 +126,9 @@ logged within 15 minutes, none missed.
 - A run on a weekday with no release exits 0 and commits nothing, as the laptop's does.
 - Two runs never write the store at once: the workflow has one concurrency group for both steps.
 - A shadow run opens no pull request and no issue.
-- The store restored on the next run holds the closes the previous evening loaded.
-- With the cache deleted, a run restores the newest artifact, not a rebuild.
+- The store restored on the next run holds the closes the previous evening uploaded.
+- Without `FT_STORE_KEY`, a run fails before any command and opens an issue; it never rebuilds.
+- The release asset cannot be read without the key (`tar` refuses the downloaded file).
 
 ## What this step does not do
 
