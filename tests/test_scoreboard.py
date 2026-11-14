@@ -153,6 +153,36 @@ def test_the_scoreboard_holds_what_the_commands_print(
     )
 
 
+def test_the_page_asks_about_each_kind_the_store_answers(
+    tmp_db: Path, scoreboard_dir: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given a CPI history with prices, moves and surprises, and no FRED key
+    monkeypatch.setattr(settings, "fred_api_key", None)
+    _history(db.get_connection())
+
+    # when the scoreboard is written
+    code = main(["scoreboard"])
+    data = json.loads((scoreboard_dir / "data.json").read_text())
+    page = (scoreboard_dir / "index.html").read_text()
+
+    # then the page holds the section, CPI's three kinds over three spans on every market, every
+    # other flow named with its reason, and no sentence holds a percentage
+    assert code == 0
+    assert 'id="ask-kind"' in page and 'id="ask-left-out"' in page
+    (cpi,) = data["ask"]
+    assert [k["kind"] for k in cpi["kinds"]] == ["above", "as expected", "below"]
+    assert len(cpi["cells"]) == 3 * 3 * len(study.MVP_PRICE_SERIES)
+    assert [entry["name"] for entry in data["ask_left_out"]] == [
+        "fomc",
+        "nfp",
+        "retail",
+        "claims",
+        "ecb",
+        "ceo",
+    ]
+    assert all("%" not in cell["say"] for cell in cpi["cells"])
+
+
 def _at(monkeypatch: pytest.MonkeyPatch, day: date) -> None:
     # The clock at 09:00 New York on ``day``, and both calendars' consensus at 0.2 for its release.
     now = datetime.combine(day, time(9, 0), tzinfo=NEW_YORK)

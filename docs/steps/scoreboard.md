@@ -59,7 +59,9 @@ data: the calls, newest day first, with the missed releases among them; then the
 surprise and raw-move grids, one row per event and one column per market, the chance count and
 the rule under each. *Amended 2026-10-23:* a browser will not fetch a file beside a page opened
 from disk, so the command writes the page too, from the template `scoreboard.html` in the package
-with the JSON embedded; `data.json` beside it is the same data for anyone else. A call's record is
+with the JSON embedded; `data.json` beside it is the same data for anyone else. Since step 22 it
+also holds *ask* and *ask_left_out*, the page's "Ask the fortune teller"
+([its spec](ask-the-fortune-teller.md)). A call's record is
 the replay's calls before its day, which is what the popup counted. `FT_SCOREBOARD_DIR` moves the
 output, for tests. `scripts/release-day.sh` gets one line after `score`. No new unit, no
 daemon-reload. *Amended 2026-11-03 ([Beat the fortune teller](beat-the-fortune-teller.md)):* the

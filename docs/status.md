@@ -21,7 +21,9 @@ graded on it (step 2b).
 
 - **Step 22: ask the fortune teller** ([the spec](steps/ask-the-fortune-teller.md)): the page
   section where a reader picks a kind of event and sees what followed, from the same function
-  the follows command uses. The spec is written and reviewed; next, its five steps.
+  the follows command uses. Steps 1 to 4 are built: one function for follows and the page, the
+  base's count, the data and its sentences, the section; checked in a browser on test data.
+  Step 5, the published page after the evening job, is next.
 - **Step 21: the loop off the laptop** ([the spec](steps/loop-off-the-laptop.md)): the jobs on
   GitHub Actions. Step 1 done: every source answers the runner; the store cannot be rebuilt from
   empty (TradingView rewrote 2025's claims weeks), so it must travel encrypted. Step 2, the shadow

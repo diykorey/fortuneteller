@@ -72,10 +72,10 @@ that it shows them exactly.
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | One function returns a flow's events, kinds, cell order and cells; the follows command calls it | The existing follows tests pass unchanged, and a new one runs follows for the CEO flow through it |
-| 2 | The base keeps how many spans it rests on | A test gives a base of 9 moves and reads 9 |
-| 3 | The scoreboard data gains *ask*: per flow its kinds, events per kind, first and last day, and per cell the numbers and its sentence; and *ask_left_out*, each flow with its reason | A test on test_what_follows.py's store compares every cell with the follows lines for the same store, field by field; a second gives no FRED key and finds the Fed left out and the others there |
-| 4 | The page shows the section: a choice of kind, then a table per span, one row per market, the sentence under it | A test finds the section in the written page, and the page, opened in a browser on the test data, shows a kind's tables |
+| 1 | ~~One function returns a flow's events, kinds, cell order and cells; the follows command calls it~~ **done** 2026-11-14 | The existing follows tests pass unchanged, and a new one runs follows for the CEO flow through it |
+| 2 | ~~The base keeps how many spans it rests on~~ **done** 2026-11-14 | A test gives a base of 9 moves and reads 9 |
+| 3 | ~~The scoreboard data gains *ask*: per flow its kinds, events per kind, first and last day, and per cell the numbers and its sentence; and *ask_left_out*, each flow with its reason~~ **done** 2026-11-14; each cell also carries its market's name from data/seed/instruments.csv | A test on test_what_follows.py's store compares every cell with the follows lines for the same store, field by field; a second gives no FRED key and finds the Fed left out and the others there |
+| 4 | ~~The page shows the section: a choice of kind, then a table per span, one row per market, the sentence under it~~ **done** 2026-11-14: the page written from test_scoreboard.py's store, opened in headless Chrome, showed three tables of 25 rows and the reasons for the six flows left out, with no script error | A test finds the section in the written page, and the page, opened in a browser on the test data, shows a kind's tables |
 | 5 | On the published page, after the evening job | Every kind in the table above appears with its cells; none is left out |
 
 ## How you know it is right

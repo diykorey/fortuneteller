@@ -1571,6 +1571,8 @@ class Base:
 
     cut: float
     rates: dict[str, float]
+    # How many spans the shares rest on; none for a base averaged over several (the CEO's).
+    n: int | None = None
 
     @property
     def up_share(self) -> float:
@@ -1586,7 +1588,7 @@ def base_of(moves: Sequence[float]) -> Base | None:
     counts = {o: 0 for o in OUTCOMES}
     for move in moves:
         counts[outcome(move, cut)] += 1
-    return Base(cut, {o: counts[o] / len(moves) for o in OUTCOMES})
+    return Base(cut, {o: counts[o] / len(moves) for o in OUTCOMES}, len(moves))
 
 
 def span_answer(counts: Mapping[str, int], same_rate: float, up_share: float) -> tuple[str, float]:

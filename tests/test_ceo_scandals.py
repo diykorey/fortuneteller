@@ -6,6 +6,7 @@ from pathlib import Path
 import pytest
 
 from fortuneteller import db, flows, sources, study
+import fortuneteller.__main__ as cli
 from fortuneteller.__main__ import _trigger_companies, main
 from fortuneteller.sources import DailyClosingPrice
 from fortuneteller.study import CANT_SAY, DOWN, SAME, TOO_FEW, UP, Base
@@ -212,6 +213,41 @@ def test_follows_for_ceo_scandals_prints_its_table(
     assert out[0] == f"follows: 2 CEO scandals {index[600].day} … {index[610].day}: 2 scandals"
     assert out[2].startswith("scandal day    vs S&P 500     2   0    0    2      0/0  ")
     assert len(out) == 6
+
+
+def test_the_page_s_ceo_cells_have_no_base_count_and_say_why(tmp_db: Path, tmp_path: Path) -> None:
+    # given the index and two companies' closes, and an event at each
+    index = _closes([0.0] * 700)
+    con = db.get_connection()
+    rows = [("SPY / ES", c) for c in index]
+    for ticker, seed, i in (("AAA", 1, 600), ("BBB", 2, 610)):
+        rows += [(ticker, c) for c in _company(seed, i, -0.06)]
+    con.executemany(
+        "INSERT INTO daily_bars (instrument, day, close, source) VALUES (?, ?, ?, 'test')",
+        [[i, c.day, c.price] for i, c in rows],
+    )
+    path = _seed(
+        tmp_path, [f"{index[600].day},10:00,AAA,a,b,c,d", f"{index[610].day},10:00,BBB,a,b,c,d"]
+    )
+    flows.store_events(flows.CEO_FLOW.load(path, datetime(2026, 11, 13, tzinfo=UTC)).events)
+
+    # when the page's data is built
+    ask = cli.ask_data(con)
+
+    # then the CEO flow has a cell per span against the S&P 500, each with no base count, saying so
+    (ceo,) = [entry for entry in ask["ask"] if entry["name"] == "ceo"]
+    cells = ceo["cells"]
+    assert [(c["span"], c["market"]) for c in cells] == [  # type: ignore[union-attr]
+        ("day", "vs S&P 500"),
+        ("week", "vs S&P 500"),
+        ("month", "vs S&P 500"),
+    ]
+    assert all(c["base_n"] is None for c in cells)  # type: ignore[union-attr]
+    assert cells[0]["say"].startswith(  # type: ignore[index]
+        "After a CEO's conduct in question, the company against the S&P 500 on the day: "
+        "up 0, about the same 0, down 2, of 2."
+    )
+    assert "no single count" in cells[0]["say"]  # type: ignore[index]
 
 
 def test_a_company_yahoo_fails_on_is_reported_and_the_others_load(

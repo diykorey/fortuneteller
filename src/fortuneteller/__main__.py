@@ -25,6 +25,7 @@ from collections.abc import Callable, Iterable, Mapping, Sequence
 from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 from importlib.resources import files
+from typing import NamedTuple
 
 import duckdb
 
@@ -591,60 +592,86 @@ def _decision_kinds(
     return study.fed_kinds(events, dict(flows.target_rates(api_key)))
 
 
-def _follows(args: argparse.Namespace) -> int:
-    if args.long and args.event != "fomc":
-        print(
-            "follows: the quarter and the year are measured on the Fed's decisions only",
-            file=sys.stderr,
+class FollowsUnavailable(Exception):
+    """Why a flow's ``follows`` cells cannot be computed, worded as ``follows`` prints it."""
+
+
+class FollowCells(NamedTuple):
+    """A flow's ``follows`` cells: its events with a kind, the kinds, their order, a record per kind,
+    span and market, and what its events are called."""
+
+    events: list[EventInstance]
+    kinds: dict[int, str]
+    order: Sequence[str]
+    cells: list[tuple[str, str, str, study.Follow]]
+    noun: str
+
+
+def follows_cells(
+    name: str, con: duckdb.DuckDBPyConnection, after: bool = False, long: bool = False
+) -> FollowCells:
+    """What ``follows`` prints for the flow ``name``, computed once for the command and the
+    scoreboard's *ask* (docs/steps/ask-the-fortune-teller.md); raises ``FollowsUnavailable`` with
+    the reason it cannot be."""
+    if long and name != "fomc":
+        raise FollowsUnavailable(
+            "the quarter and the year are measured on the Fed's decisions only"
         )
-        return 1
-    flow = flows.flow_named(args.event)
-    noun = FOLLOWS_NOUNS[args.event]
-    con = db.get_connection()
-    db.init_db(con=con)
+    flow = flows.flow_named(name)
+    noun = FOLLOWS_NOUNS[name]
     if not flows.stored_events(flow, con=con):
-        print(
-            f"follows: no {noun} stored; run `fortuneteller load-releases` first", file=sys.stderr
-        )
-        return 1
+        raise FollowsUnavailable(f"no {noun} stored; run `fortuneteller load-releases` first")
     if db.count_rows("daily_bars", con=con) == 0:
-        print(
-            "follows: no daily_bars stored; run `fortuneteller load-prices` first", file=sys.stderr
-        )
-        return 1
+        raise FollowsUnavailable("no daily_bars stored; run `fortuneteller load-prices` first")
     try:
         if flow is flows.CEO_FLOW:
             events = flows.stored_events(flow, con=con)
             kinds = dict.fromkeys((e.event_id for e in events), study.SCANDAL)
             order: Sequence[str] = (study.SCANDAL,)
-            cells = study.follow_ceo(events, con=con, after=args.after_the_day)
+            cells = study.follow_ceo(events, con=con, after=after)
         else:
             if flow is flows.FED_FLOW or flow is flows.ECB_FLOW:
-                decided = _decision_kinds(flow, flows.stored_events(flow, con=con), "follows")
-                if decided is None:
-                    return 1
-                kinds = decided
+                stored = flows.stored_events(flow, con=con)
+                if flow is flows.ECB_FLOW:
+                    kinds = study.ecb_kinds(stored, flows.load_ecb_rates(settings.cache_dir))
+                else:
+                    api_key = (
+                        settings.fred_api_key.get_secret_value() if settings.fred_api_key else ""
+                    )
+                    if not api_key:
+                        raise FollowsUnavailable(
+                            "FT_FRED_API_KEY is not set (see docs/accounts.md)"
+                        )
+                    kinds = study.fed_kinds(stored, dict(flows.target_rates(api_key)))
                 order = study.KINDS
             else:
                 kinds = study.release_kinds(flow, con=con)
                 order = study.SURPRISE_KINDS
                 if not kinds:
-                    print(
-                        f"follows: no surprises for {args.event} yet; "
-                        "run `fortuneteller load-surprises` first",
-                        file=sys.stderr,
+                    raise FollowsUnavailable(
+                        f"no surprises for {name} yet; run `fortuneteller load-surprises` first"
                     )
-                    return 1
             events, cells = study.follow_decisions(
-                flow, kinds, order, con=con, after=args.after_the_day, long=args.long
+                flow, kinds, order, con=con, after=after, long=long
             )
     except (sources.FredError, sources.CalendarError, ValueError) as exc:
+        raise FollowsUnavailable(str(exc)) from exc
+    if not events:
+        raise FollowsUnavailable(f"no {noun} with a kind yet")
+    return FollowCells(events, kinds, order, cells, noun)
+
+
+def _follows(args: argparse.Namespace) -> int:
+    con = db.get_connection()
+    db.init_db(con=con)
+    try:
+        f = follows_cells(args.event, con, args.after_the_day, args.long)
+    except FollowsUnavailable as exc:
         print(f"follows: {exc}", file=sys.stderr)
         return 1
-    if not events:
-        print(f"follows: no {noun} with a kind yet", file=sys.stderr)
-        return 1
-    for line in describe_follows(events, kinds, cells, order, noun, args.after_the_day, args.long):
+    for line in describe_follows(
+        f.events, f.kinds, f.cells, f.order, f.noun, args.after_the_day, args.long
+    ):
         print(line)
     return 0
 
@@ -1540,7 +1567,154 @@ def scoreboard_data(
         "handles": handle_counts(graded),
         "ahead": ahead,
         "watch": watch,
+        **ask_data(con),
     }
+
+
+# Step 22, ask the fortune teller (docs/steps/ask-the-fortune-teller.md): each kind of event, in
+# the words the page gives it.
+ASK_DECISIONS = {
+    "fomc": {
+        study.CUT: "a Fed rate cut",
+        study.HOLD: "the Fed holding its rate",
+        study.HIKE: "a Fed rate hike",
+    },
+    "ecb": {
+        study.CUT: "an ECB rate cut",
+        study.HOLD: "the ECB holding its rate",
+        study.HIKE: "an ECB rate hike",
+    },
+    "ceo": {study.SCANDAL: "a CEO's conduct in question"},
+}
+ASK_RELEASES = {
+    "nfp": "a jobs report",
+    "retail": "a retail sales release",
+    "cpi": "a CPI release",
+    "claims": "a jobless claims report",
+}
+ASK_SURPRISE = {
+    study.ABOVE: "above the consensus",
+    study.AS_EXPECTED: "as expected",
+    study.BELOW: "below the consensus",
+}
+ASK_SPANS = {
+    "day": "on the day",
+    "week": "over the next week",
+    "month": "over the next month",
+    "quarter": "over the next quarter",
+    "year": "over the next year",
+}
+
+
+def market_names() -> dict[str, str]:
+    """Each market's name from data/seed/instruments.csv, the CEO kind's in words; a market not
+    there keeps its symbol."""
+    with (settings.seed_dir / "instruments.csv").open(newline="") as f:
+        names = {row["symbol"]: row["name"] for row in csv.DictReader(f)}
+    names[study.EXCESS_MARKET] = "the company against the S&P 500"
+    return names
+
+
+def ask_kind(name: str, kind: str) -> str:
+    """A kind of event as the page names it: "a jobs report above the consensus"."""
+    if name in ASK_DECISIONS:
+        return ASK_DECISIONS[name][kind]
+    return f"{ASK_RELEASES[name]} {ASK_SURPRISE[kind]}"
+
+
+def _counts(up: int, same: int, down: int) -> str:
+    return f"up {up}, about the same {same}, down {down}, of {up + same + down}"
+
+
+def ask_say(name: str, kind: str, span: str, market: str, f: study.Follow) -> str:
+    """One cell in plain words: the events' counts, the base's counts, the answer and its replay;
+    counts only, never a percentage."""
+    counts = [f.counts[o] for o in study.OUTCOMES]
+    words = [f"After {ask_kind(name, kind)}, {market} {ASK_SPANS[span]}: {_counts(*counts)}."]
+    if f.base is not None and f.base.n:
+        base = [round(f.base.rates[o] * f.base.n) for o in study.OUTCOMES]
+        every = "On every day" if span == "day" else f"Over every {span}"
+        words.append(f"{every} of its history: {_counts(*base)}.")
+    elif f.base is not None:
+        words.append(
+            "Its base is each company's own past two years, averaged, so it has no single count."
+        )
+    n = sum(counts)
+    if f.answer == study.TOO_FEW:
+        words.append(f"Too few events to answer: {n}, against the {study.MIN_EVENT_DAYS} it needs.")
+    else:
+        words.append(f"Answer: {f.answer}.")
+    if f.graded == 0:
+        words.append("Not replayed.")
+    elif f.verdict == study.HOLDS:
+        words.append(f"Replayed, it held: right {f.right} of {f.graded}.")
+    elif f.verdict == study.DOESNT_HOLD:
+        words.append(f"Replayed, it did not hold: right {f.right} of {f.graded}.")
+    else:
+        words.append(f"Too few replayed to judge: right {f.right} of {f.graded}.")
+    if f.by_cycle is not None:
+        words.append(
+            f"Counting each rate cycle once: {f.by_cycle[1]}, from {f.by_cycle[0]} cycles."
+        )
+    return " ".join(words)
+
+
+def ask_cell(
+    name: str, kind: str, span: str, market: str, f: study.Follow, names: Mapping[str, str]
+) -> dict[str, object]:
+    """One cell's numbers, as ``follows`` prints them, and its sentence."""
+    base = f.base
+    return {
+        "kind": kind,
+        "span": span,
+        "market": market,
+        "market_name": names.get(market, market),
+        "up": f.counts[study.UP],
+        "same": f.counts[study.SAME],
+        "down": f.counts[study.DOWN],
+        "base_up": None if base is None else round(base.rates[study.UP], 4),
+        "base_same": None if base is None else round(base.rates[study.SAME], 4),
+        "base_down": None if base is None else round(base.rates[study.DOWN], 4),
+        "base_n": None if base is None else base.n,
+        "answer": f.answer,
+        "graded": f.graded,
+        "right": f.right,
+        "verdict": f.verdict,
+        "cycles": None if f.by_cycle is None else list(f.by_cycle),
+        "say": ask_say(name, kind, span, names.get(market, market), f),
+    }
+
+
+def ask_data(con: duckdb.DuckDBPyConnection) -> dict[str, list[dict[str, object]]]:
+    """The page's *ask*: for each flow ``follows`` measures, its kinds and every cell, the Fed's
+    with the quarter and the year; and each flow that cannot be computed, with the reason."""
+    ask: list[dict[str, object]] = []
+    left_out: list[dict[str, object]] = []
+    names = market_names()
+    for name, noun in FOLLOWS_NOUNS.items():
+        try:
+            f = follows_cells(name, con)
+            cells = list(f.cells)
+            if name == "fomc":
+                cells += follows_cells(name, con, long=True).cells
+        except FollowsUnavailable as exc:
+            left_out.append({"name": name, "noun": noun, "reason": str(exc)})
+            continue
+        counted = [f.kinds[e.event_id] for e in f.events if e.event_id in f.kinds]
+        ask.append(
+            {
+                "name": name,
+                "noun": noun,
+                "kinds": [
+                    {"kind": k, "label": ask_kind(name, k), "events": counted.count(k)}
+                    for k in f.order
+                ],
+                "first": flows.release_date(f.events[0]).isoformat(),
+                "last": flows.release_date(f.events[-1]).isoformat(),
+                "cells": [ask_cell(name, *cell, names) for cell in cells],
+            }
+        )
+    return {"ask": ask, "ask_left_out": left_out}
 
 
 # The week ahead (docs/steps/week-ahead.md): the releases `live` calls in the next seven days.
