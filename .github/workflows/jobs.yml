@@ -1,0 +1,56 @@
+# The release-day job and the evening score on a runner (docs/steps/loop-off-the-laptop.md).
+# Step 1: run on demand, the store rebuilt from empty, each command timed, every source asked.
+name: Jobs
+
+on:
+  workflow_dispatch:
+    inputs:
+      step:
+        description: "rebuild: the store from empty, step 1's run"
+        type: choice
+        options: [rebuild]
+        default: rebuild
+
+permissions:
+  contents: read
+
+concurrency:
+  group: jobs
+  cancel-in-progress: false
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    env:
+      FT_FRED_API_KEY: ${{ secrets.FT_FRED_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.12"
+
+      - run: uv sync --locked
+
+      - name: Rebuild from empty, each command timed
+        run: |
+          set +e
+          mkdir -p out
+          for command in init seed load-releases load-prices load-surprises load-tone load-sentiment; do
+            start=$(date +%s)
+            uv run fortuneteller "$command" > "out/$command.txt" 2>&1
+            status=$?
+            printf '%s exit %s in %ss\n' "$command" "$status" "$(( $(date +%s) - start ))" |
+              tee -a out/timings.txt
+          done
+          FT_CALLS_PATH=data/calls.csv uv run fortuneteller score > out/score.txt 2>&1
+          printf 'score exit %s\n' "$?" | tee -a out/timings.txt
+          tail -n 3 out/*.txt
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: rebuild-${{ github.run_id }}
+          path: out/
+          retention-days: 90
