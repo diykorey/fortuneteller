@@ -11,6 +11,27 @@ amended there with a date.
 Each entry: **what** was decided, **why**, what it **retires**, and **where** the detail is. *By the
 owner* marks a choice the owner made over another on the table.
 
+## 2026-11-14: Prove the loop, show the page, be seen; then widen
+
+- **What:** roadmap phase 4. Steps 21 to 23 come first: the jobs off the laptop, the page where a
+  reader picks a kind of event and sees what followed, and a counted audience. No new flow or kind
+  starts before them, except step 20's part 2, already in progress. A gate on 2027-01-31 judges
+  them together: four straight weeks of release days logged on time and graded, none missed; the
+  page live for every kind step 17 and step 20 answer; at least 100 unique visitors in one week. A
+  miss is answered with a new entry here before any new step. The number of live calls is reported,
+  not a bar. Prediction markets lead the Later list once the gate passes. Once a month a goldfish
+  zooms out over the whole plan.
+- **Why:** a review of every document on 2026-11-14 found the measurement sound and the product
+  unseen. After a month live, data/calls.csv held 47 rows and one call (retail sales, 2026-10-15,
+  wrong); two of the last release days were missed or late; the page the target describes did not
+  exist; 20 roadmap steps had widened what is measured while almost every new kind answered
+  *can't say*. Being seen was named as progress on 2026-10-23 and never measured. A goldfish read
+  of the first draft dropped a bar of 10 live calls, which the work cannot control.
+- **Retires:** "chosen one at a time after step 18's results" for the Later list; it now waits on
+  the gate. Part 1b of step 20 waits for the gate too.
+- **Where:** [roadmap phase 4](roadmap.md#phase-4-prove-the-loop-show-the-page-be-seen),
+  [Legend](legend.md#how-a-step-is-reviewed-the-elephant-and-the-goldfish).
+
 ## 2026-11-14: A CEO's conduct without a departure is a kind too (by the owner)
 
 - **What:** step 20 keeps two company kinds: a CEO leaving over their own conduct (`ceo`, part 1)

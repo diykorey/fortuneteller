@@ -6,6 +6,7 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-14 | Roadmap phase 4: the loop off the laptop, the ask page, a counted audience; a gate on 2027-01-31; monthly zoom-out | PR #310 |
 | 2026-11-14 | News into triggers, part 2: spec, a pasted article read into a trigger by rules, tested on part 1's dataset | PR #307 |
 | 2026-11-14 | A `ceo` trigger no longer waits on closes: no closes for its company is no answer; a scandal without closes is left out and named | PR #309 |
 | 2026-11-14 | News into triggers, part 1, step 2b: a `ceo` trigger names its company, answered from the scandals before it and graded on that company | PR #306 |
