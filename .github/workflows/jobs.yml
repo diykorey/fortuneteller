@@ -57,7 +57,7 @@ jobs:
             echo "scheduled $hour:$minute UTC is $at New York"
           fi
           echo "step=$step" >>"$GITHUB_OUTPUT"
-          echo "step: ${step:-none, the other schedule is today's}"
+          echo "step: ${step:-none, the other schedule runs it}"
 
       - uses: actions/checkout@v4
         if: steps.plan.outputs.step != ''
