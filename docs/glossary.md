@@ -284,6 +284,11 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **Dev set / test set** — *added 2026-11-14*: the two halves of a labelled set, split by a rule fixed beforehand:
   rules are written and tried on the dev set only, then frozen, and the test set is read once to
   grade them ([a pasted article](steps/article-to-trigger.md)).
+- **8-K / EDGAR** — *added 2026-11-14*: an 8-K is the filing a US-listed company makes with the SEC
+  within days of a major event, such as a chief executive leaving; its exhibit 99 is usually the
+  press release. EDGAR is the SEC's public archive of filings.
+- **Reads / doesn't read / too few texts** — *added 2026-11-14*: step 20, part 2's verdict on its
+  rules for reading a kind from a text, against the bars in [its spec](steps/article-to-trigger.md).
 - **Kind (of event)** — *added 2026-11-04*: what a reader names ("the Fed cuts rates"); in the
   code an event flow, and for a decision what was decided (cut, hold or hike).
 - **Up / down / about the same / can't say** — *added 2026-11-04*: a span's four answers against
