@@ -20,8 +20,9 @@ graded on it (step 2b).
 ## In progress
 
 - **Step 20, part 2: a pasted article read into a trigger** ([the spec](steps/article-to-trigger.md)),
-  by rules, tested on part 1's dataset. The spec waits for the owner: Nvidia's CEO has not left, so
-  as written it reads *not a measured kind*.
+  by rules, tested on part 1's dataset. It reads both kinds the owner chose: a departure for the
+  CEO's conduct, answered, and conduct with no departure (Nvidia), read but not answered until
+  part 1b measures it. Next in it: step 1, the sets.
 - **Step 18, part 2, step 3: the first triggers graded** ([the spec](steps/trigger-file.md)). The
   first trigger, CPI of 2026-11-10, is void: merged after every reaction close, and its kind read
   from the headline instead of the core print. It waits for the next one.
