@@ -327,7 +327,7 @@ def test_a_ceo_trigger_late_unnamed_or_without_closes_counts_nowhere() -> None:
     assert unnamed == [
         f"t.csv:2 ceo {day} scandal: void, a ceo trigger names its company in a ticker column"
     ]
-    assert gone == [f"t.csv:2 ceo {day} scandal GONE: waiting, GONE's closes are not loaded"]
+    assert gone == [f"t.csv:2 ceo {day} scandal GONE: void, no closes for GONE, so no answer"]
 
 
 def test_only_a_ceo_trigger_fetches_its_company(
@@ -355,7 +355,7 @@ def test_only_a_ceo_trigger_fetches_its_company(
     assert named == {"NEW": [DailyClosingPrice(START, 1.0)]}
 
 
-def test_a_ceo_trigger_waits_while_a_scandal_s_company_has_no_closes() -> None:
+def test_a_ceo_trigger_answers_without_a_scandal_whose_company_has_no_closes() -> None:
     # given the twelve scandals, one of whose companies has no closes loaded
     index, companies, _ = _history()
     del companies["C3"]
@@ -367,8 +367,7 @@ def test_a_ceo_trigger_waits_while_a_scandal_s_company_has_no_closes() -> None:
         trigger, datetime.combine(day, time(12, 0), tzinfo=sources.NEW_YORK), companies
     )
 
-    # then it waits and logs nothing, so no row is fixed as too few
-    assert rows == []
-    assert lines == [
-        f"t.csv:2 ceo {day} scandal NEW: waiting, 1 scandals' companies have no closes loaded"
-    ]
+    # then it answers at once from the other eleven and says which was left out
+    day_row = next(r for r in rows if r["span"] == "day")
+    assert (day_row["answer"], day_row["down"]) == (DOWN, "11")
+    assert lines[1] == "  answered without C3: no closes"
