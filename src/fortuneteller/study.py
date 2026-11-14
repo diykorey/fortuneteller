@@ -2413,13 +2413,12 @@ def _ceo_trigger(
     """A CEO scandal's trigger, its lines, its rows added to ``by_key``: on its company against
     the S&P 500 from the first close on or after its day, answered from the stored scandals whose
     spans ended by then, each against its own base, and graded against the company's own base
-    (docs/steps/ceo-scandals.md, step 2b)."""
+    (docs/steps/ceo-scandals.md, step 2b). A company with no closes gives no answer, and a scandal
+    whose company has none is left out of the history; neither waits."""
     stock, index = companies.get(t.ticker), closes[EXCESS_OVER]
     if stock is None:
-        return [f"{head}: waiting, {t.ticker}'s closes are not loaded"]
+        return [f"{head}: void, no closes for {t.ticker}, so no answer"]
     missing = {e.detail or "" for e in events} - set(companies)
-    if missing:
-        return [f"{head}: waiting, {len(missing)} scandals' companies have no closes loaded"]
     shared = _shared(stock, index)[0]
     if not shared or t.day > shared[-1].day:
         return [f"{head}: waiting, no close on or after its day"]
@@ -2435,6 +2434,8 @@ def _ceo_trigger(
             f"its reaction close {deadline:%Y-%m-%d %H:%M %Z}"
         ]
     lines = [f"{head}, merged {at.astimezone(NEW_YORK):%Y-%m-%d %H:%M} New York"]
+    if missing:
+        lines.append(f"  answered without {', '.join(sorted(missing))}: no closes")
     decisions = [(first_reaction_day(e, STOCK), e.detail or "") for e in events]
     for span, c in SPANS.items():
         spans = excess_spans(stock, index, c)

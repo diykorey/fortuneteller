@@ -80,7 +80,7 @@ the S&P 500 after past scandals, with part 1's counts, answer, placebo and walk-
 | --- | --- | --- |
 | 1 | ~~The dataset read and coded by the rule; the seed `data/seed/ceo_scandals.csv` with each row's day, time, ticker, CEO, conduct and source; each company's closes loaded | Every kept row cites its source; the coding is listed row by row in this spec; the left-out rows are counted by reason~~ **done** 2026-11-13. *Amended:* the coding is in [`ceo-scandals-coding.csv`](ceo-scandals-coding.csv), not this spec, and the closes load in step 2 |
 | 2 | ~~`follows --event ceo` with the excess move and each company's base; `ceo` in `TRIGGER_KINDS` (kind `scandal`, with the company's ticker in the trigger)~~ `follows --event ceo` with the excess move and each company's base; the companies' closes by `load-prices --companies` | Tests: the excess move of a stock that moves exactly as the index is zero; a base never reads a close after the event's close before; with ten events all down against a base of a third, the answer is *down* |
-| 2b | ~~`ceo` in `TRIGGER_KINDS` (kind `scandal`, with the company's ticker in the trigger) and its grading on the company against the S&P 500; NVDA's closes loaded | A `ceo` trigger is answered from the events before it and graded on its company alone; every other flow's trigger file reads as today~~ **done** 2026-11-14. *Amended:* `triggers` fetches a named company's closes itself, so NVDA loads when a trigger names it |
+| 2b | ~~`ceo` in `TRIGGER_KINDS` (kind `scandal`, with the company's ticker in the trigger) and its grading on the company against the S&P 500; NVDA's closes loaded | A `ceo` trigger is answered from the events before it and graded on its company alone; every other flow's trigger file reads as today~~ **done** 2026-11-14. *Amended:* `triggers` fetches a named company's closes itself, so NVDA loads when a trigger names it. *Amended 2026-11-14, at the owner's word:* nothing waits on a company's closes: a named company Yahoo has none for is void, no answer, and a scandal whose company has none is left out of the history, the line naming it |
 | 3 | ~~Results here and in [MVP results](../mvp-results.md), checked against the expected outcome; the answer for Nvidia's 2026-11-08 printed beside them | Each span's answer and walk-forward recorded~~ **done** 2026-11-14, [below](#results) |
 
 *Step 1, 2026-11-13:* of the dataset's 237 departures coded *legal*, 58 name the CEO's own
@@ -160,6 +160,10 @@ for its spans and base; step 2b's `triggers` prints them for a trigger filed in 
   answer was *can't say*.
 - The week ends on 2026-11-13's close and the month on 2026-12-08's; neither close was in Yahoo's
   history when it was read.
+- *Amended 2026-11-14, after 2026-11-13's close:* the week, 2026-11-06's close to 2026-11-13's:
+  Nvidia −12.7% and the S&P 500 +2.5%, an excess of −15.2% against its cut of 1.91%: *down*, as the
+  answer was. Still outside the kind and not a call. From the reaction close, the week ends on
+  2026-11-16's close; both months are still open.
 
 ## How you know it is right
 
