@@ -29,8 +29,8 @@ logged within 15 minutes, none missed.
   neither rebuilds from empty (`init`, `seed`, every `load-*`) and says so. Whether a rebuild
   reproduces the laptop is measured in step 1, not assumed: the cache holds calendars that may not
   be fetchable again.
-  - *Amended 2026-11-14, after step 1, before step 2, pending the owner's word; step 2 waits
-    for it:* the rebuild does not reproduce (below), and
+  - *Amended 2026-11-14, after step 1, before step 2, by the owner
+    ([why](../decisions.md#2026-11-14-the-store-travels-encrypted-by-the-owner)):* the rebuild does not reproduce (below), and
     an artifact of a public repository can be downloaded by anyone signed in to GitHub, which
     would republish Nasdaq's and TradingView's replies. So the store and the cache travel as one
     encrypted file instead: a `tar` of both, encrypted with `gpg --symmetric` (AES-256) under a
@@ -127,7 +127,7 @@ days.
     at once, TradingView rate-limits the runner. The morning's `live` asks one quarter, as the ask
     above did, and was answered.
 
-The store's carrying is amended above, pending the owner's word on it.
+The store's carrying is amended above, by the owner.
 
 ## How you know it is right
 
