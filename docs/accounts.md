@@ -11,7 +11,12 @@ constraint, not an accident: see [`legend.md`](legend.md).
 | Service | Account | Credential | Used for | Cost |
 | --- | --- | --- | --- | --- |
 | [FRED](https://fredaccount.stlouisfed.org/) — Federal Reserve Economic Data | Dedicated dev Gmail account | `FT_FRED_API_KEY` in `.env` | CPI release dates and actuals — [step 1](steps/step-1-releases.md); the breakeven's daily values for `load-prices` — [the breakeven](steps/breakeven.md) | Free |
-| [GitHub](https://github.com/diykorey/fortuneteller) | `diykorey` | local git + `gh` auth | Code hosting, CI, issue tracker | Free |
+| [GitHub](https://github.com/diykorey/fortuneteller) | `diykorey` | local git + `gh` auth | Code hosting, CI, issue tracker, the scoreboard on GitHub Pages | Free |
+| Yahoo Finance chart API | None | No key | Daily closes for every market but the breakeven: `load-prices` | Free, unofficial |
+| Nasdaq economic calendar | None | No key | The free consensus: [free consensus](steps/free-consensus.md) | Free, no stated terms |
+| TradingView economic calendar | None | No key | Release history for the flows FRED lacks, and the consensus where Nasdaq has none: [consensus fallback](steps/consensus-fallback.md) | Free |
+| Federal Reserve website | None | No key | FOMC calendars and statements: [rung 1](steps/rung-1-more-events.md), [the Fed statement's sentiment](steps/fed-statement-sentiment.md) | Free |
+| Cleveland Fed inflation nowcast | None | No key | CPI's nowcast baseline: [MVP step 4](steps/step-4-surprise.md) | Free |
 
 ## Expected later
 
@@ -19,9 +24,8 @@ Listed so the cost and signup burden are visible in advance, not to imply they a
 
 | Service | Needed for | Key required | Cost |
 | --- | --- | --- | --- |
-| Stooq or yfinance | Daily price history — [step 2](roadmap.md) | No | Free |
 | BLS | Cross-checking release dates against the official schedule | Optional | Free |
-| An economic calendar | Historical **consensus**, if step 4 uses market expectations | Yes | Usually paid — the open question in the roadmap |
+| A paid consensus or intraday prices | Sharper measurement; deferred, not dropped ([Decisions](decisions.md), 2026-10-09 and 2026-10-23) | Yes | Paid |
 
 ## Rules
 

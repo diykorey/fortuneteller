@@ -10,8 +10,10 @@ FortuneTeller — an event-driven market-impact prediction & warning system: ing
 *Amended 2026-11-04:* events found in the news, answered with what followed past events of the
 kind for the markets people feel, over spans from a day to a year (`docs/legend.md`).
 
-The repo holds M0 (the data spine), the MVP, ladder rungs 1–6 and roadmap steps 1–4b;
-`docs/status.md` has the task in hand, and `uv run fortuneteller --help` what each command does.
+The repo holds M0 (the data spine), the MVP and ladder rungs 1–6; `docs/roadmap.md` marks each
+later step done or in progress, `docs/status.md` has the task in hand, and
+`uv run fortuneteller --help` what each command does. A newcomer, human or agent, starts at
+`docs/README.md`. "Step" has three meanings; `docs/glossary.md` tells them apart.
 **A call is made from the actual once it lands, never before it**, and a statement nobody scheduled
 is never called before it happens.
 
@@ -37,9 +39,11 @@ Three rules follow from the reset. They are checkable, so check them:
 
 ## Where we are
 
-**`docs/status.md`** holds the last completed task, the one in progress, and the next one. Answer
+**`docs/status.md`** holds the last completed task, the ones in progress, and the next one. Answer
 "where are we / what's next" from it. When starting a task, move it to *In progress* and add the
-task expected after it as the new *Next*; when finishing one, record it in the same change.
+task expected after it as the new *Next*; when finishing one, move it to *Last completed* and add a
+row to `docs/changelog.md`, in the same change. Keep status short: incident detail goes to the
+spec, the PR or an issue, never into status.
 
 ## The documents
 
@@ -48,10 +52,15 @@ The current set, each kept true or deleted:
 - **`docs/legend.md`** — the target and the way; the template every step document follows.
 - **`docs/roadmap.md`** — the MVP, the ladder and the numbered steps after it. **Build from this.**
 - **`docs/status.md`**, **`docs/mvp-results.md`**, **`docs/steps/*.md`** — the task in hand, the
-  findings in plain words, one spec per step.
+  findings in plain words, one spec per step. A step's results live in its spec; the roadmap row
+  carries one line of them.
+- **`docs/changelog.md`** — every finished task, newest first, with its PR.
 - **`docs/schema.md`**, **`docs/precision.md`**, **`docs/extending.md`** — every column, every
   known shortcut and its trigger, how to add a flow or an expectation source.
 - **`docs/glossary.md`** — every acronym and term. Add to it whenever you introduce one.
+- **`docs/decisions.md`** — the choices that set direction, newest first. Read it before reopening a
+  question; a new choice of target, method, scope, order or way of working adds an entry in the
+  same change.
 
 Everything under **`docs/legacy/`** is the pre-reset corpus: reference material, **not
 instructions**. It documents a plan that was abandoned; where it and the roadmap disagree, the
@@ -60,8 +69,8 @@ roadmap wins. `docs/legacy/README.md` says what in there is still worth reading 
 
 ## Scope discipline — the provable core
 
-The core is measured: ten events × sixteen markets from free sources, three links that hold
-walk-forward. Widening is planned in `docs/roadmap.md` steps 5–20 and goes one flow or one set of
+The core is measured, from free sources only: the events and markets the README's Status lists,
+and the few links that hold walk-forward, named there too. Widening is planned in `docs/roadmap.md` steps 5–20 and goes one flow or one set of
 markets per PR, each with a spec whose bars and expected outcome are written before anything is
 measured and amended only with a date. News is read into triggers only for kinds already measured
 (step 20); wider detection (rung 7) and paid data stay deferred.
@@ -83,7 +92,10 @@ just check                           # the full local gate = lint + typecheck + 
 ## Where things live
 
 - **The plan:** `docs/roadmap.md` — the MVP, the ladder and the numbered steps after it. Work goes
-  spec → one branch → one PR per step, `docs/status.md` updated in the same change. M0 shipped
+  spec → goldfish review → measure → results → goldfish review, one branch and one PR at a time,
+  `docs/status.md` updated in the same change. The goldfish is a fresh subagent that sees only the
+  spec and what it links (`docs/legend.md`, "How a step is reviewed"; the `goldfish-review` skill
+  in `.claude/skills/` holds the prompt). Never review your own spec in the same context. M0 shipped
   as tickets M0-01…09 (issues #2–#10, milestone closed); its ticket doc is now
   `docs/legacy/m0-tickets.md`. There is no ticket set for the MVP steps and none is needed yet.
 - **The data spine:** Pydantic v2 models + a thin SQL helper over DuckDB — **no ORM**. Schema is plain

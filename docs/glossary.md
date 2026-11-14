@@ -33,14 +33,17 @@ Terms are grouped by what they are about, alphabetical within each group.
   here, which is why a single process is enough and streaming infrastructure is not needed.
 - **Polarity** — whether an event type is inherently good, bad, or context-dependent for risk
   assets (`positive`, `negative`, `both`).
-- **Prediction** — the system's statement about what an instrument will do: direction, magnitude,
-  horizon, confidence.
+- **Prediction** — the system's statement about what a market will do. Today it is a direction
+  only, for a link that holds walk-forward, printed with its record as counts and its band; never
+  a probability until one proves honest ([the record, not a probability](steps/record-not-probability.md)).
 - **Scheduled vs unscheduled** — a scheduled event has a known date and a published expectation
   (CPI, a Fed meeting); an unscheduled one does not (an invasion, a hack). Scheduled events are
   measurable first, which is why the MVP uses one.
 - **Tier** — a rough importance ranking of an event type, used to prioritise attention.
-- **Warning** — the user-facing output: "CPI printed hot; expect SPY down 0.5–1.5% over minutes to
-  hours, confidence medium."
+- **Warning** — the user-facing output: today a call on release day (a market's direction, its
+  walk-forward record as counts and its band), delivered as a popup and on the scoreboard, or a
+  span's answer after a kind of event (*up*, *down*, *about the same*, *can't say*, with the
+  counts).
 
 ## Economic releases (the events)
 
@@ -280,9 +283,6 @@ Terms are grouped by what they are about, alphabetical within each group.
   beyond the market.
 - **Kind (of event)** — *added 2026-11-04*: what a reader names ("the Fed cuts rates"); in the
   code an event flow, and for a decision what was decided (cut, hold or hike).
-- **Trigger** (news) — *added 2026-11-04*: an event that has happened, as a record of its flow,
-  what was decided and its day, standing in for a news item (roadmap step 18). Not a *graduation
-  trigger*.
 - **Up / down / about the same / can't say** — *added 2026-11-04*: a span's four answers against
   its base rate, by the rule in [what follows](steps/what-follows.md); under ten events, *too few*.
   *Can't say* is shown and counted, never graded.
@@ -293,7 +293,8 @@ Terms are grouped by what they are about, alphabetical within each group.
   yield less the inflation-protected yield of the same maturity; FRED's 5-year series `T5YIE`.
 - **Vintage / new-and-revised view** — a series' values as they stood on one release day. FRED's
   `output_type=3` returns one column per release day; payrolls need it because every jobs report
-  revises the two months before.
+  revises the two months before. FRED keeps every vintage, which is how a release's first print
+  and its publication date are recovered.
 - **Event flow** — one event type's way in from one origin country (`flows.py`, from step 2 of
   [event flows](steps/event-flows.md)): fetch from its own source, run its own checks, return the
   common records. Identified by (event type, country), so UK CPI would be a flow apart from US CPI
@@ -311,6 +312,25 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **Walk-forward** — replaying history one release at a time, each decision made only from the
   releases before it, so that what is graded was never seen when deciding
   ([rung 2](steps/rung-2-predict.md)).
+- **Link** — one event flow and one market, as a pair whose move is measured against the flow's
+  surprise. A **signed link** has a direction written down first (a hotter CPI lifts the yield);
+  a link **holds** when its direction is right walk-forward by the bar in
+  [rung 2](steps/rung-2-predict.md). Only links that hold are called live.
+- **Moves / unclear / doesn't** (raw move) — MVP step 3's verdict on whether an event's days move
+  a market more than ordinary days: *moves* if the ratio of event-day to ordinary-day moves is at
+  least 1.10 **and** p < 0.01; *unclear* if only one holds; *doesn't* if neither
+  ([step 3](steps/step-3-raw-move.md)).
+- **Tracks / unclear / doesn't** (surprise) — MVP step 4's verdict on whether the move follows the
+  surprise: a rank correlation in the expected direction at p < 0.01 **and** the direction right on
+  at least 60% of noticeable surprises; *unclear* if only one holds; *doesn't* if neither
+  ([step 4](steps/step-4-surprise.md)).
+- **Holds** — rung 2's verdict on a link replayed walk-forward: at least 30 calls, right on at
+  least 60%, one-sided binomial p < 0.01 ([rung 2](steps/rung-2-predict.md)).
+- **Noticeable surprise** — one at least the size its flow's rule sets (0.1 pp for core CPI);
+  hit rates count only these, since a tiny surprise has no direction worth grading.
+- **Placebo** — the same test run with each event's key close moved away (10 closes earlier and
+  10 later, or a span's length if longer), so an answer the period alone would give is caught
+  ([what follows](steps/what-follows.md)).
 - **Open link** — in rung 2, an event × market link allowed to predict at a release because it
   passes the surprise test on earlier releases; a closed link stays silent.
 - **Payroll model** — the jobs report's free forecast, the `payroll_model` expectation source
@@ -434,7 +454,6 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **FRED new-and-revised view** (`output_type=3`) — one column per release day, holding the month
   first published that day and the months revised that day. Rung 1 reads NFP's first-published
   changes from it in one request.
-- **GDELT** — a free global database of news events. A detection-stage source, deferred.
 - **GDELT** (Global Database of Events, Language and Tone) — a free, machine-coded record of the
   world's news as dated events since 2015 (daily since 1979), each with its actors, type and tone.
   The only free history of statements and shocks as events, and noisy: [roadmap](roadmap.md) step
@@ -459,9 +478,6 @@ Terms are grouped by what they are about, alphabetical within each group.
   `^TNX`.
 - **Stooq** — a free source of historical price data. Since at least 2026-09 it sits behind a
   JavaScript bot check and cannot be read by a program, so the MVP does not use it.
-- **Vintage** — a snapshot of what a series looked like on a given past date, before revisions.
-  FRED retains vintages, which is how the **initial release** and its publication date are
-  recoverable.
 - **Yahoo Finance chart API** — the unofficial endpoint (`query1.finance.yahoo.com/v8/finance/chart`)
   behind Yahoo's charts; returns daily history as JSON with no key. Step 2's price source.
 - **yfinance** — a Python library pulling free price history from Yahoo Finance. Convenient and
@@ -516,8 +532,24 @@ Terms are grouped by what they are about, alphabetical within each group.
   the surprise was. MVP step 1 fills it.
 - **Episode** (legacy) — a JSON file describing a pre-detected event, fed to the replay harness.
   Appears in legacy docs only.
+- **Elephant, goldfish** — the author of a spec, who carries the whole conversation behind it, and
+  a reviewer who has seen none of it and reads only the page and its links. Every spec is read by
+  a goldfish before measuring and again when its results are in
+  ([Legend](legend.md#how-a-step-is-reviewed-the-elephant-and-the-goldfish)).
 - **Feature ladder** — the ordered list of what gets built after the MVP, in
   [the roadmap](roadmap.md).
+- **Step** — a word with three uses, told apart by what comes with it:
+  - **MVP step 1 to 4**: the four sequential experiments of the MVP, files step-1-releases.md to
+    step-4-surprise.md.
+  - **Roadmap step N** (1 to 20, with 1a, 4a, 4b, 8a): one numbered entry in the roadmap's "Next
+    steps" tables, planned after the ladder's rungs 1 to 6. Its spec is named for its subject, as
+    in ceo-scandals.md; step-4-more-events.md is roadmap step 4, not MVP step 4.
+  - **A step inside a spec**: one row of that spec's "The steps" table, each with its own "done
+    when". "Step 18, part 2, step 3" means roadmap step 18, its part 2 spec, that spec's third row.
+- **Part** — one spec of a roadmap step too big for one: roadmap step 17 has parts 1 to 2, with
+  1b to 1f between. Each part has its own spec, bars and pull requests.
+- **Rung** — one entry of the feature ladder, 1 to 7; each is built only because the one below it
+  worked. Specs are named rung-N-name.md.
 - **Legacy docs** — everything under [`docs/legacy/`](legacy/README.md): the pre-reset design
   corpus, kept for reference, not authoritative.
 - **M0 … M7** — the superseded milestone scheme from the old roadmap. **M0 (the data spine) shipped
@@ -536,8 +568,9 @@ Terms are grouped by what they are about, alphabetical within each group.
   exist*, defined in [the roadmap](roadmap.md). Not a shipped product.
 - **`observations`** — one row per event per instrument: the prices and returns around that event.
   MVP step 2 fills it.
-- **Provable core** — the scope discipline of calibrating one narrow slice (one event type × five
-  liquid instruments) before widening to anything else.
+- **Provable core** — the scope discipline of measuring a narrow slice before widening: it began as
+  one event type × five liquid instruments (the MVP), and widens one flow or one set of markets per
+  pull request, each with its bars written first.
 - **Replay harness** (legacy) — the discarded mechanism for running canned events through the
   prediction core. Appears in legacy docs; not part of the current plan.
 - **Scoreboard** — the static page `fortuneteller scoreboard` writes to `docs/scoreboard/` and the
@@ -557,7 +590,8 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **Trigger** — an event the owner files after it happens, a row `flow,day,kind` in a CSV under
   `data/triggers/` added through a pull request; answered from the reaction close on each market it
   was merged in time for, logged in `data/trigger-log.csv` and graded when the span ends
-  ([a trigger arrives](steps/trigger-file.md)).
+  ([a trigger arrives](steps/trigger-file.md)). It stands in for a news item until step 20 reads
+  the news. Not a *graduation trigger*.
 - **The reset** — 2026-08-05, when `main` was rolled back to the M0 spine because the
   implementation had become over-engineered for the stage. Recorded in [CLAUDE.md](../CLAUDE.md).
 - **The spine** — the M0 data layer: models, schema, store, seed loader, CLI. Shipped.
