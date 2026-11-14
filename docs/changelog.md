@@ -6,6 +6,7 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-14 | News into triggers, part 1, step 3: results — the company falls against the S&P 500 on the day, 17 of 26; no direction from the reaction close; Nvidia's day beside them | PR #305 |
 | 2026-11-14 | Docs: fixes from two goldfish reads, onboarding and results review; verdict words in the glossary | PR #304 |
 | 2026-11-14 | Docs: the goldfish review before measuring and after results; the step template matches practice | PR #303 |
 | 2026-11-14 | Docs: the roadmap one line per step, status back to its three sections, this changelog split out | PR #302 |

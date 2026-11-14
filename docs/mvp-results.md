@@ -607,6 +607,19 @@ outcome, written first, said it would not hold; that was wrong. On core PCE it *
 noticeable surprises. The move is a few basis points. Its close comes from FRED a day late, so the
 call is graded an evening or more after the other markets, which are graded on time.
 
+## What follows a CEO's conduct in question
+
+Measured 2026-11-14. Detail in [a CEO's conduct in question](steps/ceo-scandals.md#results).
+
+26 S&P 1500 CEOs who left over their own conduct, 2005 to 2023, from a published dataset of CEO
+dismissals, each company against the S&P 500 and against its own two years before
+(`follows --event ceo`). **The company falls on the day**: 17 of 26, a median 2.1% below the
+market, chance 0.004. The week and the month read *down* too, each holding the day. **From the
+next close on, *can't say***: the week and the month lean down, short of the bar. Nothing holds
+walk-forward. Nvidia's CEO has not left, so it is outside the kind; read after the fact, not a call
+and with no trigger filed, it fell 6.6% against the market on 2026-11-09 and 5.1% more the day
+after, where the answer from that close was *can't say*.
+
 ## What comes next
 
 Chosen 2026-10-13: keep score ([rung 4](steps/rung-4-keep-score.md)), done above with the live path
