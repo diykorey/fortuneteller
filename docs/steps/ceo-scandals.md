@@ -160,6 +160,10 @@ for its spans and base; step 2b's `triggers` prints them for a trigger filed in 
   answer was *can't say*.
 - The week ends on 2026-11-13's close and the month on 2026-12-08's; neither close was in Yahoo's
   history when it was read.
+- *Amended 2026-11-14, after 2026-11-13's close:* the week, 2026-11-06's close to 2026-11-13's:
+  Nvidia −12.7% and the S&P 500 +2.5%, an excess of −15.2% against its cut of 1.91%: *down*, as the
+  answer was. Still outside the kind and not a call. From the reaction close, the week ends on
+  2026-11-16's close; both months are still open.
 
 ## How you know it is right
 
