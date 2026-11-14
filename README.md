@@ -1,58 +1,49 @@
 # FortuneTeller
 
-FortuneTeller forecasts how today's events ripple through markets and the world. From an event
-happening now, it forecasts — across **short / mid / long horizons**:
+A fortune teller who shows their record. You read a headline, such as "the Fed cuts rates", and
+FortuneTeller answers with what followed every past event of that kind, for the markets behind what
+people pay for, over spans from a day to a year. It is an entertainment tool with a realistic
+approach, not financial advice ([Legend](docs/legend.md#the-target)).
 
-- **The shake** — the event's own immediate impact.
-- **The aftershakes** — the follow-on events and reactions it is likely to trigger.
-- **The result of the aftershakes** — the downstream impact of those reactions, forecast on its own track.
+```
+Fed cuts rates → EUR/USD
+  next week    down       24 of 30 past cuts; all weeks: down 3,900 of 8,000
+  next month   can't say  down 16 of 30; all months: down 3,800 of 8,000
+```
 
-Each forecast is *explained*, not just emitted — but every claim is anchored to a **measurable
-backbone** (realized market moves), so confidence stays **calibrated** rather than asserted. A
-forecasting/warning product, not HFT (the latency budget is seconds-to-minutes). *Amended
-2026-10-23:* an entertainment tool with a realistic approach, not a financial one: a fortune teller
-who shows their record ([Legend](docs/legend.md#the-target)).
+(An illustration of the shape, not a measurement.)
 
-Design principles that run through everything:
+## The rules every answer follows
 
-- **Calibrated, not certain** — every forecast carries a probability and a magnitude range.
-- **Anchored explanation** — the narrative explains the numbers; it may only claim what the
-  measurable spine can (eventually) score. No unfalsifiable storytelling.
-- **Surprise drives magnitude** — built around `actual − expected`, not headline tone.
-- **Fast-but-noisy is confirmed before it fires** — speed tiers corroborated against reliable ones.
-- **Knowledge base is config, pipeline is code** — the reference tables are data the pipeline reads.
+- **Arithmetic on history, never a model's opinion.** Each span answers up, down, about the same,
+  or can't say, against the base rate: how often that market went that way over every span of
+  that length, events or not.
+- **Counts, never a percentage.** A call shows its record as counts and its band until one proves
+  honest by rung 3's rule ([the record, not a probability](docs/steps/record-not-probability.md)).
+- **A call is made from the actual once it lands, never before it.** A statement nobody scheduled
+  is never called before it happens.
+- **Measured before shown.** Every number comes from free, real data and is graded walk-forward.
+  "No edge" is a result, and the page shows it.
+- **The US first, then one country at a time.** The euro area and Germany are already stored.
 
 ## How it works
 
-A **measurable spine** grounds everything: events flow through a deterministic pipeline that
-predicts market impact and grades itself against realized returns.
+Every event flow (an event type from one country) is loaded from its history and joined to daily
+market closes. Then four questions are asked in order, each tested before the next is built on it:
 
-```
-ingest → classify (31 event types) → entity-link → corroborate → estimate surprise
-→ predict (effect-size × regime, multi-horizon) → calibrate confidence → severity/dedup → warn → capture outcome
-```
+1. Do markets move on the event's days more than on ordinary days? (raw-move)
+2. Does the move follow the surprise, the gap between the actual and the expected? (surprise)
+3. Does that hold for the next release, replayed walk-forward? (predict)
+4. After an event of a kind, does a market go one way more often than its base rate? (follows)
 
-Captured outcomes feed a calibration loop that re-estimates the effect-size matrix, so the predictor
-keeps learning. On top of that spine, a **causal-chain layer** forecasts the aftershakes (likely
-follow-on events, constrained to the taxonomy) and their results, and explains the
-shake → aftershake → result story — only ever asserting what the spine can score. Build-now detail
-is being rebuilt from a measured base; see the [roadmap](docs/roadmap.md).
+What holds is called live on release days and graded each evening on the
+[scoreboard](https://diykorey.github.io/fortuneteller/scoreboard/). Why it is built in this order
+is in the [Legend](docs/legend.md); what comes next is in the [Roadmap](docs/roadmap.md).
 
-## Documentation
+## New here?
 
-**[`docs/`](docs/README.md) is the single entry point** — it carries the map of how everything
-connects. The documents form one chain, from *why* to *what exactly*:
-
-- **[Legend](docs/legend.md)** — the target, the bet behind it, the way we intend to get there, and
-  the template every step document follows.
-- **[Roadmap](docs/roadmap.md)** — what gets built, in what order, and what "done" means.
-- **[MVP results](docs/mvp-results.md)** — what the MVP found, in plain words, and the options for
-  what comes next. The four step documents behind it are in [`docs/steps/`](docs/steps/);
-  [status](docs/status.md) names the task being worked on now.
-- **[Glossary](docs/glossary.md)** — every acronym, ticker, and piece of jargon, explained.
-
-The pre-2026-09-11 design corpus — architecture sketches, reference-table documentation, the old
-milestone plans — is kept for reference in [`docs/legacy/`](docs/legacy/README.md).
+Start at **[docs/README.md](docs/README.md)**. It gives a reading path of five documents, three
+commands to run, and one spec to study, and maps every other document.
 
 ## Repository layout
 
@@ -66,10 +57,12 @@ tests/           # pytest suite (ruff + mypy --strict + pytest is the gate)
 
 ## Status
 
-Bootstrapping, **measurable-spine first**. M0 (the data spine), the MVP, ladder rungs 1–6 and the
-roadmap's steps 1–4b are complete. The repo holds ten events (US CPI, the jobs report, Fed
-decisions, retail sales, core PCE, GDP, the ISM survey and weekly jobless claims; ECB decisions and
-the euro area's flash inflation) and 25 markets (the S&P 500, the Nasdaq, the 10-year and 5-year yields, the dollar index
+Bootstrapping, **measurable-spine first**. M0 (the data spine), the MVP and ladder rungs 1–6 are
+complete; the [roadmap](docs/roadmap.md) marks each later step done or in progress. The repo holds
+the US releases (CPI, the jobs report, retail sales, core PCE, GDP, the ISM survey, weekly jobless
+claims), Fed and ECB decisions, the euro area's and Germany's releases, the Fed chair's and the ECB
+president's scheduled statements, and dated shocks (elections, tariff actions, the debt limit,
+summits), against these markets (the S&P 500, the Nasdaq, the 10-year and 5-year yields, the dollar index
 and the euro, gold, Brent, VIX, the DAX, the Euro Stoxx 50, the FTSE 100 and the STOXX 600,
 bitcoin, a defence and an energy ETF, the funds holding corn, wheat, soybean, gasoline and natural gas futures, utilities and homebuilders, coffee, and the 5-year breakeven inflation), 1972 to today, from free sources: each market's measured move around every
 release, how it relates to each surprise, and a walk-forward replay of every link.
@@ -90,7 +83,8 @@ uv run fortuneteller scoreboard             # the page: every call graded, every
 **What it predicts:** the direction of the 10-year and 5-year yields, the dollar index and the euro
 on the six links that hold walk-forward at 08:30 (the jobs report's dollar and euro, its two
 yields, retail sales' two yields; ISM's 5-year yield holds too, but ISM lands at 10:00, after the
-morning job), each printed with its record as counts and its band, never a probability: none has
+morning job), and the 5-year breakeven on CPI, graded a day late because FRED publishes its close
+the next day; each printed with its record as counts and its band, never a probability: none has
 proved honest yet. On release days the calls are made, graded and delivered as a desktop popup
 unattended ([the release-day job](docs/steps/release-day-job.md), [the evening
 score](docs/steps/evening-score.md)), and the [scoreboard](https://diykorey.github.io/fortuneteller/scoreboard/) shows
@@ -100,6 +94,6 @@ give no call. [MVP results](docs/mvp-results.md) has the findings in plain words
 [roadmap](docs/roadmap.md) what comes next, and [status](docs/status.md) the task in hand.
 
 > **Data provenance:** the seed reference tables are partial (read-only Notion export limits) and
-> the effect-size values in them are illustrative placeholders, not measurements — replacing them
-> with measured numbers is what the MVP is for. Each table states its own completeness; see
+> the effect-size values in them are illustrative placeholders, not measurements. Every number the
+> commands print comes from the loaded history, never from these tables. Each table states its own completeness; see
 > [docs/legacy/data/README.md](docs/legacy/data/README.md).
