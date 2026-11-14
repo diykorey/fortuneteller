@@ -19,6 +19,9 @@ graded on it (step 2b).
 
 ## In progress
 
+- **Step 21: the loop off the laptop** ([the spec](steps/loop-off-the-laptop.md)): the jobs on
+  GitHub Actions, first a run on demand from an empty store against every source, then a shadow run
+  beside the laptop on two release days.
 - **Step 20, part 2: a pasted article read into a trigger** ([the spec](steps/article-to-trigger.md)),
   by rules, tested on part 1's dataset. It reads both kinds the owner chose: a departure for the
   CEO's conduct, answered, and conduct with no departure (Nvidia), read but not answered until
@@ -34,9 +37,7 @@ graded on it (step 2b).
 
 ## Next
 
-Step 21, the loop off the laptop: its spec, then the shadow run, started now so four straight
-on-time weeks fit before the gate on 2027-01-31; step 20, part 2, step 1 (the dev and test sets)
-goes on beside it, once the owner has settled that spec. Then step 22, the page
+Step 20, part 2, step 1 (the dev and test sets), beside step 21; then step 22, the page
 ([roadmap phase 4](roadmap.md#phase-4-prove-the-loop-show-the-page-be-seen)).
 
 ## Known, not yet fixed

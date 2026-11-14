@@ -6,6 +6,7 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-14 | Step 21 spec: the jobs on GitHub Actions, a run from empty against every source, then a shadow run beside the laptop | PR #311 |
 | 2026-11-14 | Roadmap phase 4: the loop off the laptop, the ask page, a counted audience; a gate on 2027-01-31; monthly zoom-out | PR #310 |
 | 2026-11-14 | News into triggers, part 2: spec, a pasted article read into a trigger by rules, tested on part 1's dataset | PR #307 |
 | 2026-11-14 | A `ceo` trigger no longer waits on closes: no closes for its company is no answer; a scandal without closes is left out and named | PR #309 |
