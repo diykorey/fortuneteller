@@ -587,7 +587,7 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **Waiting** — a logged call whose close FRED publishes a day late and has not published yet; `score`
   lists it under `waiting:` and, unlike a *pending* row, it stops nothing
   ([the breakeven's sign](steps/breakeven-sign.md)).
-- **Trigger** — an event the owner files after it happens, a row `flow,day,kind` in a CSV under
+- **Trigger** — an event the owner files after it happens, a row `flow,day,kind` (with a `ticker` for a CEO scandal) in a CSV under
   `data/triggers/` added through a pull request; answered from the reaction close on each market it
   was merged in time for, logged in `data/trigger-log.csv` and graded when the span ends
   ([a trigger arrives](steps/trigger-file.md)). It stands in for a news item until step 20 reads

@@ -12,16 +12,13 @@ Where the work is and what comes next: the task last finished, the tasks in prog
 
 ## Last completed
 
-Step 20, part 1, step 3: what follows a CEO's conduct in question. The company falls against the
-S&P 500 on the day, 17 of 26, chance 0.004; from the reaction close there is no direction; nothing
-holds walk-forward ([the results](steps/ceo-scandals.md#results)).
+Step 20, part 1: a CEO's conduct in question, the company against the S&P 500
+([the spec](steps/ceo-scandals.md)). It falls on the day, 17 of 26, chance 0.004; from the
+reaction close *can't say*; nothing holds walk-forward. A `ceo` trigger names its company and is
+graded on it (step 2b).
 
 ## In progress
 
-- **Step 20, part 1: a CEO's conduct in question** ([the spec](steps/ceo-scandals.md)), the company
-  against the S&P 500, from a published dataset of CEO dismissals. Steps 1 to 3 are done: 26
-  events, 2005 to 2023, follows --event ceo, and the results with Nvidia's day beside them.
-  Step 2b, the trigger with the company's ticker, remains.
 - **Step 18, part 2, step 3: the first triggers graded** ([the spec](steps/trigger-file.md)). The
   first trigger, CPI of 2026-11-10, is void: merged after every reaction close, and its kind read
   from the headline instead of the core print. It waits for the next one.
@@ -33,8 +30,8 @@ holds walk-forward ([the results](steps/ceo-scandals.md#results)).
 
 ## Next
 
-Step 20, part 1, step 2b: a ceo trigger with its company's ticker. Then part 2, a pasted article
-read into a trigger.
+Step 20, part 2: a pasted article read into a trigger, by rules first; its own spec, reviewed
+before anything is built.
 
 ## Known, not yet fixed
 

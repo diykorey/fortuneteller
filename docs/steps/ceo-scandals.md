@@ -80,7 +80,7 @@ the S&P 500 after past scandals, with part 1's counts, answer, placebo and walk-
 | --- | --- | --- |
 | 1 | ~~The dataset read and coded by the rule; the seed `data/seed/ceo_scandals.csv` with each row's day, time, ticker, CEO, conduct and source; each company's closes loaded | Every kept row cites its source; the coding is listed row by row in this spec; the left-out rows are counted by reason~~ **done** 2026-11-13. *Amended:* the coding is in [`ceo-scandals-coding.csv`](ceo-scandals-coding.csv), not this spec, and the closes load in step 2 |
 | 2 | ~~`follows --event ceo` with the excess move and each company's base; `ceo` in `TRIGGER_KINDS` (kind `scandal`, with the company's ticker in the trigger)~~ `follows --event ceo` with the excess move and each company's base; the companies' closes by `load-prices --companies` | Tests: the excess move of a stock that moves exactly as the index is zero; a base never reads a close after the event's close before; with ten events all down against a base of a third, the answer is *down* |
-| 2b | `ceo` in `TRIGGER_KINDS` (kind `scandal`, with the company's ticker in the trigger) and its grading on the company against the S&P 500; NVDA's closes loaded | A `ceo` trigger is answered from the events before it and graded on its company alone; every other flow's trigger file reads as today |
+| 2b | ~~`ceo` in `TRIGGER_KINDS` (kind `scandal`, with the company's ticker in the trigger) and its grading on the company against the S&P 500; NVDA's closes loaded | A `ceo` trigger is answered from the events before it and graded on its company alone; every other flow's trigger file reads as today~~ **done** 2026-11-14. *Amended:* `triggers` fetches a named company's closes itself, so NVDA loads when a trigger names it |
 | 3 | ~~Results here and in [MVP results](../mvp-results.md), checked against the expected outcome; the answer for Nvidia's 2026-11-08 printed beside them | Each span's answer and walk-forward recorded~~ **done** 2026-11-14, [below](#results) |
 
 *Step 1, 2026-11-13:* of the dataset's 237 departures coded *legal*, 58 name the CEO's own
@@ -192,6 +192,7 @@ call and no row in `data/calls.csv`.
 - **Study:** `excess_spans(stock, index, c)`, `event_base`, `rates_answer` and `follow_scandals`
   beside `follow_market`, which is left unchanged; part 1's non-overlap walk and base are reused.
 - **Triggers (step 2b):** a fourth column, `ticker`, read only for `ceo`. Every other flow's file is
-  read as today.
+  read as today. The reaction close is the first on or after the trigger's day, so word out after a
+  close is filed under the next trading day.
 - **Docs:** this spec, the glossary (*excess move*), `docs/schema.md` if a column is added,
   `docs/status.md`, and roadmap row 20.

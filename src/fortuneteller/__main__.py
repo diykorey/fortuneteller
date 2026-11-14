@@ -649,6 +649,33 @@ def _follows(args: argparse.Namespace) -> int:
     return 0
 
 
+def _trigger_companies(
+    triggers: Sequence[study.Trigger],
+    events: Sequence[EventInstance],
+    con: duckdb.DuckDBPyConnection,
+) -> dict[str, list[sources.DailyClosingPrice]]:
+    """For `ceo` triggers alone: each named company's closes fetched from Yahoo and stored, and the
+    stored scandals' companies' closes, fetched only when none are stored, by ticker; a company
+    Yahoo fails on is reported."""
+    named = sorted({t.ticker for t in triggers if t.flow == flows.CEO_FLOW.cli_name and t.ticker})
+    if not named:
+        return {}
+
+    def load() -> dict[str, list[sources.DailyClosingPrice]]:
+        companies = {}
+        for ticker in {*named, *(e.detail or "" for e in events)}:
+            try:
+                companies[ticker] = study.stored_closes(ticker, con=con)
+            except ValueError:
+                continue
+        return companies
+
+    unloaded = {e.detail or "" for e in events} - set(load())
+    for note in study.load_company_bars(sorted({*named, *unloaded}), con=con)[1]:
+        print(f"triggers: {note}")
+    return load()
+
+
 def _triggers(_args: argparse.Namespace) -> int:
     con = db.get_connection()
     db.init_db(con=con)
@@ -674,9 +701,12 @@ def _triggers(_args: argparse.Namespace) -> int:
                 if decided is None:
                     return 1
                 kinds[name] = decided
+            elif flow is flows.CEO_FLOW:
+                kinds[name] = {}
             else:
                 kinds[name] = study.release_kinds(flow, con=con)
         closes = {m: study.stored_closes(m, con=con) for m in study.MVP_PRICE_SERIES}
+        companies = _trigger_companies(triggers, events.get(flows.CEO_FLOW.cli_name, []), con)
         times: dict[str, datetime | None] = {}
 
         def merged(sha: str) -> datetime | None:
@@ -685,7 +715,7 @@ def _triggers(_args: argparse.Namespace) -> int:
             return times[sha]
 
         log = study.read_trigger_log(settings.trigger_log_path)
-        rows, lines = study.answer_triggers(triggers, merged, events, kinds, closes, log)
+        rows, lines = study.answer_triggers(triggers, merged, events, kinds, closes, log, companies)
     except (
         sources.FredError,
         sources.CalendarError,

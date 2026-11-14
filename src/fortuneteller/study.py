@@ -2019,16 +2019,17 @@ class Scandal(NamedTuple):
         return outcome(self.span.move, self.base.cut)
 
 
-def follow_scandals(
+def kept_scandals(
     events: Sequence[tuple[date, str]],
     closes: Mapping[str, Sequence[DailyClosingPrice]],
     index: Sequence[DailyClosingPrice],
     c: int,
     after: bool = False,
-) -> Follow:
-    """The record of ``events``, (first reaction day, ticker) oldest first, on each company's
-    excess spans of ``c`` closes, each against its own base. A second event at a company inside its
-    first's span is left out; one with a hole, no closes or too short a history is a hole."""
+) -> tuple[list[Scandal], int, int]:
+    """The events of ``events``, (first reaction day, ticker) oldest first, kept on each company's
+    excess spans of ``c`` closes with their bases, by their spans' start, with the counts left out
+    and holes. A second event at a company inside its first's span is left out; one with a hole,
+    no closes or too short a history is a hole; one whose span is open is neither."""
     tickers: dict[str, list[date]] = {}
     for day, ticker in events:
         tickers.setdefault(ticker, []).append(day)
@@ -2055,6 +2056,19 @@ def follow_scandals(
                     Scandal(stock, spans, reacted, each.reaction + (1 if after else 0), base)
                 )
     kept.sort(key=lambda s: s.span.start)
+    return kept, overlapped, holes
+
+
+def follow_scandals(
+    events: Sequence[tuple[date, str]],
+    closes: Mapping[str, Sequence[DailyClosingPrice]],
+    index: Sequence[DailyClosingPrice],
+    c: int,
+    after: bool = False,
+) -> Follow:
+    """The record of ``events``, (first reaction day, ticker) oldest first, on each company's
+    excess spans of ``c`` closes, each against its own base, as ``kept_scandals`` keeps them."""
+    kept, overlapped, holes = kept_scandals(events, closes, index, c, after)
     if not kept:
         empty = {o: 0 for o in OUTCOMES}
         return Follow(
@@ -2125,6 +2139,9 @@ def follow_ceo(
 
 # Step 18, part 2: a trigger arrives (docs/steps/trigger-file.md).
 TRIGGER_COLUMNS = ("flow", "day", "kind")
+# A CEO scandal's trigger names its company (docs/steps/ceo-scandals.md, step 2b); a file may add
+# the column, and it is read for `ceo` alone.
+TICKER = "ticker"
 TRIGGER_KINDS = {
     "fomc": KINDS,
     "nfp": SURPRISE_KINDS,
@@ -2132,6 +2149,7 @@ TRIGGER_KINDS = {
     "cpi": SURPRISE_KINDS,
     "claims": SURPRISE_KINDS,
     "ecb": KINDS,
+    "ceo": (SCANDAL,),
 }
 TRIGGER_LOG_COLUMNS = (
     "file",
@@ -2163,6 +2181,7 @@ class Trigger:
     flow: str
     day: date
     kind: str
+    ticker: str = ""
 
 
 def read_triggers(
@@ -2179,17 +2198,20 @@ def read_triggers(
             if content is None:
                 raise ValueError("it cannot be read from its commit")
             reader = csv.DictReader(io.StringIO(content.decode("utf-8-sig")))
-            if tuple(reader.fieldnames or ()) != TRIGGER_COLUMNS:
+            header = tuple(reader.fieldnames or ())
+            if header not in (TRIGGER_COLUMNS, (*TRIGGER_COLUMNS, TICKER)):
                 raise ValueError(f"its header is not {','.join(TRIGGER_COLUMNS)}")
             rows = []
             for r in reader:
                 if None in r or None in r.values():
-                    raise ValueError(f"line {reader.line_num}: not three columns")
+                    width = "three" if header == TRIGGER_COLUMNS else "four"
+                    raise ValueError(f"line {reader.line_num}: not {width} columns")
                 try:
                     day = date.fromisoformat(r["day"])
                 except ValueError:
                     raise ValueError(f"line {reader.line_num}: day {r['day']!r}") from None
-                rows.append(Trigger(path, reader.line_num, sha, r["flow"], day, r["kind"]))
+                ticker = r.get(TICKER, "") if r["flow"] == "ceo" else ""
+                rows.append(Trigger(path, reader.line_num, sha, r["flow"], day, r["kind"], ticker))
         except (ValueError, csv.Error) as exc:
             bad.append(f"{path}: void, {exc}")
             continue
@@ -2214,10 +2236,11 @@ def answer_triggers(
     kinds: Mapping[str, Mapping[int, str]],
     closes: Mapping[str, Sequence[DailyClosingPrice]],
     log: Sequence[Mapping[str, str]],
+    companies: Mapping[str, Sequence[DailyClosingPrice]] | None = None,
 ) -> tuple[list[dict[str, str]], list[str]]:
     """The log with each trigger's new rows added and empty outcomes filled, and the lines
     ``triggers`` prints. ``events`` and ``kinds`` are by flow name, the events oldest first;
-    ``closes`` by market."""
+    ``closes`` by market; ``companies`` each company's closes by ticker, for `ceo`."""
     times = {t.sha: merged(t.sha) for t in triggers}
     order = sorted(
         triggers,
@@ -2229,24 +2252,32 @@ def answer_triggers(
         tuple[dict[date, Span], list[tuple[date, Span]], list[Kept], list[date]],
     ] = {}
     lines: list[str] = []
-    seen: set[tuple[str, date]] = set()
+    seen: set[tuple[str, date, str]] = set()
+    history: dict[int, list[Scandal]] = {}
     filed: dict[str, set[date]] = {}
     for t in order:
         at = times[t.sha]
-        head = f"{t.path}:{t.line} {t.flow} {t.day} {t.kind}"
+        head = f"{t.path}:{t.line} {t.flow} {t.day} {t.kind}" + (f" {t.ticker}" if t.ticker else "")
         reason = None
         if t.flow not in TRIGGER_KINDS:
             reason = f"{t.flow} is not one of {', '.join(TRIGGER_KINDS)}"
         elif t.kind not in TRIGGER_KINDS[t.flow]:
             reason = f"{t.kind!r} is not a kind of {t.flow}"
+        elif t.flow == "ceo" and not t.ticker:
+            reason = "a ceo trigger names its company in a ticker column"
         elif at is None:
             reason = "not merged through a pull request"
-        elif (t.flow, t.day) in seen:
+        elif (t.flow, t.day, t.ticker) in seen:
             reason = f"repeats {t.flow} {t.day}, filed earlier"
         if reason is not None or at is None:
             lines.append(f"{head}: void, {reason}")
             continue
-        seen.add((t.flow, t.day))
+        seen.add((t.flow, t.day, t.ticker))
+        if t.flow == "ceo":
+            lines += _ceo_trigger(
+                t, at, head, events.get(t.flow, []), companies or {}, closes, by_key, history
+            )
+            continue
         flow_events = events.get(t.flow, [])
         event = next((e for e in flow_events if release_date(e) == t.day), None)
         if event is None:
@@ -2367,6 +2398,93 @@ def answer_triggers(
         ),
     )
     return rows, lines
+
+
+def _ceo_trigger(
+    t: Trigger,
+    at: datetime,
+    head: str,
+    events: Sequence[EventInstance],
+    companies: Mapping[str, Sequence[DailyClosingPrice]],
+    closes: Mapping[str, Sequence[DailyClosingPrice]],
+    by_key: dict[tuple[str, str, str, str], dict[str, str]],
+    history: dict[int, list[Scandal]],
+) -> list[str]:
+    """A CEO scandal's trigger, its lines, its rows added to ``by_key``: on its company against
+    the S&P 500 from the first close on or after its day, answered from the stored scandals whose
+    spans ended by then, each against its own base, and graded against the company's own base
+    (docs/steps/ceo-scandals.md, step 2b)."""
+    stock, index = companies.get(t.ticker), closes[EXCESS_OVER]
+    if stock is None:
+        return [f"{head}: waiting, {t.ticker}'s closes are not loaded"]
+    missing = {e.detail or "" for e in events} - set(companies)
+    if missing:
+        return [f"{head}: waiting, {len(missing)} scandals' companies have no closes loaded"]
+    shared = _shared(stock, index)[0]
+    if not shared or t.day > shared[-1].day:
+        return [f"{head}: waiting, no close on or after its day"]
+    pair = closing_price_before_after(shared, t.day)
+    if isinstance(pair, str):
+        why = "no close before its day" if pair == BEFORE_HISTORY else "a hole around its day"
+        return [f"{head}: void, {why}"]
+    r = shared.index(pair[1])
+    deadline = datetime.combine(shared[r].day, STOCK.close, tzinfo=STOCK.zone)
+    if at >= deadline:
+        return [
+            f"{head}: late, merged {at.astimezone(STOCK.zone):%Y-%m-%d %H:%M}, "
+            f"its reaction close {deadline:%Y-%m-%d %H:%M %Z}"
+        ]
+    lines = [f"{head}, merged {at.astimezone(NEW_YORK):%Y-%m-%d %H:%M} New York"]
+    decisions = [(first_reaction_day(e, STOCK), e.detail or "") for e in events]
+    for span, c in SPANS.items():
+        spans = excess_spans(stock, index, c)
+        key = (t.path, str(t.line), t.ticker, span)
+        row = by_key.get(key)
+        if row is None:
+            row = dict.fromkeys(TRIGGER_LOG_COLUMNS, "")
+            row.update(
+                file=t.path,
+                line=str(t.line),
+                flow=t.flow,
+                day=t.day.isoformat(),
+                kind=t.kind,
+                market=t.ticker,
+                span=span,
+                merged_at=at.astimezone(UTC).isoformat(timespec="seconds"),
+                answer=TOO_FEW,
+            )
+            base = event_base(spans, shared, r)
+            if c not in history:
+                history[c] = kept_scandals(decisions, companies, index, c, after=True)[0]
+            earlier = [s for s in history[c] if s.span.end <= shared[r].day]
+            answer, chance, counts = rates_answer(
+                [s.outcome for s in earlier], [s.base for s in earlier]
+            )
+            if base is not None and answer != TOO_FEW:
+                row.update(
+                    answer=answer,
+                    chance="" if math.isnan(chance) else repr(chance),
+                    up=str(counts[UP]),
+                    same=str(counts[SAME]),
+                    down=str(counts[DOWN]),
+                    cut=repr(base.cut),
+                )
+            by_key[key] = row
+        if row["cut"] and not row["outcome"]:
+            move = _span_move(spans, shared, r + 1, c)
+            if move == HOLE:
+                row["outcome"] = HOLE
+            elif isinstance(move, float):
+                row["outcome"] = outcome(move, float(row["cut"]))
+                if row["answer"] in OUTCOMES:
+                    row["result"] = RIGHT if row["outcome"] == row["answer"] else WRONG
+        graded = f", {row['outcome']}" + (f", {row['result']}" if row["result"] else "")
+        lines.append(
+            f"  {t.ticker} {EXCESS_MARKET} {span}: {row['answer']}"
+            + (f" ({row['up']}/{row['same']}/{row['down']})" if row["up"] else "")
+            + (graded if row["outcome"] else "")
+        )
+    return lines
 
 
 def read_trigger_log(path: Path) -> list[dict[str, str]]:
