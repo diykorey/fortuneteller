@@ -20,8 +20,9 @@ graded on it (step 2b).
 ## In progress
 
 - **Step 21: the loop off the laptop** ([the spec](steps/loop-off-the-laptop.md)): the jobs on
-  GitHub Actions, first a run on demand from an empty store against every source, then a shadow run
-  beside the laptop on two release days.
+  GitHub Actions. Step 1 done: every source answers the runner; the store cannot be rebuilt from
+  empty (TradingView rewrote 2025's claims weeks), so it must travel encrypted. Step 2, the shadow
+  run, is next: the store seeded from the laptop, the schedule added.
 - **Step 20, part 2: a pasted article read into a trigger** ([the spec](steps/article-to-trigger.md)),
   by rules, tested on part 1's dataset. It reads both kinds the owner chose: a departure for the
   CEO's conduct, answered, and conduct with no departure (Nvidia), read but not answered until
