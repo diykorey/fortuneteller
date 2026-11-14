@@ -6,6 +6,7 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-14 | Step 22, steps 1 to 4: the page asks about each kind of event, from the same cells follows prints | PR #317 |
 | 2026-11-14 | Step 21, step 2 begun: the shadow workflow on GitHub's schedule, the store seeded encrypted from the laptop | PR #316 |
 | 2026-11-14 | Spec: step 22, ask the fortune teller | PR #315 |
 | 2026-11-14 | Step 21, step 1: every source answers the runner, Nasdaq too; the rebuild from empty fails on TradingView's rewritten 2025 claims, so the store travels encrypted | PR #314 |

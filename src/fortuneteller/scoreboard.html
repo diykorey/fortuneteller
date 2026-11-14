@@ -63,6 +63,17 @@ day's.</p>
 <div class="wrap"><table id="watch"></table></div>
 <p class="muted" id="watch-chance"></p>
 
+<h2 id="ask-the-fortune-teller">Ask the fortune teller</h2>
+<p class="muted"><strong>Entertainment, not financial advice.</strong> Pick a kind of event and see
+what each market did after every past one, on the day and over the spans after it, beside what it
+did over every span of its history. An answer is given only when the counts are unlikely by chance;
+most read <em>can't say</em>. Each answer was also replayed, every event answered from the ones
+before it; only a replay that held is marked.</p>
+<p><label for="ask-kind">Kind of event </label><select id="ask-kind"></select></p>
+<p class="muted" id="ask-about"></p>
+<div id="ask"></div>
+<ul class="muted" id="ask-left-out"></ul>
+
 <h2>The calls</h2>
 <p class="muted">Each release's lines as logged that morning: the direction called, the link's record
 before it as counts, the band half its moves land in, and the grade on the close.</p>
@@ -170,6 +181,62 @@ record is shown, losses included. A handle is dropped from the page on request; 
   byId('ahead-rule').textContent = 'Written ' + data.written + '; a release whose day has passed is dropped. '
     + 'The threshold is the consensus plus or minus the rule\'s noticeable surprise; below, each market is called the other way. '
     + data.rules.walk_forward;
+
+  // Ask the fortune teller: a kind of event, then a table per span, a row per market; the
+  // sentences are written with the data, never here.
+  const askSelect = byId('ask-kind');
+  const askFlows = data.ask || [];
+  askFlows.forEach((flow) => {
+    const group = el('optgroup');
+    group.label = flow.noun.charAt(0).toUpperCase() + flow.noun.slice(1);
+    flow.kinds.forEach((k) => {
+      const option = el('option', k.label + ' (' + k.events + ')');
+      option.value = flow.name + '|' + k.kind;
+      group.appendChild(option);
+    });
+    askSelect.appendChild(group);
+  });
+  const showAsk = () => {
+    const [name, kind] = askSelect.value.split('|');
+    const flow = askFlows.find((f) => f.name === name);
+    const box = byId('ask');
+    box.textContent = '';
+    if (!flow) return;
+    const counted = flow.kinds.find((k) => k.kind === kind);
+    const total = flow.kinds.reduce((sum, k) => sum + k.events, 0);
+    byId('ask-about').textContent = counted.label.charAt(0).toUpperCase() + counted.label.slice(1)
+      + ': ' + counted.events + ' of the ' + total + ' ' + flow.noun + ' from ' + flow.first
+      + ' to ' + flow.last + '.';
+    const spans = [...new Set(flow.cells.map((c) => c.span))];
+    spans.forEach((span) => {
+      box.appendChild(el('h3', 'Over the ' + (span === 'day' ? 'day' : 'next ' + span)));
+      const table = el('table');
+      table.appendChild(head(['Market', 'After it: up / same / down', 'Every ' + span + ': up / same / down', 'Answer', 'Replayed']));
+      flow.cells.filter((c) => c.kind === kind && c.span === span).forEach((c) => {
+        const base = c.base_n
+          ? [c.base_up, c.base_same, c.base_down].map((s) => Math.round(s * c.base_n)).join(' / ') + ' of ' + c.base_n
+          : 'each company\'s own two years';
+        const answered = c.answer !== "can't say" && c.answer !== 'too few';
+        const answer = el('td', c.answer, answered ? '' : 'none');
+        answer.appendChild(el('small', c.say));
+        let replay = 'not replayed';
+        if (c.graded) replay = c.right + ' of ' + c.graded + (c.verdict === 'holds' ? ', held' : c.verdict === 'too few' ? ', too few' : ", didn't hold");
+        table.appendChild(row([
+          el('td', c.market_name),
+          el('td', c.up + ' / ' + c.same + ' / ' + c.down + ' of ' + (c.up + c.same + c.down)),
+          el('td', base), answer, el('td', replay, c.verdict === 'holds' ? 'yes' : 'none'),
+        ]));
+      });
+      const wrap = el('div', null, 'wrap');
+      wrap.appendChild(table);
+      box.appendChild(wrap);
+    });
+  };
+  askSelect.addEventListener('change', showAsk);
+  showAsk();
+  (data.ask_left_out || []).forEach((l) => {
+    byId('ask-left-out').appendChild(el('li', 'Not shown: ' + l.noun + ', because ' + l.reason + '.'));
+  });
 
   // The calls, newest day first; a release since the log began with no rows is a missed one.
   const calls = byId('calls');

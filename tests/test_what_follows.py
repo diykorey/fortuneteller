@@ -1,4 +1,6 @@
+import math
 import random
+import re
 from collections.abc import Mapping
 from datetime import UTC, date, datetime, time, timedelta
 from pathlib import Path
@@ -7,6 +9,7 @@ import pytest
 from pydantic import SecretStr
 
 from fortuneteller import db, flows, sources, stats, study
+import fortuneteller.__main__ as cli
 from fortuneteller.__main__ import describe_follows, main
 from fortuneteller.config import settings
 from fortuneteller.models import Surprise
@@ -904,3 +907,157 @@ def test_follows_long_prints_the_quarter_and_the_year_with_the_cycles(
     assert [line.split()[1] for line in out[2:-1]] == ["quarter", "year"] * 3
     assert out[2].startswith("cut   quarter  SPY / ES       1")
     assert "1: too few cycles" in out[2]
+
+
+def test_a_base_keeps_how_many_moves_it_rests_on() -> None:
+    # given nine moves
+    moves = [0.01, -0.02, 0.0, 0.03, -0.01, 0.002, -0.004, 0.02, -0.03]
+
+    # when their base is taken
+    base = study.base_of(moves)
+
+    # then it rests on nine
+    assert base is not None
+    assert base.n == 9
+
+
+FOLLOWS_LINE = re.compile(
+    r"^(?P<kind>above|as expected|below)\s+(?P<span>day|week|month)\s+(?P<market>.+?)\s+"
+    r"(?P<n>\d+)\s+(?P<up>\d+)\s+(?P<same>\d+)\s+(?P<down>\d+)\s+\d+/\d+\s+"
+    r"(?P<base>[\d.]+/[\d.]+/[\d.]+|—)\s+(?P<answer>up|down|about the same|can't say|too few)\s+"
+    r"\S+\s+\S+\s+(?P<graded>\d+): (?P<right>\d+) right, (?P<verdict>.+)$"
+)
+
+
+def test_the_page_s_cells_are_the_lines_follows_prints(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given two markets' closes and 45 jobs reports, the surprises' signs alternating and the
+    # markets rising on the day after a report above the consensus
+    two = {k: study.MVP_PRICE_SERIES[k] for k in ("SPY / ES", "DXY")}
+    monkeypatch.setattr(study, "MVP_PRICE_SERIES", two)
+    rng = random.Random(3)
+    keys = list(range(30, 1380, 30))
+    steps = [rng.gauss(0, 0.005) for _ in range(1400)]
+    for j, k in enumerate(keys):
+        steps[k] = 0.01 if j % 3 == 0 else rng.gauss(0, 0.005)
+    closes = _closes(steps)
+    db.init_db()
+    db.get_connection().executemany(
+        "INSERT INTO daily_bars (instrument, day, close, source) VALUES (?, ?, ?, 'test')",
+        [[m, c.day, c.price] for m in two for c in closes],
+    )
+    signs = (60.0, 0.0, -60.0)
+    _store_reports([(closes[k].day, "nasdaq_consensus", signs[j % 3]) for j, k in enumerate(keys)])
+
+    # when follows prints the jobs reports' table and the page's data is built
+    assert main(["follows", "--event", "nfp"]) == 0
+    printed = [FOLLOWS_LINE.match(line) for line in capsys.readouterr().out.splitlines()[2:-1]]
+    ask = cli.ask_data(db.get_connection())
+
+    # then every line has one cell on the page, equal field by field
+    (nfp,) = [entry for entry in ask["ask"] if entry["name"] == "nfp"]
+    cells = {(c["kind"], c["span"], c["market"]): c for c in nfp["cells"]}  # type: ignore[union-attr]
+    assert len(printed) == len(cells) == 3 * 3 * 2
+    for line in printed:
+        assert line is not None
+        cell = cells[(line["kind"], line["span"], line["market"])]
+        assert [cell["up"], cell["same"], cell["down"]] == [
+            int(line["up"]),
+            int(line["same"]),
+            int(line["down"]),
+        ]
+        shares = [cell["base_up"], cell["base_same"], cell["base_down"]]
+        assert "/".join(f"{s:.2f}" for s in shares) == line["base"]
+        assert (cell["answer"], cell["verdict"]) == (line["answer"], line["verdict"])
+        assert (cell["graded"], cell["right"]) == (int(line["graded"]), int(line["right"]))
+        assert "%" not in str(cell["say"])
+    assert [k["events"] for k in nfp["kinds"]] == [15, 15, 15]  # type: ignore[index]
+
+
+def test_the_page_names_a_flow_it_cannot_compute_and_shows_the_others(
+    tmp_db: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given a Fed decision and three jobs reports with their surprises, and no FRED key
+    monkeypatch.setattr(settings, "fred_api_key", None)
+    monkeypatch.setattr(study, "MVP_PRICE_SERIES", {"SPY / ES": study.MVP_PRICE_SERIES["SPY / ES"]})
+    closes = _closes(_alternating(300))
+    days = [closes[i].day for i in (20, 60, 100)]
+    _store_reports(
+        [(day, "nasdaq_consensus", s) for day, s in zip(days, (60.0, 0.0, -60.0), strict=True)]
+    )
+    flows.store_fomc_decisions([sources.FomcDecision(closes[140].day, True)])
+    db.get_connection().executemany(
+        "INSERT INTO daily_bars (instrument, day, close, source) VALUES ('SPY / ES', ?, ?, 'test')",
+        [[c.day, c.price] for c in closes],
+    )
+
+    # when the page's data is built
+    ask = cli.ask_data(db.get_connection())
+
+    # then the Fed is left out with the reason, and the jobs reports are there
+    left = {entry["name"]: entry["reason"] for entry in ask["ask_left_out"]}
+    assert left["fomc"] == "FT_FRED_API_KEY is not set (see docs/accounts.md)"
+    assert (
+        left["retail"] == "no retail sales releases stored; run `fortuneteller load-releases` first"
+    )
+    assert [entry["name"] for entry in ask["ask"]] == ["nfp"]
+
+
+def test_a_cell_s_sentence_gives_its_events_its_base_and_its_replay_apart() -> None:
+    # given step 17's cell for the 10-year yield on the day after a jobs report above the consensus
+    f = study.Follow(
+        counts={UP: 47, SAME: 8, DOWN: 13},
+        overlapped=0,
+        holes=0,
+        base=study.Base(0.01, {UP: 0.45, SAME: 0.33, DOWN: 0.22}, 9000),
+        answer=UP,
+        chance=0.00001,
+        period=False,
+        graded=57,
+        right=38,
+        walk_chance=0.001,
+        verdict=study.HOLDS,
+    )
+
+    # when it is put in words
+    say = cli.ask_say("nfp", ABOVE, "day", "UST10Y / ZN", f)
+
+    # then the event counts, the base's counts and the replay are each named, with no percentage
+    assert say == (
+        "After a jobs report above the consensus, UST10Y / ZN on the day: up 47, about the same 8, "
+        "down 13, of 68. On every day of its history: up 4050, about the same 2970, down 1980, of "
+        "9000. Answer: up. Replayed, it held: right 38 of 57."
+    )
+
+
+def test_each_replay_verdict_and_too_few_events_have_words() -> None:
+    # given a cell with five events, and the replay's three other states
+    def cell(graded: int, right: int, verdict: str) -> study.Follow:
+        return study.Follow(
+            {UP: 3, SAME: 1, DOWN: 1},
+            0,
+            0,
+            None,
+            TOO_FEW,
+            math.nan,
+            False,
+            graded,
+            right,
+            1.0,
+            verdict,
+        )
+
+    # when each is put in words
+    words = [
+        cli.ask_say("fomc", CUT, "week", "DXY", cell(*args))
+        for args in ((0, 0, TOO_FEW), (34, 17, study.DOESNT_HOLD), (6, 4, TOO_FEW))
+    ]
+
+    # then each says it plainly
+    assert words[0] == (
+        "After a Fed rate cut, DXY over the next week: up 3, about the same 1, down 1, of 5. "
+        "Too few events to answer: 5, against the 10 it needs. Not replayed."
+    )
+    assert words[1].endswith("Replayed, it did not hold: right 17 of 34.")
+    assert words[2].endswith("Too few replayed to judge: right 4 of 6.")
