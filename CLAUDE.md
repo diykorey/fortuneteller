@@ -71,7 +71,7 @@ roadmap wins. `docs/legacy/README.md` says what in there is still worth reading 
 
 The core is measured, from free sources only: the events and markets the README's Status lists,
 and the few links that hold walk-forward, named there too. Widening is planned in `docs/roadmap.md` steps 5–20 and goes one flow or one set of
-markets per PR, each with a spec whose bars and expected outcome are written before anything is
+markets per PR; phase 4 (steps 21–23) pauses new flows until its gate on 2027-01-31. Each goes with a spec whose bars and expected outcome are written before anything is
 measured and amended only with a date. News is read into triggers only for kinds already measured
 (step 20); wider detection (rung 7) and paid data stay deferred.
 

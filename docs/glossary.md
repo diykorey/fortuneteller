@@ -544,6 +544,13 @@ Terms are grouped by what they are about, alphabetical within each group.
   a reviewer who has seen none of it and reads only the page and its links. Every spec is read by
   a goldfish before measuring and again when its results are in
   ([Legend](legend.md#how-a-step-is-reviewed-the-elephant-and-the-goldfish)).
+- **Shadow run** — a new way of running a job beside the old one, both logging, every row compared,
+  before the old one is retired (roadmap step 21).
+- **The gate** — a dated check of several steps together against bars fixed in advance; a miss is
+  answered with a decisions entry before new work starts. The current one is 2027-01-31
+  ([roadmap phase 4](roadmap.md#phase-4-prove-the-loop-show-the-page-be-seen)).
+- **Zoom-out** — the monthly goldfish read of the whole plan, not one spec
+  ([Legend](legend.md#how-a-step-is-reviewed-the-elephant-and-the-goldfish)).
 - **Feature ladder** — the ordered list of what gets built after the MVP, in
   [the roadmap](roadmap.md).
 - **Step** — a word with three uses, told apart by what comes with it:

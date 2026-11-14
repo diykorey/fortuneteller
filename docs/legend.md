@@ -180,6 +180,11 @@ next month. (The pattern is the elephant-goldfish model; here it is two reviews,
 | **Before measuring**, the spec's pull request | The spec, the documents it links or names, this Legend and the Glossary | 1. The goal in one sentence. 2. The bars and the expected outcome, as numbers. 3. Each "done when" it could not check without judgement. 4. A plausible wrong answer the checks would miss. 5. Every term or claim that needs the conversation to understand | Fixes the spec, or says in the pull request why a finding stands |
 | **When the results are in**, the results' pull request | The same, with the spec's Results, and the spec's git history to check dates | 1. Is each verdict judged against the rule written first, with every number its bar needs? 2. Did any bar move without a dated amendment? 3. Does each plain-words summary say what its numbers say, no more and no less? | Fixes the Results, or says why not |
 
+**Once a month, a goldfish zooms out.** Given only this Legend, the roadmap, status and the
+decisions, it answers: does the plan still serve the target; which step's cost is out of line with
+what it could show; what a newcomer would cut. Its findings go into a decisions entry or a roadmap
+pull request, never into a spec quietly.
+
 The pull request carries one line per review: how many findings, how many fixed. An agent runs the
 goldfish as a fresh subagent with only those files; the [goldfish-review
 skill](../.claude/skills/goldfish-review/SKILL.md) holds the prompt. A person can be the goldfish

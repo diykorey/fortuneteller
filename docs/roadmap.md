@@ -66,7 +66,7 @@ output**. The claim shrinks; it does not get quietly overstated.
 
 ## Next steps, in order
 
-Three phases, each opened by a decision that says why ([Decisions](decisions.md)). A row says what
+Four phases, each opened by a decision that says why ([Decisions](decisions.md)). A row says what
 the step is and where it stands; its spec holds the bars, the method and the full results.
 
 ### Phase 1: sharpen the measurement, then predict, then widen
@@ -124,12 +124,45 @@ written first.
 | 19 | **The markets people feel**: [part 1](steps/markets-people-feel.md), corn, wheat, soybeans, gasoline and natural gas through their funds, utilities and homebuilders; [2a, coffee](steps/coffee.md); [2b, the breakeven](steps/breakeven.md); [the scoreboard, faster](steps/scoreboard-faster.md); [2c, the signs](steps/signs.md); [2d, the breakeven's sign](steps/breakeven-sign.md). Mortgages need nothing new: they follow the yields already stored | **Done** 2026-11-12. The breakeven holds on CPI, 35 of 42, the first market people feel with a call; utilities' and homebuilders' signs hold nothing |
 | 20 | **News into triggers**: a free news source read into step 18's triggers, by rules first and a model on this machine if rules fall short (starting from the unified prompt in docs/legacy/event-polarity-and-classifier-prompts.md). [Part 1](steps/ceo-scandals.md), a CEO's conduct in question, measured from a published dataset; part 1b, a CEO's conduct coming out with no departure (Nvidia's case), a kind by the owner's word, measured once a free list nobody picks is found; part 2, a pasted article read into a trigger, reading both kinds; part 3, a feed; tariff actions after | **In progress.** Taken 2026-11-13 by the owner, ahead of steps 17 and 18's grades ([why](decisions.md#2026-11-13-news-into-triggers-now-company-news-first-by-the-owner)). Part 1: the company falls against the S&P 500 on the day, 17 of 26; nothing holds walk-forward |
 
-Later, not planned in detail, each chosen one at a time after step 18's results: new kinds of
+### Phase 4: prove the loop, show the page, be seen
+
+Opened 2026-11-14 ([why](decisions.md#2026-11-14-prove-the-loop-show-the-page-be-seen-then-widen)).
+After a month live, the log holds one call; the page the target describes does not exist; nobody
+outside the project sees it. So the next work closes that gap before widening. **No new flow or
+kind starts until steps 21 to 23 are done**, except step 20's part 2, already in progress; part 1b
+waits for the gate. Each step gets its own spec, bars written first, read by a goldfish before
+anything is built.
+
+| # | Step | Where it stands |
+| --- | --- | --- |
+| 21 | **The loop off the laptop**: the release-day and evening jobs on GitHub Actions, first in a shadow run beside the laptop for two release days, every row compared. The spec says where the store lives on a runner that starts empty (rebuilt or cached). If a source refuses the runner (Nasdaq answered a different Python with HTTP 403 before), that is a result: the laptop stays and the reason is written down. Rung 6's popup stays on the laptop as a second channel; the page and step 23's post become the main one. When it passes, the 2026-11-10 decision to keep the laptop open is retired | **Planned**, next |
+| 22 | **Ask the fortune teller**: the page the target describes, with the reader picking the kind of event until step 20 reads it from the news. For each kind step 17 answers (Fed decisions, the jobs report, retail sales, CPI, jobless claims, ECB decisions) and step 20's *ceo*, every market and span: the answer, the counts and the base rate. *Can't say* is shown with what markets did anyway, never graded. Answers are computed ahead into a file the static scoreboard reads, the same numbers the follows command prints; no server | **Planned** |
+| 23 | **Be seen, and count it**: a free, privacy-light visitor counter on the page, and one channel, a weekly post: what the fortune teller said, and how it did. The spec names the counter and how it counts a unique visitor before the first post; the bar is the gate's | **Planned** |
+
+**The gate, 2027-01-31.** Steps 21 to 23 are judged together against bars fixed now, each counted
+from a named source:
+
+- **The loop:** every release day of a flow the live command calls is logged on time and graded,
+  none missed, for the four straight weeks before the gate. *On time* means logged within 15
+  minutes of the release, before New York opens. Counted from the logged_at column of
+  data/calls.csv against the release calendar, and the misses the score command lists.
+- **The page:** live on GitHub Pages, answering every kind listed in step 22.
+- **Readers:** at least 100 unique visitors in one week, by step 23's counter.
+
+How many live calls are made is reported at the gate but is not a bar: it depends on how big the
+surprises are, which no step controls. If any bar fails, the next change is a decisions entry that
+says what the project does instead, before any new step starts. If all pass, the "Later" list
+opens, prediction markets first: Kalshi's and Polymarket's free price history (Polymarket's from
+2020), measured as markets readers bet in, then as a free expected value for an election (step 10).
+They are the betting markets the project's first statement of intent named beside stocks and
+crypto.
+
+Later, not planned in detail, each chosen one at a time after the gate: new kinds of
 events, each a dated history before a flow (OPEC decisions against Brent, already stored; floods
 and droughts in crop-growing regions, with one start day each; earnings reports, with the single
-companies' prices they need; crypto's own news); the page's words for the figures, once rung 3's
-rule allows a percentage; what-if stories for what has no past, labelled as reasoning and kept
-apart from graded records; and prediction-market prices as an election's expected value.
+companies' prices they need; crypto's own news); a CEO's conduct with no departure (step 20, part
+1b); the page's words for the figures, once rung 3's rule allows a percentage; and what-if stories
+for what has no past, labelled as reasoning and kept apart from graded records.
 
 ## After the MVP — the feature ladder
 

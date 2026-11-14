@@ -34,7 +34,10 @@ graded on it (step 2b).
 
 ## Next
 
-Step 20, part 2, step 1: the dev and test sets, once the owner has settled the spec.
+Step 21, the loop off the laptop: its spec, then the shadow run, started now so four straight
+on-time weeks fit before the gate on 2027-01-31; step 20, part 2, step 1 (the dev and test sets)
+goes on beside it, once the owner has settled that spec. Then step 22, the page
+([roadmap phase 4](roadmap.md#phase-4-prove-the-loop-show-the-page-be-seen)).
 
 ## Known, not yet fixed
 
