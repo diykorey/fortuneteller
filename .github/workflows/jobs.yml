@@ -33,6 +33,36 @@ jobs:
 
       - run: uv sync --locked
 
+      - name: Ask each source once
+        if: always()
+        run: |
+          mkdir -p out
+          uv run python - <<'PY' 2>&1 | tee out/sources.txt
+          import json, os
+          from datetime import date
+          from pathlib import Path
+          from fortuneteller import sources
+
+          cache = Path("out/probe-cache")
+          key = os.environ["FT_FRED_API_KEY"]
+          asks = {
+              "Yahoo": lambda: sources.parse_daily_bars(sources.fetch_daily_bars("^GSPC"))[-1],
+              "FRED": lambda: len(sources.fetch_series(key, "T5YIE")),
+              "Fed": lambda: len(sources.fetch_fed_page(sources.FED_CALENDAR_URL)),
+              "TradingView": lambda: len(
+                  json.loads(sources.fetch_tradingview_quarter(date(2026, 10, 1), cache))["result"]
+              ),
+              "Nasdaq": lambda: len(
+                  json.loads(sources.fetch_nasdaq_day(date(2026, 11, 12), cache))["data"]["rows"]
+              ),
+          }
+          for name, ask in asks.items():
+              try:
+                  print(f"{name}: answers, {ask()}")
+              except Exception as exc:
+                  print(f"{name}: refuses, {exc!r}")
+          PY
+
       - name: Rebuild from empty, each command timed
         run: |
           set +e
