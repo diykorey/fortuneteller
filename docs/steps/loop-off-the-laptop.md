@@ -47,6 +47,10 @@ logged within 15 minutes, none missed.
   logged after 08:45. So a schedule up to an hour late still logs on time. The evening is
   scheduled at 22:30 and 23:30 UTC, goes on at or after 18:00 New York once a day by the same
   rule; it has no deadline, and a late start only grades later.
+  - *Amended 2026-11-14, before step 2:* a run goes on by the time it was scheduled for, not the
+    time it started: the one scheduled for 07:30 New York is the morning, the one for 18:30 the
+    evening, the other exits. Exactly one of each a day, however late GitHub starts it, and no run
+    list to read.
 - **The obstacle: a source that refuses a datacenter.** Nasdaq's calendar answered a different
   Python with HTTP 403 on 2026-11-10
   ([Decisions](../decisions.md#2026-11-11-python-pinned-to-312)); its servers may refuse GitHub's
@@ -151,7 +155,7 @@ their own steps.
 ## Technical details
 
 - **Workflow:** `.github/workflows/jobs.yml`, triggers `schedule` and `workflow_dispatch`, a
-  `step` input (`live`, `score`, and `rebuild`, step 1's run from empty), actions only from those the repository allows
+  `step` input (`live`, `score`; *amended 2026-11-14:* `rebuild` was step 1's alone and is gone), actions only from those the repository allows
   (`actions/*`, `astral-sh/setup-uv`).
 - **Script:** `scripts/release-day.sh` keeps the laptop's run; the runner's steps live in the
   workflow until a second caller needs them in a script.

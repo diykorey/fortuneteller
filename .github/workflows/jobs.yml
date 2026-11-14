@@ -1,86 +1,140 @@
 # The release-day job and the evening score on a runner (docs/steps/loop-off-the-laptop.md).
-# Step 1: run on demand, the store rebuilt from empty, each command timed, every source asked.
+# Step 2, the shadow run: beside the laptop, committing and opening nothing; the day's rows and the
+# evening's files are uploaded as the run's artifact. The store travels as an encrypted release
+# asset (docs/decisions.md, 2026-11-14).
 name: Jobs
 
 on:
+  schedule:
+    # GitHub's schedule is UTC; the run whose time is 07:30 or 18:30 New York goes on, the other
+    # exits, so summer and winter each get one.
+    - cron: "30 11 * * 1-5"
+    - cron: "30 12 * * 1-5"
+    - cron: "30 22 * * 1-5"
+    - cron: "30 23 * * 1-5"
   workflow_dispatch:
     inputs:
       step:
-        description: "rebuild: the store from empty, step 1's run"
+        description: "live: the morning call; score: the evening loads and grading"
         type: choice
-        options: [rebuild]
-        default: rebuild
+        options: [live, score]
+        default: live
 
 permissions:
-  contents: read
+  contents: write
+  pull-requests: read
 
 concurrency:
   group: jobs
   cancel-in-progress: false
 
+env:
+  GH_TOKEN: ${{ github.token }}
+  REPO: ${{ github.repository }}
+
 jobs:
-  rebuild:
+  run:
     runs-on: ubuntu-latest
-    timeout-minutes: 180
-    env:
-      FT_FRED_API_KEY: ${{ secrets.FT_FRED_API_KEY }}
+    timeout-minutes: 120
     steps:
+      - name: Which step, by New York's clock
+        id: plan
+        env:
+          EVENT: ${{ github.event_name }}
+          CRON: ${{ github.event.schedule }}
+          ASKED: ${{ inputs.step }}
+        run: |
+          if [ "$EVENT" = workflow_dispatch ]; then
+            step=$ASKED
+          else
+            read -r minute hour _ <<<"$CRON"
+            at=$(TZ=America/New_York date -d "$(date -u +%F) $hour:$minute UTC" +%H:%M)
+            case $at in
+              07:30) step=live ;;
+              18:30) step=score ;;
+              *) step= ;;
+            esac
+            echo "scheduled $hour:$minute UTC is $at New York"
+          fi
+          echo "step=$step" >>"$GITHUB_OUTPUT"
+          echo "step: ${step:-none, the other schedule is today's}"
+
       - uses: actions/checkout@v4
+        if: steps.plan.outputs.step != ''
 
       - uses: astral-sh/setup-uv@v5
+        if: steps.plan.outputs.step != ''
         with:
           python-version: "3.12"
 
-      - run: uv sync --locked
-
-      - name: Ask each source once
-        if: always()
+      - name: The store, downloaded and decrypted
+        if: steps.plan.outputs.step != ''
+        env:
+          FT_STORE_KEY: ${{ secrets.FT_STORE_KEY }}
         run: |
+          [ -n "$FT_STORE_KEY" ] || { echo "FT_STORE_KEY is not set"; exit 1; }
+          uv sync --locked
+          gh release download store -R "$REPO" -p store.tar.gpg -D "$RUNNER_TEMP"
+          gpg --batch --decrypt --passphrase-file <(printf '%s' "$FT_STORE_KEY") \
+            "$RUNNER_TEMP/store.tar.gpg" | tar -xzf -
+          ls -la data/fortuneteller.duckdb
           mkdir -p out
-          uv run python - <<'PY' 2>&1 | tee out/sources.txt
-          import json, os
-          from datetime import date
-          from pathlib import Path
-          from fortuneteller import sources
 
-          cache = Path("out/probe-cache")
-          key = os.environ["FT_FRED_API_KEY"]
-          asks = {
-              "Yahoo": lambda: sources.parse_daily_bars(sources.fetch_daily_bars("^GSPC"))[-1],
-              "FRED": lambda: len(sources.fetch_series(key, "T5YIE")),
-              "Fed": lambda: len(sources.fetch_fed_page(sources.FED_CALENDAR_URL)),
-              "TradingView": lambda: len(
-                  json.loads(sources.fetch_tradingview_quarter(date(2026, 10, 1), cache))["result"]
-              ),
-              "Nasdaq": lambda: len(
-                  json.loads(sources.fetch_nasdaq_day(date(2026, 11, 12), cache))["data"]["rows"]
-              ),
-          }
-          for name, ask in asks.items():
-              try:
-                  print(f"{name}: answers, {ask()}")
-              except Exception as exc:
-                  print(f"{name}: refuses, {exc!r}")
-          PY
-
-      - name: Rebuild from empty, each command timed
+      - name: The morning call
+        if: steps.plan.outputs.step == 'live'
         run: |
+          at=$(TZ=America/New_York date -d "08:30:05" +%s)
+          now=$(date +%s)
+          if [ "$now" -lt "$at" ]; then
+            echo "waiting $((at - now))s for 08:30:05 New York"
+            sleep $((at - now))
+          fi
           set +e
-          mkdir -p out
-          for command in init seed load-releases load-prices load-surprises load-tone load-sentiment; do
-            start=$(date +%s)
-            uv run fortuneteller "$command" > "out/$command.txt" 2>&1
-            status=$?
-            printf '%s exit %s in %ss\n' "$command" "$status" "$(( $(date +%s) - start ))" |
-              tee -a out/timings.txt
+          FT_CALLS_PATH=data/calls.csv uv run fortuneteller live 2>&1 | tee out/live.txt
+          status=${PIPESTATUS[0]}
+          git diff -U0 -- data/calls.csv | tee out/calls.diff
+          cp data/calls.csv out/
+          exit "$status"
+
+      - name: The evening loads and grading
+        if: steps.plan.outputs.step == 'score'
+        id: score
+        env:
+          FT_FRED_API_KEY: ${{ secrets.FT_FRED_API_KEY }}
+        run: |
+          waiting=$(gh pr list -R "$REPO" --state open --json headRefName --jq \
+            '.[].headRefName | select(startswith("calls-") or startswith("score-") or startswith("triggers-"))')
+          if [ -n "$waiting" ]; then
+            echo "score: waiting for $waiting to be merged" | tee out/score.txt
+            exit 0
+          fi
+          for command in load-releases load-prices load-surprises; do
+            uv run fortuneteller "$command" 2>&1 | tee -a out/loads.txt
+            [ "${PIPESTATUS[0]}" -eq 0 ] || exit 1
           done
-          FT_CALLS_PATH=data/calls.csv uv run fortuneteller score > out/score.txt 2>&1
-          printf 'score exit %s\n' "$?" | tee -a out/timings.txt
-          tail -n 3 out/*.txt
+          echo "loaded=1" >>"$GITHUB_OUTPUT"
+          FT_CALLS_PATH=data/calls.csv uv run fortuneteller score >data/score.txt
+          cp data/score.txt out/
+          if grep -q '^pending: ' data/score.txt; then
+            echo "score: rows pending; no triggers, as on the laptop"
+            exit 0
+          fi
+          uv run fortuneteller triggers | tee out/triggers.txt
+          cp data/trigger-log.csv out/
+
+      - name: The store, encrypted and uploaded
+        if: steps.score.outputs.loaded == '1'
+        env:
+          FT_STORE_KEY: ${{ secrets.FT_STORE_KEY }}
+        run: |
+          tar -czf - data/fortuneteller.duckdb data/cache |
+            gpg --batch --yes --symmetric --cipher-algo AES256 --compress-algo none \
+              --passphrase-file <(printf '%s' "$FT_STORE_KEY") -o "$RUNNER_TEMP/store.tar.gpg"
+          gh release upload store -R "$REPO" "$RUNNER_TEMP/store.tar.gpg" --clobber
 
       - uses: actions/upload-artifact@v4
-        if: always()
+        if: always() && steps.plan.outputs.step != ''
         with:
-          name: rebuild-${{ github.run_id }}
+          name: ${{ steps.plan.outputs.step }}-${{ github.run_id }}
           path: out/
           retention-days: 90
