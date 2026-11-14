@@ -11,6 +11,19 @@ amended there with a date.
 Each entry: **what** was decided, **why**, what it **retires**, and **where** the detail is. *By the
 owner* marks a choice the owner made over another on the table.
 
+## 2026-11-14: The store travels encrypted (by the owner)
+
+- **What:** on GitHub's runners, the store and the source cache travel between runs as one
+  gpg-encrypted file, a release asset, under the secret `FT_STORE_KEY`; never as a cache or a
+  plain artifact, and never rebuilt from empty. The owner set `FT_FRED_API_KEY` and
+  `FT_STORE_KEY` as repository secrets.
+- **Why:** step 21's first run showed the store cannot be rebuilt: TradingView rewrote 2025's
+  shutdown weeks of claims and rate-limits a runner asking for every quarter. And an artifact of a
+  public repository can be downloaded by anyone signed in, which would republish Nasdaq's and
+  TradingView's replies.
+- **Retires:** step 21's `actions/cache` and 90-day artifact for the store.
+- **Where:** [step 21](steps/loop-off-the-laptop.md#results).
+
 ## 2026-11-14: Prove the loop, show the page, be seen; then widen
 
 - **What:** roadmap phase 4. Steps 21 to 23 come first: the jobs off the laptop, the page where a

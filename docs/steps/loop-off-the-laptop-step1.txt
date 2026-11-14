@@ -1,0 +1,42 @@
+# Step 21, step 1: the evidence (docs/steps/loop-off-the-laptop.md, Results), 2026-11-14
+
+## Run 43628949150 (main at #312): gh workflow run jobs.yml -f step=rebuild; its timings.txt
+init exit 0 in 1s
+seed exit 0 in 0s
+load-releases exit 1 in 25s
+load-prices exit 1 in 1s
+load-surprises exit 1 in 0s
+load-tone exit 1 in 0s
+load-sentiment exit 1 in 1s
+score exit 0
+
+## Run 43630076184 (main at #313): the same; its sources.txt, then timings.txt
+Yahoo: answers, DailyClosingPrice(day=datetime.date(2026, 11, 13), price=7561.669921875)
+FRED: answers, 590916
+Fed: answers, 166065
+TradingView: answers, 1466
+Nasdaq: answers, 74
+init exit 0 in 1s
+seed exit 0 in 1s
+load-releases exit 1 in 9s
+load-prices exit 1 in 0s
+load-surprises exit 1 in 1s
+load-tone exit 1 in 0s
+load-sentiment exit 1 in 0s
+score exit 0
+
+## Run 43628949150's load-releases.txt
+load-releases: jobless claims reports at two times or for two months on 2025-11-18, 2025-11-20
+
+## Run 43630076184's load-releases.txt
+load-releases: TradingView 2017-04-01: HTTP 429
+
+## The laptop, from an empty store and an empty cache (FT_DB_PATH and FT_CACHE_DIR set to a new
+## directory): uv run fortuneteller init; uv run fortuneteller seed; uv run fortuneteller load-releases
+load-releases: jobless claims reports at two times or for two months on 2025-11-18, 2025-11-20
+
+## TradingView's quarter from 2025-10-01: the US 'Initial Jobless Claims' rows of 2025-11-18 and
+## 2025-11-20, counted per published time (UTC). The laptop's copy is data/cache/tradingview/
+## 2025-10-01.json, written 2026-10-16; the other was fetched by the empty-store run above.
+laptop: 2025-11-18T10:00Z 1, 2025-11-20T13:30Z 7
+fetched now: 2025-11-18T12:00Z 1, 2025-11-18T12:30Z 1, 2025-11-18T13:00Z 1, 2025-11-18T13:30Z 1, 2025-11-20T12:00Z 1, 2025-11-20T12:30Z 1, 2025-11-20T13:00Z 1, 2025-11-20T13:30Z 1
