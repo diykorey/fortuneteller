@@ -90,7 +90,8 @@ with under 504 closes before it; 1 a blank-check shell; and 6 that no source tie
 (Johnson Controls, MGM, ADP, Crocs, Unifi, Planet Fitness). Twenty-three keep a stamped time; three
 say only *before close*, *after close* or *unknown*. The first public word was earlier than the
 dataset's date for five: Horace Mann (the drunk-driving disclosure), Wynn (the WSJ report), Apollo
-(the NYT report), F5 and Visteon (the dataset's date was wrong). No price was read.
+(the NYT report), F5 and Visteon (the dataset's date was wrong). No price was read: the exclusions by history read only the dates
+each Yahoo history covers.
 
 *Amended 2026-11-14, before step 2's results were read:* the trigger is its own step, 2b. A trigger
 file's three columns and its grading on every market are what the evening job reads, and a `ceo`
@@ -103,48 +104,62 @@ A hand-made list is then the owner's call, labelled as picked.
 ## Results
 
 Measured 2026-11-14 on a copy of the store, each company's closes from Yahoo that day: 26 events,
-2005-03-07 … 2023-09-19, none left out or a hole on any span.
+2005-03-07 … 2023-09-19, none left out or a hole on any span. The counts, answers, chances, bases,
+placebo and walk-forward are printed by `fortuneteller follows --event ceo` (the first three rows)
+and `fortuneteller follows --event ceo --after-the-day` (the last three). The median excess move is
+not printed by a command; it was read from the same spans, `study.excess_spans`, in a one-off script.
 
-| Span | Up / same / down | Answer | Chance | Median excess | Walk-forward |
-| --- | --- | --- | --- | --- | --- |
-| Day | 4 / 5 / 17 | **down** | 0.0040 | −2.1% | 6 graded, 4 right, *too few* |
-| Week | 5 / 4 / 17 | **down** | 0.0074 | −3.1% | 4 graded, 2 right, *too few* |
-| Month | 4 / 5 / 17 | **down** | 0.0013 | −5.3% | 10 graded, 6 right, *too few* |
-| Day, from the reaction close | 8 / 8 / 10 | *can't say* | 0.40 | −0.1% | 0 graded |
-| Week, from the reaction close | 4 / 10 / 12 | *can't say* | 0.023 | −0.6% | 1 graded, 0 right |
-| Month, from the reaction close | 4 / 11 / 11 | *can't say* | 0.058 | −1.9% | 2 graded, 0 right |
+| Span | Up / same / down | Base up / same / down | Answer | Chance | Median excess | Walk-forward |
+| --- | --- | --- | --- | --- | --- | --- |
+| Day | 4 / 5 / 17 | 0.33 / 0.33 / 0.33 | **down** | 0.0040 | −2.1% | 6 graded, 4 right, *too few* |
+| Week | 5 / 4 / 17 | 0.34 / 0.33 / 0.33 | **down** | 0.0074 | −3.1% | 4 graded, 2 right, *too few* |
+| Month | 4 / 5 / 17 | 0.35 / 0.33 / 0.31 | **down** | 0.0013 | −5.3% | 10 graded, 6 right, *too few* |
+| Day, from the reaction close | 8 / 8 / 10 | 0.33 / 0.33 / 0.33 | *can't say* | 0.40 | −0.1% | 0 graded |
+| Week, from the reaction close | 4 / 10 / 12 | 0.34 / 0.33 / 0.33 | *can't say* | 0.023 | −0.6% | 1 graded, 0 right |
+| Month, from the reaction close | 4 / 11 / 11 | 0.35 / 0.33 / 0.31 | *can't say* | 0.058 | −1.9% | 2 graded, 0 right |
 
-The base is about a third each way on every span. The placebo, the same spans 10 or more closes
-away on each company's own closes, never gives the answer. Three of the six cells answer, against
-about 0.2 by chance, and they are one fall seen three times: the week and the month start at the
-same close as the day.
+The base is each event's own, averaged as `follows` prints it. The placebo, the same spans 10 or
+more closes away on each company's own closes, does not give the answer on any of the three
+answered spans (`follows`' placebo column `-`). Three of the six cells answer, against about 0.2 by
+chance. The week and the month start at the same close as the day, so the day's fall is inside
+them; the month's median is larger than the day's, so not all of it is the day.
 
 **Against the expected outcome:**
 
 - Nothing can hold: **right**, *too few* walk-forward on every span.
-- Count 20 to 40: **right**, 26. Up to a third left out with no history of their own: **wrong**,
-  24 of the 52 tied to their conduct (19 not on Yahoo, 4 tickers now another company's, 1 restarted).
+- Count 20 to 40 from 2000 to 2018: **wrong** for that window, 17 of the 26 fall in it; the
+  dated amendment of 2026-11-13 took the newer release, 1992 to 2023, and on it the count is 26,
+  inside 20 to 40.
+- Up to a third left out with no Yahoo history: **right**, 19 of the 58 that name the CEO's own
+  conduct, just under a third. With the 5 whose history is not their own (4 tickers now another
+  company's, 1 restarted) it is 24 of 58, over it.
 - The day *down*: **right**, 17 of 26, chance 0.004.
-- The week and the month *can't say*: **wrong**, both *down*. From the reaction close they are
-  *can't say*, so the day's fall carries them, not a further fall.
-- From the reaction close *can't say* on every span: **right**.
-- Every existing output unchanged: **right**, checked in step 2.
+- The week and the month *can't say*: **wrong**, both *down*, each holding the day.
+- From the reaction close *can't say* on every span: **right**. The week and the month lean down,
+  12 to 4 and 11 to 4, chances 0.023 and 0.058, short of the 0.01 bar.
+- Every existing output unchanged: **right**. In PR #299, `follows` for six flows with and without
+  `--after-the-day`, `raw-move` for six, `surprise` for three and `predict` printed the same on the
+  same store before and after; `score` and `scoreboard` too, but for the scoreboard's new CEO card.
 
 **What it says.** When a CEO goes over personal conduct, the company's stock falls against the
-market on the day the word is out: a median 2.1%, and 17 times in 26. After that close there is no
-direction: the next day, week and month are *can't say*. It is a record of counts. Nothing holds
-walk-forward, so it is not a call, and the list leans to companies that survived.
+market on the day the word is out: a median 2.1%, and 17 times in 26. From the next close on, the
+answer is *can't say*: the week and the month still lean down, but not past the bar. It is a record
+of counts. Nothing holds walk-forward, so it is not a call, and the list leans to companies that
+survived.
 
-**Nvidia, 2026-11-08.** The board's investigation and the CEO's admission came out on a Sunday, so
-the first reaction close is Monday 2026-11-09. From the 26 events before it, all ended by then: the
-day *down*, the week *down*, the month *down*; from the reaction close *can't say*. Computed
-2026-11-14, after the day's close was in, from nothing of Nvidia's but its base:
+**Nvidia, 2026-11-08.** Not one of the kind: its CEO has not left, and every event in the history is
+a departure, so what follows is a neighbour's record, not a call, read after the fact. No trigger
+was filed. The board's investigation and the CEO's admission came out on a Sunday, so the first
+reaction close is Monday 2026-11-09. From the 26 events, all ended by then: the day, week and month
+*down*; from the reaction close *can't say*. Nvidia's own moves were read on 2026-11-14 by a one-off
+script with `study.load_company_bars` for its closes and `study.excess_spans` and `study.event_base`
+for its spans and base; step 2b's `triggers` prints them for a trigger filed in time:
 
-- The day: Nvidia −4.3% and the S&P 500 +2.3%, an excess of −6.6% against a cut of 0.77%:
-  *down*, as answered. From the reaction close the day after: −5.1%, *down*, where the answer was
-  *can't say*.
-- The week ends on 2026-11-13's close and the month on 2026-12-08's; neither was in. The CEO has
-  not left, unlike every event in the history, so it is a neighbour of the kind, not one of it.
+- The day: Nvidia −4.3% and the S&P 500 +2.3%, an excess of −6.6% against its cut of 0.77%:
+  *down*. From the reaction close the day after: −5.1% against the same cut, *down*, where the
+  answer was *can't say*.
+- The week ends on 2026-11-13's close and the month on 2026-12-08's; neither close was in Yahoo's
+  history when it was read.
 
 ## How you know it is right
 
