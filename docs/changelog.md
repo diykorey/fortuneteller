@@ -6,6 +6,7 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-14 | News into triggers, part 2: spec, a pasted article read into a trigger by rules, tested on part 1's dataset | PR #307 |
 | 2026-11-14 | A `ceo` trigger no longer waits on closes: no closes for its company is no answer; a scandal without closes is left out and named | PR #309 |
 | 2026-11-14 | News into triggers, part 1, step 2b: a `ceo` trigger names its company, answered from the scandals before it and graded on that company | PR #306 |
 | 2026-11-14 | News into triggers, part 1, step 3: results — the company falls against the S&P 500 on the day, 17 of 26; no direction from the reaction close; Nvidia's day beside them | PR #305 |

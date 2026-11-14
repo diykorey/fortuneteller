@@ -11,6 +11,16 @@ amended there with a date.
 Each entry: **what** was decided, **why**, what it **retires**, and **where** the detail is. *By the
 owner* marks a choice the owner made over another on the table.
 
+## 2026-11-14: A CEO's conduct without a departure is a kind too (by the owner)
+
+- **What:** step 20 keeps two company kinds: a CEO leaving over their own conduct (`ceo`, part 1)
+  and a CEO's conduct coming out while they stay (Nvidia, 2026-11-08). Part 2's reader tells them
+  apart; the second gets no trigger and no answer until it has its own measured history (part 1b).
+- **Why:** the news the owner pastes is mostly the second kind: a board investigates and the CEO
+  stays. Part 1's dataset holds departures only, so it cannot answer for it.
+- **Retires:** part 2's reading of Nvidia as *not a measured kind*.
+- **Where:** [part 2](steps/article-to-trigger.md), [roadmap step 20](roadmap.md#next-steps-in-order).
+
 ## 2026-11-14: Every spec is read twice by a fresh reviewer
 
 - **What:** each step's spec gets a goldfish review before anything is measured, and another when
