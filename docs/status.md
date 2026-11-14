@@ -19,6 +19,9 @@ graded on it (step 2b).
 
 ## In progress
 
+- **Step 22: ask the fortune teller** ([the spec](steps/ask-the-fortune-teller.md)): the page
+  section where a reader picks a kind of event and sees what followed, from the same function
+  the follows command uses. The spec is written and reviewed; next, its five steps.
 - **Step 21: the loop off the laptop** ([the spec](steps/loop-off-the-laptop.md)): the jobs on
   GitHub Actions, first a run on demand from an empty store against every source, then a shadow run
   beside the laptop on two release days.
@@ -37,7 +40,8 @@ graded on it (step 2b).
 
 ## Next
 
-Step 20, part 2, step 1 (the dev and test sets), beside step 21; then step 22, the page
+Step 22's steps 1 to 4, in one build; then step 5 on the published page after the evening job.
+Step 21 and step 20, part 2, go on beside it
 ([roadmap phase 4](roadmap.md#phase-4-prove-the-loop-show-the-page-be-seen)).
 
 ## Known, not yet fixed
