@@ -72,4 +72,5 @@ graded per handle); the page shows them after the calls.
 ## What this does not do
 
 No history of earlier pages, no charts, no text that explains a number, no preview of a scheduled
-statement (step 8), no per-visitor state, no probability.
+statement (step 8), no per-visitor state, no probability. *Amended 2026-11-15:* the page keeps no per-visitor state itself;
+from [step 23](be-seen.md), Umami's cookie-free counter counts its visits.

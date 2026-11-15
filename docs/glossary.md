@@ -292,6 +292,14 @@ Terms are grouped by what they are about, alphabetical within each group.
   can often be read there. A User-Agent is the name a client gives a site with each request;
   some sites refuse a script's, and EDGAR asks for a contact in it
   ([a pasted article](steps/article-to-trigger.md)).
+- **Umami / unique visitor** — *added 2026-11-15* ([be seen](steps/be-seen.md)): Umami is a
+  cookie-free web analytics service; its free cloud tier counts the scoreboard page's visits. A
+  unique visitor is one browser on one address in a month, by a hash Umami re-salts monthly;
+  step 23 counts them per week, Monday to Sunday UTC.
+- **Disabled flag / seen / not seen** — *added 2026-11-15* ([be seen](steps/be-seen.md)): the
+  disabled flag is Umami's browser storage key `umami.disabled`, set to `1` in the owner's browsers
+  so their visits are not counted. *Seen* is step 23's verdict when one week of the window reaches
+  100 unique visitors; *not seen* when none does.
 - **Reads / doesn't read / too few texts** — *added 2026-11-14*: step 20, part 2's verdict on its
   rules for reading a kind from a text, against the bars in [its spec](steps/article-to-trigger.md).
 - **Kind (of event)** — *added 2026-11-04*: what a reader names ("the Fed cuts rates"); in the
