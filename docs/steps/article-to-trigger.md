@@ -180,6 +180,8 @@ which prints:
   for*, *refuses*, *no plans to* and the like is not a departure, so a story about a CEO who stays
   is not read as one. Dev's counts did not move.
 
+**The frozen commit: `fe7048d3f5106ca017647fbb764cc0aeb50e05b0`**, written here before any test address is fetched.
+
 ## How you know it is right
 
 - A text that names a CEO leaving for "personal reasons", and nothing else, is not the kind.
