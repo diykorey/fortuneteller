@@ -24,6 +24,9 @@ until the 2027-01-31 gate, by the owner
   the follows command uses. Steps 1 to 4 are built: one function for follows and the page, the
   base's count, the data and its sentences, the section; checked in a browser on test data.
   Step 5, the published page after the evening job, is next.
+- **Step 23: be seen, and count it** ([the spec](steps/be-seen.md)): a cookie-free Umami counter
+  on the page and a weekly LinkedIn post drafted by `weekly-post`, both the owner's choice. Spec
+  written; next, the owner's Umami website ID for step 1.
 - **Step 21: the loop off the laptop** ([the spec](steps/loop-off-the-laptop.md)): the jobs on
   GitHub Actions. Step 1 done: every source answers the runner; the store cannot be rebuilt from
   empty (TradingView rewrote 2025's claims weeks), so it must travel encrypted. Step 2, the shadow

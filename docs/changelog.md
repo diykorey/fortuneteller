@@ -6,6 +6,7 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-15 | Spec: step 23, be seen and count it (Umami Cloud and LinkedIn, by the owner) | PR #324 |
 | 2026-11-15 | Step 20 parked until the 2027-01-31 gate, by the owner; the work goes to steps 21 to 23 | PR #323 |
 | 2026-11-15 | Step 20, part 2, step 3: the test texts read once, *doesn't read* (5 of 12 positives, 6 of 99 negatives misread); `read-article`; Nvidia read as not a measured kind | PR #322 |
 | 2026-11-15 | Step 20, part 2, step 2: the rules for reading an article, written on the dev texts and frozen; dev 9 of 12 positives read, 0 of 103 negatives | PR #321 |
