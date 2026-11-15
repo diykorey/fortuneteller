@@ -11,6 +11,21 @@ amended there with a date.
 Each entry: **what** was decided, **why**, what it **retires**, and **where** the detail is. *By the
 owner* marks a choice the owner made over another on the table.
 
+## 2026-11-15: Step 20 parked until the gate (by the owner)
+
+- **What:** step 20 stops where it stands until the 2027-01-31 gate: part 1 measured, part 2's
+  word rules *doesn't read*, `read-article` kept but not trusted. Part 1b, part 2's next try and
+  part 3 wait. The work goes to steps 21 to 23. A `ceo` trigger is still filed by hand from part 1.
+- **Why:** the rules read 5 of 12 test positives and misread 6 of 99 other departures, and Nvidia's
+  article read as *not a measured kind*. The next try, a small model on this machine (Gemma 3 4B or
+  Qwen 2.5 3B, on the CPU), with a fresh test set from part 1's conduct departures left out for
+  their prices, is a new method that phase 4 says waits for the gate. The owner chose this over
+  the model now and over pasting alone.
+- **Retires:** phase 4's exception for step 20's part 2; and its spec's line that a *doesn't read*
+  is answered before part 3, which this entry answers.
+- **Where:** [part 2's results](steps/article-to-trigger.md#results),
+  [roadmap step 20](roadmap.md#next-steps-in-order).
+
 ## 2026-11-14: The store travels encrypted (by the owner)
 
 - **What:** on GitHub's runners, the store and the source cache travel between runs as one
