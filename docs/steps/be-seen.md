@@ -36,7 +36,10 @@ counter, LinkedIn for the channel.
 - **The post: drafted from the data, published by the owner.** `weekly-post` prints a draft for
   the last full week: each live call in `data/calls.csv` logged that week (by `logged_at`), its
   direction and market, and its grade, *right*, *wrong* or *pending*; the record of graded calls
-  so far, right and wrong in counts, as `score` counts them; and the page's link. Triggers
+  so far, right and wrong in counts; and the page's link. *Amended 2026-11-15, in step 2:* a call
+  is a row whose outcome is `call`, as the scoreboard shows it; a row leaning *too few* is not
+  one. Each is graded as `score` and the scoreboard grade it. The releases of the week are named
+  too, so a week with only silent rows still says what came out. Triggers
   (`data/trigger-log.csv`) are not calls and are not in it. A week with no call says *no call this
   week*. It ends *an entertainment tool, not advice*. The owner may reword it and publishes it;
   the numbers stay.
@@ -64,7 +67,7 @@ counter, LinkedIn for the channel.
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | The counter: the owner creates the Umami Cloud site, gives its website ID (public) and an API key (a secret, kept in `.env` as `FT_UMAMI_API_KEY`); the tag goes into the template | A test finds one Umami tag in the written page, with the ID, `data-do-not-track` and `data-domains`. The published page, opened from a browser without the flag, is one visitor by the API for that hour; opened again with the flag, still one. The date is written here |
-| 2 | `fortuneteller weekly-post` | Tests: a week with a graded call prints it as *right* or *wrong*; a pending call says *pending*; a week with none says *no call this week*; the record equals `score`'s right and wrong counts; a week across a month's first is asked in two parts and the larger kept; the last line is the disclaimer |
+| 2 | ~~`fortuneteller weekly-post`~~ **done** 2026-11-15 | Tests: a week with a graded call prints it as *right* or *wrong*; a pending call says *pending*; a week with none says *no call this week*; the record counts the calls' grades (*amended:* not `score`'s counts, which include rows leaning *too few*); a week across a month's first is asked in two parts and the larger kept; the last line is the disclaimer |
 | 3 | The first post, after step 22's page is published | Its date and address are in the weeks file's row for its week, written the next Monday with the count |
 | 4 | Every Monday to 2027-02-01: the week's row, and the next post | A row for each week of the window; on 2027-02-01, the verdict here against the bar |
 

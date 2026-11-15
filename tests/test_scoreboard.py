@@ -313,3 +313,99 @@ def test_scoreboard_asks_for_the_loads_it_needs(
     assert code == 1
     assert "load-releases" in capsys.readouterr().err
     assert not scoreboard_dir.exists()
+
+
+def _week() -> tuple[datetime, datetime]:
+    start = datetime(2026, 11, 16, tzinfo=study.UTC)
+    return start, start + timedelta(days=7)
+
+
+def test_a_week_s_post_names_each_call_and_its_grade_and_ends_with_the_disclaimer() -> None:
+    # given
+    start, end = _week()
+    at = datetime(2026, 11, 17, 13, 30, 9, tzinfo=study.UTC)
+    rows = [
+        study.LoggedCall(
+            at - timedelta(days=30), "retail", date(2026, 10, 15), 0.8, "UST10Y / ZN", "call", 1
+        ),
+        study.LoggedCall(at, "retail", date(2026, 11, 17), 0.9, "UST10Y / ZN", "call", 1),
+        study.LoggedCall(at, "retail", date(2026, 11, 17), 0.9, "UST5Y / ZF", "call", -1),
+        study.LoggedCall(at, "retail", date(2026, 11, 17), 0.9, "DXY", "too_few", 1),
+    ]
+    grades = {0: "wrong", 1: "right", 3: "right"}
+
+    # when
+    lines = cli.weekly_post_lines(rows, grades, start, end, {"UST10Y / ZN": "10-year yield"})
+
+    # then
+    assert lines[2:] == [
+        "Releases: retail sales 2026-11-17.",
+        "retail sales 2026-11-17: 10-year yield up, right.",
+        "retail sales 2026-11-17: UST5Y / ZF down, pending.",
+        "",
+        "The record so far: 1 right, 1 wrong.",
+        cli.SCOREBOARD_URL,
+        "An entertainment tool, not advice.",
+    ]
+
+
+def test_a_week_without_a_call_says_so() -> None:
+    # given
+    start, end = _week()
+    rows = [
+        study.LoggedCall(
+            datetime(2026, 11, 19, 13, 30, tzinfo=study.UTC),
+            "claims",
+            date(2026, 11, 19),
+            220,
+            "DXY",
+            "silent",
+        ),
+    ]
+
+    # when
+    lines = cli.weekly_post_lines(rows, {}, start, end, {})
+
+    # then
+    assert "No call this week." in lines and "The record so far: 0 right, 0 wrong." in lines
+
+
+def test_the_last_full_week_ends_on_the_sunday_before() -> None:
+    # given
+    sunday_night = datetime(2026, 11, 22, 23, 0, tzinfo=study.UTC)
+    monday = datetime(2026, 11, 23, 1, 0, tzinfo=study.UTC)
+
+    # when
+    weeks = [study.last_full_week(sunday_night), study.last_full_week(monday)]
+
+    # then
+    assert [w[0].date() for w in weeks] == [date(2026, 11, 9), date(2026, 11, 16)]
+
+
+def test_a_week_across_a_month_s_first_is_asked_in_two_parts_and_the_larger_kept() -> None:
+    # given
+    start = datetime(2026, 11, 30, tzinfo=study.UTC)
+    end = start + timedelta(days=7)
+    asked: list[tuple[datetime, datetime]] = []
+
+    def ask(a: datetime, b: datetime) -> int:
+        asked.append((a, b))
+        return 30 if a == start else 45
+
+    # when
+    visitors = study.week_visitors(start, end, ask)
+
+    # then
+    first = datetime(2026, 12, 1, tzinfo=study.UTC)
+    assert visitors == (45, True) and asked == [(start, first), (first, end)]
+
+
+def test_a_week_inside_one_month_is_asked_once() -> None:
+    # given
+    start, end = _week()
+
+    # when
+    visitors = study.week_visitors(start, end, lambda a, b: 12)
+
+    # then
+    assert visitors == (12, False)

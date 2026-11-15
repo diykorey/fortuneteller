@@ -808,6 +808,101 @@ def _read_article(args: argparse.Namespace) -> int:
     return 0
 
 
+# Step 23 (docs/steps/be-seen.md): the page the weekly post links to, and its Umami site.
+SCOREBOARD_URL = "https://diykorey.github.io/fortuneteller/scoreboard/"
+UMAMI_WEBSITE_ID = ""
+DISCLAIMER = "An entertainment tool, not advice."
+# The releases the morning job calls, as a post names them.
+POST_NAMES = {
+    "cpi": "CPI",
+    "nfp": "the jobs report",
+    "retail": "retail sales",
+    "claims": "jobless claims",
+    "pce": "core PCE",
+    "gdp": "GDP",
+    "ism": "the ISM survey",
+}
+
+
+def _post_name(flow: str) -> str:
+    return POST_NAMES.get(flow, flows.flow_named(flow).event_type)
+
+
+def weekly_post_lines(
+    rows: Sequence[study.LoggedCall],
+    grades: Mapping[int, str],
+    start: datetime,
+    end: datetime,
+    names: Mapping[str, str],
+) -> list[str]:
+    """The week's post: its releases, each call logged in it and its grade, the record of graded
+    calls so far, the link and the disclaimer. ``grades`` holds ``_grade``'s word for each row
+    with a direction, by its place in ``rows``; a call is a row whose outcome is ``call``."""
+    week = [r for r in rows if start <= r.logged_at < end]
+    last = (end - timedelta(days=1)).date()
+    lines = [f"The fortune teller, {start:%Y-%m-%d} to {last:%Y-%m-%d}", ""]
+    releases = sorted({(r.day, _post_name(r.flow)) for r in week})
+    if releases:
+        lines.append("Releases: " + "; ".join(f"{label} {day}" for day, label in releases) + ".")
+    else:
+        lines.append("No release this week.")
+    calls = [(i, r) for i, r in enumerate(rows) if r.outcome == "call"]
+    said = [(i, r) for i, r in calls if start <= r.logged_at < end]
+    for i, r in said:
+        lines.append(
+            f"{_post_name(r.flow)} {r.day}: {names.get(r.instrument, r.instrument)} "
+            f"{_direction(r.direction or 0)}, {grades.get(i, 'pending')}."
+        )
+    if not said:
+        lines.append("No call this week.")
+    right = sum(grades.get(i) == "right" for i, _ in calls)
+    wrong = sum(grades.get(i) == "wrong" for i, _ in calls)
+    lines += ["", f"The record so far: {right} right, {wrong} wrong.", SCOREBOARD_URL, DISCLAIMER]
+    return lines
+
+
+def _weekly_post(_args: argparse.Namespace) -> int:
+    try:
+        rows = study.read_calls(settings.calls_path)
+    except ValueError as exc:
+        print(f"weekly-post: {exc}", file=sys.stderr)
+        return 1
+    con = db.get_connection()
+    db.init_db(con=con)
+    scores = {
+        flow.cli_name: study.score_calls(flow, rows, con=con)
+        for flow in flows.EVENT_FLOWS
+        if flow.surprise_rule is not None and any(r.flow == flow.cli_name for r in rows)
+    }
+    grades = {
+        i: _grade(r, scores[r.flow])[0]
+        for i, r in enumerate(rows)
+        if r.direction is not None and r.flow in scores
+    }
+    start, end = study.last_full_week(_now())
+    for line in weekly_post_lines(rows, grades, start, end, market_names()):
+        print(line)
+    key = settings.umami_api_key
+    print()
+    if key is None or not UMAMI_WEBSITE_ID:
+        print("visitors: no API key or website ID")
+        return 0
+
+    def ask(a: datetime, b: datetime) -> int:
+        assert key is not None
+        return sources.fetch_umami_visitors(
+            key.get_secret_value(), UMAMI_WEBSITE_ID, a, b - timedelta(milliseconds=1)
+        )
+
+    try:
+        visitors, crosses = study.week_visitors(start, end, ask)
+    except sources.UmamiError as exc:
+        print(f"weekly-post: {exc}", file=sys.stderr)
+        return 1
+    print(f"visitors: {visitors}" + (" (the larger of the week's two months)" if crosses else ""))
+    return 0
+
+
 def describe_grades(
     grades: dict[str, study.LinkGrade], expected_sign: dict[str, int], scope: str
 ) -> list[str]:
@@ -1994,6 +2089,12 @@ def build_parser() -> argparse.ArgumentParser:
         help="answer each trigger in data/triggers/ from the reaction close, and log and grade it",
     )
     p_triggers.set_defaults(func=_triggers)
+
+    p_post = sub.add_parser(
+        "weekly-post",
+        help="draft the week's post: its calls and grades, the record, and the page's visitors",
+    )
+    p_post.set_defaults(func=_weekly_post)
 
     p_article = sub.add_parser(
         "read-article",
