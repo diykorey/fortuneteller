@@ -1,0 +1,39 @@
+# uv run python -I scripts/article_texts.py read test data/cache/articles/test data/fortuneteller.duckdb
+# run once, 2026-11-15, rules frozen at fe7048d3f5106ca017647fbb764cc0aeb50e05b0
+1713 ceo read none
+1857 ceo read none
+2301 ceo read none
+2313 none read conduct
+3407 ceo read ceo ticker SYK (right, set SYK) day 2012-05-23 (no set day)
+3563 ceo read none
+4170 none read ceo
+6325 ceo read ceo ticker NGVT (right, set NGVT) day 2020-02-20 (right, set 2020-02-20)
+6955 none read ceo
+8026 none read ceo
+8069 none read ceo
+8205 ceo read ceo ticker PCLN (wrong, set BKNG) day 2016-04-28 (no set day)
+8486 ceo read none
+8746 ceo read none
+8820 none read ceo
+10213 ceo read ceo ticker - (empty, set KDP) day 2022-11-10 (right, set 2022-11-10)
+10500 ceo read ceo ticker - (empty, set LULU) day 2018-02-05 (right, set 2018-02-05)
+10809 ceo read none
+positives with a text: 12; read as ceo: 5; read as the second kind: 0
+negatives with a text: 99; read as either kind: 6 (ceo 5, the second kind 1)
+ticker on positives read: {'right': 2, 'empty': 2, 'wrong': 1}; day on those with a set day: {'right': 3, 'wrong': 0}
+by the rule: doesn't read
+
+# uv run python -I scripts/article_texts.py count test
+ceo	HTTP 404	1
+ceo	text, archive	5
+ceo	text, page	7
+none	archive failed	1
+none	library login	1
+none	no capture	36
+none	not a text page	1
+none	text, archive	31
+none	text, page	68
+none	under 100 words	1
+
+# uv run fortuneteller read-article data/cache/articles/nvidia-2026-11-08.txt
+not a measured kind

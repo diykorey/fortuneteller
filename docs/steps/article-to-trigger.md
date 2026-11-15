@@ -137,8 +137,8 @@ part 3 starts; the roadmap's next try is a model on this machine, with its own t
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~The sets: every row listed in `docs/steps/article-to-trigger-set.csv` (id, address, split, expected kind, ticker where part 1 has one, day); the dev texts fetched and counted out by reason; the test texts not fetched | Every row the sets above name is listed; each fetch is a row in the committed `docs/steps/article-to-trigger-fetch.csv` (address, UTC time, words, reason if counted out); no text is committed~~ **done** 2026-11-15, [below](#results) |
-| 2 | ~~The rules on the dev set, and their dev counts written here; then frozen by a commit whose hash is written here (*amended 2026-11-15:* frozen means the block of `study.py` from the comment `# Step 20, part 2` to the end of `article_day`: `CONDUCT_NO_DEPARTURE`, the patterns and tables `_CHIEF`, `_LEAVES`, `_CONDUCT`, `_TICKER`, `_MONTHS`, `_DATE`, `_CLOCK`, `_ZONES`, `_HEDGE`, the reaches `_NEAR_*`, `Reading`, `_near`, `_departures`, `_own_day`, `read_article` and `article_day`, with the values they read from outside it, `STOCK.close` and `NEW_YORK`; and the scorer, `scripts/article_texts.py read`. At step 3's results the block is byte for byte the frozen commit's. The tests check the rules work as written; the dev counts are the measure) | Tests: a conduct departure reads; conduct with no departure reads as the second kind; a fraud departure and a retirement do not; `(NYSE: BA)` gives `BA`; an after-close time moves the day. The dev counts (the kind on the dev positives and negatives, the second kind's count, the ticker and day counts) are recorded before the hash~~ **done** 2026-11-15, [below](#results) |
-| 3 | The test texts fetched and read once; the Nvidia article read; `read-article` | Results here: the kind against both bars, the ticker and day counts, the second kind's count, and Nvidia's line |
+| 2 | ~~The rules on the dev set, and their dev counts written here; then frozen by a commit whose hash is written here (*amended 2026-11-15, rewritten the same day before the freeze from "`read_article` and every function it calls":* frozen means the block of `study.py` from the comment `# Step 20, part 2` to the end of `article_day`: `CONDUCT_NO_DEPARTURE`, the patterns and tables `_CHIEF`, `_LEAVES`, `_CONDUCT`, `_TICKER`, `_MONTHS`, `_DATE`, `_CLOCK`, `_ZONES`, `_HEDGE`, the reaches `_NEAR_*`, `Reading`, `_near`, `_departures`, `_own_day`, `read_article` and `article_day`, with the values they read from outside it, `STOCK.close` and `NEW_YORK`; and the scorer, `scripts/article_texts.py read`. At step 3's results the block is byte for byte the frozen commit's. The tests check the rules work as written; the dev counts are the measure) | Tests: a conduct departure reads; conduct with no departure reads as the second kind; a fraud departure and a retirement do not; `(NYSE: BA)` gives `BA`; an after-close time moves the day. The dev counts (the kind on the dev positives and negatives, the second kind's count, the ticker and day counts) are recorded before the hash~~ **done** 2026-11-15, [below](#results) |
+| 3 | ~~The test texts fetched and read once; the Nvidia article read; `read-article` | Results here: the kind against both bars, the ticker and day counts, the second kind's count, and Nvidia's line~~ **done** 2026-11-15, [below](#results): *doesn't read* |
 
 ## Results
 
@@ -181,6 +181,65 @@ which prints:
   is not read as one. Dev's counts did not move.
 
 **The frozen commit: `fe7048d3f5106ca017647fbb764cc0aeb50e05b0`**, written here before any test address is fetched.
+
+**Step 3, 2026-11-15: *doesn't read*.** The test texts were fetched once by
+`scripts/article_texts.py fetch test`, the first at 17:29 UTC by the fetch log's `fetched_at`,
+after the frozen commit (17:21 UTC by `git log -1 --format=%cI fe7048d`);
+no row was left at the archive's rate limit. They were read once by
+`scripts/article_texts.py read test data/cache/articles/test data/fortuneteller.duckdb`; its
+output, the fetch counts and Nvidia's line are in [the evidence](article-to-trigger-test.txt).
+The frozen block of `study.py` is byte for byte the frozen commit's. The 12 test positives with a
+text are 8 news pages, 2 filings and 2 press releases by the hosts rule above; the 99 negatives 76,
+15, 7 and 1 reference page. So this measures news and filings together, not news alone.
+
+- **The kind, against the bars:** 5 of the 12 test positives with a text read as `ceo`, 42%
+  against 75%; 6 of the 99 test negatives with a text read as either kind, 6.1% against 5% (5 as
+  `ceo`, 1 as the second kind). Both bars missed: *doesn't read*. The expected verdict was right
+  for the wrong half: the negatives were expected to miss, about 8%, but the positives were
+  expected to pass, about 11 of 13.
+- **The seven positives not read, and whether their text reports the departure:**
+  - It does, with the conduct out of reach: Texas Instruments ("Crutcher resigned due to
+    violations of the company's code of conduct", his surname with no title, so no departure is
+    found there, and the one found is 400 characters from the conduct); Intel (the "consensual
+    relationship" 780 characters after the departure found); Apollo ("steps down ... in wake of
+    Epstein scandal", a scandal the word lists do not name); Red Robin ("ousted ... for misusing
+    funds", a story of his death 13 years on, with words the lists do not name). The distances are
+    the character offsets of the frozen patterns' matches in the text, measured by hand.
+  - It does not say why: Visteon's story names no conduct.
+  - It does not report the departure: HP's address is an 8-K of 2011 electing a director;
+    McDonald's is its 2020 proxy statement, 48,342 words by the fetch log.
+- **The six negatives read:** an employment agreement's "Termination" beside "Code of Conduct"
+  (Manhattan Associates); a CEO stepping down beside a drug for "sexual" desire (Amag); a lawyer
+  saying the CEO "did not engage in any intentional misconduct" (ACS, options backdating); a story
+  naming other CEOs' scandals beside Restoration Hardware's (Hurd's "sexual harassment"); an
+  activist's letter alleging conduct "inappropriate" (Tessera); and, as the second kind, a proxy
+  statement's "Code of Ethics" beside its chief executive.
+- **The second kind:** 0 positives, 1 negative (above).
+- **The ticker, on the 5 read:** as the scorer prints it, 2 right (Stryker, Ingevity), 2 empty, 1
+  wrong: Priceline's `PCLN` against the set's `BKNG`. By the 2026-11-15 amendment, a ticker of
+  the time is right, so 3 right and 0 wrong, checked by hand: Priceline Group's stock traded on
+  Nasdaq as `PCLN` until it was renamed Booking Holdings in February 2018. That amendment's
+  example is this test row, whose set ticker was in view when it was written, before any test
+  text was fetched; the scorer's count is the one that stands on its own.
+- **Against the expected outcome:** the ticker was expected empty on about a third and never
+  wrong; it was empty on 2 of 5 and wrong on 1 by the scorer, 0 by the amendment. The day was
+  expected right on about 6 of the 8 positives with a day; only 3 were read, and all 3 were
+  right. The second kind was expected on about 3% of negatives; it fired on 1 of 99.
+- **The day, on the 3 read with a set day:** 3 right.
+- **Nvidia's article:** `not a measured kind`, where *a CEO's conduct, no departure: not measured
+  yet*, `NVDA`, was expected. A general sentence, "corporate boards historically tend to oust
+  chief executives caught having extramarital affairs", reads as a departure, and a text naming a
+  departure is never the second kind; the text gives no exchange ticker. Beside that sentence
+  "affairs" is plural, which `\baffair\b` misses; had it matched, the article would have read as
+  a `ceo` departure, a worse error.
+
+**In plain words:** the word rules miss both bars. They read 5 of the 12 test texts of a CEO
+leaving over conduct: half of the 10 that report the departure, 5 of the 9 that give the conduct.
+They misread 6 of 99 other departures. Of the 7 missed, 2 give the reason sentences after the
+departure, out of the rules' reach; 2 name it in words the lists lack; 1 gives no reason; 2 are
+not about the departure. And the one news article that matters, Nvidia's, is not read as what it
+is. By the spec, this is answered by a decisions entry before part 3; the roadmap's next try is a
+model on this machine, with its own test set.
 
 ## How you know it is right
 

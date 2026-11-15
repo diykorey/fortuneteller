@@ -757,6 +757,57 @@ def _triggers(_args: argparse.Namespace) -> int:
     return 0
 
 
+def _read_article(args: argparse.Namespace) -> int:
+    """A pasted text read into a kind (docs/steps/article-to-trigger.md): a trigger row the owner
+    could file, with the answers a trigger on its day would get; the second kind, not answered;
+    or not a measured kind. It files nothing."""
+    try:
+        text = Path(args.file).read_text()
+    except OSError as exc:
+        print(f"read-article: {exc}", file=sys.stderr)
+        return 1
+    reading = study.read_article(text)
+    if reading is None:
+        print("not a measured kind")
+        return 0
+    if reading.kind == study.CONDUCT_NO_DEPARTURE:
+        print(
+            "a CEO's conduct, no departure: not measured yet"
+            + (f" ({reading.ticker})" if reading.ticker else "")
+        )
+        return 0
+    con = db.get_connection()
+    db.init_db(con=con)
+    closes = {m: study.stored_closes(m, con=con) for m in study.MVP_PRICE_SERIES}
+    days = [c.day for c in closes[study.EXCESS_OVER]]
+    day = study.article_day(reading, days) or reading.day
+    print(f"trigger: ceo,{day or ''},scandal,{reading.ticker}")
+    if reading.day is None:
+        print("  no date in the text: fill the day")
+        return 0
+    if reading.at is None:
+        print("  time not given: check it")
+    if not reading.ticker:
+        print("  no ticker in the text: fill it to get the answer")
+        return 0
+    assert day is not None
+    trigger = study.Trigger(
+        "article", 1, "", flows.CEO_FLOW.cli_name, day, "scandal", reading.ticker
+    )
+    events = {trigger.flow: flows.stored_events(flows.CEO_FLOW, con=con)}
+    companies = _trigger_companies([trigger], events[trigger.flow], con)
+    at = datetime.combine(day, datetime.min.time(), tzinfo=sources.NEW_YORK)
+    lines = study.answer_triggers(
+        [trigger], lambda _: at, events, {trigger.flow: {}}, closes, [], companies
+    )[1]
+    head = lines[0].split(": ", 1)
+    if ", merged " not in lines[0]:
+        print(f"  {head[-1]}")
+    for line in lines[1:]:
+        print(line)
+    return 0
+
+
 def describe_grades(
     grades: dict[str, study.LinkGrade], expected_sign: dict[str, int], scope: str
 ) -> list[str]:
@@ -1943,6 +1994,13 @@ def build_parser() -> argparse.ArgumentParser:
         help="answer each trigger in data/triggers/ from the reaction close, and log and grade it",
     )
     p_triggers.set_defaults(func=_triggers)
+
+    p_article = sub.add_parser(
+        "read-article",
+        help="read a pasted text into a trigger row it reports, if a measured kind; files nothing",
+    )
+    p_article.add_argument("file", help="the text, as a file")
+    p_article.set_defaults(func=_read_article)
 
     p_raw = sub.add_parser(
         "raw-move", help="compare each instrument's moves on an event's days with ordinary days"

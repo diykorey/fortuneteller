@@ -30,12 +30,11 @@ graded on it (step 2b).
   run, is scheduled from Monday 2026-11-16 (PR #316): beside the laptop, its rows and evening
   files compared. A manual evening run on 2026-11-14 gave the laptop's `score.txt` byte for byte.
   The first release day to count: retail sales, Tuesday 2026-11-17.
-- **Step 20, part 2: a pasted article read into a trigger** ([the spec](steps/article-to-trigger.md)),
-  by rules, tested on part 1's dataset. It reads both kinds the owner chose: a departure for the
-  CEO's conduct, answered, and conduct with no departure (Nvidia), read but not answered until
-  part 1b measures it. Steps 1 and 2 done: the rules, written on the dev texts, read 9 of 12 dev
-  positives and none of 103 negatives, and are frozen. Next in it: step 3, the test texts fetched
-  and read once, the Nvidia article, and `read-article`.
+- **Step 20, part 2: a pasted article read into a trigger** ([the spec](steps/article-to-trigger.md)):
+  done, *doesn't read*. The frozen word rules read 5 of 12 test positives and misread 6 of 99
+  negatives; Nvidia's article read as *not a measured kind*. `read-article` exists, its answer not
+  to be trusted. Waiting for the owner: the decisions entry the spec asks for before part 3 (the
+  roadmap's next try is a model on this machine, with its own test set).
 - **Step 18, part 2, step 3: the first triggers graded** ([the spec](steps/trigger-file.md)). The
   first trigger, CPI of 2026-11-10, is void: merged after every reaction close, and its kind read
   from the headline instead of the core print. It waits for the next one.
