@@ -6,7 +6,7 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-11-15 | Step 20, part 2, step 3: the test texts read once, *doesn't read* (5 of 12 positives, 6 of 99 negatives misread); `read-article`; Nvidia read as not a measured kind | PR #TBD |
+| 2026-11-15 | Step 20, part 2, step 3: the test texts read once, *doesn't read* (5 of 12 positives, 6 of 99 negatives misread); `read-article`; Nvidia read as not a measured kind | PR #322 |
 | 2026-11-15 | Step 20, part 2, step 2: the rules for reading an article, written on the dev texts and frozen; dev 9 of 12 positives read, 0 of 103 negatives | PR #321 |
 | 2026-11-15 | Step 20, part 2, step 1: the dev and test sets listed; the dev texts fetched, from the page or the Wayback Machine, 12 of 13 positives with a text | PR #320 |
 | 2026-11-14 | Step 22, steps 1 to 4: the page asks about each kind of event, from the same cells follows prints | PR #317 |
