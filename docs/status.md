@@ -12,10 +12,10 @@ Where the work is and what comes next: the task last finished, the tasks in prog
 
 ## Last completed
 
-Step 20, part 1: a CEO's conduct in question, the company against the S&P 500
-([the spec](steps/ceo-scandals.md)). It falls on the day, 17 of 26, chance 0.004; from the
-reaction close *can't say*; nothing holds walk-forward. A `ceo` trigger names its company and is
-graded on it (step 2b).
+Step 20, part 2: a pasted article read into a trigger ([the spec](steps/article-to-trigger.md)).
+The word rules *don't read*: 5 of 12 test positives, 6 of 99 negatives misread. Step 20 is parked
+until the 2027-01-31 gate, by the owner
+([why](decisions.md#2026-11-15-step-20-parked-until-the-gate-by-the-owner)).
 
 ## In progress
 
@@ -33,11 +33,6 @@ graded on it (step 2b).
   run, is scheduled from Monday 2026-11-16 (PR #316): beside the laptop, its rows and evening
   files compared. A manual evening run on 2026-11-14 gave the laptop's `score.txt` byte for byte.
   The first release day to count: retail sales, Tuesday 2026-11-17.
-- **Step 20, part 2: a pasted article read into a trigger** ([the spec](steps/article-to-trigger.md)):
-  done, *doesn't read*. The frozen word rules read 5 of 12 test positives and misread 6 of 99
-  negatives; Nvidia's article read as *not a measured kind*. `read-article` exists, its answer not
-  to be trusted. Waiting for the owner: the decisions entry the spec asks for before part 3 (the
-  roadmap's next try is a model on this machine, with its own test set).
 - **Step 18, part 2, step 3: the first triggers graded** ([the spec](steps/trigger-file.md)). The
   first trigger, CPI of 2026-11-10, is void: merged after every reaction close, and its kind read
   from the headline instead of the core print. It waits for the next one.
@@ -49,8 +44,8 @@ graded on it (step 2b).
 
 ## Next
 
-Step 22's steps 1 to 4, in one build; then step 5 on the published page after the evening job.
-Step 21 and step 20, part 2, go on beside it
+Step 22's step 5, the ask section on the published page after the evening job; step 23's spec,
+the visitor counter and the weekly post. Step 21's shadow run goes on beside them
 ([roadmap phase 4](roadmap.md#phase-4-prove-the-loop-show-the-page-be-seen)).
 
 ## Known, not yet fixed
