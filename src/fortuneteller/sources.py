@@ -904,3 +904,37 @@ def parse_tradingview(payload: bytes, names: Iterable[str]) -> list[CalendarRow]
         ]
     except MALFORMED_REPLY as exc:
         raise CalendarError(f"TradingView sent an unexpected reply: {exc!r}") from None
+
+
+# Umami Cloud (docs/steps/be-seen.md): the scoreboard page's distinct visitors over a range.
+UMAMI_STATS_URL = "https://api.umami.is/v1/websites/{site}/stats"
+
+
+class UmamiError(RuntimeError):
+    pass
+
+
+def fetch_umami_visitors(
+    api_key: str, site: str, start: datetime, end: datetime, timeout: float = 30.0
+) -> int:
+    """Distinct visitors from ``start`` to ``end``, both aware, by Umami's stats."""
+    query = urllib.parse.urlencode(
+        {"startAt": int(start.timestamp() * 1000), "endAt": int(end.timestamp() * 1000)}
+    )
+    request = urllib.request.Request(
+        f"{UMAMI_STATS_URL.format(site=site)}?{query}",
+        headers={"x-umami-api-key": api_key, "Accept": "application/json"},
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=timeout) as response:
+            reply = json.loads(response.read())
+        visitors = reply["visitors"]
+        return int(visitors["value"] if isinstance(visitors, dict) else visitors)
+    except urllib.error.HTTPError as exc:
+        raise UmamiError(f"Umami returned HTTP {exc.code}") from None
+    except urllib.error.URLError as exc:
+        raise UmamiError(f"the Umami request failed: {exc.reason}") from None
+    except NETWORK_FAILURE as exc:
+        raise UmamiError(f"the Umami request failed: {exc}") from None
+    except MALFORMED_REPLY as exc:
+        raise UmamiError(f"Umami's reply cannot be read: {exc!r}") from None

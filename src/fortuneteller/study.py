@@ -2666,3 +2666,26 @@ def write_trigger_log(path: Path, rows: Sequence[Mapping[str, str]]) -> None:
         writer = csv.DictWriter(f, TRIGGER_LOG_COLUMNS, lineterminator="\n")
         writer.writeheader()
         writer.writerows(rows)
+
+
+# Step 23 (docs/steps/be-seen.md): a week runs Monday 00:00 to the next Monday 00:00 UTC.
+def last_full_week(now: datetime) -> tuple[datetime, datetime]:
+    """The last Monday-to-Sunday week in UTC that has ended by ``now``."""
+    today = now.astimezone(UTC).date()
+    monday = today - timedelta(days=today.weekday() + 7)
+    start = datetime.combine(monday, time(0, 0), tzinfo=UTC)
+    return start, start + timedelta(days=7)
+
+
+def week_visitors(
+    start: datetime, end: datetime, ask: Callable[[datetime, datetime], int]
+) -> tuple[int, bool]:
+    """A week's unique visitors, and whether it crosses a month's first. Umami re-salts each month,
+    so such a week is asked as its two parts and the larger kept: a returning visitor is never
+    counted twice. ``ask`` takes a range whose end is excluded."""
+    first = datetime.combine(
+        (end - timedelta(microseconds=1)).date().replace(day=1), time(0, 0), tzinfo=UTC
+    )
+    if start < first < end:
+        return max(ask(start, first), ask(first, end)), True
+    return ask(start, end), False
