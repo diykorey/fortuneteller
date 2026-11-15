@@ -531,3 +531,26 @@ def test_calls_to_step_down_or_a_refusal_to_resign_are_not_a_departure() -> None
 
     # then
     assert kinds == [study.CONDUCT_NO_DEPARTURE, study.CONDUCT_NO_DEPARTURE, "ceo"]
+
+
+def test_read_article_prints_the_second_kind_with_its_ticker_or_not_a_measured_kind(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    # given
+    stays = tmp_path / "stays.txt"
+    stays.write_text(
+        "Nvidia (Nasdaq: NVDA) said on Nov. 8, 2026 that its board will investigate the chief "
+        "executive's admitted affair; he remains in his role."
+    )
+    other = tmp_path / "other.txt"
+    other.write_text("The chief executive retired on June 2, 2015 after 30 years.")
+
+    # when
+    codes = [main(["read-article", str(stays)]), main(["read-article", str(other)])]
+
+    # then
+    assert codes == [0, 0]
+    assert capsys.readouterr().out.splitlines() == [
+        "a CEO's conduct, no departure: not measured yet (NVDA)",
+        "not a measured kind",
+    ]
