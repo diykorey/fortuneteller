@@ -33,8 +33,9 @@ graded on it (step 2b).
 - **Step 20, part 2: a pasted article read into a trigger** ([the spec](steps/article-to-trigger.md)),
   by rules, tested on part 1's dataset. It reads both kinds the owner chose: a departure for the
   CEO's conduct, answered, and conduct with no departure (Nvidia), read but not answered until
-  part 1b measures it. Step 1 done: the sets listed, the dev texts fetched (12 of 13 positives,
-  103 of 140 negatives with a text). Next in it: step 2, the rules on the dev set, then frozen.
+  part 1b measures it. Steps 1 and 2 done: the rules, written on the dev texts, read 9 of 12 dev
+  positives and none of 103 negatives, and are frozen. Next in it: step 3, the test texts fetched
+  and read once, the Nvidia article, and `read-article`.
 - **Step 18, part 2, step 3: the first triggers graded** ([the spec](steps/trigger-file.md)). The
   first trigger, CPI of 2026-11-10, is void: merged after every reaction close, and its kind read
   from the headline instead of the core print. It waits for the next one.

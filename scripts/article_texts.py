@@ -9,6 +9,7 @@ Usage:
   uv run --with openpyxl python -I scripts/article_texts.py sets DATASET.xlsx
   uv run python -I scripts/article_texts.py fetch dev|test TEXT_DIR
   uv run python -I scripts/article_texts.py count dev|test
+  uv run python -I scripts/article_texts.py read dev|test TEXT_DIR STORE
 """
 
 import csv
@@ -227,9 +228,82 @@ def count(split: str) -> None:
         print(f"{kind}\t{what}\t{n}")
 
 
+def read(split: str, text_dir: str, store: str) -> None:
+    """The rule's counts on a split (docs/steps/article-to-trigger.md): a positive is read only as
+    ceo; a negative read as either kind counts toward the 5% bar; the day on read positives with a
+    set day, right if it is that day or, for a time at or after 16:00, the next S&P 500 trading
+    day; the ticker right, empty or wrong against the set, each wrong one listed for the hand
+    check."""
+    from bisect import bisect_right
+    from datetime import date
+
+    import duckdb
+
+    from fortuneteller.study import article_day, read_article
+
+    with duckdb.connect(store, read_only=True) as con:
+        days = [
+            r[0]
+            for r in con.execute(
+                "select day from daily_bars where instrument = 'SPY / ES' order by day"
+            ).fetchall()
+        ]
+    texts = Path(text_dir)
+    with_text = {"ceo": 0, "none": 0}
+    read_as = {("ceo", "ceo"): 0, ("ceo", "conduct"): 0, ("none", "ceo"): 0, ("none", "conduct"): 0}
+    ticker = {"right": 0, "empty": 0, "wrong": 0}
+    day = {"right": 0, "wrong": 0}
+    for row in csv.DictReader(SET.open(newline="")):
+        path = texts / f"{row['dismissal_dataset_id']}.txt"
+        if row["split"] != split or not path.exists():
+            continue
+        kind = row["expected_kind"]
+        with_text[kind] += 1
+        reading = read_article(path.read_text())
+        if reading is not None:
+            read_as[(kind, reading.kind)] += 1
+        line = f"{row['dismissal_dataset_id']} {kind} read {reading.kind if reading else 'none'}"
+        if kind == "ceo" and reading is not None and reading.kind == "ceo":
+            what = (
+                "empty"
+                if not reading.ticker
+                else ("right" if reading.ticker == row["ticker"] else "wrong")
+            )
+            ticker[what] += 1
+            line += f" ticker {reading.ticker or '-'} ({what}, set {row['ticker']})"
+            filed = article_day(reading, days)
+            if row["day"]:
+                want = date.fromisoformat(row["day"])
+                late = reading.at is not None and reading.at.hour >= 16
+                after = days[bisect_right(days, want)] if late else want
+                verdict = "right" if filed in (want, after) else "wrong"
+                day[verdict] += 1
+                line += f" day {filed} ({verdict}, set {want})"
+            else:
+                line += f" day {filed} (no set day)"
+        if kind == "ceo" or reading is not None:
+            print(line)
+    positives, negatives = with_text["ceo"], with_text["none"]
+    misread = read_as[("none", "ceo")] + read_as[("none", "conduct")]
+    print(f"positives with a text: {positives}; read as ceo: {read_as[('ceo', 'ceo')]}", end="")
+    print(f"; read as the second kind: {read_as[('ceo', 'conduct')]}")
+    print(f"negatives with a text: {negatives}; read as either kind: {misread}", end="")
+    print(f" (ceo {read_as[('none', 'ceo')]}, the second kind {read_as[('none', 'conduct')]})")
+    print(f"ticker on positives read: {ticker}; day on those with a set day: {day}")
+    if positives < 10:
+        verdict = "too few texts"
+    elif read_as[("ceo", "ceo")] >= 0.75 * positives and misread <= 0.05 * negatives:
+        verdict = "reads"
+    else:
+        verdict = "doesn't read"
+    print(f"by the rule: {verdict}")
+
+
 if __name__ == "__main__":
     if sys.argv[1] == "sets":
         sets(sys.argv[2])
+    elif sys.argv[1] == "read" and sys.argv[2] in ("dev", "test"):
+        read(sys.argv[2], sys.argv[3], sys.argv[4])
     elif sys.argv[1] == "count" and sys.argv[2] in ("dev", "test"):
         count(sys.argv[2])
     elif sys.argv[1] == "fetch" and sys.argv[2] in ("dev", "test"):

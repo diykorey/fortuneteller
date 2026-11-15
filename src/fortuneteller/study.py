@@ -2402,6 +2402,169 @@ def answer_triggers(
     return rows, lines
 
 
+# Step 20, part 2 (docs/steps/article-to-trigger.md): a pasted text read into a kind, by rules
+# written on the dev set only. A departure is a word of leaving close to a chief executive; it is
+# the kind when a word of the CEO's own conduct is close to that departure. Conduct close to a
+# chief executive with no departure anywhere is the second kind, read and never answered.
+CONDUCT_NO_DEPARTURE = "conduct"
+_CHIEF = re.compile(
+    r"chief executive|\bCEO\b|\bC\.E\.O\b|\bchief exec\b|president and chief|chairman and chief",
+    re.I,
+)
+_LEAVES = re.compile(
+    r"\bresign|\bstep(?:s|ped|ping)? (?:down|aside)|\bterminat|\bfired\b|\bfires\b|\bousts?\b"
+    r"|\bousted\b|\bdismiss|\bforced out\b|\bpushed out\b|\bdeparture\b|\bdeparts?\b|\bdeparted\b"
+    r"|\bleaves?\b|\bleaving\b|\bleft the company\b|\bis out\b|\bout as\b|\blost (?:his|her) job\b"
+    r"|\bseparat(?:ed|ion) from\b|\breplac(?:ed|es|ing)\b|\bsucceed|\bquits?\b",
+    re.I,
+)
+_CONDUCT = re.compile(
+    r"personal conduct|personal behavio|code of (?:business )?conduct|code of ethics"
+    r"|\b(?:his|her) (?:own |personal )?conduct\b|allegations? (?:of|regarding|about) (?:his|her)"
+    r"|\bconsensual\b|\brelationship with (?:a|an) (?:female |male |former |junior )?"
+    r"(?:employee|executive|subordinate|colleague|woman|consultant|contractor)"
+    r"|improper relationship|personal relationship|romantic|\baffair\b|\bsexual|\bharassment\b"
+    r"|\bmisconduct\b|inappropriate|offensive conduct|zero.tolerance|\bdrunk|\bDUI\b"
+    r"|personal expenses|expense (?:report|account)s?|\bmisstat\w* (?:his|her) (?:academic|degree)"
+    r"|\b(?:academic|educational) (?:record|credentials|background)|(?:his|her) r[ée]sum[ée]\b"
+    r"|r\u00e9sum\u00e9|ethics and core values|\bbehavio(?:u)?rs?\b",
+    re.I,
+)
+_TICKER = re.compile(
+    r"\((?:NYSE|NASDAQ|Nasdaq|NasdaqGS|NasdaqGM|NYSE American|AMEX|NYSE MKT)\s*:\s*([A-Z]{1,5})"
+    r"(?:\.[A-Z])?\)|\b(?:NYSE|NASDAQ|Nasdaq)\s*:\s*([A-Z]{1,5})\b"
+)
+_MONTHS = {
+    m: i + 1
+    for i, ms in enumerate(
+        [
+            ("january", "jan"),
+            ("february", "feb"),
+            ("march", "mar"),
+            ("april", "apr"),
+            ("may",),
+            ("june", "jun"),
+            ("july", "jul"),
+            ("august", "aug"),
+            ("september", "sept", "sep"),
+            ("october", "oct"),
+            ("november", "nov"),
+            ("december", "dec"),
+        ]
+    )
+    for m in ms
+}
+_MONTH = "|".join(sorted(_MONTHS, key=len, reverse=True))
+_DATE = re.compile(
+    rf"\b(?:(?P<m1>{_MONTH})\.? (?P<d1>\d{{1,2}}),? (?P<y1>(?:19|20)\d\d)"
+    rf"|(?P<d2>\d{{1,2}}) (?P<m2>{_MONTH})\.?,? (?P<y2>(?:19|20)\d\d)"
+    r"|(?P<y3>(?:19|20)\d\d)-(?P<m3>\d\d)-(?P<d3>\d\d))\b",
+    re.I,
+)
+_CLOCK = re.compile(
+    r"\b(?P<h>\d{1,2}):(?P<m>\d\d)\s*(?P<ap>a\.?m\.?|p\.?m\.?)?\s*"
+    r"(?P<zone>E[SD]?T|Eastern|P[SD]?T|Pacific|C[SD]?T|Central|GMT|UTC)\b",
+    re.I,
+)
+_ZONES = {"e": "America/New_York", "p": "America/Los_Angeles", "c": "America/Chicago"}
+_HEDGE = re.compile(
+    r"\bcall(?:s|ed|ing)? (?:on \w+ )?for\b|\burg(?:e|es|ed|ing)\b|\bdemand|\bpressure\b"
+    r"|\brefus|\bdeclin|\bno plans? to\b|\bwhether\b|\bwill not\b|\bwon't\b|\bwould not\b"
+    r"|\bnot (?:going|planning) to\b|\bshould\b|\bmust\b",
+    re.I,
+)
+# How near, in characters, a departure's chief executive is, its conduct, and a hedge before it.
+_NEAR_HEDGE = 40
+_NEAR_CHIEF = 120
+_NEAR_CONDUCT = 300
+
+
+@dataclass(frozen=True)
+class Reading:
+    """What a text reports: ``ceo`` (a departure over the CEO's own conduct) or
+    ``CONDUCT_NO_DEPARTURE``; its own first date, the time beside it in New York if given, and a
+    ticker if the text gives one."""
+
+    kind: str
+    day: date | None
+    at: time | None
+    ticker: str
+
+
+def _near(text: str, pattern: re.Pattern[str], start: int, end: int, reach: int) -> bool:
+    return pattern.search(text, max(0, start - reach), end + reach) is not None
+
+
+def _departures(text: str) -> list[tuple[int, int]]:
+    """Each word of leaving near a chief executive, unless the words before it only ask for one
+    or refuse it ("called for him to step down", "has no plans to resign")."""
+    return [
+        (m.start(), m.end())
+        for m in _LEAVES.finditer(text)
+        if _near(text, _CHIEF, m.start(), m.end(), _NEAR_CHIEF)
+        and not _HEDGE.search(text, max(0, m.start() - _NEAR_HEDGE), m.start())
+    ]
+
+
+def _own_day(text: str) -> tuple[date | None, time | None]:
+    """The text's own day: the first date with a clock beside it (a release's or a story's stamp),
+    else the first date; with the clock, in New York."""
+    first: date | None = None
+    for m in _DATE.finditer(text):
+        g = m.groupdict()
+        try:
+            if g["y1"]:
+                day = date(int(g["y1"]), _MONTHS[g["m1"].lower()], int(g["d1"]))
+            elif g["y2"]:
+                day = date(int(g["y2"]), _MONTHS[g["m2"].lower()], int(g["d2"]))
+            else:
+                day = date(int(g["y3"]), int(g["m3"]), int(g["d3"]))
+        except ValueError:
+            continue
+        first = first or day
+        clock = _CLOCK.search(text, max(0, m.start() - 60), m.end() + 60)
+        if clock is None:
+            continue
+        hour, minute = int(clock["h"]) % 12 if clock["ap"] else int(clock["h"]), int(clock["m"])
+        if clock["ap"] and clock["ap"].lower().startswith("p"):
+            hour += 12
+        if hour > 23 or minute > 59:
+            continue
+        letter = clock["zone"][0].lower()
+        zone = ZoneInfo(_ZONES[letter]) if letter in _ZONES else UTC
+        seen = datetime.combine(day, time(hour, minute), tzinfo=zone).astimezone(NEW_YORK)
+        return seen.date(), seen.time()
+    return first, None
+
+
+def read_article(text: str) -> Reading | None:
+    """The kind a text reports, or None for *not a measured kind*
+    (docs/steps/article-to-trigger.md). The departure is read first: a text naming a CEO's
+    departure is never the second kind."""
+    departures = _departures(text)
+    if any(_near(text, _CONDUCT, s, e, _NEAR_CONDUCT) for s, e in departures):
+        kind = "ceo"
+    elif not departures and any(
+        _near(text, _CHIEF, m.start(), m.end(), _NEAR_CHIEF) for m in _CONDUCT.finditer(text)
+    ):
+        kind = CONDUCT_NO_DEPARTURE
+    else:
+        return None
+    ticker = _TICKER.search(text)
+    day, at = _own_day(text)
+    return Reading(kind, day, at, (ticker[1] or ticker[2]) if ticker else "")
+
+
+def article_day(reading: Reading, trading_days: Sequence[date]) -> date | None:
+    """The day a trigger from this reading is filed under: the first trading day on or after the
+    text's own day, or after it when the text's time is at or after the 16:00 close."""
+    if reading.day is None:
+        return None
+    after = reading.at is not None and reading.at >= STOCK.close
+    i = (bisect_right if after else bisect_left)(trading_days, reading.day)
+    return trading_days[i] if i < len(trading_days) else None
+
+
 def _ceo_trigger(
     t: Trigger,
     at: datetime,
