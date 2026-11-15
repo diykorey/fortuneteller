@@ -21,6 +21,7 @@ nothing: filing stays the owner's call
 ([trigger file](trigger-file.md)). Part 3, a feed, needs this to read correctly first.
 *Amended 2026-11-15:* a *doesn't read* or *too few texts* is answered by a decisions entry before
 part 3 starts; the roadmap's next try is a model on this machine, with its own test set.
+*Added 2026-11-15:* the owner parked step 20 until the gate ([decisions](../decisions.md#2026-11-15-step-20-parked-until-the-gate-by-the-owner)).
 
 ## The way to reach it
 
