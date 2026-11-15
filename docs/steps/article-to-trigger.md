@@ -15,9 +15,12 @@ it says *not a measured kind*.
 At the end, `fortuneteller read-article FILE` prints either
 `trigger: ceo,<day>,scandal,<ticker>` with the answers a trigger on that day would get (part 1's
 spans from the reaction close, from the events whose spans ended by then, as `triggers` answers
-them), `a CEO's conduct, no departure: not measured yet`, or `not a measured kind`. It files
+them), `a CEO's conduct, no departure: not measured yet` (*amended 2026-11-15:* followed by
+the ticker, if the text gives one, as `(NVDA)`), or `not a measured kind`. It files
 nothing: filing stays the owner's call
 ([trigger file](trigger-file.md)). Part 3, a feed, needs this to read correctly first.
+*Amended 2026-11-15:* a *doesn't read* or *too few texts* is answered by a decisions entry before
+part 3 starts; the roadmap's next try is a model on this machine, with its own test set.
 
 ## The way to reach it
 
@@ -28,6 +31,10 @@ nothing: filing stays the owner's call
   Every row, positive or negative, is read from the same place: the first address in the
   dataset's `sources` column, else in its `eight_ks` column, the departure as the dataset found
   it. Its expected day is the row's `date_departure_announced`.
+  - *Amended 2026-11-15:* that first address does not always report the departure (a page on
+    the CEO's death years later, a proxy statement, a profile page). Such a positive lowers the
+    reading for a reason the rules do not cause; the rule stands, and the results name each test
+    positive missed and whether its text reports the departure at all.
   - *Amended 2026-11-15, in step 1, before any text is fetched:* an address that is a library's
     login (`login?url=`, `idm.oclc.org`, `ezproxy`, `lp.hscl.`) cannot be fetched by anyone
     outside that library, so a row is read from its first address that is not one, else that
@@ -68,16 +75,21 @@ nothing: filing stays the owner's call
   releases, not the news an owner pastes. What this measures holds for that genre only; the
   results say so, and the one news text checked is the 2026-11-08 Nvidia article.
   - *Amended 2026-11-15, in step 1, by the addresses alone, before any rule:* the sources are
-    mostly news. Of the 305 addresses, by their hosts, 38 are filings (EDGAR or a mirror of it),
+    mostly news. Of the 305 addresses, by their hosts (filings: `sec.gov`, `sec.report`; press
+    releases: `businesswire`, `prnewswire`, `globenewswire`, a host starting `ir.` or holding
+    `investor`, `newsroom` or `press`; reference: `wikipedia`, `fundinguniverse`, `macroaxis`,
+    profile pages), 38 are filings (EDGAR or a mirror of it),
     29 press releases or investor pages, 7 reference pages (an encyclopedia, a company history)
-    and 231 news or other pages. So the measure is nearer the news an owner pastes than feared,
+    and 231 others, nearly all news sites. So the measure is nearer the news an owner pastes than feared,
     though most of the news is about the departure on its day, and some pages are written later.
 - **The ticker comes from the text:** `(NYSE: BA)`, `(Nasdaq: NVDA)`, `NYSE:BA`. There is no
   table from names to tickers. A text with none prints an empty ticker, and the owner fills it.
 - **The day** is the first date the text gives as its own (a dateline, an 8-K's date of report).
-  Word out at or after 16:00 New York is filed under the next trading day
-  ([trigger file](trigger-file.md)); when the text gives a time, the printed day follows that
-  rule, and when it gives none, the line says *time not given: check it*.
+  Word out at or after 16:00 New York is filed under the next trading day; *amended
+  2026-11-15:* that is part 1's rule ([CEO scandals](ceo-scandals.md), `first_reaction_day`), and
+  a trading day is one with an S&P 500 close in the store, so a weekend or holiday dateline also
+  moves to the next. When the text gives a time, the printed day follows that rule, and when it
+  gives none, the line says *time not given: check it*.
 - **Two kinds, one measured.** *Amended 2026-11-14, by the owner:* both a departure for the CEO's
   conduct (`ceo`, measured in part 1) and the CEO's conduct coming out with no departure are kinds
   ([decisions](../decisions.md#2026-11-14-a-ceos-conduct-without-a-departure-is-a-kind-too-by-the-owner)).
@@ -96,10 +108,14 @@ nothing: filing stays the owner's call
   departure must not). Every dataset text is a departure, so a second-kind reading on one is a
   departure the rules missed: on a positive it is not *read*, on a negative it is not counted
   toward the 5% bar but reported beside it. Its bars come with part 1b's history.
+  - *Amended 2026-11-15, before any rule is written:* so that doubtful texts cannot be sent to the
+    second kind to pass, a negative read as either kind counts toward the 5% bar.
 - **The ticker and the day** are reported on the positives read, not barred: a ticker right, empty
   or wrong; a day right or not (on the positives with one, *amended 2026-11-15*), right being `date_departure_announced`, or the trading day after it
-  (the NYSE calendar) when the text gives a time at or after 16:00 New York. A wrong ticker on any positive is
-  said plainly: it would file a trigger on the wrong company.
+  (a day with an S&P 500 close) when the text gives a time at or after 16:00 New York. A wrong ticker on any positive is
+  said plainly: it would file a trigger on the wrong company. *Amended 2026-11-15:* a ticker is
+  right when it is the set's or the one the company traded under on the text's day (Priceline's
+  `PCLN`, now `BKNG`), checked by hand against the company's filings and said so.
 - Nothing is tuned after the test set is read. A changed rule needs a new test set, and none is
   left in the dataset: it would be news texts the owner labels before they are read, with a dated
   amendment.
@@ -109,7 +125,7 @@ nothing: filing stays the owner's call
     say so ("violated the code of conduct", "a consensual relationship"). The negatives miss the
     5% bar, about 8%: the company-fraud departures are worded in the same legal terms.
   - The ticker empty in about a third of the positives read, and never wrong; the day right on
-    most.
+    most (*amended 2026-11-15:* about 6 of the 8 test positives with a day, if all are read).
   - *Amended 2026-11-14, before anything is fetched:* the 2026-11-08 Nvidia article: *a CEO's conduct, no departure: not measured yet*, ticker
     `NVDA`.
   - The second kind fires on none of the positives, which all name a departure, and on a few
@@ -121,16 +137,21 @@ nothing: filing stays the owner's call
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~The sets: every row listed in `docs/steps/article-to-trigger-set.csv` (id, address, split, expected kind, ticker where part 1 has one, day); the dev texts fetched and counted out by reason; the test texts not fetched | Every row the sets above name is listed; each fetch is a row in the committed `docs/steps/article-to-trigger-fetch.csv` (address, UTC time, words, reason if counted out); no text is committed~~ **done** 2026-11-15, [below](#results) |
-| 2 | The rules on the dev set, and their dev counts written here; then frozen by a commit whose hash is written here | Tests: a conduct departure reads; conduct with no departure reads as the second kind; a fraud departure and a retirement do not; `(NYSE: BA)` gives `BA`; an after-close time moves the day. The dev counts (the kind on the dev positives and negatives, the second kind's count, the ticker and day counts) are recorded before the hash |
+| 2 | The rules on the dev set, and their dev counts written here; then frozen by a commit whose hash is written here (*amended 2026-11-15:* frozen means `read_article` and every function it calls; step 3 may add the command around it, and `git diff HASH -- ` of those functions is empty at step 3's results. The tests check the rules work as written; the dev counts are the measure) | Tests: a conduct departure reads; conduct with no departure reads as the second kind; a fraud departure and a retirement do not; `(NYSE: BA)` gives `BA`; an after-close time moves the day. The dev counts (the kind on the dev positives and negatives, the second kind's count, the ticker and day counts) are recorded before the hash |
 | 3 | The test texts fetched and read once; the Nvidia article read; `read-article` | Results here: the kind against both bars, the ticker and day counts, the second kind's count, and Nvidia's line |
 
 ## Results
 
 **Step 1, 2026-11-15.** `scripts/article_texts.py sets` lists the 305 rows, 13 positives and 140
 negatives in the dev set, 13 and 139 in the test set; run again, it rewrites the file unchanged.
-`scripts/article_texts.py fetch dev` fetched the dev texts in four passes (the first by the old
-method, the rest resuming the archive's refusals), and only dev addresses are in the log. By each
-row's last answer in the log:
+`scripts/article_texts.py fetch dev` fetched the dev texts in five passes, each in the log by
+its time and `via` (`generic`: the contact `User-Agent` for every site; `browser`: a news site
+asked as a browser; `archive`: the Wayback Machine; `none`: a library login, not asked). Pass 1
+(08:45 UTC) was the first method; passes 2 (08:56) and 3 (09:09), over all 153 rows, were the
+committed script before it resumed, and met the archive's 429; passes 4 (13:23, 29 rows) and 5
+(16:13, 19 rows) resumed them, the last with the archive asked by the contact name. The test set
+will be fetched by the committed script in full, then resumed. By each row's last answer, as
+`scripts/article_texts.py count dev` prints it:
 
 | Dev rows | With a text | Counted out |
 | --- | --- | --- |
@@ -138,6 +159,8 @@ row's last answer in the log:
 | 140 negatives | 103 (69 from the page, 34 from the archive) | 37: 33 no capture, 2 under 100 words, 1 refused by the archive (HTTP 403), 1 a library login with no other address |
 
 The texts are in `data/cache/articles/dev/`, not committed. The test texts are not fetched.
+Row 3398 had a text in passes 1 and 2 and an HTTP 503 in pass 3, its last answer, so it is counted
+out; the 34 rows with no capture were asked again by the contact name and still have none.
 
 ## How you know it is right
 
@@ -149,7 +172,8 @@ The texts are in `data/cache/articles/dev/`, not committed. The test texts are n
 - A text about an inquiry into the company in which its CEO stays, and nothing ties the CEO's own
   conduct to it, is neither kind.
 - A press release stamped 16:05 New York prints the next trading day.
-- `read-article` on an article dated before an event in the history answers without that event.
+- `read-article` on an article dated before an event in the history answers without that event,
+  and (*added 2026-11-15*) without an earlier event whose span had not ended by the article's day.
 
 ## What this part does not do
 

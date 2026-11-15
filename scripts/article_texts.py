@@ -3,11 +3,12 @@
 `sets` lists every row of docs/steps/article-to-trigger-set.csv from part 1's dataset and coding;
 `fetch SPLIT` fetches that split's texts into a directory and appends each fetch to
 docs/steps/article-to-trigger-fetch.csv. Only `fetch test` reads a test address, and only after the
-rules are frozen.
+rules are frozen. `count SPLIT` prints each row's last answer in the log, by expected kind.
 
 Usage:
   uv run --with openpyxl python -I scripts/article_texts.py sets DATASET.xlsx
   uv run python -I scripts/article_texts.py fetch dev|test TEXT_DIR
+  uv run python -I scripts/article_texts.py count dev|test
 """
 
 import csv
@@ -204,9 +205,33 @@ def fetch(split: str, text_dir: str) -> None:
             print(row_id, words, reason or "text", flush=True)
 
 
+def count(split: str) -> None:
+    """Each row's last answer in the log, by expected kind: a text (from the page or the archive)
+    or the reason it is counted out."""
+    kinds = {r["dismissal_dataset_id"]: r for r in csv.DictReader(SET.open(newline=""))}
+    last = {r["dismissal_dataset_id"]: r for r in csv.DictReader(LOG.open(newline=""))}
+    tally: dict[tuple[str, str], int] = {}
+    for row_id, row in kinds.items():
+        if row["split"] != split:
+            continue
+        answer = last.get(row_id)
+        if answer is None:
+            what = "not fetched"
+        elif answer["reason"]:
+            what = answer["reason"].split(" (")[0]
+        else:
+            what = "text, " + ("page" if answer["via"] == "browser" else "archive")
+        key = (row["expected_kind"], what)
+        tally[key] = tally.get(key, 0) + 1
+    for (kind, what), n in sorted(tally.items()):
+        print(f"{kind}\t{what}\t{n}")
+
+
 if __name__ == "__main__":
     if sys.argv[1] == "sets":
         sets(sys.argv[2])
+    elif sys.argv[1] == "count" and sys.argv[2] in ("dev", "test"):
+        count(sys.argv[2])
     elif sys.argv[1] == "fetch" and sys.argv[2] in ("dev", "test"):
         fetch(sys.argv[2], sys.argv[3])
     else:
