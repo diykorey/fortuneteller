@@ -6,6 +6,7 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-15 | Step 20, part 2, step 1: the dev and test sets listed; the dev texts fetched, from the page or the Wayback Machine, 12 of 13 positives with a text | PR #320 |
 | 2026-11-14 | Step 22, steps 1 to 4: the page asks about each kind of event, from the same cells follows prints | PR #317 |
 | 2026-11-14 | Step 21, step 2 begun: the shadow workflow on GitHub's schedule, the store seeded encrypted from the laptop | PR #316 |
 | 2026-11-14 | Spec: step 22, ask the fortune teller | PR #315 |
