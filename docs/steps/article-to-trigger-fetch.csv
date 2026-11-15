@@ -1,0 +1,713 @@
+dismissal_dataset_id,address,fetched_at,via,words,reason
+162,https://www.washingtonpost.com/archive/business/2005/03/15/aig-chief-greenberg-retires-in-shake-up/a012a34b-a61f-4209-b91b-636e20d0aeb1/,2026-11-15T08:45:23Z,generic,0,fetch failed (TimeoutError)
+318,https://sec.report/Document/0000950103-02-000801/?__cf_chl_jschl_tk__=32229d06819567b9ef676bb4bb3f308d5b64313e-1592086953-0-AQxfhNOGJZ7hNY1w-930qm47sGzT_NQFKiLOn--glPFUOsSI8_byXdafHTLBdN3TdcXmXoKPGUwlp7IpTz-jW-ccC8m0HAo7-Da6RKtzV0aESLeUjS4eyz9DMLbRUSoT-29_XmtKTz8C51PunbxgBOjDaf5qq3PKKwmqd9ceL5QEln6L3LcKPhpyKiVWnjymC4jfI85ISu3PBz7Mwk9gXbX3AYY8jWrwRNFzqLhTtMK9SxotSK7c8cyNEr3nBc1TW3z1n4Op-y7pOk8ula9GRhpVESMphoOP4NIPlvTB6-cWxlzl5ZD_n1O4XkF0pSj4wOIZqkc_40EF0AIScJrbX9_VB9BkR4Y0WUf7kEWpUXPv7bEcz-GSm01QNT4n0vfHNQ,2026-11-15T08:45:54Z,generic,0,fetch failed (URLError)
+341,https://www.ball.com/newswire/article/124103/ball-corporation-board-elects-fisher-as-ceo-hayes-to-remain-chairman,2026-11-15T08:45:56Z,generic,0,HTTP 403
+443,https://www.wsj.com/articles/SB10001424052702303815404577335551794808074,2026-11-15T08:45:57Z,generic,0,HTTP 401
+498,https://money.cnn.com/2005/03/07/news/fortune500/boeing_ceo/,2026-11-15T08:45:59Z,generic,0,HTTP 503
+536,https://money.cnn.com/2006/09/12/news/companies/bristol/index.htm,2026-11-15T08:46:00Z,generic,0,HTTP 503
+702,https://www.sec.gov/Archives/edgar/data/278166/000027816618000063/a2018929-exhibit101.htm,2026-11-15T08:46:01Z,generic,0,HTTP 503
+780,https://www.sec.gov/Archives/edgar/data/313927/000119312505057673/dpre14a.htm,2026-11-15T08:46:03Z,generic,19994,
+912,https://www.computerworld.com/article/2565088/update--ca-s-sanjay-kumar-stepping-down-as-ceo.html,2026-11-15T08:46:04Z,generic,1044,
+919,https://en.wikipedia.org/wiki/DXC_Technology,2026-11-15T08:46:07Z,generic,2105,
+948,http://www.fundinguniverse.com/company-histories/consolidated-papers-inc-history/,2026-11-15T08:46:09Z,generic,3423,
+957,https://www.power-eng.com/news/cms-energys-ceo-quits-board-creates-committee-to-investigate-round-trip-trading/#gref,2026-11-15T08:46:12Z,generic,0,HTTP 403
+1041,https://www.toledoblade.com/local/2008/11/04/Dana-CEO-to-leave-post-was-on-job-for-6-months/stories/200811040049,2026-11-15T08:46:13Z,generic,388,
+1053,https://www.sec.gov/Archives/edgar/data/27096/000092189507002572/dfan14a06297040_11082007.htm,2026-11-15T08:46:16Z,generic,3280,
+1062,https://www.law360.com/articles/25153/ex-dpl-execs-settle-payout-suit-for-25m,2026-11-15T08:46:19Z,generic,1076,
+1087,https://www.chicagotribune.com/business/ct-devry-ceo-0525-biz-20160524-story.html,2026-11-15T08:46:21Z,generic,1377,
+1361,https://www.sec.gov/Archives/edgar/data/794367/000079436703000061/fds8k041603.htm,2026-11-15T08:46:24Z,generic,695,
+1431,https://www.tampabay.com/archive/1997/11/10/florida-progress-then-and-now/,2026-11-15T08:46:25Z,generic,288,
+1556,https://www.hollandsentinel.com/news/20180228/zeelands-gentex-corporation-appoints-leadership-team,2026-11-15T08:46:31Z,generic,0,HTTP 402
+1622,http://www.vermontguides.com/nbmerge/nb97.htm,2026-11-15T08:46:32Z,generic,0,fetch failed (URLError)
+1777,https://www.sec.gov/Archives/edgar/data/48898/000095012304003303/y93651def14a.htm,2026-11-15T08:47:04Z,generic,13919,
+1869,https://exechange.com/19219/interface-ceo-jay-gould-leaves,2026-11-15T08:47:05Z,generic,510,
+1875,https://webcache.googleusercontent.com/search?q=cache:cuGXQwGgvu4J:https://www.bizjournals.com/atlanta/stories/1997/09/15/focus2.html+&cd=6&hl=en&ct=clnk&gl=ph,2026-11-15T08:47:08Z,generic,13,under 100 words
+1878,https://www.sec.gov/Archives/edgar/data/51124/000005112400000012/0000051124-00-000012.txt,2026-11-15T08:47:10Z,generic,1255,
+1881,https://www.footnoted.com/revisiting-ibms-palmisano-equation/,2026-11-15T08:47:11Z,generic,0,HTTP 403
+1888,https://ir.iff.com/news-releases/news-release-details/iff-appoints-frank-clyburn-chief-executive-officer-and-board,2026-11-15T08:47:13Z,generic,0,HTTP 403
+1891,https://www.ttnews.com/articles/former-navistar-ceo-daniel-ustian-sec-ready-discuss-settlement,2026-11-15T08:47:14Z,generic,928,
+1911,https://www.eetimes.com/document.asp?doc_id=1252932,2026-11-15T08:47:16Z,generic,0,HTTP 403
+1997,http://ir.kla-tencor.com/news-releases/news-release-details/kla-tencor-appoints-rick-wallace-chief-executive-officer-john,2026-11-15T08:47:17Z,generic,0,HTTP 404
+2001,https://www.crainsdetroit.com/article/20100225/FREE/100229913/former-kmart-ceo-charles-conaway-ordered-to-pay-millions,2026-11-15T08:47:19Z,generic,0,HTTP 403
+2103,https://www.wsj.com/articles/lam-research-ceo-resigns-amid-misconduct-investigation-1544049396,2026-11-15T08:47:20Z,generic,0,HTTP 401
+2220,https://www.mts.com/en/about/news/mtsnews/DEV_003657,2026-11-15T08:47:22Z,generic,1452,
+2242,https://www.nasdaq.com/article/host-hotels-president-ceo-w-edward-walter-to-step-down-cm721982,2026-11-15T08:47:26Z,generic,0,fetch failed (TimeoutError)
+2271,https://www.wsj.com/articles/mattel-ceo-margo-georgiadis-in-talks-to-leave-the-company-1524166521,2026-11-15T08:47:57Z,generic,0,HTTP 401
+2327,https://sec.report/Document/0000898430-01-000920/,2026-11-15T08:47:58Z,generic,0,fetch failed (URLError)
+2353,https://www.investmentnews.com/taking-sidessome-good-news-amid-all-the-bad-5565,2026-11-15T08:48:00Z,generic,0,HTTP 404
+2434,https://www.wsj.com/articles/SB877533714204931000,2026-11-15T08:48:01Z,generic,0,HTTP 401
+2483,https://www.nj.com/business/2008/06/plea_deal_ends_nui_probe.html,2026-11-15T08:48:02Z,generic,0,HTTP 403
+2494,https://progressivegrocer.com/nash-finch-ceo-marshall-leave-06,2026-11-15T08:48:03Z,generic,0,HTTP 403
+2585,https://www.sec.gov/Archives/edgar/data/320187/000032018716000339/nke-2016xdef14a.htm,2026-11-15T08:48:05Z,generic,29240,
+2643,https://billingsgazette.com/business/even-with-bankruptcy-northwestern-pays-millions-to-current-and-former/article_f05250d3-76e6-5a8b-968a-bff8eb3c1f22.html,2026-11-15T08:48:07Z,generic,0,HTTP 403
+2651,https://www.nytimes.com/2016/10/13/business/dealbook/wells-fargo-ceo.html,2026-11-15T08:48:08Z,generic,1637,
+2691,https://exechange.com/20309/firstenergy-ceo-chuck-jones-leaves,2026-11-15T08:48:11Z,generic,510,
+2747,https://pubs.acs.org/doi/10.1021/cen-v071n030.p006a,2026-11-15T08:48:15Z,generic,0,HTTP 403
+2838,https://webcache.googleusercontent.com/search?q=cache:UxviCW5boq8J:https://www.chicagotribune.com/news/ct-xpm-2006-02-25-0602250176-story.html+&cd=2&hl=en&ct=clnk&gl=ph,2026-11-15T08:48:16Z,generic,13,under 100 words
+2853,https://www.bizjournals.com/denver/news/2011/06/11/new-ceo-chairman-named-at-pdc-energy.html,2026-11-15T08:48:18Z,generic,0,HTTP 403
+2978,https://www.nasa.gov/offices/nac/members/montoya-bio.html,2026-11-15T08:48:19Z,generic,0,HTTP 404
+3032,https://www.northeastern.edu/voices/picard/bio.html,2026-11-15T08:48:21Z,generic,0,HTTP 404
+3058,https://www.bizjournals.com/dayton/stories/2004/08/02/daily4.html,2026-11-15T08:48:23Z,generic,0,HTTP 403
+3138,https://www.huffingtonpost.ca/2016/03/21/j-michael-pearson-valeant_n_9515494.html,2026-11-15T08:48:25Z,generic,0,HTTP 404
+3179,https://www.washingtonpost.com/archive/business/2002/11/14/ceo-leaving-drug-company/5302e0d6-1c3d-457e-9b21-93440a1cef4c/,2026-11-15T08:48:26Z,generic,0,fetch failed (TimeoutError)
+3185,https://www.crainscleveland.com/article/20071116/FREE/71116017/ceo-haines-to-exit-a-schulman,2026-11-15T08:48:57Z,generic,0,HTTP 403
+3210,https://www.chron.com/business/article/Ex-Seitel-CEO-gets-63-months-in-prison-1931979.php,2026-11-15T08:48:59Z,generic,1402,
+3398,https://www.sec.gov/Archives/edgar/data/723610/0000723610-98-000005.txt,2026-11-15T08:49:03Z,generic,18587,
+3454,https://www.chicagotribune.com/news/ct-xpm-2004-07-04-0407030278-story.html,2026-11-15T08:49:05Z,generic,1924,
+3456,https://www.crn.com/news/channel-programs/18826107/symbol-ceo-bravman-steps-down.htm,2026-11-15T08:49:08Z,generic,0,HTTP 404
+3531,https://www.chicagotribune.com/news/ct-xpm-2003-11-06-0311060394-story.html,2026-11-15T08:49:09Z,generic,1755,
+3668,https://www.latimes.com/business/la-fi-united-severance-20160503-snap-story.html,2026-11-15T08:49:12Z,generic,1293,
+3712,https://www.chicagotribune.com/news/ct-xpm-2006-10-16-0610160148-story.html,2026-11-15T08:49:14Z,generic,1614,
+3982,http://www.fundinguniverse.com/company-histories/foot-locker-inc-history/,2026-11-15T08:49:16Z,generic,5359,
+4377,https://www.thestreet.com/technology/three-top-comverse-tech-execs-resign-10282664,2026-11-15T08:49:24Z,generic,0,HTTP 403
+4378,https://seekingalpha.com/article/38178-have-we-seen-the-worst-of-comverse-technology,2026-11-15T08:49:25Z,generic,0,HTTP 403
+4475,http://securities.stanford.edu/filings-documents/1030/OI04-01/200417_f01c_0410027.pdf,2026-11-15T08:49:27Z,generic,211,
+4492,https://www.wirelessdesignonline.com/doc/microwave-power-devices-names-new-chairman-of-0001,2026-11-15T08:49:30Z,generic,0,HTTP 404
+4610,https://www.massdevice.com/dentsply-sirona-taps-bd-executive-ceo/,2026-11-15T08:49:31Z,generic,0,HTTP 403
+4750,https://webcache.googleusercontent.com/search?q=cache:dlBGal326scJ:https://www.bizjournals.com/pittsburgh/stories/1999/08/30/story4.html+&cd=1&hl=en&ct=clnk&gl=ph,2026-11-15T08:49:33Z,generic,13,under 100 words
+4795,https://www.globenewswire.com/news-release/2015/07/20/753387/10142206/en/Mercer-International-Inc-Announces-Leadership-Transition.html,2026-11-15T08:49:34Z,generic,0,HTTP 403
+4824,https://www.rttnews.com/1331009/presidential-life-s-former-ceo-herbert-kurz-resigns-as-director-update.aspx,2026-11-15T08:49:35Z,generic,1341,
+4856,https://www.businesswire.com/news/home/20041115005448/en/Merisel-Announces-Resignation-President-Chief-Executive-Officer,2026-11-15T08:49:38Z,generic,0,HTTP 403
+4940,https://www.sec.gov/Archives/edgar/data/846909/000102140801506720/ddef14a.txt,2026-11-15T08:49:39Z,generic,15802,
+4957,https://kundoc.com/pdf-enhanced-distributorship-deal-agreed-.html,2026-11-15T08:49:40Z,generic,0,fetch failed (URLError)
+5013,http://www.fundinguniverse.com/company-histories/lechters-inc-history/,2026-11-15T08:49:42Z,generic,3043,
+5038,https://www.eetimes.com/document.asp?doc_id=1155699,2026-11-15T08:49:44Z,generic,0,HTTP 403
+5063,https://apnews.com/c6cd3178b292535f94e12764cc8d1b63,2026-11-15T08:49:45Z,generic,0,HTTP 403
+5079,https://www.nytimes.com/2007/07/31/nyregion/31hill.html,2026-11-15T08:49:47Z,generic,1762,
+5082,https://www.sec.gov/litigation/litreleases/2008/lr20721.htm,2026-11-15T08:49:49Z,generic,968,
+5083,https://www.businesswire.com/news/home/20090928006072/en/BanCorp-Announces-Senior-Management-Board-Directors,2026-11-15T08:49:51Z,generic,0,HTTP 403
+5210,https://www.reuters.com/article/us-brixmor-cfo/brixmor-property-group-names-angela-aman-cfo-idUSKCN0XO2RA,2026-11-15T08:49:52Z,generic,0,HTTP 401
+5287,https://www.baltimoresun.com/news/bs-xpm-1999-04-06-9904060153-story.html,2026-11-15T08:49:54Z,generic,1121,
+5449,https://www.americanbanker.com/slideshow/women-to-watch-2013,2026-11-15T08:49:56Z,generic,862,
+5475,https://www.businesswire.com/news/home/20220615005803/en/Patrick-Beharelle-Resigns-as-TrueBlue-CEO,2026-11-15T08:49:59Z,generic,0,HTTP 403
+5586,https://www.businesswire.com/news/home/20140627005323/en/Biolase-Director-Federico-Pignatelli-Initiates-Process-Obtain,2026-11-15T08:50:00Z,generic,0,HTTP 403
+5632,https://sec.report/Document/0000912057-97-029527/,2026-11-15T08:50:01Z,generic,0,fetch failed (URLError)
+5877,https://www.tampabay.com/archive/1994/03/10/checkers-founder-resigns-as-ceo/,2026-11-15T08:50:03Z,generic,288,
+5884,https://www.sj-r.com/article/20101006/NEWS/310069923,2026-11-15T08:50:13Z,generic,0,HTTP 402
+5911,http://www.fundinguniverse.com/company-histories/the-hockey-company-history/,2026-11-15T08:50:14Z,generic,2630,
+6197,https://www.bizjournals.com/sanjose/news/2011/07/12/mcafee-names-michael-decesare-todd.html,2026-11-15T08:50:22Z,generic,0,HTTP 403
+6201,https://www.nytimes.com/1998/02/04/business/chief-of-gtech-quits-in-wake-of-libel-case.html,2026-11-15T08:50:23Z,generic,1126,
+6245,http://blog.al.com/businessnews/2009/03/booksamillion_chief_cochran_de.html,2026-11-15T08:50:25Z,generic,0,HTTP 403
+6278,https://www.reuters.com/article/blackbox-ceo-idUSWNAS690920071018,2026-11-15T08:50:27Z,generic,0,HTTP 401
+6290,https://www.crainsdetroit.com/article/20080822/REG/60405905/former-hayes-lemmerz-executive-found-liable-in-accounting-fraud,2026-11-15T08:50:28Z,generic,0,HTTP 403
+6340,https://www.entrepreneur.com/author/bruce-cazenave,2026-11-15T08:50:29Z,generic,1189,
+6350,https://www.bizjournals.com/pittsburgh/news/2013/01/29/chesapeakes-mcclendon-to-retire-april-1.html,2026-11-15T08:50:31Z,generic,0,HTTP 403
+6426,http://www.siliconbeat.com/2008/05/02/applied-signal-co-founder-steps-down-as-chairman-and-ceo/,2026-11-15T08:50:33Z,generic,0,fetch failed (URLError)
+6430,https://www.sec.gov/Archives/edgar/data/745732/000091205702013818/a2075841zpre14a.htm,2026-11-15T08:50:34Z,generic,11860,
+6483,https://www.bizjournals.com/twincities/stories/2001/03/26/story5.html,2026-11-15T08:50:36Z,generic,0,HTTP 403
+6554,https://www.ogj.com/general-interest/article/17243831/stone-energy-responds-to-reserves-review,2026-11-15T08:50:37Z,generic,618,
+6584,https://www.businesswire.com/news/home/20050328005748/en/Equity-Residential-Announces-January-2006-Retirement-CEO,2026-11-15T08:50:39Z,generic,0,HTTP 403
+6588,https://www.autonews.com/article/20121115/OEM02/121119933/borgwarner-picks-verrier-to-succeed-manganello-as-ceo,2026-11-15T08:50:40Z,generic,0,HTTP 403
+6682,https://www.europeanceo.com/lifestyle/glen-senk-leaves-urban-outfitters/,2026-11-15T08:50:41Z,generic,816,
+6830,https://www.bizjournals.com/denver/stories/2010/04/12/daily3.html,2026-11-15T08:50:43Z,generic,0,HTTP 403
+6879,https://www.google.com/search?safe=active&rlz=1C1CHBF_enUS819US819&tbs=cdr:1,2026-11-15T08:50:44Z,generic,6,under 100 words
+6885,https://www.prnewswire.com/news-releases/robert-b-goergen-jr-named-as-blyth-incs-new-ceo-232328371.html,2026-11-15T08:50:46Z,generic,1848,
+6887,https://www.prnewswire.com/news-releases/ameris-bancorp-announces-ceo-succession-300661242.html,2026-11-15T08:50:48Z,generic,1418,
+6969,https://www.google.com/search?safe=active&rlz=1C1CHBF_enUS819US819&tbs=cdr:1,2026-11-15T08:50:49Z,generic,6,under 100 words
+7032,http://www.mondovisione.com/media-and-resources/news/sec-charges-former-chairman-and-ceo-of-brooks-automation-in-stock-option-fraud/,2026-11-15T08:50:51Z,generic,0,HTTP 404
+7167,https://sec.report/Document/0000931148-99-000023/,2026-11-15T08:50:52Z,generic,0,fetch failed (URLError)
+7344,https://www.nytimes.com/2005/03/30/business/2-former-top-executives-at-impath-are-indicted.html,2026-11-15T08:50:54Z,generic,677,
+7394,https://seekingalpha.com/article/18612-options-scandal-sweeps-out-ceo-cfo-at-sapient,2026-11-15T08:50:56Z,generic,0,HTTP 403
+7468,https://www.naura-akrion.com/peter-kirlin-former-ceo-of-dupont-photomasks-joins-akrions-board-of-directors/,2026-11-15T08:50:58Z,generic,0,fetch failed (URLError)
+7657,http://www.tributes.com/obituary/print/84629050,2026-11-15T08:51:30Z,generic,0,HTTP 410
+7747,https://www.eetimes.com/author.asp?section_id=36&doc_id=1333485,2026-11-15T08:51:31Z,generic,0,HTTP 403
+7763,https://www.theinquirer.net/inquirer/news/1010849/health-outsourcer-fires-ceo-over-workers-treatment,2026-11-15T08:51:32Z,generic,0,HTTP 522
+7772,https://www.businesswire.com/news/home/20050218005578/en/StarTek-Announces-Management-Change,2026-11-15T08:51:53Z,generic,0,HTTP 403
+7802,https://www.chicagobusiness.com/article/20020419/NEWS01/20005170/equity-office-ceo-steps-down,2026-11-15T08:51:54Z,generic,0,HTTP 403
+7956,https://dealbreaker.com/2007/05/verisigning-off-ceo-leaves-under-extremely-secret-yet-secure-conditions,2026-11-15T08:51:56Z,generic,0,HTTP 403
+7990,https://jimmycsays.com/2017/09/30/keith-a-tucker-guilty-on-two-counts-gaming-the-tax-code-and-depriving-area-residents-of-a-view-of-one-of-the-most-beautiful-homes-in-kc/,2026-11-15T08:51:57Z,generic,1858,
+8085,https://www.dallasnews.com/news/watchdog/2013/11/24/watchdog-mannatech-founder-banned-from-company-still-works-from-inside/,2026-11-15T08:51:59Z,generic,1589,
+8086,https://www.dallasnews.com/business/2009/12/03/mannatech-ceo-quits-after-17-months-on-the-job/,2026-11-15T08:52:02Z,generic,963,
+8139,https://www.kansascity.com/news/business/technology/article73518922.html,2026-11-15T08:52:04Z,generic,0,fetch failed (TimeoutError)
+8155,https://www.bizjournals.com/seattle/blog/techflash/2009/02/Voelker_leaves_InfoSpace_as_former_VC_takes_over39151932.html,2026-11-15T08:52:35Z,generic,0,HTTP 403
+8247,http://content.time.com/time/specials/packages/article/0,2026-11-15T08:52:36Z,generic,0,HTTP 403
+8257,https://www.macroaxis.com/invest/manager/117.F/Manuel-Rivelo,2026-11-15T08:52:38Z,generic,0,HTTP 403
+8261,https://www.sec.gov/Archives/edgar/data/1080667/000110465907063935/a07-22396_18k.htm,2026-11-15T08:52:39Z,generic,618,
+8289,https://www.sdxcentral.com/articles/news/why-juniper-ousted-ceo-shaygan-kheradpir/2015/02/,2026-11-15T08:52:41Z,generic,1132,
+8398,https://www.postbulletin.com/news/business/ibm-sells-division-to-toshiba/article_ee1d6bae-00ac-5e4a-b171-18217e100610.html,2026-11-15T08:52:43Z,generic,0,HTTP 404
+8426,https://www.networkworld.com/article/2311658/utstarcom-s-ceo-bows-out-amidst-accounting-mess.html,2026-11-15T08:52:45Z,generic,0,HTTP 404
+8496,https://www.morningstar.com/articles/298806/gary-black-out-as-ceo-of-janus,2026-11-15T08:52:47Z,generic,0,HTTP 403
+8517,https://www.channele2e.com/news/equinix-ceo-resigned-six-days-before-public-disclosure/,2026-11-15T08:52:48Z,generic,438,
+8540,https://www.nytimes.com/2020/07/21/business/tapestry-jide-zeitlin-resigns.html,2026-11-15T08:52:50Z,generic,1153,
+8554,https://www.forbes.com/2008/01/07/nii-holdings-dussek-markets-equity-cx_ra_0107markets22.html#170441f44e7a,2026-11-15T08:52:52Z,generic,1715,
+8578,https://www.npr.org/sections/thetwo-way/2017/05/11/527886633/ex-massey-energy-ceo-completes-1-year-federal-criminal-sentence,2026-11-15T08:52:54Z,generic,0,fetch failed (TimeoutError)
+8585,https://www.sec.gov/Archives/edgar/data/1129623/000095013404015119/d19177e8vk.htm,2026-11-15T08:53:25Z,generic,1225,
+8586,https://www.bizjournals.com/dallas/stories/2003/09/22/daily2.html,2026-11-15T08:53:27Z,generic,0,HTTP 403
+8601,https://www.allaccess.com/net-news/archive/story/69030/update-arbitron-s-michael-skarzynski-exits-under-a,2026-11-15T08:53:28Z,generic,111,
+8664,https://fortune.com/2018/05/11/gamestop-ceo-michael-mauler-resigns/,2026-11-15T08:53:31Z,generic,641,
+8747,https://www.businesswire.com/news/home/20100812006340/en/Red-Robin-Announces-Stephen-E.-Carley-Appointed,2026-11-15T08:53:33Z,generic,0,HTTP 403
+8760,https://www.theadvocate.com/baton_rouge/news/business/article_9f50a11a-b51f-5619-a9fa-0288fd00185e.html,2026-11-15T08:53:34Z,generic,0,HTTP 403
+8761,https://www.fool.com/investing/2018/01/31/what-the-steve-wynn-allegations-could-mean-for-wyn.aspx,2026-11-15T08:53:36Z,generic,1724,
+8966,https://www.wsj.com/articles/SB10001424052970204642604577213513713315158,2026-11-15T08:53:38Z,generic,0,HTTP 401
+9005,https://www.tronox.com/tronox-limited-names-jeffry-n-quinn-as-chief-executive-officer/,2026-11-15T08:53:39Z,generic,642,
+9181,https://www.bizjournals.com/washington/news/2016/12/19/comscore-sees-yet-another-departure-with.html,2026-11-15T08:53:41Z,generic,0,HTTP 403
+9315,https://www.jbtc.com/news-and-events/press-releases/2020-09-24-brian-deck-appointed-interim-president-and-ceo,2026-11-15T08:53:42Z,generic,0,HTTP 404
+9423,https://www.marketwatch.com/story/wageworks-cleans-house-after-investigation-but-may-not-be-done-2018-04-05,2026-11-15T08:53:44Z,generic,0,HTTP 401
+9943,https://www.firstenergycorp.com/newsroom/news_articles/firstenergy-names-steven-e--strah-chief-executive-officer.html,2026-11-15T08:53:45Z,generic,2894,
+10037,https://www.chemours.com/en/about-chemours/leadership/mark-e-newman-leadership-bio,2026-11-15T08:53:50Z,generic,0,HTTP 403
+10065,https://www.wsj.com/articles/SB116403059773828336,2026-11-15T08:53:51Z,generic,0,HTTP 401
+10192,https://advance-lexis-com.umiss.idm.oclc.org/api/document?collection=news&id=urn:contentItem:5YVK-SY21-DXMP-K060-00000-00&context=1516831,2026-11-15T08:53:52Z,generic,0,library login
+10482,https://www.prnewswire.com/news-releases/mark-j-decesaris-to-retire-as-ceo-of-w-p-carey-at-year-end-jason-e-fox-named-as-successor-300548917.html,2026-11-15T08:53:52Z,generic,2015,
+10625,https://www.wsj.com/us-news/unitedhealth-medicare-fraud-investigation-df80667f?mod=hp_lead_pos1,2026-11-15T08:53:54Z,generic,0,HTTP 401
+10649,https://freddiemac.gcs-web.com/news-releases/news-release-details/freddie-mac-announces-michael-t-hutchins-interim-ceo,2026-11-15T08:53:55Z,generic,0,HTTP 403
+10679,https://www.sec.gov/Archives/edgar/data/876523/000087652314000072/a8-k7x21x14.htm,2026-11-15T08:53:57Z,generic,1543,
+10708,https://www.cfo.com/news/orthofix-cfo-john-bostjancic-c-suite-execs-terminated/693548/,2026-11-15T08:53:58Z,generic,0,HTTP 403
+162,https://www.washingtonpost.com/archive/business/2005/03/15/aig-chief-greenberg-retires-in-shake-up/a012a34b-a61f-4209-b91b-636e20d0aeb1/,2026-11-15T08:56:21Z,browser,438,
+318,https://sec.report/Document/0000950103-02-000801/?__cf_chl_jschl_tk__=32229d06819567b9ef676bb4bb3f308d5b64313e-1592086953-0-AQxfhNOGJZ7hNY1w-930qm47sGzT_NQFKiLOn--glPFUOsSI8_byXdafHTLBdN3TdcXmXoKPGUwlp7IpTz-jW-ccC8m0HAo7-Da6RKtzV0aESLeUjS4eyz9DMLbRUSoT-29_XmtKTz8C51PunbxgBOjDaf5qq3PKKwmqd9ceL5QEln6L3LcKPhpyKiVWnjymC4jfI85ISu3PBz7Mwk9gXbX3AYY8jWrwRNFzqLhTtMK9SxotSK7c8cyNEr3nBc1TW3z1n4Op-y7pOk8ula9GRhpVESMphoOP4NIPlvTB6-cWxlzl5ZD_n1O4XkF0pSj4wOIZqkc_40EF0AIScJrbX9_VB9BkR4Y0WUf7kEWpUXPv7bEcz-GSm01QNT4n0vfHNQ,2026-11-15T08:56:23Z,browser,0,fetch failed (URLError)
+318,https://sec.report/Document/0000950103-02-000801/?__cf_chl_jschl_tk__=32229d06819567b9ef676bb4bb3f308d5b64313e-1592086953-0-AQxfhNOGJZ7hNY1w-930qm47sGzT_NQFKiLOn--glPFUOsSI8_byXdafHTLBdN3TdcXmXoKPGUwlp7IpTz-jW-ccC8m0HAo7-Da6RKtzV0aESLeUjS4eyz9DMLbRUSoT-29_XmtKTz8C51PunbxgBOjDaf5qq3PKKwmqd9ceL5QEln6L3LcKPhpyKiVWnjymC4jfI85ISu3PBz7Mwk9gXbX3AYY8jWrwRNFzqLhTtMK9SxotSK7c8cyNEr3nBc1TW3z1n4Op-y7pOk8ula9GRhpVESMphoOP4NIPlvTB6-cWxlzl5ZD_n1O4XkF0pSj4wOIZqkc_40EF0AIScJrbX9_VB9BkR4Y0WUf7kEWpUXPv7bEcz-GSm01QNT4n0vfHNQ,2026-11-15T08:56:29Z,archive,0,no capture
+341,https://www.ball.com/newswire/article/124103/ball-corporation-board-elects-fisher-as-ceo-hayes-to-remain-chairman,2026-11-15T08:56:29Z,browser,1457,
+443,https://www.wsj.com/articles/SB10001424052702303815404577335551794808074,2026-11-15T08:56:31Z,browser,0,HTTP 401
+443,https://www.wsj.com/articles/SB10001424052702303815404577335551794808074,2026-11-15T08:56:34Z,archive 20141219173940,0,HTTP 429
+498,https://money.cnn.com/2005/03/07/news/fortune500/boeing_ceo/,2026-11-15T08:56:37Z,browser,0,HTTP 503
+498,https://money.cnn.com/2005/03/07/news/fortune500/boeing_ceo/,2026-11-15T08:56:40Z,archive 20050603081014,0,HTTP 429
+536,https://money.cnn.com/2006/09/12/news/companies/bristol/index.htm,2026-11-15T08:56:43Z,browser,0,HTTP 503
+536,https://money.cnn.com/2006/09/12/news/companies/bristol/index.htm,2026-11-15T08:56:46Z,archive 20080511150752,1650,
+702,https://www.sec.gov/Archives/edgar/data/278166/000027816618000063/a2018929-exhibit101.htm,2026-11-15T08:56:50Z,browser,2631,
+780,https://www.sec.gov/Archives/edgar/data/313927/000119312505057673/dpre14a.htm,2026-11-15T08:56:52Z,browser,19994,
+912,https://www.computerworld.com/article/2565088/update--ca-s-sanjay-kumar-stepping-down-as-ceo.html,2026-11-15T08:56:53Z,browser,1044,
+919,https://en.wikipedia.org/wiki/DXC_Technology,2026-11-15T08:56:55Z,browser,2105,
+948,http://www.fundinguniverse.com/company-histories/consolidated-papers-inc-history/,2026-11-15T08:56:56Z,browser,3423,
+957,https://www.power-eng.com/news/cms-energys-ceo-quits-board-creates-committee-to-investigate-round-trip-trading/#gref,2026-11-15T08:56:59Z,browser,0,HTTP 403
+957,https://www.power-eng.com/news/cms-energys-ceo-quits-board-creates-committee-to-investigate-round-trip-trading/#gref,2026-11-15T08:57:02Z,archive,0,no capture
+1041,https://www.toledoblade.com/local/2008/11/04/Dana-CEO-to-leave-post-was-on-job-for-6-months/stories/200811040049,2026-11-15T08:57:02Z,browser,388,
+1053,https://www.sec.gov/Archives/edgar/data/27096/000092189507002572/dfan14a06297040_11082007.htm,2026-11-15T08:57:04Z,browser,3280,
+1062,https://www.law360.com/articles/25153/ex-dpl-execs-settle-payout-suit-for-25m,2026-11-15T08:57:06Z,browser,1076,
+1087,https://www.chicagotribune.com/business/ct-devry-ceo-0525-biz-20160524-story.html,2026-11-15T08:57:08Z,browser,1377,
+1361,https://www.sec.gov/Archives/edgar/data/794367/000079436703000061/fds8k041603.htm,2026-11-15T08:57:09Z,browser,695,
+1431,https://www.tampabay.com/archive/1997/11/10/florida-progress-then-and-now/,2026-11-15T08:57:10Z,browser,288,
+1556,https://www.hollandsentinel.com/news/20180228/zeelands-gentex-corporation-appoints-leadership-team,2026-11-15T08:57:13Z,browser,0,HTTP 402
+1556,https://www.hollandsentinel.com/news/20180228/zeelands-gentex-corporation-appoints-leadership-team,2026-11-15T08:57:18Z,archive 20180228213718,0,HTTP 429
+1622,http://www.vermontguides.com/nbmerge/nb97.htm,2026-11-15T08:57:21Z,browser,0,fetch failed (URLError)
+1622,http://www.vermontguides.com/nbmerge/nb97.htm,2026-11-15T08:57:56Z,archive 20010215155017,0,HTTP 429
+1777,https://www.sec.gov/Archives/edgar/data/48898/000095012304003303/y93651def14a.htm,2026-11-15T08:57:59Z,browser,13919,
+1869,https://exechange.com/19219/interface-ceo-jay-gould-leaves,2026-11-15T08:58:00Z,browser,510,
+1875,https://webcache.googleusercontent.com/search?q=cache:cuGXQwGgvu4J:https://www.bizjournals.com/atlanta/stories/1997/09/15/focus2.html+&cd=6&hl=en&ct=clnk&gl=ph,2026-11-15T08:58:03Z,browser,13,under 100 words
+1875,https://webcache.googleusercontent.com/search?q=cache:cuGXQwGgvu4J:https://www.bizjournals.com/atlanta/stories/1997/09/15/focus2.html+&cd=6&hl=en&ct=clnk&gl=ph,2026-11-15T08:58:06Z,archive,0,no capture
+1878,https://www.sec.gov/Archives/edgar/data/51124/000005112400000012/0000051124-00-000012.txt,2026-11-15T08:58:06Z,browser,1255,
+1881,https://www.footnoted.com/revisiting-ibms-palmisano-equation/,2026-11-15T08:58:07Z,browser,2034,
+1888,https://ir.iff.com/news-releases/news-release-details/iff-appoints-frank-clyburn-chief-executive-officer-and-board,2026-11-15T08:58:11Z,browser,2943,
+1891,https://www.ttnews.com/articles/former-navistar-ceo-daniel-ustian-sec-ready-discuss-settlement,2026-11-15T08:58:13Z,browser,928,
+1911,https://www.eetimes.com/document.asp?doc_id=1252932,2026-11-15T08:58:15Z,browser,0,HTTP 403
+1911,https://www.eetimes.com/document.asp?doc_id=1252932,2026-11-15T08:58:23Z,archive 20171214212459,0,HTTP 429
+1997,http://ir.kla-tencor.com/news-releases/news-release-details/kla-tencor-appoints-rick-wallace-chief-executive-officer-john,2026-11-15T08:58:25Z,browser,0,HTTP 404
+1997,http://ir.kla-tencor.com/news-releases/news-release-details/kla-tencor-appoints-rick-wallace-chief-executive-officer-john,2026-11-15T08:58:29Z,archive,0,no capture
+2001,https://www.crainsdetroit.com/article/20100225/FREE/100229913/former-kmart-ceo-charles-conaway-ordered-to-pay-millions,2026-11-15T08:58:29Z,browser,150,
+2103,https://www.wsj.com/articles/lam-research-ceo-resigns-amid-misconduct-investigation-1544049396,2026-11-15T08:58:32Z,browser,0,HTTP 401
+2103,https://www.wsj.com/articles/lam-research-ceo-resigns-amid-misconduct-investigation-1544049396,2026-11-15T08:58:40Z,archive 20181206014736,0,HTTP 429
+2220,https://www.mts.com/en/about/news/mtsnews/DEV_003657,2026-11-15T08:58:42Z,browser,1452,
+2242,https://www.nasdaq.com/article/host-hotels-president-ceo-w-edward-walter-to-step-down-cm721982,2026-11-15T08:58:46Z,browser,0,HTTP 403
+2242,https://www.nasdaq.com/article/host-hotels-president-ceo-w-edward-walter-to-step-down-cm721982,2026-11-15T08:58:51Z,archive 20161216161232,0,HTTP 429
+2271,https://www.wsj.com/articles/mattel-ceo-margo-georgiadis-in-talks-to-leave-the-company-1524166521,2026-11-15T08:58:54Z,browser,0,HTTP 401
+2271,https://www.wsj.com/articles/mattel-ceo-margo-georgiadis-in-talks-to-leave-the-company-1524166521,2026-11-15T08:58:57Z,archive 20180419220746,0,HTTP 429
+2327,https://sec.report/Document/0000898430-01-000920/,2026-11-15T08:59:00Z,browser,0,fetch failed (URLError)
+2327,https://sec.report/Document/0000898430-01-000920/,2026-11-15T08:59:03Z,archive,0,no capture
+2353,https://www.investmentnews.com/taking-sidessome-good-news-amid-all-the-bad-5565,2026-11-15T08:59:03Z,browser,0,HTTP 404
+2353,https://www.investmentnews.com/taking-sidessome-good-news-amid-all-the-bad-5565,2026-11-15T08:59:07Z,archive,0,no capture
+2434,https://www.wsj.com/articles/SB877533714204931000,2026-11-15T08:59:07Z,browser,0,HTTP 401
+2434,https://www.wsj.com/articles/SB877533714204931000,2026-11-15T08:59:38Z,archive,0,no capture
+2483,https://www.nj.com/business/2008/06/plea_deal_ends_nui_probe.html,2026-11-15T08:59:38Z,browser,0,HTTP 403
+2483,https://www.nj.com/business/2008/06/plea_deal_ends_nui_probe.html,2026-11-15T08:59:42Z,archive 20221103151442,0,HTTP 429
+2494,https://progressivegrocer.com/nash-finch-ceo-marshall-leave-06,2026-11-15T08:59:44Z,browser,0,HTTP 403
+2494,https://progressivegrocer.com/nash-finch-ceo-marshall-leave-06,2026-11-15T08:59:52Z,archive 20230926063039,0,HTTP 429
+2585,https://www.sec.gov/Archives/edgar/data/320187/000032018716000339/nke-2016xdef14a.htm,2026-11-15T08:59:54Z,browser,29240,
+2643,https://billingsgazette.com/business/even-with-bankruptcy-northwestern-pays-millions-to-current-and-former/article_f05250d3-76e6-5a8b-968a-bff8eb3c1f22.html,2026-11-15T08:59:56Z,browser,0,HTTP 403
+2643,https://billingsgazette.com/business/even-with-bankruptcy-northwestern-pays-millions-to-current-and-former/article_f05250d3-76e6-5a8b-968a-bff8eb3c1f22.html,2026-11-15T09:00:01Z,archive 20120828005552,0,HTTP 429
+2651,https://www.nytimes.com/2016/10/13/business/dealbook/wells-fargo-ceo.html,2026-11-15T09:00:03Z,browser,493,
+2691,https://exechange.com/20309/firstenergy-ceo-chuck-jones-leaves,2026-11-15T09:00:06Z,browser,510,
+2747,https://pubs.acs.org/doi/10.1021/cen-v071n030.p006a,2026-11-15T09:00:10Z,browser,0,HTTP 403
+2747,https://pubs.acs.org/doi/10.1021/cen-v071n030.p006a,2026-11-15T09:00:14Z,archive,0,no capture
+2838,https://webcache.googleusercontent.com/search?q=cache:UxviCW5boq8J:https://www.chicagotribune.com/news/ct-xpm-2006-02-25-0602250176-story.html+&cd=2&hl=en&ct=clnk&gl=ph,2026-11-15T09:00:14Z,browser,13,under 100 words
+2838,https://webcache.googleusercontent.com/search?q=cache:UxviCW5boq8J:https://www.chicagotribune.com/news/ct-xpm-2006-02-25-0602250176-story.html+&cd=2&hl=en&ct=clnk&gl=ph,2026-11-15T09:00:18Z,archive,0,no capture
+2853,https://www.bizjournals.com/denver/news/2011/06/11/new-ceo-chairman-named-at-pdc-energy.html,2026-11-15T09:00:18Z,browser,0,HTTP 403
+2853,https://www.bizjournals.com/denver/news/2011/06/11/new-ceo-chairman-named-at-pdc-energy.html,2026-11-15T09:00:24Z,archive 20110616230559,0,HTTP 429
+2978,https://www.nasa.gov/offices/nac/members/montoya-bio.html,2026-11-15T09:00:26Z,browser,0,HTTP 404
+2978,https://www.nasa.gov/offices/nac/members/montoya-bio.html,2026-11-15T09:00:35Z,archive 20090528110835,0,HTTP 429
+3032,https://www.northeastern.edu/voices/picard/bio.html,2026-11-15T09:00:38Z,browser,0,HTTP 404
+3032,https://www.northeastern.edu/voices/picard/bio.html,2026-11-15T09:00:42Z,archive 20110724203539,0,HTTP 429
+3058,https://www.bizjournals.com/dayton/stories/2004/08/02/daily4.html,2026-11-15T09:00:45Z,browser,0,HTTP 403
+3058,https://www.bizjournals.com/dayton/stories/2004/08/02/daily4.html,2026-11-15T09:00:49Z,archive 20040907131831,0,HTTP 429
+3138,https://www.huffingtonpost.ca/2016/03/21/j-michael-pearson-valeant_n_9515494.html,2026-11-15T09:00:51Z,browser,0,HTTP 404
+3138,https://www.huffingtonpost.ca/2016/03/21/j-michael-pearson-valeant_n_9515494.html,2026-11-15T09:00:55Z,archive 20160324032549,2173,
+3179,https://www.washingtonpost.com/archive/business/2002/11/14/ceo-leaving-drug-company/5302e0d6-1c3d-457e-9b21-93440a1cef4c/,2026-11-15T09:00:59Z,browser,449,
+3185,https://www.crainscleveland.com/article/20071116/FREE/71116017/ceo-haines-to-exit-a-schulman,2026-11-15T09:01:01Z,browser,163,
+3210,https://www.chron.com/business/article/Ex-Seitel-CEO-gets-63-months-in-prison-1931979.php,2026-11-15T09:01:04Z,browser,1402,
+3398,https://www.sec.gov/Archives/edgar/data/723610/0000723610-98-000005.txt,2026-11-15T09:01:06Z,browser,18587,
+3454,https://www.chicagotribune.com/news/ct-xpm-2004-07-04-0407030278-story.html,2026-11-15T09:01:08Z,browser,1924,
+3456,https://www.crn.com/news/channel-programs/18826107/symbol-ceo-bravman-steps-down.htm,2026-11-15T09:01:10Z,browser,0,HTTP 404
+3456,https://www.crn.com/news/channel-programs/18826107/symbol-ceo-bravman-steps-down.htm,2026-11-15T09:01:13Z,archive,0,no capture
+3531,https://www.chicagotribune.com/news/ct-xpm-2003-11-06-0311060394-story.html,2026-11-15T09:01:13Z,browser,1755,
+3668,https://www.latimes.com/business/la-fi-united-severance-20160503-snap-story.html,2026-11-15T09:01:15Z,browser,1293,
+3712,https://www.chicagotribune.com/news/ct-xpm-2006-10-16-0610160148-story.html,2026-11-15T09:01:16Z,browser,1614,
+3982,http://www.fundinguniverse.com/company-histories/foot-locker-inc-history/,2026-11-15T09:01:18Z,browser,5359,
+4377,https://www.thestreet.com/technology/three-top-comverse-tech-execs-resign-10282664,2026-11-15T09:01:20Z,browser,0,HTTP 403
+4377,https://www.thestreet.com/technology/three-top-comverse-tech-execs-resign-10282664,2026-11-15T09:01:24Z,archive 20210203235722,0,HTTP 429
+4378,https://seekingalpha.com/article/38178-have-we-seen-the-worst-of-comverse-technology,2026-11-15T09:01:27Z,browser,0,HTTP 403
+4378,https://seekingalpha.com/article/38178-have-we-seen-the-worst-of-comverse-technology,2026-11-15T09:01:32Z,archive 20070901144427,745,
+4475,http://securities.stanford.edu/filings-documents/1030/OI04-01/200417_f01c_0410027.pdf,2026-11-15T09:01:36Z,browser,211,
+4492,https://www.wirelessdesignonline.com/doc/microwave-power-devices-names-new-chairman-of-0001,2026-11-15T09:01:38Z,browser,0,HTTP 404
+4492,https://www.wirelessdesignonline.com/doc/microwave-power-devices-names-new-chairman-of-0001,2026-11-15T09:01:43Z,archive,0,no capture
+4610,https://www.massdevice.com/dentsply-sirona-taps-bd-executive-ceo/,2026-11-15T09:01:43Z,browser,0,HTTP 403
+4610,https://www.massdevice.com/dentsply-sirona-taps-bd-executive-ceo/,2026-11-15T09:01:46Z,archive 20220826143715,0,HTTP 429
+4750,https://webcache.googleusercontent.com/search?q=cache:dlBGal326scJ:https://www.bizjournals.com/pittsburgh/stories/1999/08/30/story4.html+&cd=1&hl=en&ct=clnk&gl=ph,2026-11-15T09:01:49Z,browser,13,under 100 words
+4750,https://webcache.googleusercontent.com/search?q=cache:dlBGal326scJ:https://www.bizjournals.com/pittsburgh/stories/1999/08/30/story4.html+&cd=1&hl=en&ct=clnk&gl=ph,2026-11-15T09:01:57Z,archive,0,no capture
+4795,https://www.globenewswire.com/news-release/2015/07/20/753387/10142206/en/Mercer-International-Inc-Announces-Leadership-Transition.html,2026-11-15T09:01:57Z,browser,1266,
+4824,https://www.rttnews.com/1331009/presidential-life-s-former-ceo-herbert-kurz-resigns-as-director-update.aspx,2026-11-15T09:01:58Z,browser,1341,
+4856,https://www.businesswire.com/news/home/20041115005448/en/Merisel-Announces-Resignation-President-Chief-Executive-Officer,2026-11-15T09:02:00Z,browser,0,HTTP 403
+4856,https://www.businesswire.com/news/home/20041115005448/en/Merisel-Announces-Resignation-President-Chief-Executive-Officer,2026-11-15T09:02:03Z,archive,0,no capture
+4940,https://www.sec.gov/Archives/edgar/data/846909/000102140801506720/ddef14a.txt,2026-11-15T09:02:03Z,browser,15802,
+4957,https://kundoc.com/pdf-enhanced-distributorship-deal-agreed-.html,2026-11-15T09:02:04Z,browser,0,fetch failed (URLError)
+4957,https://kundoc.com/pdf-enhanced-distributorship-deal-agreed-.html,2026-11-15T09:02:11Z,archive,0,no capture
+5013,http://www.fundinguniverse.com/company-histories/lechters-inc-history/,2026-11-15T09:02:11Z,browser,3043,
+5038,https://www.eetimes.com/document.asp?doc_id=1155699,2026-11-15T09:02:13Z,browser,0,HTTP 403
+5038,https://www.eetimes.com/document.asp?doc_id=1155699,2026-11-15T09:02:16Z,archive,0,no capture
+5063,https://apnews.com/c6cd3178b292535f94e12764cc8d1b63,2026-11-15T09:02:16Z,browser,0,HTTP 403
+5063,https://apnews.com/c6cd3178b292535f94e12764cc8d1b63,2026-11-15T09:02:21Z,archive,0,no capture
+5079,https://www.nytimes.com/2007/07/31/nyregion/31hill.html,2026-11-15T09:02:21Z,browser,1549,
+5082,https://www.sec.gov/litigation/litreleases/2008/lr20721.htm,2026-11-15T09:02:23Z,browser,968,
+5083,https://www.businesswire.com/news/home/20090928006072/en/BanCorp-Announces-Senior-Management-Board-Directors,2026-11-15T09:02:25Z,browser,0,HTTP 403
+5083,https://www.businesswire.com/news/home/20090928006072/en/BanCorp-Announces-Senior-Management-Board-Directors,2026-11-15T09:02:29Z,archive,0,no capture
+5210,https://www.reuters.com/article/us-brixmor-cfo/brixmor-property-group-names-angela-aman-cfo-idUSKCN0XO2RA,2026-11-15T09:02:29Z,browser,0,HTTP 401
+5210,https://www.reuters.com/article/us-brixmor-cfo/brixmor-property-group-names-angela-aman-cfo-idUSKCN0XO2RA,2026-11-15T09:02:32Z,archive 20181208220445,311,
+5287,https://www.baltimoresun.com/news/bs-xpm-1999-04-06-9904060153-story.html,2026-11-15T09:02:36Z,browser,1121,
+5449,https://www.americanbanker.com/slideshow/women-to-watch-2013,2026-11-15T09:02:38Z,browser,862,
+5475,https://www.businesswire.com/news/home/20220615005803/en/Patrick-Beharelle-Resigns-as-TrueBlue-CEO,2026-11-15T09:02:39Z,browser,0,HTTP 403
+5475,https://www.businesswire.com/news/home/20220615005803/en/Patrick-Beharelle-Resigns-as-TrueBlue-CEO,2026-11-15T09:02:42Z,archive 20220616072005,524,
+5586,https://www.businesswire.com/news/home/20140627005323/en/Biolase-Director-Federico-Pignatelli-Initiates-Process-Obtain,2026-11-15T09:02:47Z,browser,0,HTTP 403
+5586,https://www.businesswire.com/news/home/20140627005323/en/Biolase-Director-Federico-Pignatelli-Initiates-Process-Obtain,2026-11-15T09:02:54Z,archive 20140717102455,0,HTTP 429
+5632,https://sec.report/Document/0000912057-97-029527/,2026-11-15T09:02:57Z,browser,0,fetch failed (URLError)
+5632,https://sec.report/Document/0000912057-97-029527/,2026-11-15T09:03:01Z,archive,0,no capture
+5877,https://www.tampabay.com/archive/1994/03/10/checkers-founder-resigns-as-ceo/,2026-11-15T09:03:01Z,browser,288,
+5884,https://www.sj-r.com/article/20101006/NEWS/310069923,2026-11-15T09:03:04Z,browser,0,HTTP 402
+5884,https://www.sj-r.com/article/20101006/NEWS/310069923,2026-11-15T09:03:10Z,archive 20160406083307,0,HTTP 429
+5911,http://www.fundinguniverse.com/company-histories/the-hockey-company-history/,2026-11-15T09:03:13Z,browser,2630,
+6197,https://www.bizjournals.com/sanjose/news/2011/07/12/mcafee-names-michael-decesare-todd.html,2026-11-15T09:03:15Z,browser,0,HTTP 403
+6197,https://www.bizjournals.com/sanjose/news/2011/07/12/mcafee-names-michael-decesare-todd.html,2026-11-15T09:03:19Z,archive 20110715223324,0,HTTP 429
+6201,https://www.nytimes.com/1998/02/04/business/chief-of-gtech-quits-in-wake-of-libel-case.html,2026-11-15T09:03:23Z,browser,485,
+6245,http://blog.al.com/businessnews/2009/03/booksamillion_chief_cochran_de.html,2026-11-15T09:03:25Z,browser,0,HTTP 403
+6245,http://blog.al.com/businessnews/2009/03/booksamillion_chief_cochran_de.html,2026-11-15T09:03:34Z,archive 20090318081611,0,HTTP 429
+6278,https://www.reuters.com/article/blackbox-ceo-idUSWNAS690920071018,2026-11-15T09:03:37Z,browser,0,HTTP 401
+6278,https://www.reuters.com/article/blackbox-ceo-idUSWNAS690920071018,2026-11-15T09:03:41Z,archive 20210516212546,0,HTTP 429
+6290,https://www.crainsdetroit.com/article/20080822/REG/60405905/former-hayes-lemmerz-executive-found-liable-in-accounting-fraud,2026-11-15T09:03:43Z,browser,149,
+6340,https://www.entrepreneur.com/author/bruce-cazenave,2026-11-15T09:03:46Z,browser,1189,
+6350,https://www.bizjournals.com/pittsburgh/news/2013/01/29/chesapeakes-mcclendon-to-retire-april-1.html,2026-11-15T09:03:49Z,browser,0,HTTP 403
+6350,https://www.bizjournals.com/pittsburgh/news/2013/01/29/chesapeakes-mcclendon-to-retire-april-1.html,2026-11-15T09:04:01Z,archive,0,no capture
+6426,http://www.siliconbeat.com/2008/05/02/applied-signal-co-founder-steps-down-as-chairman-and-ceo/,2026-11-15T09:04:01Z,browser,0,fetch failed (URLError)
+6426,http://www.siliconbeat.com/2008/05/02/applied-signal-co-founder-steps-down-as-chairman-and-ceo/,2026-11-15T09:04:04Z,archive,0,no capture
+6430,https://www.sec.gov/Archives/edgar/data/745732/000091205702013818/a2075841zpre14a.htm,2026-11-15T09:04:04Z,browser,11860,
+6483,https://www.bizjournals.com/twincities/stories/2001/03/26/story5.html,2026-11-15T09:04:05Z,browser,0,HTTP 403
+6483,https://www.bizjournals.com/twincities/stories/2001/03/26/story5.html,2026-11-15T09:04:08Z,archive 20180923234113,0,HTTP 429
+6554,https://www.ogj.com/general-interest/article/17243831/stone-energy-responds-to-reserves-review,2026-11-15T09:04:11Z,browser,618,
+6584,https://www.businesswire.com/news/home/20050328005748/en/Equity-Residential-Announces-January-2006-Retirement-CEO,2026-11-15T09:04:13Z,browser,0,HTTP 403
+6584,https://www.businesswire.com/news/home/20050328005748/en/Equity-Residential-Announces-January-2006-Retirement-CEO,2026-11-15T09:04:17Z,archive,0,no capture
+6588,https://www.autonews.com/article/20121115/OEM02/121119933/borgwarner-picks-verrier-to-succeed-manganello-as-ceo,2026-11-15T09:04:17Z,browser,203,
+6682,https://www.europeanceo.com/lifestyle/glen-senk-leaves-urban-outfitters/,2026-11-15T09:04:20Z,browser,816,
+6830,https://www.bizjournals.com/denver/stories/2010/04/12/daily3.html,2026-11-15T09:04:22Z,browser,0,HTTP 403
+6830,https://www.bizjournals.com/denver/stories/2010/04/12/daily3.html,2026-11-15T09:04:27Z,archive,0,no capture
+6879,https://www.google.com/search?safe=active&rlz=1C1CHBF_enUS819US819&tbs=cdr:1,2026-11-15T09:04:27Z,browser,7,under 100 words
+6879,https://www.google.com/search?safe=active&rlz=1C1CHBF_enUS819US819&tbs=cdr:1,2026-11-15T09:04:30Z,archive,0,no capture
+6885,https://www.prnewswire.com/news-releases/robert-b-goergen-jr-named-as-blyth-incs-new-ceo-232328371.html,2026-11-15T09:04:30Z,browser,1848,
+6887,https://www.prnewswire.com/news-releases/ameris-bancorp-announces-ceo-succession-300661242.html,2026-11-15T09:04:32Z,browser,1418,
+6969,https://www.google.com/search?safe=active&rlz=1C1CHBF_enUS819US819&tbs=cdr:1,2026-11-15T09:04:33Z,browser,7,under 100 words
+6969,https://www.google.com/search?safe=active&rlz=1C1CHBF_enUS819US819&tbs=cdr:1,2026-11-15T09:04:37Z,archive,0,no capture
+7032,http://www.mondovisione.com/media-and-resources/news/sec-charges-former-chairman-and-ceo-of-brooks-automation-in-stock-option-fraud/,2026-11-15T09:04:37Z,browser,0,HTTP 404
+7032,http://www.mondovisione.com/media-and-resources/news/sec-charges-former-chairman-and-ceo-of-brooks-automation-in-stock-option-fraud/,2026-11-15T09:04:40Z,archive,0,no capture
+7167,https://sec.report/Document/0000931148-99-000023/,2026-11-15T09:04:40Z,browser,0,fetch failed (URLError)
+7167,https://sec.report/Document/0000931148-99-000023/,2026-11-15T09:04:45Z,archive,0,no capture
+7344,https://www.nytimes.com/2005/03/30/business/2-former-top-executives-at-impath-are-indicted.html,2026-11-15T09:04:45Z,browser,464,
+7394,https://seekingalpha.com/article/18612-options-scandal-sweeps-out-ceo-cfo-at-sapient,2026-11-15T09:04:47Z,browser,0,HTTP 403
+7394,https://seekingalpha.com/article/18612-options-scandal-sweeps-out-ceo-cfo-at-sapient,2026-11-15T09:04:51Z,archive 20080122172833,0,HTTP 429
+7468,https://www.naura-akrion.com/peter-kirlin-former-ceo-of-dupont-photomasks-joins-akrions-board-of-directors/,2026-11-15T09:04:54Z,browser,0,fetch failed (URLError)
+7468,https://www.naura-akrion.com/peter-kirlin-former-ceo-of-dupont-photomasks-joins-akrions-board-of-directors/,2026-11-15T09:05:27Z,archive,0,no capture
+7657,http://www.tributes.com/obituary/print/84629050,2026-11-15T09:05:27Z,browser,0,HTTP 410
+7657,http://www.tributes.com/obituary/print/84629050,2026-11-15T09:05:36Z,archive,0,no capture
+7747,https://www.eetimes.com/author.asp?section_id=36&doc_id=1333485,2026-11-15T09:05:36Z,browser,0,HTTP 403
+7747,https://www.eetimes.com/author.asp?section_id=36&doc_id=1333485,2026-11-15T09:05:39Z,archive 20180911042351,3698,
+7763,https://www.theinquirer.net/inquirer/news/1010849/health-outsourcer-fires-ceo-over-workers-treatment,2026-11-15T09:05:43Z,browser,0,HTTP 522
+7763,https://www.theinquirer.net/inquirer/news/1010849/health-outsourcer-fires-ceo-over-workers-treatment,2026-11-15T09:06:06Z,archive 20191226043545,0,HTTP 429
+7772,https://www.businesswire.com/news/home/20050218005578/en/StarTek-Announces-Management-Change,2026-11-15T09:06:08Z,browser,0,HTTP 403
+7772,https://www.businesswire.com/news/home/20050218005578/en/StarTek-Announces-Management-Change,2026-11-15T09:06:12Z,archive,0,no capture
+7802,https://www.chicagobusiness.com/article/20020419/NEWS01/20005170/equity-office-ceo-steps-down,2026-11-15T09:06:12Z,browser,147,
+7956,https://dealbreaker.com/2007/05/verisigning-off-ceo-leaves-under-extremely-secret-yet-secure-conditions,2026-11-15T09:06:16Z,browser,0,HTTP 403
+7956,https://dealbreaker.com/2007/05/verisigning-off-ceo-leaves-under-extremely-secret-yet-secure-conditions,2026-11-15T09:06:18Z,archive,0,no capture
+7990,https://jimmycsays.com/2017/09/30/keith-a-tucker-guilty-on-two-counts-gaming-the-tax-code-and-depriving-area-residents-of-a-view-of-one-of-the-most-beautiful-homes-in-kc/,2026-11-15T09:06:18Z,browser,1858,
+8085,https://www.dallasnews.com/news/watchdog/2013/11/24/watchdog-mannatech-founder-banned-from-company-still-works-from-inside/,2026-11-15T09:06:19Z,browser,1589,
+8086,https://www.dallasnews.com/business/2009/12/03/mannatech-ceo-quits-after-17-months-on-the-job/,2026-11-15T09:06:21Z,browser,963,
+8139,https://www.kansascity.com/news/business/technology/article73518922.html,2026-11-15T09:06:23Z,browser,806,
+8155,https://www.bizjournals.com/seattle/blog/techflash/2009/02/Voelker_leaves_InfoSpace_as_former_VC_takes_over39151932.html,2026-11-15T09:06:27Z,browser,0,HTTP 403
+8155,https://www.bizjournals.com/seattle/blog/techflash/2009/02/Voelker_leaves_InfoSpace_as_former_VC_takes_over39151932.html,2026-11-15T09:06:30Z,archive 20190717044137,0,HTTP 429
+8247,http://content.time.com/time/specials/packages/article/0,2026-11-15T09:06:32Z,browser,0,HTTP 403
+8247,http://content.time.com/time/specials/packages/article/0,2026-11-15T09:06:36Z,archive,0,no capture
+8257,https://www.macroaxis.com/invest/manager/117.F/Manuel-Rivelo,2026-11-15T09:06:36Z,browser,0,under 100 words
+8257,https://www.macroaxis.com/invest/manager/117.F/Manuel-Rivelo,2026-11-15T09:06:39Z,archive,0,no capture
+8261,https://www.sec.gov/Archives/edgar/data/1080667/000110465907063935/a07-22396_18k.htm,2026-11-15T09:06:39Z,browser,618,
+8289,https://www.sdxcentral.com/articles/news/why-juniper-ousted-ceo-shaygan-kheradpir/2015/02/,2026-11-15T09:06:41Z,browser,1132,
+8398,https://www.postbulletin.com/news/business/ibm-sells-division-to-toshiba/article_ee1d6bae-00ac-5e4a-b171-18217e100610.html,2026-11-15T09:06:42Z,browser,0,HTTP 404
+8398,https://www.postbulletin.com/news/business/ibm-sells-division-to-toshiba/article_ee1d6bae-00ac-5e4a-b171-18217e100610.html,2026-11-15T09:06:46Z,archive,0,no capture
+8426,https://www.networkworld.com/article/2311658/utstarcom-s-ceo-bows-out-amidst-accounting-mess.html,2026-11-15T09:06:46Z,browser,0,HTTP 404
+8426,https://www.networkworld.com/article/2311658/utstarcom-s-ceo-bows-out-amidst-accounting-mess.html,2026-11-15T09:06:50Z,archive,0,no capture
+8496,https://www.morningstar.com/articles/298806/gary-black-out-as-ceo-of-janus,2026-11-15T09:06:50Z,browser,0,HTTP 404
+8496,https://www.morningstar.com/articles/298806/gary-black-out-as-ceo-of-janus,2026-11-15T09:07:00Z,archive 20210313192027,0,HTTP 429
+8517,https://www.channele2e.com/news/equinix-ceo-resigned-six-days-before-public-disclosure/,2026-11-15T09:07:03Z,browser,438,
+8540,https://www.nytimes.com/2020/07/21/business/tapestry-jide-zeitlin-resigns.html,2026-11-15T09:07:05Z,browser,598,
+8554,https://www.forbes.com/2008/01/07/nii-holdings-dussek-markets-equity-cx_ra_0107markets22.html#170441f44e7a,2026-11-15T09:07:07Z,browser,1715,
+8578,https://www.npr.org/sections/thetwo-way/2017/05/11/527886633/ex-massey-energy-ceo-completes-1-year-federal-criminal-sentence,2026-11-15T09:07:08Z,browser,783,
+8585,https://www.sec.gov/Archives/edgar/data/1129623/000095013404015119/d19177e8vk.htm,2026-11-15T09:07:10Z,browser,1225,
+8586,https://www.bizjournals.com/dallas/stories/2003/09/22/daily2.html,2026-11-15T09:07:11Z,browser,0,HTTP 403
+8586,https://www.bizjournals.com/dallas/stories/2003/09/22/daily2.html,2026-11-15T09:07:14Z,archive 20040401052257,0,HTTP 429
+8601,https://www.allaccess.com/net-news/archive/story/69030/update-arbitron-s-michael-skarzynski-exits-under-a,2026-11-15T09:07:17Z,browser,111,
+8664,https://fortune.com/2018/05/11/gamestop-ceo-michael-mauler-resigns/,2026-11-15T09:07:20Z,browser,641,
+8747,https://www.businesswire.com/news/home/20100812006340/en/Red-Robin-Announces-Stephen-E.-Carley-Appointed,2026-11-15T09:07:22Z,browser,0,HTTP 403
+8747,https://www.businesswire.com/news/home/20100812006340/en/Red-Robin-Announces-Stephen-E.-Carley-Appointed,2026-11-15T09:07:25Z,archive,0,no capture
+8760,https://www.theadvocate.com/baton_rouge/news/business/article_9f50a11a-b51f-5619-a9fa-0288fd00185e.html,2026-11-15T09:07:25Z,browser,0,HTTP 403
+8760,https://www.theadvocate.com/baton_rouge/news/business/article_9f50a11a-b51f-5619-a9fa-0288fd00185e.html,2026-11-15T09:07:28Z,archive 20180723185706,0,HTTP 429
+8761,https://www.fool.com/investing/2018/01/31/what-the-steve-wynn-allegations-could-mean-for-wyn.aspx,2026-11-15T09:07:31Z,browser,1724,
+8966,https://www.wsj.com/articles/SB10001424052970204642604577213513713315158,2026-11-15T09:07:33Z,browser,0,HTTP 401
+8966,https://www.wsj.com/articles/SB10001424052970204642604577213513713315158,2026-11-15T09:07:36Z,archive 20160626075340,0,HTTP 429
+9005,https://www.tronox.com/tronox-limited-names-jeffry-n-quinn-as-chief-executive-officer/,2026-11-15T09:07:39Z,browser,642,
+9181,https://www.bizjournals.com/washington/news/2016/12/19/comscore-sees-yet-another-departure-with.html,2026-11-15T09:07:41Z,browser,0,HTTP 403
+9181,https://www.bizjournals.com/washington/news/2016/12/19/comscore-sees-yet-another-departure-with.html,2026-11-15T09:07:44Z,archive 20161223124301,0,HTTP 429
+9315,https://www.jbtc.com/news-and-events/press-releases/2020-09-24-brian-deck-appointed-interim-president-and-ceo,2026-11-15T09:07:46Z,browser,0,HTTP 404
+9315,https://www.jbtc.com/news-and-events/press-releases/2020-09-24-brian-deck-appointed-interim-president-and-ceo,2026-11-15T09:07:50Z,archive 20210923212935,1870,
+9423,https://www.marketwatch.com/story/wageworks-cleans-house-after-investigation-but-may-not-be-done-2018-04-05,2026-11-15T09:07:54Z,browser,0,HTTP 401
+9423,https://www.marketwatch.com/story/wageworks-cleans-house-after-investigation-but-may-not-be-done-2018-04-05,2026-11-15T09:07:59Z,archive 20180406020700,0,HTTP 429
+9943,https://www.firstenergycorp.com/newsroom/news_articles/firstenergy-names-steven-e--strah-chief-executive-officer.html,2026-11-15T09:08:02Z,browser,2894,
+10037,https://www.chemours.com/en/about-chemours/leadership/mark-e-newman-leadership-bio,2026-11-15T09:08:06Z,browser,0,HTTP 403
+10037,https://www.chemours.com/en/about-chemours/leadership/mark-e-newman-leadership-bio,2026-11-15T09:08:10Z,archive 20191113025734,0,HTTP 429
+10065,https://www.wsj.com/articles/SB116403059773828336,2026-11-15T09:08:13Z,browser,0,HTTP 401
+10065,https://www.wsj.com/articles/SB116403059773828336,2026-11-15T09:08:17Z,archive 20191019072148,0,HTTP 429
+10192,https://advance-lexis-com.umiss.idm.oclc.org/api/document?collection=news&id=urn:contentItem:5YVK-SY21-DXMP-K060-00000-00&context=1516831,2026-11-15T09:08:20Z,none,0,library login
+10482,https://www.prnewswire.com/news-releases/mark-j-decesaris-to-retire-as-ceo-of-w-p-carey-at-year-end-jason-e-fox-named-as-successor-300548917.html,2026-11-15T09:08:20Z,browser,2015,
+10625,https://www.wsj.com/us-news/unitedhealth-medicare-fraud-investigation-df80667f?mod=hp_lead_pos1,2026-11-15T09:08:21Z,browser,0,HTTP 401
+10625,https://www.wsj.com/us-news/unitedhealth-medicare-fraud-investigation-df80667f?mod=hp_lead_pos1,2026-11-15T09:08:27Z,archive 20250514231841,0,HTTP 429
+10649,https://freddiemac.gcs-web.com/news-releases/news-release-details/freddie-mac-announces-michael-t-hutchins-interim-ceo,2026-11-15T09:08:29Z,browser,730,
+10679,https://www.sec.gov/Archives/edgar/data/876523/000087652314000072/a8-k7x21x14.htm,2026-11-15T09:08:31Z,browser,1543,
+10708,https://www.cfo.com/news/orthofix-cfo-john-bostjancic-c-suite-execs-terminated/693548/,2026-11-15T09:08:32Z,browser,0,HTTP 403
+10708,https://www.cfo.com/news/orthofix-cfo-john-bostjancic-c-suite-execs-terminated/693548/,2026-11-15T09:08:35Z,archive 20240224123855,0,HTTP 429
+162,https://www.washingtonpost.com/archive/business/2005/03/15/aig-chief-greenberg-retires-in-shake-up/a012a34b-a61f-4209-b91b-636e20d0aeb1/,2026-11-15T09:09:16Z,browser,438,
+318,https://sec.report/Document/0000950103-02-000801/?__cf_chl_jschl_tk__=32229d06819567b9ef676bb4bb3f308d5b64313e-1592086953-0-AQxfhNOGJZ7hNY1w-930qm47sGzT_NQFKiLOn--glPFUOsSI8_byXdafHTLBdN3TdcXmXoKPGUwlp7IpTz-jW-ccC8m0HAo7-Da6RKtzV0aESLeUjS4eyz9DMLbRUSoT-29_XmtKTz8C51PunbxgBOjDaf5qq3PKKwmqd9ceL5QEln6L3LcKPhpyKiVWnjymC4jfI85ISu3PBz7Mwk9gXbX3AYY8jWrwRNFzqLhTtMK9SxotSK7c8cyNEr3nBc1TW3z1n4Op-y7pOk8ula9GRhpVESMphoOP4NIPlvTB6-cWxlzl5ZD_n1O4XkF0pSj4wOIZqkc_40EF0AIScJrbX9_VB9BkR4Y0WUf7kEWpUXPv7bEcz-GSm01QNT4n0vfHNQ,2026-11-15T09:09:18Z,browser,0,fetch failed (URLError)
+318,https://sec.report/Document/0000950103-02-000801/?__cf_chl_jschl_tk__=32229d06819567b9ef676bb4bb3f308d5b64313e-1592086953-0-AQxfhNOGJZ7hNY1w-930qm47sGzT_NQFKiLOn--glPFUOsSI8_byXdafHTLBdN3TdcXmXoKPGUwlp7IpTz-jW-ccC8m0HAo7-Da6RKtzV0aESLeUjS4eyz9DMLbRUSoT-29_XmtKTz8C51PunbxgBOjDaf5qq3PKKwmqd9ceL5QEln6L3LcKPhpyKiVWnjymC4jfI85ISu3PBz7Mwk9gXbX3AYY8jWrwRNFzqLhTtMK9SxotSK7c8cyNEr3nBc1TW3z1n4Op-y7pOk8ula9GRhpVESMphoOP4NIPlvTB6-cWxlzl5ZD_n1O4XkF0pSj4wOIZqkc_40EF0AIScJrbX9_VB9BkR4Y0WUf7kEWpUXPv7bEcz-GSm01QNT4n0vfHNQ,2026-11-15T09:09:25Z,archive,0,no capture
+341,https://www.ball.com/newswire/article/124103/ball-corporation-board-elects-fisher-as-ceo-hayes-to-remain-chairman,2026-11-15T09:09:25Z,browser,1457,
+443,https://www.wsj.com/articles/SB10001424052702303815404577335551794808074,2026-11-15T09:09:28Z,browser,0,HTTP 401
+443,https://www.wsj.com/articles/SB10001424052702303815404577335551794808074,2026-11-15T09:09:35Z,archive 20141219173940,0,HTTP 429
+498,https://money.cnn.com/2005/03/07/news/fortune500/boeing_ceo/,2026-11-15T09:16:43Z,browser,0,HTTP 503
+498,https://money.cnn.com/2005/03/07/news/fortune500/boeing_ceo/,2026-11-15T09:16:50Z,archive 20050603081014,0,HTTP 429
+536,https://money.cnn.com/2006/09/12/news/companies/bristol/index.htm,2026-11-15T09:23:58Z,browser,0,HTTP 503
+536,https://money.cnn.com/2006/09/12/news/companies/bristol/index.htm,2026-11-15T09:24:07Z,archive 20080511150752,1650,
+702,https://www.sec.gov/Archives/edgar/data/278166/000027816618000063/a2018929-exhibit101.htm,2026-11-15T09:24:16Z,browser,2631,
+780,https://www.sec.gov/Archives/edgar/data/313927/000119312505057673/dpre14a.htm,2026-11-15T09:24:17Z,browser,19994,
+912,https://www.computerworld.com/article/2565088/update--ca-s-sanjay-kumar-stepping-down-as-ceo.html,2026-11-15T09:24:18Z,browser,1044,
+919,https://en.wikipedia.org/wiki/DXC_Technology,2026-11-15T09:24:20Z,browser,2105,
+948,http://www.fundinguniverse.com/company-histories/consolidated-papers-inc-history/,2026-11-15T09:24:22Z,browser,3423,
+957,https://www.power-eng.com/news/cms-energys-ceo-quits-board-creates-committee-to-investigate-round-trip-trading/#gref,2026-11-15T09:24:25Z,browser,0,HTTP 403
+957,https://www.power-eng.com/news/cms-energys-ceo-quits-board-creates-committee-to-investigate-round-trip-trading/#gref,2026-11-15T09:24:32Z,archive,0,no capture
+1041,https://www.toledoblade.com/local/2008/11/04/Dana-CEO-to-leave-post-was-on-job-for-6-months/stories/200811040049,2026-11-15T09:24:32Z,browser,388,
+1053,https://www.sec.gov/Archives/edgar/data/27096/000092189507002572/dfan14a06297040_11082007.htm,2026-11-15T09:24:34Z,browser,3280,
+1062,https://www.law360.com/articles/25153/ex-dpl-execs-settle-payout-suit-for-25m,2026-11-15T09:24:35Z,browser,1076,
+1087,https://www.chicagotribune.com/business/ct-devry-ceo-0525-biz-20160524-story.html,2026-11-15T09:24:38Z,browser,1377,
+1361,https://www.sec.gov/Archives/edgar/data/794367/000079436703000061/fds8k041603.htm,2026-11-15T09:24:40Z,browser,695,
+1431,https://www.tampabay.com/archive/1997/11/10/florida-progress-then-and-now/,2026-11-15T09:24:41Z,browser,288,
+1556,https://www.hollandsentinel.com/news/20180228/zeelands-gentex-corporation-appoints-leadership-team,2026-11-15T09:24:43Z,browser,0,HTTP 402
+1556,https://www.hollandsentinel.com/news/20180228/zeelands-gentex-corporation-appoints-leadership-team,2026-11-15T09:24:54Z,archive 20180228213718,0,HTTP 429
+1622,http://www.vermontguides.com/nbmerge/nb97.htm,2026-11-15T09:32:03Z,browser,0,fetch failed (URLError)
+1622,http://www.vermontguides.com/nbmerge/nb97.htm,2026-11-15T09:32:40Z,archive 20010215155017,4555,
+1777,https://www.sec.gov/Archives/edgar/data/48898/000095012304003303/y93651def14a.htm,2026-11-15T09:32:48Z,browser,13919,
+1869,https://exechange.com/19219/interface-ceo-jay-gould-leaves,2026-11-15T09:32:49Z,browser,510,
+1875,https://webcache.googleusercontent.com/search?q=cache:cuGXQwGgvu4J:https://www.bizjournals.com/atlanta/stories/1997/09/15/focus2.html+&cd=6&hl=en&ct=clnk&gl=ph,2026-11-15T09:32:52Z,browser,13,under 100 words
+1875,https://webcache.googleusercontent.com/search?q=cache:cuGXQwGgvu4J:https://www.bizjournals.com/atlanta/stories/1997/09/15/focus2.html+&cd=6&hl=en&ct=clnk&gl=ph,2026-11-15T09:33:00Z,archive,0,no capture
+1878,https://www.sec.gov/Archives/edgar/data/51124/000005112400000012/0000051124-00-000012.txt,2026-11-15T09:33:00Z,browser,1255,
+1881,https://www.footnoted.com/revisiting-ibms-palmisano-equation/,2026-11-15T09:33:01Z,browser,2034,
+1888,https://ir.iff.com/news-releases/news-release-details/iff-appoints-frank-clyburn-chief-executive-officer-and-board,2026-11-15T09:33:04Z,browser,2943,
+1891,https://www.ttnews.com/articles/former-navistar-ceo-daniel-ustian-sec-ready-discuss-settlement,2026-11-15T09:33:05Z,browser,928,
+1911,https://www.eetimes.com/document.asp?doc_id=1252932,2026-11-15T09:33:07Z,browser,0,HTTP 403
+1911,https://www.eetimes.com/document.asp?doc_id=1252932,2026-11-15T09:33:17Z,archive 20171214212459,0,HTTP 429
+1997,http://ir.kla-tencor.com/news-releases/news-release-details/kla-tencor-appoints-rick-wallace-chief-executive-officer-john,2026-11-15T09:40:24Z,browser,0,HTTP 404
+1997,http://ir.kla-tencor.com/news-releases/news-release-details/kla-tencor-appoints-rick-wallace-chief-executive-officer-john,2026-11-15T09:40:32Z,archive,0,no capture
+2001,https://www.crainsdetroit.com/article/20100225/FREE/100229913/former-kmart-ceo-charles-conaway-ordered-to-pay-millions,2026-11-15T09:40:32Z,browser,150,
+2103,https://www.wsj.com/articles/lam-research-ceo-resigns-amid-misconduct-investigation-1544049396,2026-11-15T09:40:35Z,browser,0,HTTP 401
+2103,https://www.wsj.com/articles/lam-research-ceo-resigns-amid-misconduct-investigation-1544049396,2026-11-15T09:40:43Z,archive 20181206014736,978,
+2220,https://www.mts.com/en/about/news/mtsnews/DEV_003657,2026-11-15T09:40:51Z,browser,1452,
+2242,https://www.nasdaq.com/article/host-hotels-president-ceo-w-edward-walter-to-step-down-cm721982,2026-11-15T09:40:55Z,browser,0,HTTP 403
+2242,https://www.nasdaq.com/article/host-hotels-president-ceo-w-edward-walter-to-step-down-cm721982,2026-11-15T09:41:06Z,archive 20161216161232,0,HTTP 429
+2271,https://www.wsj.com/articles/mattel-ceo-margo-georgiadis-in-talks-to-leave-the-company-1524166521,2026-11-15T09:48:14Z,browser,0,HTTP 401
+2271,https://www.wsj.com/articles/mattel-ceo-margo-georgiadis-in-talks-to-leave-the-company-1524166521,2026-11-15T09:48:21Z,archive 20180419220746,0,HTTP 429
+2327,https://sec.report/Document/0000898430-01-000920/,2026-11-15T09:55:29Z,browser,0,fetch failed (URLError)
+2327,https://sec.report/Document/0000898430-01-000920/,2026-11-15T09:55:37Z,archive,0,no capture
+2353,https://www.investmentnews.com/taking-sidessome-good-news-amid-all-the-bad-5565,2026-11-15T09:55:37Z,browser,0,HTTP 404
+2353,https://www.investmentnews.com/taking-sidessome-good-news-amid-all-the-bad-5565,2026-11-15T09:55:49Z,archive,0,no capture
+2434,https://www.wsj.com/articles/SB877533714204931000,2026-11-15T09:55:49Z,browser,0,HTTP 401
+2434,https://www.wsj.com/articles/SB877533714204931000,2026-11-15T09:55:57Z,archive 20180317202511,0,HTTP 429
+2483,https://www.nj.com/business/2008/06/plea_deal_ends_nui_probe.html,2026-11-15T10:03:07Z,browser,0,HTTP 403
+2483,https://www.nj.com/business/2008/06/plea_deal_ends_nui_probe.html,2026-11-15T10:03:15Z,archive 20221103151442,0,HTTP 429
+2494,https://progressivegrocer.com/nash-finch-ceo-marshall-leave-06,2026-11-15T10:10:23Z,browser,0,HTTP 403
+2494,https://progressivegrocer.com/nash-finch-ceo-marshall-leave-06,2026-11-15T10:10:32Z,archive 20230926063039,595,
+2585,https://www.sec.gov/Archives/edgar/data/320187/000032018716000339/nke-2016xdef14a.htm,2026-11-15T10:11:40Z,browser,29240,
+2643,https://billingsgazette.com/business/even-with-bankruptcy-northwestern-pays-millions-to-current-and-former/article_f05250d3-76e6-5a8b-968a-bff8eb3c1f22.html,2026-11-15T10:11:42Z,browser,0,HTTP 403
+2643,https://billingsgazette.com/business/even-with-bankruptcy-northwestern-pays-millions-to-current-and-former/article_f05250d3-76e6-5a8b-968a-bff8eb3c1f22.html,2026-11-15T10:11:56Z,archive 20120828005552,0,HTTP 429
+2651,https://www.nytimes.com/2016/10/13/business/dealbook/wells-fargo-ceo.html,2026-11-15T10:19:04Z,browser,493,
+2691,https://exechange.com/20309/firstenergy-ceo-chuck-jones-leaves,2026-11-15T10:19:06Z,browser,510,
+2747,https://pubs.acs.org/doi/10.1021/cen-v071n030.p006a,2026-11-15T10:19:09Z,browser,0,HTTP 403
+2747,https://pubs.acs.org/doi/10.1021/cen-v071n030.p006a,2026-11-15T10:19:19Z,archive,0,no capture
+2838,https://webcache.googleusercontent.com/search?q=cache:UxviCW5boq8J:https://www.chicagotribune.com/news/ct-xpm-2006-02-25-0602250176-story.html+&cd=2&hl=en&ct=clnk&gl=ph,2026-11-15T10:19:19Z,browser,13,under 100 words
+2838,https://webcache.googleusercontent.com/search?q=cache:UxviCW5boq8J:https://www.chicagotribune.com/news/ct-xpm-2006-02-25-0602250176-story.html+&cd=2&hl=en&ct=clnk&gl=ph,2026-11-15T10:19:28Z,archive,0,no capture
+2853,https://www.bizjournals.com/denver/news/2011/06/11/new-ceo-chairman-named-at-pdc-energy.html,2026-11-15T10:19:28Z,browser,0,HTTP 403
+2853,https://www.bizjournals.com/denver/news/2011/06/11/new-ceo-chairman-named-at-pdc-energy.html,2026-11-15T10:19:35Z,archive 20110616230559,0,HTTP 429
+2978,https://www.nasa.gov/offices/nac/members/montoya-bio.html,2026-11-15T10:26:44Z,browser,0,HTTP 404
+2978,https://www.nasa.gov/offices/nac/members/montoya-bio.html,2026-11-15T10:26:53Z,archive 20090528110835,0,HTTP 429
+3032,https://www.northeastern.edu/voices/picard/bio.html,2026-11-15T10:34:01Z,browser,0,HTTP 404
+3032,https://www.northeastern.edu/voices/picard/bio.html,2026-11-15T10:34:10Z,archive 20110724203539,615,
+3058,https://www.bizjournals.com/dayton/stories/2004/08/02/daily4.html,2026-11-15T10:37:20Z,browser,0,HTTP 403
+3058,https://www.bizjournals.com/dayton/stories/2004/08/02/daily4.html,2026-11-15T10:37:27Z,archive 20040907131831,0,HTTP 429
+3138,https://www.huffingtonpost.ca/2016/03/21/j-michael-pearson-valeant_n_9515494.html,2026-11-15T10:44:36Z,browser,0,HTTP 404
+3138,https://www.huffingtonpost.ca/2016/03/21/j-michael-pearson-valeant_n_9515494.html,2026-11-15T10:44:44Z,archive 20160324032549,0,HTTP 429
+3179,https://www.washingtonpost.com/archive/business/2002/11/14/ceo-leaving-drug-company/5302e0d6-1c3d-457e-9b21-93440a1cef4c/,2026-11-15T10:51:52Z,browser,449,
+3185,https://www.crainscleveland.com/article/20071116/FREE/71116017/ceo-haines-to-exit-a-schulman,2026-11-15T10:51:54Z,browser,163,
+3210,https://www.chron.com/business/article/Ex-Seitel-CEO-gets-63-months-in-prison-1931979.php,2026-11-15T10:51:57Z,browser,1398,
+3398,https://www.sec.gov/Archives/edgar/data/723610/0000723610-98-000005.txt,2026-11-15T10:52:06Z,browser,0,HTTP 503
+3398,https://www.sec.gov/Archives/edgar/data/723610/0000723610-98-000005.txt,2026-11-15T10:52:24Z,archive,0,no capture
+3454,https://www.chicagotribune.com/news/ct-xpm-2004-07-04-0407030278-story.html,2026-11-15T10:52:24Z,browser,1924,
+3456,https://www.crn.com/news/channel-programs/18826107/symbol-ceo-bravman-steps-down.htm,2026-11-15T10:52:26Z,browser,0,HTTP 404
+3456,https://www.crn.com/news/channel-programs/18826107/symbol-ceo-bravman-steps-down.htm,2026-11-15T10:52:36Z,archive,0,no capture
+3531,https://www.chicagotribune.com/news/ct-xpm-2003-11-06-0311060394-story.html,2026-11-15T10:52:36Z,browser,1755,
+3668,https://www.latimes.com/business/la-fi-united-severance-20160503-snap-story.html,2026-11-15T10:52:38Z,browser,1293,
+3712,https://www.chicagotribune.com/news/ct-xpm-2006-10-16-0610160148-story.html,2026-11-15T10:52:39Z,browser,1614,
+3982,http://www.fundinguniverse.com/company-histories/foot-locker-inc-history/,2026-11-15T10:52:41Z,browser,5359,
+4377,https://www.thestreet.com/technology/three-top-comverse-tech-execs-resign-10282664,2026-11-15T10:52:44Z,browser,0,HTTP 403
+4377,https://www.thestreet.com/technology/three-top-comverse-tech-execs-resign-10282664,2026-11-15T10:52:51Z,archive 20210203235722,475,
+4378,https://seekingalpha.com/article/38178-have-we-seen-the-worst-of-comverse-technology,2026-11-15T10:54:01Z,browser,0,HTTP 403
+4378,https://seekingalpha.com/article/38178-have-we-seen-the-worst-of-comverse-technology,2026-11-15T10:54:09Z,archive 20070901144427,0,HTTP 429
+4475,http://securities.stanford.edu/filings-documents/1030/OI04-01/200417_f01c_0410027.pdf,2026-11-15T11:01:18Z,browser,211,
+4492,https://www.wirelessdesignonline.com/doc/microwave-power-devices-names-new-chairman-of-0001,2026-11-15T11:01:21Z,browser,0,HTTP 404
+4492,https://www.wirelessdesignonline.com/doc/microwave-power-devices-names-new-chairman-of-0001,2026-11-15T11:01:28Z,archive,0,no capture
+4610,https://www.massdevice.com/dentsply-sirona-taps-bd-executive-ceo/,2026-11-15T11:01:28Z,browser,0,HTTP 403
+4610,https://www.massdevice.com/dentsply-sirona-taps-bd-executive-ceo/,2026-11-15T11:01:35Z,archive 20220826143715,0,HTTP 429
+4750,https://webcache.googleusercontent.com/search?q=cache:dlBGal326scJ:https://www.bizjournals.com/pittsburgh/stories/1999/08/30/story4.html+&cd=1&hl=en&ct=clnk&gl=ph,2026-11-15T11:08:43Z,browser,13,under 100 words
+4750,https://webcache.googleusercontent.com/search?q=cache:dlBGal326scJ:https://www.bizjournals.com/pittsburgh/stories/1999/08/30/story4.html+&cd=1&hl=en&ct=clnk&gl=ph,2026-11-15T11:08:51Z,archive,0,no capture
+4795,https://www.globenewswire.com/news-release/2015/07/20/753387/10142206/en/Mercer-International-Inc-Announces-Leadership-Transition.html,2026-11-15T11:08:51Z,browser,1266,
+4824,https://www.rttnews.com/1331009/presidential-life-s-former-ceo-herbert-kurz-resigns-as-director-update.aspx,2026-11-15T11:08:52Z,browser,1341,
+4856,https://www.businesswire.com/news/home/20041115005448/en/Merisel-Announces-Resignation-President-Chief-Executive-Officer,2026-11-15T11:08:54Z,browser,0,HTTP 403
+4856,https://www.businesswire.com/news/home/20041115005448/en/Merisel-Announces-Resignation-President-Chief-Executive-Officer,2026-11-15T11:09:03Z,archive,0,no capture
+4940,https://www.sec.gov/Archives/edgar/data/846909/000102140801506720/ddef14a.txt,2026-11-15T11:09:03Z,browser,15802,
+4957,https://kundoc.com/pdf-enhanced-distributorship-deal-agreed-.html,2026-11-15T11:09:05Z,browser,0,fetch failed (URLError)
+4957,https://kundoc.com/pdf-enhanced-distributorship-deal-agreed-.html,2026-11-15T11:09:12Z,archive,0,no capture
+5013,http://www.fundinguniverse.com/company-histories/lechters-inc-history/,2026-11-15T11:09:12Z,browser,3043,
+5038,https://www.eetimes.com/document.asp?doc_id=1155699,2026-11-15T11:09:15Z,browser,0,HTTP 403
+5038,https://www.eetimes.com/document.asp?doc_id=1155699,2026-11-15T11:09:23Z,archive,0,no capture
+5063,https://apnews.com/c6cd3178b292535f94e12764cc8d1b63,2026-11-15T11:09:23Z,browser,0,HTTP 403
+5063,https://apnews.com/c6cd3178b292535f94e12764cc8d1b63,2026-11-15T11:09:32Z,archive,0,no capture
+5079,https://www.nytimes.com/2007/07/31/nyregion/31hill.html,2026-11-15T11:09:32Z,browser,1549,
+5082,https://www.sec.gov/litigation/litreleases/2008/lr20721.htm,2026-11-15T11:09:34Z,browser,968,
+5083,https://www.businesswire.com/news/home/20090928006072/en/BanCorp-Announces-Senior-Management-Board-Directors,2026-11-15T11:09:36Z,browser,0,HTTP 403
+5083,https://www.businesswire.com/news/home/20090928006072/en/BanCorp-Announces-Senior-Management-Board-Directors,2026-11-15T11:09:46Z,archive,0,no capture
+5210,https://www.reuters.com/article/us-brixmor-cfo/brixmor-property-group-names-angela-aman-cfo-idUSKCN0XO2RA,2026-11-15T11:09:46Z,browser,0,HTTP 401
+5210,https://www.reuters.com/article/us-brixmor-cfo/brixmor-property-group-names-angela-aman-cfo-idUSKCN0XO2RA,2026-11-15T11:09:53Z,archive 20181208220445,311,
+5287,https://www.baltimoresun.com/news/bs-xpm-1999-04-06-9904060153-story.html,2026-11-15T11:10:01Z,browser,1121,
+5449,https://www.americanbanker.com/slideshow/women-to-watch-2013,2026-11-15T11:10:09Z,browser,862,
+5475,https://www.businesswire.com/news/home/20220615005803/en/Patrick-Beharelle-Resigns-as-TrueBlue-CEO,2026-11-15T11:10:10Z,browser,0,HTTP 403
+5475,https://www.businesswire.com/news/home/20220615005803/en/Patrick-Beharelle-Resigns-as-TrueBlue-CEO,2026-11-15T11:10:18Z,archive 20220616072005,524,
+5586,https://www.businesswire.com/news/home/20140627005323/en/Biolase-Director-Federico-Pignatelli-Initiates-Process-Obtain,2026-11-15T11:17:31Z,browser,0,HTTP 403
+5586,https://www.businesswire.com/news/home/20140627005323/en/Biolase-Director-Federico-Pignatelli-Initiates-Process-Obtain,2026-11-15T11:17:39Z,archive 20140717102455,0,HTTP 429
+5632,https://sec.report/Document/0000912057-97-029527/,2026-11-15T11:24:47Z,browser,0,fetch failed (URLError)
+5632,https://sec.report/Document/0000912057-97-029527/,2026-11-15T11:24:57Z,archive,0,no capture
+5877,https://www.tampabay.com/archive/1994/03/10/checkers-founder-resigns-as-ceo/,2026-11-15T11:24:57Z,browser,288,
+5884,https://www.sj-r.com/article/20101006/NEWS/310069923,2026-11-15T11:25:04Z,browser,0,HTTP 402
+5884,https://www.sj-r.com/article/20101006/NEWS/310069923,2026-11-15T11:25:12Z,archive 20160406083307,1096,
+5911,http://www.fundinguniverse.com/company-histories/the-hockey-company-history/,2026-11-15T11:32:28Z,browser,2630,
+6197,https://www.bizjournals.com/sanjose/news/2011/07/12/mcafee-names-michael-decesare-todd.html,2026-11-15T11:32:30Z,browser,0,HTTP 403
+6197,https://www.bizjournals.com/sanjose/news/2011/07/12/mcafee-names-michael-decesare-todd.html,2026-11-15T11:32:38Z,archive 20110715223324,0,HTTP 429
+6201,https://www.nytimes.com/1998/02/04/business/chief-of-gtech-quits-in-wake-of-libel-case.html,2026-11-15T11:39:46Z,browser,485,
+6245,http://blog.al.com/businessnews/2009/03/booksamillion_chief_cochran_de.html,2026-11-15T11:39:48Z,browser,0,HTTP 403
+6245,http://blog.al.com/businessnews/2009/03/booksamillion_chief_cochran_de.html,2026-11-15T11:39:55Z,archive 20090318081611,0,HTTP 429
+6278,https://www.reuters.com/article/blackbox-ceo-idUSWNAS690920071018,2026-11-15T11:47:03Z,browser,0,HTTP 401
+6278,https://www.reuters.com/article/blackbox-ceo-idUSWNAS690920071018,2026-11-15T11:47:10Z,archive 20210516212546,0,HTTP 429
+6290,https://www.crainsdetroit.com/article/20080822/REG/60405905/former-hayes-lemmerz-executive-found-liable-in-accounting-fraud,2026-11-15T11:54:19Z,browser,149,
+6340,https://www.entrepreneur.com/author/bruce-cazenave,2026-11-15T11:54:26Z,browser,1189,
+6350,https://www.bizjournals.com/pittsburgh/news/2013/01/29/chesapeakes-mcclendon-to-retire-april-1.html,2026-11-15T11:54:29Z,browser,0,HTTP 403
+6350,https://www.bizjournals.com/pittsburgh/news/2013/01/29/chesapeakes-mcclendon-to-retire-april-1.html,2026-11-15T11:54:38Z,archive,0,no capture
+6426,http://www.siliconbeat.com/2008/05/02/applied-signal-co-founder-steps-down-as-chairman-and-ceo/,2026-11-15T11:54:38Z,browser,0,fetch failed (URLError)
+6426,http://www.siliconbeat.com/2008/05/02/applied-signal-co-founder-steps-down-as-chairman-and-ceo/,2026-11-15T11:54:47Z,archive,0,no capture
+6430,https://www.sec.gov/Archives/edgar/data/745732/000091205702013818/a2075841zpre14a.htm,2026-11-15T11:54:47Z,browser,11860,
+6483,https://www.bizjournals.com/twincities/stories/2001/03/26/story5.html,2026-11-15T11:54:49Z,browser,0,HTTP 403
+6483,https://www.bizjournals.com/twincities/stories/2001/03/26/story5.html,2026-11-15T11:54:56Z,archive 20180923234113,0,HTTP 429
+6554,https://www.ogj.com/general-interest/article/17243831/stone-energy-responds-to-reserves-review,2026-11-15T12:02:05Z,browser,618,
+6584,https://www.businesswire.com/news/home/20050328005748/en/Equity-Residential-Announces-January-2006-Retirement-CEO,2026-11-15T12:02:06Z,browser,0,HTTP 403
+6584,https://www.businesswire.com/news/home/20050328005748/en/Equity-Residential-Announces-January-2006-Retirement-CEO,2026-11-15T12:02:14Z,archive,0,no capture
+6588,https://www.autonews.com/article/20121115/OEM02/121119933/borgwarner-picks-verrier-to-succeed-manganello-as-ceo,2026-11-15T12:02:14Z,browser,203,
+6682,https://www.europeanceo.com/lifestyle/glen-senk-leaves-urban-outfitters/,2026-11-15T12:02:17Z,browser,816,
+6830,https://www.bizjournals.com/denver/stories/2010/04/12/daily3.html,2026-11-15T12:02:19Z,browser,0,HTTP 403
+6830,https://www.bizjournals.com/denver/stories/2010/04/12/daily3.html,2026-11-15T12:02:26Z,archive,0,no capture
+6879,https://www.google.com/search?safe=active&rlz=1C1CHBF_enUS819US819&tbs=cdr:1,2026-11-15T12:02:26Z,browser,7,under 100 words
+6879,https://www.google.com/search?safe=active&rlz=1C1CHBF_enUS819US819&tbs=cdr:1,2026-11-15T12:02:34Z,archive,0,no capture
+6885,https://www.prnewswire.com/news-releases/robert-b-goergen-jr-named-as-blyth-incs-new-ceo-232328371.html,2026-11-15T12:02:34Z,browser,1848,
+6887,https://www.prnewswire.com/news-releases/ameris-bancorp-announces-ceo-succession-300661242.html,2026-11-15T12:02:35Z,browser,1418,
+6969,https://www.google.com/search?safe=active&rlz=1C1CHBF_enUS819US819&tbs=cdr:1,2026-11-15T12:02:37Z,browser,3,under 100 words
+6969,https://www.google.com/search?safe=active&rlz=1C1CHBF_enUS819US819&tbs=cdr:1,2026-11-15T12:02:44Z,archive,0,no capture
+7032,http://www.mondovisione.com/media-and-resources/news/sec-charges-former-chairman-and-ceo-of-brooks-automation-in-stock-option-fraud/,2026-11-15T12:02:44Z,browser,0,HTTP 404
+7032,http://www.mondovisione.com/media-and-resources/news/sec-charges-former-chairman-and-ceo-of-brooks-automation-in-stock-option-fraud/,2026-11-15T12:02:54Z,archive,0,no capture
+7167,https://sec.report/Document/0000931148-99-000023/,2026-11-15T12:02:54Z,browser,0,fetch failed (URLError)
+7167,https://sec.report/Document/0000931148-99-000023/,2026-11-15T12:03:02Z,archive,0,no capture
+7344,https://www.nytimes.com/2005/03/30/business/2-former-top-executives-at-impath-are-indicted.html,2026-11-15T12:03:02Z,browser,464,
+7394,https://seekingalpha.com/article/18612-options-scandal-sweeps-out-ceo-cfo-at-sapient,2026-11-15T12:03:04Z,browser,0,HTTP 403
+7394,https://seekingalpha.com/article/18612-options-scandal-sweeps-out-ceo-cfo-at-sapient,2026-11-15T12:03:14Z,archive 20080122172833,1035,
+7468,https://www.naura-akrion.com/peter-kirlin-former-ceo-of-dupont-photomasks-joins-akrions-board-of-directors/,2026-11-15T12:03:21Z,browser,0,fetch failed (URLError)
+7468,https://www.naura-akrion.com/peter-kirlin-former-ceo-of-dupont-photomasks-joins-akrions-board-of-directors/,2026-11-15T12:03:59Z,archive,0,no capture
+7657,http://www.tributes.com/obituary/print/84629050,2026-11-15T12:03:59Z,browser,0,HTTP 410
+7657,http://www.tributes.com/obituary/print/84629050,2026-11-15T12:04:06Z,archive,0,no capture
+7747,https://www.eetimes.com/author.asp?section_id=36&doc_id=1333485,2026-11-15T12:04:06Z,browser,0,HTTP 403
+7747,https://www.eetimes.com/author.asp?section_id=36&doc_id=1333485,2026-11-15T12:04:16Z,archive 20180911042351,0,HTTP 429
+7763,https://www.theinquirer.net/inquirer/news/1010849/health-outsourcer-fires-ceo-over-workers-treatment,2026-11-15T12:11:24Z,browser,0,HTTP 522
+7763,https://www.theinquirer.net/inquirer/news/1010849/health-outsourcer-fires-ceo-over-workers-treatment,2026-11-15T12:11:51Z,archive 20191226043545,0,HTTP 429
+7772,https://www.businesswire.com/news/home/20050218005578/en/StarTek-Announces-Management-Change,2026-11-15T12:18:59Z,browser,0,HTTP 403
+7772,https://www.businesswire.com/news/home/20050218005578/en/StarTek-Announces-Management-Change,2026-11-15T12:19:06Z,archive,0,no capture
+7802,https://www.chicagobusiness.com/article/20020419/NEWS01/20005170/equity-office-ceo-steps-down,2026-11-15T12:19:06Z,browser,147,
+7956,https://dealbreaker.com/2007/05/verisigning-off-ceo-leaves-under-extremely-secret-yet-secure-conditions,2026-11-15T12:19:09Z,browser,0,HTTP 403
+7956,https://dealbreaker.com/2007/05/verisigning-off-ceo-leaves-under-extremely-secret-yet-secure-conditions,2026-11-15T12:19:11Z,archive,0,archive HTTP 403
+7990,https://jimmycsays.com/2017/09/30/keith-a-tucker-guilty-on-two-counts-gaming-the-tax-code-and-depriving-area-residents-of-a-view-of-one-of-the-most-beautiful-homes-in-kc/,2026-11-15T12:19:11Z,browser,1858,
+8085,https://www.dallasnews.com/news/watchdog/2013/11/24/watchdog-mannatech-founder-banned-from-company-still-works-from-inside/,2026-11-15T12:19:13Z,browser,1591,
+8086,https://www.dallasnews.com/business/2009/12/03/mannatech-ceo-quits-after-17-months-on-the-job/,2026-11-15T12:19:15Z,browser,973,
+8139,https://www.kansascity.com/news/business/technology/article73518922.html,2026-11-15T12:19:17Z,browser,806,
+8155,https://www.bizjournals.com/seattle/blog/techflash/2009/02/Voelker_leaves_InfoSpace_as_former_VC_takes_over39151932.html,2026-11-15T12:19:21Z,browser,0,HTTP 403
+8155,https://www.bizjournals.com/seattle/blog/techflash/2009/02/Voelker_leaves_InfoSpace_as_former_VC_takes_over39151932.html,2026-11-15T12:19:28Z,archive 20190717044137,5,under 100 words
+8247,http://content.time.com/time/specials/packages/article/0,2026-11-15T12:22:39Z,browser,0,HTTP 403
+8247,http://content.time.com/time/specials/packages/article/0,2026-11-15T12:22:47Z,archive,0,no capture
+8257,https://www.macroaxis.com/invest/manager/117.F/Manuel-Rivelo,2026-11-15T12:22:47Z,browser,0,under 100 words
+8257,https://www.macroaxis.com/invest/manager/117.F/Manuel-Rivelo,2026-11-15T12:22:54Z,archive,0,no capture
+8261,https://www.sec.gov/Archives/edgar/data/1080667/000110465907063935/a07-22396_18k.htm,2026-11-15T12:22:54Z,browser,618,
+8289,https://www.sdxcentral.com/articles/news/why-juniper-ousted-ceo-shaygan-kheradpir/2015/02/,2026-11-15T12:22:56Z,browser,1132,
+8398,https://www.postbulletin.com/news/business/ibm-sells-division-to-toshiba/article_ee1d6bae-00ac-5e4a-b171-18217e100610.html,2026-11-15T12:22:57Z,browser,0,HTTP 404
+8398,https://www.postbulletin.com/news/business/ibm-sells-division-to-toshiba/article_ee1d6bae-00ac-5e4a-b171-18217e100610.html,2026-11-15T12:23:05Z,archive,0,no capture
+8426,https://www.networkworld.com/article/2311658/utstarcom-s-ceo-bows-out-amidst-accounting-mess.html,2026-11-15T12:23:05Z,browser,0,HTTP 404
+8426,https://www.networkworld.com/article/2311658/utstarcom-s-ceo-bows-out-amidst-accounting-mess.html,2026-11-15T12:23:12Z,archive,0,no capture
+8496,https://www.morningstar.com/articles/298806/gary-black-out-as-ceo-of-janus,2026-11-15T12:23:12Z,browser,0,HTTP 404
+8496,https://www.morningstar.com/articles/298806/gary-black-out-as-ceo-of-janus,2026-11-15T12:23:21Z,archive 20210313192027,0,HTTP 429
+8517,https://www.channele2e.com/news/equinix-ceo-resigned-six-days-before-public-disclosure/,2026-11-15T12:30:29Z,browser,438,
+8540,https://www.nytimes.com/2020/07/21/business/tapestry-jide-zeitlin-resigns.html,2026-11-15T12:30:31Z,browser,598,
+8554,https://www.forbes.com/2008/01/07/nii-holdings-dussek-markets-equity-cx_ra_0107markets22.html#170441f44e7a,2026-11-15T12:30:32Z,browser,1715,
+8578,https://www.npr.org/sections/thetwo-way/2017/05/11/527886633/ex-massey-energy-ceo-completes-1-year-federal-criminal-sentence,2026-11-15T12:30:34Z,browser,783,
+8585,https://www.sec.gov/Archives/edgar/data/1129623/000095013404015119/d19177e8vk.htm,2026-11-15T12:30:37Z,browser,1225,
+8586,https://www.bizjournals.com/dallas/stories/2003/09/22/daily2.html,2026-11-15T12:30:38Z,browser,0,HTTP 403
+8586,https://www.bizjournals.com/dallas/stories/2003/09/22/daily2.html,2026-11-15T12:30:45Z,archive 20040401052257,614,
+8601,https://www.allaccess.com/net-news/archive/story/69030/update-arbitron-s-michael-skarzynski-exits-under-a,2026-11-15T12:38:01Z,browser,114,
+8664,https://fortune.com/2018/05/11/gamestop-ceo-michael-mauler-resigns/,2026-11-15T12:38:05Z,browser,641,
+8747,https://www.businesswire.com/news/home/20100812006340/en/Red-Robin-Announces-Stephen-E.-Carley-Appointed,2026-11-15T12:38:06Z,browser,0,HTTP 403
+8747,https://www.businesswire.com/news/home/20100812006340/en/Red-Robin-Announces-Stephen-E.-Carley-Appointed,2026-11-15T12:38:16Z,archive,0,no capture
+8760,https://www.theadvocate.com/baton_rouge/news/business/article_9f50a11a-b51f-5619-a9fa-0288fd00185e.html,2026-11-15T12:38:16Z,browser,0,HTTP 403
+8760,https://www.theadvocate.com/baton_rouge/news/business/article_9f50a11a-b51f-5619-a9fa-0288fd00185e.html,2026-11-15T12:38:23Z,archive 20180723185706,0,HTTP 429
+8761,https://www.fool.com/investing/2018/01/31/what-the-steve-wynn-allegations-could-mean-for-wyn.aspx,2026-11-15T12:45:32Z,browser,1717,
+8966,https://www.wsj.com/articles/SB10001424052970204642604577213513713315158,2026-11-15T12:45:33Z,browser,0,HTTP 401
+8966,https://www.wsj.com/articles/SB10001424052970204642604577213513713315158,2026-11-15T12:45:41Z,archive 20160626075340,0,HTTP 429
+9005,https://www.tronox.com/tronox-limited-names-jeffry-n-quinn-as-chief-executive-officer/,2026-11-15T12:52:48Z,browser,642,
+9181,https://www.bizjournals.com/washington/news/2016/12/19/comscore-sees-yet-another-departure-with.html,2026-11-15T12:52:50Z,browser,0,HTTP 403
+9181,https://www.bizjournals.com/washington/news/2016/12/19/comscore-sees-yet-another-departure-with.html,2026-11-15T12:52:57Z,archive 20161223124301,1508,
+9315,https://www.jbtc.com/news-and-events/press-releases/2020-09-24-brian-deck-appointed-interim-president-and-ceo,2026-11-15T12:53:05Z,browser,0,HTTP 404
+9315,https://www.jbtc.com/news-and-events/press-releases/2020-09-24-brian-deck-appointed-interim-president-and-ceo,2026-11-15T12:53:13Z,archive 20210923212935,0,HTTP 429
+9423,https://www.marketwatch.com/story/wageworks-cleans-house-after-investigation-but-may-not-be-done-2018-04-05,2026-11-15T13:00:22Z,browser,0,HTTP 401
+9423,https://www.marketwatch.com/story/wageworks-cleans-house-after-investigation-but-may-not-be-done-2018-04-05,2026-11-15T13:00:29Z,archive 20180406020700,0,HTTP 429
+9943,https://www.firstenergycorp.com/newsroom/news_articles/firstenergy-names-steven-e--strah-chief-executive-officer.html,2026-11-15T13:07:37Z,browser,2894,
+10037,https://www.chemours.com/en/about-chemours/leadership/mark-e-newman-leadership-bio,2026-11-15T13:07:42Z,browser,0,HTTP 403
+10037,https://www.chemours.com/en/about-chemours/leadership/mark-e-newman-leadership-bio,2026-11-15T13:07:50Z,archive 20191113025734,845,
+10065,https://www.wsj.com/articles/SB116403059773828336,2026-11-15T13:07:57Z,browser,0,HTTP 401
+10065,https://www.wsj.com/articles/SB116403059773828336,2026-11-15T13:08:04Z,archive 20191019072148,0,HTTP 429
+10192,https://advance-lexis-com.umiss.idm.oclc.org/api/document?collection=news&id=urn:contentItem:5YVK-SY21-DXMP-K060-00000-00&context=1516831,2026-11-15T13:15:13Z,none,0,library login
+10482,https://www.prnewswire.com/news-releases/mark-j-decesaris-to-retire-as-ceo-of-w-p-carey-at-year-end-jason-e-fox-named-as-successor-300548917.html,2026-11-15T13:15:13Z,browser,2015,
+10625,https://www.wsj.com/us-news/unitedhealth-medicare-fraud-investigation-df80667f?mod=hp_lead_pos1,2026-11-15T13:15:14Z,browser,0,HTTP 401
+10625,https://www.wsj.com/us-news/unitedhealth-medicare-fraud-investigation-df80667f?mod=hp_lead_pos1,2026-11-15T13:15:23Z,archive 20250514231841,851,
+10649,https://freddiemac.gcs-web.com/news-releases/news-release-details/freddie-mac-announces-michael-t-hutchins-interim-ceo,2026-11-15T13:15:31Z,browser,730,
+10679,https://www.sec.gov/Archives/edgar/data/876523/000087652314000072/a8-k7x21x14.htm,2026-11-15T13:15:33Z,browser,1543,
+10708,https://www.cfo.com/news/orthofix-cfo-john-bostjancic-c-suite-execs-terminated/693548/,2026-11-15T13:15:34Z,browser,0,HTTP 403
+10708,https://www.cfo.com/news/orthofix-cfo-john-bostjancic-c-suite-execs-terminated/693548/,2026-11-15T13:15:41Z,archive 20240224123855,0,HTTP 429
+443,https://www.wsj.com/articles/SB10001424052702303815404577335551794808074,2026-11-15T13:23:18Z,browser,0,HTTP 401
+443,https://www.wsj.com/articles/SB10001424052702303815404577335551794808074,2026-11-15T13:23:41Z,archive 20141219173940,0,HTTP 429
+498,https://money.cnn.com/2005/03/07/news/fortune500/boeing_ceo/,2026-11-15T13:30:49Z,browser,0,HTTP 503
+498,https://money.cnn.com/2005/03/07/news/fortune500/boeing_ceo/,2026-11-15T13:31:15Z,archive 20050603081014,0,HTTP 429
+1556,https://www.hollandsentinel.com/news/20180228/zeelands-gentex-corporation-appoints-leadership-team,2026-11-15T13:38:23Z,browser,0,HTTP 402
+1556,https://www.hollandsentinel.com/news/20180228/zeelands-gentex-corporation-appoints-leadership-team,2026-11-15T13:38:45Z,archive 20180228213718,0,HTTP 429
+1911,https://www.eetimes.com/document.asp?doc_id=1252932,2026-11-15T13:45:53Z,browser,0,HTTP 403
+1911,https://www.eetimes.com/document.asp?doc_id=1252932,2026-11-15T13:46:16Z,archive 20171214212459,0,HTTP 429
+2242,https://www.nasdaq.com/article/host-hotels-president-ceo-w-edward-walter-to-step-down-cm721982,2026-11-15T13:53:24Z,browser,0,HTTP 403
+2242,https://www.nasdaq.com/article/host-hotels-president-ceo-w-edward-walter-to-step-down-cm721982,2026-11-15T13:53:48Z,archive 20161216161232,0,HTTP 429
+2271,https://www.wsj.com/articles/mattel-ceo-margo-georgiadis-in-talks-to-leave-the-company-1524166521,2026-11-15T14:00:56Z,browser,0,HTTP 401
+2271,https://www.wsj.com/articles/mattel-ceo-margo-georgiadis-in-talks-to-leave-the-company-1524166521,2026-11-15T14:01:18Z,archive 20180419220746,0,HTTP 429
+2434,https://www.wsj.com/articles/SB877533714204931000,2026-11-15T14:08:26Z,browser,0,HTTP 401
+2434,https://www.wsj.com/articles/SB877533714204931000,2026-11-15T14:08:49Z,archive 20180317202511,0,HTTP 429
+2483,https://www.nj.com/business/2008/06/plea_deal_ends_nui_probe.html,2026-11-15T14:15:57Z,browser,0,HTTP 403
+2483,https://www.nj.com/business/2008/06/plea_deal_ends_nui_probe.html,2026-11-15T14:16:20Z,archive 20221103151442,774,
+2643,https://billingsgazette.com/business/even-with-bankruptcy-northwestern-pays-millions-to-current-and-former/article_f05250d3-76e6-5a8b-968a-bff8eb3c1f22.html,2026-11-15T14:17:45Z,browser,0,HTTP 403
+2643,https://billingsgazette.com/business/even-with-bankruptcy-northwestern-pays-millions-to-current-and-former/article_f05250d3-76e6-5a8b-968a-bff8eb3c1f22.html,2026-11-15T14:18:08Z,archive 20120828005552,0,HTTP 429
+2853,https://www.bizjournals.com/denver/news/2011/06/11/new-ceo-chairman-named-at-pdc-energy.html,2026-11-15T14:25:16Z,browser,0,HTTP 403
+2853,https://www.bizjournals.com/denver/news/2011/06/11/new-ceo-chairman-named-at-pdc-energy.html,2026-11-15T14:25:39Z,archive 20110616230559,0,HTTP 429
+2978,https://www.nasa.gov/offices/nac/members/montoya-bio.html,2026-11-15T14:32:47Z,browser,0,HTTP 404
+2978,https://www.nasa.gov/offices/nac/members/montoya-bio.html,2026-11-15T14:33:10Z,archive 20090528110835,415,
+3058,https://www.bizjournals.com/dayton/stories/2004/08/02/daily4.html,2026-11-15T14:33:32Z,browser,0,HTTP 403
+3058,https://www.bizjournals.com/dayton/stories/2004/08/02/daily4.html,2026-11-15T14:33:58Z,archive 20040907131831,706,
+3138,https://www.huffingtonpost.ca/2016/03/21/j-michael-pearson-valeant_n_9515494.html,2026-11-15T14:37:23Z,browser,0,HTTP 404
+3138,https://www.huffingtonpost.ca/2016/03/21/j-michael-pearson-valeant_n_9515494.html,2026-11-15T14:37:46Z,archive 20160324032549,2173,
+4378,https://seekingalpha.com/article/38178-have-we-seen-the-worst-of-comverse-technology,2026-11-15T14:39:13Z,browser,0,HTTP 403
+4378,https://seekingalpha.com/article/38178-have-we-seen-the-worst-of-comverse-technology,2026-11-15T14:39:37Z,archive 20070901144427,0,HTTP 429
+4610,https://www.massdevice.com/dentsply-sirona-taps-bd-executive-ceo/,2026-11-15T14:46:46Z,browser,0,HTTP 403
+4610,https://www.massdevice.com/dentsply-sirona-taps-bd-executive-ceo/,2026-11-15T14:47:10Z,archive 20220826143715,1697,
+5586,https://www.businesswire.com/news/home/20140627005323/en/Biolase-Director-Federico-Pignatelli-Initiates-Process-Obtain,2026-11-15T14:47:33Z,browser,0,HTTP 403
+5586,https://www.businesswire.com/news/home/20140627005323/en/Biolase-Director-Federico-Pignatelli-Initiates-Process-Obtain,2026-11-15T14:47:59Z,archive 20140717102455,0,HTTP 429
+6197,https://www.bizjournals.com/sanjose/news/2011/07/12/mcafee-names-michael-decesare-todd.html,2026-11-15T14:55:07Z,browser,0,HTTP 403
+6197,https://www.bizjournals.com/sanjose/news/2011/07/12/mcafee-names-michael-decesare-todd.html,2026-11-15T14:55:30Z,archive 20110715223324,0,HTTP 429
+6245,http://blog.al.com/businessnews/2009/03/booksamillion_chief_cochran_de.html,2026-11-15T15:02:38Z,browser,0,HTTP 403
+6245,http://blog.al.com/businessnews/2009/03/booksamillion_chief_cochran_de.html,2026-11-15T15:03:01Z,archive 20090318081611,535,
+6278,https://www.reuters.com/article/blackbox-ceo-idUSWNAS690920071018,2026-11-15T15:10:28Z,browser,0,HTTP 401
+6278,https://www.reuters.com/article/blackbox-ceo-idUSWNAS690920071018,2026-11-15T15:10:50Z,archive 20210516212546,0,HTTP 429
+6483,https://www.bizjournals.com/twincities/stories/2001/03/26/story5.html,2026-11-15T15:17:59Z,browser,0,HTTP 403
+6483,https://www.bizjournals.com/twincities/stories/2001/03/26/story5.html,2026-11-15T15:18:21Z,archive 20180923234113,0,under 100 words
+7747,https://www.eetimes.com/author.asp?section_id=36&doc_id=1333485,2026-11-15T15:19:47Z,browser,0,HTTP 403
+7747,https://www.eetimes.com/author.asp?section_id=36&doc_id=1333485,2026-11-15T15:20:09Z,archive 20180911042351,0,HTTP 429
+7763,https://www.theinquirer.net/inquirer/news/1010849/health-outsourcer-fires-ceo-over-workers-treatment,2026-11-15T15:27:17Z,browser,0,HTTP 522
+7763,https://www.theinquirer.net/inquirer/news/1010849/health-outsourcer-fires-ceo-over-workers-treatment,2026-11-15T15:27:59Z,archive 20191226043545,0,HTTP 429
+8496,https://www.morningstar.com/articles/298806/gary-black-out-as-ceo-of-janus,2026-11-15T15:35:07Z,browser,0,HTTP 404
+8496,https://www.morningstar.com/articles/298806/gary-black-out-as-ceo-of-janus,2026-11-15T15:35:31Z,archive 20210313192027,702,
+8760,https://www.theadvocate.com/baton_rouge/news/business/article_9f50a11a-b51f-5619-a9fa-0288fd00185e.html,2026-11-15T15:38:58Z,browser,0,HTTP 403
+8760,https://www.theadvocate.com/baton_rouge/news/business/article_9f50a11a-b51f-5619-a9fa-0288fd00185e.html,2026-11-15T15:39:29Z,archive 20180723185706,0,HTTP 429
+8966,https://www.wsj.com/articles/SB10001424052970204642604577213513713315158,2026-11-15T15:46:37Z,browser,0,HTTP 401
+8966,https://www.wsj.com/articles/SB10001424052970204642604577213513713315158,2026-11-15T15:47:03Z,archive 20160626075340,0,HTTP 429
+9315,https://www.jbtc.com/news-and-events/press-releases/2020-09-24-brian-deck-appointed-interim-president-and-ceo,2026-11-15T15:54:11Z,browser,0,HTTP 404
+9315,https://www.jbtc.com/news-and-events/press-releases/2020-09-24-brian-deck-appointed-interim-president-and-ceo,2026-11-15T15:54:34Z,archive 20210923212935,1870,
+9423,https://www.marketwatch.com/story/wageworks-cleans-house-after-investigation-but-may-not-be-done-2018-04-05,2026-11-15T15:55:58Z,browser,0,HTTP 401
+9423,https://www.marketwatch.com/story/wageworks-cleans-house-after-investigation-but-may-not-be-done-2018-04-05,2026-11-15T15:56:21Z,archive 20180406020700,0,HTTP 429
+10065,https://www.wsj.com/articles/SB116403059773828336,2026-11-15T16:03:29Z,browser,0,HTTP 401
+10065,https://www.wsj.com/articles/SB116403059773828336,2026-11-15T16:03:51Z,archive 20191019072148,0,HTTP 429
+10708,https://www.cfo.com/news/orthofix-cfo-john-bostjancic-c-suite-execs-terminated/693548/,2026-11-15T16:11:00Z,browser,0,HTTP 403
+10708,https://www.cfo.com/news/orthofix-cfo-john-bostjancic-c-suite-execs-terminated/693548/,2026-11-15T16:11:23Z,archive 20240224123855,1082,
+443,https://www.wsj.com/articles/SB10001424052702303815404577335551794808074,2026-11-15T16:13:29Z,browser,0,HTTP 401
+443,https://www.wsj.com/articles/SB10001424052702303815404577335551794808074,2026-11-15T16:13:52Z,archive 20141219173940,542,
+498,https://money.cnn.com/2005/03/07/news/fortune500/boeing_ceo/,2026-11-15T16:14:13Z,browser,0,HTTP 503
+498,https://money.cnn.com/2005/03/07/news/fortune500/boeing_ceo/,2026-11-15T16:14:38Z,archive 20050603081014,1232,
+1556,https://www.hollandsentinel.com/news/20180228/zeelands-gentex-corporation-appoints-leadership-team,2026-11-15T16:15:01Z,browser,0,HTTP 402
+1556,https://www.hollandsentinel.com/news/20180228/zeelands-gentex-corporation-appoints-leadership-team,2026-11-15T16:15:24Z,archive 20180228213718,680,
+1911,https://www.eetimes.com/document.asp?doc_id=1252932,2026-11-15T16:15:46Z,browser,0,HTTP 403
+1911,https://www.eetimes.com/document.asp?doc_id=1252932,2026-11-15T16:16:08Z,archive 20171214212459,1458,
+2242,https://www.nasdaq.com/article/host-hotels-president-ceo-w-edward-walter-to-step-down-cm721982,2026-11-15T16:16:30Z,browser,0,HTTP 403
+2242,https://www.nasdaq.com/article/host-hotels-president-ceo-w-edward-walter-to-step-down-cm721982,2026-11-15T16:16:54Z,archive 20161216161232,1408,
+2271,https://www.wsj.com/articles/mattel-ceo-margo-georgiadis-in-talks-to-leave-the-company-1524166521,2026-11-15T16:17:15Z,browser,0,HTTP 401
+2271,https://www.wsj.com/articles/mattel-ceo-margo-georgiadis-in-talks-to-leave-the-company-1524166521,2026-11-15T16:17:39Z,archive 20180419220746,1130,
+2434,https://www.wsj.com/articles/SB877533714204931000,2026-11-15T16:18:02Z,browser,0,HTTP 401
+2434,https://www.wsj.com/articles/SB877533714204931000,2026-11-15T16:18:24Z,archive 20180317202511,1075,
+2643,https://billingsgazette.com/business/even-with-bankruptcy-northwestern-pays-millions-to-current-and-former/article_f05250d3-76e6-5a8b-968a-bff8eb3c1f22.html,2026-11-15T16:18:46Z,browser,0,HTTP 403
+2643,https://billingsgazette.com/business/even-with-bankruptcy-northwestern-pays-millions-to-current-and-former/article_f05250d3-76e6-5a8b-968a-bff8eb3c1f22.html,2026-11-15T16:19:09Z,archive 20120828005552,2216,
+2853,https://www.bizjournals.com/denver/news/2011/06/11/new-ceo-chairman-named-at-pdc-energy.html,2026-11-15T16:19:32Z,browser,0,HTTP 403
+2853,https://www.bizjournals.com/denver/news/2011/06/11/new-ceo-chairman-named-at-pdc-energy.html,2026-11-15T16:19:55Z,archive 20110616230559,1296,
+4378,https://seekingalpha.com/article/38178-have-we-seen-the-worst-of-comverse-technology,2026-11-15T16:20:17Z,browser,0,HTTP 403
+4378,https://seekingalpha.com/article/38178-have-we-seen-the-worst-of-comverse-technology,2026-11-15T16:20:42Z,archive 20070901144427,745,
+5586,https://www.businesswire.com/news/home/20140627005323/en/Biolase-Director-Federico-Pignatelli-Initiates-Process-Obtain,2026-11-15T16:21:03Z,browser,0,HTTP 403
+5586,https://www.businesswire.com/news/home/20140627005323/en/Biolase-Director-Federico-Pignatelli-Initiates-Process-Obtain,2026-11-15T16:21:26Z,archive 20140717102455,1758,
+6197,https://www.bizjournals.com/sanjose/news/2011/07/12/mcafee-names-michael-decesare-todd.html,2026-11-15T16:21:47Z,browser,0,HTTP 403
+6197,https://www.bizjournals.com/sanjose/news/2011/07/12/mcafee-names-michael-decesare-todd.html,2026-11-15T16:22:15Z,archive 20110715223324,1379,
+6278,https://www.reuters.com/article/blackbox-ceo-idUSWNAS690920071018,2026-11-15T16:22:37Z,browser,0,HTTP 401
+6278,https://www.reuters.com/article/blackbox-ceo-idUSWNAS690920071018,2026-11-15T16:23:01Z,archive 20210516212546,117,
+7747,https://www.eetimes.com/author.asp?section_id=36&doc_id=1333485,2026-11-15T16:23:24Z,browser,0,HTTP 403
+7747,https://www.eetimes.com/author.asp?section_id=36&doc_id=1333485,2026-11-15T16:23:52Z,archive 20180911042351,3698,
+7763,https://www.theinquirer.net/inquirer/news/1010849/health-outsourcer-fires-ceo-over-workers-treatment,2026-11-15T16:24:13Z,browser,0,HTTP 522
+7763,https://www.theinquirer.net/inquirer/news/1010849/health-outsourcer-fires-ceo-over-workers-treatment,2026-11-15T16:24:56Z,archive 20191226043545,541,
+8760,https://www.theadvocate.com/baton_rouge/news/business/article_9f50a11a-b51f-5619-a9fa-0288fd00185e.html,2026-11-15T16:25:18Z,browser,0,HTTP 403
+8760,https://www.theadvocate.com/baton_rouge/news/business/article_9f50a11a-b51f-5619-a9fa-0288fd00185e.html,2026-11-15T16:25:41Z,archive 20180723185706,1169,
+8966,https://www.wsj.com/articles/SB10001424052970204642604577213513713315158,2026-11-15T16:26:02Z,browser,0,HTTP 401
+8966,https://www.wsj.com/articles/SB10001424052970204642604577213513713315158,2026-11-15T16:26:25Z,archive 20160626075340,1396,
+9423,https://www.marketwatch.com/story/wageworks-cleans-house-after-investigation-but-may-not-be-done-2018-04-05,2026-11-15T16:26:46Z,browser,0,HTTP 401
+9423,https://www.marketwatch.com/story/wageworks-cleans-house-after-investigation-but-may-not-be-done-2018-04-05,2026-11-15T16:27:09Z,archive 20180406020700,921,
+10065,https://www.wsj.com/articles/SB116403059773828336,2026-11-15T16:27:30Z,browser,0,HTTP 401
+10065,https://www.wsj.com/articles/SB116403059773828336,2026-11-15T16:27:57Z,archive 20191019072148,928,

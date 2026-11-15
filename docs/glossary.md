@@ -287,6 +287,11 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **8-K / EDGAR** — *added 2026-11-14*: an 8-K is the filing a US-listed company makes with the SEC
   within days of a major event, such as a chief executive leaving; its exhibit 99 is usually the
   press release. EDGAR is the SEC's public archive of filings.
+- **Wayback Machine / User-Agent** — *added 2026-11-15*: the Wayback Machine is the Internet
+  Archive's store of web pages as they were captured on given days; a page gone from its address
+  can often be read there. A User-Agent is the name a client gives a site with each request;
+  some sites refuse a script's, and EDGAR asks for a contact in it
+  ([a pasted article](steps/article-to-trigger.md)).
 - **Reads / doesn't read / too few texts** — *added 2026-11-14*: step 20, part 2's verdict on its
   rules for reading a kind from a text, against the bars in [its spec](steps/article-to-trigger.md).
 - **Kind (of event)** — *added 2026-11-04*: what a reader names ("the Fed cuts rates"); in the

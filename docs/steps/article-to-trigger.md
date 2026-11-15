@@ -28,6 +28,15 @@ nothing: filing stays the owner's call
   Every row, positive or negative, is read from the same place: the first address in the
   dataset's `sources` column, else in its `eight_ks` column, the departure as the dataset found
   it. Its expected day is the row's `date_departure_announced`.
+  - *Amended 2026-11-15, in step 1, before any text is fetched:* an address that is a library's
+    login (`login?url=`, `idm.oclc.org`, `ezproxy`, `lp.hscl.`) cannot be fetched by anyone
+    outside that library, so a row is read from its first address that is not one, else that
+    login, which counts out. Two test positives and 26 negatives move to their next address; two
+    negatives have only a login. And the dataset leaves `date_departure_announced` blank on 12 of
+    the 26 positives and 198 of the negatives: a blank stays blank as the expected day, and the
+    day is reported on the positives with one (6 dev, 8 test). The split's order uses
+    `left_ceo_office` where the announcement is blank. The expected day can differ from part 1's
+    seed day by design: part 1 took the first public word, here it is the departure.
   - Positives: the 26 events part 1 kept. (Part 1 dated five of them from an earlier report of the
     conduct; that report is not used here, because it may not name a departure.)
   - Negatives: the 179 departures coded 4 (*legal violations or concerns*) that part 1 found were
@@ -42,9 +51,27 @@ nothing: filing stays the owner's call
   fetches a test text.
 - **A text** is the page's words after the markup is stripped. One under 100 words (an index
   page, a paywall, a scan) is counted out as *no text*, as is one that cannot be fetched.
+  - *Amended 2026-11-15, in step 1, before any test address is fetched:* the fetch is
+    `scripts/article_texts.py fetch`, the same for both sets. A first dev pass sent every site the
+    contact `User-Agent` EDGAR asks for; most news sites refused it (HTTP 401 and 403), leaving 4 of
+    the 13 dev positives with a text. So news sites get an ordinary browser's `User-Agent`, and an
+    address that is counted out for any reason but a library login gets one more try: its first
+    capture with status 200 in the Internet Archive's Wayback Machine, fetched raw. EDGAR and the
+    archive get the contact `User-Agent`: the archive answers a browser's name from a script with
+    HTTP 429 on every try. A 429 means *later*, not *no text*: a run asks again up to three times,
+    and a row whose last answer is still 429 is fetched by the next run until it has another. The
+    markup's `head`, scripts and styles are dropped with their contents. Every pass is in the fetch
+    log, by its `via` column and time; the dev counts are each row's last answer. The method is
+    changed this once: no other source of a text is sought, so a row is never read from a text
+    someone looked for.
 - **The obstacle: the genre.** The sources are mostly filings (an 8-K and its exhibit 99) and press
   releases, not the news an owner pastes. What this measures holds for that genre only; the
   results say so, and the one news text checked is the 2026-11-08 Nvidia article.
+  - *Amended 2026-11-15, in step 1, by the addresses alone, before any rule:* the sources are
+    mostly news. Of the 305 addresses, by their hosts, 38 are filings (EDGAR or a mirror of it),
+    29 press releases or investor pages, 7 reference pages (an encyclopedia, a company history)
+    and 231 news or other pages. So the measure is nearer the news an owner pastes than feared,
+    though most of the news is about the departure on its day, and some pages are written later.
 - **The ticker comes from the text:** `(NYSE: BA)`, `(Nasdaq: NVDA)`, `NYSE:BA`. There is no
   table from names to tickers. A text with none prints an empty ticker, and the owner fills it.
 - **The day** is the first date the text gives as its own (a dateline, an 8-K's date of report).
@@ -70,7 +97,7 @@ nothing: filing stays the owner's call
   departure the rules missed: on a positive it is not *read*, on a negative it is not counted
   toward the 5% bar but reported beside it. Its bars come with part 1b's history.
 - **The ticker and the day** are reported on the positives read, not barred: a ticker right, empty
-  or wrong; a day right or not, right being `date_departure_announced`, or the trading day after it
+  or wrong; a day right or not (on the positives with one, *amended 2026-11-15*), right being `date_departure_announced`, or the trading day after it
   (the NYSE calendar) when the text gives a time at or after 16:00 New York. A wrong ticker on any positive is
   said plainly: it would file a trigger on the wrong company.
 - Nothing is tuned after the test set is read. A changed rule needs a new test set, and none is
@@ -93,9 +120,24 @@ nothing: filing stays the owner's call
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | The sets: every row listed in `docs/steps/article-to-trigger-set.csv` (id, address, split, expected kind, ticker where part 1 has one, day); the dev texts fetched and counted out by reason; the test texts not fetched | Every row the sets above name is listed; each fetch is a row in the committed `docs/steps/article-to-trigger-fetch.csv` (address, UTC time, words, reason if counted out); no text is committed |
+| 1 | ~~The sets: every row listed in `docs/steps/article-to-trigger-set.csv` (id, address, split, expected kind, ticker where part 1 has one, day); the dev texts fetched and counted out by reason; the test texts not fetched | Every row the sets above name is listed; each fetch is a row in the committed `docs/steps/article-to-trigger-fetch.csv` (address, UTC time, words, reason if counted out); no text is committed~~ **done** 2026-11-15, [below](#results) |
 | 2 | The rules on the dev set, and their dev counts written here; then frozen by a commit whose hash is written here | Tests: a conduct departure reads; conduct with no departure reads as the second kind; a fraud departure and a retirement do not; `(NYSE: BA)` gives `BA`; an after-close time moves the day. The dev counts (the kind on the dev positives and negatives, the second kind's count, the ticker and day counts) are recorded before the hash |
 | 3 | The test texts fetched and read once; the Nvidia article read; `read-article` | Results here: the kind against both bars, the ticker and day counts, the second kind's count, and Nvidia's line |
+
+## Results
+
+**Step 1, 2026-11-15.** `scripts/article_texts.py sets` lists the 305 rows, 13 positives and 140
+negatives in the dev set, 13 and 139 in the test set; run again, it rewrites the file unchanged.
+`scripts/article_texts.py fetch dev` fetched the dev texts in four passes (the first by the old
+method, the rest resuming the archive's refusals), and only dev addresses are in the log. By each
+row's last answer in the log:
+
+| Dev rows | With a text | Counted out |
+| --- | --- | --- |
+| 13 positives | 12 (4 from the page, 8 from the archive) | 1: the page gone and no capture (F5 Networks) |
+| 140 negatives | 103 (69 from the page, 34 from the archive) | 37: 33 no capture, 2 under 100 words, 1 refused by the archive (HTTP 403), 1 a library login with no other address |
+
+The texts are in `data/cache/articles/dev/`, not committed. The test texts are not fetched.
 
 ## How you know it is right
 
@@ -124,6 +166,7 @@ until part 1b. No news article in the test set beyond Nvidia's, and no filing of
   `data/cache/articles/nvidia-2026-11-08.txt`, not committed.
 - **Code:** `read_article(text) -> Reading | None` in `study.py`, beside `follow_ceo`, a `Reading`
   being the kind (`ceo` or the second), the day, the time if given, and the ticker; the command in `__main__.py`, answering through
-  `answer_triggers`' path for `ceo`. Tests in `tests/test_ceo_scandals.py`.
-- **Docs:** this spec, the glossary (*dev set*, *test set*, *8-K*, *EDGAR*, *reads*), `docs/status.md`, the changelog and
+  `answer_triggers`' path for `ceo`. Tests in `tests/test_ceo_scandals.py`. The sets and the
+  fetch: `scripts/article_texts.py` (*added 2026-11-15*), a script, since only this step calls it.
+- **Docs:** this spec, the glossary (*dev set*, *test set*, *8-K*, *EDGAR*, *reads*, *Wayback Machine*), `docs/status.md`, the changelog and
   roadmap row 20.
