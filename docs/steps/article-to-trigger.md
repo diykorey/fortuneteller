@@ -137,7 +137,7 @@ part 3 starts; the roadmap's next try is a model on this machine, with its own t
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~The sets: every row listed in `docs/steps/article-to-trigger-set.csv` (id, address, split, expected kind, ticker where part 1 has one, day); the dev texts fetched and counted out by reason; the test texts not fetched | Every row the sets above name is listed; each fetch is a row in the committed `docs/steps/article-to-trigger-fetch.csv` (address, UTC time, words, reason if counted out); no text is committed~~ **done** 2026-11-15, [below](#results) |
-| 2 | The rules on the dev set, and their dev counts written here; then frozen by a commit whose hash is written here (*amended 2026-11-15:* frozen means `read_article` and every function it calls; step 3 may add the command around it, and `git diff HASH -- ` of those functions is empty at step 3's results. The tests check the rules work as written; the dev counts are the measure) | Tests: a conduct departure reads; conduct with no departure reads as the second kind; a fraud departure and a retirement do not; `(NYSE: BA)` gives `BA`; an after-close time moves the day. The dev counts (the kind on the dev positives and negatives, the second kind's count, the ticker and day counts) are recorded before the hash |
+| 2 | ~~The rules on the dev set, and their dev counts written here; then frozen by a commit whose hash is written here (*amended 2026-11-15:* frozen means the block of `study.py` from the comment `# Step 20, part 2` to the end of `article_day`: `CONDUCT_NO_DEPARTURE`, the patterns and tables `_CHIEF`, `_LEAVES`, `_CONDUCT`, `_TICKER`, `_MONTHS`, `_DATE`, `_CLOCK`, `_ZONES`, `_HEDGE`, the reaches `_NEAR_*`, `Reading`, `_near`, `_departures`, `_own_day`, `read_article` and `article_day`, with the values they read from outside it, `STOCK.close` and `NEW_YORK`; and the scorer, `scripts/article_texts.py read`. At step 3's results the block is byte for byte the frozen commit's. The tests check the rules work as written; the dev counts are the measure) | Tests: a conduct departure reads; conduct with no departure reads as the second kind; a fraud departure and a retirement do not; `(NYSE: BA)` gives `BA`; an after-close time moves the day. The dev counts (the kind on the dev positives and negatives, the second kind's count, the ticker and day counts) are recorded before the hash~~ **done** 2026-11-15, [below](#results) |
 | 3 | The test texts fetched and read once; the Nvidia article read; `read-article` | Results here: the kind against both bars, the ticker and day counts, the second kind's count, and Nvidia's line |
 
 ## Results
@@ -161,6 +161,24 @@ will be fetched by the committed script in full, then resumed. By each row's las
 The texts are in `data/cache/articles/dev/`, not committed. The test texts are not fetched.
 Row 3398 had a text in passes 1 and 2 and an HTTP 503 in pass 3, its last answer, so it is counted
 out; the 34 rows with no capture were asked again by the contact name and still have none.
+
+**Step 2, 2026-11-15.** The rules (the frozen block above) were written on the dev texts alone,
+reading them by `scripts/article_texts.py read dev data/cache/articles/dev data/fortuneteller.duckdb`,
+which prints:
+
+- The kind: **9 of the 12 dev positives with a text** read as `ceo`, exactly 75%, no slack; **0 of
+  the 103 dev negatives** read as either kind. The three not read: Interface's text is a page on
+  CEO departures in general; Equinix's calls the resignation mysterious and gives no reason; Wynn's
+  is a story from before he left, read as the second kind, rightly for its words.
+- One read is on the wrong company: the Rambus row's text (eetimes) is about Texas Instruments'
+  CEO, so it reads for a reason that is not Rambus's.
+- The second kind: 1 positive (Wynn's) and 0 negatives.
+- The ticker, on the 9 read: 1 right (TrueBlue's), 8 empty, 0 wrong.
+- The day, on the 5 read with a set day: 4 right; Orthofix's text is dated the day after the
+  departure, its only date.
+- One guard was added from the spec's own risk, not from dev: a word of leaving after *called
+  for*, *refuses*, *no plans to* and the like is not a departure, so a story about a CEO who stays
+  is not read as one. Dev's counts did not move.
 
 ## How you know it is right
 

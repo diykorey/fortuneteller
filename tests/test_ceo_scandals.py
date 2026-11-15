@@ -407,3 +407,127 @@ def test_a_ceo_trigger_answers_without_a_scandal_whose_company_has_no_closes() -
     day_row = next(r for r in rows if r["span"] == "day")
     assert (day_row["answer"], day_row["down"]) == (DOWN, "11")
     assert lines[1] == "  answered without C3: no closes"
+
+
+def test_a_departure_over_the_ceo_s_own_conduct_reads_as_ceo() -> None:
+    # given
+    text = (
+        "March 7, 2005: 12:48 PM EST. Boeing (NYSE: BA) said its chief executive, Harry "
+        "Stonecipher, resigned after the board found an improper relationship with a female "
+        "executive."
+    )
+
+    # when
+    reading = study.read_article(text)
+
+    # then
+    assert reading == study.Reading("ceo", date(2005, 3, 7), time(12, 48), "BA")
+
+
+def test_conduct_coming_out_while_the_ceo_stays_is_the_second_kind() -> None:
+    # given
+    text = (
+        "The board said on Nov. 8, 2026 that it has hired outside counsel to look into "
+        "allegations of sexual harassment against the chief executive, who denies them."
+    )
+
+    # when
+    reading = study.read_article(text)
+
+    # then
+    assert reading is not None and reading.kind == study.CONDUCT_NO_DEPARTURE
+
+
+def test_a_fraud_departure_and_a_retirement_are_not_a_measured_kind() -> None:
+    # given
+    fraud = (
+        "The chief executive resigned on May 1, 2004 as regulators widened an inquiry into the "
+        "company's accounting and restated three years of revenue."
+    )
+    retirement = (
+        "After 30 years, the chief executive will retire at the end of the year, the company "
+        "said on June 2, 2015, and the board has begun a search for a successor."
+    )
+
+    # when
+    readings = [study.read_article(fraud), study.read_article(retirement)]
+
+    # then
+    assert readings == [None, None]
+
+
+def test_a_ticker_is_read_from_its_exchange() -> None:
+    # given
+    texts = [
+        "The chief executive resigned over personal conduct, said Boeing (NYSE: BA).",
+        "Nvidia (Nasdaq: NVDA) said its CEO stays while a misconduct claim is looked into.",
+        "The CEO resigned over personal conduct.",
+    ]
+
+    # when
+    tickers = [r.ticker for r in map(study.read_article, texts) if r is not None]
+
+    # then
+    assert tickers == ["BA", "NVDA", ""]
+
+
+def test_a_word_out_after_the_close_or_on_a_weekend_moves_to_the_next_trading_day() -> None:
+    # given
+    days = [date(2026, 11, 6), date(2026, 11, 9), date(2026, 11, 10)]
+    after_close = study.Reading("ceo", date(2026, 11, 9), time(16, 5), "")
+    before_close = study.Reading("ceo", date(2026, 11, 9), time(15, 59), "")
+    sunday = study.Reading("ceo", date(2026, 11, 8), None, "")
+
+    # when
+    filed = [study.article_day(r, days) for r in (after_close, before_close, sunday)]
+
+    # then
+    assert filed == [date(2026, 11, 10), date(2026, 11, 9), date(2026, 11, 9)]
+
+
+def test_a_text_dated_in_pacific_time_is_read_in_new_york() -> None:
+    # given
+    text = "Dec. 5, 2018 2:36 p.m. PT. The CEO resigned after allegations of misconduct."
+
+    # when
+    reading = study.read_article(text)
+
+    # then
+    assert reading is not None and (reading.day, reading.at) == (date(2018, 12, 5), time(17, 36))
+
+
+def test_personal_reasons_or_an_inquiry_into_the_company_is_neither_kind() -> None:
+    # given
+    personal_reasons = "The chief executive resigned on March 2, 2010 for personal reasons."
+    inquiry = (
+        "Regulators opened an inquiry into the company's sales practices on May 4, 2016; "
+        "the chief executive said the company would cooperate fully."
+    )
+
+    # when
+    readings = [study.read_article(personal_reasons), study.read_article(inquiry)]
+
+    # then
+    assert readings == [None, None]
+
+
+def test_calls_to_step_down_or_a_refusal_to_resign_are_not_a_departure() -> None:
+    # given
+    called = (
+        "Shareholders called for the chief executive to step down after allegations of "
+        "misconduct; the board backed him."
+    )
+    refused = (
+        "The CEO said he has no plans to resign while the board reviews claims of an "
+        "inappropriate relationship."
+    )
+    left = (
+        "The chief executive resigned after an inquiry into an inappropriate relationship; "
+        "investors had called for him to step down weeks earlier."
+    )
+
+    # when
+    kinds = [r.kind if r else None for r in map(study.read_article, (called, refused, left))]
+
+    # then
+    assert kinds == [study.CONDUCT_NO_DEPARTURE, study.CONDUCT_NO_DEPARTURE, "ceo"]
