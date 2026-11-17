@@ -175,8 +175,8 @@ carries nothing.
 - The arithmetic (*oil up* 40 events on every market but bitcoin, 36; *oil down* only on the 15
   named): **right** on the day's counts, which the bullet was written from; every *oil down* cell
   elsewhere is *too few* walk-forward. Over the week and the month fewer events are kept, and
-  some *oil up* markets fall under 40: corn 39, wheat and soybeans 37 over the week; Brent 36 and
-  the STOXX 50 31 over the month. Those cells are *too few* walk-forward too.
+  several *oil up* markets fall under 40, among them corn 39, wheat and soybeans 37 over the week,
+  and Brent 36 and the STOXX 50 31 over the month; those cells are *too few* walk-forward too.
 - On the day, energy stocks and gasoline with the kind, nothing else: **wrong**. Both answer with
   the kind, *up* and *down*; but the breakeven (T5YIE) also answers *up* after *oil up*
   (33 / 15 / 14, 0.0068).
