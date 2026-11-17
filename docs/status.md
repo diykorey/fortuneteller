@@ -45,9 +45,8 @@ until the 2027-01-31 gate, by the owner
 
 ## Next
 
-Step 22's step 5, the ask section on the published page after the evening job; step 23's spec,
-the visitor counter and the weekly post. Step 21's shadow run goes on beside them
-([roadmap phase 4](roadmap.md#phase-4-prove-the-loop-show-the-page-be-seen)).
+Step 24, OPEC+ decisions: the first of phase 5's kinds, its spec first
+([roadmap phase 5](roadmap.md#phase-5-the-kinds-the-news-brings)). Steps 21 to 23 finish beside it.
 
 ## Known, not yet fixed
 

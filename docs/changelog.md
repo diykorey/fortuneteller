@@ -6,6 +6,7 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-17 | Phase 5 opened by the owner: OPEC+, other central banks, war, crypto shocks, weather, one kind per PR; phase 4's pause lifted; the news model to the backlog | PR #329 |
 | 2026-11-17 | Step 23, step 1: the counter live on the page and checked (a private visit counted once; the owner's flagged browser, a copy on disk and cookies: none); the share link kept whole, by the owner | PR #328 |
 | 2026-11-17 | Step 23, step 1: Umami's tag on the page; the week's visitors read through the site's share link, the free plan having no API key (by the owner) | PR #326 |
 | 2026-11-15 | Step 23, step 2: `weekly-post` drafts the week's post from the live calls, and reads the week's visitors from Umami's API | PR #325 |
