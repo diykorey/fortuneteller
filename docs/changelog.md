@@ -6,6 +6,7 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-17 | Step 23, step 1: Umami's tag on the page; the week's visitors read through the site's share link, the free plan having no API key (by the owner) | PR #326 |
 | 2026-11-15 | Step 23, step 2: `weekly-post` drafts the week's post from the live calls, and reads the week's visitors from Umami's API | PR #325 |
 | 2026-11-15 | Spec: step 23, be seen and count it (Umami Cloud and LinkedIn, by the owner) | PR #324 |
 | 2026-11-15 | Step 20 parked until the 2027-01-31 gate, by the owner; the work goes to steps 21 to 23 | PR #323 |

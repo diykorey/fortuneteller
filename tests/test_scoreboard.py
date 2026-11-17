@@ -1,7 +1,9 @@
 """The scoreboard: its data holds what the commands print, and each call its popup's numbers."""
 
+import io
 import json
 import random
+import urllib.request
 import re
 from datetime import date, datetime, time, timedelta
 from pathlib import Path
@@ -9,7 +11,7 @@ from pathlib import Path
 import duckdb
 import pytest
 
-from fortuneteller import db, expectations, flows, study
+from fortuneteller import db, expectations, flows, sources, study
 import fortuneteller.__main__ as cli
 from fortuneteller.__main__ import main
 from fortuneteller.config import settings
@@ -145,6 +147,11 @@ def test_the_scoreboard_holds_what_the_commands_print(
     assert (data["data_until"], data["calls"], data["missed"]) == ("2022-01-31", [], [])
     page = (scoreboard_dir / "index.html").read_text()
     assert cli.SCOREBOARD_DATA_MARK not in page
+    tags = re.findall(r"<script[^>]*cloud\.umami\.is[^>]*>", page)
+    assert len(tags) == 1
+    assert 'data-website-id="ed3ca059-ba91-40f1-937c-ace5118ffcb0"' in tags[0]
+    assert 'data-do-not-track="true"' in tags[0]
+    assert 'data-domains="diykorey.github.io"' in tags[0]
     assert (
         json.loads(
             page.split('<script id="data" type="application/json">')[1].split("</script>")[0]
@@ -409,3 +416,47 @@ def test_a_week_inside_one_month_is_asked_once() -> None:
 
     # then
     assert visitors == (12, False)
+
+
+def test_visitors_are_asked_through_the_share_link_with_its_token(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # given Umami answering the share link with a site and token, then the stats with a count
+    seen: list[urllib.request.Request] = []
+    replies = [
+        {"websiteId": "site-1", "token": "signed"},
+        {"pageviews": 9, "visitors": 4, "visits": 5},
+    ]
+
+    def answer(request: urllib.request.Request, timeout: float) -> io.BytesIO:
+        seen.append(request)
+        return io.BytesIO(json.dumps(replies[len(seen) - 1]).encode())
+
+    monkeypatch.setattr(sources.urllib.request, "urlopen", answer)
+    start, end = _week()
+
+    # when
+    visitors = sources.fetch_umami_visitors("code", start, end)
+
+    # then the week's distinct visitors come back, asked over the exact range in milliseconds UTC
+    assert visitors == 4
+    assert seen[0].full_url == "https://cloud.umami.is/analytics/eu/api/share/code"
+    stats = seen[1]
+    assert stats.full_url == (
+        "https://cloud.umami.is/analytics/eu/api/websites/site-1/stats"
+        f"?startAt={int(start.timestamp() * 1000)}&endAt={int(end.timestamp() * 1000)}"
+    )
+    assert stats.get_header("X-umami-share-token") == "signed"
+    assert stats.get_header("X-umami-share-context") == "1"
+
+
+def test_a_share_link_without_a_token_is_an_umami_error(monkeypatch: pytest.MonkeyPatch) -> None:
+    # given a share link that no longer answers with a token
+    monkeypatch.setattr(
+        sources.urllib.request, "urlopen", lambda request, timeout: io.BytesIO(b"{}")
+    )
+    start, end = _week()
+
+    # when / then
+    with pytest.raises(sources.UmamiError, match="cannot be read"):
+        sources.fetch_umami_visitors("code", start, end)

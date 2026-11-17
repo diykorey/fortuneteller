@@ -29,7 +29,6 @@ class Settings(BaseSettings):
     # SecretStr so the value cannot print itself in a traceback or repr; read it with
     # .get_secret_value() at the call site.
     fred_api_key: SecretStr | None = None
-    umami_api_key: SecretStr | None = None
 
     model_config = SettingsConfigDict(env_prefix="FT_", env_file=".env")
 

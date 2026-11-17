@@ -32,7 +32,15 @@ counter, LinkedIn for the channel.
   Umami's API for the week's distinct visitors over exactly that range in UTC, so a dashboard set
   to another time zone, or a week added up from its days, cannot enter the file. A week that
   crosses the first of a month spans two salts, and a returning visitor would count twice in it;
-  such a week is asked as its two parts, and its count is the larger part.
+  such a week is asked as its two parts, and its count is the larger part. The larger part is a
+  floor, not the week's true count: a week of 100 split 60 and 40 is written as 60.
+  *Amended 2026-11-17, by the owner:* Umami Cloud's free plan has no API key, and the owner pays
+  nothing before there are customers. The API is read through the site's *share link* instead:
+  the link's public code gives the site and a signed token, and the same stats are asked with it.
+  The token is one of the ways in that Umami's own API description lists, but its free use is not
+  promised; if it stops answering, the week is read from the dashboard, set to UTC, over a custom
+  range, and the row says so. The share link makes the site's dashboard public: its visits by
+  page, referrer, country, browser and device, none naming a person; the owner accepted that.
 - **The post: drafted from the data, published by the owner.** `weekly-post` prints a draft for
   the last full week: each live call in `data/calls.csv` logged that week (by `logged_at`), its
   direction and market, and its grade, *right*, *wrong* or *pending*; the record of graded calls
@@ -51,13 +59,15 @@ counter, LinkedIn for the channel.
 ## The rule, fixed before the first post
 
 - **The window:** every week from the one the counter is first published in to the week of
-  2027-01-25 to 2027-01-31. That last week is read on Monday 2027-02-01, so the *readers* bar is
+  2027-01-25 to 2027-01-31. *Amended 2026-11-17:* the first week counts even if the counter went
+  up mid-week, since a part week can only count fewer; its row names the day it went up. That last week is read on Monday 2027-02-01, so the *readers* bar is
   judged that day, a day after the gate's other two bars; the gate's date is left as it is.
 - **The bar is the gate's:** at least 100 unique visitors, as the weeks file has them, in one week
   of the window. Met: *seen*. Not met: *not seen*, with the best week's count. No post by
   2027-01-01 still leaves the counter counting; the verdict says how many posts were made.
 - **Counted, not barred:** each week's visitors, whether a post went out, and its reactions as
-  LinkedIn shows them on the Monday the row is written.
+  LinkedIn shows them on the Monday the row is written. *Amended 2026-11-17:* reactions are the
+  one count LinkedIn shows beside the post's reaction icons; comments and reposts are not in it.
 - **Expected outcome, written first:** *not seen*. A guess from a network of a few hundred, a few
   in a hundred clicking a link: the best week 30 to 50 unique visitors, the week of the first
   post; then 10 to 20 a week. A weekly post of mostly silent rows gives little reason to come back.
@@ -66,7 +76,7 @@ counter, LinkedIn for the channel.
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | The counter: the owner creates the Umami Cloud site, gives its website ID (public) and an API key (a secret, kept in `.env` as `FT_UMAMI_API_KEY`); the tag goes into the template | A test finds one Umami tag in the written page, with the ID, `data-do-not-track` and `data-domains`. The published page, opened from a browser without the flag, is one visitor by the API for that hour; opened again with the flag, still one. The date is written here |
+| 1 | The counter: the owner creates the Umami Cloud site, gives its website ID (public) ~~and an API key (a secret, kept in `.env` as `FT_UMAMI_API_KEY`)~~; the tag goes into the template. *Amended 2026-11-17:* the share link's code instead of the key; the tag is the one in Technical details, its address and ID as Umami gives them for the site (built 2026-11-17; the look waits for the published page) | A test finds one Umami tag in the written page, with the ID, `data-do-not-track` and `data-domains`. *Amended 2026-11-17:* read by pageviews as well as visitors, since a browser already counted that month stays one visitor whatever it does. The published page, opened from a browser without the flag, adds one visitor and one pageview; opened from the same browser with the flag, and from a file on disk, adds no pageview; the browser's cookies after the visit hold none from Umami. Each look's time and counts, and the date, are written here |
 | 2 | ~~`fortuneteller weekly-post`~~ **done** 2026-11-15 | Tests: a week with a graded call prints it as *right* or *wrong*; a pending call says *pending*; a week with none says *no call this week*; the record counts the calls' grades (*amended:* not `score`'s counts, which include rows leaning *too few*); a week across a month's first is asked in two parts and the larger kept; the last line is the disclaimer |
 | 3 | The first post, after step 22's page is published | Its date and address are in the weeks file's row for its week, written the next Monday with the count |
 | 4 | Every Monday to 2027-02-01: the week's row, and the next post | A row for each week of the window; on 2027-02-01, the verdict here against the bar |
@@ -93,13 +103,17 @@ repository.
 - **Tag:** `<script defer src="https://cloud.umami.is/script.js" data-website-id="ID"
   data-do-not-track="true" data-domains="diykorey.github.io"></script>` in the template's head;
   the ID in the template, one place, since the page has one site.
-- **API:** Umami Cloud's website stats for `startAt` and `endAt` in milliseconds UTC, with the key
-  in the `x-umami-api-key` header; the reply's visitors. No key: the draft prints and the count
-  line says *no API key*.
+- **API:** Umami Cloud's website stats for `startAt` and `endAt` in milliseconds UTC; the reply's
+  visitors. *Amended 2026-11-17:* the site is in Umami's EU region, `cloud.umami.is/analytics/eu/api`;
+  `share/{code}` answers the site and a token, and the stats are asked with it in the
+  `x-umami-share-token` header and `x-umami-share-context: 1`, as Umami's share page does. The
+  code is `UMAMI_SHARE` in `__main__.py`; no secret. A failed ask prints the draft, then the error.
 - **Command:** `weekly-post` in `__main__.py`, reading `study.read_calls`; it writes nothing. The
   owner or the session adds the week's row to the weeks file. Tests in `tests/test_scoreboard.py`.
 - **File:** `docs/steps/be-seen-weeks.csv`: `week_start, unique_visitors, crosses_month, posted,
-  post_date, post_url, reactions`.
+  post_date, post_url, reactions`. *Amended 2026-11-17:* `week_start` and `post_date` are
+  `YYYY-MM-DD`, the week's Monday in UTC; `crosses_month` and `posted` are `yes` or `no`; a field
+  with nothing to say is empty.
 - **Docs:** this spec; the glossary (*unique visitor*, *Umami*, *disabled flag*, *seen*); the
   [scoreboard spec](scoreboard.md)'s "no per-visitor state", amended to say the page keeps none
   itself and Umami counts visits; `docs/status.md`, the changelog and roadmap row 23.

@@ -808,9 +808,10 @@ def _read_article(args: argparse.Namespace) -> int:
     return 0
 
 
-# Step 23 (docs/steps/be-seen.md): the page the weekly post links to, and its Umami site.
+# Step 23 (docs/steps/be-seen.md): the page the weekly post links to, and the code of its Umami
+# share link, public by design.
 SCOREBOARD_URL = "https://diykorey.github.io/fortuneteller/scoreboard/"
-UMAMI_WEBSITE_ID = ""
+UMAMI_SHARE = "7PW46kYjf9EyzI0H"
 DISCLAIMER = "An entertainment tool, not advice."
 # The releases the morning job calls, as a post names them.
 POST_NAMES = {
@@ -882,17 +883,10 @@ def _weekly_post(_args: argparse.Namespace) -> int:
     start, end = study.last_full_week(_now())
     for line in weekly_post_lines(rows, grades, start, end, market_names()):
         print(line)
-    key = settings.umami_api_key
     print()
-    if key is None or not UMAMI_WEBSITE_ID:
-        print("visitors: no API key or website ID")
-        return 0
 
     def ask(a: datetime, b: datetime) -> int:
-        assert key is not None
-        return sources.fetch_umami_visitors(
-            key.get_secret_value(), UMAMI_WEBSITE_ID, a, b - timedelta(milliseconds=1)
-        )
+        return sources.fetch_umami_visitors(UMAMI_SHARE, a, b - timedelta(milliseconds=1))
 
     try:
         visitors, crosses = study.week_visitors(start, end, ask)

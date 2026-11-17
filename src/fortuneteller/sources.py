@@ -906,35 +906,48 @@ def parse_tradingview(payload: bytes, names: Iterable[str]) -> list[CalendarRow]
         raise CalendarError(f"TradingView sent an unexpected reply: {exc!r}") from None
 
 
-# Umami Cloud (docs/steps/be-seen.md): the scoreboard page's distinct visitors over a range.
-UMAMI_STATS_URL = "https://api.umami.is/v1/websites/{site}/stats"
+# Umami Cloud (docs/steps/be-seen.md): the scoreboard page's distinct visitors over a range, read
+# through the site's public share link; the free plan has no API key. The site is in Umami's EU
+# region.
+UMAMI_API = "https://cloud.umami.is/analytics/eu/api"
 
 
 class UmamiError(RuntimeError):
     pass
 
 
-def fetch_umami_visitors(
-    api_key: str, site: str, start: datetime, end: datetime, timeout: float = 30.0
-) -> int:
-    """Distinct visitors from ``start`` to ``end``, both aware, by Umami's stats."""
-    query = urllib.parse.urlencode(
-        {"startAt": int(start.timestamp() * 1000), "endAt": int(end.timestamp() * 1000)}
-    )
+def _umami_get(url: str, headers: dict[str, str], timeout: float) -> Any:
     request = urllib.request.Request(
-        f"{UMAMI_STATS_URL.format(site=site)}?{query}",
-        headers={"x-umami-api-key": api_key, "Accept": "application/json"},
+        url, headers={**BROWSER_HEADERS, **headers, "Accept": "application/json"}
     )
     try:
         with urllib.request.urlopen(request, timeout=timeout) as response:
-            reply = json.loads(response.read())
-        visitors = reply["visitors"]
-        return int(visitors["value"] if isinstance(visitors, dict) else visitors)
+            return json.loads(response.read())
     except urllib.error.HTTPError as exc:
         raise UmamiError(f"Umami returned HTTP {exc.code}") from None
     except urllib.error.URLError as exc:
         raise UmamiError(f"the Umami request failed: {exc.reason}") from None
     except NETWORK_FAILURE as exc:
         raise UmamiError(f"the Umami request failed: {exc}") from None
+    except MALFORMED_REPLY as exc:
+        raise UmamiError(f"Umami's reply cannot be read: {exc!r}") from None
+
+
+def fetch_umami_visitors(share: str, start: datetime, end: datetime, timeout: float = 30.0) -> int:
+    """Distinct visitors from ``start`` to ``end``, both aware, by Umami's stats: the share link
+    gives the site and a signed token, and the stats are asked with it."""
+    try:
+        link = _umami_get(f"{UMAMI_API}/share/{share}", {}, timeout)
+        site, token = str(link["websiteId"]), str(link["token"])
+        query = urllib.parse.urlencode(
+            {"startAt": int(start.timestamp() * 1000), "endAt": int(end.timestamp() * 1000)}
+        )
+        reply = _umami_get(
+            f"{UMAMI_API}/websites/{site}/stats?{query}",
+            {"x-umami-share-token": token, "x-umami-share-context": "1"},
+            timeout,
+        )
+        visitors = reply["visitors"]
+        return int(visitors["value"] if isinstance(visitors, dict) else visitors)
     except MALFORMED_REPLY as exc:
         raise UmamiError(f"Umami's reply cannot be read: {exc!r}") from None
