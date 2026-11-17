@@ -25,6 +25,7 @@ any coverage gap, and a primary news source).
 | 0 | Euro area | ~16.4 | — | Not a country: the union whose central bank is the ECB; unranked | Reuters / ECB |
 | 0 | European Union | ~21 | — | Not a country: the union whose parliament is elected; unranked ([elections](../../steps/elections.md)) | Reuters / European Parliament |
 | 0 | G7 / G20 | ~100 | — | Not a country: the forums whose leaders meet yearly; unranked ([summits](../../steps/summits.md)) | Reuters / G7 and G20 Research Groups |
+| 0 | OPEC | ~4 | — | Not a country: the producers' group whose announcements step 24 measures; unranked ([OPEC+ decisions](../../steps/opec.md)) | Reuters / Känzig 2021 |
 
 The full Notion table extends through rank 50 and records, per country, how many of the 132 tracked
 [trading platforms](platforms.md) sit in that market and whether any coverage gap remains.

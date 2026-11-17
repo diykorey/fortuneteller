@@ -98,6 +98,7 @@ def test_seed_dir_has_no_unexpected_csvs() -> None:
         "presidential_posts.csv",
         "presidential_posts_2.csv",
         "ceo_scandals.csv",
+        "opec.csv",
         "fomc_sentiment_dictionary.csv",
     }
     # then exactly those files are present
@@ -187,6 +188,30 @@ def test_summit_rows_are_g7_and_g20_summits_since_1975() -> None:
     assert all(re.fullmatch(r"https://www\.g(7|20)\.utoronto\.ca/\S+", s) for s in sources)
     assert len(set(days)) == len(days) and len(set(sources)) == len(sources)
     assert days == sorted(days) and days[0] >= date(1975, 11, 17) and days[-1] <= date.today()
+
+
+def test_opec_rows_are_kanzigs_announcements_with_their_kind() -> None:
+    # given the committed OPEC announcements
+    with (settings.seed_dir / "opec.csv").open(newline="", encoding="utf-8") as handle:
+        reader = csv.DictReader(handle)
+        header = reader.fieldnames
+        rows = list(reader)
+    # when their days and kinds are read
+    days = [date.fromisoformat(row["day"]) for row in rows]
+    kinds = {row["day"]: row["kind"] for row in rows}
+    # then the vintage's 169 days are there once, in order, at the rule's hour, each with a kind,
+    # and four days checked by hand against the news carry the oil market's reading
+    assert header == ["day", "time", "kind"]
+    assert len(rows) == 169 and len(set(days)) == 169 and days == sorted(days)
+    assert (days[0], days[-1]) == (date(1983, 7, 19), date(2025, 12, 1))
+    assert {row["time"] for row in rows} == {"08:00"}
+    assert set(kinds.values()) == {"oil up", "oil down"}
+    assert [kinds[d] for d in ("2014-11-27", "2016-11-30", "2020-04-12", "2022-10-05")] == [
+        "oil down",
+        "oil up",
+        "oil up",
+        "oil up",
+    ]
 
 
 def test_tweet_days_are_inside_the_first_term() -> None:
