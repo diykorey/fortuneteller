@@ -20,8 +20,9 @@ until the 2027-01-31 gate, by the owner
 ## In progress
 
 - **Step 24: OPEC+ decisions** ([the spec](steps/opec.md)): what followed 169 OPEC
-  announcements, 1983–2025, by the sign of the oil market's surprise. Step 1 done: the seed stored,
-  the live kind agreeing on 72 of 80 days; next, `follows --event opec`.
+  announcements, 1983–2025, by the sign of the oil market's surprise. Steps 1 and 2 done: the seed
+  stored, the live kind agreeing on 72 of 80 days; `follows --event opec` and the `opec` trigger.
+  Next, step 3: the results against the expected outcome, and the IMF check.
 - **Step 22: ask the fortune teller** ([the spec](steps/ask-the-fortune-teller.md)): the page
   section where a reader picks a kind of event and sees what followed, from the same function
   the follows command uses. Steps 1 to 4 are built: one function for follows and the page, the
