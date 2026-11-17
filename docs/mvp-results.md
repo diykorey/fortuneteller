@@ -627,10 +627,12 @@ Measured 2026-11-17. Detail in [what follows an OPEC+ decision](steps/opec.md#re
 169 OPEC announcements, 1983 to 2025, each taken by how the oil market read it: 96 that pushed oil
 up, 73 down (`follows --event opec`). **Energy stocks and gasoline move with oil**: up on the day,
 the week and the month after *oil up*, down on the day and the week after *oil down*, each at
-chance 0.004 or less. Gasoline's day after *oil up* holds walk-forward, 20 right of 31; energy
-stocks' does not, 25 of 47. Outside oil, energy stocks and gasoline, the answers are no more than
-chance gives. What OPEC decided, by the IMF's coding of 89 of the meetings, answers no cell; the
-market's reading answers 6 on the same days.
+chance 0.004 or less, counted from the close before. Gasoline's day after *oil up* holds
+walk-forward, 20 right of 31; energy stocks' does not, 25 of 47. Outside oil, energy stocks and
+gasoline, the answers are within what chance gives. **From the reaction close, as a live trigger
+is answered, the move is already in**: five scattered cells answer, about chance. On 89 of the
+meetings the IMF's cut, hold or boost answers no cell, most having too few events; the market's
+reading answers 6, mostly oil itself.
 
 ## What comes next
 

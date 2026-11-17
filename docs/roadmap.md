@@ -171,7 +171,7 @@ step 18 trigger; reading the news into kinds waits in the backlog below.
 
 | # | Step | Where it stands |
 | --- | --- | --- |
-| 24 | **[OPEC+ decisions](steps/opec.md)**: output cuts and rises, against Brent (stored), gasoline and the indexes | **Done** 2026-11-17 ([results](steps/opec.md#results)): energy stocks and gasoline move with the kind on the day and the week; gasoline's day after *oil up* holds walk-forward (20 of 31); the rest is chance; the IMF's cut/hold/boost answers nothing |
+| 24 | **[OPEC+ decisions](steps/opec.md)**: output cuts and rises, against Brent (stored), gasoline and the indexes | **Done** 2026-11-17 ([results](steps/opec.md#results)): from the close before, energy stocks and gasoline move with the kind on the day and the week, and gasoline's day after *oil up* holds walk-forward (20 of 31); from the reaction close, about chance; the IMF's cut/hold/boost answers no cell on 89 meetings, most too few |
 | 25 | **Other central banks**: the Bank of England's and the Bank of Japan's rate decisions, against the pound, the yen and their bonds, as the Fed and the ECB are | Planned |
 | 26 | **War and military strikes**: the dated outbreaks and major strikes, against oil, gold, defence stocks and the indexes | Planned |
 | 27 | **Crypto shocks**: exchange collapses, hacks, ETF approvals and halvings, against bitcoin, ether and coin stocks | Planned |

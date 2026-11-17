@@ -12,9 +12,9 @@ Where the work is and what comes next: the task last finished, the tasks in prog
 
 ## Last completed
 
-Step 24: what follows an OPEC+ decision ([the spec](steps/opec.md#results)). Energy stocks and
-gasoline move with the oil market's reading on the day and the week; gasoline's day after *oil up*
-holds walk-forward; the rest is chance, and the IMF's cut, hold or boost answers nothing.
+Step 24: what follows an OPEC+ decision ([the spec](steps/opec.md#results)). From the close
+before, energy stocks and gasoline move with the oil market's reading on the day and the week, and
+gasoline's day after *oil up* holds walk-forward; from the reaction close, about chance.
 
 ## In progress
 

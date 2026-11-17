@@ -427,3 +427,74 @@ def test_an_ecb_trigger_is_answered_not_refused(one_market: None) -> None:
     # then it is answered on the market, not refused for its flow
     assert {r["market"] for r in rows} == {SPY}
     assert not any("is not one of" in line for line in lines)
+
+
+def _brent(closes: list[DailyClosingPrice], i: int, step: float) -> list[DailyClosingPrice]:
+    # ``closes`` with close ``i`` moved by ``step`` from the one before, the later ones with it
+    moved = list(closes)
+    for k in range(i, len(moved)):
+        moved[k] = DailyClosingPrice(moved[k].day, moved[k].price * (1 + step))
+    return moved
+
+
+def _opec_answer(
+    trigger: study.Trigger, closes: list[DailyClosingPrice], brent: list[DailyClosingPrice]
+) -> tuple[list[dict[str, str]], list[str]]:
+    # a live OPEC trigger, merged at 09:00 New York on its day, past announcements none stored
+    merged = datetime.combine(trigger.day, time(9, 0), tzinfo=sources.NEW_YORK)
+    return study.answer_triggers(
+        [trigger],
+        lambda sha: merged,
+        {"opec": []},
+        {"opec": {}},
+        {SPY: closes, study.KIND_MARKET: brent},
+        [],
+    )
+
+
+def test_a_live_opec_trigger_takes_its_kind_from_brent_s_reaction_day(one_market: None) -> None:
+    # given Brent 2% up on an announcement's day, and the S&P 500's closes
+    closes = _closes(_wavy(300))
+    day = closes[200].day
+    brent = _brent(closes, 200, 0.02)
+
+    # when filed as oil up, as oil down, and before Brent's reaction close is in
+    up = _opec_answer(_trigger(day, study.OIL_UP, "opec"), closes, brent)
+    down = _opec_answer(_trigger(day, study.OIL_DOWN, "opec"), closes, brent)
+    early = _opec_answer(_trigger(day, study.OIL_UP, "opec"), closes, brent[:200])
+
+    # then oil up is answered on the market from its reaction close, oil down is void, and the
+    # early one waits
+    assert {(r["market"], r["kind"]) for r in up[0]} == {(SPY, study.OIL_UP)}
+    assert up[1][0].startswith(f"2001.csv:2 opec {day} oil up, merged")
+    assert down[1] == [
+        f"2001.csv:2 opec {day} oil down: void, Brent's reaction day gives oil up, not oil down"
+    ]
+    assert early == (
+        [],
+        [f"2001.csv:2 opec {day} oil up: waiting, Brent's reaction close is not in"],
+    )
+
+
+def test_a_stored_opec_announcement_s_trigger_keeps_the_seed_s_kind(one_market: None) -> None:
+    # given a stored announcement whose seed says oil down, on a day Brent rose
+    closes = _closes(_wavy(300))
+    day = closes[200].day
+    stored = flows.OPEC_FLOW.event_instance(
+        datetime.combine(day, time(8, 0), tzinfo=sources.NEW_YORK), study.OIL_DOWN
+    )
+    merged = datetime.combine(day, time(9, 0), tzinfo=sources.NEW_YORK)
+
+    # when filed as oil down
+    rows, lines = study.answer_triggers(
+        [_trigger(day, study.OIL_DOWN, "opec")],
+        lambda sha: merged,
+        {"opec": [stored]},
+        {"opec": study.detail_kinds([stored])},
+        {SPY: closes, study.KIND_MARKET: _brent(closes, 200, 0.02)},
+        [],
+    )
+
+    # then the seed's kind stands and it is answered, not read from Brent
+    assert {r["kind"] for r in rows} == {study.OIL_DOWN}
+    assert not any("void" in line for line in lines)
