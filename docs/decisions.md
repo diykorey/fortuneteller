@@ -11,6 +11,19 @@ amended there with a date.
 Each entry: **what** was decided, **why**, what it **retires**, and **where** the detail is. *By the
 owner* marks a choice the owner made over another on the table.
 
+## 2026-11-17: Widen the kinds now (by the owner)
+
+- **What:** phase 4's pause on new kinds is lifted. Phase 5 adds, one per pull request: OPEC+
+  decisions, other central banks (the Bank of England, the Bank of Japan), war and military
+  strikes, crypto shocks, and weather and climate events. A hot event of a measured kind is filed
+  by hand as a trigger; reading the news into kinds by a small local model goes to the backlog.
+- **Why:** the owner wants the fortune teller to answer the news people talk about, and a kind can
+  only be answered once its past is measured. Each kind is a dated list on the building block the
+  tariff, election, summit and CEO kinds already use, so each costs a list and a spec.
+- **Retires:** phase 4's "no new flow or kind starts until steps 21 to 23 are done". The gate on
+  2027-01-31 keeps its three bars; steps 21 to 23 finish beside the new kinds.
+- **Where:** [roadmap phase 5](roadmap.md#phase-5-the-kinds-the-news-brings).
+
 ## 2026-11-17: The visitor count is read through Umami's share link (by the owner)
 
 - **What:** step 23's weekly count stays on Umami Cloud's free plan and is read through the site's

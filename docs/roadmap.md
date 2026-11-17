@@ -130,7 +130,10 @@ Opened 2026-11-14 ([why](decisions.md#2026-11-14-prove-the-loop-show-the-page-be
 After a month live, the log holds one call; the page the target describes does not exist; nobody
 outside the project sees it. So the next work closes that gap before widening. **No new flow or
 kind starts until steps 21 to 23 are done**; step 20 is parked until the gate (*amended
-2026-11-15*, [why](decisions.md#2026-11-15-step-20-parked-until-the-gate-by-the-owner)). Each step gets its own spec, bars written first, read by a goldfish before
+2026-11-15*, [why](decisions.md#2026-11-15-step-20-parked-until-the-gate-by-the-owner)).
+*Amended 2026-11-17, by the owner:* the pause is lifted; new kinds start now, in phase 5 below,
+while steps 21 to 23 finish and the gate keeps its bars
+([why](decisions.md#2026-11-17-widen-the-kinds-now-by-the-owner)). Each step gets its own spec, bars written first, read by a goldfish before
 anything is built.
 
 | # | Step | Where it stands |
@@ -157,6 +160,25 @@ opens, prediction markets first: Kalshi's and Polymarket's free price history (P
 2020), measured as markets readers bet in, then as a free expected value for an election (step 10).
 They are the betting markets the project's first statement of intent named beside stocks and
 crypto.
+
+### Phase 5: the kinds the news brings
+
+Opened 2026-11-17 by the owner ([why](decisions.md#2026-11-17-widen-the-kinds-now-by-the-owner)).
+Each a dated history of past events, measured as step 17 measures a kind (what followed, over
+spans, against the base rate, walk-forward), one kind per pull request, its spec and expected
+outcome written first and read by a goldfish. A hot event of a measured kind is filed by hand as a
+step 18 trigger; reading the news into kinds waits in the backlog below.
+
+| # | Step | Where it stands |
+| --- | --- | --- |
+| 24 | **OPEC+ decisions**: output cuts and rises, against Brent (stored), gasoline and the indexes | Next |
+| 25 | **Other central banks**: the Bank of England's and the Bank of Japan's rate decisions, against the pound, the yen and their bonds, as the Fed and the ECB are | Planned |
+| 26 | **War and military strikes**: the dated outbreaks and major strikes, against oil, gold, defence stocks and the indexes | Planned |
+| 27 | **Crypto shocks**: exchange collapses, hacks, ETF approvals and halvings, against bitcoin, ether and coin stocks | Planned |
+| 28 | **Weather and climate**: hurricane landfalls, floods and droughts in crop-growing regions, each with one start day, against crops, fuel and insurers | Planned |
+
+**Backlog:** news read into these kinds by a small model on this machine (Gemma 3 4B or Qwen 2.5
+3B), tested on a fresh labelled set: step 20's parked next try, widened to phase 5's kinds.
 
 Later, not planned in detail, each chosen one at a time after the gate: new kinds of
 events, each a dated history before a flow (OPEC decisions against Brent, already stored; floods
