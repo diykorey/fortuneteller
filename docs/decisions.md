@@ -11,6 +11,22 @@ amended there with a date.
 Each entry: **what** was decided, **why**, what it **retires**, and **where** the detail is. *By the
 owner* marks a choice the owner made over another on the table.
 
+## 2026-11-17: The runner is started by an outside timer (by the owner)
+
+- **What:** the release-day job and the evening score on GitHub's runner are started by two jobs at
+  cron-job.org, a free service, asking GitHub's API to run the workflow at 07:30 and 18:30 New
+  York on weekdays. The ask carries the owner's fine-grained token for this repository only,
+  allowed *Actions: read and write*, kept at that service alone, expiring 2027-03-31 (renewed
+  before then, or the loop stops). The workflow's own schedule is removed.
+- **Why:** GitHub started the scheduled runs 6 to 10 hours late on 2026-11-16 and had not started
+  the morning of retail sales, 2026-11-17, by 15:13 UTC; runs asked for start at once. Of the
+  three ways weighed, the laptop starting the runner keeps the laptop awake, and fixing the
+  laptop's sleep keeps the job on it; an outside timer frees both.
+- **Retires:** step 21's 2026-11-14 rule that a run goes on by the time it was scheduled for.
+  The token at a third party can start, cancel, re-run and delete this repository's workflow runs;
+  it cannot read or change the code or the secrets.
+- **Where:** [step 21](steps/loop-off-the-laptop.md), its amendments and results of 2026-11-17.
+
 ## 2026-11-17: Widen the kinds now (by the owner)
 
 - **What:** phase 4's pause on new kinds is lifted. Phase 5 adds, one per pull request: OPEC+
