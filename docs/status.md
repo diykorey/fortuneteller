@@ -12,16 +12,12 @@ Where the work is and what comes next: the task last finished, the tasks in prog
 
 ## Last completed
 
-Step 20, part 2: a pasted article read into a trigger ([the spec](steps/article-to-trigger.md)).
-The word rules *don't read*: 5 of 12 test positives, 6 of 99 negatives misread. Step 20 is parked
-until the 2027-01-31 gate, by the owner
-([why](decisions.md#2026-11-15-step-20-parked-until-the-gate-by-the-owner)).
+Step 24: what follows an OPEC+ decision ([the spec](steps/opec.md#results)). Energy stocks and
+gasoline move with the oil market's reading on the day and the week; gasoline's day after *oil up*
+holds walk-forward; the rest is chance, and the IMF's cut, hold or boost answers nothing.
 
 ## In progress
 
-- **Step 24: OPEC+ decisions** ([the spec](steps/opec.md)): what followed 169 OPEC
-  announcements, 1983–2025, by the sign of the oil market's surprise. Step 1 done: the seed stored,
-  the live kind agreeing on 72 of 80 days; next, `follows --event opec`.
 - **Step 22: ask the fortune teller** ([the spec](steps/ask-the-fortune-teller.md)): the page
   section where a reader picks a kind of event and sees what followed, from the same function
   the follows command uses. Steps 1 to 4 are built: one function for follows and the page, the

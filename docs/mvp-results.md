@@ -620,6 +620,18 @@ walk-forward. Nvidia's CEO has not left, so it is outside the kind; read after t
 and with no trigger filed, it fell 6.6% against the market on 2026-11-09 and 5.1% more the day
 after, where the answer from that close was *can't say*.
 
+## What follows an OPEC+ decision
+
+Measured 2026-11-17. Detail in [what follows an OPEC+ decision](steps/opec.md#results).
+
+169 OPEC announcements, 1983 to 2025, each taken by how the oil market read it: 96 that pushed oil
+up, 73 down (`follows --event opec`). **Energy stocks and gasoline move with oil**: up on the day,
+the week and the month after *oil up*, down on the day and the week after *oil down*, each at
+chance 0.004 or less. Gasoline's day after *oil up* holds walk-forward, 20 right of 31; energy
+stocks' does not, 25 of 47. Outside oil, energy stocks and gasoline, the answers are no more than
+chance gives. What OPEC decided, by the IMF's coding of 89 of the meetings, answers no cell; the
+market's reading answers 6 on the same days.
+
 ## What comes next
 
 Chosen 2026-10-13: keep score ([rung 4](steps/rung-4-keep-score.md)), done above with the live path
