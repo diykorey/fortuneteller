@@ -300,6 +300,11 @@ Terms are grouped by what they are about, alphabetical within each group.
   disabled flag is Umami's browser storage key `umami.disabled`, set to `1` in the owner's browsers
   so their visits are not counted. *Seen* is step 23's verdict when one week of the window reaches
   100 unique visitors; *not seen* when none does.
+- **OPEC+ / oil supply surprise** — *added 2026-11-17* ([OPEC+ decisions](steps/opec.md)): OPEC is
+  the Organization of the Petroleum Exporting Countries; OPEC+ is OPEC with Russia and other
+  producers, deciding together since late 2016. An oil supply surprise is how far oil futures moved
+  over an OPEC announcement's day (Känzig 2021); its sign gives step 24's kind, *oil up* or *oil
+  down*.
 - **Share link** — *added 2026-11-17* ([be seen](steps/be-seen.md)): Umami's public address for a
   site's dashboard, `cloud.umami.is/share/CODE`. Asked through Umami's API, the code gives the site
   and a signed token that reads its stats; step 23 counts the week's visitors with it, since the
