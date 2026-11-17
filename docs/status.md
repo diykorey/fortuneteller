@@ -26,8 +26,8 @@ until the 2027-01-31 gate, by the owner
   Step 5, the published page after the evening job, is next.
 - **Step 23: be seen, and count it** ([the spec](steps/be-seen.md)): a cookie-free Umami counter
   on the page and a weekly LinkedIn post drafted by `weekly-post`, both the owner's choice. Step 1
-  built: the tag is in the page, and the count is read through Umami's share link (no paid key).
-  Next: one visit seen on the published page.
+  done: the counter is live and counts a visit once, read through Umami's share link. Next: the
+  first post, after step 22's page is checked.
 - **Step 21: the loop off the laptop** ([the spec](steps/loop-off-the-laptop.md)): the jobs on
   GitHub Actions. Step 1 done: every source answers the runner; the store cannot be rebuilt from
   empty (TradingView rewrote 2025's claims weeks), so it must travel encrypted. Step 2, the shadow

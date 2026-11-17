@@ -39,8 +39,10 @@ counter, LinkedIn for the channel.
   the link's public code gives the site and a signed token, and the same stats are asked with it.
   The token is one of the ways in that Umami's own API description lists, but its free use is not
   promised; if it stops answering, the week is read from the dashboard, set to UTC, over a custom
-  range, and the row says so. The share link makes the site's dashboard public: its visits by
-  page, referrer, country, browser and device, none naming a person; the owner accepted that.
+  range, and the row says so. The share link makes the site's dashboard public, each visit
+  included: its time, city, browser, system, screen and language, no name or address. On a page
+  this small such a row can point to one reader; the owner judged it not private data and keeps
+  the link whole (2026-11-17).
 - **The post: drafted from the data, published by the owner.** `weekly-post` prints a draft for
   the last full week: each live call in `data/calls.csv` logged that week (by `logged_at`), its
   direction and market, and its grade, *right*, *wrong* or *pending*; the record of graded calls
@@ -76,10 +78,18 @@ counter, LinkedIn for the channel.
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | The counter: the owner creates the Umami Cloud site, gives its website ID (public) ~~and an API key (a secret, kept in `.env` as `FT_UMAMI_API_KEY`)~~; the tag goes into the template. *Amended 2026-11-17:* the share link's code instead of the key; the tag is the one in Technical details, its address and ID as Umami gives them for the site (built 2026-11-17; the look waits for the published page) | A test finds one Umami tag in the written page, with the ID, `data-do-not-track` and `data-domains`. *Amended 2026-11-17:* read by pageviews as well as visitors, since a browser already counted that month stays one visitor whatever it does. The published page, opened from a browser without the flag, adds one visitor and one pageview; opened from the same browser with the flag, and from a file on disk, adds no pageview; the browser's cookies after the visit hold none from Umami. Each look's time and counts, and the date, are written here |
+| 1 | ~~The counter~~ **done** 2026-11-17. The counter: the owner creates the Umami Cloud site, gives its website ID (public) ~~and an API key (a secret, kept in `.env` as `FT_UMAMI_API_KEY`)~~; the tag goes into the template. *Amended 2026-11-17:* the share link's code instead of the key; the tag is the one in Technical details, its address and ID as Umami gives them for the site (built 2026-11-17; the look waits for the published page) | A test finds one Umami tag in the written page, with the ID, `data-do-not-track` and `data-domains`. *Amended 2026-11-17:* read by pageviews as well as visitors, since a browser already counted that month stays one visitor whatever it does. The published page, opened from a browser without the flag, adds one visitor and one pageview; opened from the same browser with the flag, and from a file on disk, adds no pageview; the browser's cookies after the visit hold none from Umami. Each look's time and counts, and the date, are written here |
 | 2 | ~~`fortuneteller weekly-post`~~ **done** 2026-11-15 | Tests: a week with a graded call prints it as *right* or *wrong*; a pending call says *pending*; a week with none says *no call this week*; the record counts the calls' grades (*amended:* not `score`'s counts, which include rows leaning *too few*); a week across a month's first is asked in two parts and the larger kept; the last line is the disclaimer |
 | 3 | The first post, after step 22's page is published | Its date and address are in the weeks file's row for its week, written the next Monday with the count |
 | 4 | Every Monday to 2027-02-01: the week's row, and the next post | A row for each week of the window; on 2027-02-01, the verdict here against the bar |
+
+**Step 1's look, 2026-11-17.** The tag reached the published page at 13:08 EET (PR #327, ahead
+of the evening job). The owner's browser, flagged before the tag was live, opened the page, then a
+private window of the same browser did. Umami's stats for 2026-11-17 from 00:00 UTC, read through
+the share link at 13:56 EET: 1 visitor, 1 pageview, the visit at 11:55:46 UTC, Chrome on Linux;
+the flagged visit added nothing. At 14:00 EET the private window showed no cookie for
+diykorey.github.io, and a copy of the page saved and opened from disk left the count at 1 pageview.
+Step 1 is done.
 
 ## How you know it is right
 
