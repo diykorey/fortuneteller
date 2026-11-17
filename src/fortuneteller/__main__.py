@@ -528,9 +528,12 @@ def describe_follows(
     noun: str = "Fed decisions",
     after: bool = False,
     long: bool = False,
+    marked: tuple[str, str] | None = None,
 ) -> list[str]:
     """``follows``' table: a row per kind, span and market, then what chance alone would give;
-    with ``long``, each cell's answer counting each cycle once."""
+    with ``long``, each cell's answer counting each cycle once. A ``marked`` span and market is
+    near the kind itself: each kind's cell there prints ``(the kind)`` and is left out of the
+    chance line (docs/steps/opec.md)."""
     counted = [kinds[e.event_id] for e in events if e.event_id in kinds]
     first, last = (flows.release_date(e) for e in (events[0], events[-1]))
     plural = "s" if tuple(order) in (study.KINDS, (study.SCANDAL,)) else ""
@@ -553,13 +556,16 @@ def describe_follows(
         walk = f"{f.graded}: {f.right} right, {f.verdict}"
         if long and f.by_cycle is not None:
             walk = f"{f'{f.by_cycle[0]}: {f.by_cycle[1]}':<18} {walk}"
+        if (span, market) == marked:
+            walk += "  (the kind)"
         lines.append(
             f"{kind:<{width}} {span:<{span_width}} {market:<12} {n:>3} {f.counts[study.UP]:>3} "
             f"{f.counts[study.SAME]:>4} {f.counts[study.DOWN]:>4} {f'{f.overlapped}/{f.holes}':>8}  "
             f"{base:<18} {f.answer:<15} {chance:<7} {placebo:<8} {walk}"
         )
-    answered = sum(f.answer != study.TOO_FEW for *_, f in cells)
-    walked = sum(f.graded >= study.MIN_PREDICTIONS for *_, f in cells)
+    judged = [f for _, span, market, f in cells if (span, market) != marked]
+    answered = sum(f.answer != study.TOO_FEW for f in judged)
+    walked = sum(f.graded >= study.MIN_PREDICTIONS for f in judged)
     lines.append(
         f"by chance: about {answered * len(study.OUTCOMES) * study.FOLLOW_P_BAR:.1f} answers on "
         f"all history, {walked * study.FOLLOW_P_BAR:.1f} holds walk-forward"
@@ -576,6 +582,7 @@ FOLLOWS_NOUNS = {
     "claims": "jobless claims reports",
     "ecb": "ECB decisions",
     "ceo": "CEO scandals",
+    "opec": "OPEC announcements",
 }
 
 
@@ -629,6 +636,10 @@ def follows_cells(
             kinds = dict.fromkeys((e.event_id for e in events), study.SCANDAL)
             order: Sequence[str] = (study.SCANDAL,)
             cells = study.follow_ceo(events, con=con, after=after)
+        elif flow is flows.OPEC_FLOW:
+            kinds = study.detail_kinds(flows.stored_events(flow, con=con))
+            order = study.OPEC_KINDS
+            events, cells = study.follow_decisions(flow, kinds, order, con=con, after=after)
         else:
             if flow is flows.FED_FLOW or flow is flows.ECB_FLOW:
                 stored = flows.stored_events(flow, con=con)
@@ -669,8 +680,13 @@ def _follows(args: argparse.Namespace) -> int:
     except FollowsUnavailable as exc:
         print(f"follows: {exc}", file=sys.stderr)
         return 1
+    marked = (
+        (study.KIND_SPAN, study.KIND_MARKET)
+        if args.event == flows.OPEC_FLOW.cli_name and not args.after_the_day
+        else None
+    )
     for line in describe_follows(
-        f.events, f.kinds, f.cells, f.order, f.noun, args.after_the_day, args.long
+        f.events, f.kinds, f.cells, f.order, f.noun, args.after_the_day, args.long, marked
     ):
         print(line)
     return 0
@@ -730,6 +746,8 @@ def _triggers(_args: argparse.Namespace) -> int:
                 kinds[name] = decided
             elif flow is flows.CEO_FLOW:
                 kinds[name] = {}
+            elif flow is flows.OPEC_FLOW:
+                kinds[name] = study.detail_kinds(events[name])
             else:
                 kinds[name] = study.release_kinds(flow, con=con)
         closes = {m: study.stored_closes(m, con=con) for m in study.MVP_PRICE_SERIES}
@@ -1832,6 +1850,9 @@ def ask_data(con: duckdb.DuckDBPyConnection) -> dict[str, list[dict[str, object]
     left_out: list[dict[str, object]] = []
     names = market_names()
     for name, noun in FOLLOWS_NOUNS.items():
+        if name == flows.OPEC_FLOW.cli_name:
+            # Step 24 adds OPEC to follows and triggers, not to the page (docs/steps/opec.md).
+            continue
         try:
             f = follows_cells(name, con)
             cells = list(f.cells)

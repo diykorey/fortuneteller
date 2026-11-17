@@ -1061,3 +1061,76 @@ def test_each_replay_verdict_and_too_few_events_have_words() -> None:
     )
     assert words[1].endswith("Replayed, it did not hold: right 17 of 34.")
     assert words[2].endswith("Too few replayed to judge: right 4 of 6.")
+
+
+def _opec(day: date, kind: str) -> flows.EventInstance:
+    # an OPEC announcement at 08:00 New York on ``day``, its kind in its detail as the seed has it
+    at = datetime.combine(day, time(8, 0), tzinfo=sources.NEW_YORK)
+    return flows.OPEC_FLOW.event_instance(at, kind)
+
+
+def test_follows_for_opec_reads_each_kind_from_the_seed_and_marks_brent_s_day(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given three OPEC announcements, two oil up and one oil down, and Brent and the S&P 500
+    # falling 3% on each oil up day and rising on the oil down one, against the kind
+    markets = ("SPY / ES", study.KIND_MARKET)
+    monkeypatch.setattr(study, "MVP_PRICE_SERIES", {m: study.MVP_PRICE_SERIES[m] for m in markets})
+    steps = _alternating(300)
+    keys = {40: study.OIL_UP, 80: study.OIL_DOWN, 120: study.OIL_UP}
+    for i, kind in keys.items():
+        steps[i] = -0.03 if kind == study.OIL_UP else 0.03
+    closes = _closes(steps)
+    db.init_db()
+    db.get_connection().executemany(
+        "INSERT INTO daily_bars (instrument, day, close, source) VALUES (?, ?, ?, 'test')",
+        [[m, c.day, c.price] for m in markets for c in closes],
+    )
+    db.insert_models("event_instances", [_opec(closes[i].day, k) for i, k in keys.items()])
+    first, last = closes[40].day, closes[120].day
+
+    # when run from the close before, and from the reaction close
+    day_code = main(["follows", "--event", "opec"])
+    day_out = capsys.readouterr().out.splitlines()
+    after_code = main(["follows", "--event", "opec", "--after-the-day"])
+    after_out = capsys.readouterr().out.splitlines()
+
+    # then the kinds are the seed's, Brent's day cells alone are marked, and only from the close
+    # before
+    assert day_code == after_code == 0
+    assert day_out[0] == f"follows: 3 OPEC announcements {first} … {last}: 2 oil up, 1 oil down"
+    marked = [line for line in day_out if line.endswith("(the kind)")]
+    assert [line.split()[:3] for line in marked] == [
+        ["oil", "up", "day"],
+        ["oil", "down", "day"],
+    ]
+    assert all(study.KIND_MARKET in line for line in marked)
+    assert not any(line.endswith("(the kind)") for line in after_out)
+
+
+def test_brent_s_day_cell_is_left_out_of_the_chance_line() -> None:
+    # given an answered cell on Brent's day and the same answer on the S&P 500's day
+    answered = study.Follow(
+        {UP: 40, SAME: 0, DOWN: 0}, 0, 0, None, UP, 0.0, False, 0, 0, 0.0, study.TOO_FEW
+    )
+    events = [_opec(date(2020, 4, 13), study.OIL_UP)]
+    kinds = study.detail_kinds(events)
+    cells = [
+        (study.OIL_UP, "day", "SPY / ES", answered),
+        (study.OIL_UP, "day", study.KIND_MARKET, answered),
+    ]
+
+    # when the table is described with Brent's day marked, and without
+    marked = describe_follows(
+        events,
+        kinds,
+        cells,
+        study.OPEC_KINDS,
+        "OPEC announcements",
+        marked=(study.KIND_SPAN, study.KIND_MARKET),
+    )
+    plain = describe_follows(events, kinds, cells, study.OPEC_KINDS, "OPEC announcements")
+
+    # then the chance line counts one answered cell with the mark, two without
+    assert marked[-1].startswith(f"by chance: about {3 * study.FOLLOW_P_BAR:.1f} answers")
+    assert plain[-1].startswith(f"by chance: about {6 * study.FOLLOW_P_BAR:.1f} answers")
