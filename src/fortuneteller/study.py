@@ -58,6 +58,7 @@ from .sources import (
     LONDON,
     NEW_YORK,
     UTC_ZONE,
+    TOKYO,
     ZURICH,
     DailyClosingPrice,
     FredError,
@@ -86,6 +87,8 @@ class PriceSeries(NamedTuple):
 # stamps a currency pair, so the next London day's bar is the first to follow a US release. The
 # seven markets people feel (docs/steps/markets-people-feel.md) are US-listed funds closing at 16:00.
 # Coffee (docs/steps/coffee.md) is `KC=F`, ICE's arabica front month, at its 13:30 settlement.
+# The pound and the yen (docs/steps/other-central-banks.md) are stamped as the euro is; the
+# Nikkei 225 closes at 15:30 Tokyo, 15:00 before 2024-11-05, a known miss written in the spec.
 # A `fred:` ticker is FRED's series: the breakeven (docs/steps/breakeven.md), read at 15:30, the
 # time of the bid quotes the Treasury builds its daily curve from.
 MVP_PRICE_SERIES = {
@@ -114,6 +117,9 @@ MVP_PRICE_SERIES = {
     "ITB": PriceSeries("ITB", "pct", time(16, 0), NEW_YORK),
     "KC": PriceSeries("KC=F", "pct", time(13, 30), NEW_YORK),
     "T5YIE": PriceSeries("fred:T5YIE", "bps", time(15, 30), NEW_YORK),
+    "GBPUSD": PriceSeries("GBPUSD=X", "pct", time(0, 0), LONDON),
+    "USDJPY": PriceSeries("JPY=X", "pct", time(0, 0), LONDON),
+    "NKY": PriceSeries("^N225", "pct", time(15, 30), TOKYO),
 }
 
 

@@ -6,6 +6,7 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-17 | Step 25, step 1: the pound, the yen and the Nikkei 225 as markets, unsigned; the Bank of England's Bank Rate changes since 2008 as a seed; every existing row unchanged | PR #337 |
 | 2026-11-17 | Spec: step 25, what follows a Bank of England or a Bank of Japan decision (TradingView's calendar, the Bank's own Bank Rate history; the pound, the yen and the Nikkei added) | PR #336 |
 | 2026-11-17 | Step 24, step 3: OPEC's results: energy stocks and gasoline move with the kind; gasoline's day after *oil up* holds; from the reaction close, about chance | PR #335 |
 | 2026-11-17 | Step 24, step 2: `follows --event opec` (kinds from the seed, Brent's day marked), the `opec` trigger (a live one's kind from Brent's reaction day), the IMF check's file and script | PR #334 |

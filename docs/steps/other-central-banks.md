@@ -61,6 +61,10 @@ trigger file may name `boe` or `boj`.
     euro, the opposite of the dollar index; the yen as the dollar index; the Nikkei as the S&P
     500. `called_live` is unchanged, so no new link is called live by this step; one that holds
     walk-forward is reported, and calling it is a decision of its own.
+    *Amended 2026-11-17, in step 1:* a market with a sign is a live link: the morning job logs a
+    row for it on every release, and calls it once it holds. So the three are **unsigned**, as
+    coffee is, and no new link can be called; signing them is a decision of its own. The signs'
+    check under How you know is dropped with them.
   - The two banks' bonds are not added: no free source gives a daily gilt or Japanese government
     bond yield (FRED's are monthly).
 - **Step 17's method, unchanged:** the spans, the base and its cut, the answers, the placebo, the
@@ -100,10 +104,38 @@ the counts above are from the calendar and are arithmetic.*
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | The three markets: seed rows, series, signs, `load-prices`; `boe-changes.csv` from the Bank's history | `load-prices` stores the three; tests: an 08:30 New York release falls on the next day's close for the pound, the yen and the Nikkei, a 02:30 UTC one on the same day's Nikkei close and a 12:00 London one on the next day's; the closes within 0.05% of the bars, written here; the known misses listed; on a copy of the store every existing row of `raw-move`, `follows` and the scoreboard identical, and each chance line and grid before and after written here; the seed test checks `boe-changes.csv`'s header, order and rates; the disagreeing days listed here |
+| 1 | ~~The three markets~~ **done** 2026-11-17. The three markets: seed rows, series, signs, `load-prices`; `boe-changes.csv` from the Bank's history | `load-prices` stores the three; tests: an 08:30 New York release falls on the next day's close for the pound, the yen and the Nikkei, a 02:30 UTC one on the same day's Nikkei close and a 12:00 London one on the next day's; the closes within 0.05% of the bars, written here; the known misses listed; on a copy of the store every existing row of `raw-move`, `follows` and the scoreboard identical, and each chance line and grid before and after written here; the seed test checks `boe-changes.csv`'s header, order and rates; the disagreeing days listed here |
 | 2 | The BoE: flow `boe`, `follows --event boe`, `boe` in `TRIGGER_KINDS` | Tests: a calendar quarter stores its decisions at their UTC time; a change day the calendar lacks is added at the file's time; a decision's kind is the Bank's change, and 2020-03-26 a hold; a `boe` trigger is answered. On a copy of the store the header is the expected one, or the difference written with a dated amendment; every other flow's `follows` and `raw-move` rows unchanged |
 | 3 | The BoJ: flow `boj`, `follows --event boj`, `boj` in `TRIGGER_KINDS` | Tests: a quarter stores its decisions at their UTC time; a decision's kind is its rate against the previous; a `boj` trigger is answered. The header as expected, or amended; the others unchanged |
 | 4 | Results here and in [MVP results](../mvp-results.md), against the expected outcome; the roadmap row | Every judged bullet of the expected outcome marked right or wrong with its numbers; each bank's walk-forward records; the new markets' rows in the other flows summarised |
+
+*Step 1, 2026-11-17:*
+
+- **The Bank's history** (its *Official Bank Rate history*, read that day): 34 changes from
+  2008-02-07 to 2026-11-05, in `data/seed/boe-changes.csv`. Against the calendar's 186 decisions
+  the two disagree on exactly the three days expected: 2020-03-11 and 2020-03-19, cuts the
+  calendar lacks, and 2020-03-26, a hold the calendar gives as a cut. *Amended 2026-11-17:* the
+  Bank's pages give no hour for either emergency cut. 2020-03-11 is written 07:00, as the news of
+  that morning reported it; 2020-03-19 is written 12:00 by rule: any hour from 06:30 to 15:30
+  London gives every market the same reaction day.
+- **The closes**, against Yahoo's 5-minute bars of 2026-11-09 to 2026-11-16: the pound's daily
+  close is the 00:00 London bar's open within 0.02% on all six days; the yen's within 0.02% on
+  five, and 0.058% on Monday 2026-11-09; the Nikkei's is 0.02% to 0.07% from its last bar, 15:25
+  to 15:30, the closing auction after it, as the DAX's is, against 0.1% to 1.6% from the next
+  bar. So the 0.05% bar is met by the pound, missed by the yen on one Monday and by the Nikkei on
+  three days, each by under 0.02 points; the closes are at the times named. *Amended
+  2026-11-17:* the October 2024 hourly check could not run: Yahoo serves hourly bars for the last
+  730 days only. The Nikkei's 15:00 close before 2024-11-05 rests on the exchange's change of
+  hours, not on bars.
+- **The known misses:** one stored event lies from 15:00 to 15:30 Tokyo before 2024-11-05, a
+  presidential post at 06:08 UTC on 2019-12-13; with the two BoE decisions to come, three.
+- **On a copy of the store**, with the three markets' closes loaded alone (the pound from
+  2003-12-01, the yen from 1996-10-30, the Nikkei from 1970-01-05, each to 2026-11-16): every
+  existing row of every flow's `raw-move` (25 flows) and `follows` (seven flows, both runs, and the
+  Fed's `--long`) and every scoreboard entry is byte for byte the one before; each output gains
+  the three markets' rows. Only the chance lines change, by the added cells: the scoreboard's
+  raw-move chance 546 → 614 cells, its surprise chance 300 → 336, and each `follows` line, e.g.
+  the Fed's from about 6.8 answers to 7.6. OPEC was not stored on that copy and was not compared.
 
 ## How you know it is right
 
@@ -112,8 +144,9 @@ the counts above are from the calendar and are arithmetic.*
   0.1%, 2020-03-26 hold, 2022-12-15 hike to 3.5%, 2025-12-18 cut to 3.75%; and three BoJ days,
   2016-09-21 hold (the yield-curve policy began, not a rate move), 2024-03-19 hike (the end of
   negative rates), 2024-07-31 hike to 0.25%.
-- **The signs:** a test where the dollar index rises and the yen weakens, `JPY=X` up, reads both
-  as the same direction, and the pound, `GBPUSD=X` down, as the opposite.
+- ~~**The signs:** a test where the dollar index rises and the yen weakens, `JPY=X` up, reads both
+  as the same direction, and the pound, `GBPUSD=X` down, as the opposite.~~ *Amended 2026-11-17:*
+  the three are unsigned (above); a test finds each sign 0 in every flow's rule.
 - **The new markets change nothing else:** every existing row byte for byte, on a copy of the
   store, before and after step 1.
 - **The Nikkei's close:** a test with a decision at 02:30 UTC finds the Nikkei's close that day, and

@@ -458,7 +458,8 @@ def with_more_outcomes(signs: dict[str, int]) -> dict[str, int]:
     the STOXX 600 the DAX's; oil, bitcoin and the two sector ETFs none, nor the markets people feel
     (docs/steps/markets-people-feel.md), coffee (docs/steps/coffee.md) or the breakeven
     (docs/steps/breakeven.md), except utilities, which compete with bonds: the 10-year yield's sign
-    reversed (docs/steps/signs.md)."""
+    reversed (docs/steps/signs.md). The pound, the yen and the Nikkei 225 none: a signed market is a
+    live link (docs/steps/other-central-banks.md)."""
     return {
         **signs,
         "BRN": 0,
@@ -479,6 +480,9 @@ def with_more_outcomes(signs: dict[str, int]) -> dict[str, int]:
         "ITB": 0,
         "KC": 0,
         "T5YIE": 0,
+        "GBPUSD": 0,
+        "USDJPY": 0,
+        "NKY": 0,
     }
 
 

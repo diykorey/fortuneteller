@@ -453,6 +453,9 @@ def test_the_more_outcomes_take_their_signs_by_analogy() -> None:
         "ITB": 0,
         "KC": 0,
         "T5YIE": 0,
+        "GBPUSD": 0,
+        "USDJPY": 0,
+        "NKY": 0,
     }
     assert list(signs) == list(study.MVP_PRICE_SERIES)
 
@@ -1005,3 +1008,45 @@ def test_an_ecb_decision_s_rate_is_the_deposit_rate_from_its_first_listing(
     # then the refinancing rate stands before the deposit rate's first listing, the deposit rate
     # after it, and a day with no deposit rate after it has none
     assert rates == {date(2015, 10, 22): 0.05, date(2015, 12, 3): -0.3, date(2016, 3, 10): -0.4}
+
+
+def _at(utc: datetime) -> flows.EventInstance:
+    # an event at ``utc``; only its time matters to its reaction day
+    return flows.ecb_event_instance(utc)
+
+
+@pytest.mark.parametrize(
+    ("at", "expected"),
+    [
+        # an 08:30 New York release: the next day for the pound, the yen and the Nikkei
+        (
+            datetime(2026, 6, 10, 12, 30, tzinfo=UTC),
+            {"GBPUSD": date(2026, 6, 11), "USDJPY": date(2026, 6, 11), "NKY": date(2026, 6, 11)},
+        ),
+        # a BoJ decision at 02:30 UTC: the Nikkei the same day, the pound and the yen the next
+        (
+            datetime(2025, 1, 24, 2, 30, tzinfo=UTC),
+            {"GBPUSD": date(2025, 1, 25), "USDJPY": date(2025, 1, 25), "NKY": date(2025, 1, 24)},
+        ),
+        # a BoE decision at 12:00 London: past Tokyo's close, so the Nikkei the next day too
+        (
+            datetime(2025, 2, 6, 12, 0, tzinfo=UTC),
+            {"GBPUSD": date(2025, 2, 7), "USDJPY": date(2025, 2, 7), "NKY": date(2025, 2, 7)},
+        ),
+        # 07:00 London in 2020 is 15:00 Tokyo: read on the same day's Nikkei close, the known miss,
+        # since Tokyo closed at 15:00 then; after 2024-11-05 the same day rightly
+        (datetime(2020, 5, 7, 6, 0, tzinfo=UTC), {"NKY": date(2020, 5, 7)}),
+        (datetime(2025, 5, 8, 6, 0, tzinfo=UTC), {"NKY": date(2025, 5, 8)}),
+    ],
+)
+def test_the_pound_the_yen_and_the_nikkei_react_by_their_own_close(
+    at: datetime, expected: dict[str, date]
+) -> None:
+    # given an event at ``at``
+    event = _at(at)
+
+    # when its first reaction day is found on each market
+    days = {m: study.first_reaction_day(event, study.MVP_PRICE_SERIES[m]) for m in expected}
+
+    # then each falls on its market's own close
+    assert days == expected
