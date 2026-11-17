@@ -1050,3 +1050,58 @@ def test_the_pound_the_yen_and_the_nikkei_react_by_their_own_close(
 
     # then each falls on its market's own close
     assert days == expected
+
+
+def _gb_quarter(*rows: tuple[str, str, float | None]) -> bytes:
+    # A TradingView UK calendar reply holding ``rows`` of (title, UTC time, actual).
+    return json.dumps(
+        {
+            "status": "ok",
+            "result": [
+                {"title": t, "country": "GB", "date": when, "actual": a, "forecast": a}
+                for t, when, a in rows
+            ],
+        }
+    ).encode()
+
+
+def test_boe_decisions_are_the_calendar_s_and_the_bank_s_changes_it_lacks(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # given a quarter of the UK calendar with two decisions, other news and one not yet held, and
+    # the Bank's changes: one on a listed day, one the calendar lacks, one after today
+    replies = {
+        date(2020, 1, 1): _gb_quarter(
+            (sources.RATE_DECISION, "2020-01-30T12:00:00.000Z", 0.75),
+            ("GDP", "2020-02-11T09:30:00.000Z", 0.1),
+            (sources.RATE_DECISION, "2020-03-26T12:00:00.000Z", 0.1),
+            (sources.RATE_DECISION, "2020-05-07T06:00:00.000Z", None),
+        ),
+    }
+    asked: list[str] = []
+
+    def fetch(
+        start: date, cache_dir: Path, today: date | None = None, country: str = "US"
+    ) -> bytes:
+        asked.append(country)
+        return replies.get(start, b'{"status": "no_data"}')
+
+    monkeypatch.setattr(sources, "fetch_tradingview_quarter", fetch)
+    monkeypatch.setattr(flows, "BOE_FROM", date(2020, 1, 1))
+    (tmp_path / flows.BOE_CHANGES).write_text(
+        "day,time,rate\n2020-03-11,07:00,0.25\n2020-03-26,12:00,0.1\n2020-05-07,07:00,0.05\n"
+    )
+
+    # when the decisions up to a day before the third change are loaded
+    listed, added = flows.load_boe_decisions(tmp_path, tmp_path, today=date(2020, 4, 1))
+
+    # then the calendar's two held ones are at their UTC time, from the UK calendar, and the change
+    # it lacks is added at the file's London hour
+    assert set(asked) == {"GB"}
+    assert listed == [
+        datetime(2020, 1, 30, 12, 0, tzinfo=UTC),
+        datetime(2020, 3, 26, 12, 0, tzinfo=UTC),
+    ]
+    assert added == [datetime(2020, 3, 11, 7, 0, tzinfo=UTC)]
+    events = [flows.decision_instance(flows.BOE_FLOW, d) for d in listed]
+    assert [(e.event_id, e.country) for e in events][0] == (2820200130, "United Kingdom")

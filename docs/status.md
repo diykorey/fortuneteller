@@ -22,7 +22,8 @@ gasoline's day after *oil up* holds walk-forward; from the reaction close, about
   Bank of England's 186 and the Bank of Japan's 86 rate decisions, with the pound, the yen and the
   Nikkei added as markets. Step 1 done: the three markets
   loaded, every existing row unchanged; the Bank's history disagrees with the calendar on the
-  three days expected. Next, step 2, the BoE's flow.
+  three days expected. Step 2 done: `follows --event boe` prints the expected 187 decisions,
+  17 cuts, 153 holds, 17 hikes. Next, step 3, the BoJ's flow.
 - **Step 22: ask the fortune teller** ([the spec](steps/ask-the-fortune-teller.md)): the page
   section where a reader picks a kind of event and sees what followed, from the same function
   the follows command uses. Steps 1 to 4 are built: one function for follows and the page, the

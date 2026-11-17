@@ -834,6 +834,7 @@ class FedFlow:
 # The ECB's decisions (docs/steps/ecb-decisions.md): TradingView lists them from 2013-04-04.
 EURO_AREA = "Euro area"
 GERMANY = "Germany"
+UNITED_KINGDOM = "United Kingdom"
 ECB_FROM = date(2013, 4, 1)
 TRADINGVIEW_CALENDAR = "tradingview_calendar"
 HAND_WRITTEN = "hand_written"
@@ -928,12 +929,20 @@ class EcbFlow:
 
 def ecb_event_instance(announced: datetime) -> EventInstance:
     """Map one ECB decision, announced at ``announced`` (aware), to its ``event_instances`` row."""
+    return decision_instance(ECB_FLOW, announced)
+
+
+def decision_instance(
+    flow: EventFlow, announced: datetime, detail: str = "scheduled meeting"
+) -> EventInstance:
+    """Map one of ``flow``'s calendar decisions, announced at ``announced`` (aware), to its
+    ``event_instances`` row, dated by the flow's zone."""
     return EventInstance(
-        event_id=event_id(ECB_FLOW, announced.astimezone(FRANKFURT).date()),
-        event_type=ECB_FLOW.event_type,
+        event_id=event_id(flow, announced.astimezone(flow.zone).date()),
+        event_type=flow.event_type,
         event_ts=announced.astimezone(UTC).replace(tzinfo=None),
-        country=ECB_FLOW.country,
-        detail="scheduled meeting",
+        country=flow.country,
+        detail=detail,
         scheduled=True,
         consensus=None,
         actual=None,
@@ -945,6 +954,82 @@ def ecb_event_instance(announced: datetime) -> EventInstance:
         rate_regime=None,
         quality=TRADINGVIEW_CALENDAR,
     )
+
+
+# The Bank of England's decisions (docs/steps/other-central-banks.md): TradingView lists them from
+# 2008-01-10; the Bank's own Bank Rate changes add the two emergency cuts it lacks.
+BOE_FROM = date(2008, 1, 1)
+BOE_CHANGES = "boe-changes.csv"
+UNSCHEDULED = "unscheduled"
+
+
+def boe_changes(seed_dir: Path) -> dict[date, tuple[time, float]]:
+    """The Bank's Bank Rate changes from ``seed_dir``: each day's London hour and new rate."""
+    with (seed_dir / BOE_CHANGES).open(newline="") as file:
+        return {
+            date.fromisoformat(row["day"]): (time.fromisoformat(row["time"]), float(row["rate"]))
+            for row in csv.DictReader(file)
+        }
+
+
+def load_boe_decisions(
+    cache_dir: Path, seed_dir: Path, today: date | None = None
+) -> tuple[list[datetime], list[datetime]]:
+    """Every BoE decision announced from ``BOE_FROM`` to ``today``, in UTC and in order: the
+    calendar's, and apart, each change of the Bank's on a day the calendar lacks, at its hour."""
+    today = today if today is not None else datetime.now(sources.LONDON).date()
+    payloads = sources.fetch_tradingview_since(BOE_FROM, cache_dir, today, "GB")
+    listed = sorted({d for payload in payloads for d in sources.parse_rate_decisions(payload)})
+    days = {d.astimezone(sources.LONDON).date() for d in listed}
+    added = sorted(
+        datetime.combine(day, at, sources.LONDON).astimezone(UTC)
+        for day, (at, _) in boe_changes(seed_dir).items()
+        if day not in days and day <= today
+    )
+    return listed, added
+
+
+class BoeFlow:
+    """The Bank of England's rate decisions from TradingView's calendar, at the time each was
+    announced, and the Bank's changes the calendar lacks. No surprise; a lesser flow."""
+
+    event_type = FOMC_EVENT_TYPE
+    country = UNITED_KINGDOM
+    zone = sources.LONDON
+    type_code = 28
+    cli_name = "boe"
+    label = "BoE"
+    surprise_rule: SurpriseRule | None = None
+    lesser: bool = True
+
+    def events(self, api_key: str) -> EventBatch:
+        listed, added = load_boe_decisions(settings.cache_dir, settings.seed_dir)
+        if not listed:
+            raise sources.CalendarError("TradingView listed no BoE decisions")
+        events = sorted(
+            [decision_instance(self, d) for d in listed]
+            + [decision_instance(self, d, UNSCHEDULED) for d in added],
+            key=lambda e: e.event_ts,
+        )
+        first, last = (release_date(e) for e in (events[0], events[-1]))
+        report = [f"loaded {len(events)} BoE decisions, {first} … {last}"]
+        if added:
+            days = ", ".join(str(d.astimezone(self.zone).date()) for d in added)
+            report.append(f"  {len(added)} from the Bank's changes the calendar lacks: {days}")
+        return EventBatch(events, report)
+
+    def actuals(self, events: Sequence[EventInstance], api_key: str) -> list[Actual]:
+        return []
+
+    def scheduled(self, cache_dir: Path, start: date, end: date) -> list[tuple[datetime, str]]:
+        return scheduled_rows(
+            "GB",
+            self.zone,
+            cache_dir,
+            start,
+            end,
+            lambda day, _, title: title == sources.RATE_DECISION,
+        )
 
 
 # The Fed chair's and the ECB president's statements (docs/steps/scheduled-statements.md).
@@ -1059,7 +1144,6 @@ SUMMIT_EVENT_TYPE = "Leaders' summit"
 POST_EVENT_TYPE = "Presidential post"
 POST_2_EVENT_TYPE = "Presidential post (second term)"
 CEO_EVENT_TYPE = "Corporate scandal / fraud / bankruptcy"
-UNITED_KINGDOM = "United Kingdom"
 FRANCE = "France"
 EUROPEAN_UNION = "European Union"
 G7_G20 = "G7 / G20"
@@ -1336,6 +1420,7 @@ class LevelFlow:
 
 
 CPI_FLOW, NFP_FLOW, FED_FLOW, ECB_FLOW = CpiFlow(), NfpFlow(), FedFlow(), EcbFlow()
+BOE_FLOW = BoeFlow()
 HICP_FLOW = TradingViewFlow(
     CPI_EVENT_TYPE,
     EURO_AREA,
@@ -1604,6 +1689,7 @@ EVENT_FLOWS: list[EventFlow] = [
     POSTS_2_FLOW,
     CEO_FLOW,
     OPEC_FLOW,
+    BOE_FLOW,
 ]
 
 
