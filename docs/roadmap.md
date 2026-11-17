@@ -171,7 +171,7 @@ step 18 trigger; reading the news into kinds waits in the backlog below.
 
 | # | Step | Where it stands |
 | --- | --- | --- |
-| 24 | **OPEC+ decisions**: output cuts and rises, against Brent (stored), gasoline and the indexes | Next |
+| 24 | **[OPEC+ decisions](steps/opec.md)**: output cuts and rises, against Brent (stored), gasoline and the indexes | **Spec** 2026-11-17: Känzig's 169 announcements, 1983–2025, by the sign of their oil supply surprise |
 | 25 | **Other central banks**: the Bank of England's and the Bank of Japan's rate decisions, against the pound, the yen and their bonds, as the Fed and the ECB are | Planned |
 | 26 | **War and military strikes**: the dated outbreaks and major strikes, against oil, gold, defence stocks and the indexes | Planned |
 | 27 | **Crypto shocks**: exchange collapses, hacks, ETF approvals and halvings, against bitcoin, ether and coin stocks | Planned |
