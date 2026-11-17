@@ -178,8 +178,8 @@ ask (`gh api repos/diykorey/fortuneteller/actions/runs/RUN/jobs`, `started_at`, 
 
 *The owner's test ask, 2026-11-17:* cron-job.org's test run of the morning job got HTTP 204, and
 run 44116494543 (`workflow_dispatch`, created 15:37:39 UTC) began its job at 15:37:45, 6 seconds
-later; its log reads `step: live` and `live: retail is already in data/calls.csv`, the main
-checkout's row from the laptop, so it logged nothing new (`gh run view 44116494543 --log`).
+later; its log reads `step: live` and `live: retail is already in data/calls.csv`: the laptop's rows, merged
+to `main` in PR #331, so it logged nothing new (`gh run view 44116494543 --log`).
 
 ## How you know it is right
 
