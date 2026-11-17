@@ -6,6 +6,7 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-17 | Step 24, step 1: the seed of Känzig's 169 OPEC announcements and the flow; the live kind agrees with the surprise on 72 of 80 days since 2007 | PR #TBD |
 | 2026-11-17 | Spec: step 24, what follows an OPEC+ decision (Känzig's 169 announcements by the sign of their oil supply surprise) | PR #330 |
 | 2026-11-17 | Phase 5 opened by the owner: OPEC+, other central banks, war, crypto shocks, weather, one kind per PR; phase 4's pause lifted; the news model to the backlog | PR #329 |
 | 2026-11-17 | Step 23, step 1: the counter live on the page and checked (a private visit counted once; the owner's flagged browser, a copy on disk and cookies: none); the share link kept whole, by the owner | PR #328 |
