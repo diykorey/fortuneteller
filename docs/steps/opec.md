@@ -83,7 +83,7 @@ year, which only the Fed's decisions have), and a trigger file may name `opec`.
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~The seed~~ **done** 2026-11-17. The seed `data/seed/opec.csv` (day, time, kind) from the vintage; the flow stored; the live kind's agreement counted | The seed test checks the header, 169 rows, days in order and unique, time `08:00`, kind *oil up* or *oil down*; a weekend row reacts on Monday; the agreement written here, in a commit before step 2's; every existing scoreboard entry identical on a copy of the store |
-| 2 | `follows --event opec`; `opec` in `TRIGGER_KINDS` with its two kinds; `opec-imf.csv` and the check's script | Tests: an event's kind comes from the seed; an `opec` trigger is answered from the reaction close; Brent's day cell prints `(the kind)`. On a copy of the store the header reads `follows: 169 OPEC announcements 1983-07-19 … 2025-12-01: 96 oil up, 73 oil down`, and the seven other `follows` tables are byte for byte the ones before |
+| 2 | ~~`follows --event opec`~~ **done** 2026-11-17. `follows --event opec`; `opec` in `TRIGGER_KINDS` with its two kinds; `opec-imf.csv` and the check's script | Tests: an event's kind comes from the seed; an `opec` trigger is answered from the reaction close; Brent's day cell prints `(the kind)`. On a copy of the store the header reads `follows: 169 OPEC announcements 1983-07-19 … 2025-12-01: 96 oil up, 73 oil down`, and the seven other `follows` tables are byte for byte the ones before |
 | 3 | Results here and in [MVP results](../mvp-results.md), against the expected outcome; the roadmap row | Every bullet of the expected outcome marked right or wrong with its numbers; the IMF check's two counts of answered cells; each kind's walk-forward records |
 
 *Step 1, 2026-11-17, on a copy of the store:* 169 announcements stored, 1983-07-19 … 2025-12-01.
@@ -91,6 +91,17 @@ The live kind agrees with the surprise's sign on **72 of the 80** announcements 
 (90%; 8 disagree, none flat), above the 80% bar, so an `opec` trigger is answered. No other market
 was read. Every one of the scoreboard's 26 existing entries is identical; the page gains the `opec`
 entry, and raw-move's chance line its 25 cells (546 → 571).
+
+*Step 2, 2026-11-17, on a copy of the store:* `follows --event opec` heads its table
+`follows: 169 OPEC announcements 1983-07-19 … 2025-12-01: 96 oil up, 73 oil down`, and marks
+Brent's two day cells `(the kind)`, from the close before only. The seven other flows' tables,
+from the close before and from the reaction close, and the Fed's `--long`, 15 outputs, are byte
+for byte those of `main` before. A live `opec` trigger takes its kind from Brent's reaction day:
+waiting until that close is in, void if it differs from the kind filed; a stored announcement's
+trigger keeps the seed's kind. `docs/steps/opec-imf.csv` holds the IMF's 101 meetings (its
+*neutral* written *hold*); `scripts/opec_imf.py` finds 89 on a day of the list, as written above.
+*Amended 2026-11-17, in step 2:* the page's *ask* leaves OPEC out for now: there Brent's day cell
+would show without its mark. Adding it is its own change, after step 3.
 
 ## How you know it is right
 
@@ -118,6 +129,7 @@ tier 5), CLI name `opec`, seed `opec.csv` with header `day,time,kind`, detail co
 `lesser=True`, `scheduled=False`: the source does not say which meetings were set ahead, and the
 extraordinary ones were not. `follows_cells` gives it kinds from each event's detail, order
 `("oil up", "oil down")`. The vintage is read once by a one-off script into the seed; no source is
-read at run time. Tests in `tests/test_seed_data.py` and `tests/test_study.py`. Docs: this spec,
+read at run time. Tests in `tests/test_seed_data.py`, `tests/test_study.py`, `tests/test_what_follows.py` and
+`tests/test_triggers.py`; the IMF check is `scripts/opec_imf.py`. Docs: this spec,
 `docs/schema.md` (the flow's code, event type and detail), the glossary (*OPEC+*, *oil supply
 surprise*), `docs/legacy/data/README.md` (the seed file), status, changelog and roadmap row 24.
