@@ -57,6 +57,12 @@ Terms are grouped by what they are about, alphabetical within each group.
   is Nasdaq's calendar consensus ([free consensus](steps/free-consensus.md)).
 - **Core vs headline** — *headline* includes food and energy prices; *core* strips them out because
   they are volatile. Markets usually react more to core.
+- **BoE** (Bank of England) — the UK's central bank; its Monetary Policy Committee sets **Bank
+  Rate**, the rate the Bank pays on reserves, eight times a year (monthly until 2016). The Bank
+  publishes every change of Bank Rate since 1694 ([step 25](steps/other-central-banks.md)).
+- **BoJ** (Bank of Japan) — Japan's central bank; its Policy Board sets the short-term policy
+  rate eight times a year, announced when the meeting ends, around midday Tokyo
+  ([step 25](steps/other-central-banks.md)).
 - **CPI** (Consumer Price Index) — the main US inflation measure, published monthly by the
   **BLS**, usually 8:30 a.m. New York time. The MVP's single event type: frequent, scheduled,
   heavily forecast, and reliably market-moving.
