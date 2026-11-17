@@ -33,6 +33,13 @@ counter, LinkedIn for the channel.
   to another time zone, or a week added up from its days, cannot enter the file. A week that
   crosses the first of a month spans two salts, and a returning visitor would count twice in it;
   such a week is asked as its two parts, and its count is the larger part.
+  *Amended 2026-11-17, by the owner:* Umami Cloud's free plan has no API key, and the owner pays
+  nothing before there are customers. The API is read through the site's *share link* instead:
+  the link's public code gives the site and a signed token, and the same stats are asked with it.
+  The token is one of the ways in that Umami's own API description lists, but its free use is not
+  promised; if it stops answering, the week is read from the dashboard, set to UTC, over a custom
+  range, and the row says so. The share link makes the site's dashboard public; nothing in it is
+  more than the weeks file publishes.
 - **The post: drafted from the data, published by the owner.** `weekly-post` prints a draft for
   the last full week: each live call in `data/calls.csv` logged that week (by `logged_at`), its
   direction and market, and its grade, *right*, *wrong* or *pending*; the record of graded calls
@@ -66,7 +73,7 @@ counter, LinkedIn for the channel.
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | The counter: the owner creates the Umami Cloud site, gives its website ID (public) and an API key (a secret, kept in `.env` as `FT_UMAMI_API_KEY`); the tag goes into the template | A test finds one Umami tag in the written page, with the ID, `data-do-not-track` and `data-domains`. The published page, opened from a browser without the flag, is one visitor by the API for that hour; opened again with the flag, still one. The date is written here |
+| 1 | The counter: the owner creates the Umami Cloud site, gives its website ID (public) and an API key (a secret, kept in `.env` as `FT_UMAMI_API_KEY`); the tag goes into the template. *Amended 2026-11-17:* a share link's code instead of the key; the tag is Umami's own for the site (built 2026-11-17, the live look waits for the published page) | A test finds one Umami tag in the written page, with the ID, `data-do-not-track` and `data-domains`. The published page, opened from a browser without the flag, is one visitor by the API for that hour; opened again with the flag, still one. The date is written here |
 | 2 | ~~`fortuneteller weekly-post`~~ **done** 2026-11-15 | Tests: a week with a graded call prints it as *right* or *wrong*; a pending call says *pending*; a week with none says *no call this week*; the record counts the calls' grades (*amended:* not `score`'s counts, which include rows leaning *too few*); a week across a month's first is asked in two parts and the larger kept; the last line is the disclaimer |
 | 3 | The first post, after step 22's page is published | Its date and address are in the weeks file's row for its week, written the next Monday with the count |
 | 4 | Every Monday to 2027-02-01: the week's row, and the next post | A row for each week of the window; on 2027-02-01, the verdict here against the bar |
@@ -93,9 +100,11 @@ repository.
 - **Tag:** `<script defer src="https://cloud.umami.is/script.js" data-website-id="ID"
   data-do-not-track="true" data-domains="diykorey.github.io"></script>` in the template's head;
   the ID in the template, one place, since the page has one site.
-- **API:** Umami Cloud's website stats for `startAt` and `endAt` in milliseconds UTC, with the key
-  in the `x-umami-api-key` header; the reply's visitors. No key: the draft prints and the count
-  line says *no API key*.
+- **API:** Umami Cloud's website stats for `startAt` and `endAt` in milliseconds UTC; the reply's
+  visitors. *Amended 2026-11-17:* the site is in Umami's EU region, `cloud.umami.is/analytics/eu/api`;
+  `share/{code}` answers the site and a token, and the stats are asked with it in the
+  `x-umami-share-token` header and `x-umami-share-context: 1`, as Umami's share page does. The
+  code is `UMAMI_SHARE` in `__main__.py`; no secret. A failed ask prints the draft, then the error.
 - **Command:** `weekly-post` in `__main__.py`, reading `study.read_calls`; it writes nothing. The
   owner or the session adds the week's row to the weeks file. Tests in `tests/test_scoreboard.py`.
 - **File:** `docs/steps/be-seen-weeks.csv`: `week_start, unique_visitors, crosses_month, posted,

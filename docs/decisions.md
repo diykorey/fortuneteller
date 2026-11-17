@@ -11,6 +11,18 @@ amended there with a date.
 Each entry: **what** was decided, **why**, what it **retires**, and **where** the detail is. *By the
 owner* marks a choice the owner made over another on the table.
 
+## 2026-11-17: The visitor count is read through Umami's share link (by the owner)
+
+- **What:** step 23's weekly count stays on Umami Cloud's free plan and is read through the site's
+  public share link, not a paid API key. If the link stops answering, the week is read from the
+  dashboard by hand.
+- **Why:** the free plan has no API key, and the owner pays nothing before there are customers.
+  The share link gave the exact Monday-to-Sunday UTC count on 2026-11-17, and its token is listed
+  in Umami's own API description. The owner chose it over GoatCounter (a free API, but a switch of
+  counter and its own count of a visitor) and over reading the dashboard every week.
+- **Retires:** the spec's `FT_UMAMI_API_KEY`.
+- **Where:** [be seen](steps/be-seen.md#the-way-to-reach-it).
+
 ## 2026-11-15: Step 20 parked until the gate (by the owner)
 
 - **What:** step 20 stops where it stands until the 2027-01-31 gate: part 1 measured, part 2's
