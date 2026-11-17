@@ -35,7 +35,7 @@ until the 2027-01-31 gate, by the owner
   GitHub Actions. Step 1 done: every source answers the runner; the store cannot be rebuilt from
   empty (TradingView rewrote 2025's claims weeks), so it must travel encrypted. Step 2, the shadow
   run, beside the laptop: its first day, retail sales 2026-11-17, failed *on time*, GitHub's
-  schedule starting runs 6 to 10 hours late. By the owner, an outside timer (cron-job.org) starts
+  schedule starting runs almost 6 to 10 hours late. By the owner, an outside timer (cron-job.org) starts
   the runs instead; the shadow restarts on two new release days once its test ask reaches GitHub.
 - **Step 18, part 2, step 3: the first triggers graded** ([the spec](steps/trigger-file.md)). The
   first trigger, CPI of 2026-11-10, is void: merged after every reaction close, and its kind read

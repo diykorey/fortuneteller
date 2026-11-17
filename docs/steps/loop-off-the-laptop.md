@@ -53,8 +53,8 @@ logged within 15 minutes, none missed.
     list to read.
   - *Amended 2026-11-17, after the first shadow day, by the owner
     ([why](../decisions.md#2026-11-17-the-runner-is-started-by-an-outside-timer-by-the-owner)):*
-    GitHub started the schedule 6 to 10 hours late and, on retail sales day, not at all by 15:13
-    UTC ([below](#results)). The runs are started by an *outside timer* instead: two jobs at
+    GitHub started the schedule 5 h 41 min to 9 h 56 min late and, on retail sales day, not at
+    all by 15:13 UTC ([below](#results)). The runs are started by an *outside timer* instead: two jobs at
     cron-job.org, a free service, each asking GitHub's API to run `jobs.yml` on `main`, with
     `step` set to `live` at 07:30 New York and to `score` at 18:30, Monday to Friday, on the
     service's New York clock, so summer and winter need nothing. The ask goes out with a
@@ -105,8 +105,10 @@ logged within 15 minutes, none missed.
     must start by 2027-01-03.
   - *Amended 2026-11-17, by the owner:* the first counting day, 2026-11-17, failed *on time*
     under GitHub's schedule. The shadow is run again with the outside timer on two new release
-    days, the three bars and the 2026-12-18 date unchanged. A day counts only if the timer's ask
-    reached GitHub as a `workflow_dispatch` run.
+    days, the three bars and the 2026-12-18 date unchanged. A day the timer's ask fails, or the
+    run starts late, fails *on time* as this one did; it is not dropped. Re-running the shadow
+    after a fail is the owner's choice, written in [Decisions](../decisions.md), not a rule a
+    later fail can lean on: a second fail goes to a decisions entry before a third try.
 - **Expected outcome, written first:** *fails on the sources*: Yahoo, FRED, the Fed and TradingView
   answer the runner; Nasdaq's calendar refuses it with 403. The rebuild reproduces the laptop's
   `score.txt` in under 20 minutes. Were Nasdaq to answer, the shadow would pass.
@@ -116,7 +118,7 @@ logged within 15 minutes, none missed.
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~`.github/workflows/jobs.yml`, run on demand: the store rebuilt from empty and each source fetched once; the rebuild timed; `score` against the laptop's | The step 1 rule's verdicts written here~~ **done** 2026-11-14, [below](#results) |
-| 2 | The schedule and the encrypted store (*amended 2026-11-14*, was the cache) added; the shadow run on two release days | The three bars, per day, written here |
+| 2 | The schedule and the encrypted store (*amended 2026-11-14*, was the cache) added; the shadow run on two release days. *Amended 2026-11-17:* the schedule removed, the runs asked for by the outside timer; the shadow again on two new release days | The three bars, per day, written here |
 | 3 | Only if step 2 passes: the workflow opens the pull requests and issues; the laptop's timers disabled | The first release day on the runner alone logged on time, and a decisions entry retiring 2026-11-10's |
 
 ## Results
@@ -148,10 +150,13 @@ days.
 
 The store's carrying is amended above, by the owner.
 
-**Step 2, the first shadow day: retail sales, 2026-11-17. Fails the shadow, *on time*.** No run
-of the morning had started by 15:13 UTC, an hour and 43 minutes after the release at 13:30 UTC;
-the laptop logged its rows at 13:30:13 (PR #331). The runs of the day before show why: GitHub
-started each scheduled run hours after its time (`gh run list -w jobs.yml`).
+**Step 2, the first shadow day: retail sales, 2026-11-17. Fails the shadow, *on time*.** Retail
+sales is a flow `live` calls: the laptop's `live` logged its rows, `logged_at` 13:30:13 UTC in
+`data/calls.csv` (PR #331), for the release at 08:30 New York, 13:30 UTC. `gh run list -w jobs.yml`
+at 15:13 UTC (by `date -u`), an hour and 43 minutes after the release, showed no run of the
+morning started. The runs of the day before show why: GitHub started each scheduled run hours
+after its time. *Scheduled* is the line `scheduled HH:MM UTC is HH:MM New York` in each run's
+log (`gh run view RUN --log`); *Started* is the run's `createdAt` in `gh run list`.
 
 | Run | Scheduled (UTC) | Started (UTC) | Late |
 | --- | --- | --- | --- |
@@ -160,10 +165,16 @@ started each scheduled run hours after its time (`gh run list -w jobs.yml`).
 | 44018836200 | 11-16 22:30 | 11-17 04:40 | 6 h 10 min |
 | 44022336694 | 11-16 23:30 | 11-17 05:11 | 5 h 41 min |
 
-The spec's "a schedule up to an hour late still logs on time" was **wrong** by hours. Runs
-started on demand began at once (step 1's five, 2026-11-14). The other two bars wait for the
-evening's run, which compares loading and grading whatever started it. The start is amended
-above, by the owner.
+The spec's "a schedule up to an hour late still logs on time" was **wrong** by hours, and so was
+the expected outcome's "were Nasdaq to answer, the shadow would pass": Nasdaq answered, and the
+shadow failed on its first day. *The same rows* fails with it: the runner logged no row to compare.
+*The same evening* is judged from the evening's run when it finishes, since loading and grading do
+not depend on what started it; it is written here then.
+
+Runs asked for start at once: the five runs of 2026-11-14 started by `gh workflow run` (43628949150,
+43630076184, 43633700634, 43634405406, 43634459297) each began their job 3 to 4 seconds after the
+ask (`gh api repos/diykorey/fortuneteller/actions/runs/RUN/jobs`, `started_at`, against the run's
+`created_at`). The start is amended above, by the owner.
 
 ## How you know it is right
 

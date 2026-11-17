@@ -18,8 +18,10 @@ owner* marks a choice the owner made over another on the table.
   York on weekdays. The ask carries the owner's fine-grained token for this repository only,
   allowed *Actions: read and write*, kept at that service alone, expiring 2027-03-31 (renewed
   before then, or the loop stops). The workflow's own schedule is removed.
-- **Why:** GitHub started the scheduled runs 6 to 10 hours late on 2026-11-16 and had not started
-  the morning of retail sales, 2026-11-17, by 15:13 UTC; runs asked for start at once. Of the
+- **Why:** GitHub started the scheduled runs 5 h 41 min to 9 h 56 min late on 2026-11-16 and had
+  not started the morning of retail sales, 2026-11-17, by 15:13 UTC, so the shadow failed *on
+  time*; runs asked for start within seconds. The owner chose to run the shadow again with the new
+  start rather than keep the laptop; a second fail comes back here before a third try. Of the
   three ways weighed, the laptop starting the runner keeps the laptop awake, and fixing the
   laptop's sleep keeps the job on it; an outside timer frees both.
 - **Retires:** step 21's 2026-11-14 rule that a run goes on by the time it was scheduled for.
