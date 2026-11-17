@@ -99,6 +99,7 @@ def test_seed_dir_has_no_unexpected_csvs() -> None:
         "presidential_posts_2.csv",
         "ceo_scandals.csv",
         "opec.csv",
+        "boe-changes.csv",
         "fomc_sentiment_dictionary.csv",
     }
     # then exactly those files are present
@@ -212,6 +213,32 @@ def test_opec_rows_are_kanzigs_announcements_with_their_kind() -> None:
         "oil up",
         "oil up",
     ]
+
+
+def test_boe_changes_are_the_bank_s_bank_rate_changes_since_2008() -> None:
+    # given the committed Bank Rate changes
+    with (settings.seed_dir / "boe-changes.csv").open(newline="", encoding="utf-8") as handle:
+        reader = csv.DictReader(handle)
+        header = reader.fieldnames
+        rows = list(reader)
+    # when their days and rates are read
+    days = [date.fromisoformat(row["day"]) for row in rows]
+    rates = {row["day"]: float(row["rate"]) for row in rows}
+    # then 34 changes are there once, in order, each a change from the one before, and the
+    # days checked by hand carry the Bank's rate, the two emergency cuts of 2020 among them
+    assert header == ["day", "time", "rate"]
+    assert len(rows) == 34 and len(set(days)) == 34 and days == sorted(days)
+    assert (days[0], days[-1]) == (date(2008, 2, 7), date(2026, 11, 5))
+    values = [float(row["rate"]) for row in rows]
+    assert all(a != b for a, b in zip(values, values[1:], strict=False))
+    assert {d: rates[d] for d in ("2009-03-05", "2016-08-04", "2020-03-11", "2020-03-19")} == {
+        "2009-03-05": 0.5,
+        "2016-08-04": 0.25,
+        "2020-03-11": 0.25,
+        "2020-03-19": 0.1,
+    }
+    assert "2020-03-26" not in rates
+    assert {row["day"]: row["time"] for row in rows}["2020-03-11"] == "07:00"
 
 
 def test_tweet_days_are_inside_the_first_term() -> None:
