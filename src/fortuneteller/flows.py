@@ -1059,6 +1059,9 @@ UNITED_KINGDOM = "United Kingdom"
 FRANCE = "France"
 EUROPEAN_UNION = "European Union"
 G7_G20 = "G7 / G20"
+# Step 24 (docs/steps/opec.md): the producers' group, the origin of its announcements.
+OPEC = "OPEC"
+OPEC_EVENT_TYPE = "OPEC+ supply decision"
 # After every market's close, VIX's 16:15 and bitcoin's midnight UTC among them; the US polls'.
 AFTER_EVERY_CLOSE = time(20, 0)
 # A seed time a source gives only in words (docs/steps/ceo-scandals.md): *before close* reacts at that
@@ -1553,6 +1556,22 @@ CEO_FLOW = DatedShockFlow(
     time_column="time",
     scheduled=False,
 )
+# Step 24 (docs/steps/opec.md): Känzig's OPEC announcements, each event's detail its kind, the sign
+# of its oil supply surprise; no hour in the source, so 08:00 New York by rule.
+OPEC_FLOW = DatedShockFlow(
+    OPEC_EVENT_TYPE,
+    OPEC,
+    NEW_YORK,
+    27,
+    "opec",
+    "OPC",
+    seed_file="opec.csv",
+    noun="announcements",
+    day_column="day",
+    detail_column="kind",
+    time_column="time",
+    scheduled=False,
+)
 EVENT_FLOWS: list[EventFlow] = [
     CPI_FLOW,
     NFP_FLOW,
@@ -1580,6 +1599,7 @@ EVENT_FLOWS: list[EventFlow] = [
     POSTS_FLOW,
     POSTS_2_FLOW,
     CEO_FLOW,
+    OPEC_FLOW,
 ]
 
 

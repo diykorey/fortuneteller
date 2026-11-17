@@ -358,6 +358,7 @@ def test_load_releases_prints_count_range_and_skipped_months(
         "day,time,ticker,company,ceo,conduct,source\n"
         "2018-06-21,09:25,INTC,Intel,Brian M. Krzanich,relationship with an employee,https://x\n"
     )
+    (tmp_db.parent / "opec.csv").write_text("day,time,kind\n2020-04-12,08:00,oil up\n")
     monkeypatch.setattr(settings, "seed_dir", tmp_db.parent)
 
     # when the command runs twice
@@ -394,8 +395,9 @@ def test_load_releases_prints_count_range_and_skipped_months(
     report += "loaded 1 United States tweet days, 2019-05-05 … 2019-05-05\n"
     report += "loaded 1 United States post days, 2025-04-09 … 2025-04-09\n"
     report += "loaded 1 United States CEO scandals, 2018-06-21 … 2018-06-21\n"
+    report += "loaded 1 OPEC announcements, 2020-04-12 … 2020-04-12\n"
     assert capsys.readouterr().out == report * 2
-    assert db.count_rows("event_instances", con=db.get_connection()) == 38
+    assert db.count_rows("event_instances", con=db.get_connection()) == 39
 
 
 def test_load_releases_stores_nothing_when_any_flow_fails(

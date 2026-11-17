@@ -705,6 +705,29 @@ def test_a_summit_reacts_on_its_last_day_in_europe_and_after_it_on_a_weekend(
     assert batch.report == ["loaded 2 G7 / G20 summits, 2018-06-09 … 2022-06-28"]
 
 
+def test_an_opec_announcement_on_a_sunday_reacts_on_monday(tmp_path: Path) -> None:
+    # given the pandemic cut, announced on Sunday 2020-04-12, and a weekday announcement
+    seed = tmp_path / "opec.csv"
+    seed.write_text("day,time,kind\n2014-11-27,08:00,oil down\n2020-04-12,08:00,oil up\n")
+
+    # when the announcements are loaded
+    batch = flows.OPEC_FLOW.load(seed, datetime(2026, 11, 17, 12, 0, tzinfo=NEW_YORK))
+
+    # then each keeps its kind as its detail, unscheduled; the Sunday one reacts on Monday on the
+    # S&P 500 and Brent and that Sunday on bitcoin; the weekday one reacts that day in Frankfurt
+    assert [(e.event_id, e.detail, e.scheduled) for e in batch.events] == [
+        (2720141127, "oil down", False),
+        (2720200412, "oil up", False),
+    ]
+    closes = _closes((date(2020, 4, 9), 100.0), (date(2020, 4, 13), 101.0))
+    for market in ("SPY / ES", "BRN"):
+        sunday = first_reaction_day(batch.events[1], MVP_PRICE_SERIES[market])
+        assert reaction_days(closes, [sunday]) == {date(2020, 4, 13)}
+    assert first_reaction_day(batch.events[1], MVP_PRICE_SERIES["BTC"]) == date(2020, 4, 12)
+    assert first_reaction_day(batch.events[0], MVP_PRICE_SERIES["DAX"]) == date(2014, 11, 27)
+    assert batch.report == ["loaded 2 OPEC announcements, 2014-11-27 … 2020-04-12"]
+
+
 def test_two_times_on_one_day_are_refused(tmp_path: Path) -> None:
     # given a seed file with two German votes on one day at different hours
     seed = tmp_path / "elections.csv"
