@@ -85,9 +85,26 @@ these landfalls; the counts above are from the record and the markets' first clo
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | Allstate: seed row, series, `load-prices`; the seed `data/seed/hurricanes.csv` (`day,time,kind,storm,knots`) from the record by `scripts/hurdat_landfalls.py` | `load-prices` stores it; each close of 2026-11-09 to 2026-11-13 within 0.05% of Yahoo's last hourly bar before 16:00 New York (`interval=60m`), a miss recorded, not the bar changed; the seed test checks the header, 79 rows, order, kind `landfall`, each at 64 knots or more, each `lat`/`lon` inside the place rule, and the rows named below. On a copy of the store, before and after: every other flow's `raw-move` and `follows` output (both runs, the Fed's `--long`) identical once Allstate's rows and the chance lines are taken out, and the scoreboard's data once Allstate and its chance are taken out; each chance line written here |
+| 1 | **Done** 2026-11-18, [below](#step-1). Allstate: seed row, series, `load-prices`; the seed `data/seed/hurricanes.csv` (`day,time,kind,storm,knots`) from the record by `scripts/hurdat_landfalls.py` | `load-prices` stores it; each close of 2026-11-09 to 2026-11-13 within 0.05% of Yahoo's last hourly bar before 16:00 New York (`interval=60m`), a miss recorded, not the bar changed; the seed test checks the header, 79 rows, order, kind `landfall`, each at 64 knots or more, each `lat`/`lon` inside the place rule, and the rows named below. On a copy of the store, before and after: every other flow's `raw-move` and `follows` output (both runs, the Fed's `--long`) identical once Allstate's rows and the chance lines are taken out, and the scoreboard's data once Allstate and its chance are taken out; each chance line written here |
 | 2 | Flow `weather`; `follows --event weather`; `weather` in `TRIGGER_KINDS` | Tests: Michael's landfall, 2018-10-10 17:30 UTC, reacts that day in New York and the next day in Tokyo; Harvey's, Saturday 2017-08-26 03:00 UTC, on Monday; a `weather` trigger for a day not stored is answered from a landfall at 04:00 UTC that day, as war's. On a copy of the store the header is the expected one, and every other flow's output byte for byte the one of step 1's store |
 | 3 | Results here and in [MVP results](../mvp-results.md), against the expected outcome; the roadmap row | Every bullet marked right or wrong with its numbers and command; each cell with 30 or more graded walk-forward and its record; the days shared with another flow, by the landfall's UTC day |
+
+### Step 1
+
+*2026-11-18.* Every line quoted is in [the evidence](weather-steps.txt), on a copy of step 27's
+store without and with Allstate.
+
+- **The seed:** `scripts/hurdat_landfalls.py` wrote 79 rows, 1970-08-03 to 2024-10-10; the seed
+  test holds: every row inside the place rule, the five named above at their times and winds, and
+  none of the six foreign landfalls named above. Checked by hand against each storm's report: the
+  five days, hours and states as written above.
+- **The closes:** Allstate 8,423 from 1993-06-03; each of the five closes within 0.04% of the last
+  hourly bar.
+- **Every other flow's output:** all 56 `raw-move` and `follows` outputs identical once Allstate's
+  rows and the chance lines are taken out. Each `follows` chance line rises by Allstate's cells
+  (the Fed's 8.0 → 8.3, war's 2.6 → 2.7, the hacks' 2.7 → 2.8, each in the evidence); the
+  scoreboard's raw-move chance 799 → 827 cells and its surprise 360 → 372, walk-forward 82
+  unchanged, its data otherwise identical.
 
 ## How you know it is right
 

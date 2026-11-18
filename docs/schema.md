@@ -96,7 +96,7 @@ outcomes](steps/more-outcomes.md) adds `BRN`, `EURUSD`, `COMP`, `UST5Y / ZF`, `U
 `CORN`, `WEAT`, `SOYB`, `UGA`, `UNG`, `XLU` and `ITB` (2026-11-04), [coffee](steps/coffee.md)
 `KC` and [the breakeven](steps/breakeven.md) `T5YIE` (2026-11-04), and [other central
 banks](steps/other-central-banks.md) `GBPUSD`, `USDJPY` and `NKY` (2026-11-17), and [crypto](steps/crypto.md) `ETH` and `COIN`
-(2026-11-18), so 30 are measured.
+(2026-11-18), and [weather](steps/weather.md) `ALL` (2026-11-18), so 31 are measured.
 
 | Column | Type | Meaning |
 | --- | --- | --- |

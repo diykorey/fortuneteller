@@ -139,8 +139,8 @@ def test_the_scoreboard_holds_what_the_commands_print(
         assert " ".join(tokens[7:]) == link["verdict"]
     assert "GC / XAU" not in cpi["walk_forward"]["links"]
     assert data["chance"] == {
-        "raw_move": {"cells": 30, "p": 0.01, "by_chance": 0.3},
-        "surprise": {"cells": 30, "p": 0.01, "by_chance": 0.3},
+        "raw_move": {"cells": 31, "p": 0.01, "by_chance": 0.31},
+        "surprise": {"cells": 31, "p": 0.01, "by_chance": 0.31},
         "walk_forward": {"cells": 14, "p": 0.01, "by_chance": 0.14},
     }
     assert data["rules"]["raw_move"] == reports["raw-move"][-1]
