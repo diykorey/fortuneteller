@@ -44,7 +44,8 @@ Allstate *can't say*; wheat *about the same* on the day from the reaction close;
 
 ## Next
 
-Phase 5's last kind is done: the owner's next choice, from [the roadmap](roadmap.md).
+Phase 5's five kinds are measured. Step 22, step 5: the published page checked after the
+evening job.
 
 ## Known, not yet fixed
 
