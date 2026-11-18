@@ -1258,3 +1258,21 @@ def test_a_violent_act_reacts_by_its_utc_day_on_each_market() -> None:
     # then it is at 04:00 UTC, on Tokyo's and New York's close that day and the euro's the next
     assert event.event_ts == datetime(1990, 8, 2, 4, 0)
     assert days == [date(1990, 8, 2), date(1990, 8, 2), date(1990, 8, 3)]
+
+
+def test_a_landfall_reacts_by_its_utc_minute_on_each_market() -> None:
+    # given the seed's landfall of Michael, Wednesday 2018-10-10 17:30 UTC
+    batch = flows.WEATHER_FLOW.load(
+        settings.seed_dir / "hurricanes.csv", datetime(2026, 11, 18, tzinfo=UTC)
+    )
+    michael = next(e for e in batch.events if flows.release_date(e) == date(2018, 10, 10))
+
+    # when its first reaction day is found on New York's and Tokyo's close
+    days = [
+        study.first_reaction_day(michael, study.MVP_PRICE_SERIES[m]) for m in ("SPY / ES", "NKY")
+    ]
+
+    # then at 13:30 New York it reacts that day in New York and the next in Tokyo; read in New
+    # York's time it would react a day late in New York
+    assert michael.event_ts == datetime(2018, 10, 10, 17, 30)
+    assert days == [date(2018, 10, 10), date(2018, 10, 11)]

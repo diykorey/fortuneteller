@@ -806,3 +806,25 @@ def test_a_hack_on_a_saturday_reacts_on_monday_on_bitcoin_and_the_s_and_p_500(
         saturday = first_reaction_day(batch.events[1], MVP_PRICE_SERIES[market])
         assert reaction_days(closes, [saturday]) == {date(2025, 4, 21)}
     assert batch.report == ["loaded 2 World crypto hacks, 2025-02-21 … 2025-04-19"]
+
+
+def test_a_saturday_landfall_reacts_on_monday(tmp_path: Path) -> None:
+    # given Harvey's landfall on Saturday 2017-08-26 at 03:00 UTC
+    seed = tmp_path / "hurricanes.csv"
+    seed.write_text(
+        "day,time,kind,storm,knots,lat,lon\n2017-08-26,03:00,landfall,Harvey,115,28.0,-96.9\n"
+    )
+
+    # when it is loaded
+    batch = flows.WEATHER_FLOW.load(seed, datetime(2026, 11, 18, 12, 0, tzinfo=NEW_YORK))
+
+    # then it is an unscheduled event naming the storm, and it reacts on Monday on the S&P 500
+    # and the Nikkei
+    assert [(e.event_id, e.detail, e.scheduled) for e in batch.events] == [
+        (3220170826, "Harvey", False)
+    ]
+    closes = _closes((date(2017, 8, 25), 100.0), (date(2017, 8, 28), 101.0))
+    for market in ("SPY / ES", "NKY"):
+        saturday = first_reaction_day(batch.events[0], MVP_PRICE_SERIES[market])
+        assert reaction_days(closes, [saturday]) == {date(2017, 8, 28)}
+    assert batch.report == ["loaded 1 United States hurricane landfalls, 2017-08-26 … 2017-08-26"]

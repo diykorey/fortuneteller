@@ -538,7 +538,8 @@ def describe_follows(
     first, last = (flows.release_date(e) for e in (events[0], events[-1]))
     plural = (
         "s"
-        if tuple(order) in (study.KINDS, (study.SCANDAL,), (study.VIOLENT_ACT,), (study.HACK,))
+        if tuple(order)
+        in (study.KINDS, (study.SCANDAL,), (study.VIOLENT_ACT,), (study.HACK,), (study.LANDFALL,))
         else ""
     )
     width = max(5, *(len(kind) for kind in order))
@@ -591,6 +592,7 @@ FOLLOWS_NOUNS = {
     "boj": "BoJ decisions",
     "war": "violent acts",
     "crypto": "crypto hacks",
+    "weather": "hurricane landfalls",
 }
 
 
@@ -1891,8 +1893,9 @@ def ask_data(con: duckdb.DuckDBPyConnection) -> dict[str, list[dict[str, object]
             flows.BOJ_FLOW.cli_name,
             flows.WAR_FLOW.cli_name,
             flows.CRYPTO_FLOW.cli_name,
+            flows.WEATHER_FLOW.cli_name,
         ):
-            # Steps 24 to 27 add OPEC, the two banks, violent acts and hacks to follows and triggers,
+            # Steps 24 to 28 add OPEC, the two banks, violent acts, hacks and landfalls to follows and triggers,
             # not to the page
             # (docs/steps/opec.md, docs/steps/other-central-banks.md).
             continue
