@@ -221,7 +221,8 @@ day of a BoE cut or hike is *can't say*: 17 of each are too few to tell a lean f
   on 10, and 15 others on 1 to 8.
 - **Step 1's closes:** the 0.05% bar was missed by the yen on one day (0.058%) and the Nikkei on
   three (up to 0.07%), as step 1 wrote. *Amended 2026-11-18:* the misses stand; no bar is
-  loosened. Each is under a tenth of one day's median move, and the next bar is 0.1% to 1.6% away,
+  loosened. Each is under a quarter of an ordinary day's median move (about 0.3% for the yen, 0.7% for
+  the Nikkei, `raw-move`), and the next bar is 0.1% to 1.6% away,
   so the closes are read as taken at the times named.
 
 The expected outcome was **right** on every count it could be judged on; OPEC's rows were not
