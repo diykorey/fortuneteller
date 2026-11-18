@@ -33,7 +33,7 @@ hack in the news can be answered from its past.
   Nasdaq's close, 16:00 New York. Both **unsigned**, as step 25's three: no live link. Hacks
   after each market's first close ([Schema](../schema.md), *How much data*): bitcoin (from
   2014-09-17) 43, Mt. Gox falling before; ether 42; Coinbase 37; each of the other 28 markets,
-  all stored from 2011 or before, 44.
+  all stored before 2014, 44.
 - **The hour.** The list gives the day at 00:00 UTC. The hour is a rule, as [war's](war.md):
   **04:00 UTC**, before every stock market's and the crypto markets' close that day, after the
   currencies' 00:00 London close. A weekend hack (12 of the 44) reacts on Monday on every market,
