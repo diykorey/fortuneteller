@@ -18,6 +18,9 @@ would not give; as expected.
 
 ## In progress
 
+- **Step 28: weather and climate** ([the spec](steps/weather.md)): what follows a hurricane's
+  first US landfall, 79 from NOAA's HURDAT2, 1970 to 2024, with Allstate added as a market. Spec
+  under review.
 - **Step 22: ask the fortune teller** ([the spec](steps/ask-the-fortune-teller.md)): the page
   section where a reader picks a kind of event and sees what followed, from the same function
   the follows command uses. Steps 1 to 4 are built: one function for follows and the page, the
@@ -44,8 +47,7 @@ would not give; as expected.
 
 ## Next
 
-Step 28, weather: the spec
-([roadmap phase 5](roadmap.md#phase-5-the-kinds-the-news-brings)).
+Step 28, step 1: Allstate and the landfalls' seed.
 
 ## Known, not yet fixed
 
