@@ -104,6 +104,12 @@ Terms are grouped by what they are about, alphabetical within each group.
   dataset of international crises since 1918, each with the date its trigger came and a code for
   what set it off (`triggr`, from a verbal act to a violent act) and how violent it became (`viol`).
   Step 26 takes every crisis since 1970 whose trigger is a *violent act*.
+- **HURDAT2** — *added 2026-11-18* ([weather](steps/weather.md)): the National Hurricane Center's
+  Atlantic best-track record, every storm since 1851 every six hours, with each landfall as its own
+  row at its UTC minute, place and wind; status `HU` is a hurricane, 64 knots or more.
+- **Landfall** — *added 2026-11-18* ([weather](steps/weather.md)): a storm's centre crossing the
+  coast; step 28's one kind is a storm's first landfall on the US mainland or the Florida Keys as a
+  hurricane.
 - **Hack** — *added 2026-11-18* ([crypto](steps/crypto.md)): a theft of $100 million or more
   from a crypto exchange, protocol or wallet, by the amount on DefiLlama's list; the one kind of
   `follows --event crypto`.
@@ -174,6 +180,8 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **BDI** (Baltic Dry Index) — cost of shipping dry bulk cargo; a gauge of global trade demand.
 - **Basis point** (bp, "bip") — one hundredth of a percent (0.01%). Bond and rate moves are quoted
   in bps: "10Y up 8 bps" means the yield rose 0.08 percentage points.
+- **ALL** (Allstate) — *added 2026-11-18* ([weather](steps/weather.md)): the shares of a large US
+  home and car insurer, listed 1993-06-03; closes 16:00 New York. Yahoo's `ALL`. No expected sign.
 - **BRN** (Brent crude) — the global oil price benchmark, traded on ICE. Measured from
   2026-10-27 ([more outcomes](steps/more-outcomes.md)) as Yahoo's `BZ=F`, the front month, at its
   14:30 New York settlement.
