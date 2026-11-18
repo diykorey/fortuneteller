@@ -633,7 +633,6 @@ def test_under_ten_event_days_there_is_no_verdict() -> None:
     assert math.isnan(comparison.ratio) and math.isnan(comparison.p)
 
 
-
 def test_a_market_with_no_days_in_the_span_has_no_verdict() -> None:
     # given a market stored only after a lesser flow's days end, so it has neither kind of day
     event, other = [], []
@@ -644,6 +643,7 @@ def test_a_market_with_no_days_in_the_span_has_no_verdict() -> None:
     # then the comparison says too few, with no medians
     assert comparison.verdict == TOO_FEW
     assert math.isnan(comparison.median_event) and math.isnan(comparison.median_other)
+
 
 def test_raw_move_over_a_week(tmp_db: Path, capsys: pytest.CaptureFixture[str]) -> None:
     # given releases and prices stored
