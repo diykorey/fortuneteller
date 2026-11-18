@@ -1242,3 +1242,19 @@ def test_follows_for_the_boj_reads_its_kinds_from_the_calendar_s_rates(
     out = capsys.readouterr().out.splitlines()
     assert code == 0
     assert out[0] == (f"follows: 2 BoJ decisions {days[1]} … {days[2]}: 0 cuts, 1 holds, 1 hikes")
+
+
+def test_a_violent_act_reacts_by_its_utc_day_on_each_market() -> None:
+    # given the seed's act of 1990-08-02, a Thursday
+    batch = flows.WAR_FLOW.load(settings.seed_dir / "war.csv", datetime(2026, 11, 18, tzinfo=UTC))
+    event = next(e for e in batch.events if flows.release_date(e) == date(1990, 8, 2))
+
+    # when its first reaction day is found on Tokyo's, New York's and the euro's close
+    days = [
+        study.first_reaction_day(event, study.MVP_PRICE_SERIES[m])
+        for m in ("NKY", "SPY / ES", "EURUSD")
+    ]
+
+    # then it is at 04:00 UTC, on Tokyo's and New York's close that day and the euro's the next
+    assert event.event_ts == datetime(1990, 8, 2, 4, 0)
+    assert days == [date(1990, 8, 2), date(1990, 8, 2), date(1990, 8, 3)]

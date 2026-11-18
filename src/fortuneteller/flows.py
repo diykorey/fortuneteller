@@ -1709,6 +1709,24 @@ OPEC_FLOW = DatedShockFlow(
     time_column="time",
     scheduled=False,
 )
+# Step 26 (docs/steps/war.md): every international crisis since 1970 that a violent act set off, by
+# ICB's list, at a rule hour; the detail names the crisis.
+WAR_EVENT_TYPE = "Geopolitical escalation / terror"
+WORLD = "World"
+WAR_FLOW = DatedShockFlow(
+    WAR_EVENT_TYPE,
+    WORLD,
+    ZoneInfo("UTC"),
+    30,
+    "war",
+    "WAR",
+    seed_file="war.csv",
+    noun="violent acts",
+    day_column="day",
+    detail_column="crisis",
+    time_column="time",
+    scheduled=False,
+)
 EVENT_FLOWS: list[EventFlow] = [
     CPI_FLOW,
     NFP_FLOW,
@@ -1739,6 +1757,7 @@ EVENT_FLOWS: list[EventFlow] = [
     OPEC_FLOW,
     BOE_FLOW,
     BOJ_FLOW,
+    WAR_FLOW,
 ]
 
 

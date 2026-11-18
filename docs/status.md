@@ -19,8 +19,8 @@ nothing beyond chance, nothing holds walk-forward; the pound *can't say* after a
 ## In progress
 
 - **Step 26: war and military strikes** ([the spec](steps/war.md)): what followed the 136
-  violent acts that set off an international crisis, 1970 to 2021, by ICB's list. Spec written;
-  next, step 1, the seed.
+  violent acts that set off an international crisis, 1970 to 2021, by ICB's list. Steps 1 and 2 done:
+  `follows --event war` prints the expected 136; next, step 3, the results.
 - **Step 22: ask the fortune teller** ([the spec](steps/ask-the-fortune-teller.md)): the page
   section where a reader picks a kind of event and sees what followed, from the same function
   the follows command uses. Steps 1 to 4 are built: one function for follows and the page, the

@@ -6,6 +6,7 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-18 | Step 26, steps 1 and 2: the violent acts' seed from ICB, the `war` flow, `follows --event war` and `war` triggers; the expected 136, every other flow unchanged | PR #343 |
 | 2026-11-18 | Step 26 spec: what follows a violent act that sets off a crisis, 136 days from ICB's list, the expected outcome written first | PR #342 |
 | 2026-11-18 | Step 25 results: BoE and BoJ decisions answer no more cells than chance, nothing holds walk-forward, the pound *can't say* after a BoE move; the expected outcome right on every count | PR #341 |
 | 2026-11-18 | Step 25, step 3: the BoJ's flow, `follows --event boj` and `boj` triggers; kinds from the calendar's rates; the expected 85 decisions, every other flow unchanged | PR #340 |
