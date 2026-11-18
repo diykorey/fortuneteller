@@ -105,3 +105,73 @@ scoreboard: 30 events, 52 call rows, data to 2026-11-17;
 {'raw_move': {'cells': 726, 'p': 0.01, 'by_chance': 7.26}, 'surprise': {'cells': 336, 'p': 0.01, 'by_chance': 3.36}, 'walk_forward': {'cells': 82, 'p': 0.01, 'by_chance': 0.82}}
 {'raw_move': {'cells': 769, 'p': 0.01, 'by_chance': 7.69}, 'surprise': {'cells': 360, 'p': 0.01, 'by_chance': 3.6}, 'walk_forward': {'cells': 82, 'p': 0.01, 'by_chance': 0.82}}
 data.json with ETH and COIN taken out of every entry and of 'markets', and 'chance' and 'data_until' taken out: identical to the one without
+
+Step 2, on a copy of step 1's store with the 44 hacks loaded:
+
+$ load the crypto flow (flows.CRYPTO_FLOW, store_events, store_observations)
+loaded 44 World crypto hacks, 2014-02-07 … 2026-10-29
+
+$ fortuneteller follows --event crypto, its first line
+follows: 44 crypto hacks 2014-02-07 … 2026-10-29: 44 hacks
+
+$ cmp, every other flow's raw-move and follows output against step 1's store
+same      fol-boe-after.txt
+same      fol-boe.txt
+same      fol-boj-after.txt
+same      fol-boj.txt
+same      fol-ceo-after.txt
+same      fol-ceo.txt
+same      fol-claims-after.txt
+same      fol-claims.txt
+same      fol-cpi-after.txt
+same      fol-cpi.txt
+same      fol-ecb-after.txt
+same      fol-ecb.txt
+same      fol-fomc-after.txt
+same      fol-fomc-long.txt
+same      fol-fomc.txt
+same      fol-nfp-after.txt
+same      fol-nfp.txt
+same      fol-opec-after.txt
+same      fol-opec.txt
+same      fol-retail-after.txt
+same      fol-retail.txt
+same      fol-war-after.txt
+same      fol-war.txt
+same      raw-boe.txt
+same      raw-boj.txt
+same      raw-ceo.txt
+same      raw-claims.txt
+same      raw-cpi.txt
+same      raw-debt.txt
+same      raw-decpi.txt
+same      raw-deelect.txt
+same      raw-ecbchief.txt
+same      raw-ecb.txt
+same      raw-euelect.txt
+same      raw-fedchair.txt
+same      raw-fomc.txt
+same      raw-frelect.txt
+same      raw-gdp.txt
+same      raw-hicp.txt
+same      raw-ifo.txt
+same      raw-ism.txt
+same      raw-nfp.txt
+same      raw-opec.txt
+same      raw-pce.txt
+same      raw-posts2.txt
+same      raw-posts.txt
+same      raw-retail.txt
+same      raw-summit.txt
+same      raw-tariff.txt
+same      raw-ukelect.txt
+same      raw-uselect.txt
+same      raw-war.txt
+same      raw-zew.txt
+
+$ fortuneteller scoreboard: its first line and the chance, step 1's store and step 2's
+scoreboard: 30 events, 52 call rows, data to 2026-11-17;
+scoreboard: 31 events, 52 call rows, data to 2026-11-17;
+{'raw_move': {'cells': 769, 'p': 0.01, 'by_chance': 7.69}, 'surprise': {'cells': 360, 'p': 0.01, 'by_chance': 3.6}, 'walk_forward': {'cells': 82, 'p': 0.01, 'by_chance': 0.82}}
+{'raw_move': {'cells': 799, 'p': 0.01, 'by_chance': 7.99}, 'surprise': {'cells': 360, 'p': 0.01, 'by_chance': 3.6}, 'walk_forward': {'cells': 82, 'p': 0.01, 'by_chance': 0.82}}
+data.json with the hacks' entry and the chance taken out: identical to step 1's

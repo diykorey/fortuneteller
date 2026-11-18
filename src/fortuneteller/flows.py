@@ -1730,6 +1730,22 @@ WAR_FLOW = DatedShockFlow(
     time_column="time",
     scheduled=False,
 )
+# Step 27 (docs/steps/crypto.md): every hack of $100 million or more on DefiLlama's list, at the
+# rule hour; the detail names the target.
+CRYPTO_FLOW = DatedShockFlow(
+    "Cyber attack / hack",
+    WORLD,
+    ZoneInfo("UTC"),
+    31,
+    "crypto",
+    "HCK",
+    seed_file="crypto.csv",
+    noun="crypto hacks",
+    day_column="day",
+    detail_column="target",
+    time_column="time",
+    scheduled=False,
+)
 EVENT_FLOWS: list[EventFlow] = [
     CPI_FLOW,
     NFP_FLOW,
@@ -1761,6 +1777,7 @@ EVENT_FLOWS: list[EventFlow] = [
     BOE_FLOW,
     BOJ_FLOW,
     WAR_FLOW,
+    CRYPTO_FLOW,
 ]
 
 

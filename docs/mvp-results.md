@@ -667,7 +667,8 @@ Measured 2026-11-18. Detail in [crypto](steps/crypto.md#results).
 DefiLlama's list (`follows --event crypto`). **Nothing follows them that an ordinary day would not
 give**: bitcoin, ether and Coinbase's shares *can't say* over the day, the week and the month;
 across every market one answer, the VIX up on the day counted from the close after, within the
-luck the chance line allows. The hack days are no bigger than ordinary days. As expected.
+luck the chance line allows. `raw-move` finds no market that moves more on hack days; 16 are
+*unclear*. As expected, but for fewer markets than expected counting 40 hacks over the week.
 
 ## What comes next
 
