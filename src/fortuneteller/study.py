@@ -124,6 +124,7 @@ MVP_PRICE_SERIES = {
     "NKY": PriceSeries("^N225", "pct", time(15, 30), TOKYO),
     "ETH": PriceSeries("ETH-USD", "pct", time(23, 59), UTC_ZONE),
     "COIN": PriceSeries("COIN", "pct", time(16, 0), NEW_YORK),
+    "ALL": PriceSeries("ALL", "pct", time(16, 0), NEW_YORK),
 }
 
 

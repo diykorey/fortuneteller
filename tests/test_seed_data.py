@@ -101,6 +101,7 @@ def test_seed_dir_has_no_unexpected_csvs() -> None:
         "opec.csv",
         "war.csv",
         "crypto.csv",
+        "hurricanes.csv",
         "boe-changes.csv",
         "fomc_sentiment_dictionary.csv",
     }
@@ -333,3 +334,46 @@ def test_crypto_rows_are_defillama_s_hacks_of_100_million_or_more() -> None:
         ("FTX", 450_000_000),
         ("Bybit", 1_400_000_000),
     ]
+
+
+def test_hurricane_rows_are_first_us_landfalls_since_1970() -> None:
+    # given the committed landfalls
+    with (settings.seed_dir / "hurricanes.csv").open(newline="", encoding="utf-8") as handle:
+        reader = csv.DictReader(handle)
+        header = reader.fieldnames
+        rows = list(reader)
+    # when their days, storms and places are read
+    days = [date.fromisoformat(row["day"]) for row in rows]
+    named = {row["day"]: (row["time"], row["storm"], int(row["knots"])) for row in rows}
+    places = [(float(row["lat"]), float(row["lon"])) for row in rows]
+    # then the 79 landfalls are in order on 79 days, one kind, each a hurricane, each inside the
+    # place rule, the five named before measuring there and the foreign landfalls named not
+    assert header == ["day", "time", "kind", "storm", "knots", "lat", "lon"]
+    assert len(rows) == 79 and len(set(days)) == 79 and days == sorted(days)
+    assert (days[0], days[-1]) == (date(1970, 8, 3), date(2024, 10, 10))
+    assert {row["kind"] for row in rows} == {"landfall"}
+    assert all(int(row["knots"]) >= 64 for row in rows)
+    assert all(
+        24.4 <= lat < 47.5
+        and lon <= -66.9
+        and not (lat < 32 and lon > -80.0)
+        and not (lon < -96.5 and lat < 25.95)
+        for lat, lon in places
+    )
+    assert [
+        named[d] for d in ("1992-08-24", "2005-09-24", "2008-09-13", "2017-08-26", "2022-09-28")
+    ] == [
+        ("08:40", "Andrew", 145),
+        ("07:40", "Rita", 100),
+        ("07:00", "Ike", 95),
+        ("03:00", "Harvey", 115),
+        ("02:00", "Ian", 110),
+    ]
+    assert not {
+        "2016-10-07",
+        "2022-11-09",
+        "2019-09-01",
+        "2017-09-20",
+        "2017-09-09",
+        "2021-08-21",
+    } & set(named)

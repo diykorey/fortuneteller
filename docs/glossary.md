@@ -275,7 +275,7 @@ Terms are grouped by what they are about, alphabetical within each group.
   canonical symbol. Step 2 maps five: `^GSPC` (S&P 500 index), `^TNX`, `DX-Y.NYB` (dollar index),
   `GC=F` (gold futures), `^VIX`; cross-country two, `^GDAXI` and `^STOXX50E`; more outcomes nine,
   `BZ=F`, `EURUSD=X`, `^IXIC`, `^FVX`, `^FTSE`, `^STOXX`, `BTC-USD`, `ITA` and `XLE`; the markets
-  people feel seven, each its own symbol; coffee `KC=F`; step 25 `GBPUSD=X`, `JPY=X` and `^N225`; step 27 `ETH-USD` and `COIN`. FRED's series for the breakeven is
+  people feel seven, each its own symbol; coffee `KC=F`; step 25 `GBPUSD=X`, `JPY=X` and `^N225`; step 27 `ETH-USD` and `COIN`; step 28 `ALL`. FRED's series for the breakeven is
   stored as `fred:T5YIE`.
 - **XLE** — the Energy Select Sector SPDR ETF, the US energy sector; oil's equity echo. Closes
   16:00 New York; no expected sign.
