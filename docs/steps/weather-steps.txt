@@ -3,7 +3,7 @@ Step 28, step 1's evidence (docs/steps/weather.md): a copy of step 27's store (c
 $ uv run python scripts/hurdat_landfalls.py hurdat2-1851-2025-092326.txt   (from https://www.nhc.noaa.gov/data/hurdat/, read 2026-11-18)
 wrote 79 rows to data/seed/hurricanes.csv, 1970-08-03 … 2024-10-10
 
-$ load-prices for ALL (study.store_daily_bars on Yahoo's daily bars): rows, first, last
+$ load-prices for ALL: study.store_daily_bars("ALL", "ALL", sources.parse_daily_bars(sources.fetch_daily_bars("ALL"))), then study.store_observations(); rows, first, last
 ALL 8423 1993-06-03 2026-11-17
 
 $ each daily close of 2026-11-09 … 2026-11-13 against Yahoo's last hourly bar before 16:00 New York (interval=60m), % difference
@@ -71,19 +71,32 @@ same-but-markets raw-uselect.txt +2 lines
 same-but-markets raw-war.txt +2 lines
 same-but-markets raw-zew.txt +2 lines
 
-$ each follows chance line, without -> with (from the close before; from the reaction close)
-fomc: about 8.0 answers;about 8.0 answers -> about 8.3 answers;about 8.3 answers
-nfp: about 8.1 answers;about 8.1 answers -> about 8.4 answers;about 8.4 answers
-retail: about 8.1 answers;about 8.1 answers -> about 8.4 answers;about 8.4 answers
-cpi: about 8.1 answers;about 8.1 answers -> about 8.4 answers;about 8.4 answers
-claims: about 8.1 answers;about 8.1 answers -> about 8.4 answers;about 8.4 answers
-ecb: about 7.9 answers;about 7.9 answers -> about 8.1 answers;about 8.2 answers
-ceo: about 0.1 answers;about 0.1 answers -> about 0.1 answers;about 0.1 answers
-opec: about 5.4 answers;about 5.3 answers -> about 5.5 answers;about 5.6 answers
-boe: about 7.6 answers;about 7.6 answers -> about 7.8 answers;about 7.8 answers
-boj: about 2.7 answers;about 2.7 answers -> about 2.8 answers;about 2.8 answers
-war: about 2.6 answers;about 2.6 answers -> about 2.7 answers;about 2.7 answers
-crypto: about 2.7 answers;about 2.7 answers -> about 2.8 answers;about 2.8 answers
+$ each follows table's rows and chance line, without -> with, and Allstate's rows (a one-off count of fortuneteller follows --event FLOW, with and without --after-the-day; each rise is 0.01 × 3 answers × each Allstate cell the chance counts, rounded to one place)
+flow  run           rows without -> with  (Allstate's rows)  chance line without -> with
+fomc    close before   270 -> 279  (9)  8.0 -> 8.3
+fomc    reaction close 270 -> 279  (9)  8.0 -> 8.3
+nfp     close before   270 -> 279  (9)  8.1 -> 8.4
+nfp     reaction close 270 -> 279  (9)  8.1 -> 8.4
+retail  close before   270 -> 279  (9)  8.1 -> 8.4
+retail  reaction close 270 -> 279  (9)  8.1 -> 8.4
+cpi     close before   270 -> 279  (9)  8.1 -> 8.4
+cpi     reaction close 270 -> 279  (9)  8.1 -> 8.4
+claims  close before   270 -> 279  (9)  8.1 -> 8.4
+claims  reaction close 270 -> 279  (9)  8.1 -> 8.4
+ecb     close before   270 -> 279  (9)  7.9 -> 8.1
+ecb     reaction close 270 -> 279  (9)  7.9 -> 8.2
+ceo     close before   3 -> 3  (0)  0.1 -> 0.1
+ceo     reaction close 3 -> 3  (0)  0.1 -> 0.1
+opec    close before   180 -> 186  (6)  5.3 -> 5.5
+opec    reaction close 180 -> 186  (6)  5.4 -> 5.6
+boe     close before   270 -> 279  (9)  7.6 -> 7.8
+boe     reaction close 270 -> 279  (9)  7.6 -> 7.8
+boj     close before   270 -> 279  (9)  2.7 -> 2.8
+boj     reaction close 270 -> 279  (9)  2.7 -> 2.8
+war     close before   90 -> 93  (3)  2.6 -> 2.7
+war     reaction close 90 -> 93  (3)  2.6 -> 2.7
+crypto  close before   90 -> 93  (3)  2.7 -> 2.8
+crypto  reaction close 90 -> 93  (3)  2.7 -> 2.8
 
 $ fortuneteller scoreboard, docs/scoreboard/data.json's chance without and with, and the rest compared
 {'raw_move': {'cells': 799, 'p': 0.01, 'by_chance': 7.99}, 'surprise': {'cells': 360, 'p': 0.01, 'by_chance': 3.6}, 'walk_forward': {'cells': 82, 'p': 0.01, 'by_chance': 0.82}}
@@ -92,7 +105,7 @@ identical without ALL and the chance: True
 
 Step 2, on a copy of step 1's store with the 79 landfalls loaded:
 
-$ load the weather flow (flows.WEATHER_FLOW, store_events, store_observations)
+$ flows.store_events(flows.WEATHER_FLOW.events("").events), then study.store_observations()
 loaded 79 United States hurricane landfalls, 1970-08-03 … 2024-10-10
 
 $ fortuneteller follows --event weather, its first line
@@ -156,7 +169,16 @@ same      raw-uselect.txt
 same      raw-war.txt
 same      raw-zew.txt
 
-$ fortuneteller scoreboard: docs/scoreboard/data.json's chance, step 1's store and step 2's, and the rest compared
+$ fortuneteller scoreboard, its first line on step 1's store and step 2's
+scoreboard: 31 events, 52 call rows, data to 2026-11-17;
+scoreboard: 32 events, 52 call rows, data to 2026-11-17;
+
+$ docs/scoreboard/data.json's chance, step 1's store and step 2's, and the rest compared
 {'raw_move': {'cells': 827, 'p': 0.01, 'by_chance': 8.27}, 'surprise': {'cells': 372, 'p': 0.01, 'by_chance': 3.72}, 'walk_forward': {'cells': 82, 'p': 0.01, 'by_chance': 0.82}}
 {'raw_move': {'cells': 857, 'p': 0.01, 'by_chance': 8.57}, 'surprise': {'cells': 372, 'p': 0.01, 'by_chance': 3.72}, 'walk_forward': {'cells': 82, 'p': 0.01, 'by_chance': 0.82}}
 identical without the landfalls' entry and the chance: True 1
+
+$ uv run pytest -q tests/test_seed_data.py::test_hurricane_rows_are_first_us_landfalls_since_1970 tests/test_what_follows.py::test_a_landfall_reacts_by_its_utc_minute_on_each_market tests/test_study_raw_move.py::test_a_saturday_landfall_reacts_on_monday tests/test_triggers.py::test_a_weather_trigger_for_a_day_not_stored_is_answered_from_a_landfall_at_04_00_utc
+4 passed in 0.19s
+
+The five storms checked by hand, 2026-11-18, against their landfalls as the NHC's Tropical Cyclone Reports give them (Andrew AL041992, Rita AL182005, Ike AL092008, Harvey AL092017, Ian AL092022), from what is known of those reports, not by downloading them: each day, hour within 30 minutes and state as the spec writes them.

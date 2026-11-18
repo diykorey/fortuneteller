@@ -676,7 +676,7 @@ Measured 2026-11-18. Detail in [weather](steps/weather.md#results).
 
 79 hurricanes' first landfalls on the US coast, 1970 to 2024, by the National Hurricane Center's
 record (`follows --event weather`). **Fuel, energy stocks, corn, soybeans and Allstate's shares
-show nothing** an ordinary day, week or month would not give. Wheat is the one exception: from the
+give no answer** over the day, the week or the month. Wheat is the one exception: from the
 close after the landfall, it ends the day about where it started more often than usual (17 of 27),
 while `raw-move` finds it moving more on the landfalls' own days; too few to grade walk-forward.
 Two answers in all, within chance.
