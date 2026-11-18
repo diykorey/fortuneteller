@@ -78,12 +78,12 @@ hack in the news can be answered from its past.
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | **Done** 2026-11-18, [below](#step-1). The two markets: seed rows, series, `load-prices`; the seed `data/seed/crypto.csv` (`day,time,kind,target,amount`) from the list by `scripts/defillama_hacks.py` | `load-prices` stores both; each close of 2026-11-09 to 2026-11-13 checked against the close of Yahoo's last hourly bar before its time (`interval=60m`: ether's 23:00 UTC bar, Coinbase's 15:30 New York bar), within 0.05%; the seed test checks the header, 44 rows, order, time `04:00`, kind `hack`, each amount at least 100000000. On a copy of the store, before and after: every other flow's `follows` and `raw-move` output identical but for the two markets' rows and the chance lines, each chance line and the scoreboard's written here |
-| 2 | Flow `crypto`; `follows --event crypto`; `crypto` in `TRIGGER_KINDS` | Tests: a Saturday hack reacts on Monday on bitcoin and on the S&P 500; a `crypto` trigger for a day not stored is answered from a hack made at 04:00 UTC. On a copy of the store the header is the expected one, and every other flow's output byte for byte the one of step 1's store |
+| 2 | **Done** 2026-11-18, [below](#step-2). Flow `crypto`; `follows --event crypto`; `crypto` in `TRIGGER_KINDS` | Tests: a Saturday hack reacts on Monday on bitcoin and on the S&P 500; a `crypto` trigger for a day not stored is answered from a hack made at 04:00 UTC. On a copy of the store the header is the expected one, and every other flow's output byte for byte the one of step 1's store |
 | 3 | Results here and in [MVP results](../mvp-results.md), against the expected outcome; the roadmap row | Every bullet marked right or wrong with its numbers and command; each cell with 30 or more graded walk-forward and its record; the days shared with another flow, by the hack's UTC day |
 
 ### Step 1
 
-*2026-11-18.* Every line quoted is in [the evidence](crypto-step1.txt), on a copy of the store
+*2026-11-18.* Every line quoted is in [the evidence](crypto-steps.txt), on a copy of the store
 without and with the two markets.
 
 - **The seed:** `scripts/defillama_hacks.py` wrote 44 rows, 2014-02-07 to 2026-10-29; the seed
@@ -103,6 +103,18 @@ without and with the two markets.
 - **A fault found and fixed:** `raw-move` and `scoreboard` stopped with *no median for empty data*
   on the president's tweets, which end before Coinbase's listing, so Coinbase has neither tweet
   days nor ordinary days there. A market with no days now gets a *too few* row (a test added).
+
+### Step 2
+
+*2026-11-18*, [the evidence](crypto-steps.txt), on a copy of step 1's store with the hacks loaded.
+
+- **The header, as expected:** `follows: 44 crypto hacks 2014-02-07 … 2026-10-29: 44 hacks`.
+- **The tests hold:** a Saturday hack reacts on Monday on bitcoin and the S&P 500; a `crypto`
+  trigger for a day not stored is answered from a hack at 04:00 UTC.
+- **Every other flow's output** (53 files) byte for byte step 1's. The scoreboard gains the hacks'
+  entry (30 → 31 events) and its raw-move chance the flow's cells, 769 → 799; surprise and
+  walk-forward unchanged; its data otherwise identical.
+- War's one kind and the hack's share one rule (`study.ONE_KIND`), now that there are two.
 
 ## How you know it is right
 
