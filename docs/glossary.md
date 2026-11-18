@@ -97,6 +97,14 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **PCE / core PCE** (Personal Consumption Expenditures price index) — the Fed's preferred US
   inflation measure, published monthly by the Bureau of Economic Analysis at 8:30 a.m. New
   York time; *core* leaves out food and energy ([more events](steps/step-4-more-events.md)).
+- **ICB** (International Crisis Behavior project) — *added 2026-11-18* ([war](steps/war.md)): a
+  dataset of international crises since 1918, each with the date its trigger came and a code for
+  what set it off (`triggr`, from a verbal act to a violent act) and how violent it became (`viol`).
+  Step 26 takes every crisis since 1970 whose trigger is a *violent act*.
+- **Violent act** — *added 2026-11-18* ([war](steps/war.md)): ICB's trigger type 9, a border
+  clash, a border crossing, an invasion of air space, a sinking, a bombardment or an invasion that
+  sets off an international crisis; the one kind of `follows --event war`, known the day it
+  happens.
 - **ISM** (Institute for Supply Management) — publishes the US manufacturing PMI at 10:00 New
   York on the month's first working day ([the ISM survey](steps/ism-manufacturing.md)).
 - **ZEW** (Leibniz Centre for European Economic Research) — its *Economic Sentiment Index* asks
