@@ -79,7 +79,7 @@ hack in the news can be answered from its past.
 | --- | --- | --- |
 | 1 | **Done** 2026-11-18, [below](#step-1). The two markets: seed rows, series, `load-prices`; the seed `data/seed/crypto.csv` (`day,time,kind,target,amount`) from the list by `scripts/defillama_hacks.py` | `load-prices` stores both; each close of 2026-11-09 to 2026-11-13 checked against the close of Yahoo's last hourly bar before its time (`interval=60m`: ether's 23:00 UTC bar, Coinbase's 15:30 New York bar), within 0.05%; the seed test checks the header, 44 rows, order, time `04:00`, kind `hack`, each amount at least 100000000. On a copy of the store, before and after: every other flow's `follows` and `raw-move` output identical but for the two markets' rows and the chance lines, each chance line and the scoreboard's written here |
 | 2 | Flow `crypto`; `follows --event crypto`; `crypto` in `TRIGGER_KINDS` | Tests: a Saturday hack reacts on Monday on bitcoin and on the S&P 500; a `crypto` trigger for a day not stored is answered from a hack made at 04:00 UTC. On a copy of the store the header is the expected one, and every other flow's output byte for byte the one of step 1's store |
-| 3 | Results here and in [MVP results](../mvp-results.md), against the expected outcome; the roadmap row | Every bullet marked right or wrong with its numbers and command; each cell with 30 or more graded walk-forward and its record; the days shared with another flow, by the hack's UTC day |
+| 3 | **Done** 2026-11-18, [below](#results). Results here and in [MVP results](../mvp-results.md), against the expected outcome; the roadmap row | Every bullet marked right or wrong with its numbers and command; each cell with 30 or more graded walk-forward and its record; the days shared with another flow, by the hack's UTC day |
 
 ### Step 1
 
@@ -139,3 +139,40 @@ No live link.
   `tests/test_study_raw_move.py`.
 - **Docs:** this spec; `docs/schema.md` (code 31, the detail, the instruments); the glossary
   (*DefiLlama*, *hack*, *ETH*, *COIN*); roadmap row 27 amended to hacks; status, changelog.
+
+## Results
+
+*2026-11-18.* Every line quoted is in [the evidence](crypto-results.txt): step 2's copy of the
+store, each command's whole output and `scripts/shared_days.py`'s count.
+
+**In plain words:** after $100 million or more was stolen in a crypto hack, bitcoin, ether and
+Coinbase's shares did nothing an ordinary day, week or month would not, in either count; nor did
+anything else, but the VIX rising on the day counted from the close after, one answer within the
+luck the chance line allows. The hack days are no bigger than ordinary days on any market. The
+expected outcome held on every count.
+
+- **The header, as expected:** `follows: 44 crypto hacks 2014-02-07 … 2026-10-29: 44 hacks`
+  (`follows --event crypto`). Right.
+- **Walk-forward: nothing holds** (`follows`, both runs): no cell is graded at all, since no cell
+  answers in its past. Right.
+- **On all history, against the chance line plus 2** (`follows`, each run; chance about 2.7, so a
+  bar of 4.7): from the close before **0 answers**; from the reaction close **1**, the VIX *up* on
+  the day (24 up, 12 down of 44, chance 0.0087), *too few* walk-forward, the placebo not marking it.
+  Right in both.
+- **Bitcoin, ether and Coinbase** (`follows`, both runs): *can't say* on all 18 cells. Bitcoin 43
+  hacks on the day, 40 over the week, 31 over the month (11 left out for overlap); ether 42, 39,
+  30; Coinbase 37, 34, 26. The smallest chance is bitcoin's week from the close before, 0.0214, 12
+  up and 8 down. Right.
+- **The arithmetic** (`follows`): Coinbase is *too few* walk-forward on every span, as expected;
+  over the month bitcoin (31) and ether (30), like every market there, fall below 40 counted. With
+  no answer graded the bar is never reached either way.
+- **Every other flow's rows** (steps 1 and 2 above): right; the chance lines rose by the added
+  cells alone, each written there.
+- **The size of the move** (`raw-move --event crypto`, outside the rule, recorded): on the hacks'
+  lone days no market *moves*: 14 *doesn't*, 16 *unclear*; bitcoin's ratio 0.95, ether's 1.18,
+  Coinbase's 1.05.
+- **Days shared with another flow** (`scripts/shared_days.py crypto`): 25 of the 44, by the hack's
+  UTC day; jobless claims on 8, the ECB president's statements on 5, the euro area's flash HICP,
+  ISM, the Fed chair's statements and the president's second-term posts on 3 each, and ten others
+  on 1 or 2 (in the evidence).
+
