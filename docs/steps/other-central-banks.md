@@ -107,7 +107,7 @@ the counts above are from the calendar and are arithmetic.*
 | 1 | ~~The three markets~~ **done** 2026-11-17. The three markets: seed rows, series, signs, `load-prices`; `boe-changes.csv` from the Bank's history | `load-prices` stores the three; tests: an 08:30 New York release falls on the next day's close for the pound, the yen and the Nikkei, a 02:30 UTC one on the same day's Nikkei close and a 12:00 London one on the next day's; the closes within 0.05% of the bars, written here; the known misses listed; on a copy of the store every existing row of `raw-move`, `follows` and the scoreboard identical, and each chance line and grid before and after written here; the seed test checks `boe-changes.csv`'s header, order and rates; the disagreeing days listed here |
 | 2 | ~~The BoE~~ **done** 2026-11-17. The BoE: flow `boe`, `follows --event boe`, `boe` in `TRIGGER_KINDS` | Tests: a calendar quarter stores its decisions at their UTC time; a change day the calendar lacks is added at the file's time; a decision's kind is the Bank's change, and 2020-03-26 a hold; a `boe` trigger is answered. On a copy of the store the header is the expected one, or the difference written with a dated amendment; every other flow's `follows` and `raw-move` rows unchanged |
 | 3 | ~~The BoJ~~ **done** 2026-11-18. The BoJ: flow `boj`, `follows --event boj`, `boj` in `TRIGGER_KINDS` | Tests: a quarter stores its decisions at their UTC time; a decision's kind is its rate against the previous; a `boj` trigger is answered. The header as expected, or amended; the others unchanged |
-| 4 | Results here and in [MVP results](../mvp-results.md), against the expected outcome; the roadmap row | Every judged bullet of the expected outcome marked right or wrong with its numbers; each bank's walk-forward records; the new markets' rows in the other flows summarised |
+| 4 | ~~Results~~ **done** 2026-11-18. Results here and in [MVP results](../mvp-results.md), against the expected outcome; the roadmap row | Every judged bullet of the expected outcome marked right or wrong with its numbers; each bank's walk-forward records; the new markets' rows in the other flows summarised |
 
 *Step 1, 2026-11-17:*
 
@@ -154,6 +154,51 @@ other flow's `follows` and `raw-move` output, the BoE's included, is byte for by
 `raw-move --event boj` is new (47 lone BoJ days on the S&P 500). The scoreboard gains the BoJ's
 raw-move entry (27 → 28 events), its raw-move chance 642 → 670 cells; every other entry is the
 same. Like the BoE, the BoJ is in `follows` and triggers, not in the page's *ask*.
+
+## Results
+
+*2026-11-18.* Every line quoted is in [the evidence](other-central-banks-results.txt): a copy of
+the store of 2026-11-17, closes to 2026-11-16, with step 1's three markets and the two banks'
+decisions loaded, each command's whole output.
+
+**In plain words:** what followed a Bank of England or a Bank of Japan decision cannot be told
+from an ordinary day. Out of hundreds of cells, a handful show a lean, fewer than chance alone
+would give, and none holds walk-forward. The pound after a BoE cut or hike is *can't say*: the
+market had it priced in.
+
+- **The headers, as expected:** `follows: 187 BoE decisions 2008-02-07 … 2026-11-05: 17 cuts,
+  153 holds, 17 hikes` and `follows: 85 BoJ decisions 2016-06-16 … 2026-10-30: 0 cuts, 79
+  holds, 6 hikes` (`follows --event boe`, `--event boj`).
+- **Walk-forward: nothing holds**, for either bank, in either run. As expected.
+- **On all history, against the chance line plus 2** (`follows`, each run):
+
+  | Bank | Run | Answers | By chance |
+  | --- | --- | --- | --- |
+  | BoE | from the close before | 1 | 7.2 |
+  | BoE | from the reaction close | 2 | 7.2 |
+  | BoJ | from the close before | 0 | 2.5 |
+  | BoJ | from the reaction close | 2 | 2.5 |
+
+  Each within its bar, as expected. The answers: after a BoE hike, Europe's shares (SXXP) *down*
+  on the day, 11 of 17, chance 0.0093, *too few* walk-forward; from the reaction close, after a
+  BoE hold, the VIX *down* on the day (74 of 153, chance 0.0004; walk-forward 47 of 94 right,
+  doesn't hold) and the DAX *about the same* over the week (chance 0.0056; 25 of 57, doesn't
+  hold); after a BoJ hold, the VIX *up* on the day (30 of 79, chance 0.0049) and homebuilders
+  (ITB) *up* over the month (36 of 71, chance 0.0048), both *too few* walk-forward.
+- **The pound on the day after a BoE decision: *can't say*** after a cut (17: 6 up, 9 down,
+  chance 0.30; from the reaction close 5 up, 8 down, chance 0.28) and after a hike (17: 3 up, 8 down, chance 0.11; from the reaction close
+  3 up, 11 down, chance 0.026), in both runs. As expected.
+- **The arithmetic held:** the BoJ's 6 hikes are *too few* everywhere; the BoE's cuts and hikes
+  answer on all history where 10 or more are graded and are *too few* walk-forward.
+- **Every existing row unchanged**, steps 1 to 3 above: only the chance lines and the
+  scoreboard's raw-move chance moved, by the added cells (546 → 614 → 642 → 670).
+- **Days shared with another flow** (by the bank's day), kept in each bank's own table: the BoE's
+  188 with jobless claims on 121, the ECB on 28, the ECB president on 16, the BoJ on 10, CPI on 8
+  and 15 other flows on 1 to 6 each; the BoJ's 86 with jobless claims on 24, the euro-area flash
+  HICP, the ECB president and the German flash CPI on 11 each, core PCE and the BoE on 10, and 15
+  others on 1 to 8.
+
+The expected outcome was **right** on every count.
 
 ## How you know it is right
 

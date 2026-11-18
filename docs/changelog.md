@@ -6,6 +6,7 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-18 | Step 25 results: BoE and BoJ decisions answer no more cells than chance, nothing holds walk-forward, the pound *can't say* after a BoE move; the expected outcome right on every count | PR #341 |
 | 2026-11-18 | Step 25, step 3: the BoJ's flow, `follows --event boj` and `boj` triggers; kinds from the calendar's rates; the expected 85 decisions, every other flow unchanged | PR #340 |
 | 2026-11-17 | Step 25, step 2: the BoE's flow, `follows --event boe` and `boe` triggers; kinds from the Bank's Bank Rate changes, 2020-03-26 a hold; the expected 187 decisions, every other flow unchanged | PR #338 |
 | 2026-11-17 | Step 25, step 1: the pound, the yen and the Nikkei 225 as markets, unsigned; the Bank of England's Bank Rate changes since 2008 as a seed; every existing row unchanged | PR #337 |
