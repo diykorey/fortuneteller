@@ -440,7 +440,13 @@ def compare_moves(
     if len(event) < MIN_EVENT_DAYS:
         middle = median(event) if event else math.nan
         return MoveComparison(
-            len(event), len(other), middle, median(other), math.nan, math.nan, TOO_FEW
+            len(event),
+            len(other),
+            middle,
+            median(other) if other else math.nan,
+            math.nan,
+            math.nan,
+            TOO_FEW,
         )
     median_event, median_other = median(event), median(other)
     ratio = median_event / median_other

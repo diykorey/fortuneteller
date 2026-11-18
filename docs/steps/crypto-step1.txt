@@ -1,0 +1,107 @@
+Step 27, step 1's evidence (docs/steps/crypto.md): a copy of the store of 2026-11-17 (closes to 2026-11-16, step 26's violent acts loaded), without and with ether's and Coinbase's closes (loaded 2026-11-18, to 2026-11-17).
+
+$ uv run python scripts/defillama_hacks.py hacks.json   (the list from https://api.llama.fi/hacks, read 2026-11-18)
+wrote 44 rows to data/seed/crypto.csv, 2014-02-07 … 2026-10-29
+
+$ load-prices for ETH and COIN (study.store_daily_bars on Yahoo's daily bars): rows, first, last
+ETH 2354 2017-11-09 2026-11-17
+COIN 1407 2021-04-14 2026-11-17
+
+$ each daily close of 2026-11-09 … 2026-11-13 against Yahoo's last hourly bar before its time (interval=60m), % difference
+ETH-USD 2026-11-09 daily 2131.4985 | last bar ≤ close ('11-09 23:00', 2132.3401) 0.039 | first bar ≥ close ('11-10 00:00', 2123.3401) -0.383
+ETH-USD 2026-11-10 daily 2050.1809 | last bar ≤ close ('11-10 23:00', 2050.5801) 0.019 | first bar ≥ close ('11-11 00:00', 2047.1801) -0.146
+ETH-USD 2026-11-11 daily 2055.8762 | last bar ≤ close ('11-11 23:00', 2054.02) -0.09 | first bar ≥ close ('11-12 00:00', 2059.51) 0.177
+ETH-USD 2026-11-12 daily 2016.8297 | last bar ≤ close ('11-12 23:00', 2017.36) 0.026 | first bar ≥ close ('11-13 00:00', 2009.37) -0.37
+ETH-USD 2026-11-13 daily 1927.5889 | last bar ≤ close ('11-13 23:00', 1927.48) -0.006 | first bar ≥ close None None
+COIN 2026-11-09 daily 136.1 | last bar ≤ close ('11-09 15:30', 136.065) -0.026 | first bar ≥ close ('11-10 09:30', 132.305) -2.788
+COIN 2026-11-10 daily 132.13 | last bar ≤ close ('11-10 15:30', 132.16) 0.023 | first bar ≥ close ('11-11 09:30', 134.76) 1.99
+COIN 2026-11-11 daily 136.27 | last bar ≤ close ('11-11 15:30', 136.35) 0.059 | first bar ≥ close ('11-12 09:30', 130.31) -4.374
+COIN 2026-11-12 daily 130.67 | last bar ≤ close ('11-12 15:30', 130.62) -0.038 | first bar ≥ close ('11-13 09:30', 126.73) -3.015
+COIN 2026-11-13 daily 127.65 | last bar ≤ close ('11-13 15:30', 127.62) -0.024 | first bar ≥ close ('11-17 16:00', 115.02) -9.894
+
+$ the same on five-minute bars (interval=5m), outside the rule
+ETH-USD 2026-11-09 daily 2131.4985 | last bar ≤ close ('11-09 23:55', 2132.3401) 0.039
+ETH-USD 2026-11-10 daily 2050.1809 | last bar ≤ close ('11-10 23:55', 2050.5801) 0.019
+ETH-USD 2026-11-11 daily 2055.8762 | last bar ≤ close ('11-11 23:55', 2054.02) -0.09
+ETH-USD 2026-11-12 daily 2016.8297 | last bar ≤ close ('11-12 23:55', 2017.36) 0.026
+ETH-USD 2026-11-13 daily 1927.5889 | last bar ≤ close ('11-13 23:55', 1927.48) -0.006
+COIN 2026-11-09 daily 136.1 | last bar ≤ close ('11-09 15:55', 136.065) -0.026
+COIN 2026-11-10 daily 132.13 | last bar ≤ close ('11-10 15:55', 132.16) 0.023
+COIN 2026-11-11 daily 136.27 | last bar ≤ close ('11-11 15:55', 136.35) 0.059
+COIN 2026-11-12 daily 130.67 | last bar ≤ close ('11-12 15:55', 130.62) -0.038
+COIN 2026-11-13 daily 127.65 | last bar ≤ close ('11-13 15:55', 127.62) -0.024
+
+$ every other flow's raw-move and follows output (both runs, the Fed's --long), without and with: the lines left once the ETH and COIN rows and the 'by chance' lines are taken out
+same-but-markets fol-boe-after.txt +18 lines
+same-but-markets fol-boe.txt +18 lines
+same-but-markets fol-boj-after.txt +18 lines
+same-but-markets fol-boj.txt +18 lines
+same-but-markets fol-ceo-after.txt +0 lines
+same-but-markets fol-ceo.txt +0 lines
+same-but-markets fol-claims-after.txt +18 lines
+same-but-markets fol-claims.txt +18 lines
+same-but-markets fol-cpi-after.txt +18 lines
+same-but-markets fol-cpi.txt +18 lines
+same-but-markets fol-ecb-after.txt +18 lines
+same-but-markets fol-ecb.txt +18 lines
+same-but-markets fol-fomc-after.txt +18 lines
+same-but-markets fol-fomc-long.txt +12 lines
+same-but-markets fol-fomc.txt +18 lines
+same-but-markets fol-nfp-after.txt +18 lines
+same-but-markets fol-nfp.txt +18 lines
+same-but-markets fol-opec-after.txt +12 lines
+same-but-markets fol-opec.txt +12 lines
+same-but-markets fol-retail-after.txt +18 lines
+same-but-markets fol-retail.txt +18 lines
+same-but-markets fol-war-after.txt +6 lines
+same-but-markets fol-war.txt +6 lines
+same-but-markets raw-boe.txt +4 lines
+same-but-markets raw-boj.txt +4 lines
+same-but-markets raw-ceo.txt +4 lines
+same-but-markets raw-claims.txt +4 lines
+same-but-markets raw-cpi.txt +4 lines
+same-but-markets raw-debt.txt +4 lines
+same-but-markets raw-decpi.txt +4 lines
+same-but-markets raw-deelect.txt +4 lines
+same-but-markets raw-ecb.txt +4 lines
+same-but-markets raw-ecbchief.txt +4 lines
+same-but-markets raw-euelect.txt +4 lines
+same-but-markets raw-fedchair.txt +4 lines
+same-but-markets raw-fomc.txt +4 lines
+same-but-markets raw-frelect.txt +4 lines
+same-but-markets raw-gdp.txt +4 lines
+same-but-markets raw-hicp.txt +4 lines
+same-but-markets raw-ifo.txt +4 lines
+same-but-markets raw-ism.txt +4 lines
+same-but-markets raw-nfp.txt +4 lines
+same-but-markets raw-opec.txt +4 lines
+same-but-markets raw-pce.txt +4 lines
+same-but-markets raw-posts.txt +4 lines
+same-but-markets raw-posts2.txt +4 lines
+same-but-markets raw-retail.txt +4 lines
+same-but-markets raw-summit.txt +4 lines
+same-but-markets raw-tariff.txt +4 lines
+same-but-markets raw-ukelect.txt +4 lines
+same-but-markets raw-uselect.txt +4 lines
+same-but-markets raw-war.txt +4 lines
+same-but-markets raw-zew.txt +4 lines
+
+$ each follows chance line, without -> with (from the close before; from the reaction close)
+fomc: about 7.6 answers;about 7.6 answers -> about 8.0 answers;about 8.0 answers
+nfp: about 7.6 answers;about 7.6 answers -> about 8.1 answers;about 8.1 answers
+retail: about 7.6 answers;about 7.6 answers -> about 8.1 answers;about 8.1 answers
+cpi: about 7.6 answers;about 7.6 answers -> about 8.1 answers;about 8.1 answers
+claims: about 7.6 answers;about 7.6 answers -> about 8.1 answers;about 8.1 answers
+ecb: about 7.6 answers;about 7.5 answers -> about 7.9 answers;about 7.9 answers
+ceo: about 0.1 answers;about 0.1 answers -> about 0.1 answers;about 0.1 answers
+opec: about 5.0 answers;about 5.0 answers -> about 5.4 answers;about 5.3 answers
+boe: about 7.2 answers;about 7.2 answers -> about 7.6 answers;about 7.6 answers
+boj: about 2.5 answers;about 2.5 answers -> about 2.7 answers;about 2.7 answers
+war: about 2.5 answers;about 2.5 answers -> about 2.6 answers;about 2.6 answers
+
+$ fortuneteller scoreboard, its first line and docs/scoreboard/data.json's chance, without and with
+scoreboard: 30 events, 52 call rows, data to 2026-11-16;
+scoreboard: 30 events, 52 call rows, data to 2026-11-17;
+{'raw_move': {'cells': 726, 'p': 0.01, 'by_chance': 7.26}, 'surprise': {'cells': 336, 'p': 0.01, 'by_chance': 3.36}, 'walk_forward': {'cells': 82, 'p': 0.01, 'by_chance': 0.82}}
+{'raw_move': {'cells': 769, 'p': 0.01, 'by_chance': 7.69}, 'surprise': {'cells': 360, 'p': 0.01, 'by_chance': 3.6}, 'walk_forward': {'cells': 82, 'p': 0.01, 'by_chance': 0.82}}
+data.json with ETH and COIN taken out of every entry and of 'markets', and 'chance' and 'data_until' taken out: identical to the one without

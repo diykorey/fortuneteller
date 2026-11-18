@@ -77,9 +77,32 @@ hack in the news can be answered from its past.
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | The two markets: seed rows, series, `load-prices`; the seed `data/seed/crypto.csv` (`day,time,kind,target,amount`) from the list by `scripts/defillama_hacks.py` | `load-prices` stores both; each close of 2026-11-09 to 2026-11-13 checked against the close of Yahoo's last hourly bar before its time (`interval=60m`: ether's 23:00 UTC bar, Coinbase's 15:30 New York bar), within 0.05%; the seed test checks the header, 44 rows, order, time `04:00`, kind `hack`, each amount at least 100000000. On a copy of the store, before and after: every other flow's `follows` and `raw-move` output identical but for the two markets' rows and the chance lines, each chance line and the scoreboard's written here |
+| 1 | **Done** 2026-11-18, [below](#step-1). The two markets: seed rows, series, `load-prices`; the seed `data/seed/crypto.csv` (`day,time,kind,target,amount`) from the list by `scripts/defillama_hacks.py` | `load-prices` stores both; each close of 2026-11-09 to 2026-11-13 checked against the close of Yahoo's last hourly bar before its time (`interval=60m`: ether's 23:00 UTC bar, Coinbase's 15:30 New York bar), within 0.05%; the seed test checks the header, 44 rows, order, time `04:00`, kind `hack`, each amount at least 100000000. On a copy of the store, before and after: every other flow's `follows` and `raw-move` output identical but for the two markets' rows and the chance lines, each chance line and the scoreboard's written here |
 | 2 | Flow `crypto`; `follows --event crypto`; `crypto` in `TRIGGER_KINDS` | Tests: a Saturday hack reacts on Monday on bitcoin and on the S&P 500; a `crypto` trigger for a day not stored is answered from a hack made at 04:00 UTC. On a copy of the store the header is the expected one, and every other flow's output byte for byte the one of step 1's store |
 | 3 | Results here and in [MVP results](../mvp-results.md), against the expected outcome; the roadmap row | Every bullet marked right or wrong with its numbers and command; each cell with 30 or more graded walk-forward and its record; the days shared with another flow, by the hack's UTC day |
+
+### Step 1
+
+*2026-11-18.* Every line quoted is in [the evidence](crypto-step1.txt), on a copy of the store
+without and with the two markets.
+
+- **The seed:** `scripts/defillama_hacks.py` wrote 44 rows, 2014-02-07 to 2026-10-29; the seed
+  test holds, the four rows named above included (Coincheck, Ronin Bridge, FTX, Bybit, each its
+  day and amount).
+- **The closes:** ether 2,354 from 2017-11-09, Coinbase 1,407 from 2021-04-14. **The 0.05% check
+  misses on 2 of 10 closes:** ether's of 2026-11-11 by 0.09% and Coinbase's of 2026-11-11 by
+  0.059%; the other eight are within 0.04%. The five-minute bars give the same differences, so
+  the gap is between Yahoo's daily close and its last intraday print, not the close's time: the
+  first bar after each close is 0.15% to 9.9% off. Recorded as missed; the bar is not changed.
+- **Every other flow's output:** all 53 `raw-move` and `follows` outputs identical once the two
+  markets' rows and the chance lines are taken out. Each `follows` chance line rises by the two
+  markets' cells (the Fed's 7.6 → 8.0, OPEC's 5.0 → 5.4, war's 2.5 → 2.6, each in the evidence);
+  the scoreboard's raw-move chance 726 → 769 cells and its surprise 336 → 360, walk-forward 82
+  unchanged, and its data otherwise identical but for the market list and its data date (the new
+  closes run a day later).
+- **A fault found and fixed:** `raw-move` and `scoreboard` stopped with *no median for empty data*
+  on the president's tweets, which end before Coinbase's listing, so Coinbase has neither tweet
+  days nor ordinary days there. A market with no days now gets a *too few* row (a test added).
 
 ## How you know it is right
 
