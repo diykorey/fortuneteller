@@ -283,7 +283,7 @@ def test_raw_move_prints_a_verdict_per_instrument_and_the_rule(
     # then every instrument has a verdict line, and the rule is printed with them
     out = capsys.readouterr().out
     assert code == 0
-    assert sum(line.endswith(" moves") for line in out.splitlines()) == 28
+    assert sum(line.endswith(" moves") for line in out.splitlines()) == 30
     assert "moves = ratio >= 1.10 and p < 0.01" in out
 
 
@@ -333,7 +333,7 @@ def test_raw_move_takes_the_event_to_measure(
 
     # then the jobs report gets its verdicts, and CPI says what to load first
     assert nfp == 0
-    assert sum(line.endswith(" moves") for line in nfp_out.splitlines()) == 28
+    assert sum(line.endswith(" moves") for line in nfp_out.splitlines()) == 30
     assert cpi == 1
     assert "no CPI / inflation surprise releases stored" in capsys.readouterr().err
 
@@ -347,7 +347,7 @@ def test_raw_move_measures_ecb_decisions(tmp_db: Path, capsys: pytest.CaptureFix
 
     # then each market gets its verdict
     assert code == 0
-    assert sum(line.endswith(" moves") for line in capsys.readouterr().out.splitlines()) == 28
+    assert sum(line.endswith(" moves") for line in capsys.readouterr().out.splitlines()) == 30
 
 
 @pytest.mark.parametrize(
@@ -366,7 +366,7 @@ def test_raw_move_measures_tradingview_releases(
 
     # then each market gets its verdict
     assert code == 0
-    assert sum(line.endswith(" moves") for line in capsys.readouterr().out.splitlines()) == 28
+    assert sum(line.endswith(" moves") for line in capsys.readouterr().out.splitlines()) == 30
 
 
 def test_another_events_days_are_not_ordinary_days() -> None:
@@ -633,6 +633,18 @@ def test_under_ten_event_days_there_is_no_verdict() -> None:
     assert math.isnan(comparison.ratio) and math.isnan(comparison.p)
 
 
+def test_a_market_with_no_days_in_the_span_has_no_verdict() -> None:
+    # given a market stored only after a lesser flow's days end, so it has neither kind of day
+    event, other = [], []
+
+    # when they are compared
+    comparison = compare_moves(event, other)
+
+    # then the comparison says too few, with no medians
+    assert comparison.verdict == TOO_FEW
+    assert math.isnan(comparison.median_event) and math.isnan(comparison.median_other)
+
+
 def test_raw_move_over_a_week(tmp_db: Path, capsys: pytest.CaptureFixture[str]) -> None:
     # given releases and prices stored
     _synthetic_store(db.get_connection())
@@ -644,7 +656,7 @@ def test_raw_move_over_a_week(tmp_db: Path, capsys: pytest.CaptureFixture[str]) 
     out = capsys.readouterr().out.splitlines()
     assert code == 0
     assert out[0] == "over a week: the move from the close before each day to the 5th close"
-    assert sum(line.split()[-1] in (MOVES, UNCLEAR, DOESNT_MOVE) for line in out[2:30]) == 28
+    assert sum(line.split()[-1] in (MOVES, UNCLEAR, DOESNT_MOVE) for line in out[2:32]) == 30
 
 
 def test_a_debt_limit_vote_reacts_on_each_market_s_next_close(tmp_path: Path) -> None:

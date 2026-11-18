@@ -121,6 +121,8 @@ MVP_PRICE_SERIES = {
     "GBPUSD": PriceSeries("GBPUSD=X", "pct", time(0, 0), LONDON),
     "USDJPY": PriceSeries("JPY=X", "pct", time(0, 0), LONDON),
     "NKY": PriceSeries("^N225", "pct", time(15, 30), TOKYO),
+    "ETH": PriceSeries("ETH-USD", "pct", time(23, 59), UTC_ZONE),
+    "COIN": PriceSeries("COIN", "pct", time(16, 0), NEW_YORK),
 }
 
 
@@ -438,7 +440,13 @@ def compare_moves(
     if len(event) < MIN_EVENT_DAYS:
         middle = median(event) if event else math.nan
         return MoveComparison(
-            len(event), len(other), middle, median(other), math.nan, math.nan, TOO_FEW
+            len(event),
+            len(other),
+            middle,
+            median(other) if other else math.nan,
+            math.nan,
+            math.nan,
+            TOO_FEW,
         )
     median_event, median_other = median(event), median(other)
     ratio = median_event / median_other
