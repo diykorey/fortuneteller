@@ -49,6 +49,7 @@ from .flows import (
     OPEC_FLOW,
     CRYPTO_FLOW,
     WAR_FLOW,
+    WEATHER_FLOW,
     SurpriseRule,
     called_live,
     event_date,
@@ -1984,12 +1985,20 @@ KIND_SPAN, KIND_MARKET = "day", "BRN"
 KIND_SERIES = MVP_PRICE_SERIES[KIND_MARKET]
 
 
-# Steps 26 and 27 (docs/steps/war.md, docs/steps/crypto.md): one kind each, the violent act that
-# set off a crisis and the hack; a live trigger's event at the seeds' rule hour, 04:00 UTC.
+# Steps 26 to 28 (docs/steps/war.md, docs/steps/crypto.md, docs/steps/weather.md): one kind
+# each, the violent act that set off a crisis, the hack and the landfall; a live trigger's event at
+# the war and hack seeds' rule hour, 04:00 UTC.
 VIOLENT_ACT = "violent act"
 HACK = "hack"
-ONE_KIND = {WAR_FLOW.cli_name: VIOLENT_ACT, CRYPTO_FLOW.cli_name: HACK}
-ONE_KIND_FLOWS: dict[str, DatedShockFlow] = {f.cli_name: f for f in (WAR_FLOW, CRYPTO_FLOW)}
+LANDFALL = "landfall"
+ONE_KIND = {
+    WAR_FLOW.cli_name: VIOLENT_ACT,
+    CRYPTO_FLOW.cli_name: HACK,
+    WEATHER_FLOW.cli_name: LANDFALL,
+}
+ONE_KIND_FLOWS: dict[str, DatedShockFlow] = {
+    f.cli_name: f for f in (WAR_FLOW, CRYPTO_FLOW, WEATHER_FLOW)
+}
 SHOCK_HOUR = time(4, 0)
 
 
@@ -2237,6 +2246,7 @@ TRIGGER_KINDS = {
     "boj": KINDS,
     "war": (VIOLENT_ACT,),
     "crypto": (HACK,),
+    "weather": (LANDFALL,),
 }
 TRIGGER_LOG_COLUMNS = (
     "file",

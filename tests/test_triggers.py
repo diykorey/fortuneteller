@@ -572,3 +572,21 @@ def test_a_crypto_trigger_for_a_day_not_stored_is_answered_from_a_hack_at_04_00_
     # then it is answered on the market, from a hack made that day
     assert {r["market"] for r in rows} == {SPY}
     assert not any("void" in line for line in lines)
+
+
+def test_a_weather_trigger_for_a_day_not_stored_is_answered_from_a_landfall_at_04_00_utc(
+    one_market: None,
+) -> None:
+    # given no stored landfall on a day, and a trigger filed that morning
+    closes = _closes(_wavy(300))
+    day = closes[200].day
+    merged = datetime.combine(day, time(5, 0), tzinfo=UTC)
+
+    # when it is answered
+    rows, lines = _answer(
+        [_trigger(day, study.LANDFALL, "weather")], [], {}, closes, merged, flow="weather"
+    )
+
+    # then it is answered on the market, from a landfall made that day
+    assert {r["market"] for r in rows} == {SPY}
+    assert not any("void" in line for line in lines)

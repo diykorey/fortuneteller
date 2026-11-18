@@ -1747,6 +1747,22 @@ CRYPTO_FLOW = DatedShockFlow(
     time_column="time",
     scheduled=False,
 )
+# Step 28 (docs/steps/weather.md): each storm's first US landfall as a hurricane since 1970, by
+# HURDAT2, at the record's UTC minute; the detail names the storm.
+WEATHER_FLOW = DatedShockFlow(
+    "Natural disaster",
+    UNITED_STATES,
+    ZoneInfo("UTC"),
+    32,
+    "weather",
+    "HUR",
+    seed_file="hurricanes.csv",
+    noun="hurricane landfalls",
+    day_column="day",
+    detail_column="storm",
+    time_column="time",
+    scheduled=False,
+)
 EVENT_FLOWS: list[EventFlow] = [
     CPI_FLOW,
     NFP_FLOW,
@@ -1779,6 +1795,7 @@ EVENT_FLOWS: list[EventFlow] = [
     BOJ_FLOW,
     WAR_FLOW,
     CRYPTO_FLOW,
+    WEATHER_FLOW,
 ]
 
 
