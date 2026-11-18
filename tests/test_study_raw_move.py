@@ -779,3 +779,30 @@ def test_a_violent_act_on_a_saturday_reacts_on_monday(tmp_path: Path) -> None:
         saturday = first_reaction_day(batch.events[0], MVP_PRICE_SERIES[market])
         assert reaction_days(closes, [saturday]) == {date(1981, 4, 27)}
     assert batch.report == ["loaded 2 World violent acts, 1981-04-25 … 1990-08-02"]
+
+
+def test_a_hack_on_a_saturday_reacts_on_monday_on_bitcoin_and_the_s_and_p_500(
+    tmp_path: Path,
+) -> None:
+    # given a hack on a weekday and one on Saturday 2025-04-19
+    seed = tmp_path / "crypto.csv"
+    seed.write_text(
+        "day,time,kind,target,amount\n"
+        "2025-02-21,04:00,hack,Bybit,1400000000\n"
+        "2025-04-19,04:00,hack,A,100000000\n"
+    )
+
+    # when the hacks are loaded
+    batch = flows.CRYPTO_FLOW.load(seed, datetime(2026, 11, 18, 12, 0, tzinfo=NEW_YORK))
+
+    # then each is an unscheduled event naming its target, and the Saturday one reacts on Monday on
+    # bitcoin and the S&P 500, since no market keeps a weekend close
+    assert [(e.event_id, e.detail, e.scheduled) for e in batch.events] == [
+        (3120250221, "Bybit", False),
+        (3120250419, "A", False),
+    ]
+    closes = _closes((date(2025, 4, 18), 100.0), (date(2025, 4, 21), 101.0))
+    for market in ("BTC", "SPY / ES"):
+        saturday = first_reaction_day(batch.events[1], MVP_PRICE_SERIES[market])
+        assert reaction_days(closes, [saturday]) == {date(2025, 4, 21)}
+    assert batch.report == ["loaded 2 World crypto hacks, 2025-02-21 … 2025-04-19"]

@@ -47,6 +47,7 @@ from .flows import (
     DatedShockFlow,
     EventFlow,
     OPEC_FLOW,
+    CRYPTO_FLOW,
     WAR_FLOW,
     SurpriseRule,
     called_live,
@@ -1982,15 +1983,18 @@ KIND_SPAN, KIND_MARKET = "day", "BRN"
 KIND_SERIES = MVP_PRICE_SERIES[KIND_MARKET]
 
 
-# Step 26 (docs/steps/war.md): one kind, the violent act that set off a crisis; a live trigger's
-# act at the seed's rule hour, 04:00 UTC.
+# Steps 26 and 27 (docs/steps/war.md, docs/steps/crypto.md): one kind each, the violent act that
+# set off a crisis and the hack; a live trigger's event at the seeds' rule hour, 04:00 UTC.
 VIOLENT_ACT = "violent act"
-WAR_HOUR = time(4, 0)
+HACK = "hack"
+ONE_KIND = {WAR_FLOW.cli_name: VIOLENT_ACT, CRYPTO_FLOW.cli_name: HACK}
+ONE_KIND_FLOWS: dict[str, DatedShockFlow] = {f.cli_name: f for f in (WAR_FLOW, CRYPTO_FLOW)}
+SHOCK_HOUR = time(4, 0)
 
 
-def war_kinds(events: Iterable[EventInstance]) -> dict[int, str]:
-    """Every violent act's kind by event id: the one kind."""
-    return dict.fromkeys((e.event_id for e in events), VIOLENT_ACT)
+def one_kind(flow: EventFlow, events: Iterable[EventInstance]) -> dict[int, str]:
+    """Every event's kind by event id, for a flow of one kind."""
+    return dict.fromkeys((e.event_id for e in events), ONE_KIND[flow.cli_name])
 
 
 def detail_kinds(events: Iterable[EventInstance]) -> dict[int, str]:
@@ -2231,6 +2235,7 @@ TRIGGER_KINDS = {
     "boe": KINDS,
     "boj": KINDS,
     "war": (VIOLENT_ACT,),
+    "crypto": (HACK,),
 }
 TRIGGER_LOG_COLUMNS = (
     "file",
@@ -2379,12 +2384,13 @@ def answer_triggers(
                 continue
             flow_events = sorted([*flow_events, event], key=lambda e: e.event_ts)
             flow_kinds = {**flow_kinds, event.event_id: live}
-        if event is None and t.flow == WAR_FLOW.cli_name:
-            event = WAR_FLOW.event_instance(
-                datetime.combine(t.day, WAR_HOUR, tzinfo=WAR_FLOW.zone), "a live trigger"
+        if event is None and t.flow in ONE_KIND:
+            shock = ONE_KIND_FLOWS[t.flow]
+            event = shock.event_instance(
+                datetime.combine(t.day, SHOCK_HOUR, tzinfo=shock.zone), "a live trigger"
             )
             flow_events = sorted([*flow_events, event], key=lambda e: e.event_ts)
-            flow_kinds = {**flow_kinds, event.event_id: VIOLENT_ACT}
+            flow_kinds = {**flow_kinds, event.event_id: ONE_KIND[t.flow]}
         if event is None:
             if any(release_date(e) > t.day for e in flow_events):
                 lines.append(f"{head}: void, {t.flow} had no event on {t.day}")
