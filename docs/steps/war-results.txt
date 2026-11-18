@@ -247,5 +247,92 @@ $ fortuneteller scoreboard: the chance in docs/scoreboard/data.json, without and
 war-before {'raw_move': {'cells': 698, 'p': 0.01, 'by_chance': 6.98}, 'surprise': {'cells': 336, 'p': 0.01, 'by_chance': 3.36}, 'walk_forward': {'cells': 82, 'p': 0.01, 'by_chance': 0.82}}
 war-after {'raw_move': {'cells': 726, 'p': 0.01, 'by_chance': 7.26}, 'surprise': {'cells': 336, 'p': 0.01, 'by_chance': 3.36}, 'walk_forward': {'cells': 82, 'p': 0.01, 'by_chance': 0.82}}
 
-$ a one-off query: each other flow's stored events on the acts' UTC days (flows.stored_events, flows.release_date by each flow's own zone)
-WAR 136 {'NFP': 4, 'CLM': 3, 'CPI': 2, 'RET': 2, 'PST': 2, 'Fed': 1, 'ISM': 1, 'ECP': 1, 'DBT': 1, 'OPC': 1}
+
+$ uv run python scripts/shared_days.py war
+WAR: 136 days, 15 shared with another flow
+  NFP 4
+  CLM 3
+  CPI 2
+  RET 2
+  PST 2
+  Fed 1
+  ISM 1
+  ECP 1
+  DBT 1
+  OPC 1
+
+$ cmp, each output of the same code without and with the acts stored (fortuneteller raw-move --event FLOW for every flow; follows --event FLOW, with and without --after-the-day, and --long for fomc; scoreboard)
+same      fol-boe-after.txt
+same      fol-boe.txt
+same      fol-boj-after.txt
+same      fol-boj.txt
+same      fol-ceo-after.txt
+same      fol-ceo.txt
+same      fol-claims-after.txt
+same      fol-claims.txt
+same      fol-cpi-after.txt
+same      fol-cpi.txt
+same      fol-ecb-after.txt
+same      fol-ecb.txt
+same      fol-fomc-after.txt
+same      fol-fomc-long.txt
+same      fol-fomc.txt
+same      fol-nfp-after.txt
+same      fol-nfp.txt
+same      fol-opec-after.txt
+same      fol-opec.txt
+same      fol-retail-after.txt
+same      fol-retail.txt
+differs   fol-war-after.txt
+differs   fol-war.txt
+same      raw-boe.txt
+same      raw-boj.txt
+same      raw-ceo.txt
+same      raw-claims.txt
+same      raw-cpi.txt
+same      raw-debt.txt
+same      raw-decpi.txt
+same      raw-deelect.txt
+same      raw-ecbchief.txt
+same      raw-ecb.txt
+same      raw-euelect.txt
+same      raw-fedchair.txt
+same      raw-fomc.txt
+same      raw-frelect.txt
+same      raw-gdp.txt
+same      raw-hicp.txt
+same      raw-ifo.txt
+same      raw-ism.txt
+same      raw-nfp.txt
+same      raw-opec.txt
+same      raw-pce.txt
+same      raw-posts2.txt
+same      raw-posts.txt
+same      raw-retail.txt
+same      raw-summit.txt
+same      raw-tariff.txt
+same      raw-ukelect.txt
+same      raw-uselect.txt
+differs   raw-war.txt
+same      raw-zew.txt
+differs   scoreboard.txt
+new       fol-war.txt fol-war-after.txt raw-war.txt
+
+$ the first line of fortuneteller scoreboard, without and with the acts
+scoreboard: 29 events, 52 call rows, data to 2026-11-16; written
+scoreboard: 30 events, 52 call rows, data to 2026-11-16; written
+
+$ each follows chance line, without and with the acts (from the close before; from the reaction close)
+fomc: about 7.6 answers;about 7.6 answers -> about 7.6 answers;about 7.6 answers
+nfp: about 7.6 answers;about 7.6 answers -> about 7.6 answers;about 7.6 answers
+retail: about 7.6 answers;about 7.6 answers -> about 7.6 answers;about 7.6 answers
+cpi: about 7.6 answers;about 7.6 answers -> about 7.6 answers;about 7.6 answers
+claims: about 7.6 answers;about 7.6 answers -> about 7.6 answers;about 7.6 answers
+ecb: about 7.6 answers;about 7.5 answers -> about 7.6 answers;about 7.5 answers
+ceo: about 0.1 answers;about 0.1 answers -> about 0.1 answers;about 0.1 answers
+opec: about 5.0 answers;about 5.0 answers -> about 5.0 answers;about 5.0 answers
+boe: about 7.2 answers;about 7.2 answers -> about 7.2 answers;about 7.2 answers
+boj: about 2.5 answers;about 2.5 answers -> about 2.5 answers;about 2.5 answers
+
+$ docs/scoreboard/data.json with the acts, its last entry (the acts') and its chance taken out, against the one without: identical
+True; 1 entry added

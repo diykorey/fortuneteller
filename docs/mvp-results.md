@@ -652,11 +652,12 @@ Measured 2026-11-18. Detail in [war](steps/war.md#results).
 
 136 days from 1970 to 2021 on which a violent act (a strike, a border clash, an invasion) set off
 an international crisis, by the International Crisis Behavior project's list (`follows --event
-war`). **Gold rose after them**: over the week, up after 23 of 37 acts since 2000 and down after
-2 (chance 0.0001), and the day and the month lean the same way; too few to grade walk-forward, so
-not a call. Oil, defence stocks and the stock indexes show nothing an ordinary day would not, and
-the acts' days are no bigger than ordinary days. Counted from the close before, the answers are
-one above the chance bar, so that run is not cleared of luck.
+war`). **Gold rose after them**: counted from the close before, up over the week after 23 of 37 acts
+since 2000 and down after 2 (chance 0.0001), and up on the day and the month too; from the close
+after, up over the week only. Too few to grade walk-forward, so not a call. Oil and defence stocks
+show nothing; a few cells elsewhere answer, the yields in opposite directions in the two runs. On
+the acts' days `raw-move` finds no market that *moves*; 8 are *unclear*. Counted from the close before, the answers are one
+above the chance bar, so that run is not cleared of luck.
 
 ## What comes next
 
