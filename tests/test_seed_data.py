@@ -100,6 +100,7 @@ def test_seed_dir_has_no_unexpected_csvs() -> None:
         "ceo_scandals.csv",
         "opec.csv",
         "war.csv",
+        "crypto.csv",
         "boe-changes.csv",
         "fomc_sentiment_dictionary.csv",
     }
@@ -306,4 +307,29 @@ def test_war_rows_are_icb_s_crises_a_violent_act_set_off_since_1970() -> None:
         "AFGHANISTAN/US",
         "INDIA PARLIAMENT ATTACK",
         "SECOND NAGORNO-KARABAKH WAR",
+    ]
+
+
+def test_crypto_rows_are_defillama_s_hacks_of_100_million_or_more() -> None:
+    # given the committed hacks
+    with (settings.seed_dir / "crypto.csv").open(newline="", encoding="utf-8") as handle:
+        reader = csv.DictReader(handle)
+        header = reader.fieldnames
+        rows = list(reader)
+    # when their days and targets are read
+    days = [date.fromisoformat(row["day"]) for row in rows]
+    targets = {row["day"]: (row["target"], int(row["amount"])) for row in rows}
+    # then the 44 hacks are in order on 44 days at the rule's hour, one kind, each at least the
+    # line, and the four rows named before measuring are there
+    assert header == ["day", "time", "kind", "target", "amount"]
+    assert len(rows) == 44 and len(set(days)) == 44 and days == sorted(days)
+    assert (days[0], days[-1]) == (date(2014, 2, 7), date(2026, 10, 29))
+    assert {row["time"] for row in rows} == {"04:00"}
+    assert {row["kind"] for row in rows} == {"hack"}
+    assert all(int(row["amount"]) >= 100_000_000 for row in rows)
+    assert [targets[d] for d in ("2018-01-26", "2022-03-23", "2022-11-12", "2025-02-21")] == [
+        ("Coincheck", 534_000_000),
+        ("Ronin Bridge", 624_000_000),
+        ("FTX", 450_000_000),
+        ("Bybit", 1_400_000_000),
     ]

@@ -459,7 +459,8 @@ def with_more_outcomes(signs: dict[str, int]) -> dict[str, int]:
     (docs/steps/markets-people-feel.md), coffee (docs/steps/coffee.md) or the breakeven
     (docs/steps/breakeven.md), except utilities, which compete with bonds: the 10-year yield's sign
     reversed (docs/steps/signs.md). The pound, the yen and the Nikkei 225 none: a signed market is a
-    live link (docs/steps/other-central-banks.md)."""
+    live link (docs/steps/other-central-banks.md); nor ether or Coinbase
+    (docs/steps/crypto.md)."""
     return {
         **signs,
         "BRN": 0,
@@ -483,6 +484,8 @@ def with_more_outcomes(signs: dict[str, int]) -> dict[str, int]:
         "GBPUSD": 0,
         "USDJPY": 0,
         "NKY": 0,
+        "ETH": 0,
+        "COIN": 0,
     }
 
 
