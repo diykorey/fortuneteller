@@ -1156,3 +1156,102 @@ USDJPY       —            —            0.58 (15)    1.21 (32)
 NKY          —            —            1.07 (15)    0.93 (32)
 
 moves = ratio >= 1.10 and p < 0.01; unclear = one of the two; doesn't = neither; other = days with no CPI, NFP, Fed, RET, PCE, GDP, ECB, HICP or ISM reaction
+
+$ a one-off query: each other flow's stored events on a bank's days (flows.stored_events, flows.release_date by each flow's own zone)
+BoE 188 {'CLM': 121, 'ECB': 28, 'ECP': 16, 'BoJ': 10, 'CPI': 8, 'PST': 6, 'RET': 5, 'ISM': 5, 'PS2': 5, 'GDP': 4, 'Fed': 3, 'FCH': 3, 'PCE': 2, 'HICP': 2, 'IFO': 2, 'DCP': 2, 'TAR': 2, 'DBT': 2, 'SUM': 1, 'CEO': 1}
+BoJ 86 {'CLM': 24, 'HICP': 11, 'ECP': 11, 'DCP': 11, 'PCE': 10, 'BoE': 10, 'ECB': 8, 'ZEW': 7, 'GDP': 5, 'Fed': 4, 'RET': 4, 'TAR': 3, 'PST': 3, 'PS2': 3, 'NFP': 2, 'ISM': 2, 'FCH': 2, 'IFO': 2, 'CPI': 1, 'SUM': 1, 'CEO': 1}
+
+$ fortuneteller scoreboard: the chance in docs/scoreboard/data.json, before step 1, after steps 1, 2 and 3
+cb-before {'raw_move': {'cells': 546, 'p': 0.01, 'by_chance': 5.46}, 'surprise': {'cells': 300, 'p': 0.01, 'by_chance': 3.0}, 'walk_forward': {'cells': 82, 'p': 0.01, 'by_chance': 0.82}}
+cb-after {'raw_move': {'cells': 614, 'p': 0.01, 'by_chance': 6.14}, 'surprise': {'cells': 336, 'p': 0.01, 'by_chance': 3.36}, 'walk_forward': {'cells': 82, 'p': 0.01, 'by_chance': 0.82}}
+cb-boe {'raw_move': {'cells': 642, 'p': 0.01, 'by_chance': 6.42}, 'surprise': {'cells': 336, 'p': 0.01, 'by_chance': 3.36}, 'walk_forward': {'cells': 82, 'p': 0.01, 'by_chance': 0.82}}
+cb-boj {'raw_move': {'cells': 670, 'p': 0.01, 'by_chance': 6.7}, 'surprise': {'cells': 336, 'p': 0.01, 'by_chance': 3.36}, 'walk_forward': {'cells': 82, 'p': 0.01, 'by_chance': 0.82}}
+
+$ fortuneteller raw-move --event FLOW, for each of the other 25 flows: the three new markets' rows (after step 1)
+ceo  GBPUSD             18       0.34%         0.30%   1.13  0.3279  unclear
+ceo  USDJPY             18       0.33%         0.31%   1.09  0.3908  doesn't
+ceo  NKY                18       0.50%         0.69%   0.72  0.8393  doesn't
+claims  GBPUSD            452       0.30%         0.27%   1.12  0.0462  unclear
+claims  USDJPY            452       0.30%         0.28%   1.09  0.1184  doesn't
+claims  NKY               441       0.62%         0.65%   0.94  0.7643  doesn't
+cpi  GBPUSD            275       0.30%         0.30%   0.97  0.6581  doesn't
+cpi  USDJPY            359       0.37%         0.33%   1.11  0.0776  unclear
+cpi  NKY               650       0.62%         0.60%   1.03  0.2794  doesn't
+cpi  NKY          0.93 (209)   1.01 (216)   1.28 (143)   1.16 (82)
+debt  GBPUSD              9       0.71%         0.30%      —  —       too few
+debt  USDJPY             10       0.19%         0.31%   0.61  0.8778  doesn't
+debt  NKY                56       0.51%         0.59%   0.87  0.7716  doesn't
+debt  NKY          0.82 (35)    1.65 (11)    1.05 (8)     0.28 (2)
+decpi  GBPUSD             85       0.26%         0.29%   0.88  0.8286  doesn't
+decpi  USDJPY             85       0.28%         0.28%   0.99  0.5404  doesn't
+decpi  NKY                81       0.84%         0.63%   1.34  0.0238  unclear
+deelect  GBPUSD              6       0.36%         0.30%      —  —       too few
+deelect  USDJPY              8       0.09%         0.32%      —  —       too few
+deelect  NKY                12       0.86%         0.60%   1.43  0.1611  unclear
+deelect  NKY          1.01 (3)     1.79 (4)     0.71 (3)     0.98 (2)
+ecbchief  GBPUSD            343       0.28%         0.28%   1.03  0.3526  doesn't
+ecbchief  USDJPY            343       0.27%         0.28%   0.94  0.7726  doesn't
+ecbchief  NKY               333       0.67%         0.65%   1.04  0.3085  doesn't
+ecb  GBPUSD            115       0.38%         0.28%   1.35  0.0044  moves
+ecb  USDJPY            115       0.33%         0.28%   1.18  0.0935  unclear
+ecb  NKY               113       0.73%         0.65%   1.13  0.1723  unclear
+euelect  GBPUSD              3       0.20%         0.30%      —  —       too few
+euelect  USDJPY              4       0.49%         0.32%      —  —       too few
+euelect  NKY                 7       0.31%         0.63%      —  —       too few
+euelect  NKY          2.59 (2)     0.39 (3)     0.91 (2)     —
+fedchair  GBPUSD            176       0.31%         0.27%   1.11  0.1503  unclear
+fedchair  USDJPY            176       0.30%         0.28%   1.07  0.2573  doesn't
+fedchair  NKY               174       0.68%         0.64%   1.06  0.2626  doesn't
+fomc  GBPUSD            191       0.44%         0.30%   1.45  0.0002  moves
+fomc  USDJPY            252       0.48%         0.33%   1.43  0.0001  moves
+fomc  NKY               269       0.99%         0.74%   1.34  0.0002  moves
+frelect  GBPUSD              5       0.28%         0.30%      —  —       too few
+frelect  USDJPY              6       0.15%         0.31%      —  —       too few
+frelect  NKY                10       0.84%         0.60%   1.40  0.1899  unclear
+frelect  NKY          1.82 (3)     1.23 (3)     1.12 (2)     1.72 (2)
+gdp  GBPUSD             92       0.33%         0.30%   1.08  0.2606  doesn't
+gdp  USDJPY            120       0.45%         0.33%   1.34  0.0046  moves
+gdp  NKY               136       0.78%         0.74%   1.05  0.3157  doesn't
+hicp  GBPUSD            144       0.31%         0.29%   1.06  0.2485  doesn't
+hicp  USDJPY            144       0.37%         0.28%   1.32  0.0030  moves
+hicp  NKY               139       0.87%         0.64%   1.36  0.0038  moves
+ifo  GBPUSD             97       0.28%         0.28%   1.03  0.4119  doesn't
+ifo  USDJPY             97       0.24%         0.26%   0.92  0.6980  doesn't
+ifo  NKY                97       0.58%         0.66%   0.88  0.8386  doesn't
+ism  GBPUSD            164       0.36%         0.28%   1.28  0.0057  moves
+ism  USDJPY            164       0.37%         0.28%   1.31  0.0036  moves
+ism  NKY               151       0.70%         0.65%   1.09  0.2245  doesn't
+nfp  GBPUSD            275       0.37%         0.30%   1.21  0.0057  moves
+nfp  USDJPY            359       0.42%         0.33%   1.25  0.0008  moves
+nfp  NKY               656       0.70%         0.59%   1.18  0.0010  moves
+nfp  NKY          1.20 (233)   1.07 (207)   1.42 (137)   1.26 (79)
+pce  GBPUSD            273       0.29%         0.30%   0.97  0.6760  doesn't
+pce  USDJPY            312       0.33%         0.31%   1.03  0.3239  doesn't
+pce  NKY               309       0.88%         0.72%   1.23  0.0048  moves
+posts2  GBPUSD            121       0.28%         0.23%   1.18  0.1118  unclear
+posts2  USDJPY            121       0.30%         0.25%   1.20  0.1854  unclear
+posts2  NKY               113       0.74%         0.90%   0.82  0.8765  doesn't
+posts  GBPUSD            102       0.35%         0.31%   1.13  0.1571  unclear
+posts  USDJPY            102       0.23%         0.25%   0.93  0.6755  doesn't
+posts  NKY                95       0.54%         0.47%   1.13  0.2067  unclear
+retail  GBPUSD            275       0.39%         0.30%   1.29  0.0010  moves
+retail  USDJPY            303       0.38%         0.31%   1.22  0.0022  moves
+retail  NKY               304       0.72%         0.72%   1.00  0.5045  doesn't
+summit  GBPUSD             25       0.21%         0.30%   0.71  0.9066  doesn't
+summit  USDJPY             31       0.30%         0.33%   0.91  0.6657  doesn't
+summit  NKY                47       0.52%         0.60%   0.86  0.7585  doesn't
+summit  NKY          0.90 (11)    0.88 (14)    1.37 (15)    1.01 (7)
+tariff  GBPUSD             38       0.31%         0.28%   1.10  0.3239  doesn't
+tariff  USDJPY             38       0.33%         0.26%   1.30  0.1103  unclear
+tariff  NKY                45       0.66%         0.66%   1.01  0.4755  doesn't
+ukelect  GBPUSD              4       0.56%         0.30%      —  —       too few
+ukelect  USDJPY              6       0.35%         0.33%      —  —       too few
+ukelect  NKY                12       1.16%         0.59%   1.95  0.0236  unclear
+ukelect  NKY          1.87 (6)     1.58 (3)     2.53 (2)     0.00 (1)
+uselect  GBPUSD             10       0.26%         0.30%   0.86  0.6558  doesn't
+uselect  USDJPY             13       0.63%         0.33%   1.89  0.0254  unclear
+uselect  NKY                26       0.65%         0.59%   1.09  0.3735  doesn't
+uselect  NKY          1.19 (10)    1.38 (9)     0.63 (5)     2.18 (2)
+zew  GBPUSD            113       0.28%         0.27%   1.02  0.4603  doesn't
+zew  USDJPY            113       0.24%         0.27%   0.88  0.8244  doesn't
+zew  NKY               113       0.65%         0.64%   1.03  0.4077  doesn't

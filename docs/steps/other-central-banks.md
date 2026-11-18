@@ -159,17 +159,22 @@ same. Like the BoE, the BoJ is in `follows` and triggers, not in the page's *ask
 
 *2026-11-18.* Every line quoted is in [the evidence](other-central-banks-results.txt): a copy of
 the store of 2026-11-17, closes to 2026-11-16, with step 1's three markets and the two banks'
-decisions loaded, each command's whole output.
+decisions loaded, each command's whole output, and the two one-off counts named there.
 
-**In plain words:** what followed a Bank of England or a Bank of Japan decision cannot be told
-from an ordinary day. Out of hundreds of cells, a handful show a lean, fewer than chance alone
-would give, and none holds walk-forward. The pound after a BoE cut or hike is *can't say*: the
-market had it priced in.
+**In plain words:** markets move more than usual on a Bank of England day, the pound and the yen
+among them, but *which way* they go after a cut, a hold or a hike is not told by the decision:
+out of hundreds of cells a handful lean, fewer than chance alone gives, and none holds
+walk-forward. Bank of Japan days are ordinary days in both size and direction. The pound on the
+day of a BoE cut or hike is *can't say*: 17 of each are too few to tell a lean from noise.
 
 - **The headers, as expected:** `follows: 187 BoE decisions 2008-02-07 … 2026-11-05: 17 cuts,
   153 holds, 17 hikes` and `follows: 85 BoJ decisions 2016-06-16 … 2026-10-30: 0 cuts, 79
   holds, 6 hikes` (`follows --event boe`, `--event boj`).
-- **Walk-forward: nothing holds**, for either bank, in either run. As expected.
+- **Walk-forward: nothing holds**, for either bank, in either run (`follows`). As expected. The
+  five cells with 30 or more graded: BoE hold, VIX on the day, 47 of 94 right; DAX over the week,
+  25 of 57; soybeans (SOYB) over the week, 15 of 35, the three from the reaction close; BoJ hold,
+  the dollar index on the day, 12 of 34, from the close before; utilities (XLU) on the day, 16 of
+  44, from the reaction close. Each *doesn't hold*.
 - **On all history, against the chance line plus 2** (`follows`, each run):
 
   | Bank | Run | Answers | By chance |
@@ -179,26 +184,48 @@ market had it priced in.
   | BoJ | from the close before | 0 | 2.5 |
   | BoJ | from the reaction close | 2 | 2.5 |
 
-  Each within its bar, as expected. The answers: after a BoE hike, Europe's shares (SXXP) *down*
-  on the day, 11 of 17, chance 0.0093, *too few* walk-forward; from the reaction close, after a
-  BoE hold, the VIX *down* on the day (74 of 153, chance 0.0004; walk-forward 47 of 94 right,
-  doesn't hold) and the DAX *about the same* over the week (chance 0.0056; 25 of 57, doesn't
-  hold); after a BoJ hold, the VIX *up* on the day (30 of 79, chance 0.0049) and homebuilders
-  (ITB) *up* over the month (36 of 71, chance 0.0048), both *too few* walk-forward.
-- **The pound on the day after a BoE decision: *can't say*** after a cut (17: 6 up, 9 down,
-  chance 0.30; from the reaction close 5 up, 8 down, chance 0.28) and after a hike (17: 3 up, 8 down, chance 0.11; from the reaction close
-  3 up, 11 down, chance 0.026), in both runs. As expected.
+  Each within its bar, as expected. The answers: from the close before, after a BoE hike,
+  Europe's shares (SXXP) *down* on the day, 11 of 17, chance 0.0093, *too few* walk-forward. From
+  the reaction close: after a BoE hold, the VIX *down* on the day (74 of 153, chance 0.0004) and
+  the DAX *about the same* over the week (chance 0.0056); after a BoJ hold, the VIX *up* on the day
+  (30 of 79, chance 0.0049) and homebuilders (ITB) *up* over the month (36 of 71, chance 0.0048),
+  both *too few* walk-forward.
+- **The pound on the day after a BoE decision: *can't say*** (`follows --event boe`, each run):
+  after a cut, 17: 6 up, 9 down, chance 0.30; from the reaction close 5 up, 8 down, 0.28; after a
+  hike, 3 up, 8 down, 0.11; from the reaction close 3 up, 11 down, 0.026, a lean short of the bar.
+  As expected.
 - **The arithmetic held:** the BoJ's 6 hikes are *too few* everywhere; the BoE's cuts and hikes
-  answer on all history where 10 or more are graded and are *too few* walk-forward.
-- **Every existing row unchanged**, steps 1 to 3 above: only the chance lines and the
-  scoreboard's raw-move chance moved, by the added cells (546 → 614 → 642 → 670).
-- **Days shared with another flow** (by the bank's day), kept in each bank's own table: the BoE's
-  188 with jobless claims on 121, the ECB on 28, the ECB president on 16, the BoJ on 10, CPI on 8
-  and 15 other flows on 1 to 6 each; the BoJ's 86 with jobless claims on 24, the euro-area flash
-  HICP, the ECB president and the German flash CPI on 11 each, core PCE and the BoE on 10, and 15
-  others on 1 to 8.
+  answer on all history where 10 or more are counted, and are *too few* walk-forward.
+- **The size of the move** (`raw-move --event boe`, `--event boj`, outside the rule, recorded):
+  on its 143 lone days the BoE's *moves* on 13 of 28 markets, the pound (ratio 1.36, p 0.0017)
+  and the yen (1.33, p 0.0036) among them; the BoJ's 47 lone days *move* none.
+- **Existing rows** (steps 1 to 3 above): every other flow's `follows` and `raw-move` rows
+  unchanged byte for byte, **except OPEC's, which were not compared**: the store copy held no OPEC
+  announcement. So this bar is met for 24 of the 25 other flows and not judged for OPEC.
+- **The lines that count every cell, before and after:** each `follows` chance line, on all
+  history, from about 6.8 to 7.6 answers for the Fed, jobs reports, retail sales, CPI and jobless
+  claims in both runs, and the ECB's in the reaction-close run; the ECB's from the close before
+  6.8 → 7.5; the Fed's `--long` 2.0 → 2.3; the CEO's 0.1, unchanged; walk-forward 0.0 or 0.1,
+  unchanged (`follows`). The scoreboard's chance (`scoreboard`, `data.json`): raw-move 546 → 614
+  → 642 → 670 cells over steps 1, 2 and 3, surprise 300 → 336 at step 1, walk-forward 82
+  unchanged. With the three markets' and the two banks' entries removed, `data.json` before and
+  after is the same, so its grids change by the added cells alone.
+- **The three markets in the other flows** (`raw-move --event FLOW`, recorded, not judged): the
+  pound *moves* on 5 flows' days (the Fed, the ECB, jobs reports, retail sales, ISM), the yen on 6
+  (the Fed, jobs reports, retail sales, GDP, euro-area flash HICP, ISM), the Nikkei on 4 (the Fed,
+  jobs reports, euro-area flash HICP, core PCE).
+- **Days shared with another flow** (a one-off count, in the evidence), kept in each bank's own
+  table: the BoE's 188 with jobless claims on 121, the ECB on 28, the ECB president on 16, the BoJ
+  on 10, CPI on 8 and 15 other flows on 1 to 6 each; the BoJ's 86 with jobless claims on 24, the
+  euro-area flash HICP, the ECB president and the German flash CPI on 11 each, core PCE and the BoE
+  on 10, and 15 others on 1 to 8.
+- **Step 1's closes:** the 0.05% bar was missed by the yen on one day (0.058%) and the Nikkei on
+  three (up to 0.07%), as step 1 wrote. *Amended 2026-11-18:* the misses stand; no bar is
+  loosened. Each is under a tenth of one day's median move, and the next bar is 0.1% to 1.6% away,
+  so the closes are read as taken at the times named.
 
-The expected outcome was **right** on every count.
+The expected outcome was **right** on every count it could be judged on; OPEC's rows were not
+compared.
 
 ## How you know it is right
 

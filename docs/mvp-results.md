@@ -640,11 +640,11 @@ Measured 2026-11-18. Detail in [other central banks](steps/other-central-banks.m
 
 187 Bank of England decisions from 2008 (17 cuts, 153 holds, 17 hikes) and 85 Bank of Japan
 decisions from 2016 (79 holds, 6 hikes), each taken by the bank's own rate (`follows --event boe`,
-`--event boj`), against every market including the newly added pound, yen and Nikkei 225. **Nothing
-follows that an ordinary day would not give**: one to two answers per bank and run, fewer than
-chance alone gives (7.2 for the BoE, 2.5 for the BoJ), and none holds walk-forward. The pound on the
-day of a BoE cut or hike is *can't say*: the market had the decision priced in, as the euro had
-the ECB's.
+`--event boj`), against every market including the newly added pound, yen and Nikkei 225. Markets
+move more than usual on BoE days, the pound and the yen among them, but **which way is not told by
+the decision**: one to two answers per bank and run, fewer than chance alone gives (7.2 for the
+BoE, 2.5 for the BoJ), and none holds walk-forward. BoJ days are ordinary in size too. The pound
+on the day of a BoE cut or hike is *can't say*, 17 of each being too few.
 
 ## What comes next
 
