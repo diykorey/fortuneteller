@@ -12,15 +12,12 @@ Where the work is and what comes next: the task last finished, the tasks in prog
 
 ## Last completed
 
-Step 27: crypto shocks ([the spec](steps/crypto.md#results)). 44 hacks of $100 million or more,
-2014 to 2026, with ether and Coinbase added as markets: nothing follows them that an ordinary day
-would not give; as expected.
+Step 28: weather and climate ([the spec](steps/weather.md#results)). 79 hurricanes' first US
+landfalls, 1970 to 2024, with Allstate added as a market: fuel, energy stocks, corn, soybeans and
+Allstate *can't say*; wheat *about the same* on the day from the reaction close; within chance.
 
 ## In progress
 
-- **Step 28: weather and climate** ([the spec](steps/weather.md)): what follows a hurricane's
-  first US landfall, 79 from NOAA's HURDAT2, 1970 to 2024, with Allstate added as a market. Steps 1
-  and 2 done: Allstate, the seed and the flow. Next: step 3, the results.
 - **Step 22: ask the fortune teller** ([the spec](steps/ask-the-fortune-teller.md)): the page
   section where a reader picks a kind of event and sees what followed, from the same function
   the follows command uses. Steps 1 to 4 are built: one function for follows and the page, the
@@ -47,7 +44,7 @@ would not give; as expected.
 
 ## Next
 
-Step 28, step 3: the results.
+Phase 5's last kind is done: the owner's next choice, from [the roadmap](roadmap.md).
 
 ## Known, not yet fixed
 

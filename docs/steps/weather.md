@@ -87,7 +87,7 @@ these landfalls; the counts above are from the record and the markets' first clo
 | --- | --- | --- |
 | 1 | **Done** 2026-11-18, [below](#step-1). Allstate: seed row, series, `load-prices`; the seed `data/seed/hurricanes.csv` (`day,time,kind,storm,knots`) from the record by `scripts/hurdat_landfalls.py` | `load-prices` stores it; each close of 2026-11-09 to 2026-11-13 within 0.05% of Yahoo's last hourly bar before 16:00 New York (`interval=60m`), a miss recorded, not the bar changed; the seed test checks the header, 79 rows, order, kind `landfall`, each at 64 knots or more, each `lat`/`lon` inside the place rule, and the rows named below. On a copy of the store, before and after: every other flow's `raw-move` and `follows` output (both runs, the Fed's `--long`) identical once Allstate's rows and the chance lines are taken out, and the scoreboard's data once Allstate and its chance are taken out; each chance line written here |
 | 2 | **Done** 2026-11-18, [below](#step-2). Flow `weather`; `follows --event weather`; `weather` in `TRIGGER_KINDS` | Tests: Michael's landfall, 2018-10-10 17:30 UTC, reacts that day in New York and the next day in Tokyo; Harvey's, Saturday 2017-08-26 03:00 UTC, on Monday; a `weather` trigger for a day not stored is answered from a landfall at 04:00 UTC that day, as war's. On a copy of the store the header is the expected one, and every other flow's output byte for byte the one of step 1's store |
-| 3 | Results here and in [MVP results](../mvp-results.md), against the expected outcome; the roadmap row | Every bullet marked right or wrong with its numbers and command; each cell with 30 or more graded walk-forward and its record; the days shared with another flow, by the landfall's UTC day |
+| 3 | **Done** 2026-11-18, [below](#results). Results here and in [MVP results](../mvp-results.md), against the expected outcome; the roadmap row | Every bullet marked right or wrong with its numbers and command; each cell with 30 or more graded walk-forward and its record; the days shared with another flow, by the landfall's UTC day |
 
 ### Step 1
 
@@ -160,3 +160,49 @@ another flow is not named.
   `tests/test_study_raw_move.py`.
 - **Docs:** this spec; `docs/schema.md` (code 32, the detail, `event_ts`, the instrument); the
   glossary (*HURDAT2*, *landfall*, *ALL*); roadmap row 28 amended to landfalls; status, changelog.
+
+## Results
+
+*2026-11-18.* Every line quoted is in [the evidence](weather-results.txt): step 2's copy of the
+store, the whole output of `follows --event weather` (from the close before), `follows --event
+weather --after-the-day` (from the reaction close) and `raw-move --event weather`, and
+`scripts/shared_days.py`'s count.
+
+**In plain words:** after a hurricane came ashore in the US, gasoline, natural gas, oil, energy
+stocks, corn, soybeans and Allstate's shares did nothing an ordinary day, week or month would not,
+counted from either close. Wheat is the exception: on the day after the landfall's reaction close
+it ended about where it started more often than usual (17 of 27), though on the landfall's own
+lone days it moved more than on ordinary days. Across every market two answers in all, one a run,
+within the luck the chance line allows. The expected outcome held but for wheat.
+
+- **The header, as expected:** `follows: 79 hurricane landfalls 1970-08-03 … 2024-10-10: 79
+  landfalls` (`follows --event weather`). Right.
+- **Walk-forward: nothing holds** (both runs). Right. No cell reaches 30 graded: the most is the
+  5-year yield's month from the reaction close, 22 graded, 7 right.
+- **On all history, against the chance line plus 2** (each run; chance about 2.8, so a bar of
+  4.8): from the close before **1 answer**, the yen (dollars in yen) *down* on the day, 10 up, 19
+  the same, 23 down of 52, chance 0.0099; from the reaction close **1**, wheat *about the same* on
+  the day. Each *too few* walk-forward, not marked by the placebo. Right in both.
+- **Gasoline, natural gas, Brent, energy stocks, the three crops and Allstate on the day, the week
+  and the month, both runs: wrong for wheat.** 47 of the 48 cells *can't say*; wheat on the day
+  from the reaction close is *about the same*: 6 up, 17 the same, 4 down of 27, against a base of
+  0.33, chance 0.0015 (walk-forward 14 graded, 8 right, *too few*).
+- **The arithmetic** (`follows`, from the close before): right. On the day the 19 markets with 42
+  or more landfalls counted 42 to 79 (the Nikkei 78, one in a hole); the 12 with 32 or fewer are
+  *too few* walk-forward on every span. Over the week the 19 counted 41 to 77; over the month,
+  after overlap, 6 to 56: the S&P 500, the yields and the dollar index 56, Allstate 38, energy
+  stocks 32, gasoline 21, the crops 18 and 19.
+- **Every other flow's rows** ([step 1](#step-1), [step 2](#step-2), [their
+  evidence](weather-steps.txt)): unchanged but for Allstate's rows; the chance lines rose by its
+  cells alone. Right.
+- **The size of the move** (`raw-move --event weather`, outside the rule, recorded): on the
+  landfalls' lone days wheat *moves* (17 days, median 1.84% against 0.96%, ratio 1.91, p 0.0047);
+  15 *doesn't*, 14 *unclear*, among them Allstate (1.52, 0.0189) and natural gas (1.41, 0.0703).
+- **Days shared with another flow** (`scripts/shared_days.py weather`): 17 of the 79, by the
+  landfall's UTC day; CPI on 5, jobs reports, retail sales, jobless claims and the Fed chair's
+  statements on 3 each, the ECB president's statements on 2, and six others on 1 (in the
+  evidence).
+
+The expected outcome was **wrong on one count**: wheat's day from the reaction close. The rest
+held.
+
