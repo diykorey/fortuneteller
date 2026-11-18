@@ -46,6 +46,8 @@ from .flows import (
     TARGET_EFFECT_DAYS,
     DatedShockFlow,
     EventFlow,
+    OPEC_FLOW,
+    WAR_FLOW,
     SurpriseRule,
     called_live,
     event_date,
@@ -57,6 +59,7 @@ from .sources import (
     LONDON,
     NEW_YORK,
     UTC_ZONE,
+    TOKYO,
     ZURICH,
     DailyClosingPrice,
     FredError,
@@ -85,6 +88,8 @@ class PriceSeries(NamedTuple):
 # stamps a currency pair, so the next London day's bar is the first to follow a US release. The
 # seven markets people feel (docs/steps/markets-people-feel.md) are US-listed funds closing at 16:00.
 # Coffee (docs/steps/coffee.md) is `KC=F`, ICE's arabica front month, at its 13:30 settlement.
+# The pound and the yen (docs/steps/other-central-banks.md) are stamped as the euro is; the
+# Nikkei 225 closes at 15:30 Tokyo, 15:00 before 2024-11-05, a known miss written in the spec.
 # A `fred:` ticker is FRED's series: the breakeven (docs/steps/breakeven.md), read at 15:30, the
 # time of the bid quotes the Treasury builds its daily curve from.
 MVP_PRICE_SERIES = {
@@ -113,6 +118,9 @@ MVP_PRICE_SERIES = {
     "ITB": PriceSeries("ITB", "pct", time(16, 0), NEW_YORK),
     "KC": PriceSeries("KC=F", "pct", time(13, 30), NEW_YORK),
     "T5YIE": PriceSeries("fred:T5YIE", "bps", time(15, 30), NEW_YORK),
+    "GBPUSD": PriceSeries("GBPUSD=X", "pct", time(0, 0), LONDON),
+    "USDJPY": PriceSeries("JPY=X", "pct", time(0, 0), LONDON),
+    "NKY": PriceSeries("^N225", "pct", time(15, 30), TOKYO),
 }
 
 
@@ -1520,6 +1528,22 @@ def fed_cycles(kinds: Sequence[str]) -> list[int]:
     return cycles
 
 
+# Bank Rate from 2007-12-06, before the first change in data/seed/boe-changes.csv.
+BOE_RATE_BEFORE = 5.5
+
+
+def boe_kinds(events: Iterable[EventInstance], changes: Mapping[date, float]) -> dict[int, str]:
+    """Each BoE decision's kind by event id, from the Bank's changes (new rate by day): on a
+    change's day a cut or a hike by it, any other a hold; the first decision has none."""
+    by_day = {}
+    before = BOE_RATE_BEFORE
+    for day, rate in sorted(changes.items()):
+        by_day[day] = CUT if rate < before else HIKE
+        before = rate
+    ordered = sorted(events, key=lambda e: e.event_ts)
+    return {e.event_id: by_day.get(release_date(e), HOLD) for e in ordered[1:]}
+
+
 def ecb_kinds(events: Iterable[EventInstance], rates: Mapping[date, float]) -> dict[int, str]:
     """Each ECB decision's kind by event id, its rate against the last earlier decision's that has
     one; a decision with no rate, or with none before it, has none."""
@@ -1939,6 +1963,49 @@ def follow_decisions(
     return events, cells
 
 
+# Step 24 — what follows an OPEC+ decision (docs/steps/opec.md): its kind is the sign of the oil
+# market's own surprise, copied into the seed's detail; a live one's, Brent's reaction-day move.
+OIL_UP, OIL_DOWN = "oil up", "oil down"
+OPEC_KINDS = (OIL_UP, OIL_DOWN)
+# A live announcement's hour, the seed's rule: 08:00 New York.
+OPEC_HOUR = time(8, 0)
+# Brent's day cell is near the kind, not a finding: printed marked, never counted against chance.
+KIND_SPAN, KIND_MARKET = "day", "BRN"
+KIND_SERIES = MVP_PRICE_SERIES[KIND_MARKET]
+
+
+# Step 26 (docs/steps/war.md): one kind, the violent act that set off a crisis; a live trigger's
+# act at the seed's rule hour, 04:00 UTC.
+VIOLENT_ACT = "violent act"
+WAR_HOUR = time(4, 0)
+
+
+def war_kinds(events: Iterable[EventInstance]) -> dict[int, str]:
+    """Every violent act's kind by event id: the one kind."""
+    return dict.fromkeys((e.event_id for e in events), VIOLENT_ACT)
+
+
+def detail_kinds(events: Iterable[EventInstance]) -> dict[int, str]:
+    """Each event's kind as its seed's detail names it, by event id."""
+    return {e.event_id: e.detail or "" for e in events}
+
+
+def brent_kind(event: EventInstance, brent: Sequence[DailyClosingPrice]) -> str | None:
+    """A live OPEC announcement's kind: *oil up* if Brent closed higher on its reaction day than
+    the close before, *oil down* if lower; ``None`` while that close is not in. A flat close is
+    neither, and raises."""
+    reaction = first_reaction_day(event, KIND_SERIES)
+    if not brent or brent[-1].day < reaction:
+        return None
+    pair = closing_price_before_after(brent, reaction)
+    if isinstance(pair, str):
+        raise ValueError(f"Brent has no close to read its kind by, around {reaction}")
+    before, after = pair
+    if after.price == before.price:
+        raise ValueError(f"Brent closed flat on {after.day}")
+    return OIL_UP if after.price > before.price else OIL_DOWN
+
+
 # Step 20, part 1 — what follows a CEO's conduct in question (docs/steps/ceo-scandals.md).
 SCANDAL = "scandal"
 EXCESS_OVER = "SPY / ES"
@@ -2152,6 +2219,10 @@ TRIGGER_KINDS = {
     "claims": SURPRISE_KINDS,
     "ecb": KINDS,
     "ceo": (SCANDAL,),
+    "opec": OPEC_KINDS,
+    "boe": KINDS,
+    "boj": KINDS,
+    "war": (VIOLENT_ACT,),
 }
 TRIGGER_LOG_COLUMNS = (
     "file",
@@ -2250,7 +2321,7 @@ def answer_triggers(
     )
     by_key = {(r["file"], r["line"], r["market"], r["span"]): dict(r) for r in log}
     cache: dict[
-        tuple[str, str, str, int],
+        tuple[str, str, str, int, date | None],
         tuple[dict[date, Span], list[tuple[date, Span]], list[Kept], list[date]],
     ] = {}
     lines: list[str] = []
@@ -2281,14 +2352,38 @@ def answer_triggers(
             )
             continue
         flow_events = events.get(t.flow, [])
+        flow_kinds = kinds.get(t.flow, {})
         event = next((e for e in flow_events if release_date(e) == t.day), None)
+        if event is None and t.flow == OPEC_FLOW.cli_name:
+            event = OPEC_FLOW.event_instance(
+                datetime.combine(t.day, OPEC_HOUR, tzinfo=OPEC_FLOW.zone), t.kind
+            )
+            try:
+                live = brent_kind(event, closes[KIND_MARKET])
+            except ValueError as exc:
+                lines.append(f"{head}: void, {exc}")
+                continue
+            if live is None:
+                lines.append(f"{head}: waiting, Brent's reaction close is not in")
+                continue
+            if live != t.kind:
+                lines.append(f"{head}: void, Brent's reaction day gives {live}, not {t.kind}")
+                continue
+            flow_events = sorted([*flow_events, event], key=lambda e: e.event_ts)
+            flow_kinds = {**flow_kinds, event.event_id: live}
+        if event is None and t.flow == WAR_FLOW.cli_name:
+            event = WAR_FLOW.event_instance(
+                datetime.combine(t.day, WAR_HOUR, tzinfo=WAR_FLOW.zone), "a live trigger"
+            )
+            flow_events = sorted([*flow_events, event], key=lambda e: e.event_ts)
+            flow_kinds = {**flow_kinds, event.event_id: VIOLENT_ACT}
         if event is None:
             if any(release_date(e) > t.day for e in flow_events):
                 lines.append(f"{head}: void, {t.flow} had no event on {t.day}")
             else:
                 lines.append(f"{head}: waiting, the event is not stored")
             continue
-        stored = kinds.get(t.flow, {}).get(event.event_id)
+        stored = flow_kinds.get(event.event_id)
         if stored is None:
             lines.append(f"{head}: waiting, its kind is not stored")
             continue
@@ -2296,7 +2391,7 @@ def answer_triggers(
             lines.append(f"{head}: void, the stored kind is {stored}, not {t.kind}")
             continue
         lines.append(f"{head}, merged {at.astimezone(NEW_YORK):%Y-%m-%d %H:%M} New York")
-        decided = [e for e in flow_events if e.event_id in kinds[t.flow]]
+        decided = [e for e in flow_events if e.event_id in flow_kinds]
         position = decided.index(event)
         for market, series in MVP_PRICE_SERIES.items():
             deadline = datetime.combine(
@@ -2309,11 +2404,11 @@ def answer_triggers(
                 )
                 continue
             market_closes = closes[market]
-            decisions = [
-                (first_reaction_day(e, series), kinds[t.flow][e.event_id]) for e in decided
-            ]
+            decisions = [(first_reaction_day(e, series), flow_kinds[e.event_id]) for e in decided]
             for span, c in SPANS.items():
-                if (t.flow, t.kind, market, c) not in cache:
+                # A live OPEC day joins its flow's events for its own trigger alone.
+                key_day = t.day if event.event_id not in kinds.get(t.flow, {}) else None
+                if (t.flow, t.kind, market, c, key_day) not in cache:
                     spans = span_moves(market_closes, series.unit, c)
                     walk, _ = kept_keys(decisions, market_closes, spans, c, after=True)
                     by_kind = [
@@ -2325,8 +2420,8 @@ def answer_triggers(
                         and kept.reaction is not None
                     ]
                     by_end = sorted(spans.items(), key=lambda item: item[1].end)
-                    cache[(t.flow, t.kind, market, c)] = (spans, by_end, walk, by_kind)
-                spans, by_end, walk, by_kind = cache[(t.flow, t.kind, market, c)]
+                    cache[(t.flow, t.kind, market, c, key_day)] = (spans, by_end, walk, by_kind)
+                spans, by_end, walk, by_kind = cache[(t.flow, t.kind, market, c, key_day)]
                 kept = walk[position]
                 if kept.reaction is None:
                     state = "waiting" if kept.status == NO_CLOSE else "a hole before its reaction"

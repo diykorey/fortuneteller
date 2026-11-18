@@ -6,6 +6,15 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-18 | Step 26, steps 1 and 2: the violent acts' seed from ICB, the `war` flow, `follows --event war` and `war` triggers; the expected 136, every other flow unchanged | PR #343 |
+| 2026-11-18 | Step 26 spec: what follows a violent act that sets off a crisis, 136 days from ICB's list, the expected outcome written first | PR #342 |
+| 2026-11-18 | Step 25 results: BoE and BoJ decisions answer no more cells than chance, nothing holds walk-forward, the pound *can't say* after a BoE move; the expected outcome right on every count | PR #341 |
+| 2026-11-18 | Step 25, step 3: the BoJ's flow, `follows --event boj` and `boj` triggers; kinds from the calendar's rates; the expected 85 decisions, every other flow unchanged | PR #340 |
+| 2026-11-17 | Step 25, step 2: the BoE's flow, `follows --event boe` and `boe` triggers; kinds from the Bank's Bank Rate changes, 2020-03-26 a hold; the expected 187 decisions, every other flow unchanged | PR #338 |
+| 2026-11-17 | Step 25, step 1: the pound, the yen and the Nikkei 225 as markets, unsigned; the Bank of England's Bank Rate changes since 2008 as a seed; every existing row unchanged | PR #337 |
+| 2026-11-17 | Spec: step 25, what follows a Bank of England or a Bank of Japan decision (TradingView's calendar, the Bank's own Bank Rate history; the pound, the yen and the Nikkei added) | PR #336 |
+| 2026-11-17 | Step 24, step 3: OPEC's results: energy stocks and gasoline move with the kind; gasoline's day after *oil up* holds; from the reaction close, about chance | PR #335 |
+| 2026-11-17 | Step 24, step 2: `follows --event opec` (kinds from the seed, Brent's day marked), the `opec` trigger (a live one's kind from Brent's reaction day), the IMF check's file and script | PR #334 |
 | 2026-11-17 | Step 21, step 2: the first shadow day fails *on time* (GitHub's schedule hours late); the runs started by an outside timer, by the owner; the workflow's schedule removed | PR #333 |
 | 2026-11-17 | Step 24, step 1: the seed of Känzig's 169 OPEC announcements and the flow; the live kind agrees with the surprise on 72 of 80 days since 2007 | PR #332 |
 | 2026-11-17 | Spec: step 24, what follows an OPEC+ decision (Känzig's 169 announcements by the sign of their oil supply surprise) | PR #330 |

@@ -12,16 +12,15 @@ Where the work is and what comes next: the task last finished, the tasks in prog
 
 ## Last completed
 
-Step 20, part 2: a pasted article read into a trigger ([the spec](steps/article-to-trigger.md)).
-The word rules *don't read*: 5 of 12 test positives, 6 of 99 negatives misread. Step 20 is parked
-until the 2027-01-31 gate, by the owner
-([why](decisions.md#2026-11-15-step-20-parked-until-the-gate-by-the-owner)).
+Step 25: other central banks ([the spec](steps/other-central-banks.md#results)). The Bank of
+England's 187 decisions and the Bank of Japan's 85, with the pound, the yen and the Nikkei added:
+nothing beyond chance, nothing holds walk-forward; the pound *can't say* after a BoE move.
 
 ## In progress
 
-- **Step 24: OPEC+ decisions** ([the spec](steps/opec.md)): what followed 169 OPEC
-  announcements, 1983–2025, by the sign of the oil market's surprise. Step 1 done: the seed stored,
-  the live kind agreeing on 72 of 80 days; next, `follows --event opec`.
+- **Step 26: war and military strikes** ([the spec](steps/war.md)): what followed the 136
+  violent acts that set off an international crisis, 1970 to 2021, by ICB's list. Steps 1 and 2 done:
+  `follows --event war` prints the expected 136; next, step 3, the results.
 - **Step 22: ask the fortune teller** ([the spec](steps/ask-the-fortune-teller.md)): the page
   section where a reader picks a kind of event and sees what followed, from the same function
   the follows command uses. Steps 1 to 4 are built: one function for follows and the page, the
@@ -48,7 +47,7 @@ until the 2027-01-31 gate, by the owner
 
 ## Next
 
-Step 25, other central banks: the Bank of England and the Bank of Japan
+Step 27, crypto shocks: the spec
 ([roadmap phase 5](roadmap.md#phase-5-the-kinds-the-news-brings)).
 
 ## Known, not yet fixed

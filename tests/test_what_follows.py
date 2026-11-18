@@ -1061,3 +1061,200 @@ def test_each_replay_verdict_and_too_few_events_have_words() -> None:
     )
     assert words[1].endswith("Replayed, it did not hold: right 17 of 34.")
     assert words[2].endswith("Too few replayed to judge: right 4 of 6.")
+
+
+def _opec(day: date, kind: str) -> flows.EventInstance:
+    # an OPEC announcement at 08:00 New York on ``day``, its kind in its detail as the seed has it
+    at = datetime.combine(day, time(8, 0), tzinfo=sources.NEW_YORK)
+    return flows.OPEC_FLOW.event_instance(at, kind)
+
+
+def test_follows_for_opec_reads_each_kind_from_the_seed_and_marks_brent_s_day(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given three OPEC announcements, two oil up and one oil down, and Brent and the S&P 500
+    # falling 3% on each oil up day and rising on the oil down one, against the kind
+    markets = ("SPY / ES", study.KIND_MARKET)
+    monkeypatch.setattr(study, "MVP_PRICE_SERIES", {m: study.MVP_PRICE_SERIES[m] for m in markets})
+    steps = _alternating(300)
+    keys = {40: study.OIL_UP, 80: study.OIL_DOWN, 120: study.OIL_UP}
+    for i, kind in keys.items():
+        steps[i] = -0.03 if kind == study.OIL_UP else 0.03
+    closes = _closes(steps)
+    db.init_db()
+    db.get_connection().executemany(
+        "INSERT INTO daily_bars (instrument, day, close, source) VALUES (?, ?, ?, 'test')",
+        [[m, c.day, c.price] for m in markets for c in closes],
+    )
+    db.insert_models("event_instances", [_opec(closes[i].day, k) for i, k in keys.items()])
+    first, last = closes[40].day, closes[120].day
+
+    # when run from the close before, and from the reaction close
+    day_code = main(["follows", "--event", "opec"])
+    day_out = capsys.readouterr().out.splitlines()
+    after_code = main(["follows", "--event", "opec", "--after-the-day"])
+    after_out = capsys.readouterr().out.splitlines()
+
+    # then the kinds are the seed's, Brent's day cells alone are marked, and only from the close
+    # before
+    assert day_code == after_code == 0
+    assert day_out[0] == f"follows: 3 OPEC announcements {first} … {last}: 2 oil up, 1 oil down"
+    marked = [line for line in day_out if line.endswith("(the kind)")]
+    assert [line.split()[:3] for line in marked] == [
+        ["oil", "up", "day"],
+        ["oil", "down", "day"],
+    ]
+    assert all(study.KIND_MARKET in line for line in marked)
+    assert not any(line.endswith("(the kind)") for line in after_out)
+
+
+def test_brent_s_day_cell_is_left_out_of_the_chance_line() -> None:
+    # given an answered cell on Brent's day and the same answer on the S&P 500's day
+    answered = study.Follow(
+        {UP: 40, SAME: 0, DOWN: 0}, 0, 0, None, UP, 0.0, False, 0, 0, 0.0, study.TOO_FEW
+    )
+    events = [_opec(date(2020, 4, 13), study.OIL_UP)]
+    kinds = study.detail_kinds(events)
+    cells = [
+        (study.OIL_UP, "day", "SPY / ES", answered),
+        (study.OIL_UP, "day", study.KIND_MARKET, answered),
+    ]
+
+    # when the table is described with Brent's day marked, and without
+    marked = describe_follows(
+        events,
+        kinds,
+        cells,
+        study.OPEC_KINDS,
+        "OPEC announcements",
+        marked=(study.KIND_SPAN, study.KIND_MARKET),
+    )
+    plain = describe_follows(events, kinds, cells, study.OPEC_KINDS, "OPEC announcements")
+
+    # then the chance line counts one answered cell with the mark, two without
+    assert marked[-1].startswith(f"by chance: about {3 * study.FOLLOW_P_BAR:.1f} answers")
+    assert plain[-1].startswith(f"by chance: about {6 * study.FOLLOW_P_BAR:.1f} answers")
+
+
+def _boe(day: date, at: time = time(12, 0)) -> flows.EventInstance:
+    # a BoE decision at ``at`` London on ``day``
+    return flows.decision_instance(
+        flows.BOE_FLOW, datetime.combine(day, at, tzinfo=sources.LONDON).astimezone(UTC)
+    )
+
+
+def test_a_boe_decision_s_kind_is_the_bank_s_change_and_2020_03_26_a_hold() -> None:
+    # given the Bank's changes from the seed, and decisions on the days checked by hand
+    days = [
+        date(2008, 1, 10),
+        date(2009, 3, 5),
+        date(2016, 8, 4),
+        date(2020, 3, 11),
+        date(2020, 3, 19),
+        date(2020, 3, 26),
+        date(2022, 12, 15),
+        date(2025, 12, 18),
+    ]
+    rates = {d: r for d, (_, r) in flows.boe_changes(settings.seed_dir).items()}
+
+    # when their kinds are read
+    kinds = study.boe_kinds([_boe(d) for d in reversed(days)], rates)
+
+    # then the first has none, and each other is the Bank's: 2020-03-26 a hold
+    assert [kinds.get(_boe(d).event_id) for d in days] == [
+        None,
+        CUT,
+        CUT,
+        CUT,
+        CUT,
+        HOLD,
+        HIKE,
+        CUT,
+    ]
+
+
+def test_the_first_bank_rate_change_is_against_the_rate_before_2008() -> None:
+    # given the decision before it, and the cut of 2008-02-07 to 5.25% from 5.5%
+    events = [_boe(date(2008, 1, 10)), _boe(date(2008, 2, 7))]
+
+    # when their kinds are read
+    kinds = study.boe_kinds(events, {date(2008, 2, 7): 5.25})
+
+    # then it is a cut
+    assert kinds == {events[1].event_id: CUT}
+
+
+def test_follows_for_the_boe_prints_its_table(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given three BoE decisions, one market's closes, and the Bank's changes patched
+    monkeypatch.setattr(study, "MVP_PRICE_SERIES", {"SPY / ES": study.MVP_PRICE_SERIES["SPY / ES"]})
+    closes = _closes(_alternating(300))
+    days = [closes[i].day for i in (20, 60, 100)]
+    db.init_db()
+    db.get_connection().executemany(
+        "INSERT INTO daily_bars (instrument, day, close, source) VALUES ('SPY / ES', ?, ?, 'test')",
+        [[c.day, c.price] for c in closes],
+    )
+    db.insert_models("event_instances", [_boe(d) for d in days])
+    monkeypatch.setattr(flows, "boe_changes", lambda _seed_dir: {days[1]: (time(12, 0), 6.0)})
+
+    # when run
+    code = main(["follows", "--event", "boe"])
+
+    # then it prints the BoE decisions' table, the first decision having no kind
+    out = capsys.readouterr().out.splitlines()
+    assert code == 0
+    assert out[0] == (f"follows: 2 BoE decisions {days[1]} … {days[2]}: 0 cuts, 1 holds, 1 hikes")
+
+
+def _boj(day: date) -> flows.EventInstance:
+    # a BoJ decision at 12:00 Tokyo on ``day``
+    return flows.decision_instance(
+        flows.BOJ_FLOW, datetime.combine(day, time(12, 0), tzinfo=sources.TOKYO).astimezone(UTC)
+    )
+
+
+def test_follows_for_the_boj_reads_its_kinds_from_the_calendar_s_rates(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given three BoJ decisions, one market's closes, and the calendar's rates patched: a hold of
+    # the yield-curve policy's start and the end of negative rates
+    monkeypatch.setattr(study, "MVP_PRICE_SERIES", {"SPY / ES": study.MVP_PRICE_SERIES["SPY / ES"]})
+    closes = _closes(_alternating(300))
+    days = [closes[i].day for i in (20, 60, 100)]
+    db.init_db()
+    db.get_connection().executemany(
+        "INSERT INTO daily_bars (instrument, day, close, source) VALUES ('SPY / ES', ?, ?, 'test')",
+        [[c.day, c.price] for c in closes],
+    )
+    db.insert_models("event_instances", [_boj(d) for d in days])
+    rates = {
+        datetime.combine(d, time(3, 0), tzinfo=UTC): r
+        for d, r in zip(days, (-0.1, -0.1, 0.1), strict=True)
+    }
+    monkeypatch.setattr(flows, "load_boj_rates", lambda _cache_dir: rates)
+
+    # when run
+    code = main(["follows", "--event", "boj"])
+
+    # then it prints the BoJ decisions' table, the first decision having no kind
+    out = capsys.readouterr().out.splitlines()
+    assert code == 0
+    assert out[0] == (f"follows: 2 BoJ decisions {days[1]} … {days[2]}: 0 cuts, 1 holds, 1 hikes")
+
+
+def test_a_violent_act_reacts_by_its_utc_day_on_each_market() -> None:
+    # given the seed's act of 1990-08-02, a Thursday
+    batch = flows.WAR_FLOW.load(settings.seed_dir / "war.csv", datetime(2026, 11, 18, tzinfo=UTC))
+    event = next(e for e in batch.events if flows.release_date(e) == date(1990, 8, 2))
+
+    # when its first reaction day is found on Tokyo's, New York's and the euro's close
+    days = [
+        study.first_reaction_day(event, study.MVP_PRICE_SERIES[m])
+        for m in ("NKY", "SPY / ES", "EURUSD")
+    ]
+
+    # then it is at 04:00 UTC, on Tokyo's and New York's close that day and the euro's the next
+    assert event.event_ts == datetime(1990, 8, 2, 4, 0)
+    assert days == [date(1990, 8, 2), date(1990, 8, 2), date(1990, 8, 3)]

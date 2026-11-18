@@ -313,6 +313,8 @@ def test_load_releases_prints_count_range_and_skipped_months(
     statements = {
         "US": ("Fed Chair Powell Speech", "2025-02-07T15:00:00.000Z"),
         "EU": ("ECB President Lagarde Speech", "2025-02-10T09:00:00.000Z"),
+        "GB": (sources.RATE_DECISION, "2025-02-06T12:00:00.000Z"),
+        "JP": (sources.RATE_DECISION, "2025-01-24T03:00:00.000Z"),
     }
     monkeypatch.setattr(
         sources,
@@ -321,7 +323,13 @@ def test_load_releases_prints_count_range_and_skipped_months(
             json.dumps(
                 {
                     "status": "ok",
-                    "result": [{"title": statements[country][0], "date": statements[country][1]}],
+                    "result": [
+                        {
+                            "title": statements[country][0],
+                            "date": statements[country][1],
+                            "actual": 4.5,
+                        }
+                    ],
                 }
             ).encode()
         ],
@@ -359,6 +367,10 @@ def test_load_releases_prints_count_range_and_skipped_months(
         "2018-06-21,09:25,INTC,Intel,Brian M. Krzanich,relationship with an employee,https://x\n"
     )
     (tmp_db.parent / "opec.csv").write_text("day,time,kind\n2020-04-12,08:00,oil up\n")
+    (tmp_db.parent / "war.csv").write_text(
+        "day,time,kind,crisis\n1990-08-02,04:00,violent act,GULF WAR\n"
+    )
+    (tmp_db.parent / "boe-changes.csv").write_text("day,time,rate\n2020-03-11,07:00,0.25\n")
     monkeypatch.setattr(settings, "seed_dir", tmp_db.parent)
 
     # when the command runs twice
@@ -396,8 +408,12 @@ def test_load_releases_prints_count_range_and_skipped_months(
     report += "loaded 1 United States post days, 2025-04-09 … 2025-04-09\n"
     report += "loaded 1 United States CEO scandals, 2018-06-21 … 2018-06-21\n"
     report += "loaded 1 OPEC announcements, 2020-04-12 … 2020-04-12\n"
+    report += "loaded 2 BoE decisions, 2020-03-11 … 2025-02-06\n"
+    report += "  1 from the Bank's changes the calendar lacks: 2020-03-11\n"
+    report += "loaded 1 BoJ decisions, 2025-01-24 … 2025-01-24\n"
+    report += "loaded 1 World violent acts, 1990-08-02 … 1990-08-02\n"
     assert capsys.readouterr().out == report * 2
-    assert db.count_rows("event_instances", con=db.get_connection()) == 39
+    assert db.count_rows("event_instances", con=db.get_connection()) == 43
 
 
 def test_load_releases_stores_nothing_when_any_flow_fails(

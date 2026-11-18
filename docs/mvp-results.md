@@ -620,6 +620,32 @@ walk-forward. Nvidia's CEO has not left, so it is outside the kind; read after t
 and with no trigger filed, it fell 6.6% against the market on 2026-11-09 and 5.1% more the day
 after, where the answer from that close was *can't say*.
 
+## What follows an OPEC+ decision
+
+Measured 2026-11-17. Detail in [what follows an OPEC+ decision](steps/opec.md#results).
+
+169 OPEC announcements, 1983 to 2025, each taken by how the oil market read it: 96 that pushed oil
+up, 73 down (`follows --event opec`). **Energy stocks and gasoline move with oil**: up on the day,
+the week and the month after *oil up*, down on the day and the week after *oil down*, each at
+chance 0.004 or less, counted from the close before. Gasoline's day after *oil up* holds
+walk-forward, 20 right of 31; energy stocks' does not, 25 of 47. Outside oil, energy stocks and
+gasoline, the answers are within what chance gives. **From the reaction close, as a live trigger
+is answered, the move is already in**: five scattered cells answer, about chance. On 89 of the
+meetings the IMF's cut, hold or boost answers no cell, most having too few events; the market's
+reading answers 6, mostly oil itself.
+
+## What follows a Bank of England or Bank of Japan decision
+
+Measured 2026-11-18. Detail in [other central banks](steps/other-central-banks.md#results).
+
+187 Bank of England decisions from 2008 (17 cuts, 153 holds, 17 hikes) and 85 Bank of Japan
+decisions from 2016 (79 holds, 6 hikes), each taken by the bank's own rate (`follows --event boe`,
+`--event boj`), against every market including the newly added pound, yen and Nikkei 225. Markets
+move more than usual on BoE days, the pound and the yen among them, but **which way is not told by
+the decision**: one to two answers per bank and run, fewer than chance alone gives (7.2 for the
+BoE, 2.5 for the BoJ), and none holds walk-forward. BoJ days are ordinary in size too. The pound
+on the day of a BoE cut or hike is *can't say*, 17 of each being too few.
+
 ## What comes next
 
 Chosen 2026-10-13: keep score ([rung 4](steps/rung-4-keep-score.md)), done above with the live path

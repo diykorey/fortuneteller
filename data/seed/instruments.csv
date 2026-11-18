@@ -30,6 +30,9 @@ XLU,US utilities sector ETF,sector_etf,us,NYSE Arca,Utilities Select Sector SPDR
 ITB,US homebuilders ETF,sector_etf,us,Cboe BZX,iShares U.S. Home Construction; housing and mortgages.
 KC,Coffee (arabica front month),commodity,global,ICE US,Front-month future; rolls five times a year.
 T5YIE,US 5-year breakeven inflation,rates_bond,us,OTC cash (Treasury curve),5-year Treasury yield less 5-year TIPS yield.
+GBPUSD,GBP/USD,fx,europe,OTC,"Yahoo GBPUSD=X; up is the pound stronger (step 25)."
+USDJPY,USD/JPY,fx,asia,OTC,"Yahoo JPY=X; up is the yen weaker (step 25)."
+NKY,Nikkei 225,equity_index,asia,Tokyo Stock Exchange,"Closes 15:30 Tokyo, 15:00 before 2024-11-05 (step 25)."
 BA,Boeing,single_stock,us,NYSE,"A CEO scandal of step 20, 2005-03-07; measured against the S&P 500."
 RRGB,Red Robin Gourmet Burgers,single_stock,us,Nasdaq,"A CEO scandal of step 20, 2005-08-11; measured against the S&P 500."
 MMS,Maximus,single_stock,us,NYSE,"A CEO scandal of step 20, 2006-04-24; measured against the S&P 500."

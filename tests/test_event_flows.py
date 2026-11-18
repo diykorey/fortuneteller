@@ -453,6 +453,9 @@ def test_the_more_outcomes_take_their_signs_by_analogy() -> None:
         "ITB": 0,
         "KC": 0,
         "T5YIE": 0,
+        "GBPUSD": 0,
+        "USDJPY": 0,
+        "NKY": 0,
     }
     assert list(signs) == list(study.MVP_PRICE_SERIES)
 
@@ -1005,3 +1008,143 @@ def test_an_ecb_decision_s_rate_is_the_deposit_rate_from_its_first_listing(
     # then the refinancing rate stands before the deposit rate's first listing, the deposit rate
     # after it, and a day with no deposit rate after it has none
     assert rates == {date(2015, 10, 22): 0.05, date(2015, 12, 3): -0.3, date(2016, 3, 10): -0.4}
+
+
+def _at(utc: datetime) -> flows.EventInstance:
+    # an event at ``utc``; only its time matters to its reaction day
+    return flows.ecb_event_instance(utc)
+
+
+@pytest.mark.parametrize(
+    ("at", "expected"),
+    [
+        # an 08:30 New York release: the next day for the pound, the yen and the Nikkei
+        (
+            datetime(2026, 6, 10, 12, 30, tzinfo=UTC),
+            {"GBPUSD": date(2026, 6, 11), "USDJPY": date(2026, 6, 11), "NKY": date(2026, 6, 11)},
+        ),
+        # a BoJ decision at 02:30 UTC: the Nikkei the same day, the pound and the yen the next
+        (
+            datetime(2025, 1, 24, 2, 30, tzinfo=UTC),
+            {"GBPUSD": date(2025, 1, 25), "USDJPY": date(2025, 1, 25), "NKY": date(2025, 1, 24)},
+        ),
+        # a BoE decision at 12:00 London: past Tokyo's close, so the Nikkei the next day too
+        (
+            datetime(2025, 2, 6, 12, 0, tzinfo=UTC),
+            {"GBPUSD": date(2025, 2, 7), "USDJPY": date(2025, 2, 7), "NKY": date(2025, 2, 7)},
+        ),
+        # 07:00 London in 2020 is 15:00 Tokyo: read on the same day's Nikkei close, the known miss,
+        # since Tokyo closed at 15:00 then; after 2024-11-05 the same day rightly
+        (datetime(2020, 5, 7, 6, 0, tzinfo=UTC), {"NKY": date(2020, 5, 7)}),
+        (datetime(2025, 5, 8, 6, 0, tzinfo=UTC), {"NKY": date(2025, 5, 8)}),
+    ],
+)
+def test_the_pound_the_yen_and_the_nikkei_react_by_their_own_close(
+    at: datetime, expected: dict[str, date]
+) -> None:
+    # given an event at ``at``
+    event = _at(at)
+
+    # when its first reaction day is found on each market
+    days = {m: study.first_reaction_day(event, study.MVP_PRICE_SERIES[m]) for m in expected}
+
+    # then each falls on its market's own close
+    assert days == expected
+
+
+def _gb_quarter(*rows: tuple[str, str, float | None]) -> bytes:
+    # A TradingView UK calendar reply holding ``rows`` of (title, UTC time, actual).
+    return json.dumps(
+        {
+            "status": "ok",
+            "result": [
+                {"title": t, "country": "GB", "date": when, "actual": a, "forecast": a}
+                for t, when, a in rows
+            ],
+        }
+    ).encode()
+
+
+def test_boe_decisions_are_the_calendar_s_and_the_bank_s_changes_it_lacks(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # given a quarter of the UK calendar with two decisions, other news and one not yet held, and
+    # the Bank's changes: one on a listed day, one the calendar lacks, one after today
+    replies = {
+        date(2020, 1, 1): _gb_quarter(
+            (sources.RATE_DECISION, "2020-01-30T12:00:00.000Z", 0.75),
+            ("GDP", "2020-02-11T09:30:00.000Z", 0.1),
+            (sources.RATE_DECISION, "2020-03-26T12:00:00.000Z", 0.1),
+            (sources.RATE_DECISION, "2020-05-07T06:00:00.000Z", None),
+        ),
+    }
+    asked: list[str] = []
+
+    def fetch(
+        start: date, cache_dir: Path, today: date | None = None, country: str = "US"
+    ) -> bytes:
+        asked.append(country)
+        return replies.get(start, b'{"status": "no_data"}')
+
+    monkeypatch.setattr(sources, "fetch_tradingview_quarter", fetch)
+    monkeypatch.setattr(flows, "BOE_FROM", date(2020, 1, 1))
+    (tmp_path / flows.BOE_CHANGES).write_text(
+        "day,time,rate\n2020-03-11,07:00,0.25\n2020-03-26,12:00,0.1\n2020-05-07,07:00,0.05\n"
+    )
+
+    # when the decisions up to a day before the third change are loaded
+    listed, added = flows.load_boe_decisions(tmp_path, tmp_path, today=date(2020, 4, 1))
+
+    # then the calendar's two held ones are at their UTC time, from the UK calendar, and the change
+    # it lacks is added at the file's London hour
+    assert set(asked) == {"GB"}
+    assert listed == [
+        datetime(2020, 1, 30, 12, 0, tzinfo=UTC),
+        datetime(2020, 3, 26, 12, 0, tzinfo=UTC),
+    ]
+    assert added == [datetime(2020, 3, 11, 7, 0, tzinfo=UTC)]
+    events = [flows.decision_instance(flows.BOE_FLOW, d) for d in listed]
+    assert [(e.event_id, e.country) for e in events][0] == (2820200130, "United Kingdom")
+
+
+def test_boj_decisions_are_read_from_the_japanese_calendar_with_their_rates(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # given a quarter of the Japanese calendar with two held decisions, other news and one not yet
+    # held
+    reply = json.dumps(
+        {
+            "status": "ok",
+            "result": [
+                {"title": t, "country": "JP", "date": when, "actual": a}
+                for t, when, a in (
+                    (sources.RATE_DECISION, "2024-03-19T03:30:00.000Z", 0.1),
+                    ("CPI", "2024-03-22T23:30:00.000Z", 2.8),
+                    (sources.RATE_DECISION, "2024-01-23T03:00:00.000Z", -0.1),
+                    (sources.RATE_DECISION, "2024-04-26T03:00:00.000Z", None),
+                )
+            ],
+        }
+    ).encode()
+    asked: list[str] = []
+
+    def fetch(
+        start: date, cache_dir: Path, today: date | None = None, country: str = "US"
+    ) -> bytes:
+        asked.append(country)
+        return reply if start == date(2024, 1, 1) else b'{"status": "no_data"}'
+
+    monkeypatch.setattr(sources, "fetch_tradingview_quarter", fetch)
+    monkeypatch.setattr(flows, "BOJ_FROM", date(2024, 1, 1))
+
+    # when the decisions to a day in the second quarter are loaded and mapped to events
+    rates = flows.load_boj_rates(tmp_path, today=date(2024, 4, 25))
+    events = [flows.decision_instance(flows.BOJ_FLOW, d) for d in rates]
+
+    # then the two held ones are there in order with their rates, dated by Tokyo's day
+    assert set(asked) == {"JP"}
+    assert list(rates.values()) == [-0.1, 0.1]
+    assert [(e.event_id, e.country) for e in events] == [
+        (2920240123, "Japan"),
+        (2920240319, "Japan"),
+    ]

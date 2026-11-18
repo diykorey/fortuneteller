@@ -283,7 +283,7 @@ def test_raw_move_prints_a_verdict_per_instrument_and_the_rule(
     # then every instrument has a verdict line, and the rule is printed with them
     out = capsys.readouterr().out
     assert code == 0
-    assert sum(line.endswith(" moves") for line in out.splitlines()) == 25
+    assert sum(line.endswith(" moves") for line in out.splitlines()) == 28
     assert "moves = ratio >= 1.10 and p < 0.01" in out
 
 
@@ -333,7 +333,7 @@ def test_raw_move_takes_the_event_to_measure(
 
     # then the jobs report gets its verdicts, and CPI says what to load first
     assert nfp == 0
-    assert sum(line.endswith(" moves") for line in nfp_out.splitlines()) == 25
+    assert sum(line.endswith(" moves") for line in nfp_out.splitlines()) == 28
     assert cpi == 1
     assert "no CPI / inflation surprise releases stored" in capsys.readouterr().err
 
@@ -347,7 +347,7 @@ def test_raw_move_measures_ecb_decisions(tmp_db: Path, capsys: pytest.CaptureFix
 
     # then each market gets its verdict
     assert code == 0
-    assert sum(line.endswith(" moves") for line in capsys.readouterr().out.splitlines()) == 25
+    assert sum(line.endswith(" moves") for line in capsys.readouterr().out.splitlines()) == 28
 
 
 @pytest.mark.parametrize(
@@ -366,7 +366,7 @@ def test_raw_move_measures_tradingview_releases(
 
     # then each market gets its verdict
     assert code == 0
-    assert sum(line.endswith(" moves") for line in capsys.readouterr().out.splitlines()) == 25
+    assert sum(line.endswith(" moves") for line in capsys.readouterr().out.splitlines()) == 28
 
 
 def test_another_events_days_are_not_ordinary_days() -> None:
@@ -644,7 +644,7 @@ def test_raw_move_over_a_week(tmp_db: Path, capsys: pytest.CaptureFixture[str]) 
     out = capsys.readouterr().out.splitlines()
     assert code == 0
     assert out[0] == "over a week: the move from the close before each day to the 5th close"
-    assert sum(line.split()[-1] in (MOVES, UNCLEAR, DOESNT_MOVE) for line in out[2:27]) == 25
+    assert sum(line.split()[-1] in (MOVES, UNCLEAR, DOESNT_MOVE) for line in out[2:30]) == 28
 
 
 def test_a_debt_limit_vote_reacts_on_each_market_s_next_close(tmp_path: Path) -> None:
@@ -741,3 +741,29 @@ def test_two_times_on_one_day_are_refused(tmp_path: Path) -> None:
     # then the file is refused: one day is one event, at one time
     with pytest.raises(ValueError, match="two times on 2025-02-23"):
         flows.DE_ELECTION_FLOW.load(seed, datetime(2026, 11, 2, 12, 0, tzinfo=NEW_YORK))
+
+
+def test_a_violent_act_on_a_saturday_reacts_on_monday(tmp_path: Path) -> None:
+    # given two crises set off on one Saturday, 1981-04-25, and a weekday act
+    seed = tmp_path / "war.csv"
+    seed.write_text(
+        "day,time,kind,crisis\n"
+        "1981-04-25,04:00,violent act,A\n"
+        "1981-04-25,04:00,violent act,B\n"
+        "1990-08-02,04:00,violent act,GULF WAR\n"
+    )
+
+    # when the acts are loaded
+    batch = flows.WAR_FLOW.load(seed, datetime(2026, 11, 18, 12, 0, tzinfo=NEW_YORK))
+
+    # then the two crises are one event naming both, unscheduled; it reacts on Monday on the S&P
+    # 500 and the euro
+    assert [(e.event_id, e.detail, e.scheduled) for e in batch.events] == [
+        (3019810425, "A; B", False),
+        (3019900802, "GULF WAR", False),
+    ]
+    closes = _closes((date(1981, 4, 24), 100.0), (date(1981, 4, 27), 101.0))
+    for market in ("SPY / ES", "EURUSD"):
+        saturday = first_reaction_day(batch.events[0], MVP_PRICE_SERIES[market])
+        assert reaction_days(closes, [saturday]) == {date(1981, 4, 27)}
+    assert batch.report == ["loaded 2 World violent acts, 1981-04-25 … 1990-08-02"]

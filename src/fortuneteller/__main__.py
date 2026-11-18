@@ -528,12 +528,15 @@ def describe_follows(
     noun: str = "Fed decisions",
     after: bool = False,
     long: bool = False,
+    marked: tuple[str, str] | None = None,
 ) -> list[str]:
     """``follows``' table: a row per kind, span and market, then what chance alone would give;
-    with ``long``, each cell's answer counting each cycle once."""
+    with ``long``, each cell's answer counting each cycle once. A ``marked`` span and market is
+    near the kind itself: each kind's cell there prints ``(the kind)`` and is left out of the
+    chance line (docs/steps/opec.md)."""
     counted = [kinds[e.event_id] for e in events if e.event_id in kinds]
     first, last = (flows.release_date(e) for e in (events[0], events[-1]))
-    plural = "s" if tuple(order) in (study.KINDS, (study.SCANDAL,)) else ""
+    plural = "s" if tuple(order) in (study.KINDS, (study.SCANDAL,), (study.VIOLENT_ACT,)) else ""
     width = max(5, *(len(kind) for kind in order))
     span_width = max(6, *(len(span) + 1 for _, span, _, _ in cells))
     lines = [
@@ -553,13 +556,16 @@ def describe_follows(
         walk = f"{f.graded}: {f.right} right, {f.verdict}"
         if long and f.by_cycle is not None:
             walk = f"{f'{f.by_cycle[0]}: {f.by_cycle[1]}':<18} {walk}"
+        if (span, market) == marked:
+            walk += "  (the kind)"
         lines.append(
             f"{kind:<{width}} {span:<{span_width}} {market:<12} {n:>3} {f.counts[study.UP]:>3} "
             f"{f.counts[study.SAME]:>4} {f.counts[study.DOWN]:>4} {f'{f.overlapped}/{f.holes}':>8}  "
             f"{base:<18} {f.answer:<15} {chance:<7} {placebo:<8} {walk}"
         )
-    answered = sum(f.answer != study.TOO_FEW for *_, f in cells)
-    walked = sum(f.graded >= study.MIN_PREDICTIONS for *_, f in cells)
+    judged = [f for _, span, market, f in cells if (span, market) != marked]
+    answered = sum(f.answer != study.TOO_FEW for f in judged)
+    walked = sum(f.graded >= study.MIN_PREDICTIONS for f in judged)
     lines.append(
         f"by chance: about {answered * len(study.OUTCOMES) * study.FOLLOW_P_BAR:.1f} answers on "
         f"all history, {walked * study.FOLLOW_P_BAR:.1f} holds walk-forward"
@@ -576,6 +582,10 @@ FOLLOWS_NOUNS = {
     "claims": "jobless claims reports",
     "ecb": "ECB decisions",
     "ceo": "CEO scandals",
+    "opec": "OPEC announcements",
+    "boe": "BoE decisions",
+    "boj": "BoJ decisions",
+    "war": "violent acts",
 }
 
 
@@ -583,13 +593,26 @@ def _decision_kinds(
     flow: flows.EventFlow, events: list[EventInstance], command: str
 ) -> dict[int, str] | None:
     """A central bank's decisions' kinds: the Fed's from FRED's target rate, ``None`` without a
-    key; the ECB's from the calendar's rates."""
+    key; the ECB's from the calendar's rates; the BoE's from the Bank's changes."""
     if flow is flows.ECB_FLOW:
         return study.ecb_kinds(events, flows.load_ecb_rates(settings.cache_dir))
+    if flow is flows.BOE_FLOW:
+        return study.boe_kinds(events, _boe_rates())
+    if flow is flows.BOJ_FLOW:
+        return study.ecb_kinds(events, _boj_rates())
     api_key = _fred_key(command)
     if not api_key:
         return None
     return study.fed_kinds(events, dict(flows.target_rates(api_key)))
+
+
+def _boj_rates() -> dict[date, float]:
+    rates = flows.load_boj_rates(settings.cache_dir)
+    return {at.astimezone(flows.BOJ_FLOW.zone).date(): rate for at, rate in rates.items()}
+
+
+def _boe_rates() -> dict[date, float]:
+    return {day: rate for day, (_, rate) in flows.boe_changes(settings.seed_dir).items()}
 
 
 class FollowsUnavailable(Exception):
@@ -629,6 +652,22 @@ def follows_cells(
             kinds = dict.fromkeys((e.event_id for e in events), study.SCANDAL)
             order: Sequence[str] = (study.SCANDAL,)
             cells = study.follow_ceo(events, con=con, after=after)
+        elif flow is flows.OPEC_FLOW:
+            kinds = study.detail_kinds(flows.stored_events(flow, con=con))
+            order = study.OPEC_KINDS
+            events, cells = study.follow_decisions(flow, kinds, order, con=con, after=after)
+        elif flow is flows.WAR_FLOW:
+            kinds = study.war_kinds(flows.stored_events(flow, con=con))
+            order = (study.VIOLENT_ACT,)
+            events, cells = study.follow_decisions(flow, kinds, order, con=con, after=after)
+        elif flow is flows.BOE_FLOW or flow is flows.BOJ_FLOW:
+            stored = flows.stored_events(flow, con=con)
+            if flow is flows.BOE_FLOW:
+                kinds = study.boe_kinds(stored, _boe_rates())
+            else:
+                kinds = study.ecb_kinds(stored, _boj_rates())
+            order = study.KINDS
+            events, cells = study.follow_decisions(flow, kinds, order, con=con, after=after)
         else:
             if flow is flows.FED_FLOW or flow is flows.ECB_FLOW:
                 stored = flows.stored_events(flow, con=con)
@@ -669,8 +708,13 @@ def _follows(args: argparse.Namespace) -> int:
     except FollowsUnavailable as exc:
         print(f"follows: {exc}", file=sys.stderr)
         return 1
+    marked = (
+        (study.KIND_SPAN, study.KIND_MARKET)
+        if args.event == flows.OPEC_FLOW.cli_name and not args.after_the_day
+        else None
+    )
     for line in describe_follows(
-        f.events, f.kinds, f.cells, f.order, f.noun, args.after_the_day, args.long
+        f.events, f.kinds, f.cells, f.order, f.noun, args.after_the_day, args.long, marked
     ):
         print(line)
     return 0
@@ -723,13 +767,17 @@ def _triggers(_args: argparse.Namespace) -> int:
         for name in sorted(names):
             flow = flows.flow_named(name)
             events[name] = flows.stored_events(flow, con=con)
-            if flow is flows.FED_FLOW or flow is flows.ECB_FLOW:
+            if flow in (flows.FED_FLOW, flows.ECB_FLOW, flows.BOE_FLOW, flows.BOJ_FLOW):
                 decided = _decision_kinds(flow, events[name], "triggers")
                 if decided is None:
                     return 1
                 kinds[name] = decided
             elif flow is flows.CEO_FLOW:
                 kinds[name] = {}
+            elif flow is flows.OPEC_FLOW:
+                kinds[name] = study.detail_kinds(events[name])
+            elif flow is flows.WAR_FLOW:
+                kinds[name] = study.war_kinds(events[name])
             else:
                 kinds[name] = study.release_kinds(flow, con=con)
         closes = {m: study.stored_closes(m, con=con) for m in study.MVP_PRICE_SERIES}
@@ -1832,6 +1880,15 @@ def ask_data(con: duckdb.DuckDBPyConnection) -> dict[str, list[dict[str, object]
     left_out: list[dict[str, object]] = []
     names = market_names()
     for name, noun in FOLLOWS_NOUNS.items():
+        if name in (
+            flows.OPEC_FLOW.cli_name,
+            flows.BOE_FLOW.cli_name,
+            flows.BOJ_FLOW.cli_name,
+            flows.WAR_FLOW.cli_name,
+        ):
+            # Steps 24 to 26 add OPEC, the two banks and violent acts to follows and triggers, not to the page
+            # (docs/steps/opec.md, docs/steps/other-central-banks.md).
+            continue
         try:
             f = follows_cells(name, con)
             cells = list(f.cells)

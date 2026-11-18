@@ -57,6 +57,12 @@ Terms are grouped by what they are about, alphabetical within each group.
   is Nasdaq's calendar consensus ([free consensus](steps/free-consensus.md)).
 - **Core vs headline** — *headline* includes food and energy prices; *core* strips them out because
   they are volatile. Markets usually react more to core.
+- **BoE** (Bank of England) — the UK's central bank; its Monetary Policy Committee sets **Bank
+  Rate**, the rate the Bank pays on reserves, eight times a year (monthly until 2016). The Bank
+  publishes every change of Bank Rate since 1694 ([step 25](steps/other-central-banks.md)).
+- **BoJ** (Bank of Japan) — Japan's central bank; its Policy Board sets the short-term policy
+  rate eight times a year, announced when the meeting ends, around midday Tokyo
+  ([step 25](steps/other-central-banks.md)).
 - **CPI** (Consumer Price Index) — the main US inflation measure, published monthly by the
   **BLS**, usually 8:30 a.m. New York time. The MVP's single event type: frequent, scheduled,
   heavily forecast, and reliably market-moving.
@@ -91,6 +97,14 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **PCE / core PCE** (Personal Consumption Expenditures price index) — the Fed's preferred US
   inflation measure, published monthly by the Bureau of Economic Analysis at 8:30 a.m. New
   York time; *core* leaves out food and energy ([more events](steps/step-4-more-events.md)).
+- **ICB** (International Crisis Behavior project) — *added 2026-11-18* ([war](steps/war.md)): a
+  dataset of international crises since 1918, each with the date its trigger came and a code for
+  what set it off (`triggr`, from a verbal act to a violent act) and how violent it became (`viol`).
+  Step 26 takes every crisis since 1970 whose trigger is a *violent act*.
+- **Violent act** — *added 2026-11-18* ([war](steps/war.md)): ICB's trigger type 9, a border
+  clash, a border crossing, an invasion of air space, a sinking, a bombardment or an invasion that
+  sets off an international crisis; the one kind of `follows --event war`, known the day it
+  happens.
 - **ISM** (Institute for Supply Management) — publishes the US manufacturing PMI at 10:00 New
   York on the month's first working day ([the ISM survey](steps/ism-manufacturing.md)).
 - **ZEW** (Leibniz Centre for European Economic Research) — its *Economic Sentiment Index* asks
@@ -178,6 +192,8 @@ Terms are grouped by what they are about, alphabetical within each group.
   euro). Rises on risk-off and on hawkish Fed expectations.
 - **ES** (E-mini S&P 500 future) — the futures contract on the S&P 500, which trades nearly around
   the clock and therefore reacts to releases outside US stock-market hours.
+- **GBPUSD** — the pound in dollars; *up* is the pound stronger (step 25).
+- **USDJPY** — dollars in yen, Yahoo's `JPY=X`; *up* is the yen weaker (step 25).
 - **EURUSD** — the euro in dollars, the dollar index's largest weight (58%), so mostly its mirror;
   it takes the dollar index's expected sign reversed. Yahoo's `EURUSD=X`, whose daily close is the
   price at 00:00 London of the bar's own day, so the bar after a US release is the next London
@@ -204,7 +220,8 @@ Terms are grouped by what they are about, alphabetical within each group.
   the instrument universe.
 - **Liquidity** — how easily something can be traded without moving its own price. The MVP sticks to
   highly liquid instruments so measured moves reflect the event, not thin trading.
-- **Nikkei 225** — Japan's main stock index. Not in the instrument universe.
+- **Nikkei 225** (`NKY`) — Japan's main stock index, closing at 15:30 Tokyo (15:00 before
+  2024-11-05); in the universe from step 25 ([other central banks](steps/other-central-banks.md)).
 - **Rates** — the government-bond / interest-rate market. Note the inversion: when bond **prices**
   rise, **yields** fall.
 - **Risk-on / risk-off** — the market mood. Risk-on: money into stocks and commodities. Risk-off:
@@ -239,7 +256,7 @@ Terms are grouped by what they are about, alphabetical within each group.
   canonical symbol. Step 2 maps five: `^GSPC` (S&P 500 index), `^TNX`, `DX-Y.NYB` (dollar index),
   `GC=F` (gold futures), `^VIX`; cross-country two, `^GDAXI` and `^STOXX50E`; more outcomes nine,
   `BZ=F`, `EURUSD=X`, `^IXIC`, `^FVX`, `^FTSE`, `^STOXX`, `BTC-USD`, `ITA` and `XLE`; the markets
-  people feel seven, each its own symbol; coffee `KC=F`. FRED's series for the breakeven is
+  people feel seven, each its own symbol; coffee `KC=F`; step 25 `GBPUSD=X`, `JPY=X` and `^N225`. FRED's series for the breakeven is
   stored as `fred:T5YIE`.
 - **XLE** — the Energy Select Sector SPDR ETF, the US energy sector; oil's equity echo. Closes
   16:00 New York; no expected sign.
