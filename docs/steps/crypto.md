@@ -20,20 +20,25 @@ hack in the news can be answered from its past.
   ([api.llama.fi/hacks](https://api.llama.fi/hacks), free, no key, read 2026-11-18): 1,362 hacks
   from 2011-06-19 to 2026-11-17, each with its day (`date`, 00:00 UTC), the amount taken in
   dollars at the time (`amount`), its target and technique. The list is kept up as hacks happen.
-- **The kind: a hack of $100 million or more**, by the list's `amount`, one kind, *hack*: a size
-  the news reports the day it happens, so a live trigger is filed on the same rule. 44 rows,
+- **The kind: a hack of $100 million or more**, by the list's `amount`, one kind, *hack*. A live
+  trigger is filed when the first reports put the theft at $100 million or more; the list's
+  `amount` is settled later, so a hack first reported smaller and later counted bigger joins the
+  past but would have been missed live: a known miss, written now. 44 rows,
   2014-02-07 to 2026-10-29, no two on one day, 12 on a weekend: exchanges (14), protocols (24),
   wallets, a chain and others (6). Funds later returned (4 rows) do not change the kind: the
   return came later.
 - **The markets: two added.** Ether (`ETH-USD`, Yahoo, from 2017-11-09; *ETH*), with bitcoin's
-  close, 23:59 UTC every day; and Coinbase's shares (`COIN`, from its listing on 2021-04-14), the
+  close, the UTC day's last price, weekend bars dropped as every market's are
+  ([Glossary](../glossary.md), *BTC*); and Coinbase's shares (`COIN`, from its listing on 2021-04-14), the
   Nasdaq's close, 16:00 New York. Both **unsigned**, as step 25's three: no live link. Hacks
-  after each market's first close: bitcoin 43 (Mt. Gox, 2014-02-07, falls before), ether 42,
-  Coinbase 37; gold 44, the S&P 500 44.
+  after each market's first close ([Schema](../schema.md), *How much data*): bitcoin (from
+  2014-09-17) 43, Mt. Gox falling before; ether 42; Coinbase 37; each of the other 28 markets,
+  all stored from 2011 or before, 44.
 - **The hour.** The list gives the day at 00:00 UTC. The hour is a rule, as [war's](war.md):
   **04:00 UTC**, before every stock market's and the crypto markets' close that day, after the
-  currencies' 00:00 London close. A weekend hack reacts on bitcoin and ether that day, on the
-  stock markets on Monday. **Known misses, written now:** a hack found after a market's close is
+  currencies' 00:00 London close. A weekend hack (12 of the 44) reacts on Monday on every market,
+  bitcoin and ether included, since no market keeps a weekend close: a known miss for the two
+  coins, which trade then. **Known misses, written now:** a hack found after a market's close is
   read a day early there. A hack made public long after its day is read on its day: LuBian
   (2020-12-28, $3.5 billion, made public in 2025).
 - **Lesser, as OPEC's:** each day stays an ordinary day for every other flow; `raw-move --event
@@ -48,18 +53,22 @@ hack in the news can be answered from its past.
 - The source, the $100 million line, the hour, the two markets and step 17's bars, unchanged by
   what the run shows. A hack added to the list later joins with a dated amendment.
 - **Expected outcome, written first:**
-  - Arithmetic, not a finding: 30 graded walk-forward needs 40 events. Bitcoin (43), ether (42)
-  and every market stored before 2014 have them; markets from 2014 on fewer: Coinbase (37) and
-  the rest are *too few* walk-forward, and the month's no-overlap rule may take markets at 40 to
-  43 below it too.
+  - Arithmetic, not a finding: 30 graded walk-forward needs 40 events ([OPEC's](opec.md)
+  rule). The 28 markets with all 44 and bitcoin (43) and ether (42) have them on the day and the
+  week; Coinbase (37) is *too few* walk-forward on every span. Over the month the no-overlap rule
+  drops a hack within a month of the one before, so a market may fall below 40 there; the month's
+  counts are recorded, not predicted.
   - The header: `follows: 44 crypto hacks 2014-02-07 … 2026-10-29: 44 hacks`.
   - Walk-forward: nothing holds.
   - On all history: no more answers than the chance line `follows` prints plus 2, for each run.
   - Bitcoin, ether and Coinbase on the day, the week and the month: *can't say*, in both runs. A
   hack takes coins from one place; it does not change what a coin is worth.
   - Every other flow's `follows` and `raw-move` output unchanged byte for byte except the two new
-  markets' rows, which are recorded, not judged; each other flow's chance line moves by its own
-  added cells alone, written before and after.
+  markets' rows (step 1), which are recorded, not judged; each other flow's `follows` chance line
+  rises by its two markets' cells alone, and the scoreboard's chance counts by the added cells
+  alone, each written before and after.
+- **Outside the rule, recorded:** `raw-move --event crypto`, whether hack days move more than
+  ordinary days. Nothing is expected.
 
 *Written 2026-11-18, before any closes of ether or Coinbase were loaded and before `follows` or
 `raw-move` ran on these hacks; the counts above are from the list and the markets' first closes.*
@@ -68,15 +77,16 @@ hack in the news can be answered from its past.
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | The two markets: seed rows, series, `load-prices`; the seed `data/seed/crypto.csv` (`day,time,kind,target,amount`) from the list by `scripts/defillama_hacks.py` | `load-prices` stores both; each close checked against the intraday bar at its time for one recent week, within 0.05%; the seed test checks the header, 44 rows, order, time `04:00`, kind `hack`, each amount at least 100000000. On a copy of the store every other flow's existing rows identical, each chance line before and after written here |
-| 2 | Flow `crypto`; `follows --event crypto`; `crypto` in `TRIGGER_KINDS` | Tests: a Saturday hack reacts that day on bitcoin and on Monday on the S&P 500; a `crypto` trigger for a day not stored is answered from a hack made at 04:00 UTC. On a copy of the store the header is the expected one, and every other flow's output byte for byte the one before |
-| 3 | Results here and in [MVP results](../mvp-results.md), against the expected outcome; the roadmap row | Every bullet marked right or wrong with its numbers and command; each cell with 30 or more graded walk-forward and its record; the shared days |
+| 1 | The two markets: seed rows, series, `load-prices`; the seed `data/seed/crypto.csv` (`day,time,kind,target,amount`) from the list by `scripts/defillama_hacks.py` | `load-prices` stores both; each close of 2026-11-09 to 2026-11-13 checked against the close of Yahoo's last hourly bar before its time (`interval=60m`: ether's 23:00 UTC bar, Coinbase's 15:30 New York bar), within 0.05%; the seed test checks the header, 44 rows, order, time `04:00`, kind `hack`, each amount at least 100000000. On a copy of the store, before and after: every other flow's `follows` and `raw-move` output identical but for the two markets' rows and the chance lines, each chance line and the scoreboard's written here |
+| 2 | Flow `crypto`; `follows --event crypto`; `crypto` in `TRIGGER_KINDS` | Tests: a Saturday hack reacts on Monday on bitcoin and on the S&P 500; a `crypto` trigger for a day not stored is answered from a hack made at 04:00 UTC. On a copy of the store the header is the expected one, and every other flow's output byte for byte the one of step 1's store |
+| 3 | Results here and in [MVP results](../mvp-results.md), against the expected outcome; the roadmap row | Every bullet marked right or wrong with its numbers and command; each cell with 30 or more graded walk-forward and its record; the days shared with another flow, by the hack's UTC day |
 
 ## How you know it is right
 
-- **The rows match the news:** four named now, checked by hand: 2018-01-26 Coincheck ($534
+- **The rows match the news:** four named now, each checked by hand against its Wikipedia article
+  and the list's own description: 2018-01-26 Coincheck ($534
   million), 2022-03-23 Ronin Bridge ($624 million), 2022-11-12 FTX ($450 million, the theft after
-  its collapse), 2025-02-21 Bybit ($1.4 billion). Each a theft on that day.
+  its collapse, which ran from late on 11-11 into 11-12 UTC; the list's day is kept), 2025-02-21 Bybit ($1.4 billion). Each a theft on that day.
 - **The new closes are at their times:** the 0.05% check above; a wrong close time would show as
   a gap of a day's move.
 - **The hour is UTC:** a weekday hack's stored `event_ts` is 04:00 that day and reacts on bitcoin
