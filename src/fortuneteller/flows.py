@@ -835,6 +835,7 @@ class FedFlow:
 EURO_AREA = "Euro area"
 GERMANY = "Germany"
 UNITED_KINGDOM = "United Kingdom"
+JAPAN = "Japan"
 ECB_FROM = date(2013, 4, 1)
 TRADINGVIEW_CALENDAR = "tradingview_calendar"
 HAND_WRITTEN = "hand_written"
@@ -1024,6 +1025,53 @@ class BoeFlow:
     def scheduled(self, cache_dir: Path, start: date, end: date) -> list[tuple[datetime, str]]:
         return scheduled_rows(
             "GB",
+            self.zone,
+            cache_dir,
+            start,
+            end,
+            lambda day, _, title: title == sources.RATE_DECISION,
+        )
+
+
+# The Bank of Japan's decisions (docs/steps/other-central-banks.md): TradingView lists them from
+# 2016-04-29, each with the rate it set.
+BOJ_FROM = date(2016, 4, 1)
+
+
+def load_boj_rates(cache_dir: Path, today: date | None = None) -> dict[datetime, float]:
+    """Every BoJ decision announced from ``BOJ_FROM`` to ``today``, in UTC, and the rate it set."""
+    today = today if today is not None else datetime.now(sources.TOKYO).date()
+    payloads = sources.fetch_tradingview_since(BOJ_FROM, cache_dir, today, "JP")
+    return dict(sorted(r for payload in payloads for r in sources.parse_rates(payload)))
+
+
+class BojFlow:
+    """The Bank of Japan's rate decisions from TradingView's calendar, at the time each was
+    announced. No surprise; a lesser flow."""
+
+    event_type = FOMC_EVENT_TYPE
+    country = JAPAN
+    zone = sources.TOKYO
+    type_code = 29
+    cli_name = "boj"
+    label = "BoJ"
+    surprise_rule: SurpriseRule | None = None
+    lesser: bool = True
+
+    def events(self, api_key: str) -> EventBatch:
+        decisions = list(load_boj_rates(settings.cache_dir))
+        if not decisions:
+            raise sources.CalendarError("TradingView listed no BoJ decisions")
+        events = [decision_instance(self, d) for d in decisions]
+        first, last = (release_date(e) for e in (events[0], events[-1]))
+        return EventBatch(events, [f"loaded {len(events)} BoJ decisions, {first} … {last}"])
+
+    def actuals(self, events: Sequence[EventInstance], api_key: str) -> list[Actual]:
+        return []
+
+    def scheduled(self, cache_dir: Path, start: date, end: date) -> list[tuple[datetime, str]]:
+        return scheduled_rows(
+            "JP",
             self.zone,
             cache_dir,
             start,
@@ -1420,7 +1468,7 @@ class LevelFlow:
 
 
 CPI_FLOW, NFP_FLOW, FED_FLOW, ECB_FLOW = CpiFlow(), NfpFlow(), FedFlow(), EcbFlow()
-BOE_FLOW = BoeFlow()
+BOE_FLOW, BOJ_FLOW = BoeFlow(), BojFlow()
 HICP_FLOW = TradingViewFlow(
     CPI_EVENT_TYPE,
     EURO_AREA,
@@ -1690,6 +1738,7 @@ EVENT_FLOWS: list[EventFlow] = [
     CEO_FLOW,
     OPEC_FLOW,
     BOE_FLOW,
+    BOJ_FLOW,
 ]
 
 

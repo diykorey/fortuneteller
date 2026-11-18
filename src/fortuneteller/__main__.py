@@ -584,6 +584,7 @@ FOLLOWS_NOUNS = {
     "ceo": "CEO scandals",
     "opec": "OPEC announcements",
     "boe": "BoE decisions",
+    "boj": "BoJ decisions",
 }
 
 
@@ -596,10 +597,17 @@ def _decision_kinds(
         return study.ecb_kinds(events, flows.load_ecb_rates(settings.cache_dir))
     if flow is flows.BOE_FLOW:
         return study.boe_kinds(events, _boe_rates())
+    if flow is flows.BOJ_FLOW:
+        return study.ecb_kinds(events, _boj_rates())
     api_key = _fred_key(command)
     if not api_key:
         return None
     return study.fed_kinds(events, dict(flows.target_rates(api_key)))
+
+
+def _boj_rates() -> dict[date, float]:
+    rates = flows.load_boj_rates(settings.cache_dir)
+    return {at.astimezone(flows.BOJ_FLOW.zone).date(): rate for at, rate in rates.items()}
 
 
 def _boe_rates() -> dict[date, float]:
@@ -647,8 +655,12 @@ def follows_cells(
             kinds = study.detail_kinds(flows.stored_events(flow, con=con))
             order = study.OPEC_KINDS
             events, cells = study.follow_decisions(flow, kinds, order, con=con, after=after)
-        elif flow is flows.BOE_FLOW:
-            kinds = study.boe_kinds(flows.stored_events(flow, con=con), _boe_rates())
+        elif flow is flows.BOE_FLOW or flow is flows.BOJ_FLOW:
+            stored = flows.stored_events(flow, con=con)
+            if flow is flows.BOE_FLOW:
+                kinds = study.boe_kinds(stored, _boe_rates())
+            else:
+                kinds = study.ecb_kinds(stored, _boj_rates())
             order = study.KINDS
             events, cells = study.follow_decisions(flow, kinds, order, con=con, after=after)
         else:
@@ -750,7 +762,7 @@ def _triggers(_args: argparse.Namespace) -> int:
         for name in sorted(names):
             flow = flows.flow_named(name)
             events[name] = flows.stored_events(flow, con=con)
-            if flow in (flows.FED_FLOW, flows.ECB_FLOW, flows.BOE_FLOW):
+            if flow in (flows.FED_FLOW, flows.ECB_FLOW, flows.BOE_FLOW, flows.BOJ_FLOW):
                 decided = _decision_kinds(flow, events[name], "triggers")
                 if decided is None:
                     return 1
@@ -1861,8 +1873,8 @@ def ask_data(con: duckdb.DuckDBPyConnection) -> dict[str, list[dict[str, object]
     left_out: list[dict[str, object]] = []
     names = market_names()
     for name, noun in FOLLOWS_NOUNS.items():
-        if name in (flows.OPEC_FLOW.cli_name, flows.BOE_FLOW.cli_name):
-            # Steps 24 and 25 add OPEC and the BoE to follows and triggers, not to the page
+        if name in (flows.OPEC_FLOW.cli_name, flows.BOE_FLOW.cli_name, flows.BOJ_FLOW.cli_name):
+            # Steps 24 and 25 add OPEC and the two banks to follows and triggers, not to the page
             # (docs/steps/opec.md, docs/steps/other-central-banks.md).
             continue
         try:

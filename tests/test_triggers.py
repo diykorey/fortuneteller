@@ -8,7 +8,7 @@ from fortuneteller.__main__ import main
 from fortuneteller.config import settings
 from fortuneteller.models import Surprise
 from fortuneteller.sources import DailyClosingPrice
-from fortuneteller.study import ABOVE, BELOW, CUT, HOLD, HOLE, LEFT_OUT, TOO_FEW
+from fortuneteller.study import ABOVE, BELOW, CUT, HIKE, HOLD, HOLE, LEFT_OUT, TOO_FEW
 
 START = date(2001, 1, 1)
 NFP = flows.flow_named("nfp")
@@ -512,6 +512,25 @@ def test_a_boe_trigger_is_answered_not_refused(one_market: None) -> None:
     # when filed as a hold before the close
     rows, lines = _answer(
         [_trigger(day, HOLD, "boe")], [hold], {hold.event_id: HOLD}, closes, merged, flow="boe"
+    )
+
+    # then it is answered on the market, not refused for its flow
+    assert {r["market"] for r in rows} == {SPY}
+    assert not any("is not one of" in line for line in lines)
+
+
+def test_a_boj_trigger_is_answered_not_refused(one_market: None) -> None:
+    # given a BoJ hike at 12:00 Tokyo
+    closes = _closes(_wavy(300))
+    day = closes[200].day
+    hike = flows.decision_instance(
+        flows.BOJ_FLOW, datetime.combine(day, time(12, 0), tzinfo=sources.TOKYO).astimezone(UTC)
+    )
+    merged = datetime.combine(day, time(12, 15), tzinfo=sources.TOKYO)
+
+    # when filed as a hike before the close
+    rows, lines = _answer(
+        [_trigger(day, HIKE, "boj")], [hike], {hike.event_id: HIKE}, closes, merged, flow="boj"
     )
 
     # then it is answered on the market, not refused for its flow
