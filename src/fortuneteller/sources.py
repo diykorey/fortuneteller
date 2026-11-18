@@ -688,7 +688,7 @@ def fetch_tradingview_quarter(
     timeout: float = 60.0,
     country: str = "US",
 ) -> bytes:
-    """TradingView's calendar of ``country`` (US or EU) for the quarter starting ``start``; kept
+    """TradingView's calendar of ``country`` (US, EU, DE, GB or JP) for the quarter starting ``start``; kept
     under ``cache_dir/tradingview`` once the quarter is over."""
     end = date(start.year + start.month // 10, (start.month + 2) % 12 + 1, 1) - timedelta(days=1)
     today = today if today is not None else datetime.now(NEW_YORK).date()
@@ -746,11 +746,21 @@ ECB_DECISION = "ECB Interest Rate Decision"
 def parse_ecb_decisions(payload: bytes) -> list[datetime]:
     """When each ECB rate decision in a TradingView euro-area calendar reply was announced, in UTC;
     a meeting not yet held (no actual) is left out."""
+    return parse_rate_decisions(payload, ECB_DECISION)
+
+
+# The Bank of England's and the Bank of Japan's decisions, as the GB and JP calendars title them.
+RATE_DECISION = "Interest Rate"
+
+
+def parse_rate_decisions(payload: bytes, title: str = RATE_DECISION) -> list[datetime]:
+    """When each held decision titled ``title`` in a TradingView calendar reply was announced, in
+    UTC; one not yet held (no actual) is left out."""
     try:
         return [
             _utc(row["date"])
             for row in _tradingview_rows(payload)
-            if row["title"] == ECB_DECISION and row.get("actual") is not None
+            if row["title"] == title and row.get("actual") is not None
         ]
     except MALFORMED_REPLY as exc:
         raise CalendarError(f"TradingView sent an unexpected reply: {exc!r}") from None

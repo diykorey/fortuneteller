@@ -1134,3 +1134,75 @@ def test_brent_s_day_cell_is_left_out_of_the_chance_line() -> None:
     # then the chance line counts one answered cell with the mark, two without
     assert marked[-1].startswith(f"by chance: about {3 * study.FOLLOW_P_BAR:.1f} answers")
     assert plain[-1].startswith(f"by chance: about {6 * study.FOLLOW_P_BAR:.1f} answers")
+
+
+def _boe(day: date, at: time = time(12, 0)) -> flows.EventInstance:
+    # a BoE decision at ``at`` London on ``day``
+    return flows.decision_instance(
+        flows.BOE_FLOW, datetime.combine(day, at, tzinfo=sources.LONDON).astimezone(UTC)
+    )
+
+
+def test_a_boe_decision_s_kind_is_the_bank_s_change_and_2020_03_26_a_hold() -> None:
+    # given the Bank's changes from the seed, and decisions on the days checked by hand
+    days = [
+        date(2008, 1, 10),
+        date(2009, 3, 5),
+        date(2016, 8, 4),
+        date(2020, 3, 11),
+        date(2020, 3, 19),
+        date(2020, 3, 26),
+        date(2022, 12, 15),
+        date(2025, 12, 18),
+    ]
+    rates = {d: r for d, (_, r) in flows.boe_changes(settings.seed_dir).items()}
+
+    # when their kinds are read
+    kinds = study.boe_kinds([_boe(d) for d in reversed(days)], rates)
+
+    # then the first has none, and each other is the Bank's: 2020-03-26 a hold
+    assert [kinds.get(_boe(d).event_id) for d in days] == [
+        None,
+        CUT,
+        CUT,
+        CUT,
+        CUT,
+        HOLD,
+        HIKE,
+        CUT,
+    ]
+
+
+def test_the_first_bank_rate_change_is_against_the_rate_before_2008() -> None:
+    # given the decision before it, and the cut of 2008-02-07 to 5.25% from 5.5%
+    events = [_boe(date(2008, 1, 10)), _boe(date(2008, 2, 7))]
+
+    # when their kinds are read
+    kinds = study.boe_kinds(events, {date(2008, 2, 7): 5.25})
+
+    # then it is a cut
+    assert kinds == {events[1].event_id: CUT}
+
+
+def test_follows_for_the_boe_prints_its_table(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given three BoE decisions, one market's closes, and the Bank's changes patched
+    monkeypatch.setattr(study, "MVP_PRICE_SERIES", {"SPY / ES": study.MVP_PRICE_SERIES["SPY / ES"]})
+    closes = _closes(_alternating(300))
+    days = [closes[i].day for i in (20, 60, 100)]
+    db.init_db()
+    db.get_connection().executemany(
+        "INSERT INTO daily_bars (instrument, day, close, source) VALUES ('SPY / ES', ?, ?, 'test')",
+        [[c.day, c.price] for c in closes],
+    )
+    db.insert_models("event_instances", [_boe(d) for d in days])
+    monkeypatch.setattr(flows, "boe_changes", lambda _seed_dir: {days[1]: (time(12, 0), 6.0)})
+
+    # when run
+    code = main(["follows", "--event", "boe"])
+
+    # then it prints the BoE decisions' table, the first decision having no kind
+    out = capsys.readouterr().out.splitlines()
+    assert code == 0
+    assert out[0] == (f"follows: 2 BoE decisions {days[1]} … {days[2]}: 0 cuts, 1 holds, 1 hikes")
