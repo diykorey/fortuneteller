@@ -181,6 +181,14 @@ run 44116494543 (`workflow_dispatch`, created 15:37:39 UTC) began its job at 15:
 later; its log reads `step: live` and `live: retail is already in data/calls.csv`: the laptop's rows, merged
 to `main` in PR #331, so it logged nothing new (`gh run view 44116494543 --log`).
 
+*The first evening, 2026-11-17:* the 18:30 New York ask (23:30 UTC) started no run: the owner
+had disabled the score job at cron-job.org by mistake, and re-enabled it on 2026-11-18
+(`gh run list --workflow jobs.yml --event workflow_dispatch` lists none after 44116494543). The
+evening was graded by GitHub's own late schedule, run 44238760250, created 04:38 UTC. Its
+`trigger-log.csv` equals the laptop's file byte for byte. Its `score.txt` grades `main`'s 52 call
+rows; the laptop's evening of 2026-11-17 failed at wake (no network, issue #339), so no `score.txt`
+of the same evening is there to compare, and that bar waits for the next evening both run.
+
 ## How you know it is right
 
 *The store's three checks amended 2026-11-14 with the store's carrying above.*
