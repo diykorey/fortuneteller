@@ -6,6 +6,7 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-18 | Step 28, step 2: the `weather` flow (code 32, lesser), `follows --event weather` and `weather` triggers; header as expected | PR #352 |
 | 2026-11-18 | Step 28, step 1: Allstate as a market, unsigned; HURDAT2's 79 first US hurricane landfalls since 1970 as the seed | PR #351 |
 | 2026-11-18 | Spec: step 28, what follows a hurricane's first US landfall (NOAA's HURDAT2, 79 storms 1970 to 2024), Allstate added as a market; roadmap row 28 amended to landfalls | PR #350 |
 | 2026-11-18 | Step 27 results: bitcoin, ether and Coinbase *can't say* after a crypto hack on every span; one answer in all, within chance; the expected outcome held but for the week's counts | PR #349 |

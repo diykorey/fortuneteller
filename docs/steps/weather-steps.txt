@@ -89,3 +89,74 @@ $ fortuneteller scoreboard, docs/scoreboard/data.json's chance without and with,
 {'raw_move': {'cells': 799, 'p': 0.01, 'by_chance': 7.99}, 'surprise': {'cells': 360, 'p': 0.01, 'by_chance': 3.6}, 'walk_forward': {'cells': 82, 'p': 0.01, 'by_chance': 0.82}}
 {'raw_move': {'cells': 827, 'p': 0.01, 'by_chance': 8.27}, 'surprise': {'cells': 372, 'p': 0.01, 'by_chance': 3.72}, 'walk_forward': {'cells': 82, 'p': 0.01, 'by_chance': 0.82}}
 identical without ALL and the chance: True
+
+Step 2, on a copy of step 1's store with the 79 landfalls loaded:
+
+$ load the weather flow (flows.WEATHER_FLOW, store_events, store_observations)
+loaded 79 United States hurricane landfalls, 1970-08-03 … 2024-10-10
+
+$ fortuneteller follows --event weather, its first line
+follows: 79 hurricane landfalls 1970-08-03 … 2024-10-10: 79 landfalls
+
+$ cmp, every other flow's raw-move and follows output against step 1's store
+same      fol-boe-after.txt
+same      fol-boe.txt
+same      fol-boj-after.txt
+same      fol-boj.txt
+same      fol-ceo-after.txt
+same      fol-ceo.txt
+same      fol-claims-after.txt
+same      fol-claims.txt
+same      fol-cpi-after.txt
+same      fol-cpi.txt
+same      fol-crypto-after.txt
+same      fol-crypto.txt
+same      fol-ecb-after.txt
+same      fol-ecb.txt
+same      fol-fomc-after.txt
+same      fol-fomc-long.txt
+same      fol-fomc.txt
+same      fol-nfp-after.txt
+same      fol-nfp.txt
+same      fol-opec-after.txt
+same      fol-opec.txt
+same      fol-retail-after.txt
+same      fol-retail.txt
+same      fol-war-after.txt
+same      fol-war.txt
+same      raw-boe.txt
+same      raw-boj.txt
+same      raw-ceo.txt
+same      raw-claims.txt
+same      raw-cpi.txt
+same      raw-crypto.txt
+same      raw-debt.txt
+same      raw-decpi.txt
+same      raw-deelect.txt
+same      raw-ecbchief.txt
+same      raw-ecb.txt
+same      raw-euelect.txt
+same      raw-fedchair.txt
+same      raw-fomc.txt
+same      raw-frelect.txt
+same      raw-gdp.txt
+same      raw-hicp.txt
+same      raw-ifo.txt
+same      raw-ism.txt
+same      raw-nfp.txt
+same      raw-opec.txt
+same      raw-pce.txt
+same      raw-posts2.txt
+same      raw-posts.txt
+same      raw-retail.txt
+same      raw-summit.txt
+same      raw-tariff.txt
+same      raw-ukelect.txt
+same      raw-uselect.txt
+same      raw-war.txt
+same      raw-zew.txt
+
+$ fortuneteller scoreboard: docs/scoreboard/data.json's chance, step 1's store and step 2's, and the rest compared
+{'raw_move': {'cells': 827, 'p': 0.01, 'by_chance': 8.27}, 'surprise': {'cells': 372, 'p': 0.01, 'by_chance': 3.72}, 'walk_forward': {'cells': 82, 'p': 0.01, 'by_chance': 0.82}}
+{'raw_move': {'cells': 857, 'p': 0.01, 'by_chance': 8.57}, 'surprise': {'cells': 372, 'p': 0.01, 'by_chance': 3.72}, 'walk_forward': {'cells': 82, 'p': 0.01, 'by_chance': 0.82}}
+identical without the landfalls' entry and the chance: True 1
