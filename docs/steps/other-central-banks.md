@@ -106,7 +106,7 @@ the counts above are from the calendar and are arithmetic.*
 | --- | --- | --- |
 | 1 | ~~The three markets~~ **done** 2026-11-17. The three markets: seed rows, series, signs, `load-prices`; `boe-changes.csv` from the Bank's history | `load-prices` stores the three; tests: an 08:30 New York release falls on the next day's close for the pound, the yen and the Nikkei, a 02:30 UTC one on the same day's Nikkei close and a 12:00 London one on the next day's; the closes within 0.05% of the bars, written here; the known misses listed; on a copy of the store every existing row of `raw-move`, `follows` and the scoreboard identical, and each chance line and grid before and after written here; the seed test checks `boe-changes.csv`'s header, order and rates; the disagreeing days listed here |
 | 2 | ~~The BoE~~ **done** 2026-11-17. The BoE: flow `boe`, `follows --event boe`, `boe` in `TRIGGER_KINDS` | Tests: a calendar quarter stores its decisions at their UTC time; a change day the calendar lacks is added at the file's time; a decision's kind is the Bank's change, and 2020-03-26 a hold; a `boe` trigger is answered. On a copy of the store the header is the expected one, or the difference written with a dated amendment; every other flow's `follows` and `raw-move` rows unchanged |
-| 3 | The BoJ: flow `boj`, `follows --event boj`, `boj` in `TRIGGER_KINDS` | Tests: a quarter stores its decisions at their UTC time; a decision's kind is its rate against the previous; a `boj` trigger is answered. The header as expected, or amended; the others unchanged |
+| 3 | ~~The BoJ~~ **done** 2026-11-18. The BoJ: flow `boj`, `follows --event boj`, `boj` in `TRIGGER_KINDS` | Tests: a quarter stores its decisions at their UTC time; a decision's kind is its rate against the previous; a `boj` trigger is answered. The header as expected, or amended; the others unchanged |
 | 4 | Results here and in [MVP results](../mvp-results.md), against the expected outcome; the roadmap row | Every judged bullet of the expected outcome marked right or wrong with its numbers; each bank's walk-forward records; the new markets' rows in the other flows summarised |
 
 *Step 1, 2026-11-17:*
@@ -146,6 +146,14 @@ byte for byte the one before. `raw-move --event boe` is new: 143 lone BoE days o
 lesser flow's days shared with no other flow. The scoreboard gains the BoE's raw-move entry (26 →
 27 events), and its raw-move chance moves by the added cells alone, 614 → 642; every other entry
 is the same. The BoE is in `follows` and triggers, not in the page's *ask*, as OPEC is.
+
+*Step 3, 2026-11-18:* on the same copy of the store, with the BoJ's decisions added
+(`loaded 86 BoJ decisions, 2016-04-29 … 2026-10-30`), `follows --event boj` prints the expected
+header, `follows: 85 BoJ decisions 2016-06-16 … 2026-10-30: 0 cuts, 79 holds, 6 hikes`. Every
+other flow's `follows` and `raw-move` output, the BoE's included, is byte for byte the one before;
+`raw-move --event boj` is new (47 lone BoJ days on the S&P 500). The scoreboard gains the BoJ's
+raw-move entry (27 → 28 events), its raw-move chance 642 → 670 cells; every other entry is the
+same. Like the BoE, the BoJ is in `follows` and triggers, not in the page's *ask*.
 
 ## How you know it is right
 

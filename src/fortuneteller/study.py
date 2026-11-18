@@ -2209,6 +2209,7 @@ TRIGGER_KINDS = {
     "ceo": (SCANDAL,),
     "opec": OPEC_KINDS,
     "boe": KINDS,
+    "boj": KINDS,
 }
 TRIGGER_LOG_COLUMNS = (
     "file",

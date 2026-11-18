@@ -314,6 +314,7 @@ def test_load_releases_prints_count_range_and_skipped_months(
         "US": ("Fed Chair Powell Speech", "2025-02-07T15:00:00.000Z"),
         "EU": ("ECB President Lagarde Speech", "2025-02-10T09:00:00.000Z"),
         "GB": (sources.RATE_DECISION, "2025-02-06T12:00:00.000Z"),
+        "JP": (sources.RATE_DECISION, "2025-01-24T03:00:00.000Z"),
     }
     monkeypatch.setattr(
         sources,
@@ -406,8 +407,9 @@ def test_load_releases_prints_count_range_and_skipped_months(
     report += "loaded 1 OPEC announcements, 2020-04-12 … 2020-04-12\n"
     report += "loaded 2 BoE decisions, 2020-03-11 … 2025-02-06\n"
     report += "  1 from the Bank's changes the calendar lacks: 2020-03-11\n"
+    report += "loaded 1 BoJ decisions, 2025-01-24 … 2025-01-24\n"
     assert capsys.readouterr().out == report * 2
-    assert db.count_rows("event_instances", con=db.get_connection()) == 41
+    assert db.count_rows("event_instances", con=db.get_connection()) == 42
 
 
 def test_load_releases_stores_nothing_when_any_flow_fails(

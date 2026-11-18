@@ -766,6 +766,19 @@ def parse_rate_decisions(payload: bytes, title: str = RATE_DECISION) -> list[dat
         raise CalendarError(f"TradingView sent an unexpected reply: {exc!r}") from None
 
 
+def parse_rates(payload: bytes, title: str = RATE_DECISION) -> list[tuple[datetime, float]]:
+    """Each held decision titled ``title`` in a TradingView calendar reply: when, in UTC, and the
+    rate it set."""
+    try:
+        return [
+            (_utc(row["date"]), float(row["actual"]))
+            for row in _tradingview_rows(payload)
+            if row["title"] == title and row.get("actual") is not None
+        ]
+    except MALFORMED_REPLY as exc:
+        raise CalendarError(f"TradingView sent an unexpected reply: {exc!r}") from None
+
+
 DEPOSIT_RATE = "Deposit Facility Rate"
 # The calendar's spelling of the deposit rate until 2017.
 DEPOSIT_RATE_TITLES = (DEPOSIT_RATE, "Deposit Facilty Rate")

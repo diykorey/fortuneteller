@@ -1105,3 +1105,46 @@ def test_boe_decisions_are_the_calendar_s_and_the_bank_s_changes_it_lacks(
     assert added == [datetime(2020, 3, 11, 7, 0, tzinfo=UTC)]
     events = [flows.decision_instance(flows.BOE_FLOW, d) for d in listed]
     assert [(e.event_id, e.country) for e in events][0] == (2820200130, "United Kingdom")
+
+
+def test_boj_decisions_are_read_from_the_japanese_calendar_with_their_rates(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # given a quarter of the Japanese calendar with two held decisions, other news and one not yet
+    # held
+    reply = json.dumps(
+        {
+            "status": "ok",
+            "result": [
+                {"title": t, "country": "JP", "date": when, "actual": a}
+                for t, when, a in (
+                    (sources.RATE_DECISION, "2024-03-19T03:30:00.000Z", 0.1),
+                    ("CPI", "2024-03-22T23:30:00.000Z", 2.8),
+                    (sources.RATE_DECISION, "2024-01-23T03:00:00.000Z", -0.1),
+                    (sources.RATE_DECISION, "2024-04-26T03:00:00.000Z", None),
+                )
+            ],
+        }
+    ).encode()
+    asked: list[str] = []
+
+    def fetch(
+        start: date, cache_dir: Path, today: date | None = None, country: str = "US"
+    ) -> bytes:
+        asked.append(country)
+        return reply if start == date(2024, 1, 1) else b'{"status": "no_data"}'
+
+    monkeypatch.setattr(sources, "fetch_tradingview_quarter", fetch)
+    monkeypatch.setattr(flows, "BOJ_FROM", date(2024, 1, 1))
+
+    # when the decisions to a day in the second quarter are loaded and mapped to events
+    rates = flows.load_boj_rates(tmp_path, today=date(2024, 4, 25))
+    events = [flows.decision_instance(flows.BOJ_FLOW, d) for d in rates]
+
+    # then the two held ones are there in order with their rates, dated by Tokyo's day
+    assert set(asked) == {"JP"}
+    assert list(rates.values()) == [-0.1, 0.1]
+    assert [(e.event_id, e.country) for e in events] == [
+        (2920240123, "Japan"),
+        (2920240319, "Japan"),
+    ]

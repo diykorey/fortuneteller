@@ -1206,3 +1206,39 @@ def test_follows_for_the_boe_prints_its_table(
     out = capsys.readouterr().out.splitlines()
     assert code == 0
     assert out[0] == (f"follows: 2 BoE decisions {days[1]} … {days[2]}: 0 cuts, 1 holds, 1 hikes")
+
+
+def _boj(day: date) -> flows.EventInstance:
+    # a BoJ decision at 12:00 Tokyo on ``day``
+    return flows.decision_instance(
+        flows.BOJ_FLOW, datetime.combine(day, time(12, 0), tzinfo=sources.TOKYO).astimezone(UTC)
+    )
+
+
+def test_follows_for_the_boj_reads_its_kinds_from_the_calendar_s_rates(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given three BoJ decisions, one market's closes, and the calendar's rates patched: a hold of
+    # the yield-curve policy's start and the end of negative rates
+    monkeypatch.setattr(study, "MVP_PRICE_SERIES", {"SPY / ES": study.MVP_PRICE_SERIES["SPY / ES"]})
+    closes = _closes(_alternating(300))
+    days = [closes[i].day for i in (20, 60, 100)]
+    db.init_db()
+    db.get_connection().executemany(
+        "INSERT INTO daily_bars (instrument, day, close, source) VALUES ('SPY / ES', ?, ?, 'test')",
+        [[c.day, c.price] for c in closes],
+    )
+    db.insert_models("event_instances", [_boj(d) for d in days])
+    rates = {
+        datetime.combine(d, time(3, 0), tzinfo=UTC): r
+        for d, r in zip(days, (-0.1, -0.1, 0.1), strict=True)
+    }
+    monkeypatch.setattr(flows, "load_boj_rates", lambda _cache_dir: rates)
+
+    # when run
+    code = main(["follows", "--event", "boj"])
+
+    # then it prints the BoJ decisions' table, the first decision having no kind
+    out = capsys.readouterr().out.splitlines()
+    assert code == 0
+    assert out[0] == (f"follows: 2 BoJ decisions {days[1]} … {days[2]}: 0 cuts, 1 holds, 1 hikes")
