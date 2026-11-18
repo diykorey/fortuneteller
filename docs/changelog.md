@@ -6,6 +6,7 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-18 | Step 27 results: bitcoin, ether and Coinbase *can't say* after a crypto hack on every span; one answer in all, within chance; the expected outcome held but for the week's counts | PR #349 |
 | 2026-11-18 | Step 27, step 2: the `crypto` flow (code 31, lesser), `follows --event crypto` and `crypto` triggers; header as expected | PR #348 |
 | 2026-11-18 | Step 27, step 1: ether and Coinbase as markets, unsigned; DefiLlama's 44 hacks of $100 million or more as the seed; a market with no days in a flow's span gets a *too few* row | PR #347 |
 | 2026-11-18 | Fix: the World row's note quoted in `countries.csv`; its comma broke the seed load and CI since #343 | PR #346 |

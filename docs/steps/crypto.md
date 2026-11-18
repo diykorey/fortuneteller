@@ -77,9 +77,9 @@ hack in the news can be answered from its past.
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | **Done** 2026-11-18, [below](#step-1). The two markets: seed rows, series, `load-prices`; the seed `data/seed/crypto.csv` (`day,time,kind,target,amount`) from the list by `scripts/defillama_hacks.py` | `load-prices` stores both; each close of 2026-11-09 to 2026-11-13 checked against the close of Yahoo's last hourly bar before its time (`interval=60m`: ether's 23:00 UTC bar, Coinbase's 15:30 New York bar), within 0.05%; the seed test checks the header, 44 rows, order, time `04:00`, kind `hack`, each amount at least 100000000. On a copy of the store, before and after: every other flow's `follows` and `raw-move` output identical but for the two markets' rows and the chance lines, each chance line and the scoreboard's written here |
+| 1 | **Done** 2026-11-18, the close check missed on 2 of 10 closes, [below](#step-1). The two markets: seed rows, series, `load-prices`; the seed `data/seed/crypto.csv` (`day,time,kind,target,amount`) from the list by `scripts/defillama_hacks.py` | `load-prices` stores both; each close of 2026-11-09 to 2026-11-13 checked against the close of Yahoo's last hourly bar before its time (`interval=60m`: ether's 23:00 UTC bar, Coinbase's 15:30 New York bar), within 0.05%; the seed test checks the header, 44 rows, order, time `04:00`, kind `hack`, each amount at least 100000000. On a copy of the store, before and after: every other flow's `follows` and `raw-move` output identical but for the two markets' rows and the chance lines, each chance line and the scoreboard's written here |
 | 2 | **Done** 2026-11-18, [below](#step-2). Flow `crypto`; `follows --event crypto`; `crypto` in `TRIGGER_KINDS` | Tests: a Saturday hack reacts on Monday on bitcoin and on the S&P 500; a `crypto` trigger for a day not stored is answered from a hack made at 04:00 UTC. On a copy of the store the header is the expected one, and every other flow's output byte for byte the one of step 1's store |
-| 3 | Results here and in [MVP results](../mvp-results.md), against the expected outcome; the roadmap row | Every bullet marked right or wrong with its numbers and command; each cell with 30 or more graded walk-forward and its record; the days shared with another flow, by the hack's UTC day |
+| 3 | **Done** 2026-11-18, [below](#results). Results here and in [MVP results](../mvp-results.md), against the expected outcome; the roadmap row | Every bullet marked right or wrong with its numbers and command; each cell with 30 or more graded walk-forward and its record; the days shared with another flow, by the hack's UTC day |
 
 ### Step 1
 
@@ -151,3 +151,46 @@ No live link.
   `tests/test_study_raw_move.py`.
 - **Docs:** this spec; `docs/schema.md` (code 31, the detail, the instruments); the glossary
   (*DefiLlama*, *hack*, *ETH*, *COIN*); roadmap row 27 amended to hacks; status, changelog.
+
+## Results
+
+*2026-11-18.* Every line quoted is in [the evidence](crypto-results.txt): step 2's copy of the
+store, the whole output of `follows --event crypto` (from the close before), `follows --event
+crypto --after-the-day` (from the reaction close) and `raw-move --event crypto`, and
+`scripts/shared_days.py`'s count.
+
+**In plain words:** after $100 million or more was stolen in a crypto hack, bitcoin, ether and
+Coinbase's shares did nothing an ordinary day, week or month would not, counted from either close.
+Across every market there is one answer: the VIX rose on the day counted from the close after,
+within what luck alone gives. No market moves more on hack days than on ordinary days by the bar,
+though 16 are *unclear*. The expected outcome held but for one piece of arithmetic: fewer markets
+than expected had 40 hacks counted over the week.
+
+- **The header, as expected:** `follows: 44 crypto hacks 2014-02-07 … 2026-10-29: 44 hacks`
+  (`follows --event crypto`). Right.
+- **Walk-forward: nothing holds** (both runs). Right. No cell reaches 30 graded: the most is
+  coffee's week from the reaction close, 14 graded, 5 right; the 5-year yield's month 5 and 7
+  (3 and 4 right), the rest 1 to 4.
+- **On all history, against the chance line plus 2** (each run; chance about 2.7, so a bar of
+  4.7): from the close before **0 answers**; from the reaction close **1**, the VIX *up* on the day
+  (24 up, 8 the same, 12 down of 44, chance 0.0087), *too few* walk-forward, not marked by the
+  placebo. Right in both.
+- **Bitcoin, ether and Coinbase** (both runs): *can't say* on all 18 cells. Right. Counted:
+  bitcoin 43 on the day, 40 over the week, 31 over the month (11 left out for overlap); ether 42,
+  39, 30; Coinbase 37, 34, 26. The smallest chance is bitcoin's week from the close before, 0.0214,
+  12 up, 20 the same, 8 down of 40, against the bar of 0.01.
+- **The arithmetic: wrong for the week.** Coinbase is *too few* on every span, as expected. But the
+  week has fewer than 40 counted where 40 were expected: from the close before, ether 39, the
+  Nikkei 39, the DAX, the Euro Stoxx 50 and the STOXX 600 37, the FTSE 100 35; from the reaction
+  close each of these 39. A week's span ends past the next hack's start on those markets and is
+  left out for overlap. No cell reached 30 graded either way.
+- **Every other flow's rows** ([step 1](#step-1), [step 2](#step-2), the `cmp` and the chance
+  lines in [their evidence](crypto-steps.txt)): unchanged but for the two markets' rows; the chance
+  lines rose by the added cells alone. Right.
+- **The size of the move** (`raw-move --event crypto`, outside the rule, recorded): on the hacks'
+  lone days no market *moves*: 14 *doesn't*, 16 *unclear*, among them energy stocks (ratio 1.59,
+  p 0.0148) and the euro (1.45, 0.039); bitcoin's ratio 0.95, ether's 1.18, Coinbase's 1.05.
+- **Days shared with another flow** (`scripts/shared_days.py crypto`): 25 of the 44, by the hack's
+  UTC day; jobless claims on 8, the ECB president's statements on 5, the euro area's flash HICP,
+  ISM, the Fed chair's statements and the president's second-term posts on 3 each, and twelve
+  others on 1 or 2 (in the evidence).

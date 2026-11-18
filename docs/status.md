@@ -12,15 +12,12 @@ Where the work is and what comes next: the task last finished, the tasks in prog
 
 ## Last completed
 
-Step 26: war and military strikes ([the spec](steps/war.md#results)). 136 violent acts that set
-off an international crisis, 1970 to 2021: gold *up* after them, too few walk-forward; oil and
-defence stocks *can't say*; one answer above the chance bar from the close before.
+Step 27: crypto shocks ([the spec](steps/crypto.md#results)). 44 hacks of $100 million or more,
+2014 to 2026, with ether and Coinbase added as markets: nothing follows them that an ordinary day
+would not give; as expected.
 
 ## In progress
 
-- **Step 27: crypto shocks** ([the spec](steps/crypto.md)): what follows a hack of $100 million
-  or more, 44 from DefiLlama's list, 2014 to 2026, with ether and Coinbase added as markets. Steps 1
-  and 2 done: the two markets, the seed and the flow. Next: step 3, the results.
 - **Step 22: ask the fortune teller** ([the spec](steps/ask-the-fortune-teller.md)): the page
   section where a reader picks a kind of event and sees what followed, from the same function
   the follows command uses. Steps 1 to 4 are built: one function for follows and the page, the
@@ -47,7 +44,8 @@ defence stocks *can't say*; one answer above the chance bar from the close befor
 
 ## Next
 
-Step 27, step 3: the results.
+Step 28, weather: the spec
+([roadmap phase 5](roadmap.md#phase-5-the-kinds-the-news-brings)).
 
 ## Known, not yet fixed
 

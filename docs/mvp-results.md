@@ -659,6 +659,17 @@ show nothing; a few cells elsewhere answer, the yields in opposite directions in
 the acts' days `raw-move` finds no market that *moves*; 8 are *unclear*. Counted from the close before, the answers are one
 above the chance bar, so that run is not cleared of luck.
 
+## What follows a crypto hack
+
+Measured 2026-11-18. Detail in [crypto](steps/crypto.md#results).
+
+44 thefts of $100 million or more from crypto exchanges, protocols and wallets, 2014 to 2026, by
+DefiLlama's list (`follows --event crypto`). **Nothing follows them that an ordinary day would not
+give**: bitcoin, ether and Coinbase's shares *can't say* over the day, the week and the month;
+across every market one answer, the VIX up on the day counted from the close after, within the
+luck the chance line allows. `raw-move` finds no market that moves more on hack days; 16 are
+*unclear*. As expected, but for fewer markets than expected counting 40 hacks over the week.
+
 ## What comes next
 
 Chosen 2026-10-13: keep score ([rung 4](steps/rung-4-keep-score.md)), done above with the live path
