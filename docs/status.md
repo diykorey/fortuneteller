@@ -12,19 +12,12 @@ Where the work is and what comes next: the task last finished, the tasks in prog
 
 ## Last completed
 
-Step 24: what follows an OPEC+ decision ([the spec](steps/opec.md#results)). From the close
-before, energy stocks and gasoline move with the oil market's reading on the day and the week, and
-gasoline's day after *oil up* holds walk-forward; from the reaction close, about chance.
+Step 25: other central banks ([the spec](steps/other-central-banks.md#results)). The Bank of
+England's 187 decisions and the Bank of Japan's 85, with the pound, the yen and the Nikkei added:
+nothing beyond chance, nothing holds walk-forward; the pound *can't say* after a BoE move.
 
 ## In progress
 
-- **Step 25: other central banks** ([the spec](steps/other-central-banks.md)): what followed the
-  Bank of England's 186 and the Bank of Japan's 86 rate decisions, with the pound, the yen and the
-  Nikkei added as markets. Step 1 done: the three markets
-  loaded, every existing row unchanged; the Bank's history disagrees with the calendar on the
-  three days expected. Step 2 done: `follows --event boe` prints the expected 187 decisions,
-  17 cuts, 153 holds, 17 hikes. Step 3 done: `follows --event boj`
-  prints the expected 85 decisions, 79 holds, 6 hikes. Next, step 4, the results.
 - **Step 22: ask the fortune teller** ([the spec](steps/ask-the-fortune-teller.md)): the page
   section where a reader picks a kind of event and sees what followed, from the same function
   the follows command uses. Steps 1 to 4 are built: one function for follows and the page, the
@@ -51,7 +44,7 @@ gasoline's day after *oil up* holds walk-forward; from the reaction close, about
 
 ## Next
 
-Step 26, war and military strikes
+Step 26, war and military strikes: the spec
 ([roadmap phase 5](roadmap.md#phase-5-the-kinds-the-news-brings)).
 
 ## Known, not yet fixed

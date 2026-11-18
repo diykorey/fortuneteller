@@ -634,6 +634,18 @@ is answered, the move is already in**: five scattered cells answer, about chance
 meetings the IMF's cut, hold or boost answers no cell, most having too few events; the market's
 reading answers 6, mostly oil itself.
 
+## What follows a Bank of England or Bank of Japan decision
+
+Measured 2026-11-18. Detail in [other central banks](steps/other-central-banks.md#results).
+
+187 Bank of England decisions from 2008 (17 cuts, 153 holds, 17 hikes) and 85 Bank of Japan
+decisions from 2016 (79 holds, 6 hikes), each taken by the bank's own rate (`follows --event boe`,
+`--event boj`), against every market including the newly added pound, yen and Nikkei 225. Markets
+move more than usual on BoE days, the pound and the yen among them, but **which way is not told by
+the decision**: one to two answers per bank and run, fewer than chance alone gives (7.2 for the
+BoE, 2.5 for the BoJ), and none holds walk-forward. BoJ days are ordinary in size too. The pound
+on the day of a BoE cut or hike is *can't say*, 17 of each being too few.
+
 ## What comes next
 
 Chosen 2026-10-13: keep score ([rung 4](steps/rung-4-keep-score.md)), done above with the live path
