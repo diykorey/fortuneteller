@@ -536,7 +536,11 @@ def describe_follows(
     chance line (docs/steps/opec.md)."""
     counted = [kinds[e.event_id] for e in events if e.event_id in kinds]
     first, last = (flows.release_date(e) for e in (events[0], events[-1]))
-    plural = "s" if tuple(order) in (study.KINDS, (study.SCANDAL,), (study.VIOLENT_ACT,)) else ""
+    plural = (
+        "s"
+        if tuple(order) in (study.KINDS, (study.SCANDAL,), (study.VIOLENT_ACT,), (study.HACK,))
+        else ""
+    )
     width = max(5, *(len(kind) for kind in order))
     span_width = max(6, *(len(span) + 1 for _, span, _, _ in cells))
     lines = [
@@ -586,6 +590,7 @@ FOLLOWS_NOUNS = {
     "boe": "BoE decisions",
     "boj": "BoJ decisions",
     "war": "violent acts",
+    "crypto": "crypto hacks",
 }
 
 
@@ -656,9 +661,9 @@ def follows_cells(
             kinds = study.detail_kinds(flows.stored_events(flow, con=con))
             order = study.OPEC_KINDS
             events, cells = study.follow_decisions(flow, kinds, order, con=con, after=after)
-        elif flow is flows.WAR_FLOW:
-            kinds = study.war_kinds(flows.stored_events(flow, con=con))
-            order = (study.VIOLENT_ACT,)
+        elif flow.cli_name in study.ONE_KIND:
+            kinds = study.one_kind(flow, flows.stored_events(flow, con=con))
+            order = (study.ONE_KIND[flow.cli_name],)
             events, cells = study.follow_decisions(flow, kinds, order, con=con, after=after)
         elif flow is flows.BOE_FLOW or flow is flows.BOJ_FLOW:
             stored = flows.stored_events(flow, con=con)
@@ -776,8 +781,8 @@ def _triggers(_args: argparse.Namespace) -> int:
                 kinds[name] = {}
             elif flow is flows.OPEC_FLOW:
                 kinds[name] = study.detail_kinds(events[name])
-            elif flow is flows.WAR_FLOW:
-                kinds[name] = study.war_kinds(events[name])
+            elif name in study.ONE_KIND:
+                kinds[name] = study.one_kind(flow, events[name])
             else:
                 kinds[name] = study.release_kinds(flow, con=con)
         closes = {m: study.stored_closes(m, con=con) for m in study.MVP_PRICE_SERIES}
@@ -1885,8 +1890,10 @@ def ask_data(con: duckdb.DuckDBPyConnection) -> dict[str, list[dict[str, object]
             flows.BOE_FLOW.cli_name,
             flows.BOJ_FLOW.cli_name,
             flows.WAR_FLOW.cli_name,
+            flows.CRYPTO_FLOW.cli_name,
         ):
-            # Steps 24 to 26 add OPEC, the two banks and violent acts to follows and triggers, not to the page
+            # Steps 24 to 27 add OPEC, the two banks, violent acts and hacks to follows and triggers,
+            # not to the page
             # (docs/steps/opec.md, docs/steps/other-central-banks.md).
             continue
         try:
