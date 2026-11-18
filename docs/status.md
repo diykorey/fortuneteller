@@ -12,15 +12,12 @@ Where the work is and what comes next: the task last finished, the tasks in prog
 
 ## Last completed
 
-Step 25: other central banks ([the spec](steps/other-central-banks.md#results)). The Bank of
-England's 187 decisions and the Bank of Japan's 85, with the pound, the yen and the Nikkei added:
-nothing beyond chance, nothing holds walk-forward; the pound *can't say* after a BoE move.
+Step 26: war and military strikes ([the spec](steps/war.md#results)). 136 violent acts that set
+off an international crisis, 1970 to 2021: gold *up* after them, too few walk-forward; oil and
+defence stocks *can't say*; one answer above the chance bar from the close before.
 
 ## In progress
 
-- **Step 26: war and military strikes** ([the spec](steps/war.md)): what followed the 136
-  violent acts that set off an international crisis, 1970 to 2021, by ICB's list. Steps 1 and 2 done:
-  `follows --event war` prints the expected 136; next, step 3, the results.
 - **Step 22: ask the fortune teller** ([the spec](steps/ask-the-fortune-teller.md)): the page
   section where a reader picks a kind of event and sees what followed, from the same function
   the follows command uses. Steps 1 to 4 are built: one function for follows and the page, the

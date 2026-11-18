@@ -78,6 +78,9 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **Flash estimate** — Eurostat's first print of the month's euro-area inflation, around the first
   working day of the next month at 11:00 Frankfurt; the final follows two weeks later
   ([euro-area inflation](steps/euro-inflation.md)).
+- **Hole** — a span whose start or end close falls after a gap of missing closes in a market's
+  data, such as US markets shut from 2001-09-11 to 2001-09-14; `follows` leaves such an event out
+  on that market and counts it in its `out/hole` column ([what follows](steps/what-follows.md)).
 - **HICP** (Harmonised Index of Consumer Prices) — the euro area's inflation measure, the
   counterpart of US CPI, published by **Eurostat**.
 - **Inter-meeting (unscheduled) decision** — a Fed rate change made outside the published meeting
