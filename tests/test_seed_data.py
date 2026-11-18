@@ -99,6 +99,7 @@ def test_seed_dir_has_no_unexpected_csvs() -> None:
         "presidential_posts_2.csv",
         "ceo_scandals.csv",
         "opec.csv",
+        "war.csv",
         "boe-changes.csv",
         "fomc_sentiment_dictionary.csv",
     }
@@ -279,3 +280,30 @@ def test_post_days_are_inside_the_second_term_window() -> None:
     assert all(re.fullmatch(r"([0-2]\d:[0-5]\d)?", row["rate_time"]) for row in rows)
     assert all(row["rate_time"] == "" or row["rate_time"] >= row["time"] for row in rows)
     assert all(int(row["posts"]) >= 1 for row in rows)
+
+
+def test_war_rows_are_icb_s_crises_a_violent_act_set_off_since_1970() -> None:
+    # given the committed violent acts
+    with (settings.seed_dir / "war.csv").open(newline="", encoding="utf-8") as handle:
+        reader = csv.DictReader(handle)
+        header = reader.fieldnames
+        rows = list(reader)
+    # when their days and crises are read
+    days = [date.fromisoformat(row["day"]) for row in rows]
+    crises = {row["day"]: row["crisis"] for row in rows}
+    # then the 137 crises are in order on 136 days at the rule's hour, one kind, and the five rows
+    # named before measuring are there
+    assert header == ["day", "time", "kind", "crisis"]
+    assert len(rows) == 137 and len(set(days)) == 136 and days == sorted(days)
+    assert (days[0], days[-1]) == (date(1970, 11, 22), date(2021, 4, 28))
+    assert {row["time"] for row in rows} == {"04:00"}
+    assert {row["kind"] for row in rows} == {"violent act"}
+    assert [
+        crises[d] for d in ("1970-11-22", "1990-08-02", "2001-09-11", "2001-12-13", "2020-09-27")
+    ] == [
+        "CONAKRY RAID",
+        "GULF WAR",
+        "AFGHANISTAN/US",
+        "INDIA PARLIAMENT ATTACK",
+        "SECOND NAGORNO-KARABAKH WAR",
+    ]

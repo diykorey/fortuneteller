@@ -536,3 +536,21 @@ def test_a_boj_trigger_is_answered_not_refused(one_market: None) -> None:
     # then it is answered on the market, not refused for its flow
     assert {r["market"] for r in rows} == {SPY}
     assert not any("is not one of" in line for line in lines)
+
+
+def test_a_war_trigger_for_a_day_not_stored_is_answered_from_an_act_at_04_00_utc(
+    one_market: None,
+) -> None:
+    # given no stored act on a day, and a trigger filed that morning
+    closes = _closes(_wavy(300))
+    day = closes[200].day
+    merged = datetime.combine(day, time(5, 0), tzinfo=UTC)
+
+    # when it is answered
+    rows, lines = _answer(
+        [_trigger(day, study.VIOLENT_ACT, "war")], [], {}, closes, merged, flow="war"
+    )
+
+    # then it is answered on the market, from an act made that day
+    assert {r["market"] for r in rows} == {SPY}
+    assert not any("void" in line for line in lines)

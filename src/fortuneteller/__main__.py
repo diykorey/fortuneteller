@@ -536,7 +536,7 @@ def describe_follows(
     chance line (docs/steps/opec.md)."""
     counted = [kinds[e.event_id] for e in events if e.event_id in kinds]
     first, last = (flows.release_date(e) for e in (events[0], events[-1]))
-    plural = "s" if tuple(order) in (study.KINDS, (study.SCANDAL,)) else ""
+    plural = "s" if tuple(order) in (study.KINDS, (study.SCANDAL,), (study.VIOLENT_ACT,)) else ""
     width = max(5, *(len(kind) for kind in order))
     span_width = max(6, *(len(span) + 1 for _, span, _, _ in cells))
     lines = [
@@ -585,6 +585,7 @@ FOLLOWS_NOUNS = {
     "opec": "OPEC announcements",
     "boe": "BoE decisions",
     "boj": "BoJ decisions",
+    "war": "violent acts",
 }
 
 
@@ -654,6 +655,10 @@ def follows_cells(
         elif flow is flows.OPEC_FLOW:
             kinds = study.detail_kinds(flows.stored_events(flow, con=con))
             order = study.OPEC_KINDS
+            events, cells = study.follow_decisions(flow, kinds, order, con=con, after=after)
+        elif flow is flows.WAR_FLOW:
+            kinds = study.war_kinds(flows.stored_events(flow, con=con))
+            order = (study.VIOLENT_ACT,)
             events, cells = study.follow_decisions(flow, kinds, order, con=con, after=after)
         elif flow is flows.BOE_FLOW or flow is flows.BOJ_FLOW:
             stored = flows.stored_events(flow, con=con)
@@ -771,6 +776,8 @@ def _triggers(_args: argparse.Namespace) -> int:
                 kinds[name] = {}
             elif flow is flows.OPEC_FLOW:
                 kinds[name] = study.detail_kinds(events[name])
+            elif flow is flows.WAR_FLOW:
+                kinds[name] = study.war_kinds(events[name])
             else:
                 kinds[name] = study.release_kinds(flow, con=con)
         closes = {m: study.stored_closes(m, con=con) for m in study.MVP_PRICE_SERIES}
@@ -1873,8 +1880,13 @@ def ask_data(con: duckdb.DuckDBPyConnection) -> dict[str, list[dict[str, object]
     left_out: list[dict[str, object]] = []
     names = market_names()
     for name, noun in FOLLOWS_NOUNS.items():
-        if name in (flows.OPEC_FLOW.cli_name, flows.BOE_FLOW.cli_name, flows.BOJ_FLOW.cli_name):
-            # Steps 24 and 25 add OPEC and the two banks to follows and triggers, not to the page
+        if name in (
+            flows.OPEC_FLOW.cli_name,
+            flows.BOE_FLOW.cli_name,
+            flows.BOJ_FLOW.cli_name,
+            flows.WAR_FLOW.cli_name,
+        ):
+            # Steps 24 to 26 add OPEC, the two banks and violent acts to follows and triggers, not to the page
             # (docs/steps/opec.md, docs/steps/other-central-banks.md).
             continue
         try:

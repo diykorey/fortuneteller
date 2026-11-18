@@ -741,3 +741,29 @@ def test_two_times_on_one_day_are_refused(tmp_path: Path) -> None:
     # then the file is refused: one day is one event, at one time
     with pytest.raises(ValueError, match="two times on 2025-02-23"):
         flows.DE_ELECTION_FLOW.load(seed, datetime(2026, 11, 2, 12, 0, tzinfo=NEW_YORK))
+
+
+def test_a_violent_act_on_a_saturday_reacts_on_monday(tmp_path: Path) -> None:
+    # given two crises set off on one Saturday, 1981-04-25, and a weekday act
+    seed = tmp_path / "war.csv"
+    seed.write_text(
+        "day,time,kind,crisis\n"
+        "1981-04-25,04:00,violent act,A\n"
+        "1981-04-25,04:00,violent act,B\n"
+        "1990-08-02,04:00,violent act,GULF WAR\n"
+    )
+
+    # when the acts are loaded
+    batch = flows.WAR_FLOW.load(seed, datetime(2026, 11, 18, 12, 0, tzinfo=NEW_YORK))
+
+    # then the two crises are one event naming both, unscheduled; it reacts on Monday on the S&P
+    # 500 and the euro
+    assert [(e.event_id, e.detail, e.scheduled) for e in batch.events] == [
+        (3019810425, "A; B", False),
+        (3019900802, "GULF WAR", False),
+    ]
+    closes = _closes((date(1981, 4, 24), 100.0), (date(1981, 4, 27), 101.0))
+    for market in ("SPY / ES", "EURUSD"):
+        saturday = first_reaction_day(batch.events[0], MVP_PRICE_SERIES[market])
+        assert reaction_days(closes, [saturday]) == {date(1981, 4, 27)}
+    assert batch.report == ["loaded 2 World violent acts, 1981-04-25 … 1990-08-02"]

@@ -47,6 +47,7 @@ from .flows import (
     DatedShockFlow,
     EventFlow,
     OPEC_FLOW,
+    WAR_FLOW,
     SurpriseRule,
     called_live,
     event_date,
@@ -1973,6 +1974,17 @@ KIND_SPAN, KIND_MARKET = "day", "BRN"
 KIND_SERIES = MVP_PRICE_SERIES[KIND_MARKET]
 
 
+# Step 26 (docs/steps/war.md): one kind, the violent act that set off a crisis; a live trigger's
+# act at the seed's rule hour, 04:00 UTC.
+VIOLENT_ACT = "violent act"
+WAR_HOUR = time(4, 0)
+
+
+def war_kinds(events: Iterable[EventInstance]) -> dict[int, str]:
+    """Every violent act's kind by event id: the one kind."""
+    return dict.fromkeys((e.event_id for e in events), VIOLENT_ACT)
+
+
 def detail_kinds(events: Iterable[EventInstance]) -> dict[int, str]:
     """Each event's kind as its seed's detail names it, by event id."""
     return {e.event_id: e.detail or "" for e in events}
@@ -2210,6 +2222,7 @@ TRIGGER_KINDS = {
     "opec": OPEC_KINDS,
     "boe": KINDS,
     "boj": KINDS,
+    "war": (VIOLENT_ACT,),
 }
 TRIGGER_LOG_COLUMNS = (
     "file",
@@ -2358,6 +2371,12 @@ def answer_triggers(
                 continue
             flow_events = sorted([*flow_events, event], key=lambda e: e.event_ts)
             flow_kinds = {**flow_kinds, event.event_id: live}
+        if event is None and t.flow == WAR_FLOW.cli_name:
+            event = WAR_FLOW.event_instance(
+                datetime.combine(t.day, WAR_HOUR, tzinfo=WAR_FLOW.zone), "a live trigger"
+            )
+            flow_events = sorted([*flow_events, event], key=lambda e: e.event_ts)
+            flow_kinds = {**flow_kinds, event.event_id: VIOLENT_ACT}
         if event is None:
             if any(release_date(e) > t.day for e in flow_events):
                 lines.append(f"{head}: void, {t.flow} had no event on {t.day}")

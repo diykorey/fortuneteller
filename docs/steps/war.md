@@ -81,9 +81,24 @@ from the source and the store's first closes, and are arithmetic.*
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | The seed `data/seed/war.csv` (`day,time,kind,crisis`) from ICB's two files, by `scripts/icb_violent_acts.py`; the flow stored | The seed test checks the header, 137 rows, days in order, time `04:00`, kind `violent act`. On a copy of the store, the flow stores 136 events; every existing scoreboard entry identical, and its chance before and after written here; the five rows below checked |
-| 2 | `follows --event war`; `war` in `TRIGGER_KINDS` | Tests: a Saturday act reacts on Monday; a weekday act on Tokyo's close the same day and the euro's the next; a `war` trigger for a day not stored is answered from an event made at 04:00 UTC that day. On a copy of the store the header is the expected one, and every other flow's `follows` and `raw-move` output byte for byte the one before, OPEC's included |
+| 1 | ~~The seed~~ **done** 2026-11-18. The seed `data/seed/war.csv` (`day,time,kind,crisis`) from ICB's two files, by `scripts/icb_violent_acts.py`; the flow stored | The seed test checks the header, 137 rows, days in order, time `04:00`, kind `violent act`. On a copy of the store, the flow stores 136 events; every existing scoreboard entry identical, and its chance before and after written here; the five rows below checked |
+| 2 | ~~`follows`~~ **done** 2026-11-18. `follows --event war`; `war` in `TRIGGER_KINDS` | Tests: a Saturday act reacts on Monday; a weekday act on Tokyo's close the same day and the euro's the next; a `war` trigger for a day not stored is answered from an event made at 04:00 UTC that day. On a copy of the store the header is the expected one, and every other flow's `follows` and `raw-move` output byte for byte the one before, OPEC's included |
 | 3 | Results here and in [MVP results](../mvp-results.md), against the expected outcome; the roadmap row | Every bullet of the expected outcome marked right or wrong with its numbers; each cell with 30 or more graded walk-forward and its record; the days shared with another flow, by the act's UTC day |
+
+*Steps 1 and 2, 2026-11-18, one pull request:* `scripts/icb_violent_acts.py` writes 137 rows,
+leaving out the two with no day; the five rows named below are in the seed as named. *Amended
+2026-11-18:* an event's detail is ICB's crisis name, not the kind, since the two crises of
+1981-04-28 are one event (`AL-BIQA MISSILES I; CONTRAS I`); the kind is the one kind, read by
+`study.war_kinds`. A Saturday act reacts on Monday by the reaction-day mapping
+(`tests/test_study_raw_move.py`), and 1990-08-02 at 04:00 UTC on Tokyo's and New York's close that
+day and the euro's the next. On a copy of the store of 2026-11-17 (closes to 2026-11-16) holding
+step 25's three markets and two banks and OPEC's 169 announcements, the same code was run with and
+without the acts stored: `load-releases` stores `136 World violent acts, 1970-11-22 … 2021-04-28`;
+`follows --event war` heads its table `follows: 136 violent acts 1970-11-22 … 2021-04-28: 136
+violent acts`, the expected header; every other flow's `follows` (both runs, and the Fed's
+`--long`) and `raw-move`, OPEC's included, is byte for byte the one before. The scoreboard gains
+the acts' raw-move entry (29 → 30 events), its raw-move chance 698 → 726 cells; every other
+entry is the same.
 
 ## How you know it is right
 
