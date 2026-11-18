@@ -6,6 +6,7 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-18 | Spec: step 27, what follows a crypto hack of $100 million or more (DefiLlama's list, 44 hacks 2014 to 2026), ether and Coinbase added as markets; roadmap row 27 amended to hacks | PR #345 |
 | 2026-11-18 | Step 26 results: gold up after a violent act on the day, the week and the month, too few walk-forward; oil and defence stocks *can't say*; the expected outcome wrong on gold, on the chance bar from the close before and on other flows' chance lines | PR #344 |
 | 2026-11-18 | Step 26, steps 1 and 2: the violent acts' seed from ICB, the `war` flow, `follows --event war` and `war` triggers; the expected 136, every other flow unchanged | PR #343 |
 | 2026-11-18 | Step 26 spec: what follows a violent act that sets off a crisis, 136 days from ICB's list, the expected outcome written first | PR #342 |

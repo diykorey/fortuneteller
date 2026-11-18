@@ -18,6 +18,9 @@ defence stocks *can't say*; one answer above the chance bar from the close befor
 
 ## In progress
 
+- **Step 27: crypto shocks** ([the spec](steps/crypto.md)): what follows a hack of $100 million
+  or more, 44 from DefiLlama's list, 2014 to 2026, with ether and Coinbase added as markets. Spec
+  under review.
 - **Step 22: ask the fortune teller** ([the spec](steps/ask-the-fortune-teller.md)): the page
   section where a reader picks a kind of event and sees what followed, from the same function
   the follows command uses. Steps 1 to 4 are built: one function for follows and the page, the
@@ -44,8 +47,7 @@ defence stocks *can't say*; one answer above the chance bar from the close befor
 
 ## Next
 
-Step 27, crypto shocks: the spec
-([roadmap phase 5](roadmap.md#phase-5-the-kinds-the-news-brings)).
+Step 27, step 1: the two markets and the seed.
 
 ## Known, not yet fixed
 
