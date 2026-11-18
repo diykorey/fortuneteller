@@ -44,7 +44,8 @@ would not give; as expected.
 
 ## Next
 
-Step 27, step 2: the `crypto` flow, `follows --event crypto`, `crypto` triggers.
+Step 28, weather: the spec
+([roadmap phase 5](roadmap.md#phase-5-the-kinds-the-news-brings)).
 
 ## Known, not yet fixed
 
