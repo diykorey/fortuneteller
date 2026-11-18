@@ -11,6 +11,17 @@ amended there with a date.
 Each entry: **what** was decided, **why**, what it **retires**, and **where** the detail is. *By the
 owner* marks a choice the owner made over another on the table.
 
+## 2026-11-18: War is measured as ICB's violent acts
+
+- **What:** step 26's *war and military strikes* is every international crisis since 1970 that
+  the International Crisis Behavior project codes as set off by a violent act: 136 days, 1970 to
+  2021, one kind.
+- **Why:** a free list nobody here picks, with a day for each. A crisis's trigger is often words
+  weeks before the shooting, and a crisis's violence is known only once it has run its course; the
+  violent act is the day a trigger would be filed, known that day.
+- **Retires:** nothing. Wars after 2021 wait for ICB's next version.
+- **Where:** [war](steps/war.md).
+
 ## 2026-11-17: Widen the kinds now (by the owner)
 
 - **What:** phase 4's pause on new kinds is lifted. Phase 5 adds, one per pull request: OPEC+
