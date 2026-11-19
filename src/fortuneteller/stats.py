@@ -219,14 +219,29 @@ def binomial_tail(k: int, n: int, rate: float) -> float:
     return min(1.0, sum(_binomial_chance(n, j, rate) for j in range(max(k, 0), n + 1)))
 
 
+class PoissonBinomial:
+    """The distribution of the count of successes, built up one try at a time, each try with its
+    own rate; kept so a walk-forward can add its next try without building the rest again."""
+
+    def __init__(self) -> None:
+        self.counts = [1.0]
+
+    def add(self, rate: float) -> None:
+        step = [0.0] * (len(self.counts) + 1)
+        for i, chance in enumerate(self.counts):
+            step[i] += chance * (1 - rate)
+            step[i + 1] += chance * rate
+        self.counts = step
+
+    def tail(self, right: int) -> float:
+        """The chance of ``right`` or more successes."""
+        return min(1.0, sum(self.counts[max(right, 0) :]))
+
+
 def poisson_binomial_tail(right: int, rates: Sequence[float]) -> float:
     """The chance of ``right`` or more successes when each try has its own rate, exactly: the
     distribution of the count built up one try at a time."""
-    counts = [1.0]
+    counts = PoissonBinomial()
     for rate in rates:
-        step = [0.0] * (len(counts) + 1)
-        for i, chance in enumerate(counts):
-            step[i] += chance * (1 - rate)
-            step[i + 1] += chance * rate
-        counts = step
-    return min(1.0, sum(counts[max(right, 0) :]))
+        counts.add(rate)
+    return counts.tail(right)
