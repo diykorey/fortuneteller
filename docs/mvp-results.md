@@ -691,6 +691,18 @@ over the day, the week or the month, and on the floods' days none moves more tha
 answer in each run, within chance; too few floods for any to hold. Droughts are not measured: the
 list dates them by season, not by day.
 
+## What follows an earnings report
+
+Measured 2026-11-19. Detail in [earnings](steps/earnings.md#results).
+
+2,068 quarterly reports of the Dow's members, 2008 to 2026, each against the S&P 500
+(`follows --event earnings`). Counted from the close before, **a miss is followed by the shares
+falling behind the index, and so is a report in line with the consensus**, over the day, the week
+and the month; a beat by running ahead over the week and the month (its day reads as the period).
+Three links hold walk-forward: a miss's day (156 of 219 right) and week (145 of 217), and an
+in-line report's day (183 of 303). From the reaction close only a miss's next day still leans
+down, and nothing holds.
+
 ## What comes next
 
 Chosen 2026-10-13: keep score ([rung 4](steps/rung-4-keep-score.md)), done above with the live path

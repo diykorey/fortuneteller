@@ -6,6 +6,8 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-19 | Step 31 results: from the close before, a Dow member's shares fall behind the S&P 500 after a miss or an in-line report and run ahead over the week and month after a beat; a miss's day and week and an in-line report's day hold walk-forward; the expected outcome wrong on six counts, the in-line reports above all | PR #368 |
+| 2026-11-19 | `follows`' walk-forward over a company's reports builds each chance one event at a time: `follows --event earnings` 11 min 16 s → 59 s, every output byte-identical (both runs of the earnings and the CEO flow compared) | PR #367 |
 | 2026-11-19 | Step 30 results: nothing follows a flood; 39 floods, one answer a run, within chance; the expected outcome right | PR #360 |
 | 2026-11-19 | Step 22, step 5: the published page answers every kind, none left out, with exactly the three expected holds; step 22 done | PR #355 |
 | 2026-11-18 | Step 28 results: fuel, energy stocks, corn, soybeans and Allstate *can't say* after a hurricane landfall; wheat *about the same* on the day from the reaction close, the one miss of the expected outcome; two answers in all, within chance | PR #354 |

@@ -12,15 +12,15 @@ Where the work is and what comes next: the task last finished, the tasks in prog
 
 ## Last completed
 
-Step 30: floods ([results](steps/floods.md#results)). Nothing follows a billion-dollar US flood
-on crops, fuel or insurers; one answer a run, within chance; droughts left out, dated by season.
+Step 31: earnings ([results](steps/earnings.md#results)). From the close before, a Dow member's
+shares fall behind the S&P 500 after a miss or an in-line report, and run ahead over the week and
+month after a beat; a miss's day and week and an in-line report's day hold walk-forward.
 
 ## In progress
 
-- **Step 31: earnings** ([the spec](steps/earnings.md)): the Dow's members' EPS against the
-  consensus, each company against the S&P 500. Step 1 done: 2,092 reports kept from
-  Nasdaq's calendar, each at its 8-K's minute; the ten hand checks pass. Step 2 done: `follows --event earnings`, every other
-  flow's output unchanged. Next: step 3, results.
+- **Step 32: ask about earnings** ([the spec](steps/ask-earnings.md)): the page answers step 31's
+  three earnings kinds, every cell carries the placebo's mark, and `load-prices` loads the
+  companies every evening. Spec read by a goldfish; next, step 1.
 - **Step 29: ask about phase 5's kinds** ([the spec](steps/ask-phase-5.md)): the page's
   section answers OPEC+, the two banks, violent acts, hacks, landfalls and floods. Step 1 built; step 2
   waits for the evening job.
