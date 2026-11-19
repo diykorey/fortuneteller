@@ -672,7 +672,13 @@ def follows_cells(
             if flow is flows.BOE_FLOW:
                 kinds = study.boe_kinds(stored, _boe_rates())
             else:
-                kinds = study.ecb_kinds(stored, _boj_rates())
+                try:
+                    boj_rates = _boj_rates()
+                except sources.CalendarError as exc:
+                    raise FollowsUnavailable(
+                        f"the BoJ's rates could not be read from TradingView: {exc}"
+                    ) from None
+                kinds = study.ecb_kinds(stored, boj_rates)
             order = study.KINDS
             events, cells = study.follow_decisions(flow, kinds, order, con=con, after=after)
         else:
@@ -1780,7 +1786,32 @@ ASK_DECISIONS = {
         study.HIKE: "an ECB rate hike",
     },
     "ceo": {study.SCANDAL: "a CEO's conduct in question"},
+    "opec": {
+        study.OIL_UP: "an OPEC+ decision that sent oil up",
+        study.OIL_DOWN: "an OPEC+ decision that sent oil down",
+    },
+    "boe": {
+        study.CUT: "a Bank of England rate cut",
+        study.HOLD: "the Bank of England holding its rate",
+        study.HIKE: "a Bank of England rate hike",
+    },
+    "boj": {
+        study.CUT: "a Bank of Japan rate cut",
+        study.HOLD: "the Bank of Japan holding its rate",
+        study.HIKE: "a Bank of Japan rate hike",
+    },
+    "war": {study.VIOLENT_ACT: "a violent act setting off an international crisis"},
+    "crypto": {study.HACK: "a crypto hack of $100 million or more"},
+    "weather": {study.LANDFALL: "a US hurricane landfall"},
 }
+# Brent's day after an OPEC+ decision is how its kind is read (docs/steps/ask-phase-5.md).
+KIND_CELL_WORDS = "This is how the kind is read, not an answer."
+
+
+def is_kind_cell(name: str, span: str, market: str) -> bool:
+    return (name, span, market) == ("opec", study.KIND_SPAN, study.KIND_MARKET)
+
+
 ASK_RELEASES = {
     "nfp": "a jobs report",
     "retail": "a retail sales release",
@@ -1821,11 +1852,14 @@ def _counts(up: int, same: int, down: int) -> str:
     return f"up {up}, about the same {same}, down {down}, of {up + same + down}"
 
 
-def ask_say(name: str, kind: str, span: str, market: str, f: study.Follow) -> str:
+def ask_say(
+    name: str, kind: str, span: str, market: str, f: study.Follow, market_name: str | None = None
+) -> str:
     """One cell in plain words: the events' counts, the base's counts, the answer and its replay;
     counts only, never a percentage."""
     counts = [f.counts[o] for o in study.OUTCOMES]
-    words = [f"After {ask_kind(name, kind)}, {market} {ASK_SPANS[span]}: {_counts(*counts)}."]
+    shown = market if market_name is None else market_name
+    words = [f"After {ask_kind(name, kind)}, {shown} {ASK_SPANS[span]}: {_counts(*counts)}."]
     if f.base is not None and f.base.n:
         base = [round(f.base.rates[o] * f.base.n) for o in study.OUTCOMES]
         every = "On every day" if span == "day" else f"Over every {span}"
@@ -1851,6 +1885,8 @@ def ask_say(name: str, kind: str, span: str, market: str, f: study.Follow) -> st
         words.append(
             f"Counting each rate cycle once: {f.by_cycle[1]}, from {f.by_cycle[0]} cycles."
         )
+    if is_kind_cell(name, span, market):
+        words.append(KIND_CELL_WORDS)
     return " ".join(words)
 
 
@@ -1876,7 +1912,8 @@ def ask_cell(
         "right": f.right,
         "verdict": f.verdict,
         "cycles": None if f.by_cycle is None else list(f.by_cycle),
-        "say": ask_say(name, kind, span, names.get(market, market), f),
+        "kind_cell": is_kind_cell(name, span, market),
+        "say": ask_say(name, kind, span, market, f, names.get(market, market)),
     }
 
 
@@ -1887,18 +1924,6 @@ def ask_data(con: duckdb.DuckDBPyConnection) -> dict[str, list[dict[str, object]
     left_out: list[dict[str, object]] = []
     names = market_names()
     for name, noun in FOLLOWS_NOUNS.items():
-        if name in (
-            flows.OPEC_FLOW.cli_name,
-            flows.BOE_FLOW.cli_name,
-            flows.BOJ_FLOW.cli_name,
-            flows.WAR_FLOW.cli_name,
-            flows.CRYPTO_FLOW.cli_name,
-            flows.WEATHER_FLOW.cli_name,
-        ):
-            # Steps 24 to 28 add OPEC, the two banks, violent acts, hacks and landfalls to follows and triggers,
-            # not to the page
-            # (docs/steps/opec.md, docs/steps/other-central-banks.md).
-            continue
         try:
             f = follows_cells(name, con)
             cells = list(f.cells)
