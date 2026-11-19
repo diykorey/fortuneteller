@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from fortuneteller import db, flows, sources, study
+from fortuneteller import db, flows, sources, stats, study
 import fortuneteller.__main__ as cli
 from fortuneteller.__main__ import _trigger_companies, main
 from fortuneteller.sources import DailyClosingPrice
@@ -556,6 +556,38 @@ def test_read_article_prints_the_second_kind_with_its_ticker_or_not_a_measured_k
         "a CEO's conduct, no departure: not measured yet (NVDA)",
         "not a measured kind",
     ]
+
+
+def test_rates_so_far_answers_each_prefix_as_its_lists_would() -> None:
+    # given forty events in random order, one at a base where nothing moves (an unsigned share)
+    rng = random.Random(7)
+    bases = [
+        Base(0.01, {UP: u, SAME: 1 - u - d, DOWN: d})
+        for u, d in ((rng.uniform(0.1, 0.5), rng.uniform(0.1, 0.4)) for _ in range(40))
+    ]
+    bases[30] = Base(0.01, {UP: 0.0, SAME: 1.0, DOWN: 0.0})
+    outcomes = [rng.choice((UP, SAME, DOWN, DOWN)) for _ in range(40)]
+    outcomes[30] = DOWN
+    so_far = study.RatesSoFar()
+
+    for n, (outcome, base) in enumerate(zip(outcomes, bases, strict=True), start=1):
+        # when each event is added to the ones before it
+        so_far.add(outcome, base)
+        answer, chance, counts = so_far.answer()
+
+        # then the answer is the one built from the first n events' own lists
+        said, kept = outcomes[:n], bases[:n]
+        assert counts == {o: said.count(o) for o in (UP, SAME, DOWN)}
+        if n < study.MIN_EVENT_DAYS:
+            assert answer == TOO_FEW
+            continue
+        chances = {SAME: stats.poisson_binomial_tail(counts[SAME], [b.rates[SAME] for b in kept])}
+        shares = [b.up_share for o, b in zip(said, kept, strict=True) if o != SAME]
+        if not any(math.isnan(s) for s in shares):
+            chances[UP] = stats.poisson_binomial_tail(counts[UP], shares)
+            chances[DOWN] = stats.poisson_binomial_tail(counts[DOWN], [1 - s for s in shares])
+        assert chance == min(chances.values())
+        assert (UP in chances) == (n <= 30)
 
 
 EARNINGS_LINE = re.compile(

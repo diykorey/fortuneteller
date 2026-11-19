@@ -2073,27 +2073,55 @@ def event_base(
     return base_of([s.move for s in spans.values() if s.start >= first and s.end <= last])
 
 
+class RatesSoFar:
+    """``rates_answer`` over events added one at a time: each chance's distribution grows by the
+    new event alone, the same sums in the same order as building it from all of them."""
+
+    def __init__(self) -> None:
+        self.counts = {o: 0 for o in OUTCOMES}
+        self.same = stats.PoissonBinomial()
+        self.up = stats.PoissonBinomial()
+        self.down = stats.PoissonBinomial()
+        self.moved = 0
+        self.unsigned = False
+
+    def add(self, outcome: str, base: Base) -> None:
+        self.counts[outcome] += 1
+        self.same.add(base.rates[SAME])
+        if outcome == SAME:
+            return
+        self.moved += 1
+        if math.isnan(base.up_share):
+            self.unsigned = True
+        elif not self.unsigned:
+            self.up.add(base.up_share)
+            self.down.add(1 - base.up_share)
+
+    def answer(self) -> tuple[str, float, dict[str, int]]:
+        counts = dict(self.counts)
+        if sum(counts.values()) < MIN_EVENT_DAYS:
+            return TOO_FEW, math.nan, counts
+        chances = {SAME: self.same.tail(counts[SAME])}
+        if self.moved and not self.unsigned:
+            chances[UP] = self.up.tail(counts[UP])
+            chances[DOWN] = self.down.tail(counts[DOWN])
+        best = min(chances.values())
+        winners = [o for o, chance in chances.items() if chance == best]
+        if best < FOLLOW_P_BAR and len(winners) == 1:
+            return winners[0], best, counts
+        return CANT_SAY, best, counts
+
+
 def rates_answer(
     outcomes: Sequence[str], bases: Sequence[Base]
 ) -> tuple[str, float, dict[str, int]]:
     """Part 1's answer with a base per event: *about the same* against each event's rate, *up* and
     *down* on the events that moved against each one's up share, each chance by
     ``stats.poisson_binomial_tail``."""
-    counts = {o: 0 for o in OUTCOMES}
-    for o in outcomes:
-        counts[o] += 1
-    if len(outcomes) < MIN_EVENT_DAYS:
-        return TOO_FEW, math.nan, counts
-    chances = {SAME: stats.poisson_binomial_tail(counts[SAME], [b.rates[SAME] for b in bases])}
-    shares = [b.up_share for o, b in zip(outcomes, bases, strict=True) if o != SAME]
-    if shares and not any(math.isnan(share) for share in shares):
-        chances[UP] = stats.poisson_binomial_tail(counts[UP], shares)
-        chances[DOWN] = stats.poisson_binomial_tail(counts[DOWN], [1 - s for s in shares])
-    best = min(chances.values())
-    winners = [o for o, chance in chances.items() if chance == best]
-    if best < FOLLOW_P_BAR and len(winners) == 1:
-        return winners[0], best, counts
-    return CANT_SAY, best, counts
+    so_far = RatesSoFar()
+    for o, b in zip(outcomes, bases, strict=True):
+        so_far.add(o, b)
+    return so_far.answer()
 
 
 class Scandal(NamedTuple):
@@ -2185,9 +2213,18 @@ def follow_scandals(
                 period = True
     rates: list[float] = []
     right = 0
+    # Each event's earlier ones are, but for an odd span, the last one's and more: those are
+    # added alone, and any other list is built again from its first.
+    so_far: RatesSoFar = RatesSoFar()
+    added: list[Scandal] = []
     for s in kept:
         earlier = [e for e in kept if e.span.end <= s.span.start]
-        said = rates_answer([e.outcome for e in earlier], [e.base for e in earlier])[0]
+        if len(earlier) < len(added) or any(a is not b for a, b in zip(earlier, added)):
+            so_far, added = RatesSoFar(), []
+        for e in earlier[len(added) :]:
+            so_far.add(e.outcome, e.base)
+        added = earlier
+        said = so_far.answer()[0]
         if said in OUTCOMES:
             rates.append(s.base.rates[said])
             right += s.outcome == said
