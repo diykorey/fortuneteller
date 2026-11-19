@@ -48,8 +48,8 @@ This step measures nothing new; it shows steps 24 to 28 exactly.
 - **Expected outcome, written before the page is built on real data:** no cell of the six flows
   holds walk-forward (each step's Results: nothing holds), and the page's three holds, the 10-year
   and 5-year yields after a jobs report above the consensus and the breakeven after a CPI above
-  it, stay the only ones. Exactly one cell is marked as the kind: Brent's day after each OPEC kind,
-  so two cells. A hold among the six, or a marked cell elsewhere, is a finding to explain before
+  it, stay the only ones. Exactly two cells are marked as the kind: Brent's day after each of
+  OPEC's two kinds. A hold among the six, or a marked cell elsewhere, is a finding to explain before
   the step is done.
 
 ## The steps
