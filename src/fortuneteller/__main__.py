@@ -127,17 +127,29 @@ def _load_prices(args: argparse.Namespace) -> int:
         releases = first.measured + first.skipped_before_history + first.skipped_no_close_nearby
         total = sum(counts.measured for counts in by_instrument.values())
         print(f"{len(by_instrument)} instruments × {releases} releases = {total} observations")
+    # The companies too, so the evening keeps them current (docs/steps/ask-earnings.md); one Yahoo
+    # fails on is reported and left out, as the page shows it, and does not fail the load.
+    tickers = company_tickers()
+    loaded, failed = study.load_company_bars(tickers, con=con)
+    for note in failed:
+        print(f"load-prices: {note}", file=sys.stderr)
+    print(f"{len(loaded)} of {len(tickers)} companies loaded")
     return 0
 
 
-def _load_companies(con: duckdb.DuckDBPyConnection) -> int:
-    """The CEO flow's and the earnings' companies' closes; a company Yahoo fails on is reported,
-    the rest load."""
+def company_tickers() -> list[str]:
+    """The CEO flow's and the earnings' companies, each once, in their seeds' order."""
     tickers: list[str] = []
     for seed_file in (flows.CEO_FLOW.seed_file, flows.EARNINGS_FLOW.seed_file):
         with (settings.seed_dir / seed_file).open(newline="") as file:
             tickers += [row["ticker"] for row in csv.DictReader(file)]
-    tickers = list(dict.fromkeys(tickers))
+    return list(dict.fromkeys(tickers))
+
+
+def _load_companies(con: duckdb.DuckDBPyConnection) -> int:
+    """The companies' closes alone; a company Yahoo fails on is reported, the rest load, and the
+    exit is 1."""
+    tickers = company_tickers()
     counts, failed = study.load_company_bars(tickers, con=con)
     for ticker, n in counts.items():
         print(f"{ticker}: {n} closes")
@@ -1822,9 +1834,25 @@ ASK_DECISIONS = {
     "crypto": {study.HACK: "a crypto hack of $100 million or more"},
     "weather": {study.LANDFALL: "a US hurricane landfall"},
     "flood": {study.FLOOD: "a billion-dollar US flood"},
+    "earnings": {
+        study.ABOVE: "a Dow company's earnings above the consensus",
+        study.AS_EXPECTED: "a Dow company's earnings in line with the consensus",
+        study.BELOW: "a Dow company's earnings below the consensus",
+    },
 }
 # Brent's day after an OPEC+ decision is how its kind is read (docs/steps/ask-phase-5.md).
 KIND_CELL_WORDS = "This is how the kind is read, not an answer."
+# A cell the placebo marks (docs/steps/ask-earnings.md).
+PERIOD_WORDS = (
+    "With each event moved ten closes or a span away, the same answer comes: it reads as the "
+    "period, not the event."
+)
+# A release on a fixed weekday lands on that weekday again when moved (what-follows-jobs.md).
+WEEKDAY_PERIOD_WORDS = (
+    "With each event moved ten closes or a span away, the same answer comes: it reads as the "
+    "period or the weekday, not the event."
+)
+WEEKDAY_FLOWS = ("nfp", "claims")
 
 
 def is_kind_cell(name: str, span: str, market: str) -> bool:
@@ -1906,6 +1934,8 @@ def ask_say(
         )
     if is_kind_cell(name, span, market):
         words.append(KIND_CELL_WORDS)
+    if f.period:
+        words.append(WEEKDAY_PERIOD_WORDS if name in WEEKDAY_FLOWS else PERIOD_WORDS)
     return " ".join(words)
 
 
@@ -1932,6 +1962,7 @@ def ask_cell(
         "verdict": f.verdict,
         "cycles": None if f.by_cycle is None else list(f.by_cycle),
         "kind_cell": is_kind_cell(name, span, market),
+        "period": f.period,
         "say": ask_say(name, kind, span, market, f, names.get(market, market)),
     }
 
@@ -1943,9 +1974,6 @@ def ask_data(con: duckdb.DuckDBPyConnection) -> dict[str, list[dict[str, object]
     left_out: list[dict[str, object]] = []
     names = market_names()
     for name, noun in FOLLOWS_NOUNS.items():
-        if name == flows.EARNINGS_FLOW.cli_name:
-            # Step 31 adds the earnings to follows, not yet to the page (docs/steps/earnings.md).
-            continue
         try:
             f = follows_cells(name, con)
             cells = list(f.cells)

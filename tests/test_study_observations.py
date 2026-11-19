@@ -8,7 +8,7 @@ import duckdb
 import pytest
 
 from fortuneteller import db, flows, sources
-from fortuneteller.__main__ import describe_release_counts, main
+from fortuneteller.__main__ import company_tickers, describe_release_counts, main
 from fortuneteller.config import settings
 from fortuneteller.models import DailyBar
 from fortuneteller.sources import (
@@ -341,7 +341,8 @@ def test_load_prices_prints_counts_per_instrument_and_in_total(
         "ALL          1 observations\n"
         "31 instruments × 1 releases = 30 observations\n"
     )
-    assert capsys.readouterr().out == report * 2
+    n = len(company_tickers())
+    assert capsys.readouterr().out == (report + f"{n} of {n} companies loaded\n") * 2
     assert db.count_rows("observations") == 30
     sources_by_market = db.get_connection().execute(
         "SELECT instrument, data_source FROM observations WHERE instrument IN ('KC', 'T5YIE')"

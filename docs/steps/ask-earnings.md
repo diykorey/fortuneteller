@@ -77,7 +77,7 @@ prints.
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | The skip goes; the three kinds' words; `period` on every cell, its sentence and the page's script; `load-prices` loads the companies | The tests below pass; on a copy of the real store the data holds the 3 kinds and 9 earnings cells, nothing left out, and the period marks and holds as the expected outcome counts them; the two `scoreboard` times against the 3-minute bar, in `docs/steps/ask-earnings-steps.txt` |
+| 1 | ~~The skip goes; the three kinds' words; `period` on every cell, its sentence and the page's script; `load-prices` loads the companies~~ **done** 2026-11-19 ([evidence](ask-earnings-steps.txt)): 3 kinds, 9 earnings cells, 7 holds and 3 period marks, as expected; `scoreboard` 1 min 36 s longer | The tests below pass; on a copy of the real store the data holds the 3 kinds and 9 earnings cells, nothing left out, and the period marks and holds as the expected outcome counts them; the two `scoreboard` times against the 3-minute bar, in `docs/steps/ask-earnings-steps.txt` |
 | 2 | On the published page, after the evening job | The 3 kinds appear with their 9 cells; a one-off script reads the published data and every flow's `follows` lines (the Fed's `--long` too) on the real store, and finds every cell's numbers and `period` equal, its output in the evidence; each bullet of the rule judged right or wrong in Results, with its numbers; a goldfish review of the Results |
 
 ## How you know it is right
