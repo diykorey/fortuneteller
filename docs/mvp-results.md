@@ -681,6 +681,16 @@ close after the landfall, it ends the day about where it started more often than
 while `raw-move` finds it moving more on the landfalls' own days; too few to grade walk-forward.
 Two answers in all, within chance.
 
+## What follows a flood
+
+Measured 2026-11-19. Detail in [floods](steps/floods.md#results).
+
+39 US floods of a billion dollars or more that have a day, 1980 to 2024, from NOAA's archived
+list (`follows --event flood`). **Crops, fuel, energy stocks and Allstate's shares give no answer**
+over the day, the week or the month, and on the floods' days none moves more than usual. One
+answer in each run, within chance; too few floods for any to hold. Droughts are not measured: the
+list dates them by season, not by day.
+
 ## What comes next
 
 Chosen 2026-10-13: keep score ([rung 4](steps/rung-4-keep-score.md)), done above with the live path
