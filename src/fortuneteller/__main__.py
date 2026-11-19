@@ -130,10 +130,10 @@ def _load_prices(args: argparse.Namespace) -> int:
     # The companies too, so the evening keeps them current (docs/steps/ask-earnings.md); one Yahoo
     # fails on is reported and left out, as the page shows it, and does not fail the load.
     tickers = company_tickers()
-    counts, failed = study.load_company_bars(tickers, con=con)
+    loaded, failed = study.load_company_bars(tickers, con=con)
     for note in failed:
         print(f"load-prices: {note}", file=sys.stderr)
-    print(f"{len(counts)} of {len(tickers)} companies loaded")
+    print(f"{len(loaded)} of {len(tickers)} companies loaded")
     return 0
 
 
