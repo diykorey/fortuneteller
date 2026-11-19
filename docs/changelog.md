@@ -27,6 +27,7 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 | 2026-11-17 | Spec: step 25, what follows a Bank of England or a Bank of Japan decision (TradingView's calendar, the Bank's own Bank Rate history; the pound, the yen and the Nikkei added) | PR #336 |
 | 2026-11-17 | Step 24, step 3: OPEC's results: energy stocks and gasoline move with the kind; gasoline's day after *oil up* holds; from the reaction close, about chance | PR #335 |
 | 2026-11-17 | Step 24, step 2: `follows --event opec` (kinds from the seed, Brent's day marked), the `opec` trigger (a live one's kind from Brent's reaction day), the IMF check's file and script | PR #334 |
+| 2026-11-17 | Step 21, step 2: the first shadow day fails *on time* (GitHub's schedule hours late); the runs started by an outside timer, by the owner; the workflow's schedule removed | PR #333 |
 | 2026-11-17 | Step 24, step 1: the seed of Känzig's 169 OPEC announcements and the flow; the live kind agrees with the surprise on 72 of 80 days since 2007 | PR #332 |
 | 2026-11-17 | Spec: step 24, what follows an OPEC+ decision (Känzig's 169 announcements by the sign of their oil supply surprise) | PR #330 |
 | 2026-11-17 | Phase 5 opened by the owner: OPEC+, other central banks, war, crypto shocks, weather, one kind per PR; phase 4's pause lifted; the news model to the backlog | PR #329 |

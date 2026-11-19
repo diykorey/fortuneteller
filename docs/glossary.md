@@ -615,6 +615,8 @@ Terms are grouped by what they are about, alphabetical within each group.
   artifact is a file a run uploads, kept 90 days; a cache is a saved directory a later run restores,
   evicted when unused (step 21). A release asset is a file attached to a GitHub release; step 21
   keeps the encrypted store as one.
+- **Outside timer** — a service outside GitHub that asks GitHub's API to start a workflow at a set
+  time, since GitHub's own schedule can start hours late; step 21's is two jobs at cron-job.org.
 - **Shadow run** — a new way of running a job beside the old one, both logging, every row compared,
   before the old one is retired (roadmap step 21).
 - **The gate** — a dated check of several steps together against bars fixed in advance; a miss is

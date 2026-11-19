@@ -51,6 +51,17 @@ logged within 15 minutes, none missed.
     time it started: the one scheduled for 07:30 New York is the morning, the one for 18:30 the
     evening, the other exits. Exactly one of each a day, however late GitHub starts it, and no run
     list to read.
+  - *Amended 2026-11-17, after the first shadow day, by the owner
+    ([why](../decisions.md#2026-11-17-the-runner-is-started-by-an-outside-timer-by-the-owner)):*
+    GitHub started the schedule 5 h 41 min to 9 h 56 min late and, on retail sales day, not at
+    all by 15:13 UTC ([below](#results)). The runs are started by an *outside timer* instead: two jobs at
+    cron-job.org, a free service, each asking GitHub's API to run `jobs.yml` on `main`, with
+    `step` set to `live` at 07:30 New York and to `score` at 18:30, Monday to Friday, on the
+    service's New York clock, so summer and winter need nothing. The ask goes out with a
+    fine-grained token of the owner's, for this repository only, allowed only *Actions: read and
+    write*, kept at the service alone. The workflow's `schedule` is removed, so a run is only ever
+    one asked for. The morning run still waits for 08:30:05; it never goes on before 07:00, now
+    because nothing asks it to.
 - **The obstacle: a source that refuses a datacenter.** Nasdaq's calendar answered a different
   Python with HTTP 403 on 2026-11-10
   ([Decisions](../decisions.md#2026-11-11-python-pinned-to-312)); its servers may refuse GitHub's
@@ -92,6 +103,12 @@ logged within 15 minutes, none missed.
     day the laptop itself misses does not count, and another is taken; if two counting days are
     not done by 2026-12-18, a decisions entry says what happens instead, since the gate's four weeks
     must start by 2027-01-03.
+  - *Amended 2026-11-17, by the owner:* the first counting day, 2026-11-17, failed *on time*
+    under GitHub's schedule. The shadow is run again with the outside timer on two new release
+    days, the three bars and the 2026-12-18 date unchanged. A day the timer's ask fails, or the
+    run starts late, fails *on time* as this one did; it is not dropped. Re-running the shadow
+    after a fail is the owner's choice, written in [Decisions](../decisions.md), not a rule a
+    later fail can lean on: a second fail goes to a decisions entry before a third try.
 - **Expected outcome, written first:** *fails on the sources*: Yahoo, FRED, the Fed and TradingView
   answer the runner; Nasdaq's calendar refuses it with 403. The rebuild reproduces the laptop's
   `score.txt` in under 20 minutes. Were Nasdaq to answer, the shadow would pass.
@@ -101,7 +118,7 @@ logged within 15 minutes, none missed.
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~`.github/workflows/jobs.yml`, run on demand: the store rebuilt from empty and each source fetched once; the rebuild timed; `score` against the laptop's | The step 1 rule's verdicts written here~~ **done** 2026-11-14, [below](#results) |
-| 2 | The schedule and the encrypted store (*amended 2026-11-14*, was the cache) added; the shadow run on two release days | The three bars, per day, written here |
+| 2 | The schedule and the encrypted store (*amended 2026-11-14*, was the cache) added; the shadow run on two release days. *Amended 2026-11-17:* the schedule removed, the runs asked for by the outside timer; the shadow again on two new release days | The three bars, per day, written here |
 | 3 | Only if step 2 passes: the workflow opens the pull requests and issues; the laptop's timers disabled | The first release day on the runner alone logged on time, and a decisions entry retiring 2026-11-10's |
 
 ## Results
@@ -133,12 +150,53 @@ days.
 
 The store's carrying is amended above, by the owner.
 
+**Step 2, the first shadow day: retail sales, 2026-11-17. Fails the shadow, *on time*.** Retail
+sales is a flow `live` calls: the laptop's `live` logged its rows, `logged_at` 13:30:13 UTC in
+`data/calls.csv` (PR #331), for the release at 08:30 New York, 13:30 UTC. `gh run list -w jobs.yml`
+at 15:13 UTC (by `date -u`), an hour and 43 minutes after the release, showed no run of the
+morning started. The runs of the day before show why: GitHub started each scheduled run hours
+after its time. *Scheduled* is the line `scheduled HH:MM UTC is HH:MM New York` in each run's
+log (`gh run view RUN --log`); *Started* is the run's `createdAt` in `gh run list`.
+
+| Run | Scheduled (UTC) | Started (UTC) | Late |
+| --- | --- | --- | --- |
+| 43957326575 | 11-16 11:30 | 11-16 21:10 | 9 h 40 min |
+| 43970103818 | 11-16 12:30 | 11-16 22:26 | 9 h 56 min |
+| 44018836200 | 11-16 22:30 | 11-17 04:40 | 6 h 10 min |
+| 44022336694 | 11-16 23:30 | 11-17 05:11 | 5 h 41 min |
+
+The spec's "a schedule up to an hour late still logs on time" was **wrong** by hours, and so was
+the expected outcome's "were Nasdaq to answer, the shadow would pass": Nasdaq answered, and the
+shadow failed on its first day. *The same rows* fails with it: the runner logged no row to compare.
+*The same evening* is judged from the evening's run when it finishes, since loading and grading do
+not depend on what started it; it is written here then.
+
+Runs asked for start at once: the five runs of 2026-11-14 started by `gh workflow run` (43628949150,
+43630076184, 43633700634, 43634405406, 43634459297) each began their job 3 to 4 seconds after the
+ask (`gh api repos/diykorey/fortuneteller/actions/runs/RUN/jobs`, `started_at`, against the run's
+`created_at`). The start is amended above, by the owner.
+
+*The owner's test ask, 2026-11-17:* cron-job.org's test run of the morning job got HTTP 204, and
+run 44116494543 (`workflow_dispatch`, created 15:37:39 UTC) began its job at 15:37:45, 6 seconds
+later; its log reads `step: live` and `live: retail is already in data/calls.csv`: the laptop's rows, merged
+to `main` in PR #331, so it logged nothing new (`gh run view 44116494543 --log`).
+
+*The first evening, 2026-11-17:* the 18:30 New York ask (23:30 UTC) started no run: the owner
+had disabled the score job at cron-job.org by mistake, and re-enabled it on 2026-11-18
+(`gh run list --workflow jobs.yml --event workflow_dispatch` lists none after 44116494543). The
+evening was graded by GitHub's own late schedule, run 44238760250, created 04:38 UTC. Its
+`trigger-log.csv` equals the laptop's file byte for byte. Its `score.txt` grades `main`'s 52 call
+rows; the laptop's evening of 2026-11-17 failed at wake (no network, issue #339), so no `score.txt`
+of the same evening is there to compare, and that bar waits for the next evening both run.
+
 ## How you know it is right
 
 *The store's three checks amended 2026-11-14 with the store's carrying above.*
 
-- In winter the 11:30 UTC morning run exits at once (06:30 New York) and the 12:30 one waits; in
-  summer the 11:30 one waits and the 12:30 one exits, since the first went on.
+- ~~In winter the 11:30 UTC morning run exits at once (06:30 New York) and the 12:30 one waits; in
+  summer the 11:30 one waits and the 12:30 one exits, since the first went on.~~ *Amended
+  2026-11-17:* the workflow has no `schedule`; the owner's test ask of the morning job appears in
+  `gh run list -w jobs.yml` as a `workflow_dispatch` run started within a minute of the ask.
 - A run on a weekday with no release exits 0 and commits nothing, as the laptop's does.
 - Two runs never write the store at once: the workflow has one concurrency group for both steps.
 - A shadow run opens no pull request and no issue.
@@ -154,10 +212,17 @@ their own steps.
 
 ## Technical details
 
-- **Workflow:** `.github/workflows/jobs.yml`, triggers `schedule` and `workflow_dispatch`, a
+- **Workflow:** `.github/workflows/jobs.yml`, triggers `schedule` and `workflow_dispatch`
+  (*amended 2026-11-17:* `workflow_dispatch` only, asked by the outside timer), a
   `step` input (`live`, `score`; *amended 2026-11-14:* `rebuild` was step 1's alone and is gone), actions only from those the repository allows
   (`actions/*`, `astral-sh/setup-uv`).
 - **Script:** `scripts/release-day.sh` keeps the laptop's run; the runner's steps live in the
   workflow until a second caller needs them in a script.
+- **The outside timer** (*amended 2026-11-17*): each cron-job.org job sends `POST
+  https://api.github.com/repos/diykorey/fortuneteller/actions/workflows/jobs.yml/dispatches` with
+  the headers `Authorization: Bearer` and the token, `Accept: application/vnd.github+json` and
+  `X-GitHub-Api-Version: 2022-11-28`, and the body `{"ref":"main","inputs":{"step":"live"}}` (or
+  `"score"`); GitHub answers 204. The service mails the owner when an ask fails. The token's
+  expiry is in [Decisions](../decisions.md).
 - **Docs:** this spec, [Decisions](../decisions.md) at step 3, `docs/status.md`, the changelog and
   roadmap row 21.

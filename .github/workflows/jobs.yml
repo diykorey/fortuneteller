@@ -5,13 +5,8 @@
 name: Jobs
 
 on:
-  schedule:
-    # GitHub's schedule is UTC; the run whose time is 07:30 or 18:30 New York goes on, the other
-    # exits, so summer and winter each get one.
-    - cron: "30 11 * * 1-5"
-    - cron: "30 12 * * 1-5"
-    - cron: "30 22 * * 1-5"
-    - cron: "30 23 * * 1-5"
+  # Started only on demand: by the outside timer at 07:30 and 18:30 New York (docs/decisions.md,
+  # 2026-11-17), since GitHub's schedule started hours late, or by hand.
   workflow_dispatch:
     inputs:
       step:
@@ -37,27 +32,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 120
     steps:
-      - name: Which step, by New York's clock
+      - name: Which step
         id: plan
         env:
-          EVENT: ${{ github.event_name }}
-          CRON: ${{ github.event.schedule }}
           ASKED: ${{ inputs.step }}
         run: |
-          if [ "$EVENT" = workflow_dispatch ]; then
-            step=$ASKED
-          else
-            read -r minute hour _ <<<"$CRON"
-            at=$(TZ=America/New_York date -d "$(date -u +%F) $hour:$minute UTC" +%H:%M)
-            case $at in
-              07:30) step=live ;;
-              18:30) step=score ;;
-              *) step= ;;
-            esac
-            echo "scheduled $hour:$minute UTC is $at New York"
-          fi
-          echo "step=$step" >>"$GITHUB_OUTPUT"
-          echo "step: ${step:-none, the other schedule runs it}"
+          echo "step=$ASKED" >>"$GITHUB_OUTPUT"
+          echo "step: $ASKED, asked at $(TZ=America/New_York date +%H:%M) New York"
 
       - uses: actions/checkout@v4
         if: steps.plan.outputs.step != ''
