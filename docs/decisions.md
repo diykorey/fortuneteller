@@ -13,10 +13,11 @@ owner* marks a choice the owner made over another on the table.
 
 ## 2026-11-19: Floods from NOAA's billion-dollar list; droughts left out
 
-- **What:** step 30 measures the 45 US floods of NOAA's Billion-Dollar Disasters list (1980 to
-  2024), the owner's "floods and droughts", as history only, with no crop-region filter.
-- **Why:** the list is free and nobody here picks it. Its 32 droughts all begin on the first of a
-  month, a season, not a day the news knew; a call is made from the actual once it lands. A
+- **What:** step 30 measures the US floods of NOAA's Billion-Dollar Disasters list (1980 to
+  2024) that have a day, 39 of its 45, the owner's "floods and droughts", as history only, with
+  no crop-region filter.
+- **Why:** the list is free and nobody here picks it. Its 32 droughts, and six of its floods, begin on the first of
+  a month and last a month or more: a season, not a day the news knew; a call is made from the actual once it lands. A
   region filter would be read from the names by hand. A flood's cost is known weeks later, so no
   trigger.
 - **Retires:** droughts as a kind, until a dated source is found; roadmap row 28's "floods and

@@ -149,7 +149,7 @@ record (the US Drought Monitor is weekly and its onset is a judgement); not trop
 hurricane strength, nor storms that only brushed the coast; not Pacific storms. No other insurer.
 Not on the page's [*ask*](ask-the-fortune-teller.md). No live link. Days are shared by the
 landfall's UTC day, as war's: a landfall after a close that shares only its reaction close with
-another flow is not named.
+another flow is not named. *Amended 2026-11-19:* NOAA's billion-dollar list gives 39 floods a day; [step 30](floods.md) measures them.
 
 ## Technical details
 
