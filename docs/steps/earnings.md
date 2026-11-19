@@ -120,3 +120,69 @@ index named above.*
   `event_id`.
 - Docs: `docs/schema.md` (the id and its order, code 34), `docs/glossary.md` (*EPS*, *8-K Item
   2.02*, *Dow member*), roadmap, status, decisions, changelog.
+
+## Results
+
+*2026-11-19.* Every line quoted is in [the evidence](earnings-results.txt): a copy of the real
+store of 2026-11-19 16:08 with the earnings loaded by step 2's code and the members' closes by
+`load-prices --companies`, the whole output of `follows --event earnings` (from the close before),
+`follows --event earnings --after-the-day` (from the reaction close), `raw-move --event earnings`
+and the reports left out, by reason.
+
+**In plain words:** on the day a Dow company reports, its shares beat the S&P 500 after a beat
+(788 of 1,498 up), fall behind it after a miss (169 of 235 down), and **fall behind it after an
+in-line report too** (203 of 335 down), counted from the close before; each lasts over the week and
+the month. Meeting the consensus reads as a disappointment, which the expected outcome did not
+foresee. Three links hold walk-forward, not one: a miss's day (156 of 219 right) and week (145 of
+217), and an in-line report's day (183 of 303). Counted from the reaction close, the news is mostly
+in: only a miss's next day still leans *down* (119 of 235) and a beat's month *about the same*, and
+nothing holds. The expected outcome was right on the beats and the misses, wrong on the in-line
+reports.
+
+- **The kinds' shares** (step 1's evidence): *above* 1,513 of 2,092 (72.3%, bar 55% to 80%),
+  *below* 242 (11.6%, bar under 25%). Right.
+- **The header:** `follows: 2092 earnings reports 2008-01-10 … 2026-11-17: 1513 above, 337 as
+  expected, 242 below` (`follows --event earnings`).
+- **From the close before** (`follows --event earnings`), against *above* → *up*, *below* →
+  *down*, *as expected* → *can't say* on each span:
+  - *above*: *up* on the day (788 up, 129 the same, 581 down of 1,498, chance 0.0000, marked
+    *period* by the placebo), the week (692/246/553 of 1,491, 0.0000) and the month (570/418/485
+    of 1,473, 0.0030). Right on all three.
+  - *below*: *down* on the day (44/22/169 of 235, 0.0000), the week (40/34/160 of 234, 0.0000)
+    and the month (37/59/132 of 228, 0.0000). Right on all three.
+  - *as expected*: *down* on the day (95/37/203 of 335, 0.0000), the week (100/52/182 of 334,
+    0.0000) and the month (102/77/151 of 330, 0.0049). **Wrong on all three.**
+- **From the reaction close** (`follows --event earnings --after-the-day`), against *can't say*
+  for every cell: 7 of 9 right. **Wrong on two:** *below*'s day *down* (74/42/119 of 235, chance
+  0.0037) and *above*'s month *about the same* (436/546/490 of 1,472, chance 0.0013, marked
+  *period* by the placebo).
+- **Walk-forward, from the close before:** *below*'s day holds (219 graded, 156 right, 71%);
+  *above*'s day does not (1,355 graded, 707 right, 52%). Right on both. **Wrong on "nothing
+  else":** *below*'s week holds (217 graded, 145 right, 67%) and *as expected*'s day holds (303
+  graded, 183 right, 60.4%). Every other cell, and every cell from the reaction close, does not
+  hold or is *too few*.
+- **Beyond the six named answers, against the chance line plus 2** (both runs print chance about
+  0.3, so a bar of 2.3): from the close before **3** answers, the three *as expected* cells.
+  **Wrong.** From the reaction close **2**, the two above. Right.
+- **Every other flow's output** ([step 2's evidence](earnings-steps.txt), both runs of every flow
+  `follows` takes, every flow's `raw-move` and the scoreboard, compared byte for byte on copies of
+  the store): unchanged; the scoreboard gained the earnings' event and its 31 raw-move cells (887
+  → 918). Right.
+- **Left out, counted:** step 1 left out 132 of 2,224 (no kind 128, no 8-K 4); `follows` leaves
+  out 24 more on the day from the close before: 16 of Alcoa's reports, filed under Howmet's ticker
+  (HWM), whose Yahoo closes start 2016-11-01; 7 of Dow Inc.'s first, with under 504 closes before;
+  Nvidia's of 2026-11-17, whose reaction close the copy did not hold yet. 156 in all, 7.0%, under
+  the expected tenth; 2,068 kept, over the 300 bar. Alcoa's 16 count in neither *out* nor *hole*
+  in `follows`' columns, which skip a report with no reaction close; the count above is from a
+  one-off read of `study.kept_scandals`' steps, in the evidence.
+- **The size of the move** (`raw-move --event earnings`, outside the rule, recorded): on the 882
+  reporting days, homebuilders (ITB) *move* (ratio 1.17, p 0.0008); the S&P 500 (1.15, p 0.0115),
+  the Nasdaq (1.13, 0.0153) and Allstate (1.11, 0.0175) *unclear*; the rest *doesn't*. These are
+  the days of a dozen reports at once in each season, so a market's move on them is the season's,
+  not one company's.
+
+The expected outcome was **wrong on the in-line reports**: from the close before, *as expected*
+was *down*, not *can't say*, on all three spans, and its day holds walk-forward; a miss's week
+holds too; from the reaction close a miss's next day is still *down*. It was right on the kinds'
+shares, on every beat and miss cell from the close before, on the walk-forward of a miss's day and
+a beat's day, and on every other flow's output.
