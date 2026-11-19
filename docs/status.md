@@ -18,6 +18,9 @@ month after a beat; a miss's day and week and an in-line report's day hold walk-
 
 ## In progress
 
+- **Step 32: ask about earnings** ([the spec](steps/ask-earnings.md)): the page answers step 31's
+  three earnings kinds, every cell carries the placebo's mark, and `load-prices` loads the
+  companies every evening. Spec read by a goldfish; next, step 1.
 - **Step 29: ask about phase 5's kinds** ([the spec](steps/ask-phase-5.md)): the page's
   section answers OPEC+, the two banks, violent acts, hacks, landfalls and floods. Step 1 built; step 2
   waits for the evening job.

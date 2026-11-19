@@ -11,6 +11,17 @@ amended there with a date.
 Each entry: **what** was decided, **why**, what it **retires**, and **where** the detail is. *By the
 owner* marks a choice the owner made over another on the table.
 
+## 2026-11-19: Earnings go on the page, and the page shows the placebo's mark
+
+- **What:** step 32 adds step 31's three earnings kinds to the page's *Ask the fortune teller*,
+  and gives every cell on the page the placebo's mark, which step 22 left off.
+- **Why:** the earnings are the kind the news brings most and three of their links hold
+  walk-forward, more than any kind on the page; it was kept off only by its 11-minute run, which
+  PR #367 brought to a minute. Step 31 found a beat's day *up* that the placebo reads as the
+  period; the page would show it as the beat's answer, and so it may already show other cells.
+- **Retires:** the earnings skip in `ask_data`; step 22's page without the placebo.
+- **Where:** [the spec](steps/ask-earnings.md).
+
 ## 2026-11-19: Earnings, the Dow's members, one event per report, by the owner
 
 - **What:** step 31 measures earnings reports: the Dow's members on each report's day, Nasdaq's
