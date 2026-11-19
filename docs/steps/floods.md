@@ -103,7 +103,7 @@ the list and the markets' first closes.*
 
 - It measures no drought, adds no market, and takes no trigger.
 - It adds the floods to `follows` only; the page's *Ask the fortune teller* section gains them in
-  a later step.
+  a later step. *Amended 2026-11-19:* [step 29](ask-phase-5.md), before its step 2.
 
 ## Technical details
 

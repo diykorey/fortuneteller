@@ -1811,6 +1811,7 @@ ASK_DECISIONS = {
     "war": {study.VIOLENT_ACT: "a violent act setting off an international crisis"},
     "crypto": {study.HACK: "a crypto hack of $100 million or more"},
     "weather": {study.LANDFALL: "a US hurricane landfall"},
+    "flood": {study.FLOOD: "a billion-dollar US flood"},
 }
 # Brent's day after an OPEC+ decision is how its kind is read (docs/steps/ask-phase-5.md).
 KIND_CELL_WORDS = "This is how the kind is read, not an answer."
@@ -1932,9 +1933,6 @@ def ask_data(con: duckdb.DuckDBPyConnection) -> dict[str, list[dict[str, object]
     left_out: list[dict[str, object]] = []
     names = market_names()
     for name, noun in FOLLOWS_NOUNS.items():
-        if name == flows.FLOOD_FLOW.cli_name:
-            # Step 30 adds the floods to follows, not yet to the page (docs/steps/floods.md).
-            continue
         try:
             f = follows_cells(name, con)
             cells = list(f.cells)
