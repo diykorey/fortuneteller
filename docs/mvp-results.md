@@ -670,6 +670,17 @@ across every market one answer, the VIX up on the day counted from the close aft
 luck the chance line allows. `raw-move` finds no market that moves more on hack days; 16 are
 *unclear*. As expected, but for fewer markets than expected counting 40 hacks over the week.
 
+## What follows a hurricane landfall
+
+Measured 2026-11-18. Detail in [weather](steps/weather.md#results).
+
+79 hurricanes' first landfalls on the US coast, 1970 to 2024, by the National Hurricane Center's
+record (`follows --event weather`). **Fuel, energy stocks, corn, soybeans and Allstate's shares
+give no answer** over the day, the week or the month. Wheat is the one exception: from the
+close after the landfall, it ends the day about where it started more often than usual (17 of 27),
+while `raw-move` finds it moving more on the landfalls' own days; too few to grade walk-forward.
+Two answers in all, within chance.
+
 ## What comes next
 
 Chosen 2026-10-13: keep score ([rung 4](steps/rung-4-keep-score.md)), done above with the live path
