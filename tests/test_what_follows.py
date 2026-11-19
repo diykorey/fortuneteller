@@ -1371,3 +1371,45 @@ def test_the_page_names_the_boj_when_its_rates_cannot_be_read_and_shows_the_boe(
         "the BoJ's rates could not be read from TradingView: TradingView answered 'error'"
     )
     assert "boe" in [entry["name"] for entry in ask["ask"]]
+
+
+def test_a_flood_reacts_at_04_00_utc_of_its_begin_day() -> None:
+    # given the seed's floods: the Upper Midwest's on Sunday 2024-06-16 and the Northeast's on
+    # Tuesday 2023-07-11 is not one; a flood placed on that Tuesday
+    batch = flows.FLOOD_FLOW.load(
+        settings.seed_dir / "floods.csv", datetime(2026, 11, 19, tzinfo=UTC)
+    )
+    midwest = next(e for e in batch.events if flows.release_date(e) == date(2024, 6, 16))
+    tuesday = flows.FLOOD_FLOW.event_instance(
+        datetime(2023, 7, 11, 4, 0, tzinfo=UTC), "a flood on a Tuesday"
+    )
+
+    # when their first reaction days are found
+    sunday = study.first_reaction_day(midwest, study.MVP_PRICE_SERIES["SPY / ES"])
+    days = [
+        study.first_reaction_day(tuesday, study.MVP_PRICE_SERIES[m])
+        for m in ("SPY / ES", "NKY", "EURUSD")
+    ]
+
+    # then the Sunday flood reacts on Monday, and the Tuesday one that day in New York and Tokyo
+    # and the next day on the euro, whose close is 00:00 London
+    closes = [
+        DailyClosingPrice(d, p) for d, p in ((date(2024, 6, 14), 100.0), (date(2024, 6, 17), 101.0))
+    ]
+    assert midwest.event_ts == datetime(2024, 6, 16, 4, 0)
+    assert study.reaction_days(closes, [sunday]) == {date(2024, 6, 17)}
+    assert days == [date(2023, 7, 11), date(2023, 7, 11), date(2023, 7, 12)]
+
+
+def test_follows_for_floods_prints_one_kind() -> None:
+    # given the flood flow
+    flow = flows.flow_named("flood")
+
+    # when its kind is read
+    kinds = study.one_kind(
+        flow, [flows.FLOOD_FLOW.event_instance(datetime(2024, 6, 16, 4, 0, tzinfo=UTC), "x")]
+    )
+
+    # then every flood is a flood, and the page leaves the floods out
+    assert set(kinds.values()) == {study.FLOOD}
+    assert cli.FOLLOWS_NOUNS["flood"] == "floods"

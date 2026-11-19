@@ -50,6 +50,7 @@ from .flows import (
     CRYPTO_FLOW,
     WAR_FLOW,
     WEATHER_FLOW,
+    FLOOD_FLOW,
     SurpriseRule,
     called_live,
     event_date,
@@ -1991,10 +1992,13 @@ KIND_SERIES = MVP_PRICE_SERIES[KIND_MARKET]
 VIOLENT_ACT = "violent act"
 HACK = "hack"
 LANDFALL = "landfall"
+# Step 30 (docs/steps/floods.md): a flood, measured as history only; it takes no trigger.
+FLOOD = "flood"
 ONE_KIND = {
     WAR_FLOW.cli_name: VIOLENT_ACT,
     CRYPTO_FLOW.cli_name: HACK,
     WEATHER_FLOW.cli_name: LANDFALL,
+    FLOOD_FLOW.cli_name: FLOOD,
 }
 ONE_KIND_FLOWS: dict[str, DatedShockFlow] = {
     f.cli_name: f for f in (WAR_FLOW, CRYPTO_FLOW, WEATHER_FLOW)

@@ -1763,6 +1763,21 @@ WEATHER_FLOW = DatedShockFlow(
     time_column="time",
     scheduled=False,
 )
+# Step 30 (docs/steps/floods.md): NOAA's billion-dollar US floods that have a day, at 04:00 UTC.
+FLOOD_FLOW = DatedShockFlow(
+    "Extreme weather / climate policy",
+    UNITED_STATES,
+    ZoneInfo("UTC"),
+    33,
+    "flood",
+    "FLD",
+    seed_file="floods.csv",
+    noun="floods",
+    day_column="day",
+    detail_column="name",
+    fixed_time=time(4, 0),
+    scheduled=False,
+)
 EVENT_FLOWS: list[EventFlow] = [
     CPI_FLOW,
     NFP_FLOW,
@@ -1796,6 +1811,7 @@ EVENT_FLOWS: list[EventFlow] = [
     WAR_FLOW,
     CRYPTO_FLOW,
     WEATHER_FLOW,
+    FLOOD_FLOW,
 ]
 
 

@@ -104,6 +104,11 @@ Terms are grouped by what they are about, alphabetical within each group.
   dataset of international crises since 1918, each with the date its trigger came and a code for
   what set it off (`triggr`, from a verbal act to a violent act) and how violent it became (`viol`).
   Step 26 takes every crisis since 1970 whose trigger is a *violent act*.
+- **Billion-dollar list** — *added 2026-11-19* ([floods](steps/floods.md)): NOAA's Billion-Dollar
+  Weather and Climate Disasters list, every US weather event of a billion dollars or more in
+  today's dollars, 1980 to 2024, with its type and begin and end day; no longer updated, archived.
+- **Flood** — *added 2026-11-19* ([floods](steps/floods.md)): a row of the billion-dollar list
+  typed `Flooding` that has a day: not one beginning on a month's first and lasting 30 days or more.
 - **HURDAT2** — *added 2026-11-18* ([weather](steps/weather.md)): the National Hurricane Center's
   Atlantic best-track record, every storm since 1851 every six hours, with each landfall as its own
   row at its UTC minute, place and wind; status `HU` is a hurricane, 64 knots or more.

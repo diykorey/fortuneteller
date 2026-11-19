@@ -539,7 +539,14 @@ def describe_follows(
     plural = (
         "s"
         if tuple(order)
-        in (study.KINDS, (study.SCANDAL,), (study.VIOLENT_ACT,), (study.HACK,), (study.LANDFALL,))
+        in (
+            study.KINDS,
+            (study.SCANDAL,),
+            (study.VIOLENT_ACT,),
+            (study.HACK,),
+            (study.LANDFALL,),
+            (study.FLOOD,),
+        )
         else ""
     )
     width = max(5, *(len(kind) for kind in order))
@@ -593,6 +600,7 @@ FOLLOWS_NOUNS = {
     "war": "violent acts",
     "crypto": "crypto hacks",
     "weather": "hurricane landfalls",
+    "flood": "floods",
 }
 
 
@@ -1924,6 +1932,9 @@ def ask_data(con: duckdb.DuckDBPyConnection) -> dict[str, list[dict[str, object]
     left_out: list[dict[str, object]] = []
     names = market_names()
     for name, noun in FOLLOWS_NOUNS.items():
+        if name == flows.FLOOD_FLOW.cli_name:
+            # Step 30 adds the floods to follows, not yet to the page (docs/steps/floods.md).
+            continue
         try:
             f = follows_cells(name, con)
             cells = list(f.cells)

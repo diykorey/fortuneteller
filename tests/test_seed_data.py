@@ -102,6 +102,7 @@ def test_seed_dir_has_no_unexpected_csvs() -> None:
         "war.csv",
         "crypto.csv",
         "hurricanes.csv",
+        "floods.csv",
         "boe-changes.csv",
         "fomc_sentiment_dictionary.csv",
     }
@@ -376,4 +377,29 @@ def test_hurricane_rows_are_first_us_landfalls_since_1970() -> None:
         "2017-09-20",
         "2017-09-09",
         "2021-08-21",
+    } & set(named)
+
+
+def test_flood_rows_are_the_billion_dollar_list_s_floods_with_a_day() -> None:
+    # given the committed floods
+    with (settings.seed_dir / "floods.csv").open(newline="", encoding="utf-8") as handle:
+        reader = csv.DictReader(handle)
+        header = reader.fieldnames
+        rows = list(reader)
+    # when their days, names and costs are read
+    days = [date.fromisoformat(row["day"]) for row in rows]
+    named = {row["day"]: (row["name"], float(row["cost"])) for row in rows}
+    # then the 39 floods are in order on 39 days, each at its begin day, the six season rows out
+    assert header == ["day", "name", "cost"]
+    assert len(rows) == 39 and len(set(days)) == 39 and days == sorted(days)
+    assert (days[0], days[-1]) == (date(1980, 4, 10), date(2024, 6, 16))
+    assert named["2024-06-16"] == ("Upper Midwest Flooding (June 2024)", 1113.0)
+    assert {"1997-01-01", "2015-10-01"} <= set(named)
+    assert not {
+        "1982-12-01",
+        "1995-01-01",
+        "2008-04-01",
+        "2010-03-01",
+        "2011-04-01",
+        "2011-05-01",
     } & set(named)

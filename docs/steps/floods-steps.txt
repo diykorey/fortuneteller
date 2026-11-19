@@ -1,0 +1,25 @@
+Step 30, step 1's evidence (docs/steps/floods.md).
+
+$ sha256sum events-US-1980-2024.csv (the Wayback copy of 2025-01-27 23:34:39 UTC)
+67831180c9f1f348ea560acd291e84a0e2410f6fa3e129fa8297f114fd8537e9
+
+$ the copy's rows counted by its Disaster column (python csv, from the row starting "Name,")
+403 events; Flooding 45
+
+$ uv run python -I scripts/noaa_floods.py events-US-1980-2024.csv
+wrote 39 floods to data/seed/floods.csv, 1980-04-10 … 2024-06-16
+
+$ on a copy of the real store (2026-11-18 evening): flows.store_events(flows.FLOOD_FLOW.events("").events), then study.store_observations()
+$ fortuneteller follows --event flood | head -1
+follows: 39 floods 1980-04-10 … 2024-06-16: 39 floods
+
+$ every flow's raw-move, follows and follows --after-the-day, follows --event fomc --long and scoreboard, on main's code without the floods and this branch's with them: files byte-identical
+59 identical: fol-boe-after.txt, fol-boe.txt, fol-boj-after.txt, fol-boj.txt, fol-ceo-after.txt, fol-ceo.txt, fol-claims-after.txt, fol-claims.txt, fol-cpi-after.txt, fol-cpi.txt, fol-crypto-after.txt, fol-crypto.txt, fol-ecb-after.txt, fol-ecb.txt, fol-fomc-after.txt, fol-fomc-long.txt, fol-fomc.txt, fol-nfp-after.txt, fol-nfp.txt, fol-opec-after.txt, fol-opec.txt, fol-retail-after.txt, fol-retail.txt, fol-war-after.txt, fol-war.txt, fol-weather-after.txt, fol-weather.txt, raw-boe.txt, raw-boj.txt, raw-ceo.txt, raw-claims.txt, raw-cpi.txt, raw-crypto.txt, raw-debt.txt, raw-decpi.txt, raw-deelect.txt, raw-ecb.txt, raw-ecbchief.txt, raw-euelect.txt, raw-fedchair.txt, raw-fomc.txt, raw-frelect.txt, raw-gdp.txt, raw-hicp.txt, raw-ifo.txt, raw-ism.txt, raw-nfp.txt, raw-opec.txt, raw-pce.txt, raw-posts.txt, raw-posts2.txt, raw-retail.txt, raw-summit.txt, raw-tariff.txt, raw-ukelect.txt, raw-uselect.txt, raw-war.txt, raw-weather.txt, raw-zew.txt
+differ: scoreboard.txt
+scoreboard: 32 events, 52 call rows, data to 2026-11-18
+scoreboard: 33 events, 52 call rows, data to 2026-11-18
+
+$ docs/scoreboard/data.json's chance, before and after; every other key equal but events
+chance before: {'raw_move': {'cells': 857, 'p': 0.01, 'by_chance': 8.57}, 'surprise': {'cells': 372, 'p': 0.01, 'by_chance': 3.72}, 'walk_forward': {'cells': 82, 'p': 0.01, 'by_chance': 0.82}}
+chance after:  {'raw_move': {'cells': 887, 'p': 0.01, 'by_chance': 8.87}, 'surprise': {'cells': 372, 'p': 0.01, 'by_chance': 3.72}, 'walk_forward': {'cells': 82, 'p': 0.01, 'by_chance': 0.82}}
+differs: events 32 33
