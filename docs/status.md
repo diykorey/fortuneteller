@@ -18,6 +18,8 @@ holds.
 
 ## In progress
 
+- **Step 29: ask about phase 5's kinds** ([the spec](steps/ask-phase-5.md)): the page's
+  section answers OPEC+, the two banks, violent acts, hacks and landfalls. Spec under review.
 - **Step 23: be seen, and count it** ([the spec](steps/be-seen.md)): a cookie-free Umami counter
   on the page and a weekly LinkedIn post drafted by `weekly-post`, both the owner's choice. Step 1
   done: the counter is live and counts a visit once, read through Umami's share link. Next: the
