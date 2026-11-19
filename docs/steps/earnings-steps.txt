@@ -1,0 +1,32 @@
+Step 31, step 1's evidence (docs/steps/earnings.md).
+
+$ data/seed/dow.csv, written by hand from Wikipedia's "Historical components of the Dow Jones Industrial Average" (raw wikitext of 2026-11-19, "Summary of changes since 1991" and the 2005 table)
+13 change days 2008-01-02 … 2026-06-29; 30 members after each
+Tickers are Nasdaq's of today, which files a company's old reports under them: Alcoa as HWM, old DuPont as DD (DowDuPont of 2017 kept the symbol, so 2017-09-01 is no change here), old General Motors as GM, Kraft as MDLZ, United Technologies as RTX.
+
+$ uv run python -I scripts/nasdaq_earnings.py fetch data/cache/earnings/nasdaq
+4926 pages saved; 0 failed
+Six pages (2026-01-08, 01-12, 01-30, 02-12, 02-13, 02-19) carry forecasts and no reported EPS, the same on a second fetch; their four members' reports (CVX, AXP, VZ on 01-30, WMT on 02-19) count as no kind.
+
+$ uv run python -I scripts/sec_8k_times.py fetch data/cache/earnings/sec
+46 tickers' filing indexes, with the filers before a change of filer number: old DuPont (30554), Motors Liquidation (40730), Disney before 2019 (1001039), Exxon Mobil before 2026 (34088); Walgreens (1618921), no longer listed.
+
+$ uv run python -I scripts/nasdaq_earnings.py seed data/cache/earnings/nasdaq data/cache/earnings/sec
+wrote 2092 reports to data/seed/earnings.csv: above 1513, as expected 337, below 242
+left out: no 8-K 4, no kind 128
+no 8-K: 2008-01-30 MRK, 2008-04-21 MRK, 2017-04-21 GE, 2017-10-24 RTX
+Kinds' shares of the 2,092 with a kind: above 72.3% (bar 55% to 80%), below 11.6% (bar under 25%).
+Left out so far, 132 of 2,224 (5.9%); a report of a company with no closes, under 504 closes before, or a reused ticker is left out in step 2 by follows. No company has two kept reports within 45 days; no 8-K is kept twice.
+
+$ reports kept, by year and by company
+2008 101 2009 101 2010 106 2011 99 2012 104 2013 107 2014 109 2015 111 2016 114 2017 111 2018 116 2019 112 2020 114 2021 115 2022 114 2023 112 2024 119 2025 118 2026 109
+AAPL 46 AIG 3 AMGN 25 AMZN 11 AXP 72 BA 74 BAC 22 C 6 CAT 73 CRM 24 CSCO 63 CVX 74 DD 41 DIS 74 DOW 22 GE 28 GOOGL 2 GS 53 HD 73 HON 24 HPQ 19 HWM 16 IBM 72 INTC 66 JNJ 74 JPM 76 KO 65 MCD 74 MMM 68 MO 1 MRK 73 MSFT 72 NKE 52 NVDA 8 PFE 50 PG 71 RTX 46 SHW 8 T 20 TRV 68 UNH 54 V 50 VZ 61 WMT 67 XOM 51
+Nasdaq's calendar misses some quarters (2008 has 101 of about 120), so a full member has 65 to 76 reports rather than 76.
+
+$ the consensus, Nasdaq's epsForecast against Yahoo's earnings history (finance.yahoo.com/quote/X/analysis, 2026-11-19), and the 8-K's minute
+Microsoft  2026-10-28  Nasdaq 4.71  Yahoo 4.72  pass   8-K 20:04 UTC = 16:04 New York, after the close: next day   pass
+JPMorgan   2026-10-13  Nasdaq 5.94  Yahoo 5.94  pass   8-K 10:30 UTC = 06:30 New York, before the open: that day   pass
+Apple      2026-11-02  Nasdaq 1.98  Yahoo 1.98  pass   8-K 21:30 UTC = 16:30 New York, after the close: next day   pass
+Walmart    2025-11-20  Nasdaq 0.61  Yahoo 0.60  pass   8-K 11:58 UTC = 06:58 New York, before the open: that day   pass
+Nike       2025-12-18  Nasdaq 0.37  Yahoo 0.37  pass   8-K 21:15 UTC = 16:15 New York, after the close: next day   pass
+The spec named JPMorgan's 2026-10-14 and Apple's 2026-10-30; both reported on another day (10-13, 11-02), on Nasdaq's calendar and their 8-Ks alike, so those two reports are checked on their days.
