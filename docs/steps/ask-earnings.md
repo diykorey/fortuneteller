@@ -29,8 +29,8 @@ and the evening job keeps both current.
   and left out, and `load-prices` still exits 0 for it, as one failed market does not stop the
   others; `--companies` alone keeps exiting 1 on a failure.
 - **The placebo's mark on the page.** Each cell gains `"period"`: true where `follows` prints
-  `period` in its placebo column. Its sentence ends "Ten closes before or after the events, the
-  same answer comes: it reads as the period, not the event." and, like a kind cell, its answer and
+  `period` in its placebo column. Its sentence ends "With each event moved ten closes or a span
+  away, the same answer comes: it reads as the period, not the event." and, like a kind cell, its answer and
   replay are not coloured.
 - **The time it takes.** `follows --event earnings` took 11 minutes a run before PR #367 and 59
   seconds after; the page adds one run (spans from the event's day) to the evening's `scoreboard`.
@@ -50,7 +50,11 @@ prints.
   three cells that hold, as in [step 31's Results](earnings.md#results): *below*'s day and week,
   *as expected*'s day; and exactly one earnings cell marked *the period*, *above*'s day. A release
   or report since those Results may move a count by one or two; another hold or mark, or a
-  missing one, is written in Results with its numbers before the step is done.
+  missing one, is written in Results with its numbers before the step is done. Across every
+  flow, exactly three cells carry `period` true, as `follows` prints them on a copy of the real
+  store of 2026-11-19 16:08 (steps 24 to 30's Results read the same): the earnings' *above* day;
+  after a jobs report above the consensus, the euro's day (*down*); after one as expected,
+  natural gas's day (*about the same*). The page's other holds stay as step 29 expects them.
 - **The evening job:** its `scoreboard` run on a copy of the real store takes no more than 3
   minutes longer than on main's code, and `load-prices` loads all 67 companies.
 
