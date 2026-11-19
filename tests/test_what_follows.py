@@ -1413,3 +1413,48 @@ def test_follows_for_floods_prints_one_kind() -> None:
     # then every flood is a flood, and the page leaves the floods out
     assert set(kinds.values()) == {study.FLOOD}
     assert cli.FOLLOWS_NOUNS["flood"] == "floods"
+
+
+def test_an_earnings_report_reacts_by_its_8_k_s_minute_summer_and_winter() -> None:
+    # given four reports at 8-K minutes either side of 16:00 New York, in summer and in winter
+    stamps = [
+        datetime(2026, 10, 28, 19, 55, tzinfo=UTC),
+        datetime(2026, 10, 28, 20, 4, tzinfo=UTC),
+        datetime(2025, 1, 29, 20, 55, tzinfo=UTC),
+        datetime(2025, 1, 29, 21, 5, tzinfo=UTC),
+    ]
+    reports = [flows.EARNINGS_FLOW.event_instance(at, "MSFT above") for at in stamps]
+
+    # when their first reaction days on a company's 16:00 New York close are found
+    days = [study.first_reaction_day(e, study.STOCK) for e in reports]
+
+    # then 15:55 New York reacts that day and 16:04 or 16:05 the next
+    assert days == [date(2026, 10, 28), date(2026, 10, 29), date(2025, 1, 29), date(2025, 1, 30)]
+
+
+def test_two_reports_on_one_day_are_two_events_in_the_order_of_their_minutes(
+    tmp_db: Path, tmp_path: Path
+) -> None:
+    # given two members reporting on one day, the later ticker first in the morning
+    seed = tmp_path / "earnings.csv"
+    seed.write_text(
+        "day,time,ticker,eps,forecast,surprise,kind\n"
+        "2026-10-28,20:04,MSFT,4.89,4.71,3.82,above\n"
+        "2026-10-28,11:00,V,3.10,3.11,-0.32,as expected\n"
+    )
+
+    # when they are loaded, stored and read back
+    batch = flows.EARNINGS_FLOW.load(seed, datetime(2026, 11, 19, tzinfo=UTC))
+    db.init_db()
+    flows.store_events(batch.events)
+    stored = flows.stored_events(flows.EARNINGS_FLOW)
+
+    # then each is its own event, each giving its day back, read by minute, with its kind
+    assert len({e.event_id for e in stored}) == 2
+    assert {flows.event_date(e.event_id) for e in stored} == {date(2026, 10, 28)}
+    assert [e.detail for e in stored] == ["V as expected", "MSFT above"]
+    assert study.earnings_kinds(stored) == {
+        stored[0].event_id: "as expected",
+        stored[1].event_id: "above",
+    }
+    assert batch.report == ["loaded 2 earnings reports, 2026-10-28 … 2026-10-28"]

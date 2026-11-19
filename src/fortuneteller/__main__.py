@@ -131,9 +131,13 @@ def _load_prices(args: argparse.Namespace) -> int:
 
 
 def _load_companies(con: duckdb.DuckDBPyConnection) -> int:
-    """The CEO flow's companies' closes; a company Yahoo fails on is reported, the rest load."""
-    with (settings.seed_dir / flows.CEO_FLOW.seed_file).open(newline="") as file:
-        tickers = list(dict.fromkeys(row["ticker"] for row in csv.DictReader(file)))
+    """The CEO flow's and the earnings' companies' closes; a company Yahoo fails on is reported,
+    the rest load."""
+    tickers: list[str] = []
+    for seed_file in (flows.CEO_FLOW.seed_file, flows.EARNINGS_FLOW.seed_file):
+        with (settings.seed_dir / seed_file).open(newline="") as file:
+            tickers += [row["ticker"] for row in csv.DictReader(file)]
+    tickers = list(dict.fromkeys(tickers))
     counts, failed = study.load_company_bars(tickers, con=con)
     for ticker, n in counts.items():
         print(f"{ticker}: {n} closes")
@@ -601,6 +605,7 @@ FOLLOWS_NOUNS = {
     "crypto": "crypto hacks",
     "weather": "hurricane landfalls",
     "flood": "floods",
+    "earnings": "earnings reports",
 }
 
 
@@ -667,6 +672,11 @@ def follows_cells(
             kinds = dict.fromkeys((e.event_id for e in events), study.SCANDAL)
             order: Sequence[str] = (study.SCANDAL,)
             cells = study.follow_ceo(events, con=con, after=after)
+        elif flow is flows.EARNINGS_FLOW:
+            events = flows.stored_events(flow, con=con)
+            kinds = study.earnings_kinds(events)
+            order = study.SURPRISE_KINDS
+            cells = study.follow_companies(events, kinds, order, con=con, after=after)
         elif flow is flows.OPEC_FLOW:
             kinds = study.detail_kinds(flows.stored_events(flow, con=con))
             order = study.OPEC_KINDS
@@ -1933,6 +1943,9 @@ def ask_data(con: duckdb.DuckDBPyConnection) -> dict[str, list[dict[str, object]
     left_out: list[dict[str, object]] = []
     names = market_names()
     for name, noun in FOLLOWS_NOUNS.items():
+        if name == flows.EARNINGS_FLOW.cli_name:
+            # Step 31 adds the earnings to follows, not yet to the page (docs/steps/earnings.md).
+            continue
         try:
             f = follows_cells(name, con)
             cells = list(f.cells)

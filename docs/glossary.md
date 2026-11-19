@@ -109,6 +109,13 @@ Terms are grouped by what they are about, alphabetical within each group.
   today's dollars, 1980 to 2024, with its type and begin and end day; no longer updated, archived.
 - **Flood** — *added 2026-11-19* ([floods](steps/floods.md)): a row of the billion-dollar list
   typed `Flooding` that has a day: not one beginning on a month's first and lasting 30 days or more.
+- **EPS** (earnings per share) — *added 2026-11-19* ([earnings](steps/earnings.md)): a company's
+  quarterly profit divided by its shares, as Nasdaq's earnings calendar gives it beside the
+  analysts' consensus and the surprise in %, which sets the report's kind: *above* at +2% or more,
+  *below* at −2% or less, *as expected* between.
+- **Dow member** — *added 2026-11-19* ([earnings](steps/earnings.md)): one of the 30 companies in
+  the Dow Jones Industrial Average on a given day, by the index's dated changes since 2008
+  (`data/seed/dow.csv`); a former member counts for the days it was in.
 - **HURDAT2** — *added 2026-11-18* ([weather](steps/weather.md)): the National Hurricane Center's
   Atlantic best-track record, every storm since 1851 every six hours, with each landfall as its own
   row at its UTC minute, place and wind; status `HU` is a hurricane, 64 knots or more.
@@ -327,7 +334,9 @@ Terms are grouped by what they are about, alphabetical within each group.
   grade them ([a pasted article](steps/article-to-trigger.md)).
 - **8-K / EDGAR** — *added 2026-11-14*: an 8-K is the filing a US-listed company makes with the SEC
   within days of a major event, such as a chief executive leaving; its exhibit 99 is usually the
-  press release. EDGAR is the SEC's public archive of filings.
+  press release. EDGAR is the SEC's public archive of filings. An 8-K with *Item 2.02* furnishes a
+  company's quarterly results; [step 31](steps/earnings.md) places each report at its acceptance
+  minute (UTC).
 - **Wayback Machine / User-Agent** — *added 2026-11-15*: the Wayback Machine is the Internet
   Archive's store of web pages as they were captured on given days; a page gone from its address
   can often be read there. A User-Agent is the name a client gives a site with each request;

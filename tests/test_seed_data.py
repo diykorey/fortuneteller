@@ -6,8 +6,9 @@ invalid enum value fails CI. Each seed file is checked against two canonical sou
 """
 
 import csv
+import importlib.util
 import re
-from datetime import date, timedelta
+from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 
 import duckdb
@@ -456,3 +457,28 @@ def test_earnings_rows_are_members_reports_with_their_kind() -> None:
     )
     msft = [r for r in rows if r["ticker"] == "MSFT" and r["day"] == "2026-10-28"]
     assert [(r["time"], r["kind"]) for r in msft] == [("20:04", "above")]
+
+
+def test_the_8_k_kept_is_the_nearest_to_the_calendar_s_day() -> None:
+    # given the seed script, and three 8-Ks with Item 2.02: 20 days before, the day before and the
+    # calendar's day
+    spec = importlib.util.spec_from_file_location(
+        "nasdaq_earnings", Path(__file__).parents[1] / "scripts" / "nasdaq_earnings.py"
+    )
+    assert spec is not None and spec.loader is not None
+    script = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(script)
+    stamps = [
+        datetime(2026, 10, 8, 20, 0, tzinfo=UTC),
+        datetime(2026, 10, 27, 20, 0, tzinfo=UTC),
+        datetime(2026, 10, 28, 20, 4, tzinfo=UTC),
+    ]
+
+    # when the one for the calendar's 2026-10-28 is chosen, and for a day with none near
+    kept = script.nearest(date(2026, 10, 28), stamps)
+    none = script.nearest(date(2026, 9, 1), stamps)
+
+    # then the calendar's own day wins, and a pre-announcement 20 days before is never taken
+    assert kept == stamps[2]
+    assert none is None
+    assert script.nearest(date(2026, 10, 9), stamps[:1]) == stamps[0]

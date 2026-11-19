@@ -11,7 +11,7 @@ from __future__ import annotations
 import csv
 import statistics
 from collections.abc import Callable, Iterable, Mapping, Sequence
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import UTC, date, datetime, time, timedelta
 from pathlib import Path
 from typing import Protocol
@@ -65,15 +65,16 @@ RELEASE_TIME = time(8, 30)
 FIRST_RELEASE = "first_release"
 
 
-def event_id(flow: EventFlow, released: date) -> int:
+def event_id(flow: EventFlow, released: date, n: int = 0) -> int:
     """The ``event_instances`` key: the flow's type code, then the release day (US CPI 2022-09-13 →
-    120220913), so ids from different flows never collide and sort by date within a flow."""
+    120220913), so ids from different flows never collide. A flow with several events a day (the
+    earnings reports, docs/steps/earnings.md) adds each one's place in its day, ``n`` × 10¹⁰."""
     day = released.year * 10_000 + released.month * 100 + released.day
-    return flow.type_code * 100_000_000 + day
+    return n * 10_000_000_000 + flow.type_code * 100_000_000 + day
 
 
 def event_date(event_id: int) -> date:
-    """The release day an ``event_id`` was built from."""
+    """The release day an ``event_id`` was built from, whatever its place in the day."""
     day = event_id % 100_000_000
     return date(day // 10_000, day // 100 % 100, day % 100)
 
@@ -282,7 +283,8 @@ def stored_events(
     """One flow's stored events, its event type in its country, oldest first."""
     return db.fetch_all(
         EventInstance,
-        "SELECT * FROM event_instances WHERE event_type = ? AND country = ? ORDER BY event_id",
+        "SELECT * FROM event_instances WHERE event_type = ? AND country = ? "
+        "ORDER BY event_ts, event_id",
         [flow.event_type, flow.country],
         con=con,
     )
@@ -1763,6 +1765,75 @@ WEATHER_FLOW = DatedShockFlow(
     time_column="time",
     scheduled=False,
 )
+
+
+@dataclass(eq=False)
+class EarningsFlow:
+    """Step 31 (docs/steps/earnings.md): the Dow's members' earnings reports, one event each at its
+    8-K's minute, the ticker and the kind in its detail (``MSFT above``). Several a day, so each
+    report's id carries its place among the day's tickers. No surprise of its own; a lesser flow."""
+
+    event_type: str = "Earnings release"
+    country: str = UNITED_STATES
+    zone: ZoneInfo = field(default_factory=lambda: ZoneInfo("UTC"))
+    type_code: int = 34
+    cli_name: str = "earnings"
+    label: str = "ERN"
+    seed_file: str = "earnings.csv"
+    noun: str = "earnings reports"
+    surprise_rule: SurpriseRule | None = None
+    lesser: bool = True
+
+    def events(self, api_key: str) -> EventBatch:
+        return self.load(settings.seed_dir / self.seed_file, datetime.now(UTC))
+
+    def load(self, path: Path, now: datetime) -> EventBatch:
+        """The reports in ``path`` made public by ``now`` (aware)."""
+        with path.open(newline="") as file:
+            rows = list(csv.DictReader(file))
+        by_day: dict[date, list[tuple[str, datetime, str]]] = {}
+        for row in rows:
+            at = datetime.combine(
+                date.fromisoformat(row["day"]), time.fromisoformat(row["time"]), tzinfo=UTC
+            )
+            if at <= now:
+                by_day.setdefault(at.date(), []).append((row["ticker"], at, row["kind"]))
+        if not by_day:
+            raise ValueError(f"{path}: no {self.noun} by {now.isoformat(timespec='minutes')}")
+        events = [
+            self.event_instance(at, f"{ticker} {kind}", n)
+            for day in sorted(by_day)
+            for n, (ticker, at, kind) in enumerate(sorted(by_day[day]))
+        ]
+        days = sorted(by_day)
+        report = f"loaded {len(events)} {self.noun}, {days[0]} … {days[-1]}"
+        return EventBatch(events, [report])
+
+    def actuals(self, events: Sequence[EventInstance], api_key: str) -> list[Actual]:
+        return []
+
+    def event_instance(self, at: datetime, detail: str, n: int = 0) -> EventInstance:
+        """Map one report at ``at`` (aware), ``n``-th of its day, to its ``event_instances`` row."""
+        return EventInstance(
+            event_id=event_id(self, at.astimezone(self.zone).date(), n),
+            event_type=self.event_type,
+            event_ts=at.astimezone(UTC).replace(tzinfo=None),
+            country=self.country,
+            detail=detail,
+            scheduled=True,
+            consensus=None,
+            actual=None,
+            surprise=None,
+            surprise_sd=None,
+            surprise_source=None,
+            priced_in_prior=None,
+            vix_t0=None,
+            rate_regime=None,
+            quality=HAND_WRITTEN,
+        )
+
+
+EARNINGS_FLOW = EarningsFlow()
 # Step 30 (docs/steps/floods.md): NOAA's billion-dollar US floods that have a day, at 04:00 UTC.
 FLOOD_FLOW = DatedShockFlow(
     "Extreme weather / climate policy",
@@ -1812,6 +1883,7 @@ EVENT_FLOWS: list[EventFlow] = [
     CRYPTO_FLOW,
     WEATHER_FLOW,
     FLOOD_FLOW,
+    EARNINGS_FLOW,
 ]
 
 

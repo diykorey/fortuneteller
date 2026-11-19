@@ -2218,18 +2218,46 @@ def follow_ceo(
     no closes stored counts as a hole."""
     if any(";" in (e.detail or "") for e in events):
         raise ValueError("two CEO events on one day: give each its own day")
+    kinds = dict.fromkeys((e.event_id for e in events), SCANDAL)
+    return follow_companies(events, kinds, (SCANDAL,), con, after)
+
+
+def follow_companies(
+    events: Sequence[EventInstance],
+    kinds: Mapping[int, str],
+    order: Sequence[str],
+    con: duckdb.DuckDBPyConnection | None = None,
+    after: bool = False,
+) -> list[tuple[str, str, str, Follow]]:
+    """Each kind's record per span, its events' companies (the detail's first word) against the
+    S&P 500, for the CEO flow and the earnings (docs/steps/earnings.md); a company with no closes
+    stored counts as a hole."""
+    tickers = {e.event_id: (e.detail or "").split(" ")[0] for e in events}
     closes = {}
-    for ticker in {e.detail or "" for e in events}:
+    for ticker in set(tickers.values()):
         try:
             closes[ticker] = stored_closes(ticker, con=con)
         except ValueError:
             continue
     index = stored_closes(EXCESS_OVER, con=con)
-    decisions = [(first_reaction_day(e, STOCK), e.detail or "") for e in events]
-    return [
-        (SCANDAL, span, EXCESS_MARKET, follow_scandals(decisions, closes, index, c, after))
-        for span, c in SPANS.items()
-    ]
+    cells = []
+    for kind in order:
+        decisions = [
+            (first_reaction_day(e, STOCK), tickers[e.event_id])
+            for e in events
+            if kinds.get(e.event_id) == kind
+        ]
+        cells += [
+            (kind, span, EXCESS_MARKET, follow_scandals(decisions, closes, index, c, after))
+            for span, c in SPANS.items()
+        ]
+    return cells
+
+
+# Step 31 (docs/steps/earnings.md): a report's kind is the detail's second part.
+def earnings_kinds(events: Iterable[EventInstance]) -> dict[int, str]:
+    """Every report's kind by event id, from its detail (``MSFT as expected``)."""
+    return {e.event_id: (e.detail or "").split(" ", 1)[1] for e in events}
 
 
 # Step 18, part 2: a trigger arrives (docs/steps/trigger-file.md).
