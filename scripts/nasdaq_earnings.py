@@ -119,20 +119,26 @@ def seed(folder: Path, sec: Path) -> None:
         changes = list(csv.DictReader(handle))
     stamps = filings(sec)
     rows, left = [], Counter()
+    missing: list[str] = []
     for day in weekdays():
-        page = json.loads((folder / f"{day.isoformat()}.json").read_text())
+        path = folder / f"{day.isoformat()}.json"
+        if not path.exists():
+            left["day not fetched"] += 1
+            continue
+        page = json.loads(path.read_text())
         members = members_on(day, changes)
         for row in (page.get("data") or {}).get("rows") or []:
             ticker = row["symbol"]
             if ticker not in members:
                 continue
-            k = kind(row["surprise"])
+            k = kind(row.get("surprise", ""))
             if k is None:
                 left["no kind"] += 1
                 continue
             at = nearest(day, stamps[ticker])
             if at is None:
                 left["no 8-K"] += 1
+                missing.append(f"{day} {ticker}")
                 continue
             rows.append(
                 (
@@ -156,6 +162,7 @@ def seed(folder: Path, sec: Path) -> None:
         + ", ".join(f"{k} {n}" for k, n in sorted(kinds.items()))
     )
     print("left out: " + ", ".join(f"{why} {n}" for why, n in sorted(left.items())))
+    print("no 8-K: " + ", ".join(missing))
 
 
 if __name__ == "__main__":

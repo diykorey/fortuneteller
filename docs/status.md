@@ -18,7 +18,8 @@ on crops, fuel or insurers; one answer a run, within chance; droughts left out, 
 ## In progress
 
 - **Step 31: earnings** ([the spec](steps/earnings.md)): the Dow's members' EPS against the
-  consensus, each company against the S&P 500. Spec under review.
+  consensus, each company against the S&P 500. Step 1 done: 2,092 reports kept from
+  Nasdaq's calendar, each at its 8-K's minute; the ten hand checks pass. Next: step 2, the flow.
 - **Step 29: ask about phase 5's kinds** ([the spec](steps/ask-phase-5.md)): the page's
   section answers OPEC+, the two banks, violent acts, hacks, landfalls and floods. Step 1 built; step 2
   waits for the evening job.
