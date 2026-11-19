@@ -12,17 +12,12 @@ Where the work is and what comes next: the task last finished, the tasks in prog
 
 ## Last completed
 
-Step 28: weather and climate ([the spec](steps/weather.md#results)). 79 hurricanes' first US
-landfalls, 1970 to 2024, with Allstate added as a market: fuel, energy stocks, corn, soybeans and
-Allstate *can't say*; wheat *about the same* on the day from the reaction close; within chance.
+Step 22: ask the fortune teller ([the spec](steps/ask-the-fortune-teller.md#step-5)). The
+published page answers every kind of the table, none left out, with exactly the three expected
+holds.
 
 ## In progress
 
-- **Step 22: ask the fortune teller** ([the spec](steps/ask-the-fortune-teller.md)): the page
-  section where a reader picks a kind of event and sees what followed, from the same function
-  the follows command uses. Steps 1 to 4 are built: one function for follows and the page, the
-  base's count, the data and its sentences, the section; checked in a browser on test data.
-  Step 5, the published page after the evening job, is next.
 - **Step 23: be seen, and count it** ([the spec](steps/be-seen.md)): a cookie-free Umami counter
   on the page and a weekly LinkedIn post drafted by `weekly-post`, both the owner's choice. Step 1
   done: the counter is live and counts a visit once, read through Umami's share link. Next: the
@@ -44,8 +39,7 @@ Allstate *can't say*; wheat *about the same* on the day from the reaction close;
 
 ## Next
 
-Phase 5's five kinds are measured. Step 22, step 5: the published page checked after the
-evening job.
+Step 23: the first weekly post, now that step 22's page is checked.
 
 ## Known, not yet fixed
 

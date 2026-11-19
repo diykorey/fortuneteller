@@ -1,0 +1,15 @@
+Step 22, step 5's evidence (docs/steps/ask-the-fortune-teller.md): the published page, https://diykorey.github.io/fortuneteller/scoreboard/, after the evening job of 2026-11-18 (PR #353, merged 2026-11-19 00:16 UTC, Pages deployed).
+
+$ curl -s https://diykorey.github.io/fortuneteller/scoreboard/data.json, then per flow its kinds, cells per span and the cells that hold
+written 2026-11-18, data to 2026-11-18; ask_left_out: []
+fomc: kinds [{'kind': 'cut', 'label': 'a Fed rate cut', 'events': 40}, {'kind': 'hold', 'label': 'the Fed holding its rate', 'events': 184}, {'kind': 'hike', 'label': 'a Fed rate hike', 'events': 52}], 465 cells {'day': 93, 'week': 93, 'month': 93, 'quarter': 93, 'year': 93}; holds: none
+nfp: kinds [{'kind': 'above', 'label': 'a jobs report above the consensus', 'events': 69}, {'kind': 'as expected', 'label': 'a jobs report as expected', 'events': 104}, {'kind': 'below', 'label': 'a jobs report below the consensus', 'events': 50}], 279 cells {'day': 93, 'week': 93, 'month': 93}; holds: ['above day UST10Y / ZN 39 right of 58', 'above day UST5Y / ZF 38 right of 58']
+retail: kinds [{'kind': 'above', 'label': 'a retail sales release above the consensus', 'events': 51}, {'kind': 'as expected', 'label': 'a retail sales release as expected', 'events': 110}, {'kind': 'below', 'label': 'a retail sales release below the consensus', 'events': 62}], 279 cells {'day': 93, 'week': 93, 'month': 93}; holds: none
+cpi: kinds [{'kind': 'above', 'label': 'a CPI release above the consensus', 'events': 62}, {'kind': 'as expected', 'label': 'a CPI release as expected', 'events': 82}, {'kind': 'below', 'label': 'a CPI release below the consensus', 'events': 78}], 279 cells {'day': 93, 'week': 93, 'month': 93}; holds: ['above day T5YIE 23 right of 31']
+claims: kinds [{'kind': 'above', 'label': 'a jobless claims report above the consensus', 'events': 207}, {'kind': 'as expected', 'label': 'a jobless claims report as expected', 'events': 216}, {'kind': 'below', 'label': 'a jobless claims report below the consensus', 'events': 281}], 279 cells {'day': 93, 'week': 93, 'month': 93}; holds: none
+ecb: kinds [{'kind': 'cut', 'label': 'an ECB rate cut', 'events': 15}, {'kind': 'hold', 'label': 'the ECB holding its rate', 'events': 88}, {'kind': 'hike', 'label': 'an ECB rate hike', 'events': 12}], 279 cells {'day': 93, 'week': 93, 'month': 93}; holds: none
+ceo: kinds [{'kind': 'scandal', 'label': "a CEO's conduct in question", 'events': 26}], 3 cells {'day': 1, 'week': 1, 'month': 1}; holds: none
+
+The page opened in Chrome: the kind picker lists 19 kinds (the Fed's and the ECB's 3 each, the four releases' 3 each, the CEO's 1), each with its count of events; a jobs report above the consensus shows three tables of 31 markets (day, week, month), the 10-year yield's row reading:
+After a jobs report above the consensus, US Treasury 10Y on the day: up 48, about the same 8, down 13, of 69. On every day of its history: up 1558, about the same 1544, down 1561, of 4663.
+No console error.
