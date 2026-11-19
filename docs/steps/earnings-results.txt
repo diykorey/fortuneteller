@@ -106,3 +106,66 @@ after above {'hole (gap) MRK': 1, 'kept': 1496, 'no reaction close HWM': 9, 'no 
 after as expected {'kept': 335, 'under 504 closes DOW': 2}
 after below {'kept': 235, 'no reaction close HWM': 7}
 HWM: Alcoa's reports, filed under Howmet's ticker; Yahoo's HWM closes start 2016-11-01, after all 16. DOW: Dow Inc.'s closes start 2019-03-20, so its first 7 reports have under 504 closes before. NVDA: the report of 2026-11-17, after the close, reacts 2026-11-18, whose S&P 500 close the copy does not hold yet (data to 2026-11-17). Open: from the reaction close, one report whose span has not ended. MRK: from the reaction close, one report whose day touches a gap in its closes. Of the 2,092, follows keeps 2,068 on the day from the close before (24 left out: 16 HWM, 7 DOW, 1 NVDA).
+
+$ the walk-forward chance (p) of each cell, which follows does not print: Follow.walk_chance from study.follow_companies on the same copy, by this one-off script (PR #367's code, whose follows output is byte-identical)
+from fortuneteller import flows, study, db
+con = db.get_connection()
+events = flows.stored_events(flows.EARNINGS_FLOW, con=con)
+kinds = study.earnings_kinds(events)
+for after in (False, True):
+    for kind, span, market, f in study.follow_companies(events, kinds, ("above", "as expected", "below"), con=con, after=after):
+        print("reaction close" if after else "close before", kind, span, f"graded {f.graded} right {f.right} p {f.walk_chance:.6f} {f.verdict}")
+
+close before above day graded 1355 right 707 p 0.000000 doesn't hold
+close before above week graded 1099 right 505 p 0.000000 doesn't hold
+close before above month graded 644 right 246 p 0.010107 doesn't hold
+close before as expected day graded 303 right 183 p 0.000000 holds
+close before as expected week graded 283 right 152 p 0.000000 doesn't hold
+close before as expected month graded 116 right 48 p 0.103840 doesn't hold
+close before below day graded 219 right 156 p 0.000000 holds
+close before below week graded 217 right 145 p 0.000000 holds
+close before below month graded 202 right 113 p 0.000000 doesn't hold
+reaction close above day graded 732 right 280 p 0.004588 doesn't hold
+reaction close above week graded 0 right 0 p nan too few
+reaction close above month graded 1011 right 368 p 0.021485 doesn't hold
+reaction close as expected day graded 0 right 0 p nan too few
+reaction close as expected week graded 0 right 0 p nan too few
+reaction close as expected month graded 0 right 0 p nan too few
+reaction close below day graded 184 right 85 p 0.000665 doesn't hold
+reaction close below week graded 0 right 0 p nan too few
+reaction close below month graded 0 right 0 p nan too few
+
+$ the one-off script that counted the reports left out, above
+import sys
+from collections import Counter
+from fortuneteller import flows, study, db
+con = db.get_connection(read_only=True) if 'read_only' in db.get_connection.__code__.co_varnames else db.get_connection()
+events = [e for e in flows.stored_events(flows.EARNINGS_FLOW, con=con)] if hasattr(flows,'stored_events') else None
+kinds = study.earnings_kinds(events)
+index = study.stored_closes(study.EXCESS_OVER, con=con)
+reasons = Counter()
+tick = {e.event_id: (e.detail or '').split(' ')[0] for e in events}
+closes = {}
+for t in set(tick.values()):
+    try: closes[t] = study.stored_closes(t, con=con)
+    except ValueError: pass
+for after in (False, True):
+  for kind in ('above','as expected','below'):
+    dec = [(study.first_reaction_day(e, study.STOCK), tick[e.event_id]) for e in events if kinds[e.event_id]==kind]
+    by = {}
+    for d,t in dec: by.setdefault(t,[]).append(d)
+    c = study.SPANS['day']
+    r = Counter()
+    for t, days in by.items():
+        if t not in closes: r['no closes '+t]+=len(days); continue
+        stock = study._shared(closes[t], index)[0]
+        spans = study.excess_spans(closes[t], index, c)
+        walk, _ = study.kept_keys([(d, study.SCANDAL) for d in days], stock, spans, c, after)
+        for w in walk:
+            if w.status == study.HOLE: r['hole (gap) '+t]+=1
+            elif w.open: r['open']+=1
+            elif w.reaction is None: r['no reaction close '+t]+=1
+            elif w.status == study.LEFT_OUT: r['inside span']+=1
+            elif study.event_base(spans, stock, w.reaction) is None: r['under 504 closes '+t]+=1
+            else: r['kept']+=1
+    print('after' if after else 'before', kind, dict(sorted(r.items())))

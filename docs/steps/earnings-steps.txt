@@ -37,7 +37,7 @@ $ on copies of the real store (2026-11-19 02:31), each with the same copied cach
 loaded 2092 earnings reports, 2008-01-10 … 2026-11-17
 67 of 67 companies loaded
 
-$ every flow's follows and follows --after-the-day (the 14 that follows takes), every flow's raw-move (32) and scoreboard, main's code on base against this branch's on new: files byte-identical
+$ every flow's follows and follows --after-the-day (the 14 that follows takes), every flow's raw-move (33) and scoreboard, main's code on base against this branch's on new: files byte-identical
 61 identical: fola-boe.txt, fola-boj.txt, fola-ceo.txt, fola-claims.txt, fola-cpi.txt, fola-crypto.txt, fola-ecb.txt, fola-flood.txt, fola-fomc.txt, fola-nfp.txt, fola-opec.txt, fola-retail.txt, fola-war.txt, fola-weather.txt, fol-boe.txt, fol-boj.txt, fol-ceo.txt, fol-claims.txt, fol-cpi.txt, fol-crypto.txt, fol-ecb.txt, fol-flood.txt, fol-fomc.txt, fol-nfp.txt, fol-opec.txt, fol-retail.txt, fol-war.txt, fol-weather.txt, raw-boe.txt, raw-boj.txt, raw-ceo.txt, raw-claims.txt, raw-cpi.txt, raw-crypto.txt, raw-debt.txt, raw-decpi.txt, raw-deelect.txt, raw-ecbchief.txt, raw-ecb.txt, raw-euelect.txt, raw-fedchair.txt, raw-flood.txt, raw-fomc.txt, raw-frelect.txt, raw-gdp.txt, raw-hicp.txt, raw-ifo.txt, raw-ism.txt, raw-nfp.txt, raw-opec.txt, raw-pce.txt, raw-posts2.txt, raw-posts.txt, raw-retail.txt, raw-summit.txt, raw-tariff.txt, raw-ukelect.txt, raw-uselect.txt, raw-war.txt, raw-weather.txt, raw-zew.txt
 differ: score.txt
 scoreboard: 33 events, 52 call rows, data to 2026-11-18

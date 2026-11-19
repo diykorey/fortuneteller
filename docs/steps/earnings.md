@@ -27,7 +27,10 @@ its own base of the 504 closes before), against the rule below written first.
   consensus (`epsForecast`) and the surprise in % (`surprise`). Only the members of that day are
   kept. Five reports' consensus is checked by hand against Yahoo's earnings history (Microsoft
   2026-10-28, JPMorgan 2026-10-14, Apple 2026-10-30, Walmart 2025-11-20, Nike 2025-12-18): within
-  $0.02 passes; a miss is written in the evidence and, at two or more, step 1 stops.
+  $0.02 passes; a miss is written in the evidence and, at two or more, step 1 stops. *Amended
+  2026-11-19, at step 3, recording step 1:* JPMorgan reported on 2026-10-13 and Apple on
+  2026-11-02, on Nasdaq's calendar and their 8-Ks alike, so those two were checked on those days
+  ([step 1's evidence](earnings-steps.txt)).
 - **The kind, from Nasdaq's surprise:** *above* at +2% or more, *below* at −2% or less, *as
   expected* between (the releases' three kinds, keys `above`, `as expected`, `below`); no surprise
   given, no kind.
@@ -125,64 +128,76 @@ index named above.*
 
 *2026-11-19.* Every line quoted is in [the evidence](earnings-results.txt): a copy of the real
 store of 2026-11-19 16:08 with the earnings loaded by step 2's code and the members' closes by
-`load-prices --companies`, the whole output of `follows --event earnings` (from the close before),
-`follows --event earnings --after-the-day` (from the reaction close), `raw-move --event earnings`
-and the reports left out, by reason.
+`load-prices --companies`; the whole output of `follows --event earnings` (from the close before),
+`follows --event earnings --after-the-day` (from the reaction close) and `raw-move --event
+earnings`; and two one-off scripts, printed there in full, for what `follows` does not print: the
+walk-forward chance of each cell and the reports left out, by reason.
 
-**In plain words:** on the day a Dow company reports, its shares beat the S&P 500 after a beat
-(788 of 1,498 up), fall behind it after a miss (169 of 235 down), and **fall behind it after an
-in-line report too** (203 of 335 down), counted from the close before; each lasts over the week and
-the month. Meeting the consensus reads as a disappointment, which the expected outcome did not
-foresee. Three links hold walk-forward, not one: a miss's day (156 of 219 right) and week (145 of
-217), and an in-line report's day (183 of 303). Counted from the reaction close, the news is mostly
-in: only a miss's next day still leans *down* (119 of 235) and a beat's month *about the same*, and
-nothing holds. The expected outcome was right on the beats and the misses, wrong on the in-line
-reports.
+**In plain words:** counted from the close before, a Dow company's shares fall behind the S&P 500
+after a miss (169 of 235 down on the day) and **after a report in line with the consensus too**
+(203 of 335 down), over the day, the week and the month. After a beat they run ahead over the week
+and the month (692 of 1,491 up over the week); on the day too (788 of 1,498), but the placebo gives
+the same *up* ten closes away, so the day is not shown to be the beat's. Three links hold
+walk-forward: a miss's day (156 of 219 right) and week (145 of 217), and an in-line report's day
+(183 of 303, 60.4%, just over the 60% bar). Counted from the reaction close, a miss's next day
+still leans *down* (119 of 235) and nothing holds. The expected outcome missed the in-line
+reports, a miss's week and a miss's next day.
 
-- **The kinds' shares** (step 1's evidence): *above* 1,513 of 2,092 (72.3%, bar 55% to 80%),
-  *below* 242 (11.6%, bar under 25%). Right.
-- **The header:** `follows: 2092 earnings reports 2008-01-10 … 2026-11-17: 1513 above, 337 as
-  expected, 242 below` (`follows --event earnings`).
-- **From the close before** (`follows --event earnings`), against *above* → *up*, *below* →
-  *down*, *as expected* → *can't say* on each span:
-  - *above*: *up* on the day (788 up, 129 the same, 581 down of 1,498, chance 0.0000, marked
-    *period* by the placebo), the week (692/246/553 of 1,491, 0.0000) and the month (570/418/485
-    of 1,473, 0.0030). Right on all three.
-  - *below*: *down* on the day (44/22/169 of 235, 0.0000), the week (40/34/160 of 234, 0.0000)
-    and the month (37/59/132 of 228, 0.0000). Right on all three.
+- **The rule's first bullet:** the companies, the sources, the ±2%, the minute and the bars are
+  step 1's and step 2's, unchanged by the run; JPMorgan's and Apple's hand checks ran on their
+  real report days, amended above. Right.
+- **The kinds' shares** (`scripts/nasdaq_earnings.py seed`, in [step 1's
+  evidence](earnings-steps.txt)): *above* 1,513 of 2,092 (72.3%, bar 55% to 80%), *below* 242
+  (11.6%, bar under 25%). Right.
+- **From the close before** (`follows --event earnings`; header `2092 earnings reports
+  2008-01-10 … 2026-11-17: 1513 above, 337 as expected, 242 below`), against *above* → *up*,
+  *below* → *down*, *as expected* → *can't say*:
+  - *above*'s day: *up* (788 up, 129 the same, 581 down of 1,498, chance 0.0000), **marked *the
+    period*** by the placebo, so by step 17's rule it reads as the period, not the beat. **Wrong.**
+  - *above*'s week *up* (692/246/553 of 1,491, 0.0000) and month *up* (570/418/485 of 1,473,
+    0.0030). Right.
+  - *below*: *down* on the day (44/22/169 of 235, 0.0000), the week (40/34/160 of 234, 0.0000) and
+    the month (37/59/132 of 228, 0.0000). Right.
   - *as expected*: *down* on the day (95/37/203 of 335, 0.0000), the week (100/52/182 of 334,
-    0.0000) and the month (102/77/151 of 330, 0.0049). **Wrong on all three.**
+    0.0000) and the month (102/77/151 of 330, 0.0049). **Wrong** on all three.
 - **From the reaction close** (`follows --event earnings --after-the-day`), against *can't say*
-  for every cell: 7 of 9 right. **Wrong on two:** *below*'s day *down* (74/42/119 of 235, chance
-  0.0037) and *above*'s month *about the same* (436/546/490 of 1,472, chance 0.0013, marked
-  *period* by the placebo).
-- **Walk-forward, from the close before:** *below*'s day holds (219 graded, 156 right, 71%);
-  *above*'s day does not (1,355 graded, 707 right, 52%). Right on both. **Wrong on "nothing
-  else":** *below*'s week holds (217 graded, 145 right, 67%) and *as expected*'s day holds (303
-  graded, 183 right, 60.4%). Every other cell, and every cell from the reaction close, does not
-  hold or is *too few*.
-- **Beyond the six named answers, against the chance line plus 2** (both runs print chance about
-  0.3, so a bar of 2.3): from the close before **3** answers, the three *as expected* cells.
-  **Wrong.** From the reaction close **2**, the two above. Right.
-- **Every other flow's output** ([step 2's evidence](earnings-steps.txt), both runs of every flow
-  `follows` takes, every flow's `raw-move` and the scoreboard, compared byte for byte on copies of
-  the store): unchanged; the scoreboard gained the earnings' event and its 31 raw-move cells (887
-  → 918). Right.
-- **Left out, counted:** step 1 left out 132 of 2,224 (no kind 128, no 8-K 4); `follows` leaves
-  out 24 more on the day from the close before: 16 of Alcoa's reports, filed under Howmet's ticker
-  (HWM), whose Yahoo closes start 2016-11-01; 7 of Dow Inc.'s first, with under 504 closes before;
-  Nvidia's of 2026-11-17, whose reaction close the copy did not hold yet. 156 in all, 7.0%, under
-  the expected tenth; 2,068 kept, over the 300 bar. Alcoa's 16 count in neither *out* nor *hole*
-  in `follows`' columns, which skip a report with no reaction close; the count above is from a
-  one-off read of `study.kept_scandals`' steps, in the evidence.
+  for every cell: *below*'s day *down* (74/42/119 of 235, chance 0.0037). **Wrong.** *above*'s
+  month *about the same* (436/546/490 of 1,472, 0.0013) is marked *the period*, so it is not an
+  answer of the kind. The other seven *can't say*. Right on eight of nine.
+- **Walk-forward** (graded and right from `follows`; p from the one-off script, Follow's
+  `walk_chance`; bar 30 graded, 60% right, 10 points over the base, p under 0.01):
+  - From the close before, *below*'s day holds (219 graded, 156 right, 71%, p under 0.000001):
+    right. *above*'s day does not (1,355, 707, 52%): right. **Wrong on "nothing else":**
+    *below*'s week holds (217, 145, 67%, p under 0.000001) and *as expected*'s day holds (303,
+    183, 60.4%, p under 0.000001).
+  - From the reaction close nothing holds (*below*'s day 184, 85, 46%; *above*'s day 732, 280;
+    *above*'s month 1,011, 368; the rest *too few*). Right.
+- **Beyond the six named answers, against the chance line plus 2** (both runs of `follows` print
+  chance about 0.3, so a bar of 2.3): from the close before **3**, the three *as expected* cells.
+  **Wrong.** From the reaction close 1 (*below*'s day), or 2 counting the month marked *the
+  period*. Right.
+- **Every other flow's output** ([step 2's evidence](earnings-steps.txt): both runs of the 14
+  flows `follows` takes, the 33 flows' `raw-move` and `scoreboard`, main's code against step 2's
+  on copies of the store, compared byte for byte): unchanged, but for the scoreboard gaining the
+  earnings' event and its 31 raw-move cells (887 → 918), as the owner's amendment of step 2 allows.
+  Right as amended.
+- **Left out, counted:** step 1 left out 132 of 2,224 (no kind 128, no 8-K 4,
+  `scripts/nasdaq_earnings.py seed`). On the day from the close before (the left-out script), 24
+  more: 7 of Dow Inc.'s first reports, under 504 closes before (`follows`' 5 *above* and 2 *as
+  expected* holes); 16 of Alcoa's, filed under Howmet's ticker (HWM), whose Yahoo closes start
+  2016-11-01; and Nvidia's of 2026-11-17, whose reaction close the copy did not hold. Alcoa's and
+  Nvidia's count in neither of `follows`' *out* nor *hole* columns: a report with no reaction close
+  is skipped there. From the reaction close, the 6 *above* holes are Dow Inc.'s 5 and one Merck day
+  on a gap in its closes. 156 in all, 7.0%, under the expected tenth; 2,068 kept, over the 300 bar.
+  Right.
 - **The size of the move** (`raw-move --event earnings`, outside the rule, recorded): on the 882
   reporting days, homebuilders (ITB) *move* (ratio 1.17, p 0.0008); the S&P 500 (1.15, p 0.0115),
-  the Nasdaq (1.13, 0.0153) and Allstate (1.11, 0.0175) *unclear*; the rest *doesn't*. These are
-  the days of a dozen reports at once in each season, so a market's move on them is the season's,
-  not one company's.
+  the Nasdaq (1.13, 0.0153) and Allstate (1.11, 0.0175) *unclear*; the rest *doesn't*.
 
-The expected outcome was **wrong on the in-line reports**: from the close before, *as expected*
-was *down*, not *can't say*, on all three spans, and its day holds walk-forward; a miss's week
-holds too; from the reaction close a miss's next day is still *down*. It was right on the kinds'
-shares, on every beat and miss cell from the close before, on the walk-forward of a miss's day and
-a beat's day, and on every other flow's output.
+The expected outcome was **wrong on six counts**: *above*'s day reads as the period; *as expected*
+is *down*, not *can't say*, on all three spans from the close before, and three answers beyond
+the named six break the chance bar; a miss's week and an in-line report's day hold walk-forward;
+a miss's next day is *down* from the reaction close. It was right on the kinds' shares, the
+members' left-out count, a beat's week and month, a miss's three spans, the walk-forward of a
+miss's day and a beat's day, nothing holding from the reaction close, and every other flow's
+output.

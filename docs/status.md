@@ -13,8 +13,8 @@ Where the work is and what comes next: the task last finished, the tasks in prog
 ## Last completed
 
 Step 31: earnings ([results](steps/earnings.md#results)). From the close before, a Dow member's
-shares beat the S&P 500 after a beat and fall behind after a miss or an in-line report; a miss's
-day and week and an in-line report's day hold walk-forward. History only.
+shares fall behind the S&P 500 after a miss or an in-line report, and run ahead over the week and
+month after a beat; a miss's day and week and an in-line report's day hold walk-forward.
 
 ## In progress
 
