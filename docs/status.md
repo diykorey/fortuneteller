@@ -18,6 +18,8 @@ holds.
 
 ## In progress
 
+- **Step 30: floods** ([the spec](steps/floods.md)): NOAA's billion-dollar US floods; droughts left
+  out, as they have no day. Spec under review.
 - **Step 29: ask about phase 5's kinds** ([the spec](steps/ask-phase-5.md)): the page's
   section answers OPEC+, the two banks, violent acts, hacks and landfalls. Step 1 built; step 2
   waits for the evening job.
