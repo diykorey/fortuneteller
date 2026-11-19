@@ -128,15 +128,18 @@ the close before), `follows --event flood --after-the-day` (from the reaction cl
 **In plain words:** after a billion-dollar US flood began, corn, wheat, soybeans, gasoline, natural
 gas, oil, energy stocks and Allstate's shares gave no answer over the day, the week or the month,
 counted from either close, and on the floods' own days none of them moved more than on ordinary
-days by the bar. Across every market, one answer in each run, within the luck the chance line
+days by the bar: corn moved somewhat more (*unclear*), the rest no more. Across every market, one answer in each run, within the luck the chance line
 allows; with 39 floods nothing could be graded enough to hold. The expected outcome held.
 
 - **The header, as expected:** `follows: 39 floods 1980-04-10 … 2024-06-16: 39 floods`
   (`follows --event flood`). Right.
-- **The arithmetic:** right. No cell reaches 30 graded: the most is 7 from the close before and 5
-  from the reaction close. On the day the S&P 500, the 10- and 5-year yields, the dollar index and
-  the Nasdaq counted 39, the Nikkei 37 (2 in holes), the FTSE 35 (1 in a hole), Allstate 33, the
-  crops 22; Coinbase counted 7 and is *too few* on every span, in both runs.
+- **The arithmetic:** right. No cell reaches 30 graded: the most is 7 from the close before
+  (wheat's day) and 5 from the reaction close (Europe's shares' day). Every market's floods on the
+  day, counted plus out and holes, are the counts the rule lists, in both runs. From the close
+  before (`follows --event flood`) the S&P 500, the 10- and 5-year yields, the dollar index and the
+  Nasdaq counted 39, the Nikkei 37 (2 in holes), the FTSE 35 (1 in a hole), Allstate 33, the crops
+  22; from the reaction close the Nikkei 36 (3 in holes) and the FTSE 36. Coinbase counted 7 and is
+  *too few* on every span, in both runs.
 - **Walk-forward: nothing holds** (both runs). Right.
 - **On all history, against the chance line plus 2** (each run; chance about 2.7, so a bar of 4.7):
   from the close before **1 answer**, bitcoin *about the same* on the day, 3 up, 12 the same, 4
@@ -145,14 +148,17 @@ allows; with 39 floods nothing could be graded enough to hold. The expected outc
   few*). Neither marked by the placebo. Right in both.
 - **Corn, wheat, soybeans, gasoline, natural gas, Brent, energy stocks and Allstate on the day, the
   week and the month, both runs:** all 48 cells *can't say*; none *too few*. Right.
-- **Every other flow's rows** ([step 1's evidence](floods-steps.txt)): byte-identical; the
-  scoreboard gained the floods' entry (32 → 33 events) and its raw-move chance count rose by their
-  30 cells (857 → 887), the surprise and walk-forward counts unchanged. Right.
+- **Every other flow's rows** ([step 1's evidence](floods-steps.txt), each file compared byte for
+  byte by a one-off Python read of both, `data.json`'s `chance` read the same way): byte-identical;
+  the scoreboard gained the floods' entry (32 → 33 events). The floods' own cells: 30 in raw-move
+  (`raw-move --event flood` prints 30 verdicts, Coinbase's *too few* not counted), none in surprise
+  (a flood has no surprise rule) and none in walk-forward (the scoreboard grades only the flows
+  `live` calls). So raw-move's count rose 857 → 887, surprise stayed 372 and walk-forward 82. Right.
 - **The size of the move** (`raw-move --event flood`, outside the rule, recorded): 28 markets
   *doesn't*, 2 *unclear* (corn, ratio 1.41, p 0.0921; the breakeven, 1.25, 0.2140), Coinbase *too
   few*; none *moves*. Allstate's lone flood days move less than its ordinary days (ratio 0.63).
 - **Days shared with another flow** (`scripts/shared_days.py flood`): 13 of the 39, CPI and the
-  ECB president's statements on 3 each, jobless claims and the French flash CPI on 2, seven others
-  on 1; none with a hurricane landfall on the same day.
+  ECB president's statements on 3 each, jobless claims and the Fed chair's statements on 2, seven
+  others on 1; none with a hurricane landfall on the same day.
 
 The expected outcome was **right on every count**.
