@@ -186,6 +186,12 @@ def test_the_page_asks_about_each_kind_the_store_answers(
         "claims",
         "ecb",
         "ceo",
+        "opec",
+        "boe",
+        "boj",
+        "war",
+        "crypto",
+        "weather",
     ]
     assert all("%" not in cell["say"] for cell in cpi["cells"])
 
