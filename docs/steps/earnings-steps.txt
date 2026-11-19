@@ -30,3 +30,17 @@ Apple      2026-11-02  Nasdaq 1.98  Yahoo 1.98  pass   8-K 21:30 UTC = 16:30 New
 Walmart    2025-11-20  Nasdaq 0.61  Yahoo 0.60  pass   8-K 11:58 UTC = 06:58 New York, before the open: that day   pass
 Nike       2025-12-18  Nasdaq 0.37  Yahoo 0.37  pass   8-K 21:15 UTC = 16:15 New York, after the close: next day   pass
 The spec named JPMorgan's 2026-10-14 and Apple's 2026-10-30; both reported on another day (10-13, 11-02), on Nasdaq's calendar and their 8-Ks alike, so those two reports are checked on their days.
+
+Step 2's evidence.
+
+$ on copies of the real store (2026-11-19 02:31), each with the same copied caches: load-releases and load-prices --companies on main's code (base) and on this branch's (new)
+loaded 2092 earnings reports, 2008-01-10 … 2026-11-17
+67 of 67 companies loaded
+
+$ every flow's follows and follows --after-the-day (the 14 that follows takes), every flow's raw-move (32) and scoreboard, main's code on base against this branch's on new: files byte-identical
+61 identical: fola-boe.txt, fola-boj.txt, fola-ceo.txt, fola-claims.txt, fola-cpi.txt, fola-crypto.txt, fola-ecb.txt, fola-flood.txt, fola-fomc.txt, fola-nfp.txt, fola-opec.txt, fola-retail.txt, fola-war.txt, fola-weather.txt, fol-boe.txt, fol-boj.txt, fol-ceo.txt, fol-claims.txt, fol-cpi.txt, fol-crypto.txt, fol-ecb.txt, fol-flood.txt, fol-fomc.txt, fol-nfp.txt, fol-opec.txt, fol-retail.txt, fol-war.txt, fol-weather.txt, raw-boe.txt, raw-boj.txt, raw-ceo.txt, raw-claims.txt, raw-cpi.txt, raw-crypto.txt, raw-debt.txt, raw-decpi.txt, raw-deelect.txt, raw-ecbchief.txt, raw-ecb.txt, raw-euelect.txt, raw-fedchair.txt, raw-flood.txt, raw-fomc.txt, raw-frelect.txt, raw-gdp.txt, raw-hicp.txt, raw-ifo.txt, raw-ism.txt, raw-nfp.txt, raw-opec.txt, raw-pce.txt, raw-posts2.txt, raw-posts.txt, raw-retail.txt, raw-summit.txt, raw-tariff.txt, raw-ukelect.txt, raw-uselect.txt, raw-war.txt, raw-weather.txt, raw-zew.txt
+differ: score.txt
+scoreboard: 33 events, 52 call rows, data to 2026-11-18
+scoreboard: 34 events, 52 call rows, data to 2026-11-18
+
+$ docs/scoreboard/data.json, before and after: every one of main's 33 events unchanged; one added, earnings (ERN, 2092 releases 2008-01-10 … 2026-11-17, no surprise, no walk-forward); chance's raw-move cells 887 -> 918, the rest equal
