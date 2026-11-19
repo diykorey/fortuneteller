@@ -64,7 +64,7 @@ This step measures nothing new; it shows steps 24 to 28 exactly.
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | The six flows in `ask_data`, their words, the kind cell, the BoJ left out on a failed fetch | The four tests below pass |
+| 1 | ~~The six flows in `ask_data`, their words, the kind cell, the BoJ left out on a failed fetch~~ **done** 2026-11-19; on a copy of the real store the data held the 11 kinds and 1,023 cells, nothing left out, before publishing | The four tests below pass |
 | 2 | On the published page, after the evening job | The 11 new kinds appear with 1,023 cells; every cell equals `follows`' line on the real store (a one-off comparison, its output in the evidence); the expected outcome holds, or each difference is written in Results with its numbers |
 
 ## How you know it is right
