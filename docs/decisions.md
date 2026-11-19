@@ -11,6 +11,15 @@ amended there with a date.
 Each entry: **what** was decided, **why**, what it **retires**, and **where** the detail is. *By the
 owner* marks a choice the owner made over another on the table.
 
+## 2026-11-19: Phase 5's kinds go on the page, by the owner
+
+- **What:** step 29 adds the six flows of steps 24 to 28 to the page's *Ask the fortune teller*,
+  before any new kind or reading the news into them.
+- **Why:** they are measured and the page is the gate's second bar; a reader who brings an OPEC+
+  or hurricane headline should find its kind. Small, and it shows only numbers already graded.
+- **Retires:** the skip in `ask_data` that kept steps 24 to 28 off the page.
+- **Where:** [the spec](steps/ask-phase-5.md).
+
 ## 2026-11-18: War is measured as ICB's violent acts
 
 - **What:** step 26's *war and military strikes* is every international crisis since 1970 that
