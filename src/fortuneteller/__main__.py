@@ -1847,6 +1847,12 @@ PERIOD_WORDS = (
     "With each event moved ten closes or a span away, the same answer comes: it reads as the "
     "period, not the event."
 )
+# A release on a fixed weekday lands on that weekday again when moved (what-follows-jobs.md).
+WEEKDAY_PERIOD_WORDS = (
+    "With each event moved ten closes or a span away, the same answer comes: it reads as the "
+    "period or the weekday, not the event."
+)
+WEEKDAY_FLOWS = ("nfp", "claims")
 
 
 def is_kind_cell(name: str, span: str, market: str) -> bool:
@@ -1929,7 +1935,7 @@ def ask_say(
     if is_kind_cell(name, span, market):
         words.append(KIND_CELL_WORDS)
     if f.period:
-        words.append(PERIOD_WORDS)
+        words.append(WEEKDAY_PERIOD_WORDS if name in WEEKDAY_FLOWS else PERIOD_WORDS)
     return " ".join(words)
 
 
