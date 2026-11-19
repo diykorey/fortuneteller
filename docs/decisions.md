@@ -11,6 +11,16 @@ amended there with a date.
 Each entry: **what** was decided, **why**, what it **retires**, and **where** the detail is. *By the
 owner* marks a choice the owner made over another on the table.
 
+## 2026-11-19: Earnings, the Dow's members, one event per report, by the owner
+
+- **What:** step 31 measures earnings reports: the Dow's members on each report's day, Nasdaq's
+  calendar for the EPS and its consensus, the SEC's 8-K for the minute. An event's id gains the
+  report's place in its day, so a flow can hold several events on one day.
+- **Why:** the kind the news brings most; a dated membership list picks the companies without
+  hindsight, where today's market caps would choose the survivors.
+- **Retires:** one event per flow per day.
+- **Where:** [the spec](steps/earnings.md).
+
 ## 2026-11-19: Floods from NOAA's billion-dollar list; droughts left out
 
 - **What:** step 30 measures the US floods of NOAA's Billion-Dollar Disasters list (1980 to
