@@ -21,10 +21,14 @@ At the end: the section answers every kind below, and the evening job keeps it c
 | `war` | a violent act setting off an international crisis | [step 26](war.md) |
 | `crypto` | a crypto hack of $100 million or more | [step 27](crypto.md) |
 | `weather` | a US hurricane landfall | [step 28](weather.md) |
+| `flood` | a billion-dollar US flood | [step 30](floods.md) |
 
-Eleven kinds. Spans are the day, the week and the month from the event's day, as `follows` prints
-by default, on each of the 31 markets: 93 cells a kind, 1,023 in all (OPEC 186, each bank 279,
-the three one-kind flows 93 each).
+Twelve kinds. Spans are the day, the week and the month from the event's day, as `follows` prints
+by default, on each of the 31 markets: 93 cells a kind, 1,116 in all (OPEC 186, each bank 279,
+the four one-kind flows 93 each).
+
+*Amended 2026-11-19, after step 1 and before step 2, when step 30 measured the floods:* the floods
+join, so the page answers every measured kind; nothing else changes.
 
 ## The way to reach it
 
@@ -53,7 +57,7 @@ This step measures nothing new; it shows steps 24 to 28 exactly.
 - **Expected outcome, written before the page is built on real data:** among the six flows,
   exactly one unmarked cell holds walk-forward: gasoline (UGA) on the day after *oil up*, 31
   graded, 20 right in [step 24's Results](opec.md#results); the BoE, the BoJ, violent acts, hacks
-  and landfalls hold nothing (each step's Results). Exactly two cells are marked as the kind:
+  landfalls and floods hold nothing (each step's Results). Exactly two cells are marked as the kind:
   Brent's day after *oil up* and after *oil down*; the first also holds (36 graded, 28 right) and
   is not counted as an answer. The page's three earlier holds stay. So the page shows four
   answers that hold. Releases since a step's Results may move a count by one or two; another
@@ -65,7 +69,7 @@ This step measures nothing new; it shows steps 24 to 28 exactly.
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~The six flows in `ask_data`, their words, the kind cell, the BoJ left out on a failed fetch~~ **done** 2026-11-19; on a copy of the real store the data held the 11 kinds and 1,023 cells, nothing left out, before publishing | The four tests below pass |
-| 2 | On the published page, after the evening job | The 11 new kinds appear with 1,023 cells; every cell equals `follows`' line on the real store (a one-off comparison, its output in the evidence); the expected outcome holds, or each difference is written in Results with its numbers |
+| 2 | On the published page, after the evening job | The 12 new kinds appear with 1,116 cells; every cell equals `follows`' line on the real store (a one-off comparison, its output in the evidence); the expected outcome holds, or each difference is written in Results with its numbers |
 
 ## How you know it is right
 
