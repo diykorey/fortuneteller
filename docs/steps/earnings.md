@@ -55,7 +55,9 @@ its own base of the 504 closes before), against the rule below written first.
   `data/seed/event_types.csv`), the ticker in the detail, scheduled, lesser like the CEO flow:
   `raw-move` judges its lone days, while `follows` keeps every report. Members need no row in
   `data/seed/instruments.csv`: their closes are loaded by `load-prices --companies` as the CEO
-  flow's are. History only in this step: no trigger, not on the page.
+  flow's are. History only in this step: no trigger, not on the page's ask. *Amended 2026-11-19,
+  by the owner, at step 2:* the scoreboard's raw-move card takes the earnings, as every flow's
+  history does (the floods' did at step 30).
 - **The fetch:** Nasdaq's ~4,900 weekdays at one request a second and the SEC's pages at under
   ten, each cached in its own directory under `data/cache/earnings/`, read with `python -I`
   (Python isolated from the download's directory). Seen before writing this: Nasdaq's pages of
@@ -79,7 +81,8 @@ its own base of the 504 closes before), against the rule below written first.
     2. The chance line is `follows`' own (each answered cell's chance summed, as in
     [step 26](war.md)).
   - Every other flow's `follows` (both runs), `raw-move` and `scoreboard` output unchanged byte
-    for byte on a copy of the store, the CEO flow's included after its code is shared.
+    for byte on a copy of the store, the CEO flow's included after its code is shared. *Amended
+    2026-11-19:* the scoreboard gains the earnings' event and raw-move cells, and nothing else.
 - **Outside the rule, recorded:** `raw-move --event earnings`; the reports left out, by reason.
 
 *Written 2026-11-19, before anything was fetched but the three calendar days and the one filing
