@@ -7,7 +7,7 @@ invalid enum value fails CI. Each seed file is checked against two canonical sou
 
 import csv
 import re
-from datetime import date
+from datetime import date, timedelta
 from pathlib import Path
 
 import duckdb
@@ -103,6 +103,8 @@ def test_seed_dir_has_no_unexpected_csvs() -> None:
         "crypto.csv",
         "hurricanes.csv",
         "floods.csv",
+        "dow.csv",
+        "earnings.csv",
         "boe-changes.csv",
         "fomc_sentiment_dictionary.csv",
     }
@@ -403,3 +405,54 @@ def test_flood_rows_are_the_billion_dollar_list_s_floods_with_a_day() -> None:
         "2011-04-01",
         "2011-05-01",
     } & set(named)
+
+
+def _dow_members(day: date) -> set[str]:
+    # the Dow's members on ``day`` by data/seed/dow.csv's dated changes
+    members: set[str] = set()
+    with (settings.seed_dir / "dow.csv").open(newline="", encoding="utf-8") as handle:
+        for row in csv.DictReader(handle):
+            if date.fromisoformat(row["day"]) <= day:
+                (members.add if row["change"] == "in" else members.discard)(row["ticker"])
+    return members
+
+
+def test_dow_members_change_on_their_days_and_stay_thirty() -> None:
+    # given the members' dated changes
+    # when the members are read on two change days and the days before them
+    days = [date(2013, 9, 20), date(2013, 9, 23), date(2008, 9, 19), date(2008, 9, 22)]
+    before13, after13, before08, after08 = (_dow_members(d) for d in days)
+
+    # then Goldman Sachs, Visa and Nike replace Alcoa, Bank of America and Hewlett-Packard, Kraft
+    # (Mondelez today) replaces AIG, and there are 30 each time
+    assert after13 - before13 == {"GS", "V", "NKE"}
+    assert before13 - after13 == {"HWM", "BAC", "HPQ"}
+    assert (after08 - before08, before08 - after08) == ({"MDLZ"}, {"AIG"})
+    assert all(len(m) == 30 for m in (before13, after13, before08, after08))
+
+
+def test_earnings_rows_are_members_reports_with_their_kind() -> None:
+    # given the committed reports
+    with (settings.seed_dir / "earnings.csv").open(newline="", encoding="utf-8") as handle:
+        reader = csv.DictReader(handle)
+        header = reader.fieldnames
+        rows = list(reader)
+
+    # when each row's kind is read against its surprise
+    def kind(surprise: float) -> str:
+        return "above" if surprise >= 2.0 else "below" if surprise <= -2.0 else "as expected"
+
+    # then every row is a member's on its day (a day either side, the 8-K's), its kind the
+    # surprise's at ±2%, and Microsoft's report of 2026-10-28 is at its 8-K's minute
+    assert header == ["day", "time", "ticker", "eps", "forecast", "surprise", "kind"]
+    assert all(row["kind"] == kind(float(row["surprise"])) for row in rows)
+    assert (kind(2.0), kind(1.9), kind(-2.0)) == ("above", "as expected", "below")
+    assert all(
+        any(
+            row["ticker"] in _dow_members(date.fromisoformat(row["day"]) + timedelta(days=d))
+            for d in (-1, 0, 1)
+        )
+        for row in rows
+    )
+    msft = [r for r in rows if r["ticker"] == "MSFT" and r["day"] == "2026-10-28"]
+    assert [(r["time"], r["kind"]) for r in msft] == [("20:04", "above")]
