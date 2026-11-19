@@ -179,6 +179,7 @@ step 18 trigger; reading the news into kinds waits in the backlog below.
 | 29 | **[Ask about phase 5's kinds](steps/ask-phase-5.md)**: the page's *Ask the fortune teller* answers OPEC+, the BoE and the BoJ, violent acts, hacks and landfalls, as step 22 answers the first seven flows. Chosen 2026-11-19 by the owner | **In progress**: spec |
 | 30 | **[Floods](steps/floods.md)**: NOAA's billion-dollar US floods with a day, 39 from 1980 to 2024, against crops, fuel, insurers and the indexes. Chosen 2026-11-19 by the owner as floods and droughts; droughts left out, as they have no day | **Done** 2026-11-19 ([results](steps/floods.md#results)): nothing follows a flood; one answer a run, within chance; too few to hold |
 | 31 | **[Earnings](steps/earnings.md)**: the Dow's members' quarterly EPS against the consensus, above, as expected or below, each company against the S&P 500. Chosen 2026-11-19 by the owner | **In progress**: spec |
+| 32 | **[Ask about earnings](steps/ask-earnings.md)**: the page's *Ask the fortune teller* answers a Dow company's report above, in line with or below the consensus, as step 31 measured it; every cell on the page carries the placebo's mark, *the period*, as `follows` prints it; the members' closes loaded every evening. Chosen 2026-11-19 | **In progress**: spec |
 
 **Backlog:** news read into these kinds by a small model on this machine (Gemma 3 4B or Qwen 2.5
 3B), tested on a fresh labelled set: step 20's parked next try, widened to phase 5's kinds.
