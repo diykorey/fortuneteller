@@ -48,7 +48,8 @@ flow takes no trigger.
   after 04:00 UTC (New York's, Europe's, Tokyo's at 06:00 UTC), and on the currencies, whose close
   is 00:00 London, the next day. A weekend or holiday flood reacts on the next close.
 - **The flow:** a `DatedShockFlow` (the seed-file flow of the one-kind shocks), `flood`, code 33,
-  event type `Natural disaster` as the landfalls', no surprise, unscheduled, lesser by its
+  event type `Extreme weather / climate policy` (*amended 2026-11-19, in step 1:* not `Natural
+  disaster`, the landfalls', since two flows of one country may not share an event type), no surprise, unscheduled, lesser by its
   default, one kind in `study.ONE_KIND`. No new market.
 
 ## The rule, fixed before anything is shown
@@ -84,7 +85,7 @@ the list and the markets' first closes.*
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | The seed and the flow: `scripts/noaa_floods.py` writes `data/seed/floods.csv` from the local copy; the `flood` flow in `follows`; the before-and-after outputs of every flow on a copy of the store | The tests below pass; `follows --event flood` prints the header above; the outputs kept in `docs/steps/floods-steps.txt` |
+| 1 | ~~The seed and the flow: `scripts/noaa_floods.py` writes `data/seed/floods.csv` from the local copy; the `flood` flow in `follows`; the before-and-after outputs of every flow on a copy of the store~~ **done** 2026-11-19: 39 floods; every other flow's output byte-identical, the scoreboard 32 → 33 events and its raw-move chance 857 → 887 cells, the floods' 30 ([evidence](floods-steps.txt)) | The tests below pass; `follows --event flood` prints the header above; the outputs kept in `docs/steps/floods-steps.txt` |
 | 2 | Results | Each bullet of the rule judged right or wrong in Results, with its numbers and the command that prints them; a goldfish review, each finding fixed or answered in the PR |
 
 ## How you know it is right
@@ -109,7 +110,7 @@ the list and the markets' first closes.*
 - `scripts/noaa_floods.py PATH` reads the local copy (`python -I`), keeps the `Flooding` rows but
   the season rule's, and writes `day,name,cost` (`day` the `Begin Date`, `cost` the CPI-adjusted
   millions).
-- `flows.FLOOD_FLOW = DatedShockFlow("Natural disaster", UNITED_STATES, UTC, 33, "flood", "FLD",
+- `flows.FLOOD_FLOW = DatedShockFlow("Extreme weather / climate policy", UNITED_STATES, UTC, 33, "flood", "FLD",
   seed_file="floods.csv", noun="floods", day_column="day", detail_column="name",
   scheduled=False)`; `study.FLOOD = "flood"` in `ONE_KIND`; its noun in `FOLLOWS_NOUNS`; not in
   `TRIGGER_KINDS`; skipped by `ask_data` (the page's data) with a comment naming this step.
