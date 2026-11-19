@@ -218,7 +218,7 @@ record is shown, losses included. A handle is dropped from the page on request; 
         const base = c.base_n
           ? [c.base_up, c.base_same, c.base_down].map((s) => Math.round(s * c.base_n)).join(' / ') + ' of ' + c.base_n
           : 'each company\'s own two years';
-        const answered = !c.kind_cell && c.answer !== "can't say" && c.answer !== 'too few';
+        const answered = !c.kind_cell && !c.period && c.answer !== "can't say" && c.answer !== 'too few';
         const answer = el('td', c.answer, answered ? '' : 'none');
         answer.appendChild(el('small', c.say));
         let replay = 'not replayed';
@@ -226,7 +226,7 @@ record is shown, losses included. A handle is dropped from the page on request; 
         table.appendChild(row([
           el('td', c.market_name),
           el('td', c.up + ' / ' + c.same + ' / ' + c.down + ' of ' + (c.up + c.same + c.down)),
-          el('td', base), answer, el('td', replay, c.verdict === 'holds' && !c.kind_cell ? 'yes' : 'none'),
+          el('td', base), answer, el('td', replay, c.verdict === 'holds' && !c.kind_cell && !c.period ? 'yes' : 'none'),
         ]));
       });
       const wrap = el('div', null, 'wrap');
