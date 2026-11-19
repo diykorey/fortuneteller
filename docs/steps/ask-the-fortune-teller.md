@@ -76,7 +76,22 @@ that it shows them exactly.
 | 2 | ~~The base keeps how many spans it rests on~~ **done** 2026-11-14 | A test gives a base of 9 moves and reads 9 |
 | 3 | ~~The scoreboard data gains *ask*: per flow its kinds, events per kind, first and last day, and per cell the numbers and its sentence; and *ask_left_out*, each flow with its reason~~ **done** 2026-11-14; each cell also carries its market's name from data/seed/instruments.csv | A test on test_what_follows.py's store compares every cell with the follows lines for the same store, field by field; a second gives no FRED key and finds the Fed left out and the others there |
 | 4 | ~~The page shows the section: a choice of kind, then a table per span, one row per market, the sentence under it~~ **done** 2026-11-14: the page written from test_scoreboard.py's store, opened in headless Chrome, showed three tables of 25 rows and the reasons for the six flows left out, with no script error | A test finds the section in the written page, and the page, opened in a browser on the test data, shows a kind's tables |
-| 5 | On the published page, after the evening job | Every kind in the table above appears with its cells; none is left out |
+| 5 | ~~On the published page, after the evening job~~ **done** 2026-11-19, [below](#step-5) | Every kind in the table above appears with its cells; none is left out |
+
+### Step 5
+
+*2026-11-19*, [the evidence](ask-the-fortune-teller-step5.txt): the published page after the
+evening job of 2026-11-18.
+
+- **Every kind is there, none left out:** the seven flows of the table above, 19 kinds in the
+  picker, each with its cells: 93 per span (31 markets × 3 kinds), the Fed's also over the quarter
+  and the year, the CEO's 1 per span (the company against the S&P 500); `ask_left_out` empty.
+- **The expected outcome, right:** exactly three cells hold, all on the day: after a jobs report
+  above the consensus the 10-year yield (39 right of 58) and the 5-year (38 of 58); after a CPI
+  above the consensus the breakeven (23 of 31). A release since step 19 moved the breakeven's
+  graded count from 30 to 31; no hold was added or lost.
+- **On screen:** opened in Chrome, a jobs report above the consensus shows the day's, the week's
+  and the month's tables of 31 markets, each row with its sentence; no console error.
 
 ## How you know it is right
 
