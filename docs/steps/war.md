@@ -83,7 +83,7 @@ from the source and the store's first closes, and are arithmetic.*
 | --- | --- | --- |
 | 1 | ~~The seed~~ **done** 2026-11-18. The seed `data/seed/war.csv` (`day,time,kind,crisis`) from ICB's two files, by `scripts/icb_violent_acts.py`; the flow stored | The seed test checks the header, 137 rows, days in order, time `04:00`, kind `violent act`. On a copy of the store, the flow stores 136 events; every existing scoreboard entry identical, and its chance before and after written here; the five rows below checked |
 | 2 | ~~`follows`~~ **done** 2026-11-18. `follows --event war`; `war` in `TRIGGER_KINDS` | Tests: a Saturday act reacts on Monday; a weekday act on Tokyo's close the same day and the euro's the next; a `war` trigger for a day not stored is answered from an event made at 04:00 UTC that day. On a copy of the store the header is the expected one, and every other flow's `follows` and `raw-move` output byte for byte the one before, OPEC's included |
-| 3 | Results here and in [MVP results](../mvp-results.md), against the expected outcome; the roadmap row | Every bullet of the expected outcome marked right or wrong with its numbers; each cell with 30 or more graded walk-forward and its record; the days shared with another flow, by the act's UTC day |
+| 3 | ~~Results~~ **done** 2026-11-18, [below](#results). Results here and in [MVP results](../mvp-results.md), against the expected outcome; the roadmap row | Every bullet of the expected outcome marked right or wrong with its numbers; each cell with 30 or more graded walk-forward and its record; the days shared with another flow, by the act's UTC day |
 
 *Steps 1 and 2, 2026-11-18, one pull request:* `scripts/icb_violent_acts.py` writes 137 rows,
 leaving out the two with no day; the five rows named below are in the seed as named. *Amended
@@ -130,9 +130,63 @@ link.
   in `docs/legacy/data/README.md`.
 - **Flow:** a `DatedShockFlow` in `flows.py`: event type `Geopolitical escalation / terror`
   (already in `data/seed/event_types.csv`), country `World`, zone UTC, type code 30, `war`, detail
-  the kind; `lesser`, unscheduled. Kinds by `study.detail_kinds`, as OPEC's. `FOLLOWS_NOUNS`
+  the crisis's name (*amended 2026-11-18*, above); `lesser`, unscheduled. Kinds by `study.war_kinds`, the one kind. `FOLLOWS_NOUNS`
   gains `violent acts`; `TRIGGER_KINDS` gains `war` with `violent act`; a live trigger's event is
   made as OPEC's is, at 04:00 UTC.
 - **Tests** in `tests/test_seed_data.py`, `tests/test_what_follows.py`, `tests/test_triggers.py`.
 - **Docs:** this spec; `docs/schema.md` (code 30, the detail, the event type); the glossary (*ICB*,
   *violent act*); roadmap row 26 and a decisions entry for the narrower kind; status, changelog.
+
+## Results
+
+*2026-11-18.* Every line quoted is in [the evidence](war-results.txt): the store copy of steps 1
+and 2, each command's whole output, the comparisons, and `scripts/shared_days.py`'s count.
+
+**In plain words:** after a violent act set off an international crisis, gold rose. Counted
+from the close before the act, it was up over the following week after 23 of 37 acts and down
+after 2, and up on the day and over the month too; from the close after the act, up over the week,
+but not clearly on the day or the month. Only 37 acts fall after gold's first stored close
+(2000-08-30, [schema](../schema.md)), so the lean is not graded walk-forward and is not a call.
+Oil and defence stocks show nothing. A few other cells answer: the Nasdaq and the Euro Stoxx 50
+*about the same*, and the 5-year yield *down* counted from the close before but *up* from the
+close after, so it does not hold together. Counted from the close before, the answers are one
+above the chance line's bar of 4.5, so that run is not cleared of luck; from the close after they
+are within it.
+
+- **The header, as expected:** `follows: 136 violent acts 1970-11-22 … 2021-04-28: 136 violent
+  acts` (`follows --event war`).
+- **Walk-forward: nothing holds**, in either run (`follows`). As expected. One cell reaches 30
+  graded: the 10-year yield on the day from the reaction close, 9 of 30 right, *doesn't hold*.
+- **On all history, against the chance line plus 2** (`follows`, each run), chance about 2.5, so
+  a bar of 4.5: from the close before **5 answers, above it: wrong**; from the reaction close 4,
+  within it, right. From the close before: gold *up* on the day (18 up, 4 down of 37, chance
+  0.0071), the week (23 up, 2 down, 0.0001) and the month (16 up, 1 down of 31, 0.0026); the
+  Nasdaq *about the same* on the day (62 of 133, 0.0010); the 5-year yield *down* on the day (55 of
+  134, 0.0095). From the reaction close: the 10-year and 5-year yields *up* on the day (54 and 51
+  of 134, 0.0043 and 0.0086); gold *up* over the week (18 up, 3 down of 37, 0.0051); the Euro
+  Stoxx 50 *about the same* over the week (15 of 26, 0.0092). Each is *too few* walk-forward but
+  the 10-year yield's, and the placebo marks none *the period*.
+- **Oil, gold and defence stocks on the day, the week and the month** (`follows`, each run):
+  **wrong for gold**. Brent (27 counted, 22 over the month) and defence stocks (ITA, 29, 24) are
+  *can't say* on every span in both runs, as expected. Gold (37, 31 over the month) is *up* on all
+  three spans from the close before and over the week from the reaction close, *can't say* on its
+  day and month from the reaction close.
+- **The arithmetic held** (`follows`): every cell outside the first two rows of the counts table
+  is *too few* walk-forward.
+- **The size of the move** (`raw-move --event war`, outside the rule, recorded): on its lone days
+  the acts *move* no market: 20 *doesn't*, 8 *unclear*.
+- **Every other flow's rows, and the lines that count every cell:** every other flow's `raw-move`
+  and `follows` output (both runs, and the Fed's `--long`), OPEC's included, is byte for byte the
+  one before (`cmp`, in the evidence): right. **The expectation that each `follows` chance line
+  changes was wrong in its premise:** each counts only its own flow's cells, so none changed (each
+  written before and after in the evidence). The scoreboard's raw-move chance moved by the added
+  cells alone, 698 → 726, its surprise and walk-forward chance unchanged; its entries rose 29 →
+  30 events, and with the acts' entry and the chance taken out its data is identical (`scoreboard`,
+  `data.json`): right.
+- **Days shared with another flow** (`scripts/shared_days.py war`): 15 of the 136 days; jobs
+  reports on 4, jobless claims on 3, CPI, retail sales and the president's tweets on 2 each, and
+  the Fed, ISM, the ECB president, the debt limit and OPEC on 1 each.
+
+The expected outcome was **wrong on three counts**: gold, which leans up after a violent act; the
+chance bar from the close before, missed by one answer; and the premise that other flows' chance
+lines would move. The rest held.

@@ -370,6 +370,15 @@ def test_load_releases_prints_count_range_and_skipped_months(
     (tmp_db.parent / "war.csv").write_text(
         "day,time,kind,crisis\n1990-08-02,04:00,violent act,GULF WAR\n"
     )
+    (tmp_db.parent / "crypto.csv").write_text(
+        "day,time,kind,target,amount\n2025-02-21,04:00,hack,Bybit,1400000000\n"
+    )
+    (tmp_db.parent / "hurricanes.csv").write_text(
+        "day,time,kind,storm,knots,lat,lon\n2018-10-10,17:30,landfall,Michael,140,30.0,-85.5\n"
+    )
+    (tmp_db.parent / "floods.csv").write_text(
+        "day,name,cost\n2024-06-16,Upper Midwest Flooding (June 2024),1113.0\n"
+    )
     (tmp_db.parent / "boe-changes.csv").write_text("day,time,rate\n2020-03-11,07:00,0.25\n")
     monkeypatch.setattr(settings, "seed_dir", tmp_db.parent)
 
@@ -412,8 +421,11 @@ def test_load_releases_prints_count_range_and_skipped_months(
     report += "  1 from the Bank's changes the calendar lacks: 2020-03-11\n"
     report += "loaded 1 BoJ decisions, 2025-01-24 … 2025-01-24\n"
     report += "loaded 1 World violent acts, 1990-08-02 … 1990-08-02\n"
+    report += "loaded 1 World crypto hacks, 2025-02-21 … 2025-02-21\n"
+    report += "loaded 1 United States hurricane landfalls, 2018-10-10 … 2018-10-10\n"
+    report += "loaded 1 United States floods, 2024-06-16 … 2024-06-16\n"
     assert capsys.readouterr().out == report * 2
-    assert db.count_rows("event_instances", con=db.get_connection()) == 43
+    assert db.count_rows("event_instances", con=db.get_connection()) == 46
 
 
 def test_load_releases_stores_nothing_when_any_flow_fails(

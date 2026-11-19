@@ -100,6 +100,9 @@ def test_seed_dir_has_no_unexpected_csvs() -> None:
         "ceo_scandals.csv",
         "opec.csv",
         "war.csv",
+        "crypto.csv",
+        "hurricanes.csv",
+        "floods.csv",
         "boe-changes.csv",
         "fomc_sentiment_dictionary.csv",
     }
@@ -307,3 +310,96 @@ def test_war_rows_are_icb_s_crises_a_violent_act_set_off_since_1970() -> None:
         "INDIA PARLIAMENT ATTACK",
         "SECOND NAGORNO-KARABAKH WAR",
     ]
+
+
+def test_crypto_rows_are_defillama_s_hacks_of_100_million_or_more() -> None:
+    # given the committed hacks
+    with (settings.seed_dir / "crypto.csv").open(newline="", encoding="utf-8") as handle:
+        reader = csv.DictReader(handle)
+        header = reader.fieldnames
+        rows = list(reader)
+    # when their days and targets are read
+    days = [date.fromisoformat(row["day"]) for row in rows]
+    targets = {row["day"]: (row["target"], int(row["amount"])) for row in rows}
+    # then the 44 hacks are in order on 44 days at the rule's hour, one kind, each at least the
+    # line, and the four rows named before measuring are there
+    assert header == ["day", "time", "kind", "target", "amount"]
+    assert len(rows) == 44 and len(set(days)) == 44 and days == sorted(days)
+    assert (days[0], days[-1]) == (date(2014, 2, 7), date(2026, 10, 29))
+    assert {row["time"] for row in rows} == {"04:00"}
+    assert {row["kind"] for row in rows} == {"hack"}
+    assert all(int(row["amount"]) >= 100_000_000 for row in rows)
+    assert [targets[d] for d in ("2018-01-26", "2022-03-23", "2022-11-12", "2025-02-21")] == [
+        ("Coincheck", 534_000_000),
+        ("Ronin Bridge", 624_000_000),
+        ("FTX", 450_000_000),
+        ("Bybit", 1_400_000_000),
+    ]
+
+
+def test_hurricane_rows_are_first_us_landfalls_since_1970() -> None:
+    # given the committed landfalls
+    with (settings.seed_dir / "hurricanes.csv").open(newline="", encoding="utf-8") as handle:
+        reader = csv.DictReader(handle)
+        header = reader.fieldnames
+        rows = list(reader)
+    # when their days, storms and places are read
+    days = [date.fromisoformat(row["day"]) for row in rows]
+    named = {row["day"]: (row["time"], row["storm"], int(row["knots"])) for row in rows}
+    places = [(float(row["lat"]), float(row["lon"])) for row in rows]
+    # then the 79 landfalls are in order on 79 days, one kind, each a hurricane, each inside the
+    # place rule, the five named before measuring there and the foreign landfalls named not
+    assert header == ["day", "time", "kind", "storm", "knots", "lat", "lon"]
+    assert len(rows) == 79 and len(set(days)) == 79 and days == sorted(days)
+    assert (days[0], days[-1]) == (date(1970, 8, 3), date(2024, 10, 10))
+    assert {row["kind"] for row in rows} == {"landfall"}
+    assert all(int(row["knots"]) >= 64 for row in rows)
+    assert all(
+        24.4 <= lat < 47.5
+        and lon <= -66.9
+        and not (lat < 32 and lon > -80.0)
+        and not (lon < -96.5 and lat < 25.95)
+        for lat, lon in places
+    )
+    assert [
+        named[d] for d in ("1992-08-24", "2005-09-24", "2008-09-13", "2017-08-26", "2022-09-28")
+    ] == [
+        ("08:40", "Andrew", 145),
+        ("07:40", "Rita", 100),
+        ("07:00", "Ike", 95),
+        ("03:00", "Harvey", 115),
+        ("02:00", "Ian", 110),
+    ]
+    assert not {
+        "2016-10-07",
+        "2022-11-09",
+        "2019-09-01",
+        "2017-09-20",
+        "2017-09-09",
+        "2021-08-21",
+    } & set(named)
+
+
+def test_flood_rows_are_the_billion_dollar_list_s_floods_with_a_day() -> None:
+    # given the committed floods
+    with (settings.seed_dir / "floods.csv").open(newline="", encoding="utf-8") as handle:
+        reader = csv.DictReader(handle)
+        header = reader.fieldnames
+        rows = list(reader)
+    # when their days, names and costs are read
+    days = [date.fromisoformat(row["day"]) for row in rows]
+    named = {row["day"]: (row["name"], float(row["cost"])) for row in rows}
+    # then the 39 floods are in order on 39 days, each at its begin day, the six season rows out
+    assert header == ["day", "name", "cost"]
+    assert len(rows) == 39 and len(set(days)) == 39 and days == sorted(days)
+    assert (days[0], days[-1]) == (date(1980, 4, 10), date(2024, 6, 16))
+    assert named["2024-06-16"] == ("Upper Midwest Flooding (June 2024)", 1113.0)
+    assert {"1997-01-01", "2015-10-01"} <= set(named)
+    assert not {
+        "1982-12-01",
+        "1995-01-01",
+        "2008-04-01",
+        "2010-03-01",
+        "2011-04-01",
+        "2011-05-01",
+    } & set(named)

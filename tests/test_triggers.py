@@ -554,3 +554,53 @@ def test_a_war_trigger_for_a_day_not_stored_is_answered_from_an_act_at_04_00_utc
     # then it is answered on the market, from an act made that day
     assert {r["market"] for r in rows} == {SPY}
     assert not any("void" in line for line in lines)
+
+
+def test_a_crypto_trigger_for_a_day_not_stored_is_answered_from_a_hack_at_04_00_utc(
+    one_market: None,
+) -> None:
+    # given no stored hack on a day, and a trigger filed that morning
+    closes = _closes(_wavy(300))
+    day = closes[200].day
+    merged = datetime.combine(day, time(5, 0), tzinfo=UTC)
+
+    # when it is answered
+    rows, lines = _answer(
+        [_trigger(day, study.HACK, "crypto")], [], {}, closes, merged, flow="crypto"
+    )
+
+    # then it is answered on the market, from a hack made that day
+    assert {r["market"] for r in rows} == {SPY}
+    assert not any("void" in line for line in lines)
+
+
+def test_a_weather_trigger_for_a_day_not_stored_is_answered_from_a_landfall_at_04_00_utc(
+    one_market: None,
+) -> None:
+    # given no stored landfall on a day, and a trigger filed that morning
+    closes = _closes(_wavy(300))
+    day = closes[200].day
+    merged = datetime.combine(day, time(5, 0), tzinfo=UTC)
+
+    # when it is answered
+    rows, lines = _answer(
+        [_trigger(day, study.LANDFALL, "weather")], [], {}, closes, merged, flow="weather"
+    )
+
+    # then it is answered on the market, from a landfall made that day
+    assert {r["market"] for r in rows} == {SPY}
+    assert not any("void" in line for line in lines)
+
+
+def test_a_flood_trigger_is_void(one_market: None) -> None:
+    # given a flood trigger, a flow measured as history only
+    closes = _closes(_wavy(300))
+    day = closes[200].day
+    merged = datetime.combine(day, time(5, 0), tzinfo=UTC)
+
+    # when it is read
+    rows, lines = _answer([_trigger(day, "flood", "flood")], [], {}, closes, merged, flow="flood")
+
+    # then it is void, its flow not one triggers reads, and nothing is answered
+    assert not [r for r in rows if r.get("answer")]
+    assert any("void" in line and "flood is not one of" in line for line in lines)

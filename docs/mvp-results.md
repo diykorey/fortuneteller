@@ -646,6 +646,51 @@ the decision**: one to two answers per bank and run, fewer than chance alone giv
 BoE, 2.5 for the BoJ), and none holds walk-forward. BoJ days are ordinary in size too. The pound
 on the day of a BoE cut or hike is *can't say*, 17 of each being too few.
 
+## What follows a violent act that sets off a crisis
+
+Measured 2026-11-18. Detail in [war](steps/war.md#results).
+
+136 days from 1970 to 2021 on which a violent act (a strike, a border clash, an invasion) set off
+an international crisis, by the International Crisis Behavior project's list (`follows --event
+war`). **Gold rose after them**: counted from the close before, up over the week after 23 of 37 acts
+since 2000 and down after 2 (chance 0.0001), and up on the day and the month too; from the close
+after, up over the week only. Too few to grade walk-forward, so not a call. Oil and defence stocks
+show nothing; a few cells elsewhere answer, the yields in opposite directions in the two runs. On
+the acts' days `raw-move` finds no market that *moves*; 8 are *unclear*. Counted from the close before, the answers are one
+above the chance bar, so that run is not cleared of luck.
+
+## What follows a crypto hack
+
+Measured 2026-11-18. Detail in [crypto](steps/crypto.md#results).
+
+44 thefts of $100 million or more from crypto exchanges, protocols and wallets, 2014 to 2026, by
+DefiLlama's list (`follows --event crypto`). **Nothing follows them that an ordinary day would not
+give**: bitcoin, ether and Coinbase's shares *can't say* over the day, the week and the month;
+across every market one answer, the VIX up on the day counted from the close after, within the
+luck the chance line allows. `raw-move` finds no market that moves more on hack days; 16 are
+*unclear*. As expected, but for fewer markets than expected counting 40 hacks over the week.
+
+## What follows a hurricane landfall
+
+Measured 2026-11-18. Detail in [weather](steps/weather.md#results).
+
+79 hurricanes' first landfalls on the US coast, 1970 to 2024, by the National Hurricane Center's
+record (`follows --event weather`). **Fuel, energy stocks, corn, soybeans and Allstate's shares
+give no answer** over the day, the week or the month. Wheat is the one exception: from the
+close after the landfall, it ends the day about where it started more often than usual (17 of 27),
+while `raw-move` finds it moving more on the landfalls' own days; too few to grade walk-forward.
+Two answers in all, within chance.
+
+## What follows a flood
+
+Measured 2026-11-19. Detail in [floods](steps/floods.md#results).
+
+39 US floods of a billion dollars or more that have a day, 1980 to 2024, from NOAA's archived
+list (`follows --event flood`). **Crops, fuel, energy stocks and Allstate's shares give no answer**
+over the day, the week or the month, and on the floods' days none moves more than usual. One
+answer in each run, within chance; too few floods for any to hold. Droughts are not measured: the
+list dates them by season, not by day.
+
 ## What comes next
 
 Chosen 2026-10-13: keep score ([rung 4](steps/rung-4-keep-score.md)), done above with the live path

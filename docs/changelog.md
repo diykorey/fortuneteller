@@ -6,6 +6,18 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-19 | Step 30 results: nothing follows a flood; 39 floods, one answer a run, within chance; the expected outcome right | PR #360 |
+| 2026-11-19 | Step 22, step 5: the published page answers every kind, none left out, with exactly the three expected holds; step 22 done | PR #355 |
+| 2026-11-18 | Step 28 results: fuel, energy stocks, corn, soybeans and Allstate *can't say* after a hurricane landfall; wheat *about the same* on the day from the reaction close, the one miss of the expected outcome; two answers in all, within chance | PR #354 |
+| 2026-11-18 | Step 28, step 2: the `weather` flow (code 32, lesser), `follows --event weather` and `weather` triggers; header as expected | PR #352 |
+| 2026-11-18 | Step 28, step 1: Allstate as a market, unsigned; HURDAT2's 79 first US hurricane landfalls since 1970 as the seed | PR #351 |
+| 2026-11-18 | Spec: step 28, what follows a hurricane's first US landfall (NOAA's HURDAT2, 79 storms 1970 to 2024), Allstate added as a market; roadmap row 28 amended to landfalls | PR #350 |
+| 2026-11-18 | Step 27 results: bitcoin, ether and Coinbase *can't say* after a crypto hack on every span; one answer in all, within chance; the expected outcome held but for the week's counts | PR #349 |
+| 2026-11-18 | Step 27, step 2: the `crypto` flow (code 31, lesser), `follows --event crypto` and `crypto` triggers; header as expected | PR #348 |
+| 2026-11-18 | Step 27, step 1: ether and Coinbase as markets, unsigned; DefiLlama's 44 hacks of $100 million or more as the seed; a market with no days in a flow's span gets a *too few* row | PR #347 |
+| 2026-11-18 | Fix: the World row's note quoted in `countries.csv`; its comma broke the seed load and CI since #343 | PR #346 |
+| 2026-11-18 | Spec: step 27, what follows a crypto hack of $100 million or more (DefiLlama's list, 44 hacks 2014 to 2026), ether and Coinbase added as markets; roadmap row 27 amended to hacks | PR #345 |
+| 2026-11-18 | Step 26 results: gold up after a violent act on the day, the week and the month, too few walk-forward; oil and defence stocks *can't say*; the expected outcome wrong on gold, on the chance bar from the close before and on other flows' chance lines | PR #344 |
 | 2026-11-18 | Step 26, steps 1 and 2: the violent acts' seed from ICB, the `war` flow, `follows --event war` and `war` triggers; the expected 136, every other flow unchanged | PR #343 |
 | 2026-11-18 | Step 26 spec: what follows a violent act that sets off a crisis, 136 days from ICB's list, the expected outcome written first | PR #342 |
 | 2026-11-18 | Step 25 results: BoE and BoJ decisions answer no more cells than chance, nothing holds walk-forward, the pound *can't say* after a BoE move; the expected outcome right on every count | PR #341 |

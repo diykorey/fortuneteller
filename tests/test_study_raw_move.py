@@ -283,7 +283,7 @@ def test_raw_move_prints_a_verdict_per_instrument_and_the_rule(
     # then every instrument has a verdict line, and the rule is printed with them
     out = capsys.readouterr().out
     assert code == 0
-    assert sum(line.endswith(" moves") for line in out.splitlines()) == 28
+    assert sum(line.endswith(" moves") for line in out.splitlines()) == 31
     assert "moves = ratio >= 1.10 and p < 0.01" in out
 
 
@@ -333,7 +333,7 @@ def test_raw_move_takes_the_event_to_measure(
 
     # then the jobs report gets its verdicts, and CPI says what to load first
     assert nfp == 0
-    assert sum(line.endswith(" moves") for line in nfp_out.splitlines()) == 28
+    assert sum(line.endswith(" moves") for line in nfp_out.splitlines()) == 31
     assert cpi == 1
     assert "no CPI / inflation surprise releases stored" in capsys.readouterr().err
 
@@ -347,7 +347,7 @@ def test_raw_move_measures_ecb_decisions(tmp_db: Path, capsys: pytest.CaptureFix
 
     # then each market gets its verdict
     assert code == 0
-    assert sum(line.endswith(" moves") for line in capsys.readouterr().out.splitlines()) == 28
+    assert sum(line.endswith(" moves") for line in capsys.readouterr().out.splitlines()) == 31
 
 
 @pytest.mark.parametrize(
@@ -366,7 +366,7 @@ def test_raw_move_measures_tradingview_releases(
 
     # then each market gets its verdict
     assert code == 0
-    assert sum(line.endswith(" moves") for line in capsys.readouterr().out.splitlines()) == 28
+    assert sum(line.endswith(" moves") for line in capsys.readouterr().out.splitlines()) == 31
 
 
 def test_another_events_days_are_not_ordinary_days() -> None:
@@ -633,6 +633,18 @@ def test_under_ten_event_days_there_is_no_verdict() -> None:
     assert math.isnan(comparison.ratio) and math.isnan(comparison.p)
 
 
+def test_a_market_with_no_days_in_the_span_has_no_verdict() -> None:
+    # given a market stored only after a lesser flow's days end, so it has neither kind of day
+    event, other = [], []
+
+    # when they are compared
+    comparison = compare_moves(event, other)
+
+    # then the comparison says too few, with no medians
+    assert comparison.verdict == TOO_FEW
+    assert math.isnan(comparison.median_event) and math.isnan(comparison.median_other)
+
+
 def test_raw_move_over_a_week(tmp_db: Path, capsys: pytest.CaptureFixture[str]) -> None:
     # given releases and prices stored
     _synthetic_store(db.get_connection())
@@ -644,7 +656,7 @@ def test_raw_move_over_a_week(tmp_db: Path, capsys: pytest.CaptureFixture[str]) 
     out = capsys.readouterr().out.splitlines()
     assert code == 0
     assert out[0] == "over a week: the move from the close before each day to the 5th close"
-    assert sum(line.split()[-1] in (MOVES, UNCLEAR, DOESNT_MOVE) for line in out[2:30]) == 28
+    assert sum(line.split()[-1] in (MOVES, UNCLEAR, DOESNT_MOVE) for line in out[2:33]) == 31
 
 
 def test_a_debt_limit_vote_reacts_on_each_market_s_next_close(tmp_path: Path) -> None:
@@ -767,3 +779,52 @@ def test_a_violent_act_on_a_saturday_reacts_on_monday(tmp_path: Path) -> None:
         saturday = first_reaction_day(batch.events[0], MVP_PRICE_SERIES[market])
         assert reaction_days(closes, [saturday]) == {date(1981, 4, 27)}
     assert batch.report == ["loaded 2 World violent acts, 1981-04-25 … 1990-08-02"]
+
+
+def test_a_hack_on_a_saturday_reacts_on_monday_on_bitcoin_and_the_s_and_p_500(
+    tmp_path: Path,
+) -> None:
+    # given a hack on a weekday and one on Saturday 2025-04-19
+    seed = tmp_path / "crypto.csv"
+    seed.write_text(
+        "day,time,kind,target,amount\n"
+        "2025-02-21,04:00,hack,Bybit,1400000000\n"
+        "2025-04-19,04:00,hack,A,100000000\n"
+    )
+
+    # when the hacks are loaded
+    batch = flows.CRYPTO_FLOW.load(seed, datetime(2026, 11, 18, 12, 0, tzinfo=NEW_YORK))
+
+    # then each is an unscheduled event naming its target, and the Saturday one reacts on Monday on
+    # bitcoin and the S&P 500, since no market keeps a weekend close
+    assert [(e.event_id, e.detail, e.scheduled) for e in batch.events] == [
+        (3120250221, "Bybit", False),
+        (3120250419, "A", False),
+    ]
+    closes = _closes((date(2025, 4, 18), 100.0), (date(2025, 4, 21), 101.0))
+    for market in ("BTC", "SPY / ES"):
+        saturday = first_reaction_day(batch.events[1], MVP_PRICE_SERIES[market])
+        assert reaction_days(closes, [saturday]) == {date(2025, 4, 21)}
+    assert batch.report == ["loaded 2 World crypto hacks, 2025-02-21 … 2025-04-19"]
+
+
+def test_a_saturday_landfall_reacts_on_monday(tmp_path: Path) -> None:
+    # given Harvey's landfall on Saturday 2017-08-26 at 03:00 UTC
+    seed = tmp_path / "hurricanes.csv"
+    seed.write_text(
+        "day,time,kind,storm,knots,lat,lon\n2017-08-26,03:00,landfall,Harvey,115,28.0,-96.9\n"
+    )
+
+    # when it is loaded
+    batch = flows.WEATHER_FLOW.load(seed, datetime(2026, 11, 18, 12, 0, tzinfo=NEW_YORK))
+
+    # then it is an unscheduled event naming the storm, and it reacts on Monday on the S&P 500
+    # and the Nikkei
+    assert [(e.event_id, e.detail, e.scheduled) for e in batch.events] == [
+        (3220170826, "Harvey", False)
+    ]
+    closes = _closes((date(2017, 8, 25), 100.0), (date(2017, 8, 28), 101.0))
+    for market in ("SPY / ES", "NKY"):
+        saturday = first_reaction_day(batch.events[0], MVP_PRICE_SERIES[market])
+        assert reaction_days(closes, [saturday]) == {date(2017, 8, 28)}
+    assert batch.report == ["loaded 1 United States hurricane landfalls, 2017-08-26 … 2017-08-26"]

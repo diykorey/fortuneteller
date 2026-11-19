@@ -139,8 +139,8 @@ def test_the_scoreboard_holds_what_the_commands_print(
         assert " ".join(tokens[7:]) == link["verdict"]
     assert "GC / XAU" not in cpi["walk_forward"]["links"]
     assert data["chance"] == {
-        "raw_move": {"cells": 28, "p": 0.01, "by_chance": 0.28},
-        "surprise": {"cells": 28, "p": 0.01, "by_chance": 0.28},
+        "raw_move": {"cells": 31, "p": 0.01, "by_chance": 0.31},
+        "surprise": {"cells": 31, "p": 0.01, "by_chance": 0.31},
         "walk_forward": {"cells": 14, "p": 0.01, "by_chance": 0.14},
     }
     assert data["rules"]["raw_move"] == reports["raw-move"][-1]
@@ -186,6 +186,12 @@ def test_the_page_asks_about_each_kind_the_store_answers(
         "claims",
         "ecb",
         "ceo",
+        "opec",
+        "boe",
+        "boj",
+        "war",
+        "crypto",
+        "weather",
     ]
     assert all("%" not in cell["say"] for cell in cpi["cells"])
 

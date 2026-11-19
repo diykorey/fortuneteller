@@ -1,0 +1,184 @@
+Step 28, step 1's evidence (docs/steps/weather.md): a copy of step 27's store (closes to 2026-11-16, the coins' and Coinbase's to 2026-11-17, the 44 hacks loaded), without and with Allstate's closes (loaded 2026-11-18, to 2026-11-17).
+
+$ uv run python scripts/hurdat_landfalls.py hurdat2-1851-2025-092326.txt   (from https://www.nhc.noaa.gov/data/hurdat/, read 2026-11-18)
+wrote 79 rows to data/seed/hurricanes.csv, 1970-08-03 … 2024-10-10
+
+$ load-prices for ALL: study.store_daily_bars("ALL", "ALL", sources.parse_daily_bars(sources.fetch_daily_bars("ALL"))), then study.store_observations(); rows, first, last
+ALL 8423 1993-06-03 2026-11-17
+
+$ each daily close of 2026-11-09 … 2026-11-13 against Yahoo's last hourly bar before 16:00 New York (interval=60m), % difference
+ALL 2026-11-09 daily 253.79 | last bar ≤ close ('11-09 15:30', 253.85) 0.024 | first bar ≥ close ('11-10 09:30', 257.4725) 1.451
+ALL 2026-11-10 daily 261.12 | last bar ≤ close ('11-10 15:30', 261.22) 0.038 | first bar ≥ close ('11-11 09:30', 258.64) -0.95
+ALL 2026-11-11 daily 262.18 | last bar ≤ close ('11-11 15:30', 262.14) -0.015 | first bar ≥ close ('11-12 09:30', 267.295) 1.951
+ALL 2026-11-12 daily 266.69 | last bar ≤ close ('11-12 15:30', 266.7) 0.004 | first bar ≥ close ('11-13 09:30', 267.71) 0.382
+ALL 2026-11-13 daily 267.64 | last bar ≤ close ('11-13 15:30', 267.71) 0.026 | first bar ≥ close None None
+
+$ every other flow's raw-move and follows output (both runs, the Fed's --long), without and with: the lines left once Allstate's rows and the 'by chance' lines are taken out
+same-but-markets fol-boe-after.txt +9 lines
+same-but-markets fol-boe.txt +9 lines
+same-but-markets fol-boj-after.txt +9 lines
+same-but-markets fol-boj.txt +9 lines
+same-but-markets fol-ceo-after.txt +0 lines
+same-but-markets fol-ceo.txt +0 lines
+same-but-markets fol-claims-after.txt +9 lines
+same-but-markets fol-claims.txt +9 lines
+same-but-markets fol-cpi-after.txt +9 lines
+same-but-markets fol-cpi.txt +9 lines
+same-but-markets fol-crypto-after.txt +3 lines
+same-but-markets fol-crypto.txt +3 lines
+same-but-markets fol-ecb-after.txt +9 lines
+same-but-markets fol-ecb.txt +9 lines
+same-but-markets fol-fomc-after.txt +9 lines
+same-but-markets fol-fomc-long.txt +6 lines
+same-but-markets fol-fomc.txt +9 lines
+same-but-markets fol-nfp-after.txt +9 lines
+same-but-markets fol-nfp.txt +9 lines
+same-but-markets fol-opec-after.txt +6 lines
+same-but-markets fol-opec.txt +6 lines
+same-but-markets fol-retail-after.txt +9 lines
+same-but-markets fol-retail.txt +9 lines
+same-but-markets fol-war-after.txt +3 lines
+same-but-markets fol-war.txt +3 lines
+same-but-markets raw-boe.txt +2 lines
+same-but-markets raw-boj.txt +2 lines
+same-but-markets raw-ceo.txt +2 lines
+same-but-markets raw-claims.txt +2 lines
+same-but-markets raw-cpi.txt +2 lines
+same-but-markets raw-crypto.txt +2 lines
+same-but-markets raw-debt.txt +2 lines
+same-but-markets raw-decpi.txt +2 lines
+same-but-markets raw-deelect.txt +2 lines
+same-but-markets raw-ecb.txt +2 lines
+same-but-markets raw-ecbchief.txt +2 lines
+same-but-markets raw-euelect.txt +2 lines
+same-but-markets raw-fedchair.txt +2 lines
+same-but-markets raw-fomc.txt +2 lines
+same-but-markets raw-frelect.txt +2 lines
+same-but-markets raw-gdp.txt +2 lines
+same-but-markets raw-hicp.txt +2 lines
+same-but-markets raw-ifo.txt +2 lines
+same-but-markets raw-ism.txt +2 lines
+same-but-markets raw-nfp.txt +2 lines
+same-but-markets raw-opec.txt +2 lines
+same-but-markets raw-pce.txt +2 lines
+same-but-markets raw-posts.txt +2 lines
+same-but-markets raw-posts2.txt +2 lines
+same-but-markets raw-retail.txt +2 lines
+same-but-markets raw-summit.txt +2 lines
+same-but-markets raw-tariff.txt +2 lines
+same-but-markets raw-ukelect.txt +2 lines
+same-but-markets raw-uselect.txt +2 lines
+same-but-markets raw-war.txt +2 lines
+same-but-markets raw-zew.txt +2 lines
+
+$ each follows table's rows and chance line, without -> with, and Allstate's rows (a one-off count of fortuneteller follows --event FLOW, with and without --after-the-day; each rise is 0.01 × 3 answers × each Allstate cell the chance counts, rounded to one place)
+flow  run           rows without -> with  (Allstate's rows)  chance line without -> with
+fomc    close before   270 -> 279  (9)  8.0 -> 8.3
+fomc    reaction close 270 -> 279  (9)  8.0 -> 8.3
+nfp     close before   270 -> 279  (9)  8.1 -> 8.4
+nfp     reaction close 270 -> 279  (9)  8.1 -> 8.4
+retail  close before   270 -> 279  (9)  8.1 -> 8.4
+retail  reaction close 270 -> 279  (9)  8.1 -> 8.4
+cpi     close before   270 -> 279  (9)  8.1 -> 8.4
+cpi     reaction close 270 -> 279  (9)  8.1 -> 8.4
+claims  close before   270 -> 279  (9)  8.1 -> 8.4
+claims  reaction close 270 -> 279  (9)  8.1 -> 8.4
+ecb     close before   270 -> 279  (9)  7.9 -> 8.1
+ecb     reaction close 270 -> 279  (9)  7.9 -> 8.2
+ceo     close before   3 -> 3  (0)  0.1 -> 0.1
+ceo     reaction close 3 -> 3  (0)  0.1 -> 0.1
+opec    close before   180 -> 186  (6)  5.3 -> 5.5
+opec    reaction close 180 -> 186  (6)  5.4 -> 5.6
+boe     close before   270 -> 279  (9)  7.6 -> 7.8
+boe     reaction close 270 -> 279  (9)  7.6 -> 7.8
+boj     close before   270 -> 279  (9)  2.7 -> 2.8
+boj     reaction close 270 -> 279  (9)  2.7 -> 2.8
+war     close before   90 -> 93  (3)  2.6 -> 2.7
+war     reaction close 90 -> 93  (3)  2.6 -> 2.7
+crypto  close before   90 -> 93  (3)  2.7 -> 2.8
+crypto  reaction close 90 -> 93  (3)  2.7 -> 2.8
+
+$ fortuneteller scoreboard, docs/scoreboard/data.json's chance without and with, and the rest compared
+{'raw_move': {'cells': 799, 'p': 0.01, 'by_chance': 7.99}, 'surprise': {'cells': 360, 'p': 0.01, 'by_chance': 3.6}, 'walk_forward': {'cells': 82, 'p': 0.01, 'by_chance': 0.82}}
+{'raw_move': {'cells': 827, 'p': 0.01, 'by_chance': 8.27}, 'surprise': {'cells': 372, 'p': 0.01, 'by_chance': 3.72}, 'walk_forward': {'cells': 82, 'p': 0.01, 'by_chance': 0.82}}
+identical without ALL and the chance: True
+
+Step 2, on a copy of step 1's store with the 79 landfalls loaded:
+
+$ flows.store_events(flows.WEATHER_FLOW.events("").events), then study.store_observations()
+loaded 79 United States hurricane landfalls, 1970-08-03 … 2024-10-10
+
+$ fortuneteller follows --event weather, its first line
+follows: 79 hurricane landfalls 1970-08-03 … 2024-10-10: 79 landfalls
+
+$ cmp, every other flow's raw-move and follows output against step 1's store
+same      fol-boe-after.txt
+same      fol-boe.txt
+same      fol-boj-after.txt
+same      fol-boj.txt
+same      fol-ceo-after.txt
+same      fol-ceo.txt
+same      fol-claims-after.txt
+same      fol-claims.txt
+same      fol-cpi-after.txt
+same      fol-cpi.txt
+same      fol-crypto-after.txt
+same      fol-crypto.txt
+same      fol-ecb-after.txt
+same      fol-ecb.txt
+same      fol-fomc-after.txt
+same      fol-fomc-long.txt
+same      fol-fomc.txt
+same      fol-nfp-after.txt
+same      fol-nfp.txt
+same      fol-opec-after.txt
+same      fol-opec.txt
+same      fol-retail-after.txt
+same      fol-retail.txt
+same      fol-war-after.txt
+same      fol-war.txt
+same      raw-boe.txt
+same      raw-boj.txt
+same      raw-ceo.txt
+same      raw-claims.txt
+same      raw-cpi.txt
+same      raw-crypto.txt
+same      raw-debt.txt
+same      raw-decpi.txt
+same      raw-deelect.txt
+same      raw-ecbchief.txt
+same      raw-ecb.txt
+same      raw-euelect.txt
+same      raw-fedchair.txt
+same      raw-fomc.txt
+same      raw-frelect.txt
+same      raw-gdp.txt
+same      raw-hicp.txt
+same      raw-ifo.txt
+same      raw-ism.txt
+same      raw-nfp.txt
+same      raw-opec.txt
+same      raw-pce.txt
+same      raw-posts2.txt
+same      raw-posts.txt
+same      raw-retail.txt
+same      raw-summit.txt
+same      raw-tariff.txt
+same      raw-ukelect.txt
+same      raw-uselect.txt
+same      raw-war.txt
+same      raw-zew.txt
+
+$ fortuneteller scoreboard, its first line on step 1's store and step 2's
+scoreboard: 31 events, 52 call rows, data to 2026-11-17;
+scoreboard: 32 events, 52 call rows, data to 2026-11-17;
+
+$ docs/scoreboard/data.json's chance, step 1's store and step 2's, and the rest compared
+{'raw_move': {'cells': 827, 'p': 0.01, 'by_chance': 8.27}, 'surprise': {'cells': 372, 'p': 0.01, 'by_chance': 3.72}, 'walk_forward': {'cells': 82, 'p': 0.01, 'by_chance': 0.82}}
+{'raw_move': {'cells': 857, 'p': 0.01, 'by_chance': 8.57}, 'surprise': {'cells': 372, 'p': 0.01, 'by_chance': 3.72}, 'walk_forward': {'cells': 82, 'p': 0.01, 'by_chance': 0.82}}
+identical without the landfalls' entry and the chance: True 1
+
+$ uv run pytest -q tests/test_seed_data.py::test_hurricane_rows_are_first_us_landfalls_since_1970 tests/test_what_follows.py::test_a_landfall_reacts_by_its_utc_minute_on_each_market tests/test_study_raw_move.py::test_a_saturday_landfall_reacts_on_monday tests/test_triggers.py::test_a_weather_trigger_for_a_day_not_stored_is_answered_from_a_landfall_at_04_00_utc
+4 passed in 0.19s
+
+The five storms checked by hand, 2026-11-18, against their landfalls as the NHC's Tropical Cyclone Reports give them (Andrew AL041992, Rita AL182005, Ike AL092008, Harvey AL092017, Ian AL092022), from what is known of those reports, not by downloading them: each day, hour within 30 minutes and state as the spec writes them.

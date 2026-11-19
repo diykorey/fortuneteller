@@ -1,4 +1,4 @@
-47 rows in data/calls.csv, each call graded on its market's close that day beside the replay of every stored release
+52 rows in data/calls.csv, each call graded on its market's close that day beside the replay of every stored release
 
 cpi: core against Nasdaq's consensus
 

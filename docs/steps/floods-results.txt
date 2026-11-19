@@ -1,0 +1,281 @@
+Step 30's results evidence (docs/steps/floods.md#results), 2026-11-19: a copy of the real store of the 2026-11-18 evening, the floods loaded with step 1's code (flows.store_events(flows.FLOOD_FLOW.events("").events), then study.store_observations()).
+
+$ fortuneteller follows --event flood
+follows: 39 floods 1980-04-10 … 2024-06-16: 39 floods
+kind  span   market        n  up same down  out/hole  base up/same/down  answer          chance  placebo  walk-forward
+flood day    SPY / ES      39  14   14   11      0/0  0.36/0.33/0.30     can't say       0.4256  -        0: 0 right, too few
+flood day    UST10Y / ZN   39   8   17   14      0/0  0.33/0.33/0.34     can't say       0.1174  -        0: 0 right, too few
+flood day    DXY           39   7   19   13      0/0  0.34/0.33/0.33     can't say       0.0334  -        0: 0 right, too few
+flood day    GC / XAU      26   5   13    8      0/0  0.36/0.33/0.31     can't say       0.0583  -        0: 0 right, too few
+flood day    VIX           34  14   14    6      0/0  0.31/0.33/0.35     can't say       0.0312  -        0: 0 right, too few
+flood day    DAX           34   9   14   11      0/0  0.35/0.33/0.31     can't say       0.2133  -        0: 0 right, too few
+flood day    SX5E          24   7    7   10      0/0  0.36/0.33/0.31     can't say       0.2181  -        0: 0 right, too few
+flood day    BRN           24   7    9    8      0/0  0.35/0.33/0.32     can't say       0.4059  -        0: 0 right, too few
+flood day    EURUSD        25   9    8    8      0/0  0.33/0.33/0.34     can't say       0.4882  -        0: 0 right, too few
+flood day    COMP          39  14   12   13      0/0  0.38/0.33/0.29     can't say       0.3859  -        0: 0 right, too few
+flood day    UST5Y / ZF    39   8   16   15      0/0  0.33/0.33/0.34     can't say       0.1149  -        0: 0 right, too few
+flood day    UKX           35  12   12   11      0/1  0.35/0.33/0.32     can't say       0.5159  -        0: 0 right, too few
+flood day    SXXP          25   7   10    8      0/0  0.36/0.33/0.31     can't say       0.3047  -        0: 0 right, too few
+flood day    BTC           19   3   12    4      0/0  0.36/0.33/0.31     about the same  0.0074  -        1: 0 right, too few
+flood day    ITA           25   6   12    7      0/0  0.36/0.33/0.30     can't say       0.0918  -        0: 0 right, too few
+flood day    XLE           26   7   12    7      0/0  0.35/0.33/0.31     can't say       0.1205  -        0: 0 right, too few
+flood day    CORN          22  12    6    4      0/0  0.32/0.33/0.34     can't say       0.0283  -        3: 1 right, too few
+flood day    WEAT          22  10    9    3      0/0  0.30/0.33/0.37     can't say       0.0200  -        7: 2 right, too few
+flood day    SOYB          22   7   10    5      0/0  0.33/0.33/0.34     can't say       0.1631  -        0: 0 right, too few
+flood day    UGA           24   8    9    7      0/0  0.35/0.33/0.31     can't say       0.4059  -        0: 0 right, too few
+flood day    UNG           24   9    7    8      0/0  0.32/0.33/0.35     can't say       0.4381  -        0: 0 right, too few
+flood day    XLU           26  10    7    9      0/0  0.36/0.33/0.31     can't say       0.5470  -        0: 0 right, too few
+flood day    ITB           25   5   12    8      0/0  0.34/0.33/0.33     can't say       0.0918  -        0: 0 right, too few
+flood day    KC            26   8   14    4      0/0  0.33/0.33/0.34     can't say       0.0247  -        0: 0 right, too few
+flood day    T5YIE         25   7    7   11      0/0  0.35/0.31/0.34     can't say       0.2099  -        0: 0 right, too few
+flood day    GBPUSD        25  11    5    9      0/0  0.34/0.33/0.33     can't say       0.4304  -        0: 0 right, too few
+flood day    USDJPY        29  12    9    8      0/0  0.35/0.33/0.32     can't say       0.3122  -        0: 0 right, too few
+flood day    NKY           37  17   10   10      0/2  0.35/0.33/0.31     can't say       0.1937  -        0: 0 right, too few
+flood day    ETH           11   4    6    1      0/0  0.34/0.33/0.32     can't say       0.1221  -        0: 0 right, too few
+flood day    COIN           7   2    1    4      0/0  0.32/0.33/0.35     too few         —       -        0: 0 right, too few
+flood day    ALL           33   9   15    9      0/0  0.35/0.33/0.32     can't say       0.0999  -        0: 0 right, too few
+flood week   SPY / ES      38  14   13   11      1/0  0.39/0.33/0.28     can't say       0.4664  -        0: 0 right, too few
+flood week   UST10Y / ZN   38   7   15   16      1/0  0.33/0.33/0.34     can't say       0.0573  -        0: 0 right, too few
+flood week   DXY           38   9   15   14      1/0  0.34/0.33/0.33     can't say       0.1878  -        0: 0 right, too few
+flood week   GC / XAU      25  10    9    6      1/0  0.38/0.33/0.29     can't say       0.4200  -        0: 0 right, too few
+flood week   VIX           33  11   11   11      1/0  0.31/0.33/0.35     can't say       0.4777  -        0: 0 right, too few
+flood week   DAX           33  11   10   12      1/0  0.38/0.33/0.29     can't say       0.2621  -        0: 0 right, too few
+flood week   SX5E          23  12    3    8      1/0  0.37/0.33/0.29     can't say       0.4584  -        0: 0 right, too few
+flood week   BRN           22   7    6    9      1/1  0.36/0.33/0.31     can't say       0.3003  -        0: 0 right, too few
+flood week   EURUSD        24   8   12    4      1/0  0.33/0.33/0.33     can't say       0.0676  -        0: 0 right, too few
+flood week   COMP          38  14   11   13      1/0  0.39/0.33/0.27     can't say       0.2777  -        0: 0 right, too few
+flood week   UST5Y / ZF    38   8   12   18      1/0  0.33/0.33/0.34     can't say       0.0458  -        0: 0 right, too few
+flood week   UKX           34  14   10   10      1/1  0.37/0.33/0.30     can't say       0.4676  -        0: 0 right, too few
+flood week   SXXP          24  14    2    8      1/0  0.38/0.33/0.29     can't say       0.3516  -        0: 0 right, too few
+flood week   BTC           18   8    6    4      1/0  0.38/0.33/0.29     can't say       0.3476  -        0: 0 right, too few
+flood week   ITA           24   7   12    5      1/0  0.39/0.33/0.28     can't say       0.0677  -        0: 0 right, too few
+flood week   XLE           25   7    9    9      1/0  0.37/0.33/0.30     can't say       0.2510  -        0: 0 right, too few
+flood week   CORN          21  14    1    6      1/0  0.31/0.33/0.35     can't say       0.0319  -        1: 0 right, too few
+flood week   WEAT          21   9    7    5      1/0  0.29/0.33/0.37     can't say       0.1065  -        0: 0 right, too few
+flood week   SOYB          21   8    9    4      1/0  0.33/0.33/0.33     can't say       0.1960  -        0: 0 right, too few
+flood week   UGA           23   7    6   10      1/0  0.36/0.33/0.30     can't say       0.1902  -        0: 0 right, too few
+flood week   UNG           23  10    7    6      1/0  0.30/0.33/0.37     can't say       0.1198  -        0: 0 right, too few
+flood week   XLU           25   8    8    9      1/0  0.38/0.33/0.29     can't say       0.2887  -        0: 0 right, too few
+flood week   ITB           24   7   11    6      1/0  0.36/0.33/0.31     can't say       0.1401  -        0: 0 right, too few
+flood week   KC            25  11   11    3      1/0  0.33/0.33/0.33     can't say       0.0288  -        0: 0 right, too few
+flood week   T5YIE         24   7   10    7      1/0  0.34/0.33/0.33     can't say       0.2478  -        0: 0 right, too few
+flood week   GBPUSD        24   9    8    7      1/0  0.34/0.33/0.33     can't say       0.4112  -        0: 0 right, too few
+flood week   USDJPY        28   8    9   11      1/0  0.36/0.33/0.31     can't say       0.2086  -        0: 0 right, too few
+flood week   NKY           35  14   15    6      1/3  0.37/0.33/0.30     can't say       0.1332  -        0: 0 right, too few
+flood week   ETH           10   6    3    1      1/0  0.36/0.33/0.30     can't say       0.0967  -        0: 0 right, too few
+flood week   COIN           7   2    1    4      0/0  0.32/0.33/0.35     too few         —       -        0: 0 right, too few
+flood week   ALL           32   9   12   11      1/0  0.37/0.33/0.29     can't say       0.2261  -        0: 0 right, too few
+flood month  SPY / ES      38  21   14    3      1/0  0.44/0.33/0.22     can't say       0.0183  -        0: 0 right, too few
+flood month  UST10Y / ZN   38  10   15   13      1/0  0.32/0.33/0.35     can't say       0.2605  -        0: 0 right, too few
+flood month  DXY           38  13   14   11      1/0  0.34/0.33/0.32     can't say       0.3806  -        0: 0 right, too few
+flood month  GC / XAU      24  10    7    7      1/1  0.40/0.33/0.26     can't say       0.5304  -        0: 0 right, too few
+flood month  VIX           33  10   12   11      1/0  0.31/0.33/0.36     can't say       0.4193  -        0: 0 right, too few
+flood month  DAX           31  14   14    3      1/2  0.40/0.33/0.26     can't say       0.0496  -        0: 0 right, too few
+flood month  SX5E          21  11    8    2      1/2  0.39/0.33/0.27     can't say       0.0487  -        0: 0 right, too few
+flood month  BRN           22   9    6    7      1/1  0.36/0.33/0.31     can't say       0.5189  -        0: 0 right, too few
+flood month  EURUSD        24   9    9    6      1/0  0.33/0.33/0.34     can't say       0.2938  -        0: 0 right, too few
+flood month  COMP          38  18   14    6      1/0  0.43/0.33/0.23     can't say       0.2040  -        0: 0 right, too few
+flood month  UST5Y / ZF    38  14    9   15      1/0  0.32/0.33/0.35     can't say       0.5665  -        0: 0 right, too few
+flood month  UKX           32  17    8    7      1/3  0.39/0.33/0.28     can't say       0.1491  -        0: 0 right, too few
+flood month  SXXP          22  11    9    2      1/2  0.40/0.33/0.27     can't say       0.0578  -        0: 0 right, too few
+flood month  BTC           18   7    9    2      1/0  0.41/0.33/0.26     can't say       0.1074  -        0: 0 right, too few
+flood month  ITA           24  14    7    3      1/0  0.44/0.33/0.22     can't say       0.1250  -        0: 0 right, too few
+flood month  XLE           25  12    8    5      1/0  0.39/0.33/0.28     can't say       0.2186  -        0: 0 right, too few
+flood month  CORN          21   6    6    9      1/0  0.30/0.33/0.37     can't say       0.4551  -        0: 0 right, too few
+flood month  WEAT          21   7    7    7      1/0  0.28/0.33/0.39     can't say       0.3463  -        0: 0 right, too few
+flood month  SOYB          21   6    8    7      1/0  0.34/0.33/0.33     can't say       0.3989  -        0: 0 right, too few
+flood month  UGA           23   9    7    7      1/0  0.39/0.33/0.28     can't say       0.5428  -        0: 0 right, too few
+flood month  UNG           23   8    7    8      1/0  0.27/0.33/0.40     can't say       0.2966  -        0: 0 right, too few
+flood month  XLU           25   8   10    7      1/0  0.40/0.33/0.26     can't say       0.3042  -        0: 0 right, too few
+flood month  ITB           24  11    8    5      1/0  0.38/0.33/0.29     can't say       0.2340  -        0: 0 right, too few
+flood month  KC            25  11   11    3      1/0  0.34/0.33/0.33     can't say       0.0318  -        0: 0 right, too few
+flood month  T5YIE         24  10    9    5      1/0  0.36/0.32/0.32     can't say       0.2087  -        0: 0 right, too few
+flood month  GBPUSD        24  11    6    7      1/0  0.34/0.33/0.33     can't say       0.2627  -        0: 0 right, too few
+flood month  USDJPY        28  10   12    6      1/0  0.36/0.33/0.31     can't say       0.1912  -        0: 0 right, too few
+flood month  NKY           29  10   13    6      1/9  0.39/0.33/0.28     can't say       0.1331  -        0: 0 right, too few
+flood month  ETH           10   6    3    1      1/0  0.37/0.33/0.30     can't say       0.1093  -        0: 0 right, too few
+flood month  COIN           7   1    3    3      0/0  0.30/0.33/0.36     too few         —       -        0: 0 right, too few
+flood month  ALL           32  17   10    5      1/0  0.41/0.33/0.26     can't say       0.0897  -        0: 0 right, too few
+by chance: about 2.7 answers on all history, 0.0 holds walk-forward
+
+$ fortuneteller follows --event flood --after-the-day
+follows: 39 floods 1980-04-10 … 2024-06-16: 39 floods, spans from the reaction close
+kind  span   market        n  up same down  out/hole  base up/same/down  answer          chance  placebo  walk-forward
+flood day    SPY / ES      39  22    9    8      0/0  0.36/0.33/0.30     can't say       0.0277  -        0: 0 right, too few
+flood day    UST10Y / ZN   39  10   14   15      0/0  0.33/0.33/0.34     can't say       0.2460  -        0: 0 right, too few
+flood day    DXY           39   9   14   16      0/0  0.34/0.33/0.33     can't say       0.0972  -        0: 0 right, too few
+flood day    GC / XAU      26   7   14    5      0/0  0.36/0.33/0.31     can't say       0.0247  -        0: 0 right, too few
+flood day    VIX           34   6   14   14      0/0  0.31/0.33/0.35     can't say       0.0991  -        0: 0 right, too few
+flood day    DAX           34  16    9    9      0/0  0.35/0.33/0.31     can't say       0.1893  -        0: 0 right, too few
+flood day    SX5E          24  14    7    3      0/0  0.36/0.33/0.31     can't say       0.0137  -        0: 0 right, too few
+flood day    BRN           24  12    7    5      0/0  0.35/0.33/0.32     can't say       0.1078  -        0: 0 right, too few
+flood day    EURUSD        25   9   11    5      0/0  0.33/0.33/0.34     can't say       0.1780  -        2: 1 right, too few
+flood day    COMP          39  20   10    9      0/0  0.38/0.33/0.29     can't say       0.1188  -        0: 0 right, too few
+flood day    UST5Y / ZF    39  11   14   14      0/0  0.33/0.33/0.34     can't say       0.3655  -        0: 0 right, too few
+flood day    UKX           36  13   14    9      0/0  0.35/0.33/0.32     can't say       0.2932  -        0: 0 right, too few
+flood day    SXXP          25  17    6    2      0/0  0.36/0.33/0.31     up              0.0011  -        5: 4 right, too few
+flood day    BTC           19   5    9    5      0/0  0.36/0.33/0.31     can't say       0.1464  -        0: 0 right, too few
+flood day    ITA           25  14    5    6      0/0  0.36/0.33/0.30     can't say       0.1226  -        0: 0 right, too few
+flood day    XLE           26  15    4    7      0/0  0.35/0.33/0.31     can't say       0.1118  -        0: 0 right, too few
+flood day    CORN          22  11    7    4      0/0  0.32/0.33/0.34     can't say       0.0449  -        0: 0 right, too few
+flood day    WEAT          22   7    3   12      0/0  0.30/0.33/0.37     can't say       0.3205  -        0: 0 right, too few
+flood day    SOYB          22   7    9    6      0/0  0.33/0.33/0.34     can't say       0.2933  -        0: 0 right, too few
+flood day    UGA           24  13    6    5      0/0  0.35/0.33/0.31     can't say       0.0765  -        0: 0 right, too few
+flood day    UNG           24  10    8    6      0/0  0.32/0.33/0.35     can't say       0.1851  -        1: 0 right, too few
+flood day    XLU           26   6   12    8      0/0  0.36/0.33/0.31     can't say       0.1206  -        0: 0 right, too few
+flood day    ITB           25  10    6    9      0/0  0.34/0.33/0.33     can't say       0.5283  -        0: 0 right, too few
+flood day    KC            26  14    7    5      0/0  0.33/0.33/0.34     can't say       0.0290  -        2: 1 right, too few
+flood day    T5YIE         25   9   11    5      0/0  0.35/0.31/0.34     can't say       0.1219  -        0: 0 right, too few
+flood day    GBPUSD        25  10    7    8      0/0  0.34/0.33/0.33     can't say       0.4248  -        0: 0 right, too few
+flood day    USDJPY        29  10   13    6      0/0  0.35/0.33/0.32     can't say       0.1329  -        0: 0 right, too few
+flood day    NKY           36  15   16    5      0/3  0.35/0.33/0.31     can't say       0.0366  -        0: 0 right, too few
+flood day    ETH           11   5    5    1      0/0  0.34/0.33/0.32     can't say       0.1222  -        0: 0 right, too few
+flood day    COIN           7   3    2    2      0/0  0.32/0.33/0.35     too few         —       -        0: 0 right, too few
+flood day    ALL           33  14   13    6      0/0  0.35/0.33/0.32     can't say       0.0867  -        0: 0 right, too few
+flood week   SPY / ES      38  16   12   10      1/0  0.39/0.33/0.28     can't say       0.4680  -        0: 0 right, too few
+flood week   UST10Y / ZN   38  12   12   14      1/0  0.33/0.33/0.34     can't say       0.4651  -        0: 0 right, too few
+flood week   DXY           38  10   13   15      1/0  0.34/0.33/0.33     can't say       0.1963  -        0: 0 right, too few
+flood week   GC / XAU      24   9   12    3      1/1  0.38/0.33/0.29     can't say       0.0677  -        0: 0 right, too few
+flood week   VIX           33  11   12   10      1/0  0.31/0.33/0.35     can't say       0.3968  -        0: 0 right, too few
+flood week   DAX           32  14    9    9      1/1  0.38/0.33/0.29     can't say       0.4212  -        0: 0 right, too few
+flood week   SX5E          22  12    6    4      1/1  0.37/0.33/0.29     can't say       0.1017  -        0: 0 right, too few
+flood week   BRN           22   5    8    9      1/1  0.36/0.33/0.31     can't say       0.1454  -        0: 0 right, too few
+flood week   EURUSD        24   9   10    5      1/0  0.33/0.33/0.33     can't say       0.2170  -        0: 0 right, too few
+flood week   COMP          38  16   10   12      1/0  0.39/0.33/0.27     can't say       0.4826  -        0: 0 right, too few
+flood week   UST5Y / ZF    38  10   14   14      1/0  0.33/0.33/0.34     can't say       0.3006  -        0: 0 right, too few
+flood week   UKX           34  15   10    9      1/1  0.37/0.33/0.30     can't say       0.3109  -        0: 0 right, too few
+flood week   SXXP          23  11    7    5      1/1  0.38/0.33/0.29     can't say       0.2513  -        0: 0 right, too few
+flood week   BTC           18   7    6    5      1/0  0.38/0.33/0.29     can't say       0.5747  -        0: 0 right, too few
+flood week   ITA           24   8   13    3      1/0  0.39/0.33/0.28     can't say       0.0285  -        0: 0 right, too few
+flood week   XLE           25  10    9    6      1/0  0.37/0.33/0.30     can't say       0.3725  -        0: 0 right, too few
+flood week   CORN          21   8    8    5      1/0  0.31/0.33/0.35     can't say       0.2179  -        0: 0 right, too few
+flood week   WEAT          21   7    8    6      1/0  0.29/0.33/0.37     can't say       0.3334  -        0: 0 right, too few
+flood week   SOYB          21   7    9    5      1/0  0.33/0.33/0.33     can't say       0.2396  -        0: 0 right, too few
+flood week   UGA           23   9    4   10      1/0  0.36/0.33/0.30     can't say       0.3380  -        0: 0 right, too few
+flood week   UNG           23   7    8    8      1/0  0.30/0.33/0.37     can't say       0.5196  -        0: 0 right, too few
+flood week   XLU           25   9   11    5      1/0  0.38/0.33/0.29     can't say       0.1778  -        0: 0 right, too few
+flood week   ITB           24  10    9    5      1/0  0.36/0.33/0.31     can't say       0.2234  -        0: 0 right, too few
+flood week   KC            25   9   12    4      1/0  0.33/0.33/0.33     can't say       0.0914  -        0: 0 right, too few
+flood week   T5YIE         24   8    9    7      1/0  0.34/0.33/0.33     can't say       0.3978  -        0: 0 right, too few
+flood week   GBPUSD        24   8    8    8      1/0  0.34/0.33/0.33     can't say       0.5759  -        0: 0 right, too few
+flood week   USDJPY        28  11    5   12      1/0  0.36/0.33/0.31     can't say       0.3487  -        0: 0 right, too few
+flood week   NKY           34  16   11    7      1/4  0.37/0.33/0.30     can't say       0.1183  -        0: 0 right, too few
+flood week   ETH           10   2    6    2      1/0  0.36/0.33/0.30     can't say       0.0764  -        0: 0 right, too few
+flood week   COIN           7   4    0    3      0/0  0.32/0.33/0.35     too few         —       -        0: 0 right, too few
+flood week   ALL           32  12   13    7      1/0  0.37/0.33/0.29     can't say       0.2425  -        0: 0 right, too few
+flood month  SPY / ES      38  21   11    6      1/0  0.44/0.33/0.22     can't say       0.1442  -        0: 0 right, too few
+flood month  UST10Y / ZN   38  12   13   13      1/0  0.32/0.33/0.35     can't say       0.5153  -        0: 0 right, too few
+flood month  DXY           38  13   13   12      1/0  0.34/0.33/0.32     can't say       0.5153  -        0: 0 right, too few
+flood month  GC / XAU      24   9    9    6      1/1  0.40/0.33/0.26     can't say       0.4055  -        0: 0 right, too few
+flood month  VIX           33   8    9   16      1/0  0.31/0.33/0.36     can't say       0.1343  -        0: 0 right, too few
+flood month  DAX           31  14   14    3      1/2  0.40/0.33/0.26     can't say       0.0496  -        0: 0 right, too few
+flood month  SX5E          21  10    9    2      1/2  0.39/0.33/0.27     can't say       0.0711  -        0: 0 right, too few
+flood month  BRN           22   6   10    6      1/1  0.36/0.33/0.31     can't say       0.1629  -        0: 0 right, too few
+flood month  EURUSD        24   7   10    7      1/0  0.33/0.33/0.34     can't say       0.2538  -        0: 0 right, too few
+flood month  COMP          38  19   12    7      1/0  0.43/0.33/0.23     can't say       0.2518  -        0: 0 right, too few
+flood month  UST5Y / ZF    38  15    7   16      1/0  0.32/0.33/0.35     can't say       0.5593  -        0: 0 right, too few
+flood month  UKX           33  19    8    6      1/2  0.39/0.33/0.28     can't say       0.0525  -        0: 0 right, too few
+flood month  SXXP          22  12    8    2      1/2  0.40/0.33/0.27     can't say       0.0396  -        0: 0 right, too few
+flood month  BTC           18   8    8    2      1/0  0.41/0.33/0.26     can't say       0.1829  -        0: 0 right, too few
+flood month  ITA           24  14    6    4      1/0  0.44/0.33/0.22     can't say       0.2226  -        0: 0 right, too few
+flood month  XLE           25   9   12    4      1/0  0.39/0.33/0.28     can't say       0.0918  -        1: 0 right, too few
+flood month  CORN          21   6    6    9      1/0  0.30/0.33/0.37     can't say       0.4559  -        0: 0 right, too few
+flood month  WEAT          21   5    9    7      1/0  0.28/0.33/0.39     can't say       0.2399  -        0: 0 right, too few
+flood month  SOYB          21   6    6    9      1/0  0.34/0.33/0.33     can't say       0.2851  -        0: 0 right, too few
+flood month  UGA           23   8    8    7      1/0  0.39/0.33/0.28     can't say       0.4574  -        0: 0 right, too few
+flood month  UNG           23   7   10    6      1/0  0.27/0.33/0.40     can't say       0.2064  -        0: 0 right, too few
+flood month  XLU           25   9   10    6      1/0  0.40/0.33/0.26     can't say       0.3044  -        0: 0 right, too few
+flood month  ITB           24  11    7    6      1/0  0.38/0.33/0.29     can't say       0.3364  -        0: 0 right, too few
+flood month  KC            25  10   11    4      1/0  0.34/0.33/0.33     can't say       0.0976  -        0: 0 right, too few
+flood month  T5YIE         24   8   10    6      1/0  0.36/0.32/0.32     can't say       0.2093  -        0: 0 right, too few
+flood month  GBPUSD        24  10    8    6      1/0  0.34/0.33/0.33     can't say       0.2469  -        0: 0 right, too few
+flood month  USDJPY        28   9   13    6      1/0  0.36/0.33/0.31     can't say       0.1038  -        0: 0 right, too few
+flood month  NKY           29  12   12    5      1/9  0.39/0.33/0.28     can't say       0.2117  -        0: 0 right, too few
+flood month  ETH           10   5    4    1      1/0  0.37/0.33/0.30     can't say       0.1720  -        0: 0 right, too few
+flood month  COIN           7   2    3    2      0/0  0.30/0.33/0.36     too few         —       -        0: 0 right, too few
+flood month  ALL           32  18    9    5      1/0  0.41/0.33/0.26     can't say       0.0682  -        0: 0 right, too few
+by chance: about 2.7 answers on all history, 0.0 holds walk-forward
+
+$ fortuneteller raw-move --event flood
+instrument   FLD days  median FLD  median other  ratio  p       verdict
+SPY / ES           32       0.46%         0.50%   0.91  0.6643  doesn't
+UST10Y / ZN        32      3.0 bp        3.5 bp   0.84  0.8138  doesn't
+DXY                32       0.18%         0.28%   0.66  0.9572  doesn't
+GC / XAU           21       0.28%         0.55%   0.50  0.9818  doesn't
+VIX                27       3.29%         3.40%   0.97  0.5504  doesn't
+DAX                27       0.62%         0.66%   0.94  0.5845  doesn't
+SX5E               19       0.62%         0.59%   1.06  0.4220  doesn't
+BRN                19       0.97%         1.07%   0.90  0.6287  doesn't
+EURUSD             18       0.21%         0.29%   0.71  0.8497  doesn't
+COMP               32       0.61%         0.58%   1.05  0.4210  doesn't
+UST5Y / ZF         32      2.5 bp        3.4 bp   0.75  0.9064  doesn't
+UKX                29       0.50%         0.52%   0.96  0.5619  doesn't
+SXXP               20       0.39%         0.51%   0.77  0.8178  doesn't
+BTC                16       0.83%         1.71%   0.49  0.9710  doesn't
+ITA                20       0.56%         0.69%   0.81  0.7914  doesn't
+XLE                20       0.83%         0.90%   0.93  0.6064  doesn't
+CORN               18       0.97%         0.69%   1.41  0.0921  unclear
+WEAT               18       1.07%         0.98%   1.09  0.3847  doesn't
+SOYB               18       0.59%         0.61%   0.98  0.5354  doesn't
+UGA                19       1.14%         1.16%   0.98  0.5229  doesn't
+UNG                19       1.38%         1.74%   0.79  0.7884  doesn't
+XLU                20       0.54%         0.57%   0.94  0.5933  doesn't
+ITB                20       0.61%         1.08%   0.56  0.9665  doesn't
+KC                 21       0.85%         1.24%   0.69  0.8842  doesn't
+T5YIE              20      2.5 bp        2.0 bp   1.25  0.2140  unclear
+GBPUSD             18       0.27%         0.30%   0.92  0.6059  doesn't
+USDJPY             20       0.27%         0.33%   0.81  0.7744  doesn't
+NKY                27       0.67%         0.64%   1.04  0.4380  doesn't
+ETH                10       0.73%         2.36%   0.31  0.9916  doesn't
+COIN                6       3.83%         2.93%      —  —       too few
+ALL                26       0.53%         0.83%   0.63  0.9442  doesn't
+
+by era: ratio (FLD days)
+instrument   1970-1989    1990-2007    2008-2019    2020-now
+SPY / ES     0.52 (5)     1.00 (8)     1.18 (12)    0.73 (7)
+UST10Y / ZN  0.00 (5)     0.98 (8)     0.97 (12)    1.29 (7)
+DXY          0.53 (5)     0.76 (8)     0.81 (12)    0.70 (7)
+GC / XAU     —            0.50 (2)     0.77 (12)    0.41 (7)
+VIX          —            0.80 (8)     0.90 (12)    0.98 (7)
+DAX          —            0.73 (8)     1.21 (12)    0.79 (7)
+SX5E         —            —            1.00 (12)    1.07 (7)
+BRN          —            —            0.78 (12)    0.74 (7)
+EURUSD       —            2.03 (1)     0.46 (11)    1.21 (6)
+COMP         0.56 (5)     0.78 (8)     1.13 (12)    0.88 (7)
+UST5Y / ZF   0.40 (5)     1.09 (8)     0.98 (12)    0.77 (7)
+UKX          0.61 (2)     0.91 (9)     1.10 (12)    0.47 (6)
+SXXP         —            0.54 (1)     1.49 (12)    0.26 (7)
+BTC          —            —            0.56 (9)     0.42 (7)
+ITA          —            0.50 (1)     0.84 (12)    0.79 (7)
+XLE          —            1.09 (1)     0.84 (12)    0.90 (7)
+CORN         —            —            1.57 (11)    1.35 (7)
+WEAT         —            —            1.04 (11)    1.12 (7)
+SOYB         —            —            0.62 (11)    2.32 (7)
+UGA          —            —            0.98 (12)    0.94 (7)
+UNG          —            —            0.72 (12)    1.56 (7)
+XLU          —            0.85 (1)     0.82 (12)    1.20 (7)
+ITB          —            1.43 (1)     0.42 (12)    0.88 (7)
+KC           —            0.34 (2)     0.81 (12)    0.90 (7)
+T5YIE        —            2.00 (1)     1.00 (12)    1.50 (7)
+GBPUSD       —            0.62 (1)     0.80 (11)    1.19 (6)
+USDJPY       —            0.72 (3)     1.56 (11)    0.75 (6)
+NKY          0.63 (4)     1.33 (6)     1.09 (12)    0.88 (5)
+ETH          —            —            1.29 (3)     0.24 (7)
+COIN         —            —            —            1.31 (6)
+ALL          —            1.48 (7)     0.51 (12)    0.49 (7)
+
+moves = ratio >= 1.10 and p < 0.01; unclear = one of the two; doesn't = neither; other = days with no CPI, NFP, Fed, RET, PCE, GDP, ECB, HICP or ISM reaction
+
+$ uv run python scripts/shared_days.py flood
+FLD: 39 days, 13 shared with another flow
+  CPI 3
+  ECP 3
+  CLM 2
+  FCH 2
+  Fed 1
+  RET 1
+  GDP 1
+  ISM 1
+  DEE 1
+  PST 1
+  BoJ 1

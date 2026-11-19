@@ -459,7 +459,8 @@ def with_more_outcomes(signs: dict[str, int]) -> dict[str, int]:
     (docs/steps/markets-people-feel.md), coffee (docs/steps/coffee.md) or the breakeven
     (docs/steps/breakeven.md), except utilities, which compete with bonds: the 10-year yield's sign
     reversed (docs/steps/signs.md). The pound, the yen and the Nikkei 225 none: a signed market is a
-    live link (docs/steps/other-central-banks.md)."""
+    live link (docs/steps/other-central-banks.md); nor ether or Coinbase
+    (docs/steps/crypto.md), nor Allstate (docs/steps/weather.md)."""
     return {
         **signs,
         "BRN": 0,
@@ -483,6 +484,9 @@ def with_more_outcomes(signs: dict[str, int]) -> dict[str, int]:
         "GBPUSD": 0,
         "USDJPY": 0,
         "NKY": 0,
+        "ETH": 0,
+        "COIN": 0,
+        "ALL": 0,
     }
 
 
@@ -1727,6 +1731,53 @@ WAR_FLOW = DatedShockFlow(
     time_column="time",
     scheduled=False,
 )
+# Step 27 (docs/steps/crypto.md): every hack of $100 million or more on DefiLlama's list, at the
+# rule hour; the detail names the target.
+CRYPTO_FLOW = DatedShockFlow(
+    "Cyber attack / hack",
+    WORLD,
+    ZoneInfo("UTC"),
+    31,
+    "crypto",
+    "HCK",
+    seed_file="crypto.csv",
+    noun="crypto hacks",
+    day_column="day",
+    detail_column="target",
+    time_column="time",
+    scheduled=False,
+)
+# Step 28 (docs/steps/weather.md): each storm's first US landfall as a hurricane since 1970, by
+# HURDAT2, at the record's UTC minute; the detail names the storm.
+WEATHER_FLOW = DatedShockFlow(
+    "Natural disaster",
+    UNITED_STATES,
+    ZoneInfo("UTC"),
+    32,
+    "weather",
+    "HUR",
+    seed_file="hurricanes.csv",
+    noun="hurricane landfalls",
+    day_column="day",
+    detail_column="storm",
+    time_column="time",
+    scheduled=False,
+)
+# Step 30 (docs/steps/floods.md): NOAA's billion-dollar US floods that have a day, at 04:00 UTC.
+FLOOD_FLOW = DatedShockFlow(
+    "Extreme weather / climate policy",
+    UNITED_STATES,
+    ZoneInfo("UTC"),
+    33,
+    "flood",
+    "FLD",
+    seed_file="floods.csv",
+    noun="floods",
+    day_column="day",
+    detail_column="name",
+    fixed_time=time(4, 0),
+    scheduled=False,
+)
 EVENT_FLOWS: list[EventFlow] = [
     CPI_FLOW,
     NFP_FLOW,
@@ -1758,6 +1809,9 @@ EVENT_FLOWS: list[EventFlow] = [
     BOE_FLOW,
     BOJ_FLOW,
     WAR_FLOW,
+    CRYPTO_FLOW,
+    WEATHER_FLOW,
+    FLOOD_FLOW,
 ]
 
 

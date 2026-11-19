@@ -11,6 +11,28 @@ amended there with a date.
 Each entry: **what** was decided, **why**, what it **retires**, and **where** the detail is. *By the
 owner* marks a choice the owner made over another on the table.
 
+## 2026-11-19: Floods from NOAA's billion-dollar list; droughts left out
+
+- **What:** step 30 measures the US floods of NOAA's Billion-Dollar Disasters list (1980 to
+  2024) that have a day, 39 of its 45, the owner's "floods and droughts", as history only, with
+  no crop-region filter.
+- **Why:** the list is free and nobody here picks it. Its 32 droughts, and six of its floods, begin on the first of
+  a month and last a month or more: a season, not a day the news knew; a call is made from the actual once it lands. A
+  region filter would be read from the names by hand. A flood's cost is known weeks later, so no
+  trigger.
+- **Retires:** droughts as a kind, until a dated source is found; roadmap row 28's "floods and
+  droughts in crop-growing regions" as a later step.
+- **Where:** [the spec](steps/floods.md).
+
+## 2026-11-19: Phase 5's kinds go on the page, by the owner
+
+- **What:** step 29 adds the six flows of steps 24 to 28 to the page's *Ask the fortune teller*,
+  before any new kind or reading the news into them.
+- **Why:** they are measured and the page is the gate's second bar; a reader who brings an OPEC+
+  or hurricane headline should find its kind. Small, and it shows only numbers already graded.
+- **Retires:** the skip in `ask_data` that kept steps 24 to 28 off the page.
+- **Where:** [the spec](steps/ask-phase-5.md).
+
 ## 2026-11-18: War is measured as ICB's violent acts
 
 - **What:** step 26's *war and military strikes* is every international crisis since 1970 that

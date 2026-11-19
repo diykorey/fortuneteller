@@ -456,6 +456,9 @@ def test_the_more_outcomes_take_their_signs_by_analogy() -> None:
         "GBPUSD": 0,
         "USDJPY": 0,
         "NKY": 0,
+        "ETH": 0,
+        "COIN": 0,
+        "ALL": 0,
     }
     assert list(signs) == list(study.MVP_PRICE_SERIES)
 

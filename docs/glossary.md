@@ -78,6 +78,9 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **Flash estimate** — Eurostat's first print of the month's euro-area inflation, around the first
   working day of the next month at 11:00 Frankfurt; the final follows two weeks later
   ([euro-area inflation](steps/euro-inflation.md)).
+- **Hole** — a span whose start or end close falls after a gap of missing closes in a market's
+  data, such as US markets shut from 2001-09-11 to 2001-09-14; `follows` leaves such an event out
+  on that market and counts it in its `out/hole` column ([what follows](steps/what-follows.md)).
 - **HICP** (Harmonised Index of Consumer Prices) — the euro area's inflation measure, the
   counterpart of US CPI, published by **Eurostat**.
 - **Inter-meeting (unscheduled) decision** — a Fed rate change made outside the published meeting
@@ -101,6 +104,20 @@ Terms are grouped by what they are about, alphabetical within each group.
   dataset of international crises since 1918, each with the date its trigger came and a code for
   what set it off (`triggr`, from a verbal act to a violent act) and how violent it became (`viol`).
   Step 26 takes every crisis since 1970 whose trigger is a *violent act*.
+- **Billion-dollar list** — *added 2026-11-19* ([floods](steps/floods.md)): NOAA's Billion-Dollar
+  Weather and Climate Disasters list, every US weather event of a billion dollars or more in
+  today's dollars, 1980 to 2024, with its type and begin and end day; no longer updated, archived.
+- **Flood** — *added 2026-11-19* ([floods](steps/floods.md)): a row of the billion-dollar list
+  typed `Flooding` that has a day: not one beginning on a month's first and lasting 30 days or more.
+- **HURDAT2** — *added 2026-11-18* ([weather](steps/weather.md)): the National Hurricane Center's
+  Atlantic best-track record, every storm since 1851 every six hours, with each landfall as its own
+  row at its UTC minute, place and wind; status `HU` is a hurricane, 64 knots or more.
+- **Landfall** — *added 2026-11-18* ([weather](steps/weather.md)): a storm's centre crossing the
+  coast; step 28's one kind is a storm's first landfall on the US mainland or the Florida Keys as a
+  hurricane.
+- **Hack** — *added 2026-11-18* ([crypto](steps/crypto.md)): a theft of $100 million or more
+  from a crypto exchange, protocol or wallet, by the amount on DefiLlama's list; the one kind of
+  `follows --event crypto`.
 - **Violent act** — *added 2026-11-18* ([war](steps/war.md)): ICB's trigger type 9, a border
   clash, a border crossing, an invasion of air space, a sinking, a bombardment or an invasion that
   sets off an international crisis; the one kind of `follows --event war`, known the day it
@@ -168,6 +185,8 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **BDI** (Baltic Dry Index) — cost of shipping dry bulk cargo; a gauge of global trade demand.
 - **Basis point** (bp, "bip") — one hundredth of a percent (0.01%). Bond and rate moves are quoted
   in bps: "10Y up 8 bps" means the yield rose 0.08 percentage points.
+- **ALL** (Allstate) — *added 2026-11-18* ([weather](steps/weather.md)): the shares of a large US
+  home and car insurer, listed 1993-06-03; closes 16:00 New York. Yahoo's `ALL`. No expected sign.
 - **BRN** (Brent crude) — the global oil price benchmark, traded on ICE. Measured from
   2026-10-27 ([more outcomes](steps/more-outcomes.md)) as Yahoo's `BZ=F`, the front month, at its
   14:30 New York settlement.
@@ -181,6 +200,8 @@ Terms are grouped by what they are about, alphabetical within each group.
   currency's rates rise.
 - **CDS** (Credit Default Swap) — insurance against a borrower defaulting; its price is a direct
   read on perceived default risk.
+- **COIN** (Coinbase) — *added 2026-11-18* ([crypto](steps/crypto.md)): the shares of the largest
+  US crypto exchange, listed 2021-04-14; closes 16:00 New York. Yahoo's `COIN`. No expected sign.
 - **COMP** (Nasdaq Composite) — the index of every Nasdaq-listed stock, the growth end of US
   equities; closes 16:00 New York. Yahoo's `^IXIC`. Takes the S&P 500's expected sign.
 - **Contagion** — a shock spreading from where it started to firms or markets exposed to it: one
@@ -190,6 +211,9 @@ Terms are grouped by what they are about, alphabetical within each group.
   **Euro Stoxx 50** (`SX5E`), the euro area's 50 largest.
 - **DXY** (US Dollar Index) — the dollar measured against a basket of major currencies (mostly the
   euro). Rises on risk-off and on hawkish Fed expectations.
+- **ETH** (Ether) — *added 2026-11-18* ([crypto](steps/crypto.md)): the second-largest coin, as
+  Yahoo's `ETH-USD` from 2017-11-09, the UTC day's last price as bitcoin's; weekend bars dropped.
+  No expected sign.
 - **ES** (E-mini S&P 500 future) — the futures contract on the S&P 500, which trades nearly around
   the clock and therefore reacts to releases outside US stock-market hours.
 - **GBPUSD** — the pound in dollars; *up* is the pound stronger (step 25).
@@ -256,7 +280,7 @@ Terms are grouped by what they are about, alphabetical within each group.
   canonical symbol. Step 2 maps five: `^GSPC` (S&P 500 index), `^TNX`, `DX-Y.NYB` (dollar index),
   `GC=F` (gold futures), `^VIX`; cross-country two, `^GDAXI` and `^STOXX50E`; more outcomes nine,
   `BZ=F`, `EURUSD=X`, `^IXIC`, `^FVX`, `^FTSE`, `^STOXX`, `BTC-USD`, `ITA` and `XLE`; the markets
-  people feel seven, each its own symbol; coffee `KC=F`; step 25 `GBPUSD=X`, `JPY=X` and `^N225`. FRED's series for the breakeven is
+  people feel seven, each its own symbol; coffee `KC=F`; step 25 `GBPUSD=X`, `JPY=X` and `^N225`; step 27 `ETH-USD` and `COIN`; step 28 `ALL`. FRED's series for the breakeven is
   stored as `fred:T5YIE`.
 - **XLE** — the Energy Select Sector SPDR ETF, the US energy sector; oil's equity echo. Closes
   16:00 New York; no expected sign.
@@ -492,6 +516,9 @@ Terms are grouped by what they are about, alphabetical within each group.
   free history. Step 4's market-like expected value: a model, not a survey.
 - **CPILFESL** — the FRED series ID for seasonally adjusted core US CPI (all items less food and
   energy). Its first-release history on FRED starts in 1997.
+- **DefiLlama** — *added 2026-11-18* ([crypto](steps/crypto.md)): a free site tracking crypto
+  protocols; its hacks list (`api.llama.fi/hacks`) gives each hack's day, amount, target and
+  technique since 2011.
 - **Economic calendar** — a commercial listing of upcoming releases with forecasts. The usual source
   of **consensus**, and rarely free for long histories.
 - **Federal Register** — the US government's daily journal of rules and presidential documents,

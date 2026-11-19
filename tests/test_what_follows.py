@@ -1258,3 +1258,158 @@ def test_a_violent_act_reacts_by_its_utc_day_on_each_market() -> None:
     # then it is at 04:00 UTC, on Tokyo's and New York's close that day and the euro's the next
     assert event.event_ts == datetime(1990, 8, 2, 4, 0)
     assert days == [date(1990, 8, 2), date(1990, 8, 2), date(1990, 8, 3)]
+
+
+def test_a_landfall_reacts_by_its_utc_minute_on_each_market() -> None:
+    # given the seed's landfall of Michael, Wednesday 2018-10-10 17:30 UTC
+    batch = flows.WEATHER_FLOW.load(
+        settings.seed_dir / "hurricanes.csv", datetime(2026, 11, 18, tzinfo=UTC)
+    )
+    michael = next(e for e in batch.events if flows.release_date(e) == date(2018, 10, 10))
+
+    # when its first reaction day is found on New York's and Tokyo's close
+    days = [
+        study.first_reaction_day(michael, study.MVP_PRICE_SERIES[m]) for m in ("SPY / ES", "NKY")
+    ]
+
+    # then at 13:30 New York it reacts that day in New York and the next in Tokyo; read in New
+    # York's time it would react a day late in New York
+    assert michael.event_ts == datetime(2018, 10, 10, 17, 30)
+    assert days == [date(2018, 10, 10), date(2018, 10, 11)]
+
+
+OPEC_LINE = re.compile(
+    r"^(?P<kind>oil up|oil down)\s+(?P<span>day|week|month)\s+(?P<market>.+?)\s+"
+    r"(?P<n>\d+)\s+(?P<up>\d+)\s+(?P<same>\d+)\s+(?P<down>\d+)\s+\d+/\d+\s+"
+    r"(?P<base>[\d.]+/[\d.]+/[\d.]+|—)\s+(?P<answer>up|down|about the same|can't say|too few)\s+"
+    r"\S+\s+\S+\s+(?P<graded>\d+): (?P<right>\d+) right, (?P<verdict>.+?)(?:\s+\(the kind\))?$"
+)
+
+
+def test_the_page_s_opec_cells_are_follows_lines_with_their_own_kind_s_words(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given 44 OPEC announcements, the kinds alternating, Brent and the S&P 500 moving with them
+    markets = ("SPY / ES", study.KIND_MARKET)
+    monkeypatch.setattr(study, "MVP_PRICE_SERIES", {m: study.MVP_PRICE_SERIES[m] for m in markets})
+    rng = random.Random(5)
+    keys = list(range(30, 1350, 30))
+    steps = [rng.gauss(0, 0.005) for _ in range(1400)]
+    kinds = {k: (study.OIL_UP if j % 2 == 0 else study.OIL_DOWN) for j, k in enumerate(keys)}
+    for k, kind in kinds.items():
+        steps[k] = 0.02 if kind == study.OIL_UP else -0.02
+    closes = _closes(steps)
+    db.init_db()
+    db.get_connection().executemany(
+        "INSERT INTO daily_bars (instrument, day, close, source) VALUES (?, ?, ?, 'test')",
+        [[m, c.day, c.price] for m in markets for c in closes],
+    )
+    db.insert_models("event_instances", [_opec(closes[k].day, kind) for k, kind in kinds.items()])
+
+    # when follows prints OPEC's table and the page's data is built
+    assert main(["follows", "--event", "opec"]) == 0
+    lines = capsys.readouterr().out.splitlines()[2:-1]
+    printed = [OPEC_LINE.match(line) for line in lines]
+    ask = cli.ask_data(db.get_connection())
+
+    # then every line is one cell, equal field by field, its sentence opening with its own kind's
+    # words, and Brent's two day cells alone are the kind's, uncoloured on the page
+    (opec,) = [entry for entry in ask["ask"] if entry["name"] == "opec"]
+    cells = {(c["kind"], c["span"], c["market"]): c for c in opec["cells"]}  # type: ignore[union-attr]
+    assert len(printed) == len(cells) == 2 * 3 * 2
+    for line in printed:
+        assert line is not None
+        cell = cells[(line["kind"], line["span"], line["market"])]
+        assert [cell["up"], cell["same"], cell["down"]] == [
+            int(line["up"]),
+            int(line["same"]),
+            int(line["down"]),
+        ]
+        shares = [cell["base_up"], cell["base_same"], cell["base_down"]]
+        assert "/".join(f"{s:.2f}" for s in shares) == line["base"]
+        assert (cell["answer"], cell["verdict"]) == (line["answer"], line["verdict"])
+        assert (cell["graded"], cell["right"]) == (int(line["graded"]), int(line["right"]))
+        assert str(cell["say"]).startswith(f"After {cli.ASK_DECISIONS['opec'][line['kind']]},")
+        assert "%" not in str(cell["say"])
+    marked = sorted((k, s, m) for (k, s, m), c in cells.items() if c["kind_cell"])
+    assert marked == [
+        (study.OIL_DOWN, "day", study.KIND_MARKET),
+        (study.OIL_UP, "day", study.KIND_MARKET),
+    ]
+    assert all(str(cells[key]["say"]).endswith(cli.KIND_CELL_WORDS) for key in marked)
+    assert [k["events"] for k in opec["kinds"]] == [22, 22]  # type: ignore[index]
+    page = (Path(cli.__file__).parent / "scoreboard.html").read_text()
+    assert "!c.kind_cell && c.answer" in page and "c.verdict === 'holds' && !c.kind_cell" in page
+
+
+def test_the_page_names_the_boj_when_its_rates_cannot_be_read_and_shows_the_boe(
+    tmp_db: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given BoE and BoJ decisions with one market's closes, and TradingView failing for the BoJ
+    monkeypatch.setattr(study, "MVP_PRICE_SERIES", {"SPY / ES": study.MVP_PRICE_SERIES["SPY / ES"]})
+    closes = _closes(_alternating(300))
+    days = [closes[i].day for i in (20, 60, 100)]
+    db.init_db()
+    db.get_connection().executemany(
+        "INSERT INTO daily_bars (instrument, day, close, source) VALUES ('SPY / ES', ?, ?, 'test')",
+        [[c.day, c.price] for c in closes],
+    )
+    db.insert_models("event_instances", [_boe(d) for d in days] + [_boj(d) for d in days])
+    monkeypatch.setattr(flows, "boe_changes", lambda _seed_dir: {days[1]: (time(12, 0), 6.0)})
+
+    def failing(_cache_dir: Path) -> dict[datetime, float]:
+        raise sources.CalendarError("TradingView answered 'error'")
+
+    monkeypatch.setattr(flows, "load_boj_rates", failing)
+
+    # when the page's data is built
+    ask = cli.ask_data(db.get_connection())
+
+    # then the BoJ is left out with the error, and the BoE is there
+    left = {entry["name"]: entry["reason"] for entry in ask["ask_left_out"]}
+    assert left["boj"] == (
+        "the BoJ's rates could not be read from TradingView: TradingView answered 'error'"
+    )
+    assert "boe" in [entry["name"] for entry in ask["ask"]]
+
+
+def test_a_flood_reacts_at_04_00_utc_of_its_begin_day() -> None:
+    # given the seed's floods: the Upper Midwest's on Sunday 2024-06-16 and the Northeast's on
+    # Tuesday 2023-07-11 is not one; a flood placed on that Tuesday
+    batch = flows.FLOOD_FLOW.load(
+        settings.seed_dir / "floods.csv", datetime(2026, 11, 19, tzinfo=UTC)
+    )
+    midwest = next(e for e in batch.events if flows.release_date(e) == date(2024, 6, 16))
+    tuesday = flows.FLOOD_FLOW.event_instance(
+        datetime(2023, 7, 11, 4, 0, tzinfo=UTC), "a flood on a Tuesday"
+    )
+
+    # when their first reaction days are found
+    sunday = study.first_reaction_day(midwest, study.MVP_PRICE_SERIES["SPY / ES"])
+    days = [
+        study.first_reaction_day(tuesday, study.MVP_PRICE_SERIES[m])
+        for m in ("SPY / ES", "NKY", "EURUSD")
+    ]
+
+    # then the Sunday flood reacts on Monday, and the Tuesday one that day in New York and Tokyo
+    # and the next day on the euro, whose close is 00:00 London
+    closes = [
+        DailyClosingPrice(d, p) for d, p in ((date(2024, 6, 14), 100.0), (date(2024, 6, 17), 101.0))
+    ]
+    assert midwest.event_ts == datetime(2024, 6, 16, 4, 0)
+    assert study.reaction_days(closes, [sunday]) == {date(2024, 6, 17)}
+    assert days == [date(2023, 7, 11), date(2023, 7, 11), date(2023, 7, 12)]
+
+
+def test_follows_for_floods_prints_one_kind() -> None:
+    # given the flood flow
+    flow = flows.flow_named("flood")
+
+    # when its kind is read
+    kinds = study.one_kind(
+        flow, [flows.FLOOD_FLOW.event_instance(datetime(2024, 6, 16, 4, 0, tzinfo=UTC), "x")]
+    )
+
+    # then every flood is a flood, and the page leaves the floods out
+    assert set(kinds.values()) == {study.FLOOD}
+    assert cli.FOLLOWS_NOUNS["flood"] == "floods"

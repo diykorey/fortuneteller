@@ -12,20 +12,14 @@ Where the work is and what comes next: the task last finished, the tasks in prog
 
 ## Last completed
 
-Step 25: other central banks ([the spec](steps/other-central-banks.md#results)). The Bank of
-England's 187 decisions and the Bank of Japan's 85, with the pound, the yen and the Nikkei added:
-nothing beyond chance, nothing holds walk-forward; the pound *can't say* after a BoE move.
+Step 30: floods ([results](steps/floods.md#results)). Nothing follows a billion-dollar US flood
+on crops, fuel or insurers; one answer a run, within chance; droughts left out, dated by season.
 
 ## In progress
 
-- **Step 26: war and military strikes** ([the spec](steps/war.md)): what followed the 136
-  violent acts that set off an international crisis, 1970 to 2021, by ICB's list. Steps 1 and 2 done:
-  `follows --event war` prints the expected 136; next, step 3, the results.
-- **Step 22: ask the fortune teller** ([the spec](steps/ask-the-fortune-teller.md)): the page
-  section where a reader picks a kind of event and sees what followed, from the same function
-  the follows command uses. Steps 1 to 4 are built: one function for follows and the page, the
-  base's count, the data and its sentences, the section; checked in a browser on test data.
-  Step 5, the published page after the evening job, is next.
+- **Step 29: ask about phase 5's kinds** ([the spec](steps/ask-phase-5.md)): the page's
+  section answers OPEC+, the two banks, violent acts, hacks and landfalls. Step 1 built; step 2
+  waits for the evening job.
 - **Step 23: be seen, and count it** ([the spec](steps/be-seen.md)): a cookie-free Umami counter
   on the page and a weekly LinkedIn post drafted by `weekly-post`, both the owner's choice. Step 1
   done: the counter is live and counts a visit once, read through Umami's share link. Next: the
@@ -47,8 +41,7 @@ nothing beyond chance, nothing holds walk-forward; the pound *can't say* after a
 
 ## Next
 
-Step 27, crypto shocks: the spec
-([roadmap phase 5](roadmap.md#phase-5-the-kinds-the-news-brings)).
+Step 23: the first weekly post, now that step 22's page is checked.
 
 ## Known, not yet fixed
 
