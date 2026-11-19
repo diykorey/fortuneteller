@@ -86,7 +86,7 @@ the list and the markets' first closes.*
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~The seed and the flow: `scripts/noaa_floods.py` writes `data/seed/floods.csv` from the local copy; the `flood` flow in `follows`; the before-and-after outputs of every flow on a copy of the store~~ **done** 2026-11-19: 39 floods; every other flow's output byte-identical, the scoreboard 32 → 33 events and its raw-move chance 857 → 887 cells, the floods' 30 ([evidence](floods-steps.txt)) | The tests below pass; `follows --event flood` prints the header above; the outputs kept in `docs/steps/floods-steps.txt` |
-| 2 | Results | Each bullet of the rule judged right or wrong in Results, with its numbers and the command that prints them; a goldfish review, each finding fixed or answered in the PR |
+| 2 | ~~Results~~ **done** 2026-11-19, [below](#results) | Each bullet of the rule judged right or wrong in Results, with its numbers and the command that prints them; a goldfish review, each finding fixed or answered in the PR |
 
 ## How you know it is right
 
@@ -117,3 +117,42 @@ the list and the markets' first closes.*
 - **Docs:** `docs/schema.md` (code 33, the detail), `docs/glossary.md` (*Billion-dollar list*,
   *Flood*), status, roadmap, changelog. Tests in `tests/test_seed_data.py`,
   `tests/test_what_follows.py`, `tests/test_triggers.py`.
+
+## Results
+
+*2026-11-19.* Every line quoted is in [the evidence](floods-results.txt): a copy of the store of
+the 2026-11-18 evening with the floods loaded, the whole output of `follows --event flood` (from
+the close before), `follows --event flood --after-the-day` (from the reaction close), `raw-move
+--event flood` and `scripts/shared_days.py flood`.
+
+**In plain words:** after a billion-dollar US flood began, corn, wheat, soybeans, gasoline, natural
+gas, oil, energy stocks and Allstate's shares gave no answer over the day, the week or the month,
+counted from either close, and on the floods' own days none of them moved more than on ordinary
+days by the bar. Across every market, one answer in each run, within the luck the chance line
+allows; with 39 floods nothing could be graded enough to hold. The expected outcome held.
+
+- **The header, as expected:** `follows: 39 floods 1980-04-10 … 2024-06-16: 39 floods`
+  (`follows --event flood`). Right.
+- **The arithmetic:** right. No cell reaches 30 graded: the most is 7 from the close before and 5
+  from the reaction close. On the day the S&P 500, the 10- and 5-year yields, the dollar index and
+  the Nasdaq counted 39, the Nikkei 37 (2 in holes), the FTSE 35 (1 in a hole), Allstate 33, the
+  crops 22; Coinbase counted 7 and is *too few* on every span, in both runs.
+- **Walk-forward: nothing holds** (both runs). Right.
+- **On all history, against the chance line plus 2** (each run; chance about 2.7, so a bar of 4.7):
+  from the close before **1 answer**, bitcoin *about the same* on the day, 3 up, 12 the same, 4
+  down of 19, chance 0.0074 (1 graded, *too few*); from the reaction close **1**, Europe's shares
+  (SXXP) *up* on the day, 17 up, 6 the same, 2 down of 25, chance 0.0011 (5 graded, 4 right, *too
+  few*). Neither marked by the placebo. Right in both.
+- **Corn, wheat, soybeans, gasoline, natural gas, Brent, energy stocks and Allstate on the day, the
+  week and the month, both runs:** all 48 cells *can't say*; none *too few*. Right.
+- **Every other flow's rows** ([step 1's evidence](floods-steps.txt)): byte-identical; the
+  scoreboard gained the floods' entry (32 → 33 events) and its raw-move chance count rose by their
+  30 cells (857 → 887), the surprise and walk-forward counts unchanged. Right.
+- **The size of the move** (`raw-move --event flood`, outside the rule, recorded): 28 markets
+  *doesn't*, 2 *unclear* (corn, ratio 1.41, p 0.0921; the breakeven, 1.25, 0.2140), Coinbase *too
+  few*; none *moves*. Allstate's lone flood days move less than its ordinary days (ratio 0.63).
+- **Days shared with another flow** (`scripts/shared_days.py flood`): 13 of the 39, CPI and the
+  ECB president's statements on 3 each, jobless claims and the French flash CPI on 2, seven others
+  on 1; none with a hurricane landfall on the same day.
+
+The expected outcome was **right on every count**.

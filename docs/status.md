@@ -12,14 +12,11 @@ Where the work is and what comes next: the task last finished, the tasks in prog
 
 ## Last completed
 
-Step 22: ask the fortune teller ([the spec](steps/ask-the-fortune-teller.md#step-5)). The
-published page answers every kind of the table, none left out, with exactly the three expected
-holds.
+Step 30: floods ([results](steps/floods.md#results)). Nothing follows a billion-dollar US flood
+on crops, fuel or insurers; one answer a run, within chance; droughts left out, dated by season.
 
 ## In progress
 
-- **Step 30: floods** ([the spec](steps/floods.md)): NOAA's billion-dollar US floods; droughts left
-  out, as they have no day. Step 1 built (39 floods); next, the results.
 - **Step 29: ask about phase 5's kinds** ([the spec](steps/ask-phase-5.md)): the page's
   section answers OPEC+, the two banks, violent acts, hacks and landfalls. Step 1 built; step 2
   waits for the evening job.
