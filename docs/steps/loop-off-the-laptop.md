@@ -189,6 +189,24 @@ evening was graded by GitHub's own late schedule, run 44238760250, created 04:38
 rows; the laptop's evening of 2026-11-17 failed at wake (no network, issue #339), so no `score.txt`
 of the same evening is there to compare, and that bar waits for the next evening both run.
 
+**Jobless claims, 2026-11-19, the first day under the outside timer. Does not count: the laptop
+missed its evening.** *On time:* the 07:30 New York ask started run 44524466043
+(`workflow_dispatch`, created 12:30:11 UTC); it logged its five claims rows at 13:30:16 UTC, 16
+seconds after the release (its artifact's `calls.diff`). *The same rows:* those five rows equal the
+laptop's, merged to `main` in PR #364 (`logged_at` 14:07:59 UTC, the laptop job having started at
+wake), in every column but `logged_at`. *The same evening:* the laptop's 01:00 EET run failed on
+FRED's HTTP 500 (issue #371), so the day does not count, by the rule above. The runner's evening,
+run 44638184576 (created 23:30:12 UTC), graded, and showed a fault of its own: its `triggers.txt`
+read the claims trigger of 2026-11-19 as "merged 2026-11-19 16:41 New York", *late* on every
+market, and its `trigger-log.csv` held no row of it. The trigger's PR #365 merged at 15:44 UTC
+(10:44 New York), before every reaction close; 16:41 New York is 21:41 UTC, when #370 merged.
+`actions/checkout` cloned one commit, so `git log --diff-filter=A` found every file added by that
+commit. PR #372 checks out the whole history (`fetch-depth: 0`). The laptop's evening was then
+run again by hand at 02:53 EET (PR #373, the trigger "merged 2026-11-19 10:44 New York"), and the
+runner's score asked again after it merged, run 44651957050: its `score.txt` and
+`trigger-log.csv` equal `main`'s after #373, byte for byte. Late rows are never logged, so the
+first run left nothing to undo. Two counting days are still needed by 2026-12-18.
+
 ## How you know it is right
 
 *The store's three checks amended 2026-11-14 with the store's carrying above.*

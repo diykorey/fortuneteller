@@ -34,7 +34,10 @@ month after a beat; a miss's day and week and an in-line report's day hold walk-
   empty (TradingView rewrote 2025's claims weeks), so it must travel encrypted. Step 2, the shadow
   run, beside the laptop: its first day, retail sales 2026-11-17, failed *on time*, GitHub's
   schedule starting runs almost 6 to 10 hours late. By the owner, an outside timer (cron-job.org) starts
-  the runs instead; the shadow restarts on two new release days once its test ask reaches GitHub.
+  the runs instead. Claims 2026-11-19, the first day under the timer, does not count (the laptop's
+  evening failed on FRED); its morning was on time with the same rows, and the runner's evening
+  matched once a one-commit checkout, which made the trigger read late, was fixed (#372). Two
+  counting days are still needed by 2026-12-18.
 - **Step 18, part 2, step 3: the first triggers graded** ([the spec](steps/trigger-file.md)). The
   first trigger, CPI of 2026-11-10, is void: merged after every reaction close, and its kind read
   from the headline instead of the core print. It waits for the next one.
