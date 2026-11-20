@@ -21,6 +21,8 @@ At the end: `follows --event conduct` prints what followed against the rule belo
   `"investigation" "personal conduct" "chief executive officer"`; `"special committee" "chief
   executive officer" "allegations"`; `"allegations" "against our chief executive officer"`. Hits
   kept when the filer was an S&P 500 member that day (`data/seed/sp500.csv`, [step 36](earnings-sp500.md)).
+  *Amended 2026-11-20, after the goldfish and before any hit was read:* membership is known from
+  2011-01-03 only, so the search runs from then.
 - **Read by the rule, by hand, as step 20's:** a hit is kept when the 8-K concerns the CEO's own
   personal conduct as step 20 codes it (a relationship, harassment or other personal misconduct; a
   misstated credential or expenses), and the CEO is still CEO 90 days after the first public
@@ -73,3 +75,23 @@ PDL 2007).*
   parked until the gate), no page, no trigger.
 - A conduct the company never put in an 8-K is not in the list: the list is the companies' own
   words, and its reach is said in the Results.
+
+## Results
+
+*Run 2026-11-20 ([evidence](ceo-conduct-steps.txt)). No price was read.*
+
+**In plain words:** the list holds no such case. From 2011, the three searches give 853 8-Ks
+(143, 710 and none); 24 are S&P 500 members' on the day, from 18 companies. Read by the rule, none
+is a CEO's conduct with the CEO staying: Best Buy 2012, Kroger 2025 and Wynn 2018 are departures
+(step 20's kind); the other 21 use the words in lawsuits, settlements, merger agreements and risk
+factors. **0 kept, under the 10 the rule asks: the step ends at step 1.** A company seems to put a
+conduct review in an 8-K when the CEO goes, not when the CEO stays, so the companies' own filings
+are no list for this kind.
+
+| | Expected | Found |
+| --- | --- | --- |
+| Kept | 10 to 40 | 0 — **wrong**; the step ends |
+| Spans | *too few* or *can't say* | not measured |
+
+The kind stays parked as before ([roadmap](../roadmap.md), step 20's part 1b): it waits on a free
+list nobody picks, which this was not. No seed, flow or test is added.

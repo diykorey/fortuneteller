@@ -1,0 +1,37 @@
+# Step 38, step 1 (docs/steps/ceo-conduct.md). Run 2026-11-20 with one-off scripts (no price read).
+# EDGAR full-text search, forms=8-K, 2011-01-03 to 2026-11-19, each query paged by 100; a hit is a
+# member's when a filer's ticker (SEC company_tickers.json) is in data/seed/sp500.csv on file_date.
+
+"investigation" "personal conduct" "chief executive officer"   total since 2011: 143
+"special committee" "chief executive officer" "allegations"     total since 2011: 710
+"allegations" "against our chief executive officer"             total since 2011: 0 (a first try: HTTP 500; retried)
+S&P 500 members' 8-Ks (distinct filings): 24   companies: 18
+
+# Each member's filing, its items, and the reading (the passage around "personal conduct" or
+# "allegations" in each hit document, read by hand):
+2011-03-30 EBAY  1.01,8.01,9.01   credit/merger agreement boilerplate: out (not the CEO's conduct)
+2011-06-02 SATS  1.01,2.03,9.01   credit agreement boilerplate: out
+2012-05-14 BBY   5.02,7.01,9.01   "investigation into personal conduct allegations involving Mr. Dunn"; Dunn separated: out (a departure, in step 20's seed)
+2012-07-20 JNJ   8.01,9.01        derivative-suit settlement notice (quality control): out
+2013-05-10 FCX   8.01,9.01        court opinion on a merger's special committee: out
+2016-07-27 SATS  1.01,2.03,9.01   credit agreement boilerplate: out
+2017-04-24 WYNN  7.01,9.01        Wynn Macau annual report, "code of personal conduct" of employees: out
+2018-04-18 WYNN  7.01,9.01        Wynn Macau annual report: Mr. Wynn resigned 2018-02-07 after allegations: out (a departure)
+2018-08-16 STZ   1.01,2.03,9.01   credit agreement boilerplate: out
+2020-02-11 SPG   1.01,9.01        merger agreement boilerplate: out
+2020-02-18 BEN   1.01,9.01        merger agreement boilerplate: out
+2020-09-25 GOOGL 8.01,9.01        derivative settlement over other executives' harassment: out (not the CEO's)
+2020-10-23 GOOGL 8.01,9.01        the same settlement's notice: out
+2020-11-16 SPG   1.01,7.01,9.01   agreement boilerplate: out
+2022-06-30 STZ   1.01,5.02,9.01   reclassification agreement boilerplate: out
+2023-04-25 GE    8.01,9.01        legal reserves, anti-competitive conduct allegations: out
+2024-09-18 J     7.01,9.01        risk factors, employment claims: out
+2024-11-13 CHTR  1.01,7.01,9.01   merger agreement representation on harassment investigations: out
+2025-02-19 CHTR  8.01             merger litigation supplemental disclosures: out
+2025-03-03 KR    2.02,5.02,7.01,9.01  McMullen resigned after a board investigation of his personal conduct: out (a departure)
+2025-04-17 MHK   8.01,9.01        derivative-suit settlement stipulation: out
+2025-05-08 TKO   2.02,8.01,9.01   financial statements' legal proceedings: out
+2026-05-13 PSKY  8.01,9.01        legal proceedings (asbestos): out
+2026-06-09 SMCI  8.01,9.01        an indictment's allegations, the company's controls: out
+
+# Kept: 0. A CEO's own conduct with the CEO staying: none. Departures: 3 (BBY, KR, WYNN).

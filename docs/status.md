@@ -12,10 +12,9 @@ Where the work is and what comes next: the task last finished, the tasks in prog
 
 ## Last completed
 
-Step 37: stock splits ([results](steps/stock-splits.md#results)). 105 forward splits by S&P 500
-members from 2011; a split announced alone was followed by the shares beating the index the next
-day 48 times of the 59 that moved, and the call holds walk-forward, 33 of 51; in an earnings
-release, *can't say*.
+Step 38: a CEO's conduct, no departure ([results](steps/ceo-conduct.md#results)). Ended at step 1:
+the members' 8-Ks found by the SEC's full-text search hold no CEO who stayed (0 kept, bar 10); the
+kind stays parked.
 
 ## In progress
 
@@ -50,7 +49,9 @@ release, *can't say*.
 ## Next
 
 Monday 2026-11-23: step 23's first weekly post, drafted by `weekly-post` and published by the
-owner, and step 33's first refresh. Meanwhile step 38, a CEO's conduct with no departure, the last of the four kinds the owner chose on 2026-11-20.
+owner, and step 33's first refresh. Then the exact-meet fix: Nasdaq writes an EPS equal to its
+estimate as N/A, so the in-line kind misses about 1,800 S&P 500 reports and 87 Dow ones
+([Precision](precision.md)); a step of its own.
 
 ## Known, not yet fixed
 
