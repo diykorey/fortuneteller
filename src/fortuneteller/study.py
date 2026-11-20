@@ -26,7 +26,7 @@ import math
 import random
 import re
 import subprocess
-from bisect import bisect_left, bisect_right
+from bisect import bisect_left, bisect_right, insort
 from collections.abc import Callable, Iterable, Mapping, Sequence
 from dataclasses import dataclass, replace
 from decimal import ROUND_HALF_UP, Decimal
@@ -1627,6 +1627,42 @@ def base_of(moves: Sequence[float]) -> Base | None:
     return Base(cut, {o: counts[o] / len(moves) for o in OUTCOMES}, len(moves))
 
 
+class BaseSoFar:
+    """``base_of`` over moves added one at a time, for the walk-forward: the moves kept sorted, so
+    each base costs a few bisections instead of a sort and a count; the same cut and shares."""
+
+    def __init__(self) -> None:
+        self.sizes: list[float] = []
+        self.ups: list[float] = []
+        self.downs: list[float] = []
+        self.flat = 0
+
+    def add(self, move: float) -> None:
+        insort(self.sizes, abs(move))
+        if move > 0:
+            insort(self.ups, move)
+        elif move < 0:
+            insort(self.downs, -move)
+        else:
+            self.flat += 1
+
+    def base(self) -> Base | None:
+        n = len(self.sizes)
+        if n < 2:
+            return None
+        # statistics.quantiles(n=3, method="inclusive")[0], as base_of takes it.
+        j, delta = divmod(n - 1, 3)
+        cut = (self.sizes[j] * (3 - delta) + self.sizes[j + 1] * delta) / 3
+        up_same = bisect_left(self.ups, cut)
+        down_same = bisect_left(self.downs, cut)
+        counts = {
+            UP: len(self.ups) - up_same,
+            SAME: self.flat + up_same + down_same,
+            DOWN: len(self.downs) - down_same,
+        }
+        return Base(cut, {o: counts[o] / n for o in OUTCOMES}, n)
+
+
 def span_answer(counts: Mapping[str, int], same_rate: float, up_share: float) -> tuple[str, float]:
     """The outcome after a kind of event, with its chance: *about the same* against its rate on all
     events, *up* and *down* only on the events that moved, against the base's share of up among
@@ -1876,10 +1912,23 @@ def _follow(
     rates: list[float] = []
     right = 0
     ends = [span.end for _, span in by_end]
+    so_far, added = BaseSoFar(), 0
     for j, key in enumerate(keys):
-        then = answer_before(keys, j, spans, by_end, ends)
-        if then is not None and then[0] in OUTCOMES:
-            said, base_then = then
+        # answer_before's answer, its base grown as the decisions go forward.
+        before = spans[key].start
+        upto = bisect_right(ends, before)
+        if upto < added:
+            so_far, added = BaseSoFar(), 0
+        for k, span in by_end[added:upto]:
+            if k >= start:
+                so_far.add(span.move)
+        added = upto
+        ended = [spans[k] for k in keys[:j] if spans[k].end <= before]
+        base_then = so_far.base() if len(ended) >= MIN_EVENT_DAYS else None
+        if base_then is None:
+            continue
+        said = _answer(ended, base_then)[0]
+        if said in OUTCOMES:
             rates.append(base_then.rates[said])
             right += outcome(spans[key].move, base_then.cut) == said
     graded = len(rates)

@@ -1459,3 +1459,20 @@ def test_two_reports_on_one_day_are_two_events_in_the_order_of_their_minutes(
         stored[1].event_id: "above",
     }
     assert batch.report == ["loaded 2 earnings reports, 2026-10-28 … 2026-10-28"]
+
+
+def test_a_base_grown_one_move_at_a_time_is_base_of_its_moves() -> None:
+    # given moves with ties, zeros and both signs
+    rng = random.Random(7)
+    moves = [round(rng.gauss(0, 1), 1) for _ in range(400)] + [0.0] * 5
+
+    # when the base is grown one move at a time
+    so_far = study.BaseSoFar()
+    grown = []
+    for i, move in enumerate(moves):
+        so_far.add(move)
+        grown.append((so_far.base(), study.base_of(moves[: i + 1])))
+
+    # then each base is base_of's, cut and shares exactly
+    assert all(a == b for a, b in grown)
+    assert grown[0] == (None, None)
