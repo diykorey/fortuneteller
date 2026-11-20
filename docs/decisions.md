@@ -11,6 +11,23 @@ amended there with a date.
 Each entry: **what** was decided, **why**, what it **retires**, and **where** the detail is. *By the
 owner* marks a choice the owner made over another on the table.
 
+## 2026-11-20: The owner's answers to the zoom-out
+
+- **What:** four answers, given the same day.
+  1. **Phase 5 goes on:** new kinds keep coming, one a pull request, before the gate; the zoom-out's
+     freeze is declined.
+  2. **The evening's score merges itself:** a score pull request, opened only when every row is
+     graded, is merged by `scripts/release-day.sh` once its checks pass; a failed check leaves it
+     for a person. The runner's evening (step 21) then finds nothing to wait on.
+  3. **A free same-day source for earnings** is looked for, as a step of its own: Nasdaq's
+     calendar fills too late for a live call ([step 33](steps/earnings-current.md)).
+  4. **The out/hole column stays as it is:** an event outside a market's closes counts in
+     neither; the [Glossary](glossary.md) says so.
+- **Why:** 1, the owner's choice of 2026-11-17 stands; 2, a person merging before 01:30 Kyiv every
+  night is the flaw the shadow found on 2026-11-18; 3 and 4, as asked.
+- **Retires:** a person reviewing each score pull request before it merges.
+- **Where:** `scripts/release-day.sh`, [step 21](steps/loop-off-the-laptop.md), the Glossary.
+
 ## 2026-11-20: The earnings are kept current, by hand, weekly
 
 - **What:** step 33 refreshes step 31's reports each Monday in a pull request, until the gate.
