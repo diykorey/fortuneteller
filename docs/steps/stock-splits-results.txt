@@ -1,0 +1,93 @@
+# Step 37, step 3 (docs/steps/stock-splits.md). Run 2026-11-20 on a copy of step 36's store
+# (FT_DB_PATH set to it; load-releases with the main checkout's cache); from the branch's root.
+
+$ fortuneteller load-releases
+loaded 105 stock splits, 2011-01-21 … 2026-10-29
+$ fortuneteller load-prices --companies --seed data/seed/stock_splits.csv
+82 of 82 companies loaded
+
+$ fortuneteller follows --event splits
+follows: 105 stock splits 2011-01-21 … 2026-10-29: 74 alone, 31 with a report
+kind          span   market        n  up same down  out/hole  base up/same/down  answer          chance  placebo  walk-forward
+alone         day    vs S&P 500    74  48   15   11      0/0  0.35/0.33/0.32     up              0.0000  -        51: 33 right, holds
+alone         week   vs S&P 500    74  39   26    9      0/0  0.37/0.33/0.30     up              0.0002  -        44: 21 right, doesn't hold
+alone         month  vs S&P 500    74  34   20   20      0/0  0.41/0.33/0.26     can't say       0.4108  -        0: 0 right, too few
+with a report day    vs S&P 500    30  18    0   12      0/1  0.35/0.33/0.32     can't say       0.2505  -        0: 0 right, too few
+with a report week   vs S&P 500    30  16    4   10      0/1  0.37/0.33/0.30     can't say       0.3365  -        0: 0 right, too few
+with a report month  vs S&P 500    30  17    7    6      0/0  0.41/0.33/0.26     can't say       0.1498  -        0: 0 right, too few
+by chance: about 0.2 answers on all history, 0.0 holds walk-forward
+
+$ fortuneteller follows --event splits --after-the-day
+follows: 105 stock splits 2011-01-21 … 2026-10-29: 74 alone, 31 with a report, spans from the reaction close
+kind          span   market        n  up same down  out/hole  base up/same/down  answer          chance  placebo  walk-forward
+alone         day    vs S&P 500    74  28   20   26      0/0  0.35/0.33/0.32     can't say       0.4992  -        0: 0 right, too few
+alone         week   vs S&P 500    74  31   19   24      0/0  0.37/0.33/0.30     can't say       0.5139  -        0: 0 right, too few
+alone         month  vs S&P 500    74  26   28   20      0/0  0.41/0.33/0.26     can't say       0.2403  -        0: 0 right, too few
+with a report day    vs S&P 500    30  12    5   13      0/1  0.35/0.33/0.32     can't say       0.4236  -        0: 0 right, too few
+with a report week   vs S&P 500    30  13    7   10      0/1  0.37/0.33/0.30     can't say       0.5330  -        0: 0 right, too few
+with a report month  vs S&P 500    30  12    7   11      0/0  0.41/0.33/0.26     can't say       0.2660  -        0: 0 right, too few
+by chance: about 0.2 answers on all history, 0.0 holds walk-forward
+
+# The with-a-report month counts 30 of 31 with no hole: Sandisk's month from 2026-10-29 has not
+# ended in the copy (its closes end 2026-11-18), so it is in neither column yet.
+
+# Every other flow's follows, both runs: main's code (a worktree of origin/main at a7cba7d, before
+# this step) against the step's branch, on the same copy:
+$ for e in fomc nfp retail cpi claims ecb ceo opec boe boj war crypto weather flood earnings additions; do
+    for a in '' --after-the-day; do
+      uv run --project MAIN --directory MAIN fortuneteller follows --event $e $a > main-$e$a.txt
+      uv run --project BRANCH --directory BRANCH fortuneteller follows --event $e $a > new-$e$a.txt
+      cmp -s main-$e$a.txt new-$e$a.txt && echo "$e$a same" || echo "$e$a DIFFER"; done; done
+fomc same (282 lines); fomc-after same (282 lines)   (a first run; its main worktree was removed midway, the rest re-run)
+nfp same (282 lines)
+nfp-after same (282 lines)
+retail same (282 lines)
+retail-after same (282 lines)
+cpi same (282 lines)
+cpi-after same (282 lines)
+claims same (282 lines)
+claims-after same (282 lines)
+ecb same (282 lines)
+ecb-after same (282 lines)
+ceo same (6 lines)
+ceo-after same (6 lines)
+opec same (189 lines)
+opec-after same (189 lines)
+boe same (282 lines)
+boe-after same (282 lines)
+boj same (282 lines)
+boj-after same (282 lines)
+war same (96 lines)
+war-after same (96 lines)
+crypto same (96 lines)
+crypto-after same (96 lines)
+weather same (96 lines)
+weather-after same (96 lines)
+flood same (96 lines)
+flood-after same (96 lines)
+earnings same (12 lines)
+earnings-after same (12 lines)
+additions same (6 lines)
+additions-after same (6 lines)
+# 16 flows, both runs, identical. earnings500 not compared: 38 minutes a run.
+
+# The five by hand: a one-off script (on the copy, read-only) taking each row's 8-K or by-hand moment in
+# New York, the reaction close (that day's if before 16:00, else the next), the close before it, the
+# company's move less SPY / ES's, and study.excess_spans(stock, index, c)'s span over the same closes.
+# Rows 1 (WEC) and 26 (CTSH) are BY_HAND rows: their check tests the move at the hand-read moment.
+   1 WEC   alone         2-for-1   news 2011-01-20 20:00 NY  2011-01-20 29.6800 -> 2011-01-21 29.8300, SPY 1280.26 -> 1283.35: +0.26 vs +0.26  (split day 2011-03-02; 1 closes)
+  26 CTSH  with a report 2-for-1   news 2014-02-05 06:16 NY  2014-02-04 48.5050 -> 2014-02-05 46.4250, SPY 1755.20 -> 1751.64: -4.09 vs -4.09  (split day 2014-03-10; 1 closes)
+  52 AFL   alone         2-for-1   news 2018-02-13 16:43 NY  2018-02-13 43.0350 -> 2018-02-14 43.8250, SPY 2662.94 -> 2698.63: +0.50 vs +0.50  (split day 2018-03-19; 1 closes)
+  78 MNST  with a report 2-for-1   news 2023-02-28 16:19 NY  2023-02-28 25.4400 -> 2023-03-01 24.7975, SPY 3970.15 -> 3951.39: -2.05 vs -2.05  (split day 2023-03-28; 1 closes)
+ 105 SNDK  with a report 8-for-1   news 2026-10-29 16:13 NY  2026-10-29 166.2563 -> 2026-10-30 143.8613, SPY 7720.39 -> 7580.07: -11.65 vs -11.65  (split day 2026-11-20; 1 closes)
+# the week span crossing its split day (the shortest lead):
+  94 TSCO  alone         5-for-1   news 2024-12-05 12:02 NY  2024-12-04 57.1720 -> 2024-12-11 57.0980, SPY 6086.49 -> 6084.19: -0.09 vs -0.09  (split day 2024-12-20; 5 closes)
+# Tractor Supply's stored closes around its 5-for-1 split day 2024-12-20 (no fall of 80%):
+   2024-12-16 55.3040
+   2024-12-17 55.0420
+   2024-12-18 53.0380
+   2024-12-19 52.8060
+   2024-12-20 53.9200
+   2024-12-23 53.6900
+   2024-12-24 54.4900
+# its month span from the close before (2024-12-04, 21 closes on): 2024-12-04 57.1720, 2025-01-06 53.6500

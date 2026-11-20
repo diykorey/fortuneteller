@@ -6,6 +6,7 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-20 | Step 37 results: a split announced alone, *up* on the day and holding (33 of 51); in an earnings release *can't say* | PR #390 |
 | 2026-11-20 | Step 37, steps 1 and 2: 105 S&P 500 members' forward splits from 2011, dated by their first public news (24 by hand), and the `splits` flow; the spec goldfish-reviewed; the Results to follow | PR #389 |
 | 2026-11-20 | Step 36: earnings beyond the Dow, 24,298 S&P 500 members' reports from 2011; a miss's day *down* and holding (2,506 of 3,798); the spec goldfish-reviewed | PR #388 |
 | 2026-11-20 | Step 35: S&P 500 additions, 191 from 2007, 143 kept; the day *up* (85 of 135 that moved) but not holding walk-forward; the spec goldfish-reviewed | PR #387 |
