@@ -144,4 +144,5 @@ answer, the miss's day included.
   point.
 - **`follows` took 38 minutes** on the copy (34 from the reaction close), which is one reason it
   stays off the evening job.
-- **By chance:** about 0.3 answers and 0.1 holds on all history; nine answers and one hold found.
+- **By chance:** about 0.3 answers and 0.1 holds on all history; found, five answers the placebo
+  does not give (four more marked *the period*) and one hold.
