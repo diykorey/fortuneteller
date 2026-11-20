@@ -502,3 +502,22 @@ def test_earnings_refresh_fetches_again_the_last_three_weeks_and_takes_the_last_
     assert script.refetched(date(2026, 11, 1), today) is False
     assert days[-1] == date(2026, 11, 20)
     assert script.weekdays()[-1] == date(2026, 11, 18)
+
+
+def test_yahoo_s_quarter_matches_nasdaq_s_and_its_kind_is_nasdaq_s_way() -> None:
+    # given step 34's script
+    spec = importlib.util.spec_from_file_location(
+        "yahoo_earnings", Path(__file__).parents[1] / "scripts" / "yahoo_earnings.py"
+    )
+    assert spec is not None and spec.loader is not None
+    script = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(script)
+
+    # when Walmart's newest quarter and three surprises are read
+    key = script.quarter_key("2026-10-31")
+    kinds = [script.kind(0.65, 0.63627), script.kind(0.65, 0.64), script.kind(-0.34, -0.21)]
+
+    # then the quarter is Nasdaq's, and a report without both figures is not yet a kind
+    assert key == "Oct/2026"
+    assert kinds == ["above", "as expected", "below"]
+    assert script.kind(None, 0.64) is None
