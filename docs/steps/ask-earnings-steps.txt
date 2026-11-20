@@ -62,3 +62,119 @@ crypto cells equal but period/say: True
 weather cells equal but period/say: True
 
 floods are left out on both: that copy predates their load (the evening job loads them).
+
+Step 2's evidence.
+
+$ curl https://diykorey.github.io/fortuneteller/scoreboard/data.json (2026-11-20, about 01:20 UTC, after the evening job's PR #373, deployed 01:13 UTC)
+earnings: 3 kinds, 9 cells; above 1513, as expected 337, below 242; ask_left_out []; data until 2026-11-19
+
+$ the evening job of 2026-11-19, run by hand at 02:53 EET after the 01:00 run failed on FRED (issue #371): its load-prices line (journalctl)
+67 of 67 companies loaded
+
+$ on a copy of the real store taken after that job: fortuneteller follows --event FLOW for every flow on the page, and follows --event fomc --long, the header lines
+follows: 276 Fed decisions 1994-02-04 … 2026-10-28: 40 cuts, 184 holds, 52 hikes
+follows: 223 jobs reports 2008-03-07 … 2026-11-06: 69 above, 104 as expected, 50 below
+follows: 223 retail sales releases 2008-03-13 … 2026-11-17: 51 above, 110 as expected, 62 below
+follows: 222 CPI releases 2008-02-20 … 2026-11-10: 62 above, 82 as expected, 78 below
+follows: 705 jobless claims reports 2013-03-14 … 2026-11-19: 208 above, 216 as expected, 281 below
+follows: 115 ECB decisions 2013-05-02 … 2026-10-29: 15 cuts, 88 holds, 12 hikes
+follows: 26 CEO scandals 2005-03-07 … 2023-09-19: 26 scandals
+follows: 169 OPEC announcements 1983-07-19 … 2025-12-01: 96 oil up, 73 oil down
+follows: 187 BoE decisions 2008-02-07 … 2026-11-05: 17 cuts, 153 holds, 17 hikes
+follows: 85 BoJ decisions 2016-06-16 … 2026-10-30: 0 cuts, 79 holds, 6 hikes
+follows: 136 violent acts 1970-11-22 … 2021-04-28: 136 violent acts
+follows: 44 crypto hacks 2014-02-07 … 2026-10-29: 44 hacks
+follows: 79 hurricane landfalls 1970-08-03 … 2024-10-10: 79 landfalls
+follows: 39 floods 1980-04-10 … 2024-06-16: 39 floods
+follows: 2092 earnings reports 2008-01-10 … 2026-11-17: 1513 above, 337 as expected, 242 below
+fomc --long: follows: 276 Fed decisions 1994-02-04 … 2026-10-28: 40 cuts, 184 holds, 52 hikes
+
+$ python3 -I cmp32.py data.json FOLLOWS_DIR (the script is at the end of this file)
+flows 15, cells 2988; equal to follows' line field by field (up, same, down, base within its printed 2 places, answer, graded, right, verdict, the kind's mark, the placebo's period, and the Fed's cycles on its long spans): 2988
+holds, unmarked: 7
+  nfp above day UST10Y / ZN: up, 58 graded, 39 right
+  nfp above day UST5Y / ZF: up, 58 graded, 38 right
+  cpi above day T5YIE: up, 31 graded, 23 right
+  opec oil up day UGA: up, 31 graded, 20 right
+  earnings as expected day vs S&P 500: down, 303 graded, 183 right
+  earnings below day vs S&P 500: down, 219 graded, 156 right
+  earnings below week vs S&P 500: down, 217 graded, 145 right
+period marks: 3
+  nfp above day EURUSD: down, verdict doesn't hold
+  nfp as expected day UNG: about the same, verdict too few
+  earnings above day vs S&P 500: up, verdict doesn't hold
+
+$ the other way: every line printing `period` in the 16 follows outputs above (grep -E '\s{2,}period\s{2,}' fol-*.txt)
+nfp: above       day    EURUSD        69  10   24   35      0/0  0.33/0.33/0.34     down            0.0002  period   46: 19 right, doesn't hold
+nfp: as expected day    UNG          104  26   50   28      0/0  0.32/0.33/0.35     about the same  0.0013  period   20: 7 right, too few
+earnings: above       day    vs S&P 500   1499 788  129  582      0/5  0.33/0.33/0.34     up              0.0000  period   1356: 707 right, doesn't hold
+3 lines, the same three cells the page marks
+
+$ on screen: the published page in Chrome (2026-11-20, about 05:25 UTC), the earnings' kinds picked, read with the page's script (answer cell, replay cell)
+above (1513)        on the day         td.none "up" (grey) ; td.none "707 of 1356, didn't hold" (grey); sentence ends "it reads as the period, not the event."
+above               over the next week td "up" ; td.none "505 of 1099, didn't hold"
+above               over the next month td "up" ; td.none "246 of 644, didn't hold"
+as expected (337)   on the day         td "down" ; td.yes "183 of 303, held"
+below (242)         on the day         td "down" ; td.yes "156 of 219, held"
+below               over the next week td "down" ; td.yes "145 of 217, held"
+below               over the next month td "down" ; td.none "113 of 202, didn't hold"
+
+$ the earnings' follows output compared, in full
+follows: 2092 earnings reports 2008-01-10 … 2026-11-17: 1513 above, 337 as expected, 242 below
+kind        span   market        n  up same down  out/hole  base up/same/down  answer          chance  placebo  walk-forward
+above       day    vs S&P 500   1499 788  129  582      0/5  0.33/0.33/0.34     up              0.0000  period   1356: 707 right, doesn't hold
+above       week   vs S&P 500   1491 692  246  553     0/10  0.33/0.33/0.33     up              0.0000  -        1099: 505 right, doesn't hold
+above       month  vs S&P 500   1473 570  418  485     0/17  0.34/0.33/0.33     up              0.0030  -        644: 246 right, doesn't hold
+as expected day    vs S&P 500   335  95   37  203      0/2  0.33/0.33/0.34     down            0.0000  -        303: 183 right, holds
+as expected week   vs S&P 500   334 100   52  182      0/3  0.33/0.33/0.34     down            0.0000  -        283: 152 right, doesn't hold
+as expected month  vs S&P 500   330 102   77  151      0/4  0.32/0.33/0.34     down            0.0049  -        116: 48 right, doesn't hold
+below       day    vs S&P 500   235  44   22  169      0/0  0.32/0.33/0.35     down            0.0000  -        219: 156 right, holds
+below       week   vs S&P 500   234  40   34  160      0/1  0.31/0.33/0.35     down            0.0000  -        217: 145 right, holds
+below       month  vs S&P 500   228  37   59  132      0/4  0.30/0.33/0.37     down            0.0000  -        202: 113 right, doesn't hold
+by chance: about 0.3 answers on all history, 0.1 holds walk-forward
+
+$ cat cmp32.py
+"""Every cell of the page's ask against follows' line (step 32, step 2).
+Usage: python3 -I cmp32.py data.json FOLLOWS_DIR  (FOLLOWS_DIR holds fol-FLOW.txt and fol-fomc-long.txt)"""
+import json, re, sys, pathlib
+data = json.load(open(sys.argv[1])); folder = pathlib.Path(sys.argv[2])
+pat = re.compile(r"^(?P<kind>.+?)\s+(?P<span>day|week|month|quarter|year)\s+(?P<market>.+?)\s+(?P<n>\d+)\s+(?P<up>\d+)\s+(?P<same>\d+)\s+(?P<down>\d+)\s+(?P<out>\d+)/(?P<hole>\d+)\s+(?P<base>\S+)\s+(?P<answer>.+?)\s{2,}(?P<chance>\S+)\s+(?P<placebo>\S+)\s+(?:(?P<cycles>\d+: .+?)\s{2,})?(?P<graded>\d+): (?P<right>\d+) right, (?P<verdict>.+)$")
+total = equal = 0; diffs = []; holds = []; periods = []
+for f in data["ask"]:
+    files = [folder / f"fol-{f['name']}.txt"] + ([folder / "fol-fomc-long.txt"] if f["name"] == "fomc" else [])
+    lines = {}
+    for path in files:
+        for line in path.read_text().splitlines()[2:]:
+            m = pat.match(line)
+            if m:
+                lines.setdefault((m["kind"].strip(), m["span"], m["market"].strip()), m)
+    for c in f["cells"]:
+        total += 1
+        m = lines.get((c["kind"], c["span"], c["market"]))
+        where = f"{f['name']} {c['kind']} {c['span']} {c['market']}"
+        if m is None:
+            diffs.append(f"{where}: no follows line"); continue
+        want = {"up": int(m["up"]), "same": int(m["same"]), "down": int(m["down"]), "answer": m["answer"].strip(),
+                "graded": int(m["graded"]), "right": int(m["right"]),
+                "verdict": m["verdict"].replace("(the kind)", "").strip(),
+                "kind_cell": m["verdict"].endswith("(the kind)"), "period": m["placebo"] == "period"}
+        if m["cycles"]:
+            n, verdict = m["cycles"].split(": ", 1)
+            want["cycles"] = [int(n), verdict.strip()]
+        got = {k: c[k] for k in want}
+        bad = [k for k in want if want[k] != got[k]]
+        b = m["base"].split("/"); pb = [c["base_up"], c["base_same"], c["base_down"]]
+        if (pb[0] is None) != (len(b) == 1) or (pb[0] is not None and any(abs(x - float(y)) > 0.005 + 1e-9 for x, y in zip(pb, b))):
+            bad.append(f"base {pb} vs {b}")
+        if bad:
+            diffs.append(f"{where}: {bad} page {got} follows {want}")
+        else:
+            equal += 1
+        if c["verdict"] == "holds" and not c["kind_cell"] and not c["period"]:
+            holds.append(f"{where}: {c['answer']}, {c['graded']} graded, {c['right']} right")
+        if c["period"]:
+            periods.append(f"{where}: {c['answer']}, verdict {c['verdict']}")
+print(f"flows {len(data['ask'])}, cells {total}; equal to follows' line field by field (up, same, down, base within its printed 2 places, answer, graded, right, verdict, the kind's mark, the placebo's period, and the Fed's cycles on its long spans): {equal}")
+for x in diffs: print("differs:", x)
+print(f"holds, unmarked: {len(holds)}"); [print("  " + x) for x in holds]
+print(f"period marks: {len(periods)}"); [print("  " + x) for x in periods]

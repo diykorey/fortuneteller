@@ -12,16 +12,12 @@ Where the work is and what comes next: the task last finished, the tasks in prog
 
 ## Last completed
 
-Step 29: ask about phase 5's kinds ([results](steps/ask-phase-5.md#results)). The published page
-answers OPEC+, the two banks, violent acts, hacks, landfalls and floods: 12 kinds, 1,116 cells, each
-equal to `follows`' line; gasoline's day after *oil up* the one new hold, Brent's day the kind.
+Step 32: ask about earnings ([results](steps/ask-earnings.md#results)). The published page answers
+a Dow company's report above, in line with or below the consensus; all 2,988 cells equal
+`follows`, with three period marks and seven holds, as expected.
 
 ## In progress
 
-- **Step 32: ask about earnings** ([the spec](steps/ask-earnings.md)): the page answers step 31's
-  three earnings kinds, every cell carries the placebo's mark, and `load-prices` loads the
-  companies every evening. Step 1 done on a copy of the store: 7 holds and 3 period marks, as
-  expected. Step 2 waits for the evening job.
 - **Step 23: be seen, and count it** ([the spec](steps/be-seen.md)): a cookie-free Umami counter
   on the page and a weekly LinkedIn post drafted by `weekly-post`, both the owner's choice. Step 1
   done: the counter is live and counts a visit once, read through Umami's share link. Next: the

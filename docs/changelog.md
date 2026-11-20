@@ -6,6 +6,7 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-20 | Step 32 results: the published page answers the three earnings kinds; all 2,988 cells of 15 flows equal `follows`, three period marks, seven holds; the expected outcome right on every count | PR #376 |
 | 2026-11-19 | Step 23: the page carries a link preview (description, Open Graph tags, a 1200 by 627 card quoting a miss's day), so a post's link shows more than an address | PR #377 |
 | 2026-11-20 | Step 29 results: the published page answers the 12 kinds of OPEC+, the BoE, the BoJ, violent acts, hacks, landfalls and floods, 1,116 cells each equal to `follows`; the expected outcome right; seven holds on the page with step 32's earnings | PR #375 |
 | 2026-11-19 | Step 32, step 1: the page's ask answers the earnings (9 cells, three holds), every cell carries the placebo's mark (3 marked), `load-prices` loads the companies' closes | PR #370 |
