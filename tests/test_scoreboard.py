@@ -468,3 +468,23 @@ def test_a_share_link_without_a_token_is_an_umami_error(monkeypatch: pytest.Monk
     # when / then
     with pytest.raises(sources.UmamiError, match="cannot be read"):
         sources.fetch_umami_visitors("code", start, end)
+
+
+def test_the_page_carries_a_link_preview_whose_image_is_published_beside_it() -> None:
+    # given the page's template and the published folder
+    page = (Path(cli.__file__).parent / "scoreboard.html").read_text()
+    image = Path(__file__).parent.parent / "docs" / "scoreboard" / "preview.png"
+
+    # when its head's preview tags are read
+    tags = dict(re.findall(r'<meta (?:property|name)="([^"]+)" content="([^"]*)">', page))
+
+    # then a reader's link shows the title, a line and the image, which is a 1200 by 627 PNG
+    url = "https://diykorey.github.io/fortuneteller/scoreboard/"
+    assert tags["og:url"] == url
+    assert tags["og:image"] == url + "preview.png"
+    assert tags["og:title"] and tags["og:description"] and tags["description"]
+    assert tags["twitter:card"] == "summary_large_image"
+    head = image.read_bytes()[:24]
+    assert head[:8] == b"\x89PNG\r\n\x1a\n"
+    assert (int.from_bytes(head[16:20]), int.from_bytes(head[20:24])) == (1200, 627)
+    assert "%" not in tags["og:description"] + tags["description"]

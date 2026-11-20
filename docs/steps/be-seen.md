@@ -118,6 +118,13 @@ repository.
   `share/{code}` answers the site and a token, and the stats are asked with it in the
   `x-umami-share-token` header and `x-umami-share-context: 1`, as Umami's share page does. The
   code is `UMAMI_SHARE` in `__main__.py`; no secret. A failed ask prints the draft, then the error.
+- **Link preview** (*amended 2026-11-19, before the first post*): a link to the page on LinkedIn
+  showed only its address and title. The template's head gains a description and Open Graph tags
+  (`og:title`, `og:description`, `og:url`, `og:image`), and `docs/scoreboard/preview.png`, a
+  1200 by 627 card rendered from `docs/scoreboard/preview.html` by headless Chrome
+  (`google-chrome --headless=new --window-size=1200,627 --screenshot`). The card quotes one cell
+  the page shows, a miss's day from [step 31](earnings.md#results), as of 2026-11-19. It changes
+  nothing the counter counts. A test reads the tags and the image's size.
 - **Command:** `weekly-post` in `__main__.py`, reading `study.read_calls`; it writes nothing. The
   owner or the session adds the week's row to the weeks file. Tests in `tests/test_scoreboard.py`.
 - **File:** `docs/steps/be-seen-weeks.csv`: `week_start, unique_visitors, crosses_month, posted,
