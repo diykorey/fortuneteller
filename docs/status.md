@@ -19,6 +19,10 @@ do not carry over.
 
 ## In progress
 
+- **Step 37: stock splits** ([the spec](steps/stock-splits.md)): steps 1 and 2 done, 105 forward
+  splits by S&P 500 members from 2011 dated by their first public news (24 by hand), and the
+  `splits` flow. Measured on a copy of the store, not yet checked or reviewed. Next: the Results,
+  their goldfish review, a second pull request.
 - **Step 34: a same-day source for earnings** ([the spec](steps/earnings-same-day.md)): step 1
   done, Yahoo's kind is Nasdaq's on 102 of 110 reports (92.7%, bar 90%). Next: the speed, asked on
   each member's report from 2026-11-23 to 2027-01-31.
@@ -50,8 +54,8 @@ do not carry over.
 ## Next
 
 Monday 2026-11-23: step 23's first weekly post, drafted by `weekly-post` and published by the
-owner, and step 33's first refresh. Meanwhile step 37, stock splits, the third of the four kinds
-the owner chose on 2026-11-20 (then a CEO's conduct with no departure).
+owner, and step 33's first refresh. Meanwhile step 37's Results, then step 38, a CEO's conduct
+with no departure, the last of the four kinds the owner chose on 2026-11-20.
 
 ## Known, not yet fixed
 
