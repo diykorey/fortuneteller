@@ -6,6 +6,7 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-20 | Step 33, step 1: step 31's scripts take the last day and fetch the recent pages again; the spec, goldfish-reviewed | PR #381 |
 | 2026-11-20 | Step 23: the page asks first, before the week ahead, and `#ask/FLOW/KIND` links open on a kind | PR #380 |
 | 2026-11-20 | The first monthly zoom-out: findings in Decisions; roadmap rows 21 and 23, the Later list and status' *Next* brought up to date | PR #379 |
 | 2026-11-20 | Step 32 results: the published page answers the three earnings kinds; all 2,988 cells of 15 flows equal `follows`, three period marks, seven holds; the expected outcome right on every count | PR #376 |

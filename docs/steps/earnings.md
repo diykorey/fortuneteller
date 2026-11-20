@@ -61,6 +61,7 @@ its own base of the 504 closes before), against the rule below written first.
   flow's are. History only in this step: no trigger, not on the page's ask. *Amended 2026-11-19,
   by the owner, at step 2:* the scoreboard's raw-move card takes the earnings, as every flow's
   history does (the floods' did at step 30).
+  *Amended 2026-11-20:* the reports after 2026-11-18 come in weekly by [step 33](earnings-current.md).
 - **The fetch:** Nasdaq's ~4,900 weekdays at one request a second and the SEC's pages at under
   ten, each cached in its own directory under `data/cache/earnings/`, read with `python -I`
   (Python isolated from the download's directory). Seen before writing this: Nasdaq's pages of
