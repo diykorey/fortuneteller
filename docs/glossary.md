@@ -422,6 +422,9 @@ Terms are grouped by what they are about, alphabetical within each group.
   before the instrument's close, otherwise the next (`study.first_reaction_day`).
 - **Daily bar / OHLC** — one row per trading day holding Open, High, Low, Close prices. The MVP's
   data resolution; enough to prove an effect exists.
+- **Crumb** — the token Yahoo's `quoteSummary` asks for beside a cookie from `fc.yahoo.com`, got
+  from `/v1/test/getcrumb`; the chart endpoint the prices come from needs neither
+  ([a same-day source](steps/earnings-same-day.md)).
 - **Effect size** — how much an instrument moves per unit of event, the core number the whole system
   is built to estimate. Here: **`mag_per_sd`**, percent moved per one standard deviation of
   surprise.
@@ -633,6 +636,9 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **The gate** — a dated check of several steps together against bars fixed in advance; a miss is
   answered with a decisions entry before new work starts. The current one is 2027-01-31
   ([roadmap phase 4](roadmap.md#phase-4-prove-the-loop-show-the-page-be-seen)).
+- **Same-day source** — a free source that has a report's figures within hours, so a live call can
+  be made on its day; Nasdaq's calendar is not one for earnings
+  ([a same-day source](steps/earnings-same-day.md)).
 - **Zoom-out** — the monthly goldfish read of the whole plan, not one spec
   ([Legend](legend.md#how-a-step-is-reviewed-the-elephant-and-the-goldfish)).
 - **Feature ladder** — the ordered list of what gets built after the MVP, in
