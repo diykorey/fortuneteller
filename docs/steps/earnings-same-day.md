@@ -26,7 +26,11 @@ At the end: a number for each question and a verdict, *usable* or not. No call, 
 - **How soon:** for each member's report from 2026-11-23 to 2026-12-31 on Nasdaq's calendar
   (listed in the results before the first), Yahoo is asked every 30 minutes for six hours, by a
   loop run in a session, from 07:00 New York for a pre-market report or 16:00 for one after the
-  close. The delay is measured afterwards: from the 8-K's minute (step 31's way) to the first ask
+  close. *Amended 2026-11-20, before any ask:* the calendar lists two members' reports to
+  2026-12-31 (Salesforce 12-02, Nike 12-17), under the bar's 3, so the window runs to the gate,
+  2027-01-31; the asks run from the laptop's crontab, a line per report night written when the
+  calendar lists it, and a night the laptop sleeps through is *not asked*, left out, not *over six
+  hours*. The delay is measured afterwards: from the 8-K's minute (step 31's way) to the first ask
   holding that quarter's EPS; a report still empty at the end counts as *over six hours*.
 
 ## The rule, fixed before measuring
@@ -62,7 +66,7 @@ in cents ($0.65), a kind apart only near ±2%.*
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | A one-off script `scripts/yahoo_earnings.py` saves the replies and prints the agreement table | The table, its counts and the three hand checks in `docs/steps/earnings-same-day-results.txt` |
-| 2 | The delay asked on the members' reports to 2026-12-31 | Each report's delay in the same file |
+| 2 | The delay asked on the members' reports to 2027-01-31 | Each report's delay in the same file |
 | 3 | Results and the verdict | The Results section here, goldfish-reviewed |
 
 ## What this step does not do

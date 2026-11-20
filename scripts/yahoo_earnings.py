@@ -1,12 +1,13 @@
 """Step 34's source: Yahoo's earningsHistory beside step 31's Nasdaq kinds
 (docs/steps/earnings-same-day.md).
 
-`fetch DIR` asks Yahoo once for each of today's Dow members and saves each reply as
-DIR/ASKED/TICKER.json, ASKED the minute asked (UTC). `agree DIR NASDAQ_DIR` matches each saved
+`fetch DIR [TICKER...]` asks Yahoo once for each of today's Dow members, or the tickers given, and
+saves each reply as DIR/ASKED/TICKER.json, ASKED the minute asked (UTC); step 2 runs it every 30
+minutes on a report's evening from the crontab. `agree DIR NASDAQ_DIR` matches each saved
 quarter to step 31's report of the same ticker and fiscal quarter and prints both kinds, the
 agreement, and the scale check.
 
-Usage: uv run python -I scripts/yahoo_earnings.py fetch DIR
+Usage: uv run python -I scripts/yahoo_earnings.py fetch DIR [TICKER...]
        uv run python -I scripts/yahoo_earnings.py agree DIR NASDAQ_DIR
 """
 
@@ -52,7 +53,7 @@ def members_today() -> list[str]:
     return sorted(members)
 
 
-def fetch(folder: Path) -> None:
+def fetch(folder: Path, tickers: list[str]) -> None:
     jar = http.cookiejar.CookieJar()
     opener = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(jar))
     try:
@@ -65,7 +66,7 @@ def fetch(folder: Path) -> None:
     crumb = opener.open(request, timeout=30).read().decode()
     asked = folder / datetime.now(UTC).strftime("%Y-%m-%dT%H%M")
     asked.mkdir(parents=True, exist_ok=True)
-    for ticker in members_today():
+    for ticker in tickers or members_today():
         url = SUMMARY.format(t=ticker, c=crumb)
         reply = opener.open(urllib.request.Request(url, headers=UA), timeout=30).read()
         (asked / f"{ticker}.json").write_bytes(reply)
@@ -95,7 +96,9 @@ def nasdaq_quarters(folder: Path) -> dict[tuple[str, str], date]:
 
 
 def agree(folder: Path, nasdaq: Path) -> None:
-    newest = sorted(p for p in folder.iterdir() if p.is_dir())[-1]
+    newest = sorted(p for p in folder.iterdir() if p.is_dir() and len(list(p.glob("*.json"))) > 1)[
+        -1
+    ]
     pages = nasdaq_quarters(nasdaq)
     with Path("data/seed/earnings.csv").open(newline="") as handle:
         seed = list(csv.DictReader(handle))
@@ -155,6 +158,6 @@ def agree(folder: Path, nasdaq: Path) -> None:
 if __name__ == "__main__":
     command, folder = sys.argv[1], Path(sys.argv[2])
     if command == "fetch":
-        fetch(folder)
+        fetch(folder, sys.argv[3:])
     elif command == "agree":
         agree(folder, Path(sys.argv[3]))

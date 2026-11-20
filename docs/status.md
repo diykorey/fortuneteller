@@ -20,7 +20,7 @@ a Dow company's report above, in line with or below the consensus; all 2,988 cel
 
 - **Step 34: a same-day source for earnings** ([the spec](steps/earnings-same-day.md)): step 1
   done, Yahoo's kind is Nasdaq's on 102 of 110 reports (92.7%, bar 90%). Next: the speed, asked on
-  each member's report from 2026-11-23 to 2026-12-31.
+  each member's report from 2026-11-23 to 2027-01-31.
 - **Step 33: the earnings kept current** ([the spec](steps/earnings-current.md)): step 1 done, the
   scripts take the last day and fetch the recent pages again. Next: the first refresh, Monday
   2026-11-23, with the weekly post.
