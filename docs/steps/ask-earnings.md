@@ -83,7 +83,7 @@ prints.
 ## Results
 
 *2026-11-20.* Every line quoted is in [the evidence](ask-earnings-steps.txt), step 2's part: the
-published page's `data.json` after the evening job of 2026-11-19 (PR #373, deployed 01:13 UTC),
+published page's `data.json` (by `curl`) after the evening job of 2026-11-19 (PR #373, deployed 01:13 UTC),
 `follows --event FLOW` for all 15 flows on the page and `follows --event fomc --long`, on a copy of
 the real store taken after that job, the comparison of every cell with its line (`python3 -I
 cmp32.py data.json FOLLOWS_DIR`, the script at the end of the evidence), and the page read in
@@ -98,23 +98,28 @@ reads as the period, not the event. The expected outcome held on every count.
 - **Same numbers:** all 2,988 cells of the 15 flows equal `follows`' line for their kind, span and
   market, field by field, the placebo's `period` and the Fed's cycles on its quarter and year
   included; the 9 earnings cells among them, and each earnings kind's count equals `follows`'
-  header (2,092 reports: 1,513 above, 337 as expected, 242 below). Right. One count moved by one
-  since [step 31's Results](earnings.md#results): *above*'s day is now graded 1,356 times (707
-  right), not 1,355, within the one or two the rule allows.
+  header (2,092 reports: 1,513 above, 337 as expected, 242 below; `follows --event earnings`).
+  Right. One cell moved by one since [step 31's Results](earnings.md#results), within the one or
+  two the rule allows: *above*'s day now counts 1,499 reports, 582 down (was 1,498 and 581), and
+  is graded 1,356 times, 707 right (was 1,355), as `follows --event earnings` prints it.
 - **The earnings add exactly three holds and one period mark:** *below*'s day (219 graded, 156
   right) and week (217, 145), *as expected*'s day (303, 183); *above*'s day marked *the period*,
-  and it does not hold (1,356, 707). Right.
+  and it does not hold (1,356, 707), each as `cmp32.py` and `follows --event earnings` print it.
+  Right.
 - **Exactly three period marks across every flow:** the earnings' *above* day; the euro's day after
   a jobs report above the consensus (*down*, does not hold); natural gas's day after one as
   expected (*about the same*, *too few*). No other flow, the floods included, has one, and none of
-  the three holds. Right.
+  the three holds (`cmp32.py`, page to `follows`). The other way, the 16 `follows` outputs print
+  `period` on exactly these three lines and no other (`grep`, in the evidence). Right.
 - **Seven holds on the page:** step 22's three (the 10- and 5-year yields on the day of a jobs
   report above the consensus, 58 graded, 39 and 38 right; the 5-year breakeven on the day of a CPI
   release above it, 31, 23), step 29's gasoline after *oil up* (31, 20) and the earnings' three.
   Right.
-- **The evening job:** `scoreboard` 1 min 36 s longer on this step's code, under the 3-minute bar
-  (step 1's evidence); `load-prices` loaded 67 of 67 companies in the evening job of 2026-11-19.
-  Right.
+- **The evening job:** `scoreboard` took 12 min 10 s on this step's code against 10 min 34 s on
+  main's, 1 min 36 s longer, under the 3-minute bar (`time fortuneteller scoreboard`, step 1's
+  evidence); `load-prices` loaded 67 of 67 companies in the evening job of 2026-11-19 (its log, by
+  `journalctl`). That job was the one run by hand at 02:53 EET, after the scheduled 01:00 run
+  failed on FRED's HTTP 500 (issue #371) before any price load. Right.
 - **On screen:** *below* picked on the published page shows the day and the week held, coloured;
   *above*'s day is grey, answer and replay alike, its sentence ending with the placebo's words.
   Right.

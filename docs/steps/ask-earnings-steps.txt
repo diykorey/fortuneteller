@@ -104,6 +104,12 @@ period marks: 3
   nfp as expected day UNG: about the same, verdict too few
   earnings above day vs S&P 500: up, verdict doesn't hold
 
+$ the other way: every line printing `period` in the 16 follows outputs above (grep -E '\s{2,}period\s{2,}' fol-*.txt)
+nfp: above       day    EURUSD        69  10   24   35      0/0  0.33/0.33/0.34     down            0.0002  period   46: 19 right, doesn't hold
+nfp: as expected day    UNG          104  26   50   28      0/0  0.32/0.33/0.35     about the same  0.0013  period   20: 7 right, too few
+earnings: above       day    vs S&P 500   1499 788  129  582      0/5  0.33/0.33/0.34     up              0.0000  period   1356: 707 right, doesn't hold
+3 lines, the same three cells the page marks
+
 $ on screen: the published page in Chrome (2026-11-20, about 05:25 UTC), the earnings' kinds picked, read with the page's script (answer cell, replay cell)
 above (1513)        on the day         td.none "up" (grey) ; td.none "707 of 1356, didn't hold" (grey); sentence ends "it reads as the period, not the event."
 above               over the next week td "up" ; td.none "505 of 1099, didn't hold"
