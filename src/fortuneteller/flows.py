@@ -1834,6 +1834,17 @@ class EarningsFlow:
 
 
 EARNINGS_FLOW = EarningsFlow()
+# Step 35 (docs/steps/sp500-additions.md): each company S&P announced would join the S&P 500, one
+# event at the announcement's minute, the kind `added`; several are announced on one day, as
+# reports are, so it is the earnings' class with its own names and seed.
+ADDITIONS_FLOW = EarningsFlow(
+    event_type="Stock index inclusion",
+    type_code=35,
+    cli_name="additions",
+    label="ADD",
+    seed_file="sp500_additions.csv",
+    noun="S&P 500 additions",
+)
 # Step 30 (docs/steps/floods.md): NOAA's billion-dollar US floods that have a day, at 04:00 UTC.
 FLOOD_FLOW = DatedShockFlow(
     "Extreme weather / climate policy",
@@ -1884,6 +1895,7 @@ EVENT_FLOWS: list[EventFlow] = [
     WEATHER_FLOW,
     FLOOD_FLOW,
     EARNINGS_FLOW,
+    ADDITIONS_FLOW,
 ]
 
 

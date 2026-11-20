@@ -92,3 +92,35 @@ and Tesla's above.*
   are; `company_tickers()` reads the new seed.
 - Docs: roadmap row 35, status, changelog, schema (`event_types`' new row, the seed), glossary
   (*index effect*, *effective day*).
+
+## Results
+
+*Measured 2026-11-20 on a copy of the store ([evidence](sp500-additions-results.txt), [step 1's
+evidence](sp500-additions-steps.txt)).*
+
+**In plain words:** after S&P announced a company would join the S&P 500, the shares beat the
+index the next day more often than not: 85 times of 143, trailed it 50, about the same 8, against
+a base of 35% up. That clears the bar only just (chance 0.0098 against 0.01), and replayed
+walk-forward it was right 30 times of 53, under 60%: it **does not hold**. Over the week and the
+month, and from the reaction close on every span, *can't say*. Nothing on the markets moves on an
+addition's day (`raw-move`, 31 of 31 *doesn't*).
+
+| | Expected | Found |
+| --- | --- | --- |
+| Day, from the close before | *up*, holds | *up*, 85/8/50 of 143, chance 0.0098; **doesn't hold**, 30 of 53 |
+| Week | *up*, doesn't hold | **can't say**, 75/31/37, chance 0.0107 |
+| Month | *can't say* | *can't say*, 0.36 |
+| From the reaction close | *can't say* on every span | *can't say* on every span |
+| Kept | 120 to 180 | 143 |
+| Every other flow's `follows` | unchanged | unchanged (CEO, earnings, OPEC compared byte for byte) |
+
+- **The expected outcome was wrong on two counts:** the day does not hold, and the week is not
+  *up*. The index effect is there on the day, as the literature says it has faded to, but not
+  strongly enough to call.
+- **The 191:** 143 kept; 39 holes (28 companies with no closes on Yahoo, bought, delisted or
+  renamed, FleetCor now Corpay among them; 11 with fewer than 504 closes before, new listings and
+  spin-offs); 9 announced before their ticker's first close on Yahoo, in neither column. The kept
+  are survivors: a company bought or failed since is not among them.
+- **The minute is S&P's practice, not read:** none of the five releases gives its time; the
+  17:15 placement rests on S&P announcing after the close.
+- **By chance:** about 0.1 answers on all history. One answer was found, at 0.0098.

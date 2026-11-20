@@ -1,3 +1,4 @@
+import csv
 import dataclasses
 import math
 import re
@@ -10,6 +11,7 @@ import pytest
 from fortuneteller import db, flows, sources, stats, study
 import fortuneteller.__main__ as cli
 from fortuneteller.__main__ import _trigger_companies, main
+from fortuneteller.config import settings
 from fortuneteller.sources import DailyClosingPrice
 from fortuneteller.study import CANT_SAY, DOWN, SAME, TOO_FEW, UP, Base
 
@@ -709,3 +711,54 @@ def test_load_prices_loads_the_companies_and_a_failing_one_does_not_fail_it(
     assert (full, alone) == (0, 1)
     assert "1 of 2 companies loaded" in full_out.out
     assert "HTTP 404 for BAD" in full_out.err
+
+
+ADDITIONS_LINE = re.compile(EARNINGS_LINE.pattern.replace("above|as expected|below", "added"))
+
+
+def test_s_p_500_additions_load_one_event_each_and_follows_prints_one_kind(
+    tmp_db: Path, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    # given a flat index and twelve companies each added 6% up on its announcement, two a day
+    index = _closes([0.0] * 700)
+    con = db.get_connection()
+    rows = [("SPY / ES", c) for c in index]
+    additions = ["day,time,ticker,kind,effective"]
+    for n in range(12):
+        ticker, i = f"C{n}", 520 + 8 * (n // 2)
+        rows += [(ticker, c) for c in _company(n, i, 0.06)]
+        additions.append(f"{index[i].day},14:00,{ticker},added,{index[i + 3].day}")
+    con.executemany(
+        "INSERT INTO daily_bars (instrument, day, close, source) VALUES (?, ?, ?, 'test')",
+        [[i, c.day, c.price] for i, c in rows],
+    )
+    seed = tmp_path / "sp500_additions.csv"
+    seed.write_text("\n".join(additions) + "\n")
+
+    # when the seed is loaded and follows prints the additions, and the page's data is built
+    batch = flows.ADDITIONS_FLOW.load(seed, datetime(2026, 11, 19, tzinfo=UTC))
+    flows.store_events(batch.events)
+    assert main(["follows", "--event", "additions"]) == 0
+    printed = [ADDITIONS_LINE.match(line) for line in capsys.readouterr().out.splitlines()[2:-1]]
+    ask = cli.ask_data(con)
+
+    # then one event an addition, two sharing a day; three spans of the one kind, the day up;
+    # and not on the page's ask yet
+    assert len(batch.events) == len({e.event_id for e in batch.events}) == 12
+    assert [m["span"] for m in printed if m] == ["day", "week", "month"]
+    assert {m["kind"] for m in printed if m} == {study.ADDED}
+    assert printed[0] is not None and printed[0]["answer"] == "up"
+    assert "additions" not in [entry["name"] for entry in ask["ask"]]
+
+
+def test_the_companies_loaded_each_evening_include_the_s_p_500_additions() -> None:
+    # given the three company seeds
+    with (settings.seed_dir / "sp500_additions.csv").open(newline="") as handle:
+        added = {row["ticker"] for row in csv.DictReader(handle)}
+
+    # when the evening's companies are listed
+    tickers = cli.company_tickers()
+
+    # then every addition's company is among them, once
+    assert added <= set(tickers)
+    assert len(tickers) == len(set(tickers))

@@ -138,9 +138,11 @@ def _load_prices(args: argparse.Namespace) -> int:
 
 
 def company_tickers() -> list[str]:
-    """The CEO flow's and the earnings' companies, each once, in their seeds' order."""
+    """The CEO flow's, the earnings' and the S&P 500 additions' companies, each once, in their
+    seeds' order."""
     tickers: list[str] = []
-    for seed_file in (flows.CEO_FLOW.seed_file, flows.EARNINGS_FLOW.seed_file):
+    company_flows = (flows.CEO_FLOW, flows.EARNINGS_FLOW, flows.ADDITIONS_FLOW)
+    for seed_file in (flow.seed_file for flow in company_flows):
         with (settings.seed_dir / seed_file).open(newline="") as file:
             tickers += [row["ticker"] for row in csv.DictReader(file)]
     return list(dict.fromkeys(tickers))
@@ -618,6 +620,7 @@ FOLLOWS_NOUNS = {
     "weather": "hurricane landfalls",
     "flood": "floods",
     "earnings": "earnings reports",
+    "additions": "S&P 500 additions",
 }
 
 
@@ -684,10 +687,10 @@ def follows_cells(
             kinds = dict.fromkeys((e.event_id for e in events), study.SCANDAL)
             order: Sequence[str] = (study.SCANDAL,)
             cells = study.follow_ceo(events, con=con, after=after)
-        elif flow is flows.EARNINGS_FLOW:
+        elif flow is flows.EARNINGS_FLOW or flow is flows.ADDITIONS_FLOW:
             events = flows.stored_events(flow, con=con)
             kinds = study.earnings_kinds(events)
-            order = study.SURPRISE_KINDS
+            order = study.SURPRISE_KINDS if flow is flows.EARNINGS_FLOW else (study.ADDED,)
             cells = study.follow_companies(events, kinds, order, con=con, after=after)
         elif flow is flows.OPEC_FLOW:
             kinds = study.detail_kinds(flows.stored_events(flow, con=con))
@@ -1974,6 +1977,8 @@ def ask_data(con: duckdb.DuckDBPyConnection) -> dict[str, list[dict[str, object]
     left_out: list[dict[str, object]] = []
     names = market_names()
     for name, noun in FOLLOWS_NOUNS.items():
+        if name == "additions":
+            continue  # on the page at a later step (docs/steps/sp500-additions.md)
         try:
             f = follows_cells(name, con)
             cells = list(f.cells)
