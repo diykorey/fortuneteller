@@ -6,7 +6,10 @@ under DIR, under ten requests a second. The current index, which holds the newes
 fetched again each time (docs/steps/earnings-current.md); the older pages are kept as saved. A member renamed keeps its filer number; two whose reports
 Nasdaq files under one symbol name both numbers here.
 
-Usage: uv run python -I scripts/sec_8k_times.py fetch DIR
+With `--members FILE` (step 36, docs/steps/earnings-sp500.md) the members are that file's; a
+member with no filer number in the SEC's list is printed and skipped.
+
+Usage: uv run python -I scripts/sec_8k_times.py fetch DIR [--members FILE]
 """
 
 import csv
@@ -36,16 +39,19 @@ def _get(url: str, path: Path, again: bool = False) -> bytes:
     return path.read_bytes()
 
 
-def members() -> list[str]:
-    with Path("data/seed/dow.csv").open(newline="") as handle:
+def members(path: Path = Path("data/seed/dow.csv")) -> list[str]:
+    with path.open(newline="") as handle:
         return sorted({row["ticker"] for row in csv.DictReader(handle)})
 
 
-def fetch(folder: Path) -> None:
+def fetch(folder: Path, members_file: Path = Path("data/seed/dow.csv")) -> None:
     folder.mkdir(parents=True, exist_ok=True)
     listing = json.loads(_get(TICKERS, folder / "company_tickers.json"))
     ciks = UNLISTED | {row["ticker"]: int(row["cik_str"]) for row in listing.values()}
-    for ticker in members():
+    for ticker in members(members_file):
+        if ticker not in ciks:
+            print(ticker, "no filer number")
+            continue
         for cik in [ciks[ticker], *MORE_FILERS.get(ticker, [])]:
             name = f"CIK{cik:010d}.json"
             index = json.loads(_get(INDEX.format(name=name), folder / name, again=True))
@@ -57,4 +63,7 @@ def fetch(folder: Path) -> None:
 if __name__ == "__main__":
     command, folder = sys.argv[1], Path(sys.argv[2])
     if command == "fetch":
-        fetch(folder)
+        if "--members" in sys.argv:
+            fetch(folder, Path(sys.argv[sys.argv.index("--members") + 1]))
+        else:
+            fetch(folder)

@@ -12,9 +12,10 @@ Where the work is and what comes next: the task last finished, the tasks in prog
 
 ## Last completed
 
-Step 35: S&P 500 additions ([results](steps/sp500-additions.md#results)). 143 kept; the shares beat
-the index the day after the announcement 85 times of the 135 that moved, an answer at chance 0.0098 that does
-not hold walk-forward (30 of 53); the week and the month *can't say*.
+Step 36: earnings beyond the Dow ([results](steps/earnings-sp500.md#results)). 24,298 reports by
+S&P 500 members from 2011; after a miss the shares trailed the index on the day 2,522 times of the
+3,521 that moved, and the call holds walk-forward, 2,506 of 3,798 (66%). The Dow's other two holds
+do not carry over.
 
 ## In progress
 
@@ -49,9 +50,8 @@ not hold walk-forward (30 of 53); the week and the month *can't say*.
 ## Next
 
 Monday 2026-11-23: step 23's first weekly post, drafted by `weekly-post` and published by the
-owner, and step 33's first refresh. Meanwhile step 36, earnings beyond the Dow, the second of the
-four kinds the owner chose on 2026-11-20 (then stock splits, then a CEO's conduct with no
-departure).
+owner, and step 33's first refresh. Meanwhile step 37, stock splits, the third of the four kinds
+the owner chose on 2026-11-20 (then a CEO's conduct with no departure).
 
 ## Known, not yet fixed
 

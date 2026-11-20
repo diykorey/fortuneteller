@@ -1,0 +1,192 @@
+# Step 36, step 1 (docs/steps/earnings-sp500.md). Run 2026-11-20 from the branch's root.
+
+$ uv run python -I scripts/sp500_additions.py members data/cache/sp500
+today 503; on 2011-01-03 509; 349 changes
+2011 508 509
+2012 508 508
+2013 505 507
+2014 505 507
+2015 507 510
+2016 509 509
+2017 508 509
+2018 507 508
+2019 507 509
+2020 507 509
+2021 506 508
+2022 504 507
+2023 504 505
+2024 504 506
+2025 504 505
+2026 503 504
+
+# Five changes by hand against S&P's releases (the 1st, 100th, 200th, 300th and last after 2011-01-03):
+1   2011-02-25 JOYG for AYE: S&P 2011-02-16, date TBA, on FirstEnergy's buying Allegheny (closed 2011-02-25): consistent
+100 2015-12-29 CHD for ALTR: S&P 2015-12-22, after the close of 2015-12-28: member from 12-29, right
+200 2019-09-23 CDW for TSS: S&P 2019-09-17, before the open of 2019-09-23: right
+300 2024-09-23 ERIE for BIO: S&P 2024-09-06, before the open of 2024-09-23: right
+349 2026-10-30 OKTA for KVUE: S&P 2026-10-30, before the open of 2026-11-04: WRONG, Wikipedia gives the release day
+# Step 1 stopped; of the 104 changes with S&P's release address, 4 are dated on the release day.
+# The owner chose (2026-11-20): take those four from S&P's releases: PSX after the close of
+# 2012-04-30 (from 05-01), KMI and ALXN after the close of 2012-05-24 (from 05-25), OKTA 2026-11-04.
+
+$ uv run python -I scripts/sp500_additions.py names500 data/cache/sp500 data/cache/earnings/sec500
+820 tickers; no CIK 197; first words differ 45
+AIV    | Aimco | APARTMENT INVESTMENT & MANAGEMENT CO
+AN     | Amoco | AUTONATION, INC.
+AOS    | A. O. Smith | SMITH A O CORP
+APC    | Anadarko Petroleum | ARKO Petroleum Corp.
+ATI    | Allegheny Technologies | ATI INC
+BEAM   | Suntory Global Spirits | Beam Therapeutics Inc.
+BF-B   | ? | BROWN FORMAN CORP
+BNY    | BNY Mellon | Bank of New York Mellon Corp
+BRK-B  | ? | BERKSHIRE HATHAWAY INC
+CHRW   | C.H. Robinson | C. H. ROBINSON WORLDWIDE, INC.
+CLF    | Cliffs Natural Resources | CLEVELAND-CLIFFS INC.
+CNX    | Consol Energy | CNX Resources Corp
+CPWR   | Compuware | Ocean Thermal Energy Corp
+DHI    | D. R. Horton | HORTON D R INC /DE/
+DV     | DeVry | DoubleVerify Holdings, Inc.
+EP     | El Paso Corporation | EMPIRE PETROLEUM CORP
+FTI    | FMC Technologies | TechnipFMC plc
+GE     | GE Aerospace | GENERAL ELECTRIC CO
+GT     | The Goodyear Tire & Rubber Company | GOODYEAR TIRE & RUBBER CO /OH/
+GWW    | W. W. Grainger | W.W. GRAINGER, INC.
+IBM    | IBM | INTERNATIONAL BUSINESS MACHINES CORP
+JBHT   | J.B. Hunt | HUNT J B TRANSPORT SERVICES INC
+LIFE   | Life Technologies | Ethos Technologies Inc.
+LLY    | Lilly (Eli) | ELI LILLY & Co
+MAA    | Mid-America Apartment Communities | MID AMERICA APARTMENT COMMUNITIES INC.
+MI     | Marshall & Ilsley | NFT Ltd
+MMI    | Motorola Mobility | Marcus & Millichap, Inc.
+OI     | Owens-Illinois | O-I Glass, Inc. /DE/
+ORLY   | O'Reilly Automotive | O REILLY AUTOMOTIVE INC
+POM    | Pepco Holdings | POMDOCTOR Ltd
+S      | Sprint Nextel | SentinelOne, Inc.
+SATS   | EchoStar | Strive, Inc.
+SCHW   | Charles Schwab Corporation | SCHWAB CHARLES CORP
+SE     | Spectra Energy | Sea Ltd
+SJM    | J.M. Smucker Company (The) | J M SMUCKER Co
+SLB    | Schlumberger | SLB LIMITED/NV
+SLE    | Sara Lee Corporation | Super League Enterprise, Inc.
+STI    | SunTrust Banks | Solidion Technology Inc.
+SUN    | SunAmerica | Sunoco LP
+TE     | TECO Energy | T1 Energy Inc.
+TROW   | T. Rowe Price | PRICE T ROWE GROUP INC
+TTD    | The Trade Desk | Trade Desk, Inc.
+VFC    | VF Corporation | V F CORP
+WAB    | Wabtec | WESTINGHOUSE AIR BRAKE TECHNOLOGIES CORP
+WRB    | W. R. Berkley Corporation | BERKLEY W R CORP
+no CIK: ABMD ACE ADS AET AGN AKS ALTR ALXN ANDV ANR ANSS APOL ARG ARNC ATVI AVB AVP AYE BBBY BCR BHI BIG BMC BMS BRCM BXLT CA CAM CBE CCE CDAY CELG CEPH CERN CFN CHK CMA CMCSK COL COV CPGX CSC CSRA CTLT CTRA CTXS CVC CVH CXO DAY DF DFS DISCA DISCK DISH DLPH DNB DNR DO DPS DRE DTV DWDP EA EMC ENDP ESRX ESV ETFC EVHC FB FBHS FDO FII FL FLIR FLT FRC FRX FTR GAS GENZ GGP GMCR GPS GR HAR HBI HCBK HES HFC HNZ HOLX HOT HSP IGT INFO IPG JCP JDSU JNPR JNS JOY JOYG JWN K KFT KORS KRFT KSU KVUE LEG LLL LLTC LM LO LSI LVLT LXK MEE MFE MHS MJN MNK MOLX MON MRO MWW MXIM NBL NFX NLSN NOVL NSM NVLS NYX PBCT PCL PCP PCS PDCO PETM PGN PLL PXD QEP QRVO RAI RDC RE RHT RRD RSH RTN SAI SBNY SCG SEE SHLD SIAL SIVB SNI SPLS SRCL STJ SVU SWN SWY TEG TFCF TFCFA TGNA TIE TIF TLAB TSS TWC TWTR TWX TYC UA-C VAR VIAB WBA WBD WCG WFM WFR WIN WLTW WPX WYN X XEC XL XLNX YHOO
+
+# Read by hand: another company now (left out by --exclude): APC BEAM CPWR DV EP LIFE MI MMI POM S SATS SE SLE STI SUN TE.
+# The other 29 are the same company named differently (AN's 'Amoco' is an old row's name; GE, FTI, CNX renamed).
+
+$ uv run python -I scripts/sec_8k_times.py fetch data/cache/earnings/sec500 --members data/seed/sp500.csv
+196 tickers with no filer number (printed and skipped)
+
+$ uv run python -I scripts/nasdaq_earnings.py seed data/cache/earnings/nasdaq data/cache/earnings/sec500 --members data/seed/sp500.csv --out data/seed/earnings_sp500.csv --first 2011-01-03 --exclude APC,BEAM,CPWR,DV,EP,LIFE,MI,MMI,POM,S,SATS,SE,SLE,STI,SUN,TE
+wrote 24298 reports to data/seed/earnings_sp500.csv: above 16602, as expected 3827, below 3869
+left out: another company now 178, no 8-K 960, no kind 2092
+# 598 companies. Shares: above 68.3%, as expected 15.8%, below 15.9% (step 31's 72.3, 16.1, 11.6).
+
+$ uv run python -I scripts/nasdaq_earnings.py seed data/cache/earnings/nasdaq data/cache/earnings/sec   # step 31's
+wrote 2092 reports to data/seed/earnings.csv: above 1513, as expected 337, below 242   (git diff: none)
+
+# Step 31's Dow reports against the new seed (a one-off script: each Dow report from 2011 whose
+# company was an S&P 500 member within a day of it, looked up by ticker and day):
+Dow reports from 2011 by S&P 500 members: 1775; same kind and minute 1775; differ 0 (0.0%)
+
+# After the four dates were fixed, the members re-run (the seed unchanged by it):
+$ uv run python -I scripts/sp500_additions.py members data/cache/sp500
+today 503; on 2011-01-03 509; 349 changes
+2011 508 509
+2012 508 508
+2013 505 507
+2014 505 507
+2015 507 510
+2016 509 509
+2017 508 509
+2018 507 508
+2019 507 509
+2020 507 509
+2021 506 508
+2022 504 507
+2023 504 505
+2024 504 506
+2025 504 505
+2026 503 504
+
+# The Dow comparison on the spec's own rule, a member on the report's day (not within a day):
+Dow reports from 2011 by S&P 500 members: 1775; same kind and minute 1775; differ 0 (0.0%)
+# The comparison script (the strict form tests only d = 0):
+    import csv
+    import sys
+    from datetime import date, timedelta
+    
+    dow_seed, new_seed, members_file = sys.argv[1:4]
+    changes = [
+        (date.fromisoformat(r["day"]), r["ticker"], r["change"])
+        for r in csv.DictReader(open(members_file))
+    ]
+    
+    
+    def member(ticker: str, day: date) -> bool:
+        held = False
+        for d, t, c in changes:
+            if d > day:
+                break
+            if t == ticker:
+                held = c == "in"
+        return held
+    
+    
+    new = {(r["ticker"], r["day"]): r for r in csv.DictReader(open(new_seed))}
+    compared = same = 0
+    diffs = []
+    for r in csv.DictReader(open(dow_seed)):
+        day = date.fromisoformat(r["day"])
+        if day < date(2011, 1, 3):
+            continue
+        if not any(member(r["ticker"], day + timedelta(d)) for d in (-1, 0, 1)):
+            continue
+        compared += 1
+        other = new.get((r["ticker"], r["day"]))
+        if other and (other["time"], other["kind"]) == (r["time"], r["kind"]):
+            same += 1
+        else:
+            got = (other["time"], other["kind"]) if other else "missing"
+            diffs.append(f"{r['day']} {r['ticker']} {r['time']} {r['kind']} -> {got}")
+    print(f"Dow reports from 2011 by S&P 500 members: {compared}; same kind and minute {same}; "
+          f"differ {len(diffs)} ({100 * len(diffs) / max(compared, 1):.1f}%)")
+    for line in diffs:
+        print(line)
+
+# 196 tickers with no filer number by sec_8k_times, 197 by names500: names500 does not add
+# sec_8k_times' UNLISTED (Walgreens, WBA, 1618921).
+
+# The 2,092 no kind: an independent recount of the members' rows with no numeric surprise, by its
+# cause (2,110: the seed counts the 16 excluded tickers' rows first as another company now):
+# members from data/seed/sp500.csv
+members' rows with no number for the surprise: 2110 {'eps equals forecast': 1802, 'no forecast': 186, 'other': 68, 'no eps': 54}
+2011-01-18 SCHW eps $0.10 forecast $0.10 surprise 'N/A'
+2011-01-18 FAST eps $0.54 forecast  surprise 'N/A'
+2011-01-20 LUV eps $0.16 forecast $0.16 surprise 'N/A'
+2011-01-25 JNJ eps $1.03 forecast $1.03 surprise 'N/A'
+2011-01-25 MMM eps $1.27 forecast $1.27 surprise 'N/A'
+2021-10-28 AAPL eps $1.24 forecast $1.24 surprise 'N/A'
+# members from data/seed/dow.csv
+members' rows with no number for the surprise: 95 {'eps equals forecast': 87, 'other': 3, 'no eps': 4, 'no forecast': 1}
+2011-01-25 JNJ eps $1.03 forecast $1.03 surprise 'N/A'
+2011-01-25 MMM eps $1.27 forecast $1.27 surprise 'N/A'
+2011-02-09 KO eps $0.72 forecast $0.72 surprise 'N/A'
+2011-04-20 T eps $0.57 forecast $0.57 surprise 'N/A'
+2011-04-28 MSFT eps $0.56 forecast $0.56 surprise 'N/A'
+2021-10-28 AAPL eps $1.24 forecast $1.24 surprise 'N/A'
+
+# Steps 1 and 2's tests (the seed tests, the earnings500 flow, load-prices --seed and
+# company_tickers() unchanged) in the full gate, as just check runs it:
+$ ruff check; ruff format --check; mypy src; pytest -q
+All checks passed!
+57 files already formatted
+Success: no issues found in 11 source files
+711 passed in 541.10s (0:09:01)

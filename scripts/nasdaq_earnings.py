@@ -7,8 +7,12 @@ REFETCH_DAYS of today, which Nasdaq may still be filling (docs/steps/earnings-cu
 from the saved pages, data/seed/dow.csv and the filing indexes `scripts/sec_8k_times.py` saved:
 each member's report with a kind and an 8-K with Item 2.02, and prints the reports left out.
 
+With `--members FILE --out FILE --first DAY` (step 36, docs/steps/earnings-sp500.md) `seed` keeps
+another index's members from DAY and writes FILE; a member with no filing index saved is *no 8-K*;
+`--exclude T1,T2` leaves those tickers out as *another company now*.
+
 Usage: uv run python -I scripts/nasdaq_earnings.py fetch DIR [LAST]
-       uv run python -I scripts/nasdaq_earnings.py seed DIR SEC_DIR [LAST]
+       uv run python -I scripts/nasdaq_earnings.py seed DIR SEC_DIR [LAST] [--members FILE --out FILE --first DAY]
 """
 
 import csv
@@ -31,8 +35,8 @@ NEW_YORK = ZoneInfo("America/New_York")
 BAR = 2.0
 
 
-def weekdays(last: date = LAST) -> list[date]:
-    days, day = [], FIRST
+def weekdays(last: date = LAST, first: date = FIRST) -> list[date]:
+    days, day = [], first
     while day <= last:
         if day.weekday() < 5:
             days.append(day)
@@ -99,19 +103,27 @@ def nearest(day: date, stamps: list[datetime]) -> datetime | None:
     return min(near, key=lambda s: (abs((s.astimezone(NEW_YORK).date() - day).days), s))
 
 
-def filings(sec: Path) -> dict[str, list[datetime]]:
+def symbol(ticker: str) -> str:
+    """Nasdaq's symbol as the seeds write it, Yahoo's way (BRK.B and BRK/B as BRK-B)."""
+    return ticker.replace(".", "-").replace("/", "-")
+
+
+def filings(sec: Path, members_file: Path = Path("data/seed/dow.csv")) -> dict[str, list[datetime]]:
     """Each member's 8-Ks with Item 2.02, by its symbol, as the SEC accepted them (UTC)."""
     sys.path.insert(0, str(Path(__file__).parent))
     from sec_8k_times import MORE_FILERS, UNLISTED
 
     listing = json.loads((sec / "company_tickers.json").read_text())
     ciks = UNLISTED | {row["ticker"]: int(row["cik_str"]) for row in listing.values()}
-    with Path("data/seed/dow.csv").open(newline="") as handle:
+    with members_file.open(newline="") as handle:
         tickers = sorted({row["ticker"] for row in csv.DictReader(handle)})
     stamps: dict[str, list[datetime]] = {}
     for ticker in tickers:
         found: list[datetime] = []
-        for cik in [ciks[ticker], *MORE_FILERS.get(ticker, [])]:
+        filers = [ciks[ticker], *MORE_FILERS.get(ticker, [])] if ticker in ciks else []
+        for cik in filers:
+            if not (sec / f"CIK{cik:010d}.json").exists():
+                continue
             index = json.loads((sec / f"CIK{cik:010d}.json").read_text())
             parts = [index["filings"]["recent"]]
             parts += [json.loads((sec / f["name"]).read_text()) for f in index["filings"]["files"]]
@@ -124,13 +136,21 @@ def filings(sec: Path) -> dict[str, list[datetime]]:
     return stamps
 
 
-def seed(folder: Path, sec: Path, last: date = LAST) -> None:
-    with Path("data/seed/dow.csv").open(newline="") as handle:
+def seed(
+    folder: Path,
+    sec: Path,
+    last: date = LAST,
+    members_file: Path = Path("data/seed/dow.csv"),
+    out: Path = SEED,
+    first: date = FIRST,
+    exclude: frozenset[str] = frozenset(),
+) -> None:
+    with members_file.open(newline="") as handle:
         changes = list(csv.DictReader(handle))
-    stamps = filings(sec)
+    stamps = filings(sec, members_file)
     rows, left = [], Counter()
     missing: list[str] = []
-    for day in weekdays(last):
+    for day in weekdays(last, first):
         path = folder / f"{day.isoformat()}.json"
         if not path.exists():
             left["day not fetched"] += 1
@@ -138,14 +158,17 @@ def seed(folder: Path, sec: Path, last: date = LAST) -> None:
         page = json.loads(path.read_text())
         members = members_on(day, changes)
         for row in (page.get("data") or {}).get("rows") or []:
-            ticker = row["symbol"]
+            ticker = symbol(row["symbol"])
             if ticker not in members:
+                continue
+            if ticker in exclude:
+                left["another company now"] += 1
                 continue
             k = kind(row.get("surprise", ""))
             if k is None:
                 left["no kind"] += 1
                 continue
-            at = nearest(day, stamps[ticker])
+            at = nearest(day, stamps.get(ticker, []))
             if at is None:
                 left["no 8-K"] += 1
                 missing.append(f"{day} {ticker}")
@@ -162,13 +185,13 @@ def seed(folder: Path, sec: Path, last: date = LAST) -> None:
                 )
             )
     rows = sorted(set(rows))
-    with SEED.open("w", newline="", encoding="utf-8") as handle:
+    with out.open("w", newline="", encoding="utf-8") as handle:
         writer = csv.writer(handle, lineterminator="\n")
         writer.writerow(["day", "time", "ticker", "eps", "forecast", "surprise", "kind"])
         writer.writerows(rows)
     kinds = Counter(r[6] for r in rows)
     print(
-        f"wrote {len(rows)} reports to {SEED}: "
+        f"wrote {len(rows)} reports to {out}: "
         + ", ".join(f"{k} {n}" for k, n in sorted(kinds.items()))
     )
     print("left out: " + ", ".join(f"{why} {n}" for why, n in sorted(left.items())))
@@ -180,4 +203,21 @@ if __name__ == "__main__":
     if command == "fetch":
         fetch(folder, *(date.fromisoformat(a) for a in sys.argv[3:4]))
     elif command == "seed":
-        seed(folder, Path(sys.argv[3]), *(date.fromisoformat(a) for a in sys.argv[4:5]))
+        args, options = sys.argv[3:], {}
+        while "--" in "".join(a[:2] for a in args):
+            i = next(i for i, a in enumerate(args) if a.startswith("--"))
+            options[args[i][2:]] = args[i + 1]
+            del args[i : i + 2]
+        seed(
+            folder,
+            Path(args[0]),
+            *(date.fromisoformat(a) for a in args[1:2]),
+            **({"members_file": Path(options["members"])} if "members" in options else {}),
+            **({"out": Path(options["out"])} if "out" in options else {}),
+            **({"first": date.fromisoformat(options["first"])} if "first" in options else {}),
+            **(
+                {"exclude": frozenset(options["exclude"].split(","))}
+                if "exclude" in options
+                else {}
+            ),
+        )
