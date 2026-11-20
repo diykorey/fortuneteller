@@ -58,6 +58,17 @@ a { color: inherit; }
 verdicts for every market; every link's record on the replay. The numbers are the ones
 <a href="https://github.com/diykorey/fortuneteller">the commands</a> print.</p>
 
+<h2 id="ask-the-fortune-teller">Ask the fortune teller</h2>
+<p class="muted"><strong>Entertainment, not financial advice.</strong> Pick a kind of event and see
+what each market did after every past one, on the day and over the spans after it, beside what it
+did over every span of its history. An answer is given only when the counts are unlikely by chance;
+most read <em>can't say</em>. Each answer was also replayed, every event answered from the ones
+before it; only a replay that held is marked.</p>
+<p><label for="ask-kind">Kind of event </label><select id="ask-kind"></select></p>
+<p class="muted" id="ask-about"></p>
+<div id="ask"></div>
+<ul class="muted" id="ask-left-out"></ul>
+
 <h2>The week ahead</h2>
 <p class="muted"><strong>Entertainment, not financial advice. Nothing is called until the number
 lands; this is the rule it will follow.</strong> For each release in the next seven days: what
@@ -74,16 +85,6 @@ day's.</p>
 <div class="wrap"><table id="watch"></table></div>
 <p class="muted" id="watch-chance"></p>
 
-<h2 id="ask-the-fortune-teller">Ask the fortune teller</h2>
-<p class="muted"><strong>Entertainment, not financial advice.</strong> Pick a kind of event and see
-what each market did after every past one, on the day and over the spans after it, beside what it
-did over every span of its history. An answer is given only when the counts are unlikely by chance;
-most read <em>can't say</em>. Each answer was also replayed, every event answered from the ones
-before it; only a replay that held is marked.</p>
-<p><label for="ask-kind">Kind of event </label><select id="ask-kind"></select></p>
-<p class="muted" id="ask-about"></p>
-<div id="ask"></div>
-<ul class="muted" id="ask-left-out"></ul>
 
 <h2>The calls</h2>
 <p class="muted">Each release's lines as logged that morning: the direction called, the link's record
@@ -77393,7 +77394,15 @@ record is shown, losses included. A handle is dropped from the page on request; 
       box.appendChild(wrap);
     });
   };
-  askSelect.addEventListener('change', showAsk);
+  // A link can pick the kind: #ask/FLOW/KIND, as the address shows once a kind is picked.
+  const asked = decodeURIComponent(location.hash).match(/^#ask\/([^/]+)\/(.+)$/);
+  if (asked && [...askSelect.options].some((o) => o.value === asked[1] + '|' + asked[2])) {
+    askSelect.value = asked[1] + '|' + asked[2];
+  }
+  askSelect.addEventListener('change', () => {
+    history.replaceState(null, '', '#ask/' + askSelect.value.split('|').map(encodeURIComponent).join('/'));
+    showAsk();
+  });
   showAsk();
   (data.ask_left_out || []).forEach((l) => {
     byId('ask-left-out').appendChild(el('li', 'Not shown: ' + l.noun + ', because ' + l.reason + '.'));

@@ -125,6 +125,10 @@ repository.
   (`google-chrome --headless=new --window-size=1200,627 --screenshot`). The card quotes one cell
   the page shows, a miss's day from [step 31](earnings.md#results), as of 2026-11-19. It changes
   nothing the counter counts. A test reads the tags and the image's size.
+- **The page's order** (*amended 2026-11-20, before the first post*): *Ask the fortune teller*
+  comes first, before the week ahead, whose rows are mostly *silent*; and an address ending
+  `#ask/FLOW/KIND` (`#ask/earnings/below`) opens on that kind, the address following the reader's
+  pick, so a post can link to the answer it quotes. A test reads the order and the script.
 - **Command:** `weekly-post` in `__main__.py`, reading `study.read_calls`; it writes nothing. The
   owner or the session adds the week's row to the weeks file. Tests in `tests/test_scoreboard.py`.
 - **File:** `docs/steps/be-seen-weeks.csv`: `week_start, unique_visitors, crosses_month, posted,
