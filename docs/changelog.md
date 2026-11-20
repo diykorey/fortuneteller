@@ -6,7 +6,7 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-11-20 | Step 29 results: the published page answers the 12 kinds of OPEC+, the BoE, the BoJ, violent acts, hacks, landfalls and floods, 1,116 cells each equal to `follows`; the expected outcome right; seven holds on the page with step 32's earnings | PR #PR |
+| 2026-11-20 | Step 29 results: the published page answers the 12 kinds of OPEC+, the BoE, the BoJ, violent acts, hacks, landfalls and floods, 1,116 cells each equal to `follows`; the expected outcome right; seven holds on the page with step 32's earnings | PR #375 |
 | 2026-11-19 | Step 32, step 1: the page's ask answers the earnings (9 cells, three holds), every cell carries the placebo's mark (3 marked), `load-prices` loads the companies' closes | PR #370 |
 | 2026-11-19 | Step 31 results: from the close before, a Dow member's shares fall behind the S&P 500 after a miss or an in-line report and run ahead over the week and month after a beat; a miss's day and week and an in-line report's day hold walk-forward; the expected outcome wrong on six counts, the in-line reports above all | PR #368 |
 | 2026-11-19 | `follows`' walk-forward over a company's reports builds each chance one event at a time: `follows --event earnings` 11 min 16 s → 59 s, every output byte-identical (both runs of the earnings and the CEO flow compared) | PR #367 |
