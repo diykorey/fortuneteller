@@ -37,7 +37,8 @@ At the end: both seeds carry the exact meets as *as expected*, and `follows --ev
 *Written 2026-11-20. Seen before: the two counts above (step 36's Results) and the cells of steps
 31 and 36; no exact meet's move. Amended the same day after the goldfish, before any price was
 read, with the seeds already rebuilt (step 1): the 87 is the Dow's since 2011, its seed runs from
-2008; the cells below the first bullet list were added.*
+2008, and the rebuilt seeds' counts (119 Dow, 87 of them since 2011; 1,685 S&P 500) were known
+when it was written; the cells below the first bullet list were added.*
 
 - Steps 31 and 36's bars, unchanged: under 10 *too few*; an answer at p < 0.01 against the
   company's own base; a link *holds* at 60% right of at least 30 graded walk-forward, 10 points
@@ -85,25 +86,27 @@ evidence](exact-meet-steps.txt)).*
 **In plain words:** a report whose EPS equals the forecast to the cent now counts as *as
 expected*: 119 more of the Dow's (87 since 2011) and 1,685 more of the S&P 500 members'. With
 them, a Dow company's in-line report is still followed by its shares trailing the index on the
-day, and the call holds more firmly: right 229 times of 368 graded walk-forward (62%, was 60.4%).
-The S&P 500's in-line cells keep their answers and still do not hold. One cell moved: the Dow's
+day, and the call still holds: right 229 times of 368 graded walk-forward (62%; step 31 had
+60.4% of 303, on an older store).
+The S&P 500's in-line cells keep their answers and still do not hold. One answer changed: the Dow's
 in-line week is now marked *the period* by the placebo, so it is no longer an answer.
 
 | | Expected | Found |
 | --- | --- | --- |
 | Rows added, Dow | 87 since 2011, ±5% | 87 since 2011 (119 from 2008), none lost — right |
-| Rows added, S&P 500 | 1,802 ±5% | 1,685, none lost — **wrong**: the 1,802 was counted before the seed's own filters (no 8-K, another company now) |
+| Rows added, S&P 500 | 1,802 ±5% | 1,685, none lost — **wrong**: the 1,802 was counted from the pages before the seed's own filters (no 8-K, another company now); the gap of 117 is not broken down by filter |
 | `follows`' header | *as expected* up by the rows added | Dow 337 → 456, S&P 500 3,827 → 5,512 — right |
 | Dow *as expected*, day | *down*, holds at 60% or more | *down*, 131/43/277 of 451, chance below 0.0001; holds, 229 of 368 (62.2%) — right |
 | Dow *as expected*, week | *down*, doesn't hold | *down* at below 0.0001, but marked *the period*; doesn't hold (212 of 387) — **wrong** |
 | Dow *as expected*, month | *down*, doesn't hold | *down*, 0.0003; doesn't hold (138 of 299) — right |
 | S&P 500 *as expected*, day | *down*, doesn't hold | *down*, 2,021/535/2,927 of 5,483; doesn't hold (2,902 of 5,446, 53%) — right |
-| S&P 500 *as expected*, week and month | *down*; month *the period*; none holds | so — right |
+| S&P 500 *as expected*, week and month | *down*; month *the period*; none holds | week *down*, 1,859/964/2,635, doesn't hold (2,612 of 5,423); month *down* marked *the period*, doesn't hold (2,081 of 5,008) — right |
 | From the reaction close | every *as expected* cell *can't say* | both flows' three *can't say* (S&P 500 day 0.41, week 0.36, month 0.011) — right |
-| *Above* and *below* cells | byte for byte unchanged | unchanged in both flows and both runs — right |
+| *Above* and *below* cells | byte for byte unchanged | **wrong** as printed: the Dow's *above* day (both runs) and month (from the reaction close) count one report more than step 31's (1,499 against 1,498). The seed's *above* and *below* rows are unchanged (the diff adds *as expected* rows only); step 31's store lacked Nvidia's 2026-11-18 reaction close, this one has it. The S&P 500's cells and the Dow's *below* are identical |
 | Answers beyond these ≤ chance line + 2 | | none new — right |
 | Every other flow's `follows` | unchanged, both runs | 16 flows, both runs, `cmp` identical — right |
 
-- **The page:** its *Ask* answers for a Dow in-line report take the new rows when merged: the day
-  stays *down* and holding, the week loses its answer to *the period*.
+- **The page:** its *Ask* answers for a Dow in-line report take the new rows once merged; by the
+  cells above, the day stays *down* and holding and the week turns to *the period* (not run on
+  the page here). The test of step 1 and the full gate pass in CI.
 - **Precision's** exact-meet row is removed: the gap is closed.
