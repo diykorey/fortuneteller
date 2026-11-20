@@ -109,6 +109,7 @@ def test_seed_dir_has_no_unexpected_csvs() -> None:
         "sp500_additions.csv",
         "sp500.csv",
         "earnings_sp500.csv",
+        "stock_splits.csv",
         "boe-changes.csv",
         "fomc_sentiment_dictionary.csv",
     }
@@ -600,3 +601,34 @@ def test_s_p_500_earnings_rows_are_members_reports_with_their_kind() -> None:
         )
         for row in sample
     )
+
+
+def test_stock_splits_are_members_forward_splits_announced_ahead_in_two_kinds() -> None:
+    # given the committed splits and the members' changes
+    with (settings.seed_dir / "stock_splits.csv").open(newline="", encoding="utf-8") as handle:
+        rows = list(csv.DictReader(handle))
+    changes = _members("sp500.csv")
+
+    def member(ticker: str, day: date) -> bool:
+        held = False
+        for d, t, c in changes:
+            if d <= day and t == ticker:
+                held = c == "in"
+        return held
+
+    # when each row's ratio, lead and company are read
+    def ratio(text: str) -> tuple[int, int]:
+        num, den = text.split("-for-")
+        return int(num), int(den)
+
+    # then every split is forward, announced 1 to 365 days ahead by a member, of the two kinds,
+    # each row an accession; one row a company and split day
+    assert all(ratio(r["ratio"])[0] > ratio(r["ratio"])[1] for r in rows)
+    assert all(
+        1 <= (date.fromisoformat(r["split_day"]) - date.fromisoformat(r["day"])).days <= 366
+        for r in rows
+    )
+    assert all(member(r["ticker"], date.fromisoformat(r["day"])) for r in rows)
+    assert {r["kind"] for r in rows} == {"alone", "with a report"}
+    assert all(re.fullmatch(r"\d{10}-\d{2}-\d{6}", r["accession"]) for r in rows)
+    assert len({(r["ticker"], r["split_day"]) for r in rows}) == len(rows)
