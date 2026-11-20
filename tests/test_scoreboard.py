@@ -488,3 +488,16 @@ def test_the_page_carries_a_link_preview_whose_image_is_published_beside_it() ->
     assert head[:8] == b"\x89PNG\r\n\x1a\n"
     assert (int.from_bytes(head[16:20]), int.from_bytes(head[20:24])) == (1200, 627)
     assert "%" not in tags["og:description"] + tags["description"]
+
+
+def test_the_page_asks_first_and_a_link_can_pick_the_kind() -> None:
+    # given the page's template
+    page = (Path(cli.__file__).parent / "scoreboard.html").read_text()
+
+    # when its sections and its script are read
+    ask = page.index('<h2 id="ask-the-fortune-teller">')
+
+    # then the ask comes before the week ahead, and #ask/FLOW/KIND picks a kind and is kept
+    assert ask < page.index("<h2>The week ahead</h2>")
+    assert "#ask\\/([^/]+)\\/(.+)$" in page
+    assert "history.replaceState(null, '', '#ask/'" in page
