@@ -85,6 +85,8 @@ Terms are grouped by what they are about, alphabetical within each group.
   Alcoa's 16 reports before Howmet's closes start (2016-11-01) is counted (the owner, 2026-11-20).
 - **HICP** (Harmonised Index of Consumer Prices) — the euro area's inflation measure, the
   counterpart of US CPI, published by **Eurostat**.
+- **Index effect** — a company's shares rising against the index when it is announced to join
+  it, as index funds will have to buy them ([S&P 500 additions](steps/sp500-additions.md)).
 - **Inter-meeting (unscheduled) decision** — a Fed rate change made outside the published meeting
   calendar, usually in a crisis (2001, 2008, March 2020). Stored with `scheduled = false`.
 - **Jobless claims (initial claims)** — the weekly count of new unemployment-insurance filings,
@@ -425,6 +427,8 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **Crumb** — the token Yahoo's `quoteSummary` asks for beside a cookie from `fc.yahoo.com`, got
   from `/v1/test/getcrumb`; the chart endpoint the prices come from needs neither
   ([a same-day source](steps/earnings-same-day.md)).
+- **Effective day** — the day an index change takes effect, after S&P announced it, usually a week
+  before ([S&P 500 additions](steps/sp500-additions.md)).
 - **Effect size** — how much an instrument moves per unit of event, the core number the whole system
   is built to estimate. Here: **`mag_per_sd`**, percent moved per one standard deviation of
   surprise.

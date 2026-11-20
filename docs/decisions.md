@@ -11,6 +11,16 @@ amended there with a date.
 Each entry: **what** was decided, **why**, what it **retires**, and **where** the detail is. *By the
 owner* marks a choice the owner made over another on the table.
 
+## 2026-11-20: Four more kinds, by the owner
+
+- **What:** asked which kind phase 5 measures next, the owner answered all four offered: S&P 500
+  additions (step 35), earnings beyond the Dow, stock splits, and a CEO's conduct with no
+  departure; one step each, in that order.
+- **Why:** phase 5 goes on (the answers above); the four were the candidates with a free dated
+  record or a known gap.
+- **Retires:** nothing.
+- **Where:** [roadmap](roadmap.md), [step 35](steps/sp500-additions.md).
+
 ## 2026-11-20: The owner's answers to the zoom-out
 
 - **What:** four answers, given the same day.

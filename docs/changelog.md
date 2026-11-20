@@ -6,6 +6,7 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-20 | Step 35: S&P 500 additions, 191 from 2007, 143 kept; the day *up* (85 of 135 that moved) but not holding walk-forward; the spec goldfish-reviewed | PR #387 |
 | 2026-11-20 | Step 34, step 2 set up: two members' reports to 2026-12-31, so the speed's window runs to the gate; the asks from the crontab | PR #386 |
 | 2026-11-20 | Step 34, step 1: Yahoo's earnings kind is Nasdaq's on 102 of 110 reports (92.7%); its EPS differs on 20 | PR #385 |
 | 2026-11-20 | Step 34 spec: a same-day source for earnings, Yahoo measured against Nasdaq before any call | PR #384 |

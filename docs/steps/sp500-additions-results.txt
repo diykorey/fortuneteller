@@ -1,0 +1,121 @@
+# Step 35, step 3: S&P 500 additions measured (docs/steps/sp500-additions.md), 2026-11-20 Kyiv.
+# A copy of the store of 2026-11-20 11:30, the 191 additions loaded, the companies' closes loaded:
+
+$ fortuneteller load-prices --companies
+224 of 252 companies loaded
+# The 28 that fail are the 28 with no closes on Yahoo in step 1's names.
+
+$ fortuneteller follows --event additions
+follows: 191 S&P 500 additions 2007-09-24 … 2026-10-01: 191 added
+kind  span   market        n  up same down  out/hole  base up/same/down  answer          chance  placebo  walk-forward
+added day    vs S&P 500   143  85    8   50     0/39  0.35/0.33/0.32     up              0.0098  -        53: 30 right, doesn't hold
+added week   vs S&P 500   143  75   31   37     0/39  0.37/0.33/0.29     can't say       0.0107  -        4: 1 right, too few
+added month  vs S&P 500   143  60   41   42     0/39  0.41/0.33/0.26     can't say       0.3599  -        2: 0 right, too few
+by chance: about 0.1 answers on all history, 0.0 holds walk-forward
+
+$ fortuneteller follows --event additions --after
+follows: 191 S&P 500 additions 2007-09-24 … 2026-10-01: 191 added, spans from the reaction close
+kind  span   market        n  up same down  out/hole  base up/same/down  answer          chance  placebo  walk-forward
+added day    vs S&P 500   143  50   34   59     0/39  0.35/0.33/0.32     can't say       0.0904  -        1: 0 right, too few
+added week   vs S&P 500   143  47   49   47     0/39  0.37/0.33/0.29     can't say       0.1399  -        62: 21 right, doesn't hold
+added month  vs S&P 500   143  45   52   46     0/39  0.41/0.33/0.26     can't say       0.0152  -        45: 9 right, doesn't hold
+by chance: about 0.1 answers on all history, 0.0 holds walk-forward
+
+# The 191: 143 kept, 39 holes (28 no closes on Yahoo, 11 fewer than 504 closes before), 9 in
+# neither column, each announced before its ticker's first close on Yahoo: ADT 2012 (Yahoo's
+# from 2018, the new ADT), ABBV 2012-12-20 (listed 2013-01-02), UA 2014 (from 2016), QRVO 2015
+# (from 2026-10-02), FTV 2016-06-23 (listed 07-05), SBNY 2021 (from 2024), WBD 2022 (from
+# 2026-10-05), KVUE 2023 (from 2026-10-30), VLTO 2023-09-28 (listed 10-04). With step 1's 198 and
+# 3 left out: 392.
+
+# The five by hand (step 3): the company's move less the S&P 500's (SPY / ES), close before to
+# reaction close, from the stored closes, against `study.excess_spans`' span for that day:
+#   ICE  2007-09-24 28.36 -> 09-25 30.23, SPY 1517.73 -> 1517.21: +6.62 vs +6.62 (465 closes before: a hole)
+#   HPE  2015-10-27  9.14 -> 10-28  9.46, SPY 2065.89 -> 2090.35: +2.31 vs +2.31 (7 closes before: a hole)
+#   FLT  no closes: FleetCor is Corpay (CPAY) since 2024, so its row's ticker finds nothing (a hole)
+#   PCG  2022-09-23 12.61 -> 09-26 12.75, SPY 3693.23 -> 3655.04: +2.14 vs +2.14
+#   TWLO 2026-10-01 301.27 -> 10-02 294.58, SPY 7666.45 -> 7722.72: -2.95 vs -2.95
+# Within 0.1 point on all four with closes.
+
+$ fortuneteller raw-move --event additions
+instrument   ADD days  median ADD  median other  ratio  p       verdict
+SPY / ES          131       0.48%         0.50%   0.96  0.6193  doesn't
+UST10Y / ZN       131      2.8 bp        3.2 bp   0.87  0.8988  doesn't
+DXY               131       0.25%         0.25%   1.00  0.5022  doesn't
+GC / XAU          131       0.50%         0.55%   0.91  0.7845  doesn't
+VIX               131       3.78%         3.78%   1.00  0.4968  doesn't
+DAX               128       0.60%         0.61%   0.99  0.5248  doesn't
+SX5E              128       0.59%         0.62%   0.96  0.6267  doesn't
+BRN               130       1.03%         1.13%   0.90  0.7922  doesn't
+EURUSD            131       0.26%         0.30%   0.88  0.8563  doesn't
+COMP              131       0.56%         0.65%   0.86  0.8675  doesn't
+UST5Y / ZF        131      2.6 bp        3.0 bp   0.87  0.9098  doesn't
+UKX               128       0.48%         0.48%   0.99  0.5284  doesn't
+SXXP              128       0.48%         0.52%   0.94  0.7166  doesn't
+BTC               105       1.82%         1.69%   1.08  0.3034  doesn't
+ITA               131       0.59%         0.70%   0.84  0.9486  doesn't
+XLE               131       0.77%         0.90%   0.85  0.9168  doesn't
+CORN              130       0.66%         0.72%   0.93  0.7769  doesn't
+WEAT              128       0.73%         0.98%   0.75  0.9853  doesn't
+SOYB              128       0.63%         0.62%   1.02  0.4387  doesn't
+UGA               130       1.08%         1.15%   0.93  0.7596  doesn't
+UNG               131       1.53%         1.80%   0.85  0.9255  doesn't
+XLU               131       0.42%         0.59%   0.72  0.9982  doesn't
+ITB               131       0.89%         1.08%   0.82  0.9367  doesn't
+KC                131       1.12%         1.26%   0.89  0.8418  doesn't
+T5YIE             131      2.0 bp        2.0 bp   1.00  0.9974  doesn't
+GBPUSD            131       0.24%         0.30%   0.80  0.9754  doesn't
+USDJPY            131       0.25%         0.31%   0.82  0.9475  doesn't
+NKY               129       0.63%         0.72%   0.87  0.8832  doesn't
+ETH                62       2.36%         2.39%   0.99  0.5346  doesn't
+COIN               26       1.49%         2.95%   0.51  0.9956  doesn't
+ALL               131       0.55%         0.79%   0.70  0.9983  doesn't
+
+by era: ratio (ADD days)
+instrument   1970-1989    1990-2007    2008-2019    2020-now
+SPY / ES     —            0.05 (1)     1.04 (95)    0.86 (35)
+UST10Y / ZN  —            0.30 (1)     0.87 (95)    1.00 (35)
+DXY          —            1.12 (1)     0.81 (95)    1.33 (35)
+GC / XAU     —            0.11 (1)     0.92 (95)    1.05 (35)
+VIX          —            0.77 (1)     1.19 (95)    0.65 (35)
+DAX          —            0.53 (1)     1.03 (94)    0.87 (33)
+SX5E         —            1.62 (1)     1.09 (94)    0.79 (33)
+BRN          —            1.27 (1)     1.01 (94)    0.66 (35)
+EURUSD       —            1.50 (1)     0.78 (95)    1.01 (35)
+COMP         —            0.67 (1)     1.08 (95)    0.48 (35)
+UST5Y / ZF   —            0.91 (1)     0.86 (95)    1.03 (35)
+UKX          —            1.38 (1)     0.89 (93)    1.17 (34)
+SXXP         —            1.91 (1)     0.99 (94)    0.84 (33)
+BTC          —            —            1.13 (70)    0.99 (35)
+ITA          —            1.66 (1)     0.73 (95)    1.09 (35)
+XLE          —            1.28 (1)     0.86 (95)    1.01 (35)
+CORN         —            —            0.77 (95)    1.09 (35)
+WEAT         —            —            0.95 (93)    0.62 (35)
+SOYB         —            —            1.09 (93)    0.93 (35)
+UGA          —            —            1.00 (95)    1.01 (35)
+UNG          —            0.67 (1)     0.93 (95)    1.02 (35)
+XLU          —            0.17 (1)     0.72 (95)    0.89 (35)
+ITB          —            1.75 (1)     0.75 (95)    1.14 (35)
+KC           —            0.72 (1)     0.94 (95)    0.86 (35)
+T5YIE        —            3.00 (1)     1.00 (95)    1.50 (35)
+GBPUSD       —            0.26 (1)     0.71 (95)    1.36 (35)
+USDJPY       —            0.46 (1)     0.82 (95)    0.91 (35)
+NKY          —            0.59 (1)     0.85 (95)    1.10 (33)
+ETH          —            —            0.88 (27)    1.06 (35)
+COIN         —            —            —            0.51 (26)
+ALL          —            0.07 (1)     0.64 (95)    0.70 (35)
+
+moves = ratio >= 1.10 and p < 0.01; unclear = one of the two; doesn't = neither; other = days with no CPI, NFP, Fed, RET, PCE, GDP, ECB, HICP or ISM reaction
+
+# Every other flow's follows, main's code (the spec's commit a86f707) against this branch's, on
+# the same copy of the store:
+$ for e in ceo earnings opec; do follows --event $e (main) > main-$e.txt; (branch) > new-$e.txt; cmp main-$e.txt new-$e.txt; done
+ceo same (6 lines)
+earnings same (12 lines)
+opec same (189 lines)
+
+# The 39 holes and 9 in neither column, by a query on the copy's daily_bars (each kept row's
+# ticker: no closes; first close after the announcement; closes on or before it):
+no closes 28
+announced before first close 9 [('ADT', '2012-09-24', '2018-01-19'), ('ABBV', '2012-12-20', '2013-01-02'), ('UA', '2014-04-24', '2016-03-23'), ('QRVO', '2015-06-09', '2026-10-02'), ('FTV', '2016-06-23', '2016-07-05'), ('SBNY', '2021-12-03', '2024-08-15'), ('WBD', '2022-04-07', '2026-10-05'), ('KVUE', '2023-08-21', '2026-10-30'), ('VLTO', '2023-09-28', '2023-10-04')]
+under 504 closes before 11

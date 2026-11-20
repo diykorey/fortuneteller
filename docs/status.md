@@ -12,9 +12,9 @@ Where the work is and what comes next: the task last finished, the tasks in prog
 
 ## Last completed
 
-Step 32: ask about earnings ([results](steps/ask-earnings.md#results)). The published page answers
-a Dow company's report above, in line with or below the consensus; all 2,988 cells equal
-`follows`, with three period marks and seven holds, as expected.
+Step 35: S&P 500 additions ([results](steps/sp500-additions.md#results)). 143 kept; the shares beat
+the index the day after the announcement 85 times of the 135 that moved, an answer at chance 0.0098 that does
+not hold walk-forward (30 of 53); the week and the month *can't say*.
 
 ## In progress
 
@@ -48,8 +48,10 @@ a Dow company's report above, in line with or below the consensus; all 2,988 cel
 
 ## Next
 
-Step 23, step 3: the first weekly post, drafted by `weekly-post` on Monday 2026-11-23 and
-published by the owner; with it step 33's first refresh.
+Monday 2026-11-23: step 23's first weekly post, drafted by `weekly-post` and published by the
+owner, and step 33's first refresh. Meanwhile step 36, earnings beyond the Dow, the second of the
+four kinds the owner chose on 2026-11-20 (then stock splits, then a CEO's conduct with no
+departure).
 
 ## Known, not yet fixed
 

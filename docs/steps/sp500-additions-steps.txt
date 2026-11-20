@@ -1,0 +1,222 @@
+# Step 35, step 1: S&P 500 additions (docs/steps/sp500-additions.md). Run 2026-11-20, Kyiv.
+# Caches in the main checkout's data/cache/sp500.
+
+$ uv run python -I scripts/sp500_additions.py fetch data/cache/sp500
+saved revision 1385951946
+
+$ uv run python -I scripts/sp500_additions.py seed data/cache/sp500
+wrote 191 additions to data/seed/sp500_additions.csv
+left out: another company now 3, no S&P release dated 1 to 40 days before 198
+# 191 + 3 + 198 = 392, the rows with a company added.
+
+$ uv run python -I scripts/sp500_additions.py names data/cache/sp500
+# ticker | the row's name | Yahoo's name now (none: no closes on Yahoo, left out at step 3 as a hole)
+AAL    | American Airlines Group | American Airlines Group Inc.
+AAP    | Advance Auto Parts | Advance Auto Parts, Inc.
+ABBV   | AbbVie | AbbVie Inc.
+ABMD   | Abiomed | none
+ACGL   | Arch Capital Group | Arch Capital Group Ltd.
+ADT    | ADT | ADT Inc.
+AJG    | Arthur J. Gallagher & Co. | Arthur J. Gallagher & Co.
+ALK    | Alaska Air Group | Alaska Air Group, Inc.
+AMCR   | Amcor | Amcor plc
+AMD    | Advanced Micro Devices | Advanced Micro Devices, Inc.
+AMG    | Affiliated Managers Group | Affiliated Managers Group, Inc.
+ANET   | Arista Networks | Arista Networks, Inc.
+APO    | Apollo Global Management | Apollo Global Management, Inc.
+ARES   | Ares Management | Ares Management Corporation
+ATO    | Atmos Energy | Atmos Energy Corporation
+AWK    | American Water Works | American Water Works Company, Inc.
+AXON   | Axon Enterprise | Axon Enterprise, Inc.
+AYI    | Acuity Brands | Acuity Inc.
+BE     | Bloom Energy | Bloom Energy Corporation
+BG     | Bunge Global | Bunge Global SA
+BHF    | Brighthouse Financial | Brighthouse Financial, Inc.
+BIO    | Bio-Rad Laboratories | Bio-Rad Laboratories, Inc.
+BLK    | BlackRock | BlackRock, Inc.
+BR     | Broadridge Financial Solutions | Broadridge Financial Solutions, Inc.
+BX     | Blackstone | Blackstone Inc.
+BXLT   | Baxalta | none
+CASY   | Casey's | Casey's General Stores, Inc.
+CCI    | Crown Castle | Crown Castle Inc.
+CDNS   | Cadence Design Systems | Cadence Design Systems, Inc.
+CDW    | CDW | CDW Corporation
+CFG    | Citizens | Citizens Financial Group, Inc.
+CHD    | Church & Dwight | Church & Dwight Co., Inc.
+CHTR   | Charter Communications | Charter Communications, Inc.
+CIEN   | Ciena | Ciena Corporation
+COIN   | Coinbase | Coinbase Global, Inc.
+COO    | The Cooper Companies | The Cooper Companies, Inc.
+COTY   | Coty | Coty Inc.
+CPGX   | Columbia Pipeline Group | none
+CPRT   | Copart | Copart, Inc.
+CPT    | Camden Property Trust | Camden Property Trust
+CRH    | CRH | CRH plc
+CRL    | Charles River Laboratories | Charles River Laboratories International, Inc.
+CSGP   | CoStar Group | CoStar Group, Inc.
+CSRA   | CSRA | Cohen & Steers Real Assets Active ETF
+CTVA   | Corteva | Corteva, Inc.
+CVC    | Cablevision | none
+CXO    | Concho Resources | none
+DASH   | DoorDash | DoorDash, Inc.
+DDOG   | Datadog | Datadog, Inc.
+DG     | Dollar General | Dollar General Corporation
+DISCK  | Discovery Communications | none
+DISH   | Dish Network | none
+DLPH   | Delphi Automotive | none
+DLR    | Digital Realty | Digital Realty Trust, Inc.
+DOW    | Dow | Dow Inc.
+DPZ    | Domino's Pizza | Domino's Pizza, Inc.
+DRE    | Duke Realty | none
+DXC    | DXC Technology | DXC Technology Company
+EME    | Emcor | EMCOR Group, Inc.
+ENDP   | Endo International | none
+ENPH   | Enphase Energy | Enphase Energy, Inc.
+EPAM   | EPAM Systems | EPAM Systems, Inc.
+EQIX   | Equinix | Equinix, Inc.
+ESV    | Ensco plc | none
+ETSY   | Etsy | Etsy, Inc.
+EVRG   | Evergy | Evergy, Inc.
+EXR    | Extra Space Storage | Extra Space Storage Inc.
+FBHS   | Fortune Brands Home & Security | none
+FERG   | Ferguson Enterprises | Ferguson Enterprises Inc.
+FICO   | Fair Isaac | Fair Isaac Corporation
+FL     | Foot Locker | none
+FLT    | FleetCor Technologies | none
+FRC    | First Republic Bank | none
+FRT    | Federal Realty Investment Trust | Federal Realty Investment Trust
+FSLR   | First Solar | First Solar, Inc.
+FTNT   | Fortinet | Fortinet, Inc.
+FTV    | Fortive Corp | Fortive Corporation
+GGP    | General Growth Properties | none
+GM     | General Motors | General Motors Company
+GOOGL  | Google | Alphabet Inc.
+GRMN   | Garmin | Garmin Ltd.
+HCA    | HCA Holdings | HCA Healthcare, Inc.
+HII    | Huntington Ingalls Industries | Huntington Ingalls Industries, Inc.
+HLT    | Hilton | Hilton Worldwide Holdings Inc.
+HOLX   | Hologic | none
+HPE    | Hewlett Packard Enterprise | Hewlett Packard Enterprise Company
+IBKR   | Interactive Brokers | Interactive Brokers Group, Inc.
+ICE    | Intercontinental Exchange | Intercontinental Exchange, Inc.
+IDXX   | Idexx Laboratories | IDEXX Laboratories, Inc.
+ILMN   | Illumina | Illumina, Inc.
+INFO   | IHS Markit | Harbor PanAgora Dynamic Large Cap Core ETF
+IPGP   | IPG Photonics | IPG Photonics Corporation
+IR     | Ingersoll Rand | Ingersoll Rand Inc.
+IT     | Gartner | Gartner, Inc.
+JBHT   | J.B. Hunt | J.B. Hunt Transport Services, Inc.
+JKHY   | Jack Henry & Associates | Jack Henry & Associates, Inc.
+KEYS   | Keysight | Keysight Technologies, Inc.
+KKR    | KKR | KKR & Co. Inc.
+KRFT   | Kraft Foods | none
+KVUE   | Kenvue | Kenvue Inc
+LDOS   | Leidos | Leidos Holdings, Inc.
+LII    | Lennox International | Lennox International Inc.
+LKQ    | LKQ Corporation | LKQ Corporation
+LNT    | Alliant Energy Corp | Alliant Energy Corporation
+LRCX   | Lam Research | Lam Research Corporation
+LULU   | Lululemon Athletica | lululemon athletica inc.
+LVLT   | Level 3 Communications | none
+LVS    | Las Vegas Sands | Las Vegas Sands Corp.
+LW     | Lamb Weston | Lamb Weston Holdings, Inc.
+LYB    | LyondellBasell | LyondellBasell Industries N.V.
+LYV    | Live Nation Entertainment | Live Nation Entertainment, Inc.
+MAA    | Mid-America Apartments | Mid-America Apartment Communities, Inc.
+MDLZ   | Mondelez | Mondelez International, Inc.
+MKTX   | MarketAxess | MarketAxess Holdings Inc.
+MLM    | Martin Marietta | Martin Marietta Materials, Inc.
+MNK    | Mallinckrodt | none
+MNST   | Monster Beverage | Monster Beverage Corporation
+MOH    | Molina Healthcare | Molina Healthcare, Inc.
+MPWR   | Monolithic Power Systems | Monolithic Power Systems, Inc.
+MRNA   | Moderna | Moderna, Inc.
+MRVL   | Marvell Technology | Marvell Technology, Inc.
+MSCI   | MSCI | MSCI Inc.
+MTCH   | Match Group | Match Group, Inc.
+MTD    | Mettler Toledo | Mettler-Toledo International Inc.
+NCLH   | Norwegian Cruise Line Holdings | Norwegian Cruise Line Holdings Ltd.
+NDSN   | Nordson Corporation | Nordson Corporation
+NLSN   | Nielsen Holdings | none
+NOW    | ServiceNow | ServiceNow, Inc.
+NVR    | NVR | NVR, Inc.
+NWSA   | 21st Century Fox | News Corporation
+NXPI   | NXP | NXP Semiconductors N.V.
+O      | Realty Income Corporation | Realty Income Corporation
+ODFL   | Old Dominion Freight Line | Old Dominion Freight Line, Inc.
+PANW   | Palo Alto Networks | Palo Alto Networks, Inc.
+PAYC   | Paycom | Paycom Software, Inc.
+PCG    | PG&E | PG&E Corporation
+PETM   | PetSmart | none
+PLTR   | Palantir Technologies | Palantir Technologies Inc.
+PODD   | Insulet | Insulet Corporation
+POOL   | Pool Corporation | Pool Corporation
+PTC    | PTC | PTC Inc.
+PYPL   | PayPal | PayPal Holdings, Inc.
+QRVO   | Qorvo | Qorvo, Inc.
+RCL    | Royal Caribbean Cruises | Royal Caribbean Cruises Ltd.
+RDDT   | Reddit | Reddit, Inc.
+RE     | Everest Re | none
+REG    | Regency Centers | Regency Centers Corporation
+RIG    | Transocean | Transocean Ltd.
+ROL    | Rollins | Rollins, Inc.
+SBAC   | SBA Communications | SBA Communications Corporation
+SBNY   | Signature Bank | Signature Bank
+SIG    | Signet Jewelers | Signet Jewelers Limited
+SMCI   | Supermicro | Super Micro Computer, Inc.
+SNDK   | Sandisk | Sandisk Corporation
+SNPS   | Synopsys | Synopsys, Inc.
+SOLV   | Solventum | Solventum Corporation
+STLD   | Steel Dynamics | Steel Dynamics, Inc.
+STX    | Seagate Technology | Seagate Technology Holdings plc
+SWKS   | Skyworks | Skyworks Solutions, Inc.
+SYF    | Synchrony Financial | Synchrony Financial
+TDG    | TransDigm Group | TransDigm Group Incorporated
+TECH   | Bio-Techne | Bio-Techne Corporation
+TFX    | Teleflex | Teleflex Incorporated
+TMUS   | T-Mobile US | T-Mobile US, Inc.
+TPL    | Texas Pacific Land Corporation | Texas Pacific Land Corporation
+TRGP   | Targa Resources | Targa Resources Corp.
+TRMB   | Trimble | Trimble Inc.
+TSLA   | Tesla | Tesla, Inc.
+TTD    | The Trade Desk | The Trade Desk, Inc.
+TTWO   | Take-Two Interactive | Take-Two Interactive Software, Inc.
+TWLO   | Twilio | Twilio Inc.
+TWTR   | Twitter | none
+UA     | Under Armour | Under Armour, Inc.
+UAL    | United Continental Holdings | United Airlines Holdings, Inc.
+UBER   | Uber | Uber Technologies, Inc.
+UDR    | UDR | UDR, Inc.
+ULTA   | Ulta Beauty | Ulta Beauty, Inc.
+URI    | United Rentals | United Rentals, Inc.
+VEEV   | Veeva Systems | Veeva Systems Inc.
+VLTO   | Veralto | Veralto Corporation
+VRSK   | Verisk Analytics | Verisk Analytics, Inc.
+VRT    | Vertiv | Vertiv Holdings Co
+VRTX   | Vertex Pharmaceuticals | Vertex Pharmaceuticals Incorporated
+VST    | Vistra | Vistra Corp.
+WAB    | Wabtec | Westinghouse Air Brake Technologies Corporation
+WBD    | Warner Bros. Discovery | Warner Bros. Discovery Inc
+WCG    | WellCare | none
+WLTW   | Willis Towers Watson | none
+WPX    | WPX Energy | none
+WRB    | W. R. Berkley Corporation | W. R. Berkley Corporation
+WST    | West Pharmaceutical Services | West Pharmaceutical Services, Inc.
+XEC    | Cimarex Energy | none
+XYZ    | Block, Inc. | Block, Inc.
+ZTS    | Zoetis | Zoetis Inc.
+# Read by hand: CSRA (now an ETF), INFO (IHS Markit; now an ETF) and NWSA (21st Century Fox; now
+# News Corp) are another company now and left out by the script. GOOGL (Google/Alphabet) and WAB
+# (Wabtec/Westinghouse Air Brake) are the same companies renamed. 28 have no closes on Yahoo.
+
+# The five by hand (seed rows 1, 50, 100, 150, 191), each against S&P's own release:
+#   ICE  2007-09-24  release PDF "New York, NY, September 24, 2007" (media.corporate-ir.net 092707.pdf)  pass
+#   HPE  2015-10-27  press.spglobal.com/2015-10-27-Blackrock-Set-to-Join-the-S-P-100-Hewlett-Packard-Enterprise-...  pass
+#   FLT  2018-06-15  release PDF "NEW YORK, June 15 2018" (spice-indices 727360)  pass
+#   PCG  2022-09-23  press.spglobal.com/2022-09-23-PG-E-and-EQT-Set-to-Join-S-P-500-...  pass
+#   TWLO 2026-10-01  press.spglobal.com/2026-10-01-Vylor-Added-to-the-S-P-500-Twilio-Set-to-Join-...  pass
+# Times: none of the five releases gives its minute (press.spglobal.com shows 00:00; the PDFs a
+# day only), so none is found before 16:00 and the stop cannot fire; the 17:15 placement rests on
+# S&P's practice of announcing after the close, written in the results.
+# Tesla: the row's release is 2020-12-11 (the day named); S&P first said on 2020-11-16, which the
+# script takes (FIRST_SAID).
