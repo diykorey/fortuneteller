@@ -46,8 +46,7 @@ a Dow company's report above, in line with or below the consensus; all 2,988 cel
 ## Next
 
 Step 23, step 3: the first weekly post, drafted by `weekly-post` on Monday 2026-11-23 and
-published by the owner; with it step 33's first refresh. Then step 34: a free same-day source of
-earnings results, by the owner's answer of 2026-11-20 ([Decisions](decisions.md)).
+published by the owner; with it step 33's first refresh. Then step 34, step 1: Yahoo's agreement with Nasdaq ([the spec](steps/earnings-same-day.md)).
 
 ## Known, not yet fixed
 

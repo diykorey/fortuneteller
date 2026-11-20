@@ -6,6 +6,7 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-20 | Step 34 spec: a same-day source for earnings, Yahoo measured against Nasdaq before any call | PR #384 |
 | 2026-11-20 | The owner's answers to the zoom-out: phase 5 goes on; the evening's score pull request merges itself once its checks pass; a same-day earnings source to be looked for; the out/hole column documented | PR #383 |
 | 2026-11-20 | The walk-forward's base grown one move at a time: the scoreboard's CPU time 7m41s → 5m08s, its output byte for byte the same | PR #382 |
 | 2026-11-20 | Step 33, step 1: step 31's scripts take the last day and fetch the recent pages again; the spec, goldfish-reviewed | PR #381 |
