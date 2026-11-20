@@ -19,7 +19,9 @@ from the close before and from the reaction close, against the rule below writte
   Asked for every one of the 820 tickers in `data/seed/sp500.csv` ([step 36](earnings-sp500.md)),
   kept from 2011 when the ratio is above 1 (a *forward split*; a reverse split is a different
   story, of a falling price). A ticker Yahoo has nothing for is counted: the kept lean towards
-  survivors, as step 36's.
+  survivors, as step 36's. *Amended 2026-11-20, before any split was counted or price read:*
+  a split's ratio has both terms 20 or under once reduced, since Yahoo writes a spin-off's price
+  adjustment as a split (Agilent's Keysight in 2014, 1398:1000).
 - **The announcement: the first 8-K naming the ratio.** The SEC's full-text search (EDGAR's, which
   covers filings from 2001) asked, per split, for the company's 8-Ks with "stock split" in the 120
   days before the split day. The event is the first whose text names the split's own ratio
@@ -27,6 +29,18 @@ from the close before and from the reaction close, against the rule below writte
   [step 31](earnings.md). An earlier 8-K that names no ratio, or another ratio, is passed over; a
   split with none is *no 8-K* and left out. A split put to shareholders more than 120 days ahead is
   *no 8-K* too: dated by the vote's 8-K it would be read late.
+  *Amended 2026-11-20 by the owner, after step 1's hand check found Fiserv's 2018 split
+  announced five days before its 8-K, and Alphabet's and Tesla's of 2022 dated by the shareholder
+  vote:* the 8-Ks of the 365 days before the split day are searched, and the event is the earliest
+  public mention naming the ratio: the filing's minute, or the date of the press release attached
+  (an exhibit 99's opening date) when that is earlier, at 20:00 New York, a time unknown as
+  [step 20](ceo-scandals.md)'s. One row a filer and split (Alphabet's two share classes, one).
+  *Amended again 2026-11-20 by the owner ("automate option 2"):* that still dated Fiserv's 2018
+  split by its late 8-K (the press release never filed) and Tesla's by the vote (its first 8-K
+  named no ratio). The script flags the splits whose 8-K is a vote's (Item 5.07), or reports an
+  earlier day than its filing with no press release dated; those 24 are dated by hand from the
+  first public news of the split, a ratio named or not (a press release, an earnings release or
+  a preliminary proxy), each source in the evidence, and kept in the script's `BY_HAND`.
 - **Members on the announcement's day,** by `sp500.csv`.
 - **The kind: alone or with a report.** Many splits are announced in the earnings release (Nvidia's
   of 2024-05-22). A split whose 8-K carries Item 2.02 is *with a report*, the rest *alone*: two
