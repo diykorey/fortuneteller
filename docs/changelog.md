@@ -6,6 +6,7 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-20 | Step 39: an exact meet (Nasdaq's `N/A`) read as *as expected*; 119 Dow and 1,685 S&P 500 reports added | PR #392 |
 | 2026-11-20 | Step 38 ended at step 1: no CEO who stayed in the members' 8-Ks; the kind stays parked | PR #391 |
 | 2026-11-20 | Step 37 results: a split announced alone, *up* on the day and holding (33 of 51); in an earnings release *can't say* | PR #390 |
 | 2026-11-20 | Step 37, steps 1 and 2: 105 S&P 500 members' forward splits from 2011, dated by their first public news (24 by hand), and the `splits` flow; the spec goldfish-reviewed; the Results to follow | PR #389 |

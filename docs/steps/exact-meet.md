@@ -76,3 +76,34 @@ read, with the seeds already rebuilt (step 1): the 87 is the Dow's since 2011, i
 
 - No new kind, no change to the ±2% bar, no change to the page's code: the page reads the store
   each evening, so its *as expected* cells take the rows once merged.
+
+## Results
+
+*Measured 2026-11-20 on a copy of the store ([evidence](exact-meet-results.txt), [step 1's
+evidence](exact-meet-steps.txt)).*
+
+**In plain words:** a report whose EPS equals the forecast to the cent now counts as *as
+expected*: 119 more of the Dow's (87 since 2011) and 1,685 more of the S&P 500 members'. With
+them, a Dow company's in-line report is still followed by its shares trailing the index on the
+day, and the call holds more firmly: right 229 times of 368 graded walk-forward (62%, was 60.4%).
+The S&P 500's in-line cells keep their answers and still do not hold. One cell moved: the Dow's
+in-line week is now marked *the period* by the placebo, so it is no longer an answer.
+
+| | Expected | Found |
+| --- | --- | --- |
+| Rows added, Dow | 87 since 2011, ±5% | 87 since 2011 (119 from 2008), none lost — right |
+| Rows added, S&P 500 | 1,802 ±5% | 1,685, none lost — **wrong**: the 1,802 was counted before the seed's own filters (no 8-K, another company now) |
+| `follows`' header | *as expected* up by the rows added | Dow 337 → 456, S&P 500 3,827 → 5,512 — right |
+| Dow *as expected*, day | *down*, holds at 60% or more | *down*, 131/43/277 of 451, chance below 0.0001; holds, 229 of 368 (62.2%) — right |
+| Dow *as expected*, week | *down*, doesn't hold | *down* at below 0.0001, but marked *the period*; doesn't hold (212 of 387) — **wrong** |
+| Dow *as expected*, month | *down*, doesn't hold | *down*, 0.0003; doesn't hold (138 of 299) — right |
+| S&P 500 *as expected*, day | *down*, doesn't hold | *down*, 2,021/535/2,927 of 5,483; doesn't hold (2,902 of 5,446, 53%) — right |
+| S&P 500 *as expected*, week and month | *down*; month *the period*; none holds | so — right |
+| From the reaction close | every *as expected* cell *can't say* | both flows' three *can't say* (S&P 500 day 0.41, week 0.36, month 0.011) — right |
+| *Above* and *below* cells | byte for byte unchanged | unchanged in both flows and both runs — right |
+| Answers beyond these ≤ chance line + 2 | | none new — right |
+| Every other flow's `follows` | unchanged, both runs | 16 flows, both runs, `cmp` identical — right |
+
+- **The page:** its *Ask* answers for a Dow in-line report take the new rows when merged: the day
+  stays *down* and holding, the week loses its answer to *the period*.
+- **Precision's** exact-meet row is removed: the gap is closed.
