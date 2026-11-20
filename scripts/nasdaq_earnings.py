@@ -1,12 +1,14 @@
 """Step 31's reports: Nasdaq's earnings calendar, one page a weekday (docs/steps/earnings.md).
 
-`fetch DIR` saves each weekday's page from 2008-01-02 to 2026-11-18 as DIR/YYYY-MM-DD.json, one
-request a second, skipping pages already saved. `seed DIR SEC_DIR` writes data/seed/earnings.csv
+`fetch DIR [LAST]` saves each weekday's page from 2008-01-02 to LAST (2026-11-18 if not given)
+as DIR/YYYY-MM-DD.json, one request a second, skipping pages already saved but those within
+REFETCH_DAYS of today, which Nasdaq may still be filling (docs/steps/earnings-current.md).
+`seed DIR SEC_DIR [LAST]` writes data/seed/earnings.csv
 from the saved pages, data/seed/dow.csv and the filing indexes `scripts/sec_8k_times.py` saved:
 each member's report with a kind and an 8-K with Item 2.02, and prints the reports left out.
 
-Usage: uv run python -I scripts/nasdaq_earnings.py fetch DIR
-       uv run python -I scripts/nasdaq_earnings.py seed DIR SEC_DIR
+Usage: uv run python -I scripts/nasdaq_earnings.py fetch DIR [LAST]
+       uv run python -I scripts/nasdaq_earnings.py seed DIR SEC_DIR [LAST]
 """
 
 import csv
@@ -20,6 +22,8 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 FIRST, LAST = date(2008, 1, 2), date(2026, 11, 18)
+# Nasdaq fills a report's EPS a day or more after it, so a page this recent is fetched again.
+REFETCH_DAYS = 21
 URL = "https://api.nasdaq.com/api/calendar/earnings?date={day}"
 HEADERS = {"User-Agent": "Mozilla/5.0", "Accept": "application/json"}
 SEED = Path("data/seed/earnings.csv")
@@ -27,21 +31,27 @@ NEW_YORK = ZoneInfo("America/New_York")
 BAR = 2.0
 
 
-def weekdays() -> list[date]:
+def weekdays(last: date = LAST) -> list[date]:
     days, day = [], FIRST
-    while day <= LAST:
+    while day <= last:
         if day.weekday() < 5:
             days.append(day)
         day += timedelta(days=1)
     return days
 
 
-def fetch(folder: Path) -> None:
+def refetched(day: date, today: date) -> bool:
+    """Whether a saved page of ``day`` is fetched again on ``today``: within REFETCH_DAYS."""
+    return (today - day).days <= REFETCH_DAYS
+
+
+def fetch(folder: Path, last: date = LAST) -> None:
     folder.mkdir(parents=True, exist_ok=True)
     failed = []
-    for day in weekdays():
+    today = date.today()
+    for day in weekdays(last):
         path = folder / f"{day.isoformat()}.json"
-        if path.exists():
+        if path.exists() and not refetched(day, today):
             continue
         request = urllib.request.Request(URL.format(day=day.isoformat()), headers=HEADERS)
         for attempt in range(3):
@@ -114,13 +124,13 @@ def filings(sec: Path) -> dict[str, list[datetime]]:
     return stamps
 
 
-def seed(folder: Path, sec: Path) -> None:
+def seed(folder: Path, sec: Path, last: date = LAST) -> None:
     with Path("data/seed/dow.csv").open(newline="") as handle:
         changes = list(csv.DictReader(handle))
     stamps = filings(sec)
     rows, left = [], Counter()
     missing: list[str] = []
-    for day in weekdays():
+    for day in weekdays(last):
         path = folder / f"{day.isoformat()}.json"
         if not path.exists():
             left["day not fetched"] += 1
@@ -168,6 +178,6 @@ def seed(folder: Path, sec: Path) -> None:
 if __name__ == "__main__":
     command, folder = sys.argv[1], Path(sys.argv[2])
     if command == "fetch":
-        fetch(folder)
+        fetch(folder, *(date.fromisoformat(a) for a in sys.argv[3:4]))
     elif command == "seed":
-        seed(folder, Path(sys.argv[3]))
+        seed(folder, Path(sys.argv[3]), *(date.fromisoformat(a) for a in sys.argv[4:5]))
