@@ -56,3 +56,24 @@ ORLY  2025-03-13 16:32 bound (8-K)          corporate.oreillyauto.com/2025/03/13
 78  MNST 2023-02-28 16:19 NY, with a report, split 2023-03-28: 8-K 02-28, split-adjusted 03-28: right
 105 SNDK 2026-10-29 16:13 NY, with a report, 8-for-1, split 2026-11-20: with fiscal Q1 results: right
 FISV 2018-02-22 (by hand); GOOG 2022-02-01 21:01 UTC (its earnings 8-K, by the 365 days); TSLA 2022-03-28: right
+
+# The final seed's run again, with its first ten 8-K documents passed over:
+159 forward splits asked; wrote 105: alone 74, with a report 31
+dated by the press release's own date, the time unknown: 14; by hand: 24
+left out: no 8-K 19, no filer number 1, not a member that day 33, the same filer's split under another ticker 1
+8-K documents passed over: another ratio 6, no ratio 81
+  no ratio: AAPL 2014-06-09 7-for-1 0001193125-14-084697 d684095dex103.htm
+  another ratio: AAPL 2014-06-09 7-for-1 0001193125-14-084697 d684095dex101.htm
+  no ratio: AFL 2018-03-19 2-for-1 0000004977-17-000118 afllong-termincentiveplane.htm
+  no ratio: ALK 2012-03-19 2-for-1 0000766421-11-000041 alkex101.htm
+  no ratio: ANET 2024-12-04 4-for-1 0001596532-24-000402 amendmenttotheamendedandre.htm
+  no ratio: ANET 2024-12-04 4-for-1 0001596532-24-000155 arista-2014planasextended2.htm
+  no ratio: AOS 2016-10-06 2-for-1 0001193125-16-529554 d172686d8k.htm
+  no ratio: APH 2014-10-10 2-for-1 0001104659-14-041219 a14-13413_1ex10d2.htm
+  no ratio: AVGO 2024-07-15 10-for-1 0001140361-24-033072 ny20032136x6_ex3-1.htm
+  no ratio: BRO 2018-03-29 2-for-1 0000079282-17-000018 exhibit101050517.htm
+
+# The 24 flagged by a one-off query on step 36's filing indexes (accession -> reportDate, items):
+# the kept 8-K a vote's (Item 5.07), or its reportDate before its filing's New York day with no
+# press release dated; the flags were then read by hand into the script's BY_HAND table, which also
+# sets their kind (with a report: an earnings release, VFC, CTSH, COO).

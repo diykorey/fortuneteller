@@ -31,16 +31,20 @@ from the close before and from the reaction close, against the rule below writte
   *no 8-K* too: dated by the vote's 8-K it would be read late.
   *Amended 2026-11-20 by the owner, after step 1's hand check found Fiserv's 2018 split
   announced five days before its 8-K, and Alphabet's and Tesla's of 2022 dated by the shareholder
-  vote:* the 8-Ks of the 365 days before the split day are searched, and the event is the earliest
+  vote, after the first seed's count had missed the *with a report* bar and before any price was
+  read:* the 8-Ks of the 365 days before the split day are searched (so a split put to
+  shareholders up to a year ahead is kept, not *no 8-K*; the 120 days above and in step 1 read
+  365), and the event is the earliest
   public mention naming the ratio: the filing's minute, or the date of the press release attached
   (an exhibit 99's opening date) when that is earlier, at 20:00 New York, a time unknown as
   [step 20](ceo-scandals.md)'s. One row a filer and split (Alphabet's two share classes, one).
   *Amended again 2026-11-20 by the owner ("automate option 2"):* that still dated Fiserv's 2018
   split by its late 8-K (the press release never filed) and Tesla's by the vote (its first 8-K
-  named no ratio). The script flags the splits whose 8-K is a vote's (Item 5.07), or reports an
+  named no ratio). A one-off query on the filing indexes flags the splits whose 8-K is a vote's (Item 5.07), or reports an
   earlier day than its filing with no press release dated; those 24 are dated by hand from the
   first public news of the split, a ratio named or not (a press release, an earnings release or
-  a preliminary proxy), each source in the evidence, and kept in the script's `BY_HAND`.
+  a preliminary proxy), each source in the evidence, and kept in the script's `BY_HAND` with
+  their kind as read (an earnings release: *with a report*).
 - **Members on the announcement's day,** by `sp500.csv`.
 - **The kind: alone or with a report.** Many splits are announced in the earnings release (Nvidia's
   of 2024-05-22). A split whose 8-K carries Item 2.02 is *with a report*, the rest *alone*: two
@@ -88,7 +92,7 @@ from the close before and from the reaction close, against the rule below writte
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | `scripts/stock_splits.py`: the splits, the 8-Ks, the seed | `stock_splits.csv` with a seed test (ratios above 1, members on the announcement's day, the announcement 1 to 120 days before the split day, the two kinds, one row an accession); the counts and the checks above in `docs/steps/stock-splits-steps.txt` |
+| 1 | `scripts/stock_splits.py`: the splits, the 8-Ks, the seed | `stock_splits.csv` with a seed test (ratios above 1, members on the announcement's day, the announcement 1 to 365 days before the split day (amended), the two kinds, one row an accession); the counts and the checks above in `docs/steps/stock-splits-steps.txt` |
 | 2 | The flow | Tests: one event a split, two kinds; `follows` prints them; its tickers not in `company_tickers()`; not on the page's *Ask*; `just check` passes |
 | 3 | Results | `follows --event splits` and `--after-the-day` on a copy of the store; every flow's `follows` both runs compared by `cmp`; the five excess checks and the week span; each expected cell judged right or wrong in the Results section, goldfish-reviewed; roadmap, status, changelog, schema and glossary (*Forward split*, *Split day*, *Alone*, *With a report*) updated |
 
@@ -110,10 +114,12 @@ evidence](stock-splits-steps.txt)). The table's numbers are printed by `follows 
 the reaction close's by `follows --event splits --after-the-day`.*
 
 **In plain words:** when an S&P 500 company announced a stock split on its own, not in an earnings
-release, its shares beat the index the next day 48 times and trailed it 11 of the 59 that moved
+release, its shares beat the index at the first close after the news (that day's for a morning
+announcement) 48 times and trailed it 11 of the 59 that moved
 (81%), where the same companies' own days split about evenly (52% up of those that moved). That is
 an answer, *up*, and replayed walk-forward it was right 33 times of 51 (65%): it **holds**, which
-the rule did not expect. The week from the close before leans the same way, 39 up against 9, an
+the rule did not expect, on a small kind, of survivors, and perhaps carrying the run-up before a
+split (below). The week from the close before leans the same way, 39 up against 9, an
 answer that does not hold (21 of 44). The month is *can't say*. Splits announced in an earnings
 release are *can't say* on every span, as are all spans from the reaction close.
 
@@ -122,22 +128,24 @@ release are *can't say* on every span, as are all spans from the reaction close.
 | Alone, day | *up*, doesn't hold | *up*, 48/15/11 of 74, chance below 0.0001, placebo `-`; **holds**, 33 of 51 — **wrong** |
 | Alone, week | *can't say* | *up*, 39/26/9, chance 0.0002, placebo `-`; doesn't hold, 21 of 44 — **wrong** |
 | Alone, month | *can't say* | *can't say*, 0.41 — right |
-| With a report, every span | *can't say* | *can't say*: the day 18/0/12 of 30, 0.25; the week 0.34; the month 0.15 — right |
-| From the reaction close | every cell *can't say* | every cell *can't say* — right |
-| Answers beyond these ≤ chance line + 2 | | one, the alone week (chance line 0.2) — right |
+| With a report, every span | *can't say* | *can't say*: the day 18/0/12 of 30, 0.25; the week 0.34; the month 0.15 (30: Sandisk's month not yet ended) — right |
+| From the reaction close | every cell *can't say* | all six *can't say* — right |
+| Answers beyond these ≤ chance line + 2 | | one, the alone week (chance line 0.2, printed by both runs) — right |
 | Splits in the seed | 100 to 300 | 105 — right |
-| With a report | 30% to 70% | 31 of 105, 29.5% — **wrong**; the owner chose to go on |
+| With a report | 30% to 70% | 31 of 105, 29.5% — **wrong**; the owner chose to go on at the first seed's 28.3%, the same bar missed |
 | *No 8-K* | at most 40% of those asked | 19 of 159, 12% — right |
 | Kept by `follows` | at least 70% | 104 of 105 on the day (one hole) — right |
-| Every other flow's `follows` | unchanged, both runs | 15 flows both runs `cmp` identical; `earnings500` not re-run (38 minutes a run) — right, but for that one |
+| Every other flow's `follows` | unchanged, both runs | 16 flows both runs `cmp` identical — right; `earnings500` not compared (38 minutes a run) |
 
 - **Why it may hold, and what to doubt.** 74 splits, 51 graded: a hold near its bar on a small
   kind. The kept are survivors (168 tickers Yahoo no longer lists; a company that split and then
   failed is missing), and companies split after their shares have risen, so the day may carry the
-  run-up. 21 of the 74 *alone* are dated by hand (step 1), 4 of them at 20:00 for a time not
-  given: a morning release so placed is read a day late, which can only blur the day.
-- **The five by hand:** rows 1, 26, 52, 78 and 105 equal `study.excess_spans` to 0.01 point.
+  run-up. 21 of the 74 *alone* are dated by hand (step 1); 11 *alone* rows sit at 20:00 for a time not
+  given (4 by hand, 7 by a press release's date): a morning release so placed is measured from a
+  day late. 168 tickers had no history on Yahoo (HTTP 404), read as no longer listed.
+- **The five by hand:** rows 1, 26, 52, 78 and 105 equal `study.excess_spans` to 0.01 point; rows
+  1 and 26 are hand-dated, so theirs checks the move at the hand-read moment, not the moment.
 - **The span across a split day:** no week crosses one (the shortest lead, Tractor Supply's, is
-  15 days); its month does, and its stored closes show no fall of the 5-for-1's 80% across
+  15 days, the next Arista's 17, by the seed), so a month span stands for the week; its month does, and its stored closes show no fall of the 5-for-1's 80% across
   2024-12-20: the closes are split-adjusted.
 - **By chance:** about 0.2 answers and 0.0 holds on all history; two answers and one hold found.
