@@ -6,6 +6,7 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-20 | Step 34, step 1: Yahoo's earnings kind is Nasdaq's on 102 of 110 reports (92.7%); its EPS differs on 20 | PR #385 |
 | 2026-11-20 | Step 34 spec: a same-day source for earnings, Yahoo measured against Nasdaq before any call | PR #384 |
 | 2026-11-20 | The owner's answers to the zoom-out: phase 5 goes on; the evening's score pull request merges itself once its checks pass; a same-day earnings source to be looked for; the out/hole column documented | PR #383 |
 | 2026-11-20 | The walk-forward's base grown one move at a time: the scoreboard's CPU time 7m41s → 5m08s, its output byte for byte the same | PR #382 |

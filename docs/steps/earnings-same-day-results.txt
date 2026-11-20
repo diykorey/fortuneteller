@@ -1,0 +1,139 @@
+# Step 34, step 1: Yahoo's earningsHistory beside step 31's Nasdaq kinds (docs/steps/earnings-same-day.md)
+# Run 2026-11-20 10:28 Kyiv, the seed as of PR #381; data/cache/earnings/{yahoo,nasdaq} in the main checkout.
+
+$ uv run python -I scripts/yahoo_earnings.py fetch data/cache/earnings/yahoo
+30 replies in data/cache/earnings/yahoo/2026-11-20T0828
+
+$ uv run python -I scripts/yahoo_earnings.py agree data/cache/earnings/yahoo data/cache/earnings/nasdaq
+asked 2026-11-20T0828
+ticker quarter day nasdaq_eps nasdaq_forecast nasdaq_kind yahoo_eps yahoo_estimate yahoo_kind
+AAPL Dec/2025 2026-01-29 2.84 2.65 above 2.84 2.6708 above
+AAPL Mar/2026 2026-04-30 2.01 1.92 above 2.01 1.94275 above
+AAPL Jun/2026 2026-07-30 1.91 1.88 as expected 2.02 1.89243 above
+AAPL Sep/2026 2026-11-02 2.05 1.98 above 2.1 1.98483 above
+AMGN Dec/2025 2026-02-03 5.29 4.76 above 5.29 4.72583 above
+AMGN Mar/2026 2026-04-30 5.15 4.73 above 5.15 4.76655 above
+AMGN Jun/2026 2026-08-04 6.29 5.60 above 6.29 5.61759 above
+AMGN Sep/2026 2026-11-03 6.45 5.74 above 6.45 5.78215 above
+AMZN Dec/2025 2026-02-05 1.95 1.98 as expected 1.95 1.95962 as expected
+AMZN Mar/2026 2026-04-29 1.56 1.60 below 2.78 1.65303 above
+AMZN Jun/2026 2026-07-30 1.88 1.83 above 5.75 1.82461 above
+AMZN Sep/2026 2026-10-29 1.89 2.01 below 1.89 1.95787 below
+AXP Mar/2026 2026-04-23 4.28 4.03 above 4.28 3.99336 above
+AXP Jun/2026 2026-07-24 4.53 4.41 above 4.53 4.40494 above
+AXP Sep/2026 2026-10-23 4.68 4.47 above 5.42 4.50016 above
+BA Dec/2025 2026-01-27 ($1.91) ($0.40) below 9.92 -0.40902 above
+BA Mar/2026 2026-04-22 ($0.20) ($0.95) above -0.2 -0.67243 above
+BA Jun/2026 2026-07-28 ($0.76) ($0.34) below -0.76 -0.31472 below
+BA Sep/2026 2026-10-27 ($0.34) ($0.21) below -0.34 -0.20099 below
+CAT Dec/2025 2026-01-29 5.16 4.67 above 5.16 4.71207 above
+CAT Mar/2026 2026-04-30 5.54 4.55 above 5.54 4.64388 above
+CAT Jun/2026 2026-08-04 8.17 6.25 above 8.17 6.19742 above
+CAT Sep/2026 2026-10-29 7.20 7.12 as expected 7.2 7.03346 above
+CRM Oct/2025 2025-12-03 2.66 2.15 above 3.25 2.86171 above
+CRM Jan/2026 2026-02-25 2.85 2.14 above 3.81 3.05166 above
+CRM Apr/2026 2026-05-27 3.05 2.30 above 3.88 3.12729 above
+CRM Jul/2026 2026-08-26 4.95 2.35 above 5.9 3.27116 above
+CSCO Jan/2026 2026-02-11 0.88 0.82 above 1.04 1.02214 as expected
+CSCO Apr/2026 2026-05-13 0.90 0.86 above 1.06 1.03625 above
+CSCO Jul/2026 2026-08-12 1.08 0.99 above 1.22 1.16883 above
+CSCO Oct/2026 2026-11-12 1.21 1.15 above 1.4 1.32523 above
+CVX Mar/2026 2026-05-01 1.41 0.92 above 1.41 0.96868 above
+CVX Jun/2026 2026-07-31 6.06 5.80 above 6.06 5.56791 above
+CVX Sep/2026 2026-10-30 5.28 4.78 above 5.28 4.86753 above
+DIS Dec/2025 2026-02-02 1.63 1.57 above 1.63 1.5758 above
+DIS Mar/2026 2026-05-06 1.57 1.49 above 1.57 1.49547 above
+DIS Jun/2026 2026-08-05 2.06 1.88 above 2.06 1.8544 above
+DIS Sep/2026 2026-11-17 1.77 1.67 above 1.77 1.67883 above
+GOOGL Jun/2026 2026-07-22 9.11 2.88 above 9.11 2.89914 above
+GOOGL Sep/2026 2026-10-28 2.12 2.94 below 2.12 3.0089 below
+GS Dec/2025 2026-01-15 14.01 11.77 above 14.01 11.65403 above
+GS Mar/2026 2026-04-13 17.55 16.34 above 17.55 16.39241 above
+GS Jun/2026 2026-07-14 20.98 14.47 above 20.98 14.54249 above
+GS Sep/2026 2026-10-13 17.01 12.90 above 17.01 13.08695 above
+HD Jan/2026 2026-02-24 2.72 2.52 above 2.72 2.5232 above
+HD Apr/2026 2026-05-19 3.43 3.40 as expected 3.43 3.40647 as expected
+HD Jul/2026 2026-08-18 4.92 4.71 above 4.92 4.73227 above
+HON Dec/2025 2026-01-29 2.59 2.53 above 5.18 5.07125 above
+HON Mar/2026 2026-04-23 2.45 2.31 above 4.9 4.64216 above
+HON Jun/2026 2026-07-23 1.95 1.80 above 1.95 1.81873 above
+HON Sep/2026 2026-10-22 2.27 2.17 above 2.27 2.16441 above
+IBM Dec/2025 2026-01-28 4.52 4.33 above 4.52 4.29238 above
+IBM Mar/2026 2026-04-22 1.91 1.81 above 1.91 1.81123 above
+IBM Sep/2026 2026-10-21 2.95 2.88 above 2.95 2.87224 above
+JNJ Dec/2025 2026-01-21 2.46 2.43 as expected 2.46 2.46271 as expected
+JNJ Mar/2026 2026-04-14 2.70 2.67 as expected 2.7 2.67727 as expected
+JNJ Jun/2026 2026-07-15 2.90 2.84 above 2.9 2.85484 as expected
+JNJ Sep/2026 2026-10-13 2.59 2.53 above 2.59 2.52225 above
+JPM Dec/2025 2026-01-13 5.23 4.87 above 4.63 4.81831 below
+JPM Mar/2026 2026-04-14 5.94 5.49 above 5.94 5.51098 above
+JPM Jun/2026 2026-07-14 6.14 5.59 above 6.14 5.79998 above
+JPM Sep/2026 2026-10-13 5.75 5.94 below 5.75 5.94266 below
+KO Mar/2026 2026-04-28 0.86 0.81 above 0.86 0.81227 above
+KO Jun/2026 2026-07-28 0.97 0.92 above 0.97 0.93225 above
+KO Sep/2026 2026-10-27 0.91 0.87 above 0.91 0.88091 above
+MCD Dec/2025 2026-02-11 3.12 3.05 above 3.12 3.05223 above
+MCD Mar/2026 2026-05-07 2.83 2.74 above 2.83 2.74459 above
+MCD Jun/2026 2026-08-04 3.38 3.32 as expected 3.38 3.32131 as expected
+MCD Sep/2026 2026-11-04 3.57 3.36 above 3.57 3.37972 above
+MMM Dec/2025 2026-01-20 1.83 1.82 as expected 1.83 1.79775 as expected
+MMM Mar/2026 2026-04-21 2.14 2.02 above 2.14 1.98376 above
+MMM Jun/2026 2026-07-21 2.40 2.27 above 2.4 2.24645 above
+MMM Sep/2026 2026-10-20 2.50 2.40 above 2.46 2.38338 above
+MRK Dec/2025 2026-02-03 2.04 2.03 as expected 2.04 2.01048 as expected
+MRK Mar/2026 2026-04-30 ($1.28) ($1.51) above -1.28 -1.47384 above
+MRK Jun/2026 2026-08-04 ($0.13) ($0.26) above -0.13 -0.25705 above
+MRK Sep/2026 2026-10-29 2.49 2.12 above 2.49 2.08214 above
+MSFT Dec/2025 2026-01-28 4.14 3.88 above 4.14 3.91702 above
+MSFT Mar/2026 2026-04-29 4.27 4.07 above 4.27 4.07243 above
+MSFT Jun/2026 2026-07-29 4.74 4.21 above 4.74 4.23939 above
+MSFT Sep/2026 2026-10-28 4.89 4.71 above 4.89 4.72072 above
+NKE Nov/2025 2025-12-18 0.53 0.37 above 0.53 0.37351 above
+NKE Feb/2026 2026-03-31 0.35 0.29 above 0.35 0.28165 above
+NKE May/2026 2026-06-30 0.20 0.11 above 0.72 0.12718 above
+NKE Aug/2026 2026-10-01 0.48 0.43 above 0.48 0.43689 above
+NVDA Jan/2026 2026-02-25 1.57 1.45 above 1.62 1.53812 above
+NVDA Jul/2026 2026-08-26 2.22 2.09 above 2.22 2.09113 above
+NVDA Oct/2026 2026-11-17 2.68 2.47 above 2.68 2.47313 above
+PG Dec/2025 2026-01-22 1.88 1.87 as expected 1.88 1.85685 as expected
+PG Mar/2026 2026-04-24 1.59 1.56 as expected 1.59 1.55547 above
+PG Jun/2026 2026-07-29 1.43 1.41 as expected 1.43 1.40817 as expected
+PG Sep/2026 2026-10-22 2 1.89 above 2.0 1.89279 above
+SHW Dec/2025 2026-01-29 2.23 2.12 above 2.23 2.16252 above
+SHW Mar/2026 2026-04-28 2.35 2.24 above 2.35 2.26917 above
+SHW Jun/2026 2026-07-28 3.70 3.56 above 3.7 3.51941 above
+SHW Sep/2026 2026-10-27 3.63 3.65 as expected 3.63 3.68773 as expected
+TRV Dec/2025 2026-01-21 11.13 8.45 above 11.13 8.80499 above
+TRV Mar/2026 2026-04-16 7.71 6.98 above 7.71 7.07824 above
+TRV Jun/2026 2026-07-17 10.04 5.31 above 10.04 5.39438 above
+TRV Sep/2026 2026-10-16 9.18 7.07 above 9.18 7.4334 above
+UNH Dec/2025 2026-01-27 2.11 2.09 as expected 2.11 2.10607 as expected
+UNH Mar/2026 2026-04-21 7.23 6.46 above 7.23 6.60176 above
+UNH Jun/2026 2026-07-16 6.38 4.94 above 6.38 4.9151 above
+UNH Sep/2026 2026-10-13 4.69 4.12 above 4.69 4.14082 above
+V Dec/2025 2026-01-29 3.17 3.14 as expected 3.17 3.14227 as expected
+V Mar/2026 2026-04-28 3.31 3.09 above 3.31 3.09955 above
+V Jun/2026 2026-07-28 3.32 3.23 above 3.32 3.23073 above
+V Sep/2026 2026-10-27 3.48 3.43 as expected 3.48 3.44068 as expected
+WMT Apr/2026 2026-05-21 0.66 0.65 as expected 0.66 0.65872 as expected
+WMT Jul/2026 2026-08-20 0.81 0.73 above 0.81 0.74126 above
+matched 110; same kind 102 (92.7%)
+not yet 0; unmatched 10: AXP Dec/2025, CVX Dec/2025, GOOGL Dec/2025, GOOGL Mar/2026, HD Oct/2026, IBM Jun/2026, KO Dec/2025, NVDA Apr/2026, WMT Jan/2026, WMT Oct/2026
+scale off by more than 0.1 point: 0 
+
+# The eight that differ (nasdaq kind -> yahoo kind):
+#   EPS itself differs (Yahoo's "normalized" EPS is not Nasdaq's): AAPL Jun/2026 1.91 vs 2.02,
+#   AMZN Mar/2026 1.56 vs 2.78, BA Dec/2025 -1.91 vs 9.92, CSCO Jan/2026 0.88 vs 1.04,
+#   JPM Dec/2025 5.23 vs 4.63.
+#   The estimate only (Nasdaq's in cents, Yahoo's unrounded, near +-2%): CAT Sep/2026, JNJ Jun/2026,
+#   PG Mar/2026.
+# EPS differs by more than $0.01 on 20 of 110 matched; the kind differs on 5 of those 20.
+# Unmatched: step 31's "no kind" or "no 8-K" reports, and WMT Oct/2026, after the seed.
+
+# Hand checks: the first three of the newest matched quarter by ticker (CSCO Oct/2026,
+# NVDA Oct/2026, then AAPL Sep/2026), Yahoo's analysis page (Normalized, headless Chrome, 2026-11-20)
+# against the saved reply, and Nasdaq's saved page against the seed:
+#   CSCO  page 10/31/2026 est 1.33 actual 1.40 | reply 1.32523 1.40 | Nasdaq 1.15 1.21 (5.22) | above / above  pass
+#   NVDA  page 10/31/2026 est 2.47 actual 2.68 | reply 2.47313 2.68 | seed 2.47 2.68           | above / above  pass
+#   AAPL  page  9/30/2026 est 1.98 actual 2.10 | reply 1.98483 2.10 | Nasdaq 1.98 2.05 (3.54) | above / above  pass
+# The quarter, EPS and estimate within $0.01 of the page on all three; no stop.
