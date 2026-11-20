@@ -508,6 +508,29 @@ def test_earnings_refresh_fetches_again_the_last_three_weeks_and_takes_the_last_
     assert script.weekdays()[-1] == date(2026, 11, 18)
 
 
+def test_an_exact_meet_nasdaq_prints_as_n_a_is_as_expected() -> None:
+    # given step 31's seed script (docs/steps/exact-meet.md)
+    spec = importlib.util.spec_from_file_location(
+        "nasdaq_earnings", Path(__file__).parents[1] / "scripts" / "nasdaq_earnings.py"
+    )
+    assert spec is not None and spec.loader is not None
+    script = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(script)
+
+    # when surprises of N/A are read with their EPS and forecast
+    met = [script.kind("N/A", "$1.23", "$1.23"), script.kind("N/A", "($0.17)", "($0.17)")]
+    unmet = [script.kind("N/A", "$0.01", "$0"), script.kind("N/A", "", "$1.20")]
+
+    # then an EPS equal to its forecast is as expected, any other N/A has no kind, numbers as before
+    assert met == ["as expected", "as expected"]
+    assert unmet == [None, None]
+    assert [script.kind("2.0"), script.kind("1.9"), script.kind("-2.0")] == [
+        "above",
+        "as expected",
+        "below",
+    ]
+
+
 def test_yahoo_s_quarter_matches_nasdaq_s_and_its_kind_is_nasdaq_s_way() -> None:
     # given step 34's script
     spec = importlib.util.spec_from_file_location(
