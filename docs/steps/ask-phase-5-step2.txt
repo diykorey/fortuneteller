@@ -1,6 +1,6 @@
 Step 29, step 2's evidence (docs/steps/ask-phase-5.md).
 
-$ curl https://diykorey.github.io/fortuneteller/scoreboard/data.json (2026-11-20 01:2x UTC, after #373's Pages deploy of 01:13 UTC)
+$ curl https://diykorey.github.io/fortuneteller/scoreboard/data.json (2026-11-20, about 01:20 UTC, after #373's Pages deploy of 01:13 UTC)
 opec: 2 kinds, 186 cells; oil up 96, oil down 73
 boe: 3 kinds, 279 cells; cut 17, hold 153, hike 17
 boj: 3 kinds, 279 cells; cut 0, hold 79, hike 6
@@ -1181,3 +1181,10 @@ flood month  ETH           10   6    3    1      1/0  0.37/0.33/0.30     can't s
 flood month  COIN           7   1    3    3      0/0  0.30/0.33/0.36     too few         —       -        0: 0 right, too few
 flood month  ALL           32  17   10    5      1/0  0.41/0.33/0.26     can't say       0.0897  -        0: 0 right, too few
 by chance: about 2.7 answers on all history, 0.0 holds walk-forward
+
+$ on screen: the published page in Chrome (2026-11-20, about 01:30 UTC), each of the 12 new kinds picked in "Kind of event", read with the page's script
+every new kind listed and drawn: opec oil up (96), oil down (73); boe cut (17), hold (153), hike (17); boj cut (0), hold (79), hike (6); war violent act (136); crypto hack (44); weather landfall (79); flood (39)
+opec|oil up   Brent crude oil  35 / 13 / 1 of 49  answer td.none "up" (grey, rgb(106,106,106))  replay td.none "28 of 36, held" (grey)
+opec|oil up   Gasoline (UGA)   30 / 14 / 4 of 48  answer td "up" (plain)  replay td.yes "20 of 31, held"
+opec|oil down Brent crude oil  1 / 3 / 27 of 31   answer td.none "down" (grey)  replay td.none "18 of 20, too few" (grey)
+td.yes on the new kinds: only gasoline's day after oil up

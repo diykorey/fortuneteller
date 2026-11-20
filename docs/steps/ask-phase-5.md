@@ -69,7 +69,42 @@ This step measures nothing new; it shows steps 24 to 28 exactly.
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~The six flows in `ask_data`, their words, the kind cell, the BoJ left out on a failed fetch~~ **done** 2026-11-19; on a copy of the real store the data held the 11 kinds and 1,023 cells, nothing left out, before publishing | The four tests below pass |
-| 2 | On the published page, after the evening job | The 12 new kinds appear with 1,116 cells; every cell equals `follows`' line on the real store (a one-off comparison, its output in the evidence); the expected outcome holds, or each difference is written in Results with its numbers |
+| 2 | ~~On the published page, after the evening job~~ **done** 2026-11-20 | The 12 new kinds appear with 1,116 cells; every cell equals `follows`' line on the real store (a one-off comparison, its output in the evidence); the expected outcome holds, or each difference is written in Results with its numbers |
+
+## Results
+
+*2026-11-20.* Every line quoted is in [the evidence](ask-phase-5-step2.txt): the published page's
+`data.json` after the evening job of 2026-11-19 (PR #373, deployed 01:13 UTC), the whole output of
+`follows --event FLOW` for the seven flows on a copy of the real store taken after that job, the
+comparison of every cell with its line, and the page read in Chrome.
+
+**In plain words:** the page now answers what followed an OPEC+ decision, a Bank of England or
+Bank of Japan decision, a violent act, a crypto hack, a hurricane landfall and a flood, with the
+same numbers `follows` prints. Among them it marks one answer that held when replayed, gasoline on
+the day after OPEC+ sent oil up; Brent's day after an OPEC+ decision is shown grey, since that is
+how the kind is read, not an answer. The expected outcome held.
+
+- **The 12 new kinds and 1,116 cells, none left out:** OPEC 2 kinds (186 cells), the BoE 3 (279),
+  the BoJ 3 (279), violent acts, hacks, landfalls and floods 1 each (93); `ask_left_out` is empty.
+  Each kind's event count equals `follows`' header (169 OPEC announcements, 96 oil up and 73 oil
+  down; 187 BoE decisions; 85 BoJ decisions, 0 cuts; 136 violent acts; 44 hacks; 79 landfalls;
+  39 floods). Right.
+- **Same numbers:** all 1,116 cells equal `follows`' line for their kind, span and market, field
+  by field (counts, base, answer, graded, right, verdict, the kind's mark, the placebo). The base
+  is compared within `follows`' two printed places: the page keeps four, and six cells' rates,
+  such as the BoE cut week Brent's 0.355, print as 0.36 there. Right.
+- **Expected outcome:** among the six flows exactly one unmarked cell holds, gasoline (UGA) on the
+  day after *oil up*, 31 graded, 20 right; exactly two cells carry the kind's mark, Brent's day
+  after *oil up* (36 graded, 28 right, held) and after *oil down* (20 graded, 18 right, *too
+  few*). The page's three earlier holds stay (the 10- and 5-year yields on the day of a jobs report
+  above the consensus, the 5-year breakeven on the day of a CPI release above it). Right, with no
+  count moved. Outside the six flows the page now shows three holds more than the spec counted,
+  the earnings' (step 32, PR #370, after this spec): *as expected* on the day, *below* on the day
+  and the week, each company against the S&P 500. So the page shows seven answers that hold, not
+  four.
+- **On screen:** each new kind picked on the published page; Brent's day after *oil up* and after
+  *oil down* is grey, answer and replay alike, and the only replay coloured as held among the new
+  kinds is gasoline's day after *oil up*. Right.
 
 ## How you know it is right
 
