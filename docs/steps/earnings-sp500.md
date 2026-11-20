@@ -107,13 +107,16 @@ evidence](earnings-sp500-steps.txt)). The table's numbers are printed by `follow
 earnings500`, the reaction close's by `follows --event earnings500 --after-the-day`.*
 
 **In plain words:** across 24,298 reports by S&P 500 members since 2011, a **miss was followed by
-the shares trailing the index on the day** 2,522 times and beating it 999 of the 3,521 that moved
-(72%), where the companies' own days split about evenly. Replayed walk-forward that call was right
+the shares trailing the index on the day** 2,522 times of the 3,521 that moved (72%), beating it
+999 times, where the companies' own days split about evenly. Replayed walk-forward that call was right
 2,506 times of 3,798 (66%): it **holds**, as on the Dow (156 of 219). The Dow's two other holds do
 not carry over: the miss's week was right 59.5% (2,246 of 3,777), just under the 60% bar, and an
 in-line report's day 52% (1,916 of 3,664). A beat is followed by *up* on the day and the week, both
-marked *the period*, and on the month, which does not hold. From the reaction close nothing is an
-answer, the miss's day included.
+marked *the period*, and on the month, which does not hold. An in-line report is *down* on the day
+and the week, a miss on the week too, none holding; both months are marked *the period*. From the
+reaction close the miss's day is *can't say*; the only cell not *can't say* is the beat's month,
+*about the same*, marked *the period*. *Holds* and *doesn't hold* are `follows`' own verdicts on
+the bars; it prints the counts, not the walk-forward chance or base.
 
 | | Expected | Found |
 | --- | --- | --- |
@@ -130,18 +133,31 @@ answer, the miss's day included.
 | Nothing else holds; answers beyond these ≤ chance line + 2 | | none beyond them (chance line 0.3) — right |
 | Reports in the seed; shares | 20,000 to 30,000; within 5 points of 72/16/12 | 24,298; 68.3/15.8/15.9 — right |
 | Kept by `follows` | at least 70% | 24,043 on the day (99%) — right |
-| Every other flow's `follows` | unchanged | CEO, earnings, OPEC and additions: `cmp` identical — right |
+| Every other flow's `follows` | unchanged | all 16 flows `follows` takes, both runs: `cmp` identical — right |
 
 - **Six cells of fourteen were expected wrongly.** The one that matters stands: a miss's day,
   on about 3,800 reports instead of 235.
-- **Left out:** 240 holes on the day (fewer than 504 closes before) and 15 with no reaction close
-  yet (reports of 2026-11-18, the copy's last close), in neither column as the
-  [Glossary](../glossary.md)'s *Hole* says. Before the seed: 960 *no 8-K* (196 tickers with no
-  SEC filer number today: bought, merged or delisted) and 178 *another company now*; the kept
-  lean towards survivors.
-- **The five by hand:** rows 1, 5,000, 10,000, 15,000 and the last kept (24,296; the last row,
-  Palo Alto's of 2026-11-18, has no reaction close in the copy) equal `study.excess_spans` to 0.01
-  point.
+- **Left out by `follows`:** 240 holes on the day, as it prints them; a query on the copy finds
+  218 of them by fewer than 504 closes before, the other 22 by `follows`' own rule, which the query
+  does not repeat. 15 in neither column, as the [Glossary](../glossary.md)'s *Hole* says, matching
+  `follows`' 24,298 less 24,043 kept and 240 holes: 13 Peabody reports of 2011 to 2014, before its
+  Yahoo history starts (Peabody went bankrupt in 2016 and listed again in 2017: a cut history, as
+  step 35 found for three tickers), and 2 of 2026-11-18 evening with no reaction close in the copy.
+- **Left out before the seed:** 178 *another company now*; 2,092 *no kind*, Nasdaq printing no
+  surprise; 960 *no 8-K*, 3.8% of the 25,258 reports with a kind. 196 tickers have no SEC filer
+  number today (197 by `names500`, which does not add Walgreens' by hand), so the kept lean towards
+  survivors.
+- **Found: an exact meet has no kind.** Of the 2,110 members' rows with no surprise, 1,802 have
+  the EPS equal to the forecast: Nasdaq prints `N/A` for a zero surprise, so the in-line kind
+  leaves out exact meets, here about half again as many as it keeps. Step 31's seed has the same
+  gap (87 of its rows since 2011). Not fixed here, since it changes step 31's cells on the page:
+  a later step, in [Precision](../precision.md).
+- **Membership past the four dates:** the four were found among the 104 changes with S&P's
+  release in their row; the other 245 cannot be checked so, and may hold the same error. The
+  count stays 503 to 510 after the fix (re-run in the step 1 evidence).
+- **The five by hand:** rows 1, 5,000, 10,000, 15,000 and the last kept (24,296; rows 24,297 and
+  24,298 are the two with no reaction close) equal `study.excess_spans` to 0.01 point (Monster's
+  from the unrounded closes, +13.4269).
 - **`follows` took 38 minutes** on the copy (34 from the reaction close), which is one reason it
   stays off the evening job.
 - **By chance:** about 0.3 answers and 0.1 holds on all history; found, five answers the placebo

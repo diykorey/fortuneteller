@@ -154,6 +154,13 @@ this by splitting the results by era.
 | The company's close | Yahoo's close, split-adjusted, not dividend-adjusted, less the S&P 500 index's, which pays none: an ex-dividend day in an event's span reads the company that much lower | The total-return close | A *down* that an ex-dividend day inside the span could make |
 | Survivors | Only companies Yahoo still lists under their own ticker: 19 of the 58 conduct cases have no history there, 4 have a ticker now another company's | Delisted companies' closes, from a paid source (CRSP) | A *down* answer read as the whole kind's |
 
+## Steps 31 and 36 — earnings reports
+
+| Choice | Now | More precise | Trigger |
+| --- | --- | --- | --- |
+| An exact meet | Nasdaq prints `N/A` for a zero surprise, and the seeds keep only a numeric one: an EPS equal to its forecast has no kind and is left out (87 Dow reports since 2011, 1,802 S&P 500 members', [step 36](steps/earnings-sp500.md#results)) | The kind read from the EPS and the forecast where the surprise is `N/A` and both are given: *as expected* | Before the in-line cells are shown again on the page, or now: they lose about a third of their reports |
+| Membership dates | The S&P 500's members rebuilt from Wikipedia's changes; four dated on S&P's release day were set by hand from S&P's releases, the other 245 with no S&P release in their row unchecked ([step 36](steps/earnings-sp500.md)) | Every change's effective day from S&P's release | A report on a change's day turning a kept count |
+
 ## TradingView's calendar since 2026-10
 
 Its fourth quarter of 2026 comes from a new feed ([jobless claims](steps/jobless-claims.md#the-first-print-from-fred)).

@@ -54,3 +54,94 @@ ceo same; earnings same (12 lines); opec same (189 lines); additions same (6 lin
 # SPY's last stored close: 2026-11-18
 24296 TJX   as expected 8-K 2026-11-18 09:19 NY  2026-11-17 129.85 -> 2026-11-18 140.30, SPY 7340.53 -> 7323.63: +8.28 vs +8.28  (9924 closes before)
 # Within 0.01 point on all five.
+
+# Every flow follows takes, both runs, main's code (a worktree of origin/main at 4fc824b, its venv
+# built first) against this branch's, on the same copy (replaces the four-flow check above):
+$ for e in fomc nfp retail cpi claims ecb ceo opec boe boj war crypto weather flood earnings additions; do for a in '' --after-the-day; do follows --event $e $a (main) > main; (branch) > new; cmp main new; done; done
+fomc same (282 lines)
+fomc-after same (282 lines)
+nfp same (282 lines)
+nfp-after same (282 lines)
+retail same (282 lines)
+retail-after same (282 lines)
+cpi same (282 lines)
+cpi-after same (282 lines)
+claims same (282 lines)
+claims-after same (282 lines)
+ecb same (282 lines)
+ecb-after same (282 lines)
+ceo same (6 lines)
+ceo-after same (6 lines)
+opec same (189 lines)
+opec-after same (189 lines)
+boe same (282 lines)
+boe-after same (282 lines)
+boj same (282 lines)
+boj-after same (282 lines)
+war same (96 lines)
+war-after same (96 lines)
+crypto same (96 lines)
+crypto-after same (96 lines)
+weather same (96 lines)
+weather-after same (96 lines)
+flood same (96 lines)
+flood-after same (96 lines)
+earnings same (12 lines)
+earnings-after same (12 lines)
+additions same (6 lines)
+additions-after same (6 lines)
+
+# Left out by follows, by a query on the copy (each seed row's reaction close among its
+# ticker's closes on SPY / ES's days; a hole when fewer than 504 closes before it):
+$ python scratchpad/leftout.py STORE   (script below)
+{'before the first close': 13, 'hole, above': 170, 'hole, as expected': 10, 'hole, below': 38, 'kept': 24065, 'no reaction close yet': 2}
+54 2011-01-25 13:12 BTU before its first close
+288 2011-04-19 12:08 BTU before its first close
+567 2011-07-19 12:11 BTU before its first close
+898 2011-10-25 12:26 BTU before its first close
+1124 2012-01-24 13:09 BTU before its first close
+1407 2012-04-19 12:06 BTU before its first close
+1709 2012-07-24 12:08 BTU before its first close
+1991 2012-10-22 12:10 BTU before its first close
+2308 2013-01-29 13:06 BTU before its first close
+2561 2013-04-18 12:06 BTU before its first close
+2896 2013-07-23 12:07 BTU before its first close
+3574 2014-01-30 13:08 BTU before its first close
+3876 2014-04-24 12:05 BTU before its first close
+24297 2026-11-18 21:06 P no reaction close
+24298 2026-11-18 21:37 PANW no reaction close
+# follows prints 240 holes (183, 13, 44) and keeps 24,043; the query's 218 holes are by the 504
+# closes alone, the other 22 by follows' own rule. The 15 in neither column match exactly.
+
+# The script:
+    import csv, duckdb, sys
+    from collections import Counter
+    from datetime import datetime, time
+    from zoneinfo import ZoneInfo
+    con = duckdb.connect(sys.argv[1], read_only=True)
+    rows = list(csv.DictReader(open("data/seed/earnings_sp500.csv")))
+    idx = {d for (d,) in con.execute("select day from daily_bars where instrument='SPY / ES'").fetchall()}
+    by = {}
+    for t, d in con.execute("select instrument, day from daily_bars order by day").fetchall():
+        if d in idx:
+            by.setdefault(t, []).append(d)
+    c, neither = Counter(), []
+    for n, r in enumerate(rows, 1):
+        at = datetime.fromisoformat(r["day"] + "T" + r["time"]).replace(tzinfo=ZoneInfo("UTC")).astimezone(ZoneInfo("America/New_York"))
+        days = by.get(r["ticker"], [])
+        react = next((i for i, d in enumerate(days) if d > at.date() or (d == at.date() and at.time() < time(16))), None)
+        if not days:
+            c["no closes"] += 1; neither.append(f"{n} {r['day']} {r['time']} {r['ticker']} no closes")
+        elif react is None:
+            c["no reaction close yet"] += 1; neither.append(f"{n} {r['day']} {r['time']} {r['ticker']} no reaction close")
+        elif react == 0:
+            c["before the first close"] += 1; neither.append(f"{n} {r['day']} {r['time']} {r['ticker']} before its first close")
+        elif react < 504:
+            c[f"hole, {r['kind']}"] += 1
+        else:
+            c["kept"] += 1
+    print(dict(sorted(c.items())))
+    print("\n".join(neither))
+
+# Monster (row 5,000) from the unrounded closes:
+MNST 2015-02-26 10.395000 -> 02-27 11.760000, SPY 2110.7400 -> 2104.5000: +13.4269

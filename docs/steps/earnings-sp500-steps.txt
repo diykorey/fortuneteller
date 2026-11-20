@@ -95,3 +95,98 @@ wrote 2092 reports to data/seed/earnings.csv: above 1513, as expected 337, below
 # Step 31's Dow reports against the new seed (a one-off script: each Dow report from 2011 whose
 # company was an S&P 500 member within a day of it, looked up by ticker and day):
 Dow reports from 2011 by S&P 500 members: 1775; same kind and minute 1775; differ 0 (0.0%)
+
+# After the four dates were fixed, the members re-run (the seed unchanged by it):
+$ uv run python -I scripts/sp500_additions.py members data/cache/sp500
+today 503; on 2011-01-03 509; 349 changes
+2011 508 509
+2012 508 508
+2013 505 507
+2014 505 507
+2015 507 510
+2016 509 509
+2017 508 509
+2018 507 508
+2019 507 509
+2020 507 509
+2021 506 508
+2022 504 507
+2023 504 505
+2024 504 506
+2025 504 505
+2026 503 504
+
+# The Dow comparison on the spec's own rule, a member on the report's day (not within a day):
+Dow reports from 2011 by S&P 500 members: 1775; same kind and minute 1775; differ 0 (0.0%)
+# The comparison script (the strict form tests only d = 0):
+    import csv
+    import sys
+    from datetime import date, timedelta
+    
+    dow_seed, new_seed, members_file = sys.argv[1:4]
+    changes = [
+        (date.fromisoformat(r["day"]), r["ticker"], r["change"])
+        for r in csv.DictReader(open(members_file))
+    ]
+    
+    
+    def member(ticker: str, day: date) -> bool:
+        held = False
+        for d, t, c in changes:
+            if d > day:
+                break
+            if t == ticker:
+                held = c == "in"
+        return held
+    
+    
+    new = {(r["ticker"], r["day"]): r for r in csv.DictReader(open(new_seed))}
+    compared = same = 0
+    diffs = []
+    for r in csv.DictReader(open(dow_seed)):
+        day = date.fromisoformat(r["day"])
+        if day < date(2011, 1, 3):
+            continue
+        if not any(member(r["ticker"], day + timedelta(d)) for d in (-1, 0, 1)):
+            continue
+        compared += 1
+        other = new.get((r["ticker"], r["day"]))
+        if other and (other["time"], other["kind"]) == (r["time"], r["kind"]):
+            same += 1
+        else:
+            got = (other["time"], other["kind"]) if other else "missing"
+            diffs.append(f"{r['day']} {r['ticker']} {r['time']} {r['kind']} -> {got}")
+    print(f"Dow reports from 2011 by S&P 500 members: {compared}; same kind and minute {same}; "
+          f"differ {len(diffs)} ({100 * len(diffs) / max(compared, 1):.1f}%)")
+    for line in diffs:
+        print(line)
+
+# 196 tickers with no filer number by sec_8k_times, 197 by names500: names500 does not add
+# sec_8k_times' UNLISTED (Walgreens, WBA, 1618921).
+
+# The 2,092 no kind: an independent recount of the members' rows with no numeric surprise, by its
+# cause (2,110: the seed counts the 16 excluded tickers' rows first as another company now):
+# members from data/seed/sp500.csv
+members' rows with no number for the surprise: 2110 {'eps equals forecast': 1802, 'no forecast': 186, 'other': 68, 'no eps': 54}
+2011-01-18 SCHW eps $0.10 forecast $0.10 surprise 'N/A'
+2011-01-18 FAST eps $0.54 forecast  surprise 'N/A'
+2011-01-20 LUV eps $0.16 forecast $0.16 surprise 'N/A'
+2011-01-25 JNJ eps $1.03 forecast $1.03 surprise 'N/A'
+2011-01-25 MMM eps $1.27 forecast $1.27 surprise 'N/A'
+2021-10-28 AAPL eps $1.24 forecast $1.24 surprise 'N/A'
+# members from data/seed/dow.csv
+members' rows with no number for the surprise: 95 {'eps equals forecast': 87, 'other': 3, 'no eps': 4, 'no forecast': 1}
+2011-01-25 JNJ eps $1.03 forecast $1.03 surprise 'N/A'
+2011-01-25 MMM eps $1.27 forecast $1.27 surprise 'N/A'
+2011-02-09 KO eps $0.72 forecast $0.72 surprise 'N/A'
+2011-04-20 T eps $0.57 forecast $0.57 surprise 'N/A'
+2011-04-28 MSFT eps $0.56 forecast $0.56 surprise 'N/A'
+2021-10-28 AAPL eps $1.24 forecast $1.24 surprise 'N/A'
+
+# Steps 1 and 2's tests (the seed tests, the earnings500 flow, load-prices --seed and
+# company_tickers() unchanged) in the full gate, as just check runs it:
+$ ruff check; ruff format --check; mypy src; pytest -q
+All checks passed!
+57 files already formatted
+Success: no issues found in 11 source files
+711 passed in 541.10s (0:09:01)
