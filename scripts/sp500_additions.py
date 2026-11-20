@@ -17,6 +17,7 @@ Usage: uv run python -I scripts/sp500_additions.py fetch DIR
        uv run python -I scripts/sp500_additions.py seed DIR
        uv run python -I scripts/sp500_additions.py names DIR
        uv run python -I scripts/sp500_additions.py members DIR
+       uv run python -I scripts/sp500_additions.py names500 DIR SEC_DIR
 """
 
 import csv
@@ -33,6 +34,14 @@ from zoneinfo import ZoneInfo
 REVISION = 1385951946
 CONSTITUENTS = 1384572480
 MEMBERS_FROM = date(2011, 1, 3)
+# Changes Wikipedia dates on S&P's release day, by the added ticker and that day: the first day
+# as a member, from S&P's release (step 36's check, amended 2026-11-20 by the owner).
+EFFECTIVE_FROM_RELEASE = {
+    ("PSX", date(2012, 4, 23)): date(2012, 5, 1),
+    ("KMI", date(2012, 5, 17)): date(2012, 5, 25),
+    ("ALXN", date(2012, 5, 21)): date(2012, 5, 25),
+    ("OKTA", date(2026, 10, 30)): date(2026, 11, 4),
+}
 URL = "https://en.wikipedia.org/w/index.php?oldid={rev}&action=raw"
 HEADERS = {"User-Agent": "fortuneteller-research/0.1"}
 YAHOO = {"User-Agent": "Mozilla/5.0"}
@@ -174,6 +183,7 @@ def members(folder: Path) -> None:
         if day is not None and day > MEMBERS_FROM:
             added = re.sub(r"[^A-Z.]", "", cells[1])
             removed = re.sub(r"[^A-Z.]", "", cells[3])
+            day = EFFECTIVE_FROM_RELEASE.get((added, day), day)
             changes.append((day, added, removed))
     changes.sort()
     held = set(now)
@@ -198,6 +208,43 @@ def members(folder: Path) -> None:
         print(year, min(counts[year]), max(counts[year]))
 
 
+def wiki_names(folder: Path) -> dict[str, str]:
+    """Each ticker's name on Wikipedia: the changes table's, then today's list's over it."""
+    plain = re.compile(r"\[\[(?:[^|\]]*\|)?([^\]]*)\]\]")
+    found: dict[str, str] = {}
+    for cells in rows((folder / f"{REVISION}.txt").read_text()):
+        for t, n in ((cells[1], cells[2]), (cells[3], cells[4])):
+            if ticker := re.sub(r"[^A-Z.]", "", t):
+                found[ticker.replace(".", "-")] = plain.sub(r"\1", n).strip()
+    text = (folder / f"{CONSTITUENTS}.txt").read_text()
+    start = text.index('id="constituents"')
+    for row in text[start : text.index("\n|}", start)].split("\n|-")[2:]:
+        m = re.search(r"\{\{(?:[A-Za-z]+Symbol|BZX link)\|([A-Z.]+)\}\}\s*\n\|\|\s*(.+)", row)
+        if m:
+            found[m[1].replace(".", "-")] = plain.sub(r"\1", m[2]).strip()
+    return found
+
+
+def names500(folder: Path, sec: Path) -> None:
+    """Step 36: each member's name on Wikipedia beside the SEC's for its ticker today; a ticker the
+    SEC does not list is *no CIK*; the first words differing are printed for reading by hand."""
+    with Path("data/seed/sp500.csv").open(newline="") as handle:
+        tickers = sorted({row["ticker"] for row in csv.DictReader(handle)})
+    listing = json.loads((sec / "company_tickers.json").read_text())
+    sec_names = {row["ticker"]: row["title"] for row in listing.values()}
+    wiki = wiki_names(folder)
+
+    def word(name: str) -> str:
+        return re.sub(r"[^a-z0-9]", "", name.lower().split()[0])[:4] if name.split() else ""
+
+    missing = [t for t in tickers if t not in sec_names]
+    differ = [t for t in tickers if t in sec_names and word(wiki.get(t, "")) != word(sec_names[t])]
+    print(f"{len(tickers)} tickers; no CIK {len(missing)}; first words differ {len(differ)}")
+    for t in differ:
+        print(f"{t:6} | {wiki.get(t, '?')} | {sec_names[t]}")
+    print("no CIK: " + " ".join(missing))
+
+
 if __name__ == "__main__":
     command, folder = sys.argv[1], Path(sys.argv[2])
     if command == "fetch":
@@ -208,3 +255,5 @@ if __name__ == "__main__":
         names(folder)
     elif command == "members":
         members(folder)
+    elif command == "names500":
+        names500(folder, Path(sys.argv[3]))

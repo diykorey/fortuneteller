@@ -1834,6 +1834,15 @@ class EarningsFlow:
 
 
 EARNINGS_FLOW = EarningsFlow()
+# Step 36 (docs/steps/earnings-sp500.md): the S&P 500's members' reports from 2011, as step 31's.
+EARNINGS_500_FLOW = EarningsFlow(
+    event_type="Earnings release (S&P 500)",
+    type_code=36,
+    cli_name="earnings500",
+    label="E500",
+    seed_file="earnings_sp500.csv",
+    noun="S&P 500 earnings reports",
+)
 # Step 35 (docs/steps/sp500-additions.md): each company S&P announced would join the S&P 500, one
 # event at the announcement's minute, the kind `added`; several are announced on one day, as
 # reports are, so it is the earnings' class with its own names and seed.
@@ -1896,6 +1905,7 @@ EVENT_FLOWS: list[EventFlow] = [
     FLOOD_FLOW,
     EARNINGS_FLOW,
     ADDITIONS_FLOW,
+    EARNINGS_500_FLOW,
 ]
 
 

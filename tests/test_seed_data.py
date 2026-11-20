@@ -107,6 +107,8 @@ def test_seed_dir_has_no_unexpected_csvs() -> None:
         "dow.csv",
         "earnings.csv",
         "sp500_additions.csv",
+        "sp500.csv",
+        "earnings_sp500.csv",
         "boe-changes.csv",
         "fomc_sentiment_dictionary.csv",
     }
@@ -539,3 +541,62 @@ def test_sp500_additions_are_announced_ahead_one_kind_one_row_a_ticker_a_day() -
     assert {r["kind"] for r in rows} == {"added"}
     assert len(per_day) == len(set(per_day))
     assert not {"CSRA", "INFO", "NWSA"} & {r["ticker"] for r in rows}
+
+
+def _members(file: str) -> list[tuple[date, str, str]]:
+    with (settings.seed_dir / file).open(newline="", encoding="utf-8") as handle:
+        return [
+            (date.fromisoformat(r["day"]), r["ticker"], r["change"]) for r in csv.DictReader(handle)
+        ]
+
+
+def test_sp500_members_stay_near_five_hundred_and_okta_joins_on_its_effective_day() -> None:
+    # given the S&P 500's dated changes
+    changes = _members("sp500.csv")
+
+    # when the members are counted after each change day
+    held: set[str] = set()
+    counts = []
+    for i, (day, ticker, change) in enumerate(changes):
+        (held.add if change == "in" else held.discard)(ticker)
+        if i + 1 == len(changes) or changes[i + 1][0] != day:
+            counts.append(len(held))
+
+    # then the count stays in 495 to 515 every day, and Okta replaces Kenvue on 2026-11-04, the
+    # day S&P's release gives, not its release day
+    assert all(495 <= n <= 515 for n in counts)
+    assert changes[0][0] == date(2011, 1, 3)
+    okta = [(d, t, c) for d, t, c in changes if t in ("OKTA", "KVUE") and d.year == 2026]
+    assert okta == [(date(2026, 11, 4), "KVUE", "out"), (date(2026, 11, 4), "OKTA", "in")]
+
+
+def test_s_p_500_earnings_rows_are_members_reports_with_their_kind() -> None:
+    # given the committed reports and the members' changes
+    with (settings.seed_dir / "earnings_sp500.csv").open(newline="", encoding="utf-8") as handle:
+        rows = list(csv.DictReader(handle))
+    changes = _members("sp500.csv")
+
+    def members(day: date) -> set[str]:
+        held: set[str] = set()
+        for d, t, c in changes:
+            if d <= day:
+                (held.add if c == "in" else held.discard)(t)
+        return held
+
+    # when each row's kind is read against its surprise, and a sample's company on its day
+    def kind(surprise: float) -> str:
+        return "above" if surprise >= 2.0 else "below" if surprise <= -2.0 else "as expected"
+
+    sample = rows[:: max(1, len(rows) // 40)]
+
+    # then every kind is the surprise's at ±2%, every report is from 2011, and each sampled
+    # report's company is a member within a day of it (the 8-K's day)
+    assert all(row["kind"] == kind(float(row["surprise"])) for row in rows)
+    assert min(row["day"] for row in rows) >= "2011-01-03"
+    assert all(
+        any(
+            row["ticker"] in members(date.fromisoformat(row["day"]) + timedelta(days=d))
+            for d in (-1, 0, 1)
+        )
+        for row in sample
+    )

@@ -762,3 +762,78 @@ def test_the_companies_loaded_each_evening_include_the_s_p_500_additions() -> No
     # then every addition's company is among them, once
     assert added <= set(tickers)
     assert len(tickers) == len(set(tickers))
+
+
+def test_s_p_500_earnings_load_one_event_a_report_and_follows_prints_the_misses(
+    tmp_db: Path, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    # given a flat index and twelve companies, each reporting a miss and falling 6%
+    index = _closes([0.0] * 700)
+    con = db.get_connection()
+    rows = [("SPY / ES", c) for c in index]
+    reports = ["day,time,ticker,eps,forecast,surprise,kind"]
+    for n in range(12):
+        ticker, i = f"C{n}", 520 + 8 * (n // 2)
+        rows += [(ticker, c) for c in _company(n, i, -0.06)]
+        reports.append(f"{index[i].day},14:00,{ticker},0.90,1.00,-10.0,below")
+    con.executemany(
+        "INSERT INTO daily_bars (instrument, day, close, source) VALUES (?, ?, ?, 'test')",
+        [[i, c.day, c.price] for i, c in rows],
+    )
+    seed = tmp_path / "earnings_sp500.csv"
+    seed.write_text("\n".join(reports) + "\n")
+
+    # when the seed is loaded and follows prints the S&P 500's earnings, and the page's data is built
+    batch = flows.EARNINGS_500_FLOW.load(seed, datetime(2026, 11, 19, tzinfo=UTC))
+    flows.store_events(batch.events)
+    assert main(["follows", "--event", "earnings500"]) == 0
+    printed = [EARNINGS_LINE.match(line) for line in capsys.readouterr().out.splitlines()]
+    ask = cli.ask_data(con)
+
+    # then one event a report; the misses' three spans, the day down; and not on the page's ask
+    cells = [m for m in printed if m]
+    assert len(batch.events) == len({e.event_id for e in batch.events}) == 12
+    assert [(m["kind"], m["span"]) for m in cells] == [
+        ("below", "day"),
+        ("below", "week"),
+        ("below", "month"),
+    ]
+    day_below = [m for m in cells if m["kind"] == "below" and m["span"] == "day"]
+    assert day_below[0]["answer"] == "down"
+    assert "earnings500" not in [entry["name"] for entry in ask["ask"]]
+
+
+def test_load_prices_with_a_seed_loads_that_seed_s_companies_and_the_evening_s_are_unchanged(
+    tmp_db: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given a seed of three reports by two companies
+    seed = tmp_path / "reports.csv"
+    seed.write_text(
+        "day,time,ticker,kind\n2020-01-02,14:00,AAA,below\n2020-04-02,14:00,BBB,above\n"
+        "2020-07-02,14:00,AAA,above\n"
+    )
+    asked: list[str] = []
+
+    def load(tickers: list[str], con: object = None) -> tuple[dict[str, int], list[str]]:
+        asked.extend(tickers)
+        return dict.fromkeys(tickers, 700), []
+
+    monkeypatch.setattr(study, "load_company_bars", load)
+    db.init_db(con=db.get_connection())
+
+    # when load-prices --companies --seed runs, and the evening's companies are listed
+    code = main(["load-prices", "--companies", "--seed", str(seed)])
+    evening = cli.company_tickers()
+
+    # then the seed's two companies are asked, once each, and the evening's list does not read
+    # the S&P 500's earnings
+    with (settings.seed_dir / "earnings_sp500.csv").open(newline="") as handle:
+        sp500 = {row["ticker"] for row in csv.DictReader(handle)}
+    seeds = (flows.CEO_FLOW, flows.EARNINGS_FLOW, flows.ADDITIONS_FLOW)
+    named: set[str] = set()
+    for name in (flow.seed_file for flow in seeds):
+        with (settings.seed_dir / name).open(newline="") as handle:
+            named |= {row["ticker"] for row in csv.DictReader(handle) if row.get("ticker")}
+    assert (code, asked) == (0, ["AAA", "BBB"])
+    assert set(evening) <= named
+    assert not sp500 <= set(evening)

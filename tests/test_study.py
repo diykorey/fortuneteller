@@ -385,6 +385,9 @@ def test_load_releases_prints_count_range_and_skipped_months(
     (tmp_db.parent / "sp500_additions.csv").write_text(
         "day,time,ticker,kind,effective\n2026-10-01,21:15,TWLO,added,2026-10-06\n"
     )
+    (tmp_db.parent / "earnings_sp500.csv").write_text(
+        "day,time,ticker,eps,forecast,surprise,kind\n2026-10-29,20:05,AAPL,1.85,1.77,4.52,above\n"
+    )
     (tmp_db.parent / "boe-changes.csv").write_text("day,time,rate\n2020-03-11,07:00,0.25\n")
     monkeypatch.setattr(settings, "seed_dir", tmp_db.parent)
 
@@ -432,8 +435,9 @@ def test_load_releases_prints_count_range_and_skipped_months(
     report += "loaded 1 United States floods, 2024-06-16 … 2024-06-16\n"
     report += "loaded 1 earnings reports, 2026-10-28 … 2026-10-28\n"
     report += "loaded 1 S&P 500 additions, 2026-10-01 … 2026-10-01\n"
+    report += "loaded 1 S&P 500 earnings reports, 2026-10-29 … 2026-10-29\n"
     assert capsys.readouterr().out == report * 2
-    assert db.count_rows("event_instances", con=db.get_connection()) == 48
+    assert db.count_rows("event_instances", con=db.get_connection()) == 49
 
 
 def test_load_releases_stores_nothing_when_any_flow_fails(

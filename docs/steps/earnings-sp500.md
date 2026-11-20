@@ -22,7 +22,10 @@ below written first.
   day; 820 tickers in all. Written as `data/seed/sp500.csv` (`day`, `ticker`, `change`), as
   `dow.csv` is. Before 2011 the table lists 1 to 13 changes a year against some 20 since, so the
   step starts then. **Check:** the rebuilt count stays between 495 and 515 on every day (seen: 503
-  to 510; a few changes the table misses); outside it, step 1 stops for the owner's call.
+  to 510; a few changes the table misses); outside it, step 1 stops for the owner's call. *Amended
+  2026-11-20 by the owner, after the five changes by hand found Okta's dated on S&P's release
+  day:* the four changes Wikipedia dates on the day of S&P's release (Okta 2026, Phillips 66,
+  Kinder Morgan and Alexion 2012) take the effective day from S&P's release instead.
 - **The reports, the kind, the minute: step 31's.** Nasdaq's calendar pages (saved, 2008 to
   2026-11-18) kept for the members of that day; the kind at ±2%; the minute of the 8-K with Item
   2.02 within a day, from the SEC's filing index of the member's CIK (the SEC's filer number,
@@ -31,11 +34,14 @@ below written first.
   minute. A member no longer listed has no CIK there: its reports are *no 8-K*, and the kept are
   survivors, as in step 35; the share left out so is printed.
 - **The names, as step 35's:** each ticker's SEC company name and Yahoo name beside Wikipedia's,
-  a mismatch read by hand and left out as *another company now*.
+  a mismatch read by hand and left out as *another company now*. *Amended 2026-11-20, before any
+  report or price was read:* the SEC's name alone, since the SEC's list and Yahoo both name
+  today's holder of a ticker; the tickers left out are passed to the seed as `--exclude`.
 - **The scripts, given the members:** `nasdaq_earnings.py seed` and `sec_8k_times.py fetch` take
   the members file and the seed to write (the Dow's by default, so step 31's seed is rewritten
   byte for byte).
-- **The flow:** `earnings500`, type code 36, event type `Earnings release`, the earnings' class
+- **The flow:** `earnings500`, type code 36, event type `Earnings release (S&P 500)` (a flow's
+  own, as each flow's must be), the earnings' class
   (step 31's flow) with seed `data/seed/earnings_sp500.csv`, lesser as step 31's. Its events load
   each evening with every flow's (and the page's `raw-move` card takes its history, as every
   flow's), but **its companies' closes are not loaded each evening and it is not on the page's
@@ -77,7 +83,7 @@ above, and Nasdaq's missing release times.*
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | The membership, the scripts given members, the SEC indexes, the names, the seed | `sp500.csv` and `earnings_sp500.csv` with seed tests (the count in 495 to 515 every day; each report's company a member on its day; kinds of the three); the checks above in `docs/steps/earnings-sp500-steps.txt`; step 31's seed rewritten byte for byte |
-| 2 | The flow, `follows --event earnings500`, `load-prices --companies --seed` | Tests: the seed loads one event per report; `--seed` loads that seed's companies and `company_tickers()` is unchanged; `follows` prints nine cells; `just check` passes |
+| 2 | The flow, `follows --event earnings500`, `load-prices --companies --seed` | Tests: the seed loads one event per report; `--seed` loads that seed's companies and `company_tickers()` is unchanged; `follows` prints each kind's three spans; `just check` passes |
 | 3 | Results | `follows --event earnings500` and `--after-the-day` on a copy of the store, every other flow's `follows` compared, the five excess checks; each expected cell judged right or wrong in the Results section, goldfish-reviewed; roadmap, status, changelog, schema updated |
 
 ## What this step does not do

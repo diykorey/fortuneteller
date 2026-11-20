@@ -8,7 +8,8 @@ from the saved pages, data/seed/dow.csv and the filing indexes `scripts/sec_8k_t
 each member's report with a kind and an 8-K with Item 2.02, and prints the reports left out.
 
 With `--members FILE --out FILE --first DAY` (step 36, docs/steps/earnings-sp500.md) `seed` keeps
-another index's members from DAY and writes FILE; a member with no filing index saved is *no 8-K*.
+another index's members from DAY and writes FILE; a member with no filing index saved is *no 8-K*;
+`--exclude T1,T2` leaves those tickers out as *another company now*.
 
 Usage: uv run python -I scripts/nasdaq_earnings.py fetch DIR [LAST]
        uv run python -I scripts/nasdaq_earnings.py seed DIR SEC_DIR [LAST] [--members FILE --out FILE --first DAY]
@@ -142,6 +143,7 @@ def seed(
     members_file: Path = Path("data/seed/dow.csv"),
     out: Path = SEED,
     first: date = FIRST,
+    exclude: frozenset[str] = frozenset(),
 ) -> None:
     with members_file.open(newline="") as handle:
         changes = list(csv.DictReader(handle))
@@ -158,6 +160,9 @@ def seed(
         for row in (page.get("data") or {}).get("rows") or []:
             ticker = symbol(row["symbol"])
             if ticker not in members:
+                continue
+            if ticker in exclude:
+                left["another company now"] += 1
                 continue
             k = kind(row.get("surprise", ""))
             if k is None:
@@ -210,4 +215,9 @@ if __name__ == "__main__":
             **({"members_file": Path(options["members"])} if "members" in options else {}),
             **({"out": Path(options["out"])} if "out" in options else {}),
             **({"first": date.fromisoformat(options["first"])} if "first" in options else {}),
+            **(
+                {"exclude": frozenset(options["exclude"].split(","))}
+                if "exclude" in options
+                else {}
+            ),
         )

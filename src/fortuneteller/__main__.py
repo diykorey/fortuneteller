@@ -103,7 +103,7 @@ def _load_prices(args: argparse.Namespace) -> int:
     con = db.get_connection()
     db.init_db(con=con)
     if args.companies:
-        return _load_companies(con)
+        return _load_companies(con, args.seed)
     if db.count_rows("event_instances", con=con) == 0:
         print(
             "load-prices: no releases stored; run `fortuneteller load-releases` first",
@@ -148,10 +148,15 @@ def company_tickers() -> list[str]:
     return list(dict.fromkeys(tickers))
 
 
-def _load_companies(con: duckdb.DuckDBPyConnection) -> int:
-    """The companies' closes alone; a company Yahoo fails on is reported, the rest load, and the
+def _load_companies(con: duckdb.DuckDBPyConnection, seed: Path | None = None) -> int:
+    """The companies' closes alone, the evening's or, with ``seed``, that seed's (step 36,
+    docs/steps/earnings-sp500.md); a company Yahoo fails on is reported, the rest load, and the
     exit is 1."""
-    tickers = company_tickers()
+    if seed is None:
+        tickers = company_tickers()
+    else:
+        with seed.open(newline="") as file:
+            tickers = list(dict.fromkeys(row["ticker"] for row in csv.DictReader(file)))
     counts, failed = study.load_company_bars(tickers, con=con)
     for ticker, n in counts.items():
         print(f"{ticker}: {n} closes")
@@ -621,6 +626,7 @@ FOLLOWS_NOUNS = {
     "flood": "floods",
     "earnings": "earnings reports",
     "additions": "S&P 500 additions",
+    "earnings500": "S&P 500 earnings reports",
 }
 
 
@@ -687,10 +693,10 @@ def follows_cells(
             kinds = dict.fromkeys((e.event_id for e in events), study.SCANDAL)
             order: Sequence[str] = (study.SCANDAL,)
             cells = study.follow_ceo(events, con=con, after=after)
-        elif flow is flows.EARNINGS_FLOW or flow is flows.ADDITIONS_FLOW:
+        elif flow in (flows.EARNINGS_FLOW, flows.EARNINGS_500_FLOW, flows.ADDITIONS_FLOW):
             events = flows.stored_events(flow, con=con)
             kinds = study.earnings_kinds(events)
-            order = study.SURPRISE_KINDS if flow is flows.EARNINGS_FLOW else (study.ADDED,)
+            order = (study.ADDED,) if flow is flows.ADDITIONS_FLOW else study.SURPRISE_KINDS
             cells = study.follow_companies(events, kinds, order, con=con, after=after)
         elif flow is flows.OPEC_FLOW:
             kinds = study.detail_kinds(flows.stored_events(flow, con=con))
@@ -1977,8 +1983,8 @@ def ask_data(con: duckdb.DuckDBPyConnection) -> dict[str, list[dict[str, object]
     left_out: list[dict[str, object]] = []
     names = market_names()
     for name, noun in FOLLOWS_NOUNS.items():
-        if name == "additions":
-            continue  # on the page at a later step (docs/steps/sp500-additions.md)
+        if name in ("additions", "earnings500"):
+            continue  # on the page at a later step (docs/steps/sp500-additions.md, earnings-sp500.md)
         try:
             f = follows_cells(name, con)
             cells = list(f.cells)
@@ -2180,6 +2186,11 @@ def build_parser() -> argparse.ArgumentParser:
         "--companies",
         action="store_true",
         help="load only the companies of the CEO scandals (step 20), each under its ticker",
+    )
+    p_prices.add_argument(
+        "--seed",
+        type=Path,
+        help="with --companies: the companies of this seed instead (a ticker column)",
     )
     p_prices.set_defaults(func=_load_prices)
 
