@@ -81,6 +81,8 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **Hole** — a span whose start or end close falls after a gap of missing closes in a market's
   data, such as US markets shut from 2001-09-11 to 2001-09-14; `follows` leaves such an event out
   on that market and counts it in its `out/hole` column ([what follows](steps/what-follows.md)).
+  An event before a market's first close, or after its last, is in neither column: none of
+  Alcoa's 16 reports before Howmet's closes start (2016-11-01) is counted (the owner, 2026-11-20).
 - **HICP** (Harmonised Index of Consumer Prices) — the euro area's inflation measure, the
   counterpart of US CPI, published by **Eurostat**.
 - **Inter-meeting (unscheduled) decision** — a Fed rate change made outside the published meeting

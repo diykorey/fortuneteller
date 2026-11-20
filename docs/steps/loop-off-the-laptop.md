@@ -236,6 +236,8 @@ their own steps.
   (`actions/*`, `astral-sh/setup-uv`).
 - **Script:** `scripts/release-day.sh` keeps the laptop's run; the runner's steps live in the
   workflow until a second caller needs them in a script.
+  *Amended 2026-11-20, by the owner:* the laptop's evening merges its score pull request once
+  the checks pass, so the runner's evening at 18:30 New York no longer waits on it.
 - **The outside timer** (*amended 2026-11-17*): each cron-job.org job sends `POST
   https://api.github.com/repos/diykorey/fortuneteller/actions/workflows/jobs.yml/dispatches` with
   the headers `Authorization: Bearer` and the token, `Accept: application/vnd.github+json` and

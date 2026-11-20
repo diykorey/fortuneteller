@@ -87,6 +87,18 @@ merge_pr() {
         push -q "https://github.com/$repo.git" --delete "$1" || echo "the branch $1 stays on GitHub"
 }
 
+# Waits for the checks on the pull request of branch $1; true when they all pass. Checks may not be
+# reported yet on a pull request opened seconds ago, so it is asked three times.
+checks_pass() {
+    for _ in 1 2 3; do
+        sleep 30
+        if timeout 1200 gh pr checks -R "$repo" "$1" --watch --fail-fast --interval 30 >/dev/null; then
+            return 0
+        fi
+    done
+    return 1
+}
+
 if [ "$step" = live ]; then
     file=data/calls.csv
     files=$file
@@ -150,6 +162,14 @@ if ! git -C "$job_tree" diff --quiet -- "$file"; then
     [ -z "$log_changed" ] || files="$files $log"
     open_pr "Score the calls on $day" "score-$day" \
         "Graded by the evening score at $(date -u +%H:%M:%SZ), after the closes."
+    # Every row is graded (a pending row stops above), so the pull request is merged once its
+    # checks pass (the owner, 2026-11-20, docs/decisions.md): the runner's evening then finds
+    # nothing to wait on. A check that fails leaves it for a person.
+    if checks_pass "score-$day"; then
+        merge_pr "score-$day"
+    else
+        echo "score: checks did not pass; score-$day left open for review"
+    fi
 elif [ -n "$log_changed" ]; then
     files=$log
     open_pr "Grade the triggers on $day" "triggers-$day" \
