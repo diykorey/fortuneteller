@@ -99,3 +99,49 @@ above, and Nasdaq's missing release times.*
 - `scripts/sp500_additions.py names500 DIR SEC_DIR` prints the names side by side.
 - `flows.py`: `EARNINGS_500_FLOW`; `__main__.py`: `follows` as for the earnings;
   `load-prices --companies` gains `--seed FILE`.
+
+## Results
+
+*Measured 2026-11-20 on a copy of the store ([evidence](earnings-sp500-results.txt), [step 1's
+evidence](earnings-sp500-steps.txt)). The table's numbers are printed by `follows --event
+earnings500`, the reaction close's by `follows --event earnings500 --after-the-day`.*
+
+**In plain words:** across 24,298 reports by S&P 500 members since 2011, a **miss was followed by
+the shares trailing the index on the day** 2,522 times and beating it 999 of the 3,521 that moved
+(72%), where the companies' own days split about evenly. Replayed walk-forward that call was right
+2,506 times of 3,798 (66%): it **holds**, as on the Dow (156 of 219). The Dow's two other holds do
+not carry over: the miss's week was right 59.5% (2,246 of 3,777), just under the 60% bar, and an
+in-line report's day 52% (1,916 of 3,664). A beat is followed by *up* on the day and the week, both
+marked *the period*, and on the month, which does not hold. From the reaction close nothing is an
+answer, the miss's day included.
+
+| | Expected | Found |
+| --- | --- | --- |
+| Miss, day | *down*, holds | *down*, 999/300/2,522 of 3,821; **holds**, 2,506 of 3,798 — right |
+| Miss, week | *down*, holds | *down*, 961/578/2,263; doesn't hold, 2,246 of 3,777 (59.5%) — **wrong** |
+| Miss, month | *down* | *down*, marked *the period* — **wrong** |
+| In line, day | *down*, holds | *down*, 1,444/367/2,003; doesn't hold, 1,916 of 3,664 — **wrong** |
+| In line, week | *down* | *down*, 1,325/669/1,805 — right |
+| In line, month | *down* | *down*, marked *the period* — **wrong** |
+| Beat, day | *up*, marked *the period* | *up*, 8,788/1,515/6,105, marked *the period* — right |
+| Beat, week | *up*, doesn't hold | *up*, marked *the period* — **wrong** |
+| Beat, month | *up*, doesn't hold | *up*, 6,515/4,306/5,226; doesn't hold — right |
+| From the reaction close | miss's day *down*, the rest *can't say* | every cell *can't say* (the beat's month *about the same*, marked *the period*) — **wrong** on the miss's day |
+| Nothing else holds; answers beyond these ≤ chance line + 2 | | none beyond them (chance line 0.3) — right |
+| Reports in the seed; shares | 20,000 to 30,000; within 5 points of 72/16/12 | 24,298; 68.3/15.8/15.9 — right |
+| Kept by `follows` | at least 70% | 24,043 on the day (99%) — right |
+| Every other flow's `follows` | unchanged | CEO, earnings, OPEC and additions: `cmp` identical — right |
+
+- **Six cells of fourteen were expected wrongly.** The one that matters stands: a miss's day,
+  on about 3,800 reports instead of 235.
+- **Left out:** 240 holes on the day (fewer than 504 closes before) and 15 with no reaction close
+  yet (reports of 2026-11-18, the copy's last close), in neither column as the
+  [Glossary](../glossary.md)'s *Hole* says. Before the seed: 960 *no 8-K* (196 tickers with no
+  SEC filer number today: bought, merged or delisted) and 178 *another company now*; the kept
+  lean towards survivors.
+- **The five by hand:** rows 1, 5,000, 10,000, 15,000 and the last kept (24,296; the last row,
+  Palo Alto's of 2026-11-18, has no reaction close in the copy) equal `study.excess_spans` to 0.01
+  point.
+- **`follows` took 38 minutes** on the copy (34 from the reaction close), which is one reason it
+  stays off the evening job.
+- **By chance:** about 0.3 answers and 0.1 holds on all history; nine answers and one hold found.

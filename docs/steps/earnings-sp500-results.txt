@@ -1,0 +1,56 @@
+# Step 36, step 3 (docs/steps/earnings-sp500.md). Run 2026-11-20 on a copy of the store (step 35's copy,
+# its S&P 500 additions' companies loaded) with FT_DB_PATH set to it; from the branch's root.
+
+$ fortuneteller load-releases   (the main checkout's cache)
+loaded 24298 S&P 500 earnings reports, 2011-01-06 … 2026-11-18
+
+$ fortuneteller load-prices --companies --seed data/seed/earnings_sp500.csv
+598 of 598 companies loaded
+(5m58s)
+
+$ fortuneteller follows --event earnings500
+follows: 24298 S&P 500 earnings reports 2011-01-06 … 2026-11-18: 16602 above, 3827 as expected, 3869 below
+kind        span   market        n  up same down  out/hole  base up/same/down  answer          chance  placebo  walk-forward
+above       day    vs S&P 500   16408 8788 1515 6105    0/183  0.33/0.33/0.33     up              0.0000  period   16274: 8715 right, doesn't hold
+above       week   vs S&P 500   16346 7787 2765 5794    0/239  0.33/0.33/0.33     up              0.0000  period   15857: 7556 right, doesn't hold
+above       month  vs S&P 500   16047 6515 4306 5226    0/272  0.34/0.33/0.33     up              0.0000  -        14421: 5848 right, doesn't hold
+as expected day    vs S&P 500   3814 1444  367 2003     0/13  0.33/0.33/0.33     down            0.0000  -        3664: 1916 right, doesn't hold
+as expected week   vs S&P 500   3799 1325  669 1805     0/27  0.33/0.33/0.34     down            0.0000  -        3622: 1723 right, doesn't hold
+as expected month  vs S&P 500   3727 1222  986 1519     0/44  0.33/0.33/0.34     down            0.0000  period   2832: 1179 right, doesn't hold
+below       day    vs S&P 500   3821 999  300 2522     0/44  0.33/0.33/0.34     down            0.0000  -        3798: 2506 right, holds
+below       week   vs S&P 500   3802 961  578 2263     0/62  0.32/0.33/0.34     down            0.0000  -        3777: 2246 right, doesn't hold
+below       month  vs S&P 500   3749 871  931 1947     0/73  0.32/0.33/0.35     down            0.0000  period   3699: 1927 right, doesn't hold
+by chance: about 0.3 answers on all history, 0.1 holds walk-forward
+(37m59s)
+
+$ fortuneteller follows --event earnings500 --after-the-day
+follows: 24298 S&P 500 earnings reports 2011-01-06 … 2026-11-18: 16602 above, 3827 as expected, 3869 below, spans from the reaction close
+kind        span   market        n  up same down  out/hole  base up/same/down  answer          chance  placebo  walk-forward
+above       day    vs S&P 500   16400 6276 3650 6474    0/188  0.33/0.33/0.33     can't say       0.0391  -        29: 9 right, too few
+above       week   vs S&P 500   16350 5761 4679 5910    0/234  0.33/0.33/0.33     can't say       0.0646  -        1454: 494 right, doesn't hold
+above       month  vs S&P 500   16040 5085 5629 5326    0/266  0.34/0.33/0.33     about the same  0.0000  period   15577: 5410 right, doesn't hold
+as expected day    vs S&P 500   3815 1461  865 1489     0/11  0.33/0.33/0.33     can't say       0.3176  -        77: 21 right, doesn't hold
+as expected week   vs S&P 500   3800 1376 1026 1398     0/26  0.33/0.33/0.34     can't say       0.4286  -        0: 0 right, too few
+as expected month  vs S&P 500   3727 1249 1295 1183     0/42  0.33/0.33/0.34     can't say       0.0232  -        2187: 736 right, doesn't hold
+below       day    vs S&P 500   3815 1470  779 1566     0/50  0.33/0.33/0.34     can't say       0.1917  -        147: 61 right, doesn't hold
+below       week   vs S&P 500   3801 1313 1057 1431     0/63  0.32/0.33/0.34     can't say       0.2565  -        1193: 461 right, doesn't hold
+below       month  vs S&P 500   3746 1124 1283 1339     0/74  0.32/0.33/0.35     can't say       0.0884  -        1168: 384 right, doesn't hold
+by chance: about 0.3 answers on all history, 0.1 holds walk-forward
+(33m51s)
+
+# Every other flow's follows: main's code (a worktree of origin/main at 4fc824b) against this
+# branch's, on the same copy (main's first run printed uv's venv lines, the rest identical):
+$ for e in ceo earnings opec additions; do follows --event $e (main) > main-$e.txt; (branch) > new-$e.txt; cmp main-$e.txt new-$e.txt; done
+ceo same; earnings same (12 lines); opec same (189 lines); additions same (6 lines)
+
+# The five by hand: the company's move less SPY / ES's, close before to reaction close (the 8-K's
+# New York minute: before 16:00 that day's close, else the next), from the copy's daily_bars,
+# against study.excess_spans(stock, index, 1)'s span over the same closes:
+    1 STZ   above       8-K 2011-01-06 09:21 NY  2011-01-05 21.58 -> 2011-01-06 19.84, SPY 1276.56 -> 1273.85: -7.85 vs -7.85  (4740 closes before)
+ 5000 MNST  above       8-K 2015-02-26 16:13 NY  2015-02-26 10.40 -> 2015-02-27 11.76, SPY 2110.74 -> 2104.50: +13.43 vs +13.43  (7366 closes before)
+10000 KMB   above       8-K 2018-10-22 08:30 NY  2018-10-19 110.23 -> 2018-10-22 106.40, SPY 2767.78 -> 2755.88: -3.04 vs -3.04  (9735 closes before)
+15000 LLY   below       8-K 2021-10-26 07:06 NY  2021-10-25 245.05 -> 2021-10-26 248.44, SPY 4566.48 -> 4574.79: +1.20 vs +1.20  (12459 closes before)
+24298 PANW 2026-11-18 no reaction close
+# SPY's last stored close: 2026-11-18
+24296 TJX   as expected 8-K 2026-11-18 09:19 NY  2026-11-17 129.85 -> 2026-11-18 140.30, SPY 7340.53 -> 7323.63: +8.28 vs +8.28  (9924 closes before)
+# Within 0.01 point on all five.
