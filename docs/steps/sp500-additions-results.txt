@@ -106,3 +106,16 @@ COIN         —            —            —            0.51 (26)
 ALL          —            0.07 (1)     0.64 (95)    0.70 (35)
 
 moves = ratio >= 1.10 and p < 0.01; unclear = one of the two; doesn't = neither; other = days with no CPI, NFP, Fed, RET, PCE, GDP, ECB, HICP or ISM reaction
+
+# Every other flow's follows, main's code (the spec's commit a86f707) against this branch's, on
+# the same copy of the store:
+$ for e in ceo earnings opec; do follows --event $e (main) > main-$e.txt; (branch) > new-$e.txt; cmp main-$e.txt new-$e.txt; done
+ceo same (6 lines)
+earnings same (12 lines)
+opec same (189 lines)
+
+# The 39 holes and 9 in neither column, by a query on the copy's daily_bars (each kept row's
+# ticker: no closes; first close after the announcement; closes on or before it):
+no closes 28
+announced before first close 9 [('ADT', '2012-09-24', '2018-01-19'), ('ABBV', '2012-12-20', '2013-01-02'), ('UA', '2014-04-24', '2016-03-23'), ('QRVO', '2015-06-09', '2026-10-02'), ('FTV', '2016-06-23', '2016-07-05'), ('SBNY', '2021-12-03', '2024-08-15'), ('WBD', '2022-04-07', '2026-10-05'), ('KVUE', '2023-08-21', '2026-10-30'), ('VLTO', '2023-09-28', '2023-10-04')]
+under 504 closes before 11

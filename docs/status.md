@@ -13,7 +13,7 @@ Where the work is and what comes next: the task last finished, the tasks in prog
 ## Last completed
 
 Step 35: S&P 500 additions ([results](steps/sp500-additions.md#results)). 143 kept; the shares beat
-the index the day after the announcement 85 times of 143, an answer at chance 0.0098 that does
+the index the day after the announcement 85 times of the 135 that moved, an answer at chance 0.0098 that does
 not hold walk-forward (30 of 53); the week and the month *can't say*.
 
 ## In progress
