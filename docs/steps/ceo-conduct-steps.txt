@@ -35,3 +35,13 @@ S&P 500 members' 8-Ks (distinct filings): 24   companies: 18
 2026-06-09 SMCI  8.01,9.01        an indictment's allegations, the company's controls: out
 
 # Kept: 0. A CEO's own conduct with the CEO staying: none. Departures: 3 (BBY, KR, WYNN).
+
+# The second reading: rows 1, 11 and 21 above (1, then every tenth, of 24), each filing's passages
+# around the words given to a fresh reader with only the rule:
+EBAY 2011-03-30  OUT (not the CEO's own conduct): a merger agreement            agrees
+BEN  2020-02-18  OUT (not the CEO's own conduct): a merger agreement's warranty agrees
+KR   2025-03-03  OUT (a departure): McMullen resigned after the investigation  agrees
+# 0 disagreements of 3 (the rule stops at more than one).
+# Query 3: the first try's HTTP 500 was retried; the retry answered with a valid result of 0 hits.
+# EchoStar (SATS) came in by a ticker clash: SEC's list gives its filer ECHO, a ticker sp500.csv holds
+# from 2011 for another company; both its filings are out on their reading.

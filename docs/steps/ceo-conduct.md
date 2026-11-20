@@ -41,8 +41,8 @@ At the end: `follows --event conduct` prints what followed against the rule belo
 
 ## The rule, fixed before measuring
 
-*Written 2026-11-20. Seen before, no price and no count kept: the three queries' hit totals (1,238,
-194, and one that the search refused), and four hit names (Guess 2018, Best Buy 2012, Kroger 2025,
+*Written 2026-11-20. Seen before, no price and no count kept: the three queries' hit totals from 2001 (194,
+1,238, and one that the search refused; *corrected 2026-11-20:* first written in the wrong order), and four hit names (Guess 2018, Best Buy 2012, Kroger 2025,
 PDL 2007).*
 
 - Step 20's bars: under 10 events *too few*; an answer at p < 0.01 against the company's own base;
@@ -80,13 +80,15 @@ PDL 2007).*
 
 *Run 2026-11-20 ([evidence](ceo-conduct-steps.txt)). No price was read.*
 
-**In plain words:** the list holds no such case. From 2011, the three searches give 853 8-Ks
-(143, 710 and none); 24 are S&P 500 members' on the day, from 18 companies. Read by the rule, none
+**In plain words:** the list holds no such case. From 2011, the three searches give 853 hits
+(143, 710 and none; hits may overlap); 24 are S&P 500 members' on the day, from 18 companies. Read by the rule, none
 is a CEO's conduct with the CEO staying: Best Buy 2012, Kroger 2025 and Wynn 2018 are departures
-(step 20's kind); the other 21 use the words in lawsuits, settlements, merger agreements and risk
-factors. **0 kept, under the 10 the rule asks: the step ends at step 1.** A company seems to put a
-conduct review in an 8-K when the CEO goes, not when the CEO stays, so the companies' own filings
-are no list for this kind.
+(step 20's kind); the other 21 use the words in credit and merger agreements, lawsuits and settlements,
+risk factors, an annual report and an indictment. **0 kept, under the 10 the rule asks: the step
+ends at step 1.** In these three phrasings, a company put a conduct review in an 8-K when the CEO
+went, not when the CEO stayed. The reach: three phrasings, 8-Ks only, read from the passage
+around the words; members matched through today's SEC ticker list, so a filer since bought or
+renamed can be missed (EchoStar's two came in by a ticker clash, both out).
 
 | | Expected | Found |
 | --- | --- | --- |
@@ -94,4 +96,4 @@ are no list for this kind.
 | Spans | *too few* or *can't say* | not measured |
 
 The kind stays parked as before ([roadmap](../roadmap.md), step 20's part 1b): it waits on a free
-list nobody picks, which this was not. No seed, flow or test is added.
+list nobody picks that holds such cases, which this one did not. No seed, flow or test is added.
