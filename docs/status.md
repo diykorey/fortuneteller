@@ -42,7 +42,8 @@ a Dow company's report above, in line with or below the consensus; all 2,988 cel
 
 ## Next
 
-Step 23: the first weekly post, now that step 22's page is checked.
+Step 23, step 3: the first weekly post, drafted by `weekly-post` on Monday 2026-11-23 and
+published by the owner; then the owner's answer to the 2026-11-20 zoom-out ([Decisions](decisions.md)).
 
 ## Known, not yet fixed
 
