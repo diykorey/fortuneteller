@@ -134,7 +134,7 @@ release are *can't say* on every span, as are all spans from the reaction close.
 - **Why it may hold, and what to doubt.** 74 splits, 51 graded: a hold near its bar on a small
   kind. The kept are survivors (168 tickers Yahoo no longer lists; a company that split and then
   failed is missing), and companies split after their shares have risen, so the day may carry the
-  run-up. 21 of the 74 *alone* are dated by hand (step 1), 5 of them at 20:00 for a time not
+  run-up. 21 of the 74 *alone* are dated by hand (step 1), 4 of them at 20:00 for a time not
   given: a morning release so placed is read a day late, which can only blur the day.
 - **The five by hand:** rows 1, 26, 52, 78 and 105 equal `study.excess_spans` to 0.01 point.
 - **The span across a split day:** no week crosses one (the shortest lead, Tractor Supply's, is
