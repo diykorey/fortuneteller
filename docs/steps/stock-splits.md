@@ -102,3 +102,42 @@ from the close before and from the reaction close, against the rule below writte
 - `scripts/stock_splits.py fetch DIR` (Yahoo's splits and the full-text search, saved under
   `DIR`) and `seed DIR`.
 - `flows.py`: `SPLITS_FLOW`; `study.py`: the two kinds.
+
+## Results
+
+*Measured 2026-11-20 on a copy of the store ([evidence](stock-splits-results.txt), [step 1's
+evidence](stock-splits-steps.txt)). The table's numbers are printed by `follows --event splits`,
+the reaction close's by `follows --event splits --after-the-day`.*
+
+**In plain words:** when an S&P 500 company announced a stock split on its own, not in an earnings
+release, its shares beat the index the next day 48 times and trailed it 11 of the 59 that moved
+(81%), where the same companies' own days split about evenly (52% up of those that moved). That is
+an answer, *up*, and replayed walk-forward it was right 33 times of 51 (65%): it **holds**, which
+the rule did not expect. The week from the close before leans the same way, 39 up against 9, an
+answer that does not hold (21 of 44). The month is *can't say*. Splits announced in an earnings
+release are *can't say* on every span, as are all spans from the reaction close.
+
+| | Expected | Found |
+| --- | --- | --- |
+| Alone, day | *up*, doesn't hold | *up*, 48/15/11 of 74, chance below 0.0001, placebo `-`; **holds**, 33 of 51 — **wrong** |
+| Alone, week | *can't say* | *up*, 39/26/9, chance 0.0002, placebo `-`; doesn't hold, 21 of 44 — **wrong** |
+| Alone, month | *can't say* | *can't say*, 0.41 — right |
+| With a report, every span | *can't say* | *can't say*: the day 18/0/12 of 30, 0.25; the week 0.34; the month 0.15 — right |
+| From the reaction close | every cell *can't say* | every cell *can't say* — right |
+| Answers beyond these ≤ chance line + 2 | | one, the alone week (chance line 0.2) — right |
+| Splits in the seed | 100 to 300 | 105 — right |
+| With a report | 30% to 70% | 31 of 105, 29.5% — **wrong**; the owner chose to go on |
+| *No 8-K* | at most 40% of those asked | 19 of 159, 12% — right |
+| Kept by `follows` | at least 70% | 104 of 105 on the day (one hole) — right |
+| Every other flow's `follows` | unchanged, both runs | 15 flows both runs `cmp` identical; `earnings500` not re-run (38 minutes a run) — right, but for that one |
+
+- **Why it may hold, and what to doubt.** 74 splits, 51 graded: a hold near its bar on a small
+  kind. The kept are survivors (168 tickers Yahoo no longer lists; a company that split and then
+  failed is missing), and companies split after their shares have risen, so the day may carry the
+  run-up. 21 of the 74 *alone* are dated by hand (step 1), 5 of them at 20:00 for a time not
+  given: a morning release so placed is read a day late, which can only blur the day.
+- **The five by hand:** rows 1, 26, 52, 78 and 105 equal `study.excess_spans` to 0.01 point.
+- **The span across a split day:** no week crosses one (the shortest lead, Tractor Supply's, is
+  15 days); its month does, and its stored closes show no fall of the 5-for-1's 80% across
+  2024-12-20: the closes are split-adjusted.
+- **By chance:** about 0.2 answers and 0.0 holds on all history; two answers and one hold found.

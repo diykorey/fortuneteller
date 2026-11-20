@@ -12,17 +12,13 @@ Where the work is and what comes next: the task last finished, the tasks in prog
 
 ## Last completed
 
-Step 36: earnings beyond the Dow ([results](steps/earnings-sp500.md#results)). 24,298 reports by
-S&P 500 members from 2011; after a miss the shares trailed the index on the day 2,522 times of the
-3,521 that moved, and the call holds walk-forward, 2,506 of 3,798 (66%). The Dow's other two holds
-do not carry over.
+Step 37: stock splits ([results](steps/stock-splits.md#results)). 105 forward splits by S&P 500
+members from 2011; a split announced alone was followed by the shares beating the index the next
+day 48 times of the 59 that moved, and the call holds walk-forward, 33 of 51; in an earnings
+release, *can't say*.
 
 ## In progress
 
-- **Step 37: stock splits** ([the spec](steps/stock-splits.md)): steps 1 and 2 done, 105 forward
-  splits by S&P 500 members from 2011 dated by their first public news (24 by hand), and the
-  `splits` flow. Measured on a copy of the store, not yet checked or reviewed. Next: the Results,
-  their goldfish review, a second pull request.
 - **Step 34: a same-day source for earnings** ([the spec](steps/earnings-same-day.md)): step 1
   done, Yahoo's kind is Nasdaq's on 102 of 110 reports (92.7%, bar 90%). Next: the speed, asked on
   each member's report from 2026-11-23 to 2027-01-31.
@@ -54,8 +50,7 @@ do not carry over.
 ## Next
 
 Monday 2026-11-23: step 23's first weekly post, drafted by `weekly-post` and published by the
-owner, and step 33's first refresh. Meanwhile step 37's Results, then step 38, a CEO's conduct
-with no departure, the last of the four kinds the owner chose on 2026-11-20.
+owner, and step 33's first refresh. Meanwhile step 38, a CEO's conduct with no departure, the last of the four kinds the owner chose on 2026-11-20.
 
 ## Known, not yet fixed
 
