@@ -106,6 +106,7 @@ def test_seed_dir_has_no_unexpected_csvs() -> None:
         "floods.csv",
         "dow.csv",
         "earnings.csv",
+        "sp500_additions.csv",
         "boe-changes.csv",
         "fomc_sentiment_dictionary.csv",
     }
@@ -521,3 +522,20 @@ def test_yahoo_s_quarter_matches_nasdaq_s_and_its_kind_is_nasdaq_s_way() -> None
     assert key == "Oct/2026"
     assert kinds == ["above", "as expected", "below"]
     assert script.kind(None, 0.64) is None
+
+
+def test_sp500_additions_are_announced_ahead_one_kind_one_row_a_ticker_a_day() -> None:
+    # given step 35's seed (docs/steps/sp500-additions.md)
+    with (settings.seed_dir / "sp500_additions.csv").open(newline="", encoding="utf-8") as handle:
+        rows = list(csv.DictReader(handle))
+
+    # when each row's announcement is set against its effective day
+    leads = [(date.fromisoformat(r["effective"]) - date.fromisoformat(r["day"])).days for r in rows]
+    per_day = [(r["day"], r["ticker"]) for r in rows]
+
+    # then every one is 1 to 40 days ahead, of the one kind, a ticker once a day, none reused since
+    assert len(rows) == 191
+    assert all(1 <= lead <= 40 for lead in leads)
+    assert {r["kind"] for r in rows} == {"added"}
+    assert len(per_day) == len(set(per_day))
+    assert not {"CSRA", "INFO", "NWSA"} & {r["ticker"] for r in rows}
