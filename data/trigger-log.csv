@@ -1,1 +1,4 @@
 file,line,flow,day,kind,market,span,merged_at,answer,chance,up,same,down,cut,outcome,result
+2026-11-19-claims.csv,2,claims,2026-11-19,above,T5YIE,day,2026-11-19T15:44:22+00:00,can't say,0.38514678670034613,74,67,66,1.000000000000023,,
+2026-11-19-claims.csv,2,claims,2026-11-19,above,T5YIE,week,2026-11-19T15:44:22+00:00,can't say,0.4737639315927586,60,54,56,3.000000000000002,,
+2026-11-19-claims.csv,2,claims,2026-11-19,above,T5YIE,month,2026-11-19T15:44:22+00:00,left out,,,,,,,

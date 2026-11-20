@@ -1,4 +1,6 @@
+import dataclasses
 import math
+import re
 import random
 from datetime import UTC, date, datetime, time, timedelta
 from pathlib import Path
@@ -586,3 +588,124 @@ def test_rates_so_far_answers_each_prefix_as_its_lists_would() -> None:
             chances[DOWN] = stats.poisson_binomial_tail(counts[DOWN], [1 - s for s in shares])
         assert chance == min(chances.values())
         assert (UP in chances) == (n <= 30)
+
+
+EARNINGS_LINE = re.compile(
+    r"^(?P<kind>above|as expected|below)\s+(?P<span>day|week|month)\s+vs S&P 500\s+"
+    r"(?P<n>\d+)\s+(?P<up>\d+)\s+(?P<same>\d+)\s+(?P<down>\d+)\s+\d+/\d+\s+"
+    r"(?P<base>[\d.]+/[\d.]+/[\d.]+)\s+(?P<answer>up|down|about the same|can't say|too few)\s+"
+    r"\S+\s+(?P<placebo>period|-)\s+(?P<graded>\d+): (?P<right>\d+) right, (?P<verdict>.+)$"
+)
+
+
+def test_the_page_s_earnings_cells_are_follows_lines_with_their_kinds_words(
+    tmp_db: Path, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    # given a flat index and 36 companies, twelve of each kind, each 6% up or down on its report
+    index = _closes([0.0] * 700)
+    con = db.get_connection()
+    rows = [("SPY / ES", c) for c in index]
+    reports = ["day,time,ticker,eps,forecast,surprise,kind"]
+    for n in range(36):
+        kind = (study.ABOVE, study.AS_EXPECTED, study.BELOW)[n % 3]
+        ticker, i = f"C{n}", 520 + 4 * n
+        rows += [(ticker, c) for c in _company(n, i, 0.06 if kind == study.ABOVE else -0.06)]
+        reports.append(f"{index[i].day},14:00,{ticker},1,1,0,{kind}")
+    con.executemany(
+        "INSERT INTO daily_bars (instrument, day, close, source) VALUES (?, ?, ?, 'test')",
+        [[i, c.day, c.price] for i, c in rows],
+    )
+    seed = tmp_path / "earnings.csv"
+    seed.write_text("\n".join(reports) + "\n")
+    flows.store_events(flows.EARNINGS_FLOW.load(seed, datetime(2026, 11, 19, tzinfo=UTC)).events)
+
+    # when follows prints the earnings and the page's data is built
+    assert main(["follows", "--event", "earnings"]) == 0
+    printed = [EARNINGS_LINE.match(line) for line in capsys.readouterr().out.splitlines()[2:-1]]
+    ask = cli.ask_data(con)
+
+    # then every line is one cell, equal field by field, with its own kind's words and no "%"
+    (earnings,) = [entry for entry in ask["ask"] if entry["name"] == "earnings"]
+    cells = {(c["kind"], c["span"]): c for c in earnings["cells"]}  # type: ignore[union-attr]
+    assert len(printed) == len(cells) == 9
+    for line in printed:
+        assert line is not None
+        cell = cells[(line["kind"], line["span"])]
+        assert [cell["up"], cell["same"], cell["down"]] == [
+            int(line["up"]),
+            int(line["same"]),
+            int(line["down"]),
+        ]
+        shares = [cell["base_up"], cell["base_same"], cell["base_down"]]
+        assert "/".join(f"{s:.2f}" for s in shares) == line["base"]
+        assert (cell["answer"], cell["verdict"]) == (line["answer"], line["verdict"])
+        assert (cell["graded"], cell["right"]) == (int(line["graded"]), int(line["right"]))
+        assert cell["period"] == (line["placebo"] == "period")
+        assert str(cell["say"]).startswith(
+            f"After {cli.ASK_DECISIONS['earnings'][line['kind']]}, the company against the S&P 500"
+        )
+        assert "%" not in str(cell["say"])
+    assert [k["events"] for k in earnings["kinds"]] == [12, 12, 12]  # type: ignore[index]
+    assert cells[(study.BELOW, "day")]["answer"] == study.DOWN
+
+
+def test_a_cell_the_placebo_marks_says_so_and_is_left_uncoloured() -> None:
+    # given one answer the placebo gives too, and the same answer it does not
+    base = Base(0.01, {UP: 1 / 3, SAME: 1 / 3, DOWN: 1 / 3}, n=500)
+    clean = study.Follow(
+        {UP: 12, SAME: 0, DOWN: 0}, 0, 0, base, UP, 0.0001, False, 40, 30, 0.001, "holds"
+    )
+    marked = dataclasses.replace(clean, period=True)
+    names = {study.EXCESS_MARKET: "the company against the S&P 500"}
+
+    # when each is made a page cell
+    cells = [
+        cli.ask_cell("earnings", study.ABOVE, "day", study.EXCESS_MARKET, f, names)
+        for f in (clean, marked)
+    ]
+
+    jobs = cli.ask_cell("nfp", study.ABOVE, "day", "EURUSD", marked, names)
+
+    # then only the marked one carries the mark and its words, a jobs report's with the weekday,
+    # and the page leaves it uncoloured
+    assert [c["period"] for c in cells] == [False, True]
+    assert str(cells[1]["say"]).endswith(cli.PERIOD_WORDS)
+    assert cli.PERIOD_WORDS not in str(cells[0]["say"])
+    assert str(jobs["say"]).endswith(cli.WEEKDAY_PERIOD_WORDS)
+    page = (Path(cli.__file__).parent / "scoreboard.html").read_text()
+    assert "!c.kind_cell && !c.period && c.answer" in page
+    assert "c.verdict === 'holds' && !c.kind_cell && !c.period" in page
+
+
+def test_load_prices_loads_the_companies_and_a_failing_one_does_not_fail_it(
+    tmp_db: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    # given the markets loaded and Yahoo failing for one company alone
+    asked: list[str] = []
+    monkeypatch.setattr(cli, "company_tickers", lambda: ["AAA", "BAD"])
+    monkeypatch.setattr(cli, "_fred_key", lambda _command: "key")
+    monkeypatch.setattr(study, "load_daily_bars", lambda _key, con=None: None)
+    monkeypatch.setattr(study, "store_observations", lambda con=None: {})
+
+    def load(tickers: list[str], con: object = None) -> tuple[dict[str, int], list[str]]:
+        asked.extend(tickers)
+        return {"AAA": 700}, ["BAD: Yahoo returned HTTP 404 for BAD"]
+
+    monkeypatch.setattr(study, "load_company_bars", load)
+    store = db.get_connection()
+    db.init_db(con=store)
+    db.insert_models("event_instances", [])
+    monkeypatch.setattr(db, "count_rows", lambda _table, con=None: 1)
+
+    # when load-prices runs, and load-prices --companies
+    full = main(["load-prices"])
+    full_out = capsys.readouterr()
+    alone = main(["load-prices", "--companies"])
+
+    # then both ask for every company; the full load exits 0 and the companies' alone 1
+    assert asked == ["AAA", "BAD", "AAA", "BAD"]
+    assert (full, alone) == (0, 1)
+    assert "1 of 2 companies loaded" in full_out.out
+    assert "HTTP 404 for BAD" in full_out.err

@@ -1339,7 +1339,8 @@ def test_the_page_s_opec_cells_are_follows_lines_with_their_own_kind_s_words(
     assert all(str(cells[key]["say"]).endswith(cli.KIND_CELL_WORDS) for key in marked)
     assert [k["events"] for k in opec["kinds"]] == [22, 22]  # type: ignore[index]
     page = (Path(cli.__file__).parent / "scoreboard.html").read_text()
-    assert "!c.kind_cell && c.answer" in page and "c.verdict === 'holds' && !c.kind_cell" in page
+    assert "!c.kind_cell && !c.period && c.answer" in page
+    assert "c.verdict === 'holds' && !c.kind_cell && !c.period" in page
 
 
 def test_the_page_names_the_boj_when_its_rates_cannot_be_read_and_shows_the_boe(

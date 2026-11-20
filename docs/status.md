@@ -12,15 +12,16 @@ Where the work is and what comes next: the task last finished, the tasks in prog
 
 ## Last completed
 
-Step 31: earnings ([results](steps/earnings.md#results)). From the close before, a Dow member's
-shares fall behind the S&P 500 after a miss or an in-line report, and run ahead over the week and
-month after a beat; a miss's day and week and an in-line report's day hold walk-forward.
+Step 29: ask about phase 5's kinds ([results](steps/ask-phase-5.md#results)). The published page
+answers OPEC+, the two banks, violent acts, hacks, landfalls and floods: 12 kinds, 1,116 cells, each
+equal to `follows`' line; gasoline's day after *oil up* the one new hold, Brent's day the kind.
 
 ## In progress
 
-- **Step 29: ask about phase 5's kinds** ([the spec](steps/ask-phase-5.md)): the page's
-  section answers OPEC+, the two banks, violent acts, hacks, landfalls and floods. Step 1 built; step 2
-  waits for the evening job.
+- **Step 32: ask about earnings** ([the spec](steps/ask-earnings.md)): the page answers step 31's
+  three earnings kinds, every cell carries the placebo's mark, and `load-prices` loads the
+  companies every evening. Step 1 done on a copy of the store: 7 holds and 3 period marks, as
+  expected. Step 2 waits for the evening job.
 - **Step 23: be seen, and count it** ([the spec](steps/be-seen.md)): a cookie-free Umami counter
   on the page and a weekly LinkedIn post drafted by `weekly-post`, both the owner's choice. Step 1
   done: the counter is live and counts a visit once, read through Umami's share link. Next: the
@@ -30,7 +31,10 @@ month after a beat; a miss's day and week and an in-line report's day hold walk-
   empty (TradingView rewrote 2025's claims weeks), so it must travel encrypted. Step 2, the shadow
   run, beside the laptop: its first day, retail sales 2026-11-17, failed *on time*, GitHub's
   schedule starting runs almost 6 to 10 hours late. By the owner, an outside timer (cron-job.org) starts
-  the runs instead; the shadow restarts on two new release days once its test ask reaches GitHub.
+  the runs instead. Claims 2026-11-19, the first day under the timer, does not count (the laptop's
+  evening failed on FRED); its morning was on time with the same rows, and the runner's evening
+  matched once a one-commit checkout, which made the trigger read late, was fixed (#372). Two
+  counting days are still needed by 2026-12-18.
 - **Step 18, part 2, step 3: the first triggers graded** ([the spec](steps/trigger-file.md)). The
   first trigger, CPI of 2026-11-10, is void: merged after every reaction close, and its kind read
   from the headline instead of the core print. It waits for the next one.

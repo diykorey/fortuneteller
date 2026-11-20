@@ -1,0 +1,64 @@
+Step 32, step 1's evidence (docs/steps/ask-earnings.md), 2026-11-19.
+
+Two copies of the real store of 2026-11-19 16:08, with step 31's earnings and the 67 companies' closes loaded (as in step 31's results evidence); the Fed's FRED key and the main checkout's caches. scoreboard run once on main's code (69221a0, PR #367 merged) and once on this branch's, one after the other, each on its own copy, timed by bash's time.
+
+$ time fortuneteller scoreboard   (this branch)
+scoreboard: 33 events, 57 call rows, data to 2026-11-18; written to sbnew
+real	12m10,186s
+user	6m45,801s
+sys	0m4,549s
+
+$ time fortuneteller scoreboard   (main)
+scoreboard: 33 events, 57 call rows, data to 2026-11-18; written to sbmain
+real	10m34,151s
+user	5m29,341s
+sys	0m4,161s
+this branch takes 1 min 36 s longer: under the 3-minute bar
+
+$ a one-off read of both data.json files (python3 -I)
+new flows on ask: ['fomc', 'nfp', 'retail', 'cpi', 'claims', 'ecb', 'ceo', 'opec', 'boe', 'boj', 'war', 'crypto', 'weather', 'earnings'] left out: [{'name': 'flood', 'noun': 'floods', 'reason': 'no floods stored; run `fortuneteller load-releases` first'}]
+new cells 2895
+new holds shown: 7
+   ('nfp', 'above', 'day', 'UST10Y / ZN')
+   ('nfp', 'above', 'day', 'UST5Y / ZF')
+   ('cpi', 'above', 'day', 'T5YIE')
+   ('opec', 'oil up', 'day', 'UGA')
+   ('earnings', 'as expected', 'day', 'vs S&P 500')
+   ('earnings', 'below', 'day', 'vs S&P 500')
+   ('earnings', 'below', 'week', 'vs S&P 500')
+new period cells: [('nfp', 'above', 'day', 'EURUSD', 'down', "doesn't hold"), ('nfp', 'as expected', 'day', 'UNG', 'about the same', 'too few'), ('earnings', 'above', 'day', 'vs S&P 500', 'up', "doesn't hold")]
+main flows on ask: ['fomc', 'nfp', 'retail', 'cpi', 'claims', 'ecb', 'ceo', 'opec', 'boe', 'boj', 'war', 'crypto', 'weather'] left out: [{'name': 'flood', 'noun': 'floods', 'reason': 'no floods stored; run `fortuneteller load-releases` first'}]
+main cells 2886
+main holds shown: 4
+   ('nfp', 'above', 'day', 'UST10Y / ZN')
+   ('nfp', 'above', 'day', 'UST5Y / ZF')
+   ('cpi', 'above', 'day', 'T5YIE')
+   ('opec', 'oil up', 'day', 'UGA')
+main period cells: []
+earnings kinds [('above', 1513), ('as expected', 337), ('below', 242)] cells 9 2008-01-10 2026-11-17
+   above day 788 129 581 up 1355 707 doesn't hold True
+   above week 692 246 553 up 1099 505 doesn't hold False
+   above month 570 418 485 up 644 246 doesn't hold False
+   as expected day 95 37 203 down 303 183 holds False
+   as expected week 100 52 182 down 283 152 doesn't hold False
+   as expected month 102 77 151 down 116 48 doesn't hold False
+   below day 44 22 169 down 219 156 holds False
+   below week 40 34 160 down 217 145 holds False
+   below month 37 59 132 down 202 113 doesn't hold False
+earnings cell say example: After a Dow company's earnings above the consensus, the company against the S&P 500 on the day: up 788, about the same 129, down 581, of 1498. Its base is each company's own past two years, averaged, so it has no single count. Answer: up. Replayed, it did not hold: right 707 of 1355. With each event moved ten closes or a span away, the same answer comes: it reads as the period, not the event.
+top-level keys differing (besides ask): []
+fomc cells equal but period/say: True
+nfp cells equal but period/say: True
+retail cells equal but period/say: True
+cpi cells equal but period/say: True
+claims cells equal but period/say: True
+ecb cells equal but period/say: True
+ceo cells equal but period/say: True
+opec cells equal but period/say: True
+boe cells equal but period/say: True
+boj cells equal but period/say: True
+war cells equal but period/say: True
+crypto cells equal but period/say: True
+weather cells equal but period/say: True
+
+floods are left out on both: that copy predates their load (the evening job loads them).
