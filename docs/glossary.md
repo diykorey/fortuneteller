@@ -429,6 +429,14 @@ Terms are grouped by what they are about, alphabetical within each group.
   ([a same-day source](steps/earnings-same-day.md)).
 - **Effective day** — the day an index change takes effect, after S&P announced it, usually a week
   before ([S&P 500 additions](steps/sp500-additions.md)).
+- **Alone** — a stock split announced on its own, not in an earnings release; *with a report*
+  is the other kind ([stock splits](steps/stock-splits.md)).
+- **Forward split** — a stock split that gives more shares, each worth less (2-for-1, 10-for-1); a
+  reverse split gives fewer ([stock splits](steps/stock-splits.md)).
+- **Split day** — the first day a company's shares trade split, weeks after the split was
+  announced ([stock splits](steps/stock-splits.md)).
+- **With a report** — a stock split announced in an earnings release, so the report's own news
+  moves the shares too ([stock splits](steps/stock-splits.md)).
 - **Effect size** — how much an instrument moves per unit of event, the core number the whole system
   is built to estimate. Here: **`mag_per_sd`**, percent moved per one standard deviation of
   surprise.

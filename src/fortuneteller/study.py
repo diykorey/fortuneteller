@@ -2085,6 +2085,8 @@ def brent_kind(event: EventInstance, brent: Sequence[DailyClosingPrice]) -> str 
 SCANDAL = "scandal"
 # Step 35 (docs/steps/sp500-additions.md): the one kind of an S&P 500 addition.
 ADDED = "added"
+# Step 37 (docs/steps/stock-splits.md): a split announced alone, or in an earnings release.
+SPLIT_KINDS = ("alone", "with a report")
 EXCESS_OVER = "SPY / ES"
 EXCESS_MARKET = "vs S&P 500"
 # Each event's base: its company's spans in this many closes up to its close before.

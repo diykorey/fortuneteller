@@ -1,0 +1,58 @@
+# Step 37, step 1 (docs/steps/stock-splits.md). Run 2026-11-20 from the branch's root.
+
+$ uv run python -I scripts/stock_splits.py fetch data/cache/splits data/cache/earnings/sec500
+820 tickers; Yahoo had nothing for 168: ABMD 404 ACE 404 ADS 404 AET 404 AGN 404 AKS 404 ALTR 404 ALXN 404 ANDV 404 ANR 404 ANSS 404 APOL 404 ARG 404 ARNC 404 ATVI 404 AVP 404 AYE 404 BCR 404 BHI 404 BIG 404 BMC 404 BMS 404 BRCM 404 BXLT 404 CBE 404 CCE 404 CDAY 404 CELG 404 CEPH 404 CERN 404 CFN 404 CHK 404 CMCSK 404 COL 404 COV 404 CPGX 404 CSC 404 CTLT 404 CTXS 404 CVC 404 CVH 404 CXO 404 DAY 404 DF 404 DFS 404 DISCA 404 DISCK 404 DISH 404 DLPH 404 DNB 404 DNR 404 DO 404 DPS 404 DRE 404 DTV 404 DWDP 404 ENDP 404 ESRX 404 ESV 404 ETFC 404 EVHC 404 FBHS 404 FDO 404 FII 404 FL 404 FLIR 404 FLT 404 FRC 404 FRX 404 FTR 404 GAS 404 GGP 404 GMCR 404 GPS 404 HAR 404 HCBK 404 HES 404 HFC 404 HNZ 404 HOLX 404 HOT 404 HSP 404 IGT 404 JCP 404 JDSU 404 JNPR 404 JNS 404 JOY 404 JOYG 404 JWN 404 KFT 404 KORS 404 KRFT 404 KSU 404 LLL 404 LLTC 404 LM 404 LO 404 LSI 404 LVLT 404 LXK 404 MEE 404 MFE 404 MHS 404 MJN 404 MNK 404 MOLX 404 MON 404 MRO 404 MWW 404 MXIM 404 NBL 404 NLSN 404 NOVL 404 NSM 404 NVLS 404 PBCT 404 PCP 404 PDCO 404 PETM 404 PGN 404 PLL 404 PXD 404 QEP 404 RAI 404 RDC 404 RE 404 RHT 404 RRD 404 RSH 404 RTN 404 SAI 404 SCG 404 SIAL 404 SIVB 404 SNI 404 SRCL 404 STJ 404 SVU 404 SWN 404 SWY 404 TEG 404 TFCF 404 TFCFA 404 TIE 404 TIF 404 TLAB 404 TSS 404 TWC 404 TWTR 404 TWX 404 TYC 404 UA-C 404 VAR 404 VIAB 404 WBA 404 WCG 404 WFM 404 WFR 404 WIN 404 WLTW 404 WPX 404 WYN 404 X 404 XEC 404 XL 404 XLNX 404 YHOO 404
+(the 168 are tickers no longer listed: the kept lean towards survivors)
+
+# The first seed, 8-Ks of the 120 days before (the spec's first way):
+159 forward splits asked; wrote 106: alone 76, with a report 30
+left out: no 8-K 19, no filer number 1, not a member that day 33
+8-K documents passed over: another ratio 4, no ratio 50, not fetched 1
+# With a report 30 of 106, 28.3%, under the 30% bar: step 1 stopped; the owner: go on, record the miss.
+
+# Five rows by hand then: WEC row 1 (8-K 2011-01-21; the release 01-20), CTSH, FISV (release 2018-02-22,
+# its 8-K 02-27: WRONG), MNST 2023, SNDK. 29 of 106 8-Ks filed after the event they report; GOOG and
+# TSLA 2022 dated by the shareholder vote. Step 1 stopped; the owner: automate the hand dating.
+
+$ uv run python -I scripts/stock_splits.py seed data/cache/splits data/cache/earnings/sec500   # 365 days, earliest mention, BY_HAND
+159 forward splits asked; wrote 105: alone 74, with a report 31
+dated by the press release's own date, the time unknown: 14; by hand: 24
+left out: no 8-K 19, no filer number 1, not a member that day 33, the same filer's split under another ticker 1
+8-K documents passed over: another ratio 6, no ratio 81
+
+# The 24 BY_HAND rows: flagged by the script's 8-K (a vote's, Item 5.07: FMC KO CRM CF MNST BALL EW
+# MCHP DXCM TSLA TECH CVNA; or reporting an earlier day, no press release dated: WEC BALL CME VFC FISV
+# CTSH NFLX FISV RJF COO DECK ORLY), each read from its first public news:
+FMC   2012-04-24 16:15 press release        prnewswire.com/news-releases/fmc-corporations-board-declares-stock-split-announces-quarterly-dividend-148747025.html
+KO    2012-04-25 09:08 press release        investors.coca-colacompany.com/news-events/press-releases/detail/395
+CRM   2013-01-25 16:21 PRE 14A (EDGAR)      sec.gov/Archives/edgar/data/1108524/000119312513024087/
+CF    2015-05-15 time unknown, 20:00        ir.cfindustries.com/Investors/news/news-details/2015/CF-Industries-Declares-Five-for-One-Stock-Split
+MNST  2016-10-14 08:16 bound (8-K)          sec.gov/Archives/edgar/data/0000865752/000110465916150144/a16-19907_1ex99d1.htm
+BALL  2017-04-26 16:05 press release        prnewswire.com/news-releases/...-300446563.html
+EW    2020-03-09 16:06 PRE 14A (EDGAR)      sec.gov/Archives/edgar/data/1099800/000119312520067159/d843930dpre14a.htm
+MCHP  2021-06-16 17:52 PRE 14A (EDGAR)      sec.gov/Archives/edgar/data/827054/000082705421000159/a2021proxy.htm
+DXCM  2022-03-25 09:00 press release        Business Wire 2022-03-25, "DexCom Announces Four-for-One Forward Stock Split"
+TSLA  2022-03-28 06:06 8-K, no ratio        sec.gov/Archives/edgar/data/1318605/000156459022011875/tsla-8k_20220328.htm
+TECH  2022-09-01 07:00 press release        prnewswire.com/news-releases/bio-techne-to-seek-approval-to-implement-four-for-one-stock-split-301616132.html
+CVNA  2026-03-13 09:01 bound (PRE 14A)      businesswire.com/news/home/20260313986313/en/
+WEC   2011-01-20 time unknown, 20:00        prnewswire.com/news-releases/...-114306579.html (wire "04:45 ET")
+BALL  2011-01-26 time unknown, 20:00        ball.mediaroom.com/2011-01-26-Ball-Corporation-Board-Elects-John-A-Hayes-CEO-Declares-2-for-1-Stock-Split
+CME   2012-05-24 18:27 press release        prnewswire.com/news-releases/cme-group-announces-five-for-one-stock-split-153800205.html
+VFC   2013-10-21 07:00 earnings release     vfc.com investors press release 1394
+FISV  2013-11-21 09:42 bound (news cite)    newsroom.fiserv.com/news-releases/news-release-details/fiserv-declares-two-one-stock-split
+CTSH  2014-02-05 06:16 earnings release     sec.gov/Archives/edgar/data/1058290/000119312514035839/d671017dex991.htm
+NFLX  2015-04-10 16:04 PRE 14A, no ratio    sec.gov/Archives/edgar/data/0001065280/000106528015000012/nflx2015prelimproxy.htm
+FISV  2018-02-22 time unknown, 20:00        businesswire.com/news/home/20180222005725/en/Fiserv-Declares-Two-for-One-Stock-Split
+RJF   2021-08-25 15:12 bound (8-K)          sec.gov/Archives/edgar/data/720005/000072000521000087/
+COO   2023-12-07 16:20 earnings release     sec.gov/Archives/edgar/data/711404/000071140423000068/cooperq42023pressrelease.htm
+DECK  2024-07-12 09:07 bound (8-K)          sec.gov/Archives/edgar/data/910521/000091052124000021/deckers-exh991pressrelease.htm
+ORLY  2025-03-13 16:32 bound (8-K)          corporate.oreillyauto.com/2025/03/13/...
+# Checked again by hand: EW's PRE 14A of 2020-03-09 names the 3-for-1 (proposal 4).
+
+# The five by hand on the final seed (rows 1, 26, 52, 78, 105) and the three named:
+1   WEC  2011-01-20 20:00 NY (by hand), 2-for-1, split 2011-03-02: release 01-20, distributed 03-01: right
+26  CTSH 2014-02-05 06:16 NY, with a report, split 2014-03-10: Q4 release 02-05, paid 03-07: right
+52  AFL  2018-02-13 16:43 NY, 2-for-1, split 2018-03-19: release and 8-K 02-13, payable 03-16: right
+78  MNST 2023-02-28 16:19 NY, with a report, split 2023-03-28: 8-K 02-28, split-adjusted 03-28: right
+105 SNDK 2026-10-29 16:13 NY, with a report, 8-for-1, split 2026-11-20: with fiscal Q1 results: right
+FISV 2018-02-22 (by hand); GOOG 2022-02-01 21:01 UTC (its earnings 8-K, by the 365 days); TSLA 2022-03-28: right

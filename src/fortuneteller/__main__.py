@@ -627,6 +627,7 @@ FOLLOWS_NOUNS = {
     "earnings": "earnings reports",
     "additions": "S&P 500 additions",
     "earnings500": "S&P 500 earnings reports",
+    "splits": "stock splits",
 }
 
 
@@ -693,10 +694,18 @@ def follows_cells(
             kinds = dict.fromkeys((e.event_id for e in events), study.SCANDAL)
             order: Sequence[str] = (study.SCANDAL,)
             cells = study.follow_ceo(events, con=con, after=after)
-        elif flow in (flows.EARNINGS_FLOW, flows.EARNINGS_500_FLOW, flows.ADDITIONS_FLOW):
+        elif flow in (
+            flows.EARNINGS_FLOW,
+            flows.EARNINGS_500_FLOW,
+            flows.ADDITIONS_FLOW,
+            flows.SPLITS_FLOW,
+        ):
             events = flows.stored_events(flow, con=con)
             kinds = study.earnings_kinds(events)
-            order = (study.ADDED,) if flow is flows.ADDITIONS_FLOW else study.SURPRISE_KINDS
+            order = {
+                flows.ADDITIONS_FLOW.cli_name: (study.ADDED,),
+                flows.SPLITS_FLOW.cli_name: study.SPLIT_KINDS,
+            }.get(flow.cli_name, study.SURPRISE_KINDS)
             cells = study.follow_companies(events, kinds, order, con=con, after=after)
         elif flow is flows.OPEC_FLOW:
             kinds = study.detail_kinds(flows.stored_events(flow, con=con))
@@ -1983,7 +1992,7 @@ def ask_data(con: duckdb.DuckDBPyConnection) -> dict[str, list[dict[str, object]
     left_out: list[dict[str, object]] = []
     names = market_names()
     for name, noun in FOLLOWS_NOUNS.items():
-        if name in ("additions", "earnings500"):
+        if name in ("additions", "earnings500", "splits"):
             continue  # on the page at a later step (docs/steps/sp500-additions.md, earnings-sp500.md)
         try:
             f = follows_cells(name, con)

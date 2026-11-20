@@ -1843,6 +1843,16 @@ EARNINGS_500_FLOW = EarningsFlow(
     seed_file="earnings_sp500.csv",
     noun="S&P 500 earnings reports",
 )
+# Step 37 (docs/steps/stock-splits.md): S&P 500 members' forward splits from 2011, at their first
+# public news, the kind alone or with a report.
+SPLITS_FLOW = EarningsFlow(
+    event_type="Stock split",
+    type_code=37,
+    cli_name="splits",
+    label="SPL",
+    seed_file="stock_splits.csv",
+    noun="stock splits",
+)
 # Step 35 (docs/steps/sp500-additions.md): each company S&P announced would join the S&P 500, one
 # event at the announcement's minute, the kind `added`; several are announced on one day, as
 # reports are, so it is the earnings' class with its own names and seed.
@@ -1906,6 +1916,7 @@ EVENT_FLOWS: list[EventFlow] = [
     EARNINGS_FLOW,
     ADDITIONS_FLOW,
     EARNINGS_500_FLOW,
+    SPLITS_FLOW,
 ]
 
 

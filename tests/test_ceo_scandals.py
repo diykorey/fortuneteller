@@ -837,3 +837,45 @@ def test_load_prices_with_a_seed_loads_that_seed_s_companies_and_the_evening_s_a
     assert (code, asked) == (0, ["AAA", "BBB"])
     assert set(evening) <= named
     assert not sp500 <= set(evening)
+    with (settings.seed_dir / flows.SPLITS_FLOW.seed_file).open(newline="") as handle:
+        split = {row["ticker"] for row in csv.DictReader(handle)}
+    assert not split <= set(evening)
+
+
+def test_stock_splits_load_one_event_a_split_and_follows_prints_the_two_kinds(
+    tmp_db: Path, tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    # given a flat index and twelve companies, each announcing a split and rising 6%, six alone
+    index = _closes([0.0] * 700)
+    con = db.get_connection()
+    rows = [("SPY / ES", c) for c in index]
+    splits = ["day,time,ticker,ratio,split_day,kind,accession"]
+    for n in range(12):
+        ticker, i = f"C{n}", 520 + 8 * (n // 2)
+        rows += [(ticker, c) for c in _company(n, i, 0.06)]
+        kind = "alone" if n % 2 else "with a report"
+        splits.append(f"{index[i].day},14:00,{ticker},2-for-1,{index[i + 20].day},{kind},x")
+    con.executemany(
+        "INSERT INTO daily_bars (instrument, day, close, source) VALUES (?, ?, ?, 'test')",
+        [[i, c.day, c.price] for i, c in rows],
+    )
+    seed = tmp_path / "stock_splits.csv"
+    seed.write_text("\n".join(splits) + "\n")
+
+    # when the seed is loaded and follows prints the splits, and the page's data is built
+    batch = flows.SPLITS_FLOW.load(seed, datetime(2026, 11, 19, tzinfo=UTC))
+    flows.store_events(batch.events)
+    assert main(["follows", "--event", "splits"]) == 0
+    pattern = re.compile(
+        EARNINGS_LINE.pattern.replace("above|as expected|below", "alone|with a report")
+    )
+    printed = [pattern.match(line) for line in capsys.readouterr().out.splitlines()]
+    ask = cli.ask_data(con)
+
+    # then one event a split; the two kinds' three spans each, in their order; not on the ask
+    cells = [m for m in printed if m]
+    assert len(batch.events) == len({e.event_id for e in batch.events}) == 12
+    assert [(m["kind"], m["span"]) for m in cells] == [
+        (kind, span) for kind in study.SPLIT_KINDS for span in ("day", "week", "month")
+    ]
+    assert "splits" not in [entry["name"] for entry in ask["ask"]]
