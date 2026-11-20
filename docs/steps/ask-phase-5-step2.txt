@@ -19,7 +19,7 @@ follows: 44 crypto hacks 2014-02-07 … 2026-10-29: 44 hacks
 follows: 79 hurricane landfalls 1970-08-03 … 2024-10-10: 79 landfalls
 follows: 39 floods 1980-04-10 … 2024-06-16: 39 floods
 
-$ each new cell against follows' line for its kind, span and market
+$ each new cell against follows' line for its kind, span and market: python3 -I cmp29.py data.json FOLLOWS_DIR (the script is at the end of this file; FOLLOWS_DIR holds fol-FLOW.txt, the follows output below)
 cells 1116, equal to follows' line field by field (up, same, down, base within its printed 2 places, answer, graded, right, verdict, the kind's mark, placebo period): 1116
 holds walk-forward:
   opec oil up day BRN: 36 graded, 28 right, kind_cell True
@@ -35,6 +35,37 @@ answers that hold on the whole page, kind cells not counted: 7
    earnings as expected day vs S&P 500
    earnings below day vs S&P 500
    earnings below week vs S&P 500
+
+$ the 21 cells whose page base (four places) ends in 5 at the fourth, so its two-place rounding depends on the digits the page drops; follows rounds the full rate: compared within 0.005
+opec oil up week ALL: page base 0.3717/0.3333/0.295, follows 0.37/0.33/0.29
+boe cut day UST5Y / ZF: page base 0.3447/0.325/0.3303, follows 0.34/0.33/0.33
+boe cut day SOYB: page base 0.335/0.3335/0.3315, follows 0.34/0.33/0.33
+boe cut week BRN: page base 0.355/0.3334/0.3116, follows 0.36/0.33/0.31
+boe hike week T5YIE: page base 0.3553/0.3296/0.315, follows 0.36/0.33/0.32
+boj hold day XLE: page base 0.3516/0.3333/0.315, follows 0.35/0.33/0.32
+boj hold day ALL: page base 0.365/0.3333/0.3017, follows 0.36/0.33/0.30
+boj hold month ITA: page base 0.435/0.3332/0.2317, follows 0.44/0.33/0.23
+boj hold month GBPUSD: page base 0.3418/0.3332/0.325, follows 0.34/0.33/0.32
+boj hike week EURUSD: page base 0.325/0.3338/0.3411, follows 0.33/0.33/0.34
+boj hike week SXXP: page base 0.405/0.3333/0.2617, follows 0.40/0.33/0.26
+boj hike month SXXP: page base 0.435/0.3333/0.2317, follows 0.43/0.33/0.23
+war violent act day UKX: page base 0.3517/0.3333/0.315, follows 0.35/0.33/0.31
+war violent act day USDJPY: page base 0.345/0.3334/0.3216, follows 0.34/0.33/0.32
+crypto hack day UKX: page base 0.355/0.3334/0.3116, follows 0.35/0.33/0.31
+crypto hack week NKY: page base 0.3915/0.3334/0.275, follows 0.39/0.33/0.28
+weather landfall day UKX: page base 0.3517/0.3333/0.315, follows 0.35/0.33/0.31
+weather landfall day XLE: page base 0.3517/0.3333/0.315, follows 0.35/0.33/0.32
+weather landfall week ITA: page base 0.385/0.3333/0.2817, follows 0.39/0.33/0.28
+weather landfall week ALL: page base 0.375/0.3333/0.2917, follows 0.38/0.33/0.29
+flood flood day UGA: page base 0.3516/0.3333/0.315, follows 0.35/0.33/0.32
+
+$ the page's other holds, from data.json (graded, right)
+nfp above day UST10Y / ZN: 58 graded, 39 right
+nfp above day UST5Y / ZF: 58 graded, 38 right
+cpi above day T5YIE: 31 graded, 23 right
+earnings as expected day vs S&P 500: 303 graded, 183 right
+earnings below day vs S&P 500: 219 graded, 156 right
+earnings below week vs S&P 500: 217 graded, 145 right
 
 $ the follows output compared, in full
 
@@ -1188,3 +1219,38 @@ opec|oil up   Brent crude oil  35 / 13 / 1 of 49  answer td.none "up" (grey, rgb
 opec|oil up   Gasoline (UGA)   30 / 14 / 4 of 48  answer td "up" (plain)  replay td.yes "20 of 31, held"
 opec|oil down Brent crude oil  1 / 3 / 27 of 31   answer td.none "down" (grey)  replay td.none "18 of 20, too few" (grey)
 td.yes on the new kinds: only gasoline's day after oil up
+
+$ cat cmp29.py
+import json,re,sys,pathlib
+data=json.load(open(sys.argv[1])); folder=pathlib.Path(sys.argv[2])
+NEW=("opec","boe","boj","war","crypto","weather","flood")
+pat=re.compile(r"^(?P<kind>.+?)\s+(?P<span>day|week|month)\s+(?P<market>.+?)\s+(?P<n>\d+)\s+(?P<up>\d+)\s+(?P<same>\d+)\s+(?P<down>\d+)\s+(?P<out>\d+)/(?P<hole>\d+)\s+(?P<base>\S+)\s+(?P<answer>.+?)\s{2,}(?P<chance>\S+)\s+(?P<placebo>\S+)\s+(?P<graded>\d+): (?P<right>\d+) right, (?P<verdict>.+)$")
+total=same=0; diffs=[]; holds=[]; kindcells=[]
+for f in data["ask"]:
+    if f["name"] not in NEW: continue
+    kinds=[k["kind"] for k in f["kinds"]]
+    lines={}
+    for line in (folder/f"fol-{f['name']}.txt").read_text().splitlines()[2:]:
+        m=pat.match(line)
+        if not m: continue
+        lines[(m["kind"].strip(),m["span"],m["market"].strip())]=m
+    for c in f["cells"]:
+        total+=1
+        m=lines.get((c["kind"],c["span"],c["market"]))
+        if m is None: diffs.append(f"{f['name']} {c['kind']} {c['span']} {c['market']}: no follows line"); continue
+        b=m["base"].split("/")
+        pb=[c["base_up"],c["base_same"],c["base_down"]]
+        want={"up":int(m["up"]),"same":int(m["same"]),"down":int(m["down"]),"answer":m["answer"].strip(),"graded":int(m["graded"]),"right":int(m["right"]),"verdict":m["verdict"].replace("(the kind)","").strip(),"kind_cell":m["verdict"].endswith("(the kind)"),"period":m["placebo"]=="period"}
+        got={k:c[k] for k in want}
+        bad=[k for k in want if want[k]!=got[k]]
+        if (pb[0] is None) != (len(b)==1) or (pb[0] is not None and any(abs(x-float(y))>0.005+1e-9 for x,y in zip(pb,b))): bad.append(f"base {pb} vs {b}")
+        if bad: diffs.append(f"{f['name']} {c['kind']} {c['span']} {c['market']}: {bad} page {got} follows {want}")
+        else: same+=1
+        if c["verdict"]=="holds": holds.append(f"{f['name']} {c['kind']} {c['span']} {c['market']}: {c['graded']} graded, {c['right']} right, kind_cell {c['kind_cell']}")
+        if c["kind_cell"]: kindcells.append(f"{f['name']} {c['kind']} {c['span']} {c['market']}")
+print(f"cells {total}, equal to follows' line field by field (up, same, down, base within its printed 2 places, answer, graded, right, verdict, the kind's mark, placebo period): {same}")
+for x in diffs: print("differs:",x)
+print("holds walk-forward:"); [print("  "+x) for x in holds]
+print("kind cells:"); [print("  "+x) for x in kindcells]
+all_holds=[(f["name"],c["kind"],c["span"],c["market"]) for f in data["ask"] for c in f["cells"] if c["verdict"]=="holds" and not c["kind_cell"]]
+print("answers that hold on the whole page, kind cells not counted:",len(all_holds)); [print("  ",*x) for x in all_holds]
