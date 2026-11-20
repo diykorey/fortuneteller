@@ -158,7 +158,6 @@ this by splitting the results by era.
 
 | Choice | Now | More precise | Trigger |
 | --- | --- | --- | --- |
-| An exact meet | Nasdaq prints `N/A` for a zero surprise, and the seeds keep only a numeric one: an EPS equal to its forecast has no kind and is left out (87 Dow reports since 2011, 1,802 S&P 500 members', [step 36](steps/earnings-sp500.md#results)) | The kind read from the EPS and the forecast where the surprise is `N/A` and both are given: *as expected* | Before the in-line cells are shown again on the page, or now: they lose about a third of their reports |
 | Membership dates | The S&P 500's members rebuilt from Wikipedia's changes; four dated on S&P's release day were set by hand from S&P's releases, the other 245 with no S&P release in their row unchecked ([step 36](steps/earnings-sp500.md)) | Every change's effective day from S&P's release | A report on a change's day turning a kept count |
 
 ## TradingView's calendar since 2026-10

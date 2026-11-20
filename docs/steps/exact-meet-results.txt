@@ -1,0 +1,107 @@
+# Step 39, step 2 (docs/steps/exact-meet.md). Run 2026-11-20 on a fresh copy of the real store (FT_DB_PATH
+# set to it, the main checkout's cache), from the branch's root.
+
+$ fortuneteller load-releases   (last lines)
+loaded 2211 earnings reports, 2008-01-10 … 2026-11-17
+loaded 191 S&P 500 additions, 2007-09-24 … 2026-10-01
+loaded 25983 S&P 500 earnings reports, 2011-01-06 … 2026-11-18
+loaded 105 stock splits, 2011-01-21 … 2026-10-29
+$ fortuneteller load-prices --companies --seed data/seed/earnings_sp500.csv; then --seed data/seed/stock_splits.csv  (last lines)
+VYLR: 36 closes
+P: 2798 closes
+598 of 598 companies loaded
+SNDK: 445 closes
+82 of 82 companies loaded
+
+$ fortuneteller follows --event earnings
+follows: 2211 earnings reports 2008-01-10 … 2026-11-17: 1513 above, 456 as expected, 242 below
+kind        span   market        n  up same down  out/hole  base up/same/down  answer          chance  placebo  walk-forward
+above       day    vs S&P 500   1499 788  129  582      0/5  0.33/0.33/0.34     up              0.0000  period   1356: 707 right, doesn't hold
+above       week   vs S&P 500   1491 692  246  553     0/10  0.33/0.33/0.33     up              0.0000  -        1099: 505 right, doesn't hold
+above       month  vs S&P 500   1473 570  418  485     0/17  0.34/0.33/0.33     up              0.0030  -        644: 246 right, doesn't hold
+as expected day    vs S&P 500   451 131   43  277      0/2  0.33/0.33/0.34     down            0.0000  -        368: 229 right, holds
+as expected week   vs S&P 500   449 129   75  245      0/3  0.33/0.33/0.34     down            0.0000  period   387: 212 right, doesn't hold
+as expected month  vs S&P 500   442 136   99  207      0/7  0.33/0.33/0.34     down            0.0003  -        299: 138 right, doesn't hold
+below       day    vs S&P 500   235  44   22  169      0/0  0.32/0.33/0.35     down            0.0000  -        219: 156 right, holds
+below       week   vs S&P 500   234  40   34  160      0/1  0.31/0.33/0.35     down            0.0000  -        217: 145 right, holds
+below       month  vs S&P 500   228  37   59  132      0/4  0.30/0.33/0.37     down            0.0000  -        202: 113 right, doesn't hold
+by chance: about 0.3 answers on all history, 0.1 holds walk-forward
+
+$ fortuneteller follows --event earnings --after-the-day
+follows: 2211 earnings reports 2008-01-10 … 2026-11-17: 1513 above, 456 as expected, 242 below, spans from the reaction close
+kind        span   market        n  up same down  out/hole  base up/same/down  answer          chance  placebo  walk-forward
+above       day    vs S&P 500   1497 531  352  614      0/6  0.33/0.33/0.34     can't say       0.0193  -        732: 280 right, doesn't hold
+above       week   vs S&P 500   1490 522  391  577     0/11  0.33/0.33/0.33     can't say       0.0723  -        0: 0 right, too few
+above       month  vs S&P 500   1473 437  546  490     0/17  0.34/0.33/0.33     about the same  0.0014  period   1012: 368 right, doesn't hold
+as expected day    vs S&P 500   451 149  105  197      0/2  0.33/0.33/0.34     can't say       0.0117  -        10: 2 right, too few
+as expected week   vs S&P 500   449 155  123  171      0/3  0.33/0.33/0.34     can't say       0.2733  -        0: 0 right, too few
+as expected month  vs S&P 500   442 142  147  153      0/7  0.33/0.33/0.34     can't say       0.3633  -        0: 0 right, too few
+below       day    vs S&P 500   235  74   42  119      0/0  0.32/0.33/0.35     down            0.0037  -        184: 85 right, doesn't hold
+below       week   vs S&P 500   234  67   70   97      0/1  0.31/0.33/0.35     can't say       0.0812  -        0: 0 right, too few
+below       month  vs S&P 500   228  59   66  103      0/4  0.30/0.33/0.37     can't say       0.0214  -        0: 0 right, too few
+by chance: about 0.3 answers on all history, 0.0 holds walk-forward
+
+$ fortuneteller follows --event earnings500
+follows: 25983 S&P 500 earnings reports 2011-01-06 … 2026-11-18: 16602 above, 5512 as expected, 3869 below
+kind        span   market        n  up same down  out/hole  base up/same/down  answer          chance  placebo  walk-forward
+above       day    vs S&P 500   16408 8788 1515 6105    0/183  0.33/0.33/0.33     up              0.0000  period   16274: 8715 right, doesn't hold
+above       week   vs S&P 500   16346 7787 2765 5794    0/239  0.33/0.33/0.33     up              0.0000  period   15857: 7556 right, doesn't hold
+above       month  vs S&P 500   16047 6515 4306 5226    0/272  0.34/0.33/0.33     up              0.0000  -        14421: 5848 right, doesn't hold
+as expected day    vs S&P 500   5483 2021  535 2927     0/28  0.33/0.33/0.33     down            0.0000  -        5446: 2902 right, doesn't hold
+as expected week   vs S&P 500   5458 1859  964 2635     0/51  0.33/0.33/0.34     down            0.0000  -        5423: 2612 right, doesn't hold
+as expected month  vs S&P 500   5365 1687 1453 2225     0/80  0.33/0.33/0.34     down            0.0000  period   5008: 2081 right, doesn't hold
+below       day    vs S&P 500   3821 999  300 2522     0/44  0.33/0.33/0.34     down            0.0000  -        3798: 2506 right, holds
+below       week   vs S&P 500   3802 961  578 2263     0/62  0.32/0.33/0.34     down            0.0000  -        3777: 2246 right, doesn't hold
+below       month  vs S&P 500   3749 871  931 1947     0/73  0.32/0.33/0.35     down            0.0000  period   3699: 1927 right, doesn't hold
+by chance: about 0.3 answers on all history, 0.1 holds walk-forward
+
+$ fortuneteller follows --event earnings500 --after-the-day
+follows: 25983 S&P 500 earnings reports 2011-01-06 … 2026-11-18: 16602 above, 5512 as expected, 3869 below, spans from the reaction close
+kind        span   market        n  up same down  out/hole  base up/same/down  answer          chance  placebo  walk-forward
+above       day    vs S&P 500   16400 6276 3650 6474    0/188  0.33/0.33/0.33     can't say       0.0391  -        29: 9 right, too few
+above       week   vs S&P 500   16350 5761 4679 5910    0/234  0.33/0.33/0.33     can't say       0.0646  -        1454: 494 right, doesn't hold
+above       month  vs S&P 500   16040 5085 5629 5326    0/266  0.34/0.33/0.33     about the same  0.0000  period   15577: 5410 right, doesn't hold
+as expected day    vs S&P 500   5484 2128 1208 2148     0/26  0.33/0.33/0.33     can't say       0.4128  -        0: 0 right, too few
+as expected week   vs S&P 500   5460 1954 1504 2002     0/49  0.33/0.33/0.34     can't say       0.3556  -        0: 0 right, too few
+as expected month  vs S&P 500   5365 1746 1868 1751     0/78  0.33/0.33/0.34     can't say       0.0111  -        4073: 1368 right, doesn't hold
+below       day    vs S&P 500   3815 1470  779 1566     0/50  0.33/0.33/0.34     can't say       0.1917  -        147: 61 right, doesn't hold
+below       week   vs S&P 500   3801 1313 1057 1431     0/63  0.32/0.33/0.34     can't say       0.2565  -        1193: 461 right, doesn't hold
+below       month  vs S&P 500   3746 1124 1283 1339     0/74  0.32/0.33/0.35     can't say       0.0884  -        1168: 384 right, doesn't hold
+by chance: about 0.3 answers on all history, 0.1 holds walk-forward
+
+# Step 31's and 36's outputs before this step: docs/steps/earnings-results.txt, docs/steps/earnings-sp500-results.txt.
+
+# Every other flow's follows, both runs: main's code (a worktree of origin/main at 6c29eec) against the
+# branch's, on the same copy, compared by cmp (fomc's first main run carried uv's setup lines; re-run):
+fomc same (282 lines)
+fomc--after-the-day same (282 lines)
+nfp same (282 lines)
+nfp--after-the-day same (282 lines)
+retail same (282 lines)
+retail--after-the-day same (282 lines)
+cpi same (282 lines)
+cpi--after-the-day same (282 lines)
+claims same (282 lines)
+claims--after-the-day same (282 lines)
+ecb same (282 lines)
+ecb--after-the-day same (282 lines)
+ceo same (6 lines)
+ceo--after-the-day same (6 lines)
+opec same (189 lines)
+opec--after-the-day same (189 lines)
+boe same (282 lines)
+boe--after-the-day same (282 lines)
+boj same (282 lines)
+boj--after-the-day same (282 lines)
+war same (96 lines)
+war--after-the-day same (96 lines)
+crypto same (96 lines)
+crypto--after-the-day same (96 lines)
+weather same (96 lines)
+weather--after-the-day same (96 lines)
+flood same (96 lines)
+flood--after-the-day same (96 lines)
+additions same (6 lines)
+additions--after-the-day same (6 lines)
+splits same (9 lines)
+splits--after-the-day same (9 lines)

@@ -73,12 +73,26 @@ def fetch(folder: Path, last: date = LAST) -> None:
         print(line)
 
 
-def kind(surprise: str) -> str | None:
-    """The spec's kind: above at +2% or more, below at -2% or less, as expected between."""
+def dollars(text: str) -> float:
+    """Nasdaq's money, ``$0.13`` or ``($0.17)`` for a loss."""
+    value = text.strip()
+    loss = value.startswith("(") and value.endswith(")")
+    return (-1 if loss else 1) * float(value.strip("()").lstrip("$"))
+
+
+def kind(surprise: str, eps: str = "", forecast: str = "") -> str | None:
+    """The spec's kind: above at +2% or more, below at -2% or less, as expected between.
+
+    Nasdaq prints ``N/A`` for an exact meet; an EPS equal to its forecast is *as expected*.
+    """
     try:
         value = float(surprise)
     except ValueError:
-        return None
+        try:
+            met = dollars(eps) == dollars(forecast)
+        except ValueError:
+            return None
+        return "as expected" if met else None
     if value >= BAR:
         return "above"
     if value <= -BAR:
@@ -164,7 +178,7 @@ def seed(
             if ticker in exclude:
                 left["another company now"] += 1
                 continue
-            k = kind(row.get("surprise", ""))
+            k = kind(row.get("surprise", ""), row.get("eps", ""), row.get("epsForecast", ""))
             if k is None:
                 left["no kind"] += 1
                 continue

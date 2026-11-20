@@ -1,0 +1,35 @@
+# Step 39, step 1 (docs/steps/exact-meet.md). Run 2026-11-20 from the branch's root, the main checkout's
+# cache as C. No price read.
+
+# The N/A rows on every saved Nasdaq page, by the shape of their EPS and forecast (9 a digit run):
+# 11,186 $9.9/$9.9 and 3,298 ($9.9)/($9.9) and 205 $9/$9 can be equal; 602 $9.9/$9 and 512 ($9.9)/$9 are a
+# forecast of $0 (no percent of zero); 27,946 and 20,866 have no forecast. Only equal ones gain a kind.
+
+$ uv run python -I scripts/nasdaq_earnings.py seed $C/nasdaq $C/sec
+wrote 2211 reports to data/seed/earnings.csv: above 1513, as expected 456, below 242
+left out: no 8-K 5, no kind 8
+no 8-K: 2008-01-30 MRK, 2008-04-21 MRK, 2009-05-15 HPQ, 2017-04-21 GE, 2017-10-24 RTX
+
+$ uv run python -I scripts/nasdaq_earnings.py seed $C/nasdaq $C/sec500 --members data/seed/sp500.csv --out data/seed/earnings_sp500.csv --first 2011-01-03 --exclude APC,BEAM,CPWR,DV,EP,LIFE,MI,MMI,POM,S,SATS,SE,SLE,STI,SUN,TE
+wrote 25983 reports to data/seed/earnings_sp500.csv: above 16602, as expected 5512, below 3869
+left out: another company now 178, no 8-K 1059, no kind 308
+no 8-K: 2011-01-20 GOOG, 2011-01-20 JCI, 2011-01-20 ED, 2011-01-25 EMC, 2011-01-26 NE, 2011-01-26 XRX, 2011-01-27 CB, 2011-01-27 ETN, 2011-01-27 SNDK, 2011-01-31 PCL, 2011-02-02 CAM, 2011-02-03 CI, 2011-02-03 …
+
+# git diff of the seeds: rows removed 0 and 0; added 119 (Dow; 87 from 2011-01-03) and 1,685 (S&P 500),
+# every added row a surprise of N/A with EPS equal to forecast, kind as expected; 28 of the S&P 500's a loss.
+# Against the rule's 87 and 1,802 give or take 5%: the Dow's exact; the S&P 500's 1,685 is under 1,712.
+# The 1,802 (step 36) counted members' N/A rows with equal figures before the seed's own filters (no 8-K,
+# another company now): an expected count set wrong, not rows lost.
+
+# Five added S&P 500 rows (1, a quarter, a half, three quarters, the last) against Nasdaq's saved page
+# (the calendar day and the three before) and the 8-K's minute in New York:
+row 1 of 1685: SCHW 8-K 2011-01-18 12:39 NY, seed eps 0.10 forecast 0.10 N/A -> as expected
+   Nasdaq: 2011-01-18: eps $0.10 forecast $0.10 surprise N/A time time-not-supplied
+row 422 of 1685: NBR 8-K 2014-04-23 09:00 NY, seed eps 0.16 forecast 0.16 N/A -> as expected
+   Nasdaq: 2014-04-22: eps $0.16 forecast $0.16 surprise N/A time time-not-supplied
+row 843 of 1685: SBUX 8-K 2017-04-27 16:08 NY, seed eps 0.45 forecast 0.45 N/A -> as expected
+   Nasdaq: 2017-04-27: eps $0.45 forecast $0.45 surprise N/A time time-not-supplied
+row 1264 of 1685: VNO 8-K 2021-08-03 08:17 NY, seed eps 0.69 forecast 0.69 N/A -> as expected
+   Nasdaq: 2021-08-02: eps $0.69 forecast $0.69 surprise N/A time time-not-supplied
+row 1685 of 1685: HD 8-K 2026-11-17 06:18 NY, seed eps 3.86 forecast 3.86 N/A -> as expected
+   Nasdaq: 2026-11-17: eps $3.86 forecast $3.86 surprise N/A time time-not-supplied

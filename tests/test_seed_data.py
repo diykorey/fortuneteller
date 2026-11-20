@@ -8,6 +8,7 @@ invalid enum value fails CI. Each seed file is checked against two canonical sou
 import csv
 import importlib.util
 import re
+from collections.abc import Callable
 from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 
@@ -436,6 +437,13 @@ def test_dow_members_change_on_their_days_and_stay_thirty() -> None:
     assert all(len(m) == 30 for m in (before13, after13, before08, after08))
 
 
+def _report_kind(row: dict[str, str], kind: Callable[[float], str]) -> str | None:
+    """The surprise's kind; Nasdaq's N/A is an exact meet only when EPS equals forecast."""
+    if row["surprise"] == "N/A":
+        return "as expected" if row["eps"] == row["forecast"] else None
+    return kind(float(row["surprise"]))
+
+
 def test_earnings_rows_are_members_reports_with_their_kind() -> None:
     # given the committed reports
     with (settings.seed_dir / "earnings.csv").open(newline="", encoding="utf-8") as handle:
@@ -450,7 +458,7 @@ def test_earnings_rows_are_members_reports_with_their_kind() -> None:
     # then every row is a member's on its day (a day either side, the 8-K's), its kind the
     # surprise's at ±2%, and Microsoft's report of 2026-10-28 is at its 8-K's minute
     assert header == ["day", "time", "ticker", "eps", "forecast", "surprise", "kind"]
-    assert all(row["kind"] == kind(float(row["surprise"])) for row in rows)
+    assert all(row["kind"] == _report_kind(row, kind) for row in rows)
     assert (kind(2.0), kind(1.9), kind(-2.0)) == ("above", "as expected", "below")
     assert all(
         any(
@@ -506,6 +514,29 @@ def test_earnings_refresh_fetches_again_the_last_three_weeks_and_takes_the_last_
     assert script.refetched(date(2026, 11, 1), today) is False
     assert days[-1] == date(2026, 11, 20)
     assert script.weekdays()[-1] == date(2026, 11, 18)
+
+
+def test_an_exact_meet_nasdaq_prints_as_n_a_is_as_expected() -> None:
+    # given step 31's seed script (docs/steps/exact-meet.md)
+    spec = importlib.util.spec_from_file_location(
+        "nasdaq_earnings", Path(__file__).parents[1] / "scripts" / "nasdaq_earnings.py"
+    )
+    assert spec is not None and spec.loader is not None
+    script = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(script)
+
+    # when surprises of N/A are read with their EPS and forecast
+    met = [script.kind("N/A", "$1.23", "$1.23"), script.kind("N/A", "($0.17)", "($0.17)")]
+    unmet = [script.kind("N/A", "$0.01", "$0"), script.kind("N/A", "", "$1.20")]
+
+    # then an EPS equal to its forecast is as expected, any other N/A has no kind, numbers as before
+    assert met == ["as expected", "as expected"]
+    assert unmet == [None, None]
+    assert [script.kind("2.0"), script.kind("1.9"), script.kind("-2.0")] == [
+        "above",
+        "as expected",
+        "below",
+    ]
 
 
 def test_yahoo_s_quarter_matches_nasdaq_s_and_its_kind_is_nasdaq_s_way() -> None:
@@ -592,7 +623,7 @@ def test_s_p_500_earnings_rows_are_members_reports_with_their_kind() -> None:
 
     # then every kind is the surprise's at ±2%, every report is from 2011, and each sampled
     # report's company is a member within a day of it (the 8-K's day)
-    assert all(row["kind"] == kind(float(row["surprise"])) for row in rows)
+    assert all(row["kind"] == _report_kind(row, kind) for row in rows)
     assert min(row["day"] for row in rows) >= "2011-01-03"
     assert all(
         any(

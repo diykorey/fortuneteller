@@ -12,9 +12,9 @@ Where the work is and what comes next: the task last finished, the tasks in prog
 
 ## Last completed
 
-Step 38: a CEO's conduct, no departure ([results](steps/ceo-conduct.md#results)). Ended at step 1:
-the members' 8-Ks found by the SEC's full-text search hold no CEO who stayed (0 kept, bar 10); the
-kind stays parked.
+Step 39: an exact meet ([results](steps/exact-meet.md#results)). An EPS equal to its forecast, which
+Nasdaq prints as `N/A`, now counts as *as expected*: 119 Dow and 1,685 S&P 500 reports added. The
+Dow's in-line day still holds (229 of 368); its week is now *the period*.
 
 ## In progress
 
@@ -49,9 +49,7 @@ kind stays parked.
 ## Next
 
 Monday 2026-11-23: step 23's first weekly post, drafted by `weekly-post` and published by the
-owner, and step 33's first refresh. Then the exact-meet fix: Nasdaq writes an EPS equal to its
-estimate as N/A, so the in-line kind misses about 1,800 S&P 500 reports and 87 Dow ones
-([Precision](precision.md)); a step of its own.
+owner, and step 33's first refresh. 
 
 ## Known, not yet fixed
 
