@@ -11,6 +11,31 @@ amended there with a date.
 Each entry: **what** was decided, **why**, what it **retires**, and **where** the detail is. *By the
 owner* marks a choice the owner made over another on the table.
 
+## 2026-11-20: The first monthly zoom-out
+
+- **What:** a goldfish, given only the Legend, the roadmap, status and these decisions, zoomed out
+  over the plan, as the [Legend](legend.md#how-a-step-is-reviewed-the-elephant-and-the-goldfish)
+  asks once a month. Its findings, most serious first:
+  1. Phase 5 repeats what phase 4 was opened to stop: nine steps in four days, most *can't say*
+     or within chance, while no post has gone out and the readers bar has no count.
+  2. The loop bar has no release day yet logged clean on both the laptop and the runner; the
+     shadow owes two counting days by 2026-12-18, before the gate's four weeks begin.
+  3. 2026-11-19 may be a second shadow failure, which the 2026-11-17 entry sends here before a
+     third try; status puts the lost day down to the laptop's FRED failure.
+  4. The Bank of England and the Bank of Japan (step 25) went before the euro area, against the
+     Legend's "one country at a time once the US answers hold".
+  5. Smaller: roadmap rows 21 and 23 and the Later list were behind status; status' *Next*
+     repeated step 23's own next part; three items have waited for a release day since before
+     2026-11-06 without saying which release ends the wait.
+  It would cut: phase 5 until the gate; step 21 to the evening job, or the morning kept on the
+  laptop; the popup and *beat the fortune teller* until there are readers.
+- **Why:** recorded as found. Finding 5 is fixed in the same change. Findings 1, 2 and 4 would
+  reverse the owner's choices of 2026-11-17 (widen the kinds now; the outside timer), so they wait
+  for the owner. Finding 3 goes to step 21's spec. What phase 5 did gain: steps 31 and 32 put three
+  links that hold on the page, the most of any kind.
+- **Retires:** nothing.
+- **Where:** [roadmap](roadmap.md), [status](status.md), [step 21](steps/loop-off-the-laptop.md).
+
 ## 2026-11-19: Earnings go on the page, and the page shows the placebo's mark
 
 - **What:** step 32 adds step 31's three earnings kinds to the page's *Ask the fortune teller*,

@@ -138,9 +138,9 @@ anything is built.
 
 | # | Step | Where it stands |
 | --- | --- | --- |
-| 21 | **The loop off the laptop**: the release-day and evening jobs on GitHub Actions, first in a shadow run beside the laptop for two release days, every row compared. The spec says where the store lives on a runner that starts empty (rebuilt or cached). If a source refuses the runner (Nasdaq answered a different Python with HTTP 403 before), that is a result: the laptop stays and the reason is written down. Rung 6's popup stays on the laptop as a second channel; the page and step 23's post become the main one. When it passes, the 2026-11-10 decision to keep the laptop open is retired | **In progress**: [the spec](steps/loop-off-the-laptop.md). Step 1: every source answers the runner; the store cannot be rebuilt from empty |
+| 21 | **The loop off the laptop**: the release-day and evening jobs on GitHub Actions, first in a shadow run beside the laptop for two release days, every row compared. The spec says where the store lives on a runner that starts empty (rebuilt or cached). If a source refuses the runner (Nasdaq answered a different Python with HTTP 403 before), that is a result: the laptop stays and the reason is written down. Rung 6's popup stays on the laptop as a second channel; the page and step 23's post become the main one. When it passes, the 2026-11-10 decision to keep the laptop open is retired | **In progress**: [the spec](steps/loop-off-the-laptop.md). Step 1: every source answers the runner; the store cannot be rebuilt from empty. Step 2, the shadow beside the laptop: two counting days owed by 2026-12-18 ([status](status.md)) |
 | 22 | **[Ask the fortune teller](steps/ask-the-fortune-teller.md)**: the page the target describes, with the reader picking the kind of event until step 20 reads it from the news. For each kind step 17 answers (Fed decisions, the jobs report, retail sales, CPI, jobless claims, ECB decisions) and step 20's *ceo*, every market and span: the answer, the counts and the base rate. *Can't say* is shown with what markets did anyway, never graded. Answers are computed ahead into a file the static scoreboard reads, the same numbers the follows command prints; no server | **Done** 2026-11-19 ([step 5](steps/ask-the-fortune-teller.md#step-5)): the published page answers every kind, none left out; exactly the three expected holds |
-| 23 | **[Be seen, and count it](steps/be-seen.md)**: a free, privacy-light visitor counter on the page, and one channel, a weekly post: what the fortune teller said, and how it did. The spec names the counter and how it counts a unique visitor before the first post; the bar is the gate's | **Spec** 2026-11-15: Umami Cloud and LinkedIn, by the owner |
+| 23 | **[Be seen, and count it](steps/be-seen.md)**: a free, privacy-light visitor counter on the page, and one channel, a weekly post: what the fortune teller said, and how it did. The spec names the counter and how it counts a unique visitor before the first post; the bar is the gate's | **In progress**: the counter live since 2026-11-17; the page's link preview since 2026-11-20; the first post next ([status](status.md)) |
 
 **The gate, 2027-01-31.** Steps 21 to 23 are judged together against bars fixed now, each counted
 from a named source:
@@ -185,10 +185,9 @@ step 18 trigger; reading the news into kinds waits in the backlog below.
 3B), tested on a fresh labelled set: step 20's parked next try, widened to phase 5's kinds.
 
 Later, not planned in detail, each chosen one at a time after the gate: new kinds of
-events, each a dated history before a flow (OPEC decisions against Brent, already stored; floods
-and droughts in crop-growing regions, with one start day each; earnings reports, with the single
-companies' prices they need; crypto's own news); a CEO's conduct with no departure (step 20, part
-1b); the page's words for the figures, once rung 3's rule allows a percentage; and what-if stories
+events, each a dated history before a flow (droughts, once a free source dates them by day;
+crypto's own news; OPEC+, floods and earnings were measured in steps 24, 30 and 31); a CEO's
+conduct with no departure (step 20, part 1b); the page's words for the figures, once rung 3's rule allows a percentage; and what-if stories
 for what has no past, labelled as reasoning and kept apart from graded records.
 
 ## After the MVP — the feature ladder
