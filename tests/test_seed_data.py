@@ -482,3 +482,23 @@ def test_the_8_k_kept_is_the_nearest_to_the_calendar_s_day() -> None:
     assert kept == stamps[2]
     assert none is None
     assert script.nearest(date(2026, 10, 9), stamps[:1]) == stamps[0]
+
+
+def test_earnings_refresh_fetches_again_the_last_three_weeks_and_takes_the_last_day() -> None:
+    # given step 33's script
+    spec = importlib.util.spec_from_file_location(
+        "nasdaq_earnings", Path(__file__).parents[1] / "scripts" / "nasdaq_earnings.py"
+    )
+    assert spec is not None and spec.loader is not None
+    script = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(script)
+    today = date(2026, 11, 23)
+
+    # when it decides which saved pages to fetch again and which weekdays to read
+    days = script.weekdays(date(2026, 11, 20))
+
+    # then 21 days back is fetched again, 22 is kept, and the last day is the one given
+    assert script.refetched(date(2026, 11, 2), today) is True
+    assert script.refetched(date(2026, 11, 1), today) is False
+    assert days[-1] == date(2026, 11, 20)
+    assert script.weekdays()[-1] == date(2026, 11, 18)

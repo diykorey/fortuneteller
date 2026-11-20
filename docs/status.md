@@ -18,6 +18,9 @@ a Dow company's report above, in line with or below the consensus; all 2,988 cel
 
 ## In progress
 
+- **Step 33: the earnings kept current** ([the spec](steps/earnings-current.md)): step 1 done, the
+  scripts take the last day and fetch the recent pages again. Next: the first refresh, Monday
+  2026-11-23, with the weekly post.
 - **Step 23: be seen, and count it** ([the spec](steps/be-seen.md)): a cookie-free Umami counter
   on the page and a weekly LinkedIn post drafted by `weekly-post`, both the owner's choice. Step 1
   done: the counter is live and counts a visit once, read through Umami's share link. Next: the

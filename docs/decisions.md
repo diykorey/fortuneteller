@@ -11,6 +11,14 @@ amended there with a date.
 Each entry: **what** was decided, **why**, what it **retires**, and **where** the detail is. *By the
 owner* marks a choice the owner made over another on the table.
 
+## 2026-11-20: The earnings are kept current, by hand, weekly
+
+- **What:** step 33 refreshes step 31's reports each Monday in a pull request, until the gate.
+- **Why:** the page's most-held answers (step 32) stop at 2026-11-18 otherwise, and a post quoting
+  them grows stale. Nasdaq fills a report's EPS days late, so no evening fetch or live call.
+- **Retires:** nothing.
+- **Where:** [step 33](steps/earnings-current.md).
+
 ## 2026-11-20: The first monthly zoom-out
 
 - **What:** a goldfish, given only the Legend, the roadmap, status and these decisions, zoomed out

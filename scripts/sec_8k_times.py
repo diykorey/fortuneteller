@@ -2,7 +2,8 @@
 (docs/steps/earnings.md).
 
 `fetch DIR` saves the SEC's ticker list and each member's filing index, its older pages included,
-under DIR, under ten requests a second. A member renamed keeps its filer number; two whose reports
+under DIR, under ten requests a second. The current index, which holds the newest 8-Ks, is
+fetched again each time (docs/steps/earnings-current.md); the older pages are kept as saved. A member renamed keeps its filer number; two whose reports
 Nasdaq files under one symbol name both numbers here.
 
 Usage: uv run python -I scripts/sec_8k_times.py fetch DIR
@@ -26,8 +27,8 @@ MORE_FILERS = {"DD": [30554], "GM": [40730], "DIS": [1001039], "XOM": [34088]}
 UNLISTED = {"WBA": 1618921}
 
 
-def _get(url: str, path: Path) -> bytes:
-    if not path.exists():
+def _get(url: str, path: Path, again: bool = False) -> bytes:
+    if again or not path.exists():
         request = urllib.request.Request(url, headers=HEADERS)
         with urllib.request.urlopen(request, timeout=60) as reply:
             path.write_bytes(reply.read())
@@ -47,7 +48,7 @@ def fetch(folder: Path) -> None:
     for ticker in members():
         for cik in [ciks[ticker], *MORE_FILERS.get(ticker, [])]:
             name = f"CIK{cik:010d}.json"
-            index = json.loads(_get(INDEX.format(name=name), folder / name))
+            index = json.loads(_get(INDEX.format(name=name), folder / name, again=True))
             for page in index["filings"]["files"]:
                 _get(INDEX.format(name=page["name"]), folder / page["name"])
         print(ticker, ciks[ticker], MORE_FILERS.get(ticker, []))
