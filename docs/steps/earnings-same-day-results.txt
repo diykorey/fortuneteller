@@ -137,3 +137,9 @@ scale off by more than 0.1 point: 0
 #   NVDA  page 10/31/2026 est 2.47 actual 2.68 | reply 2.47313 2.68 | seed 2.47 2.68           | above / above  pass
 #   AAPL  page  9/30/2026 est 1.98 actual 2.10 | reply 1.98483 2.10 | Nasdaq 1.98 2.05 (3.54) | above / above  pass
 # The quarter, EPS and estimate within $0.01 of the page on all three; no stop.
+
+# Step 2: the members' reports on Nasdaq's calendar, read 2026-11-20 11:00 Kyiv, 2026-11-23 to 2026-12-31:
+#   2026-12-02 CRM after the close; 2026-12-17 NKE, time not given (after the close as before).
+# Under the speed bar's 3, so the window runs to 2027-01-31 (the spec's amendment of 2026-11-20).
+# The asks: the laptop's crontab, every 30 minutes from 16:00 New York for six hours (23:00 to
+# 04:30 Kyiv), the ticker alone, replies under data/cache/earnings/yahoo/ASKED/.
