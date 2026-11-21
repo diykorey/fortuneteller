@@ -1,0 +1,151 @@
+id,rubric,score,reason
+M008,oil,0,A software and SaaS company with no fuel or energy input named in the text.
+M008,rates,0,"Subscription software business with no lending, and the text names no reliance on debt."
+M008,consumer,1,"Sells mostly to enterprises and creative professionals, with some consumer and hobbyist subscriptions."
+M016,oil,0,Supplemental life and health insurance in Japan and the US has no oil exposure in the text.
+M016,rates,1,"An insurer earning investment income on a bond portfolio, though most of it is yen-based and tied to Japan."
+M016,consumer,0,Voluntary supplemental insurance premiums do not depend much on discretionary US spending.
+M024,oil,-5,"An airline flying over 1,200 daily departures for which fuel is a main cost."
+M024,rates,-1,"Capital-intensive aircraft fleet, but the text stresses investment-grade ratings and strong liquidity."
+M024,consumer,3,"Passenger air travel, much of it leisure to Hawaii and West Coast markets, grows with consumer spending."
+M032,oil,0,"Wealth management, annuities and insurance with no oil link named."
+M032,rates,2,"Annuities, investment certificates and a bank lending portfolio earn wider spreads when rates rise."
+M032,consumer,1,Asset-management and auto and home insurance revenue rises a little with household wealth and spending.
+M040,oil,0,An office and lab REIT for life science tenants with no oil exposure in the text.
+M040,rates,-3,A REIT funding development of 3.9 million RSF with debt and equity is hurt by a higher cost of capital.
+M040,consumer,0,Tenants are pharma and biotech firms whose rents do not track consumer spending.
+M048,oil,0,"The commercial book includes the energy sector, but only as a small credit concentration."
+M048,rates,4,"A large bank living on loans and deposits, so its lending margin widens with higher rates."
+M048,consumer,2,"Consumer credit card, auto and mortgage portfolios see higher volumes and fewer credit losses when consumers spend."
+M056,oil,0,A neurology biopharma with no fuel or energy input named.
+M056,rates,0,Drug sales and R&D with share buybacks; no lending and no debt reliance named.
+M056,consumer,0,Prescription MS and SMA therapies do not depend on discretionary spending.
+M064,oil,-1,"Sells to light-vehicle OEMs where dearer fuel can slow SUV and truck demand, partly offset by demand for fuel-economy products."
+M064,rates,-1,Vehicle demand from OEM customers softens when auto financing costs more.
+M064,consumer,3,"Products go into passenger cars, SUVs and light trucks, whose sales are cyclical consumer purchases."
+M072,oil,-4,Operates 104 cruise ships for which fuel is a large operating cost.
+M072,rates,-2,Builds 21 new ships through 2025 and carries debt maturities that cost more at higher rates.
+M072,consumer,3,The world's largest leisure travel company selling discretionary cruise vacations.
+M080,oil,0,Health insurance and pharmacy benefits with no oil link.
+M080,rates,1,"Revenue includes investment income from an insurer's float, though the Express Scripts deal adds debt."
+M080,consumer,0,Employer-sponsored and government health coverage is not discretionary spending.
+M088,oil,0,Medicaid and marketplace managed care with no oil exposure.
+M088,rates,0,Government-funded health plans; the text names neither lending nor debt reliance.
+M088,consumer,0,Membership is funded by Medicaid and subsidies and does not track consumer spending.
+M096,oil,-1,"Ingredient and packaging costs rise with energy costs, as the text notes."
+M096,rates,-1,The company is paying down acquisition debt from Snyder's-Lance with sale proceeds.
+M096,consumer,1,"Branded soups and snacks sold through grocers and Wal-Mart are staples, so the lift is small."
+M104,oil,0,Pharmacy and health benefits with no oil link named.
+M104,rates,-2,"About $45 billion of new debt, including term loans, was issued to buy Aetna."
+M104,consumer,1,"Over 9,900 retail locations gain a little from more spending, but most revenue is pharmacy and insurance."
+M112,oil,0,"Immaterial oil and gas assets, and its Texas markets are only part of a 29-state business."
+M112,rates,-5,The largest US homebuilder whose buyers rely on mortgages and which runs a mortgage subsidiary.
+M112,consumer,2,"New-home demand rises with household income and spending, especially at entry-level prices."
+M120,oil,0,"Electricity comes mainly from coal and nuclear, and gas costs pass through to regulated rates."
+M120,rates,-3,A capital-intensive regulated utility whose property is under a mortgage lien and which is funded largely by debt.
+M120,consumer,0,Regulated electricity and gas demand barely moves with discretionary spending.
+M128,oil,0,A regulated New York utility and clean energy businesses with no oil exposure.
+M128,rates,-3,A utility valued on its dividend and funding a $53.9 billion asset base largely with debt.
+M128,consumer,0,Regulated utility sales do not follow consumer discretionary spending.
+M136,oil,5,An oil and gas producer with 1.5 billion barrels of proved crude reserves.
+M136,rates,0,"Funded from cash flow with a strong balance sheet, so rates have little effect."
+M136,consumer,0,Crude prices are set globally and are not driven by US consumer spending.
+M144,oil,0,Generation and regulated wires businesses; oil is not a named fuel or cost.
+M144,rates,-3,"Capital-intensive utilities funded by long-term debt and commercial paper, with recovery limited by regulation."
+M144,consumer,0,Regulated electricity distribution does not follow discretionary spending.
+M152,oil,0,Regulated transmission and distribution with no oil link.
+M152,rates,-3,"A regulated utility earning a return on invested capital, carrying holding-company debt."
+M152,consumer,0,Regulated electricity delivery to six million customers is not discretionary.
+M160,oil,0,Shopping-center REIT with no oil exposure.
+M160,rates,-3,A REIT funding redevelopment and acquisitions with unsecured debt and some variable-rate debt.
+M160,consumer,2,"Higher tenant sales let it charge higher rents in affluent shopping centers, as the text says."
+M168,oil,0,Life and supplemental health insurance with no oil link.
+M168,rates,2,"About 95% of invested assets are fixed maturities, and profit comes from investment income above what reserves require."
+M168,consumer,0,Life and Medicare supplement premiums from middle-income families do not track discretionary spending.
+M176,oil,0,An MRO distributor with no fuel or energy input named in the text.
+M176,rates,0,A distribution business; the text names neither lending nor debt reliance.
+M176,consumer,1,"Sells business-to-business to manufacturers, contractors and government, so the lift from consumer spending is indirect."
+M184,oil,0,A hotel franchisor whose fee revenue has no direct fuel cost.
+M184,rates,-1,"Asset-light, but hotel development by third-party owners slows when financing costs more."
+M184,consumer,3,"Fees come from leisure and business hotel stays across 5,685 properties, which grow with spending."
+M192,oil,0,Dental and medical supply distribution with no oil link.
+M192,rates,0,"Distribution business whose financial services are non-recourse, and no debt reliance is named."
+M192,consumer,1,Some dental and elective procedures and equipment purchases rise a little with consumer spending.
+M200,oil,-1,Synthetic molecules and commodity ingredients carry some petrochemical input cost.
+M200,rates,-1,The large Frutarom acquisition raises reliance on borrowed funding.
+M200,consumer,1,"Flavours and fragrances go into perfumes and consumer goods, mostly staples with some fine fragrance."
+M208,oil,0,A robotic surgical systems and instruments maker with no oil input or output named in the text.
+M208,rates,0,The text describes surgical systems and instruments with no debt or lending mentioned.
+M208,consumer,0,Sales go to hospitals and surgeons for medical procedures rather than to consumer discretionary spending.
+M216,oil,0,The text is an executive roster and share repurchase table across pharmaceuticals and devices with no oil link.
+M216,rates,0,Only open-market share repurchases are described; no lending or debt dependence is shown.
+M216,consumer,1,"A Consumer sector is named alongside pharmaceuticals and medical devices, giving a small consumer tilt."
+M224,oil,2,"A CO2 segment and hedging of energy commodity prices give some upside from higher crude, though pipelines and terminals dominate."
+M224,rates,-2,"Net interest of about $1.9 billion against $2.5 billion pre-tax income, with variable-rate exposure, makes higher rates a cost."
+M224,consumer,0,Earnings come from natural gas pipelines and terminals fees rather than consumer spending.
+M232,oil,0,A clinical laboratory testing business with no oil exposure in the text.
+M232,rates,0,The text covers regulation and reimbursement with no debt or lending named.
+M232,consumer,0,Testing is billed to MCOs and Medicare rather than driven by discretionary consumer spending.
+M240,oil,0,A home improvement retailer whose text names no fuel or oil cost exposure.
+M240,rates,-2,"The company monitors home prices and housing turnover, which higher mortgage rates would weaken."
+M240,consumer,4,"A home improvement retailer whose demand tracks real disposable personal income, employment and housing activity."
+M248,oil,0,A department store chain with no oil cost or revenue named.
+M248,rates,0,Credit card accounts are owned by a Citibank subsidiary so the company carries little lending exposure.
+M248,consumer,5,"A department store selling apparel, cosmetics and home furnishings, the archetypal discretionary retailer."
+M256,oil,0,A credit rating agency with no oil link in the text.
+M256,rates,-2,Rating revenue depends on debt issuance in the credit markets which higher rates would slow.
+M256,consumer,0,Customers are issuers and financial institutions rather than consumers.
+M264,oil,0,An electronic bond trading platform with no oil exposure.
+M264,rates,0,"Commissions come from bond trading volume, which higher rates could slow in issuance or lift in turnover, no clear net effect."
+M264,consumer,0,Clients are institutional investors and broker-dealers rather than consumers.
+M272,oil,0,The text is cybersecurity and regulatory risk for a services firm with no oil link.
+M272,rates,0,No lending margin or debt dependence is described in the excerpt.
+M272,consumer,0,Services go to corporate clients with no consumer spending tie in the text.
+M280,oil,0,Oil derivatives listed on its exchanges are a small part of a broad exchange and technology business.
+M280,rates,0,Trading clearing and technology fees show no stated dependence on interest rates.
+M280,consumer,0,Revenue comes from trading listings data and market technology rather than consumer spending.
+M288,oil,0,An enterprise cloud software company with no oil exposure.
+M288,rates,0,Subscription software with no debt or lending described.
+M288,consumer,0,Customers are enterprises buying IT and workflow software.
+M296,oil,0,A media and information company with no oil link in the text.
+M296,rates,-1,"Digital real estate services such as realtor.com depend on housing activity, which higher rates would dampen."
+M296,consumer,2,"Revenue from subscriptions, advertising, book sales and real estate listings rises with consumer spending."
+M304,oil,0,A payroll and HR services provider with no oil exposure.
+M304,rates,2,"Payroll taxes and net payroll are collected from clients and held for one to 30 days or more, earning more on that float at higher rates."
+M304,consumer,1,"Clients are small- to medium-sized businesses whose payroll counts rise with economic activity, a small indirect effect."
+M312,oil,1,Oil & gas appears among the end markets served by several industrial groups giving a small upside.
+M312,rates,0,The text describes motion and control products with no debt or lending named.
+M312,consumer,0,Sales go to OEMs and distributors in industrial and aerospace markets rather than to consumers.
+M320,oil,0,A regulated electric utility whose fuel adjustment clauses pass fuel costs through.
+M320,rates,-3,"Rate base growth is driven by significant capital expenditures funded through credit markets, so higher rates raise financing costs."
+M320,consumer,0,Regulated utility earnings do not move with consumer spending.
+M328,oil,0,A wireless chip and licensing company with no oil exposure.
+M328,rates,0,The text names no debt or lending dependence.
+M328,consumer,2,"Revenue rests on smartphone demand driven by consumer replacement cycles, a discretionary consumer purchase."
+M336,oil,0,A respiratory medical device maker with no oil link.
+M336,rates,0,No debt or lending is described in the text.
+M336,consumer,0,Devices treat sleep apnea and COPD as medical needs rather than discretionary purchases.
+M344,oil,0,A wireless tower lessor with no oil exposure.
+M344,rates,-3,"Towers are acquired and built with borrowings while keeping target leverage ratios, so higher rates raise funding costs."
+M344,consumer,0,Leases are long-term contracts with wireless carriers rather than consumer spending.
+M352,oil,0,An electronic design automation software provider with no oil exposure.
+M352,rates,0,No debt or lending dependence is described.
+M352,consumer,0,Customers are chip and software designers rather than consumers.
+M360,oil,-1,"Beer is produced in Mexico and wine imported for the U.S. market, so higher fuel lifts transport and packaging costs a little."
+M360,rates,0,The text does not tie earnings to debt or lending.
+M360,consumer,2,"Beer, wine and spirits sales ride consumer premiumization, a consumer good that is partly discretionary."
+M368,oil,0,"Oil and gas end markets are small and offset by automotive demand, leaving no clear net effect."
+M368,rates,0,No debt or lending dependence is described.
+M368,consumer,2,"Automotive is 73% of the largest segment and appliances 41% of communications, both tied to consumer purchases."
+M376,oil,0,An investment manager with no oil exposure.
+M376,rates,-1,"Revenue depends on the value of assets under management, mostly equities, which higher rates would weigh on."
+M376,consumer,0,Fees track financial market values rather than consumer spending.
+M384,oil,0,A performance apparel company with no oil cost named in the text.
+M384,rates,0,No debt or lending dependence is described.
+M384,consumer,4,"Performance apparel, footwear and accessories sold wholesale and direct to consumers are discretionary goods."
+M392,oil,1,Rentals to energy companies are part of the industrial customer base giving a small upside.
+M392,rates,-1,Demand from commercial construction and debt-funded acquisitions make higher rates a modest negative.
+M392,consumer,1,"Residential construction is about 4% of rentals and retailers appear among customers, a small consumer tie."
+M400,oil,1,Energy analytics serving 9 of the top 10 global energy providers would gain a little from a stronger energy sector.
+M400,rates,0,"Revenue is mostly pre-paid subscriptions, with no debt or lending dependence described."
+M400,consumer,0,Customers are insurers energy firms and financial institutions rather than consumers.

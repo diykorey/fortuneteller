@@ -6,6 +6,7 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-21 | Step 42: who a macro event hits, exposure scores; the Subscription LLM scored 426 S&P 500 members' 2019 10-Ks on oil, rates and consumer spending; only oil on OPEC+ *oil down* answers, near the kind, and no score beats its industry | [#396](https://github.com/diykorey/fortuneteller/pull/396) |
 | 2026-11-21 | Step 41: hypotheses from an expert reader; 40 rules from the record to 2019, tested on 2020 onward: 5 pass, 2 hold, all restatements; no condition added | PR #395 |
 | 2026-11-21 | Step 40: big moves and the news filed with them; the 8-K items against S&P 500 members' big moves, and 40 unfiled big moves read by hand | PR #394 |
 | 2026-11-20 | Step 39: an exact meet (Nasdaq's `N/A`) read as *as expected*; 119 Dow and 1,685 S&P 500 reports added | PR #392 |
