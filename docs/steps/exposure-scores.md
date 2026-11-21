@@ -49,7 +49,7 @@ judged against the rule below written first.
 - **The scorer:** the Subscription LLM ([step 41](expert-hypotheses.md); a hosted model through
   the owner's subscription, allowed as an input by the [decision of
   2026-11-21](../decisions.md#2026-11-21-a-model-proposes-the-records-decide-by-the-owner)), in fresh sessions of 25 members each, given only the brief
-  and those members' texts; it writes `ticker,rubric,score,reason` rows to
+  and those members' texts; each text under an id that says nothing of the company (`M001` …, the key kept in the cache); it writes `id,rubric,score,reason` rows to
   `docs/steps/exposure-scores.csv`. The file is committed, and its SHA-256 posted in the pull
   request, before any test exists. Its model name is recorded.
 - **The second reading:** 50 members, rows *n*, 2*n*, … 50*n* of the file by ticker order (*n* the
