@@ -12,3 +12,12 @@ the same window; "no filer" is tickers of the seed with no SEC submissions file 
 The 400 by item (a filing may carry two): 3.02 219, 8.01 148, 7.01 110, 2.05 92, 5.02 49.
 Texts from 844 to 8,315 characters, the median 4,097; 197 have no exhibit 99, so only their items.
 texts.csv SHA-256: 2b86b4abd51ef65f008bb714c3f4746c179e3421415d71f10cb9dbed547b444c
+
+Step 2, the scores. The Subscription LLM, model claude-opus-5-5, in 16 fresh sessions of 25 run
+2026-11-21, each given only docs/steps/severity-brief.md and its filings' texts under their ids;
+rows sorted by id:
+  400 rows; none unreadable, missing or twice.
+  -4:2 -3:12 -2:29 -1:64 0:211 1:60 2:16 3:5 4:1
+  bad (-2 or less) 43, expected 80 to 160; good (+2 or more) 22, expected 40 to 120; both
+  under their bands (recorded, not a stop).
+severity-scores.csv SHA-256: 062740f243301a69b44d0ec029160f8944456eae940c819467bad2622a43d0fe
