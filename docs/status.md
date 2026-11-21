@@ -12,17 +12,18 @@ Where the work is and what comes next: the task last finished, the tasks in prog
 
 ## Last completed
 
-Step 42: who a macro event hits, exposure scores ([results](steps/exposure-scores.md#results)).
-The Subscription LLM's scores of 426 members' 2019 10-Ks, tested on 2020 onward: only oil on
-OPEC+ *oil down* answers (15 of 18, day and week), within chance and near the kind, and the
-industry sorts as well; rates and consumer sort nothing; none holds or beats its sector.
+Step 43: good or bad, read from the filing ([results](steps/filing-severity.md#results)). The
+Subscription LLM's scores of 400 members' 8-Ks of 2020 to 2025: 43 bad, 22 good; after bad ones
+the shares trailed on 27 of 43 days (p 0.06), short of an answer; nothing answers or holds.
 
 ## In progress
 
 - **Step 42, step 5: the forward log** ([the spec](steps/exposure-scores.md)): each OPEC+, CPI,
   Fed and retail event after the scores' commit, its spread per rubric written to
   `steps/exposure-forward.csv` and graded, to the 2027-01-31 gate.
-- **Next: step 43, filing severity**: 8-K text scored for good or bad news, by step 42's pattern.
+- **Step 43, step 5: the forward log** ([the spec](steps/filing-severity.md)): members' 8-Ks of
+  the five items after the scores' commit, scored and committed before their reaction close,
+  graded at the span's end, to the 2027-01-31 gate.
 - **Step 41, step 5: the forward log** ([the spec](steps/expert-hypotheses.md)): each new event
   meeting rules 11, 23, 25 or 26 written to `steps/expert-forward.csv` before its reaction close
   and graded at its span's end, to the 2027-01-31 gate.

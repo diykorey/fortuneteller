@@ -1,0 +1,107 @@
+Step 43's evidence (docs/steps/filing-severity.md).
+
+Step 1, the sample and the texts. FT_DB_PATH on step 40's store copy (the index's closes), run
+2026-11-21:
+uv run python scripts/eightk_text.py fetch data/cache/earnings/sec500 data/cache/eightk
+  member-days with a filing 18906; sampled 400; left out: {'no filer': 196, 'results that day': 3671}
+  texts 400; {'no item heading': 0, 'no exhibit 99': 197, 'stub': 0}
+  blind test: 0 found []
+  sample test: draw reproduced True; one per member-day True; items kept True
+"results that day" counts member-days with one of the five items left out for a 2.02 filing in
+the same window; "no filer" is tickers of the seed with no SEC submissions file (step 40's count).
+The 400 by item (a filing may carry two): 3.02 219, 8.01 148, 7.01 110, 2.05 92, 5.02 49.
+Texts from 844 to 8,315 characters, the median 4,097; 197 have no exhibit 99, so only their items.
+texts.csv SHA-256: 2b86b4abd51ef65f008bb714c3f4746c179e3421415d71f10cb9dbed547b444c
+
+Step 2, the scores. The Subscription LLM, model claude-opus-5-5, in 16 fresh sessions of 25 run
+2026-11-21, each given only docs/steps/severity-brief.md and its filings' texts under their ids;
+rows sorted by id:
+  400 rows; none unreadable, missing or twice.
+  -4:2 -3:12 -2:29 -1:64 0:211 1:60 2:16 3:5 4:1
+  bad (-2 or less) 43, expected 80 to 160; good (+2 or more) 22, expected 40 to 120; both
+  under their bands (recorded, not a stop).
+severity-scores.csv SHA-256: 062740f243301a69b44d0ec029160f8944456eae940c819467bad2622a43d0fe
+
+Step 2, the second reading. Two fresh sessions of the same model, 2026-11-21, given the brief and
+the texts of F008, F016, ... F400, after the scores were frozen; their rows in
+docs/steps/severity-second.csv. Against the first reading: within 2 points 50 of 50 (100%, bar
+80%); the same side 47 of 50 (94%, bar 70%); equal 43. Each session then marked the first
+reading's reasons for its 25 naming an event after the filing's date: 0 and 0 (bar: more than 5
+stops). Counted by a one-off script reading the two files (side: -2 or less, +2 or more).
+
+Step 3, the tester. FT_DB_PATH on step 40's store copy, run 2026-11-21:
+uv run python scripts/severity_check.py 5885102 data/cache/eightk/texts.csv
+  scores: docs/steps/severity-scores.csv at 5885102968de98202a2e0641ecd20c3456e69143, SHA-256 062740f243301a69b44d0ec029160f8944456eae940c819467bad2622a43d0fe
+  filings scored 400, members with closes 200 of 202; bad 43, neither 335, good 22
+  cell             span  n    right  base   p        answer  period  walk (right/graded)
+  bad, down        day    43    27  0.498  0.0597   no      -       0/0 -
+    item 2.05       day    36    23  0.498  0.0629   no      (reported)
+    item 3.02       day     5     3  0.498  nan      no      (reported)
+    item 5.02       day     1     1  0.498  nan      no      (reported)
+    item 7.01       day    16    13  0.498  0.0102   no      (reported)
+    item 8.01       day    10     7  0.498  0.1683   no      (reported)
+  bad, down        week   43    24  0.502  0.2787   no      -       0/0 -
+    item 2.05       week   36    21  0.502  0.2084   no      (reported)
+    item 3.02       week    5     2  0.502  nan      no      (reported)
+    item 5.02       week    1     1  0.502  nan      no      (reported)
+    item 7.01       week   16    13  0.502  0.0110   no      (reported)
+    item 8.01       week   10     5  0.502  0.6273   no      (reported)
+  good, up         day    22    12  0.502  0.4240   no      -       0/0 -
+    item 2.05       day     1     0  0.502  nan      no      (reported)
+    item 3.02       day    16     8  0.502  0.6050   no      (reported)
+    item 5.02       day     0     0  0.502  nan      no      (reported)
+    item 7.01       day    15     9  0.502  0.3096   no      (reported)
+    item 8.01       day     4     2  0.502  nan      no      (reported)
+  good, up         week   22    12  0.498  0.4096   no      -       0/0 -
+    item 2.05       week    1     1  0.498  nan      no      (reported)
+    item 3.02       week   16     9  0.498  0.3964   no      (reported)
+    item 5.02       week    0     0  0.498  nan      no      (reported)
+    item 7.01       week   15     9  0.498  0.2989   no      (reported)
+    item 8.01       week    4     2  0.498  nan      no      (reported)
+  cells 4; answer 0 (chance line 0.04)
+(200 of the 202 tickers have closes in the store; the filings of the other 2 are not counted.)
+
+The hand checks: closes read straight from daily_bars,
+uv run python hand.py <the store> data/cache/eightk/texts.csv (scratchpad/m43):
+  first bad: F006 GM 2020-02-18 items 2.05 score -2; close before 2020-02-14; stock -1.0069%, SPY -0.2920%, excess -0.007149
+  first good: F060 MMM 2020-08-13 items 7.01,9.01 score 2; close before 2020-08-12; stock +0.9741%, SPY -0.2047%, excess +0.011788
+The tester's excess moves (study.excess_spans) on the same: GM 2020-02-18 -0.007149, MMM
+2020-08-13 +0.011788; equal to the hand's. The script:
+  | import csv, sys, duckdb
+  | from datetime import date
+  | csv.field_size_limit(10**7)
+  | store, texts = sys.argv[1], sys.argv[2]
+  | scores = {r["id"]: int(r["score"]) for r in csv.DictReader(open("docs/steps/severity-scores.csv"))}
+  | rows = sorted((r for r in csv.DictReader(open(texts))), key=lambda r: (r["day"], r["ticker"]))
+  | raw = duckdb.connect(store, read_only=True)
+  | spy = [d for (d,) in raw.execute("select day from daily_bars where instrument='SPY / ES' order by day").fetchall()]
+  | for label, test in (("first bad", lambda s: s <= -2), ("first good", lambda s: s >= 2)):
+  |     r = next(r for r in rows if test(scores[r["id"]]))
+  |     day = date.fromisoformat(r["day"]); before = max(d for d in spy if d < day)
+  |     def ret(t):
+  |         got = dict(raw.execute("select day, close from daily_bars where instrument=? and day in (?, ?)", [t, before, day]).fetchall())
+  |         return got[day] / got[before] - 1
+  |     stock, idx = ret(r["ticker"]), ret("SPY / ES")
+  |     print(f"{label}: {r['id']} {r['ticker']} {day} items {r['items']} score {scores[r['id']]}; close before {before};"
+  |           f" stock {stock:+.4%}, SPY {idx:+.4%}, excess {stock - idx:+.6f}")
+
+The local check, uv run ruff check . && uv run ruff format --check . && uv run mypy && uv run pytest -q,
+before the results commit:
+  All checks passed! / 71 files already formatted / Success: no issues found in 11 source files
+  741 passed in 526.58s
+
+After the results review, 2026-11-21. Every count above from texts.csv and the two score files:
+python3 -I docs/steps/severity-counts.py data/cache/eightk/texts.csv
+  texts 400 by item {'2.05': 92, '3.02': 219, '5.02': 49, '7.01': 110, '8.01': 148} length 844 4097 8315
+  with a press release 203
+  texts.csv SHA-256 2b86b4abd51ef65f008bb714c3f4746c179e3421415d71f10cb9dbed547b444c
+  scores 400 -4:2 -3:12 -2:29 -1:64 0:211 1:60 2:16 3:5 4:1 bad 43 good 22
+  bad 7.01 16 with a press release 14
+  second reading 50 within 2 50 same side 47 equal 43
+The marks: each second session wrote its marks as a CSV; both files hold the header alone
+(wc -l: 1 and 1), 0 marked. The hand check, its script committed:
+uv run python docs/steps/severity-hand.py <step 40's store copy> data/cache/eightk/texts.csv
+Step 1's counts: no primary document 0 (a failed fetch stops the run, and none did); the window,
+membership and 2.02 checks are the listing's own filters, tested in tests/test_eightk_text.py,
+and the sample test checks each drawn filing's items and one per member-day. The placebo column
+prints - when the cell does not answer, as it is tried only on an answer.

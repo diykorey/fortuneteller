@@ -31,7 +31,10 @@ owner* marks a choice the owner made over another on the table.
   a bar, scores as inputs never answers, and the cost (about 1,500 scores) carried by the
   Subscription LLM now, an API paid by tokens later, as his runs through OpenRouter.
 - **Retires:** nothing.
-- **Where:** [step 42](steps/exposure-scores.md).
+- **Where:** [step 42](steps/exposure-scores.md); [step 43](steps/filing-severity.md).
+- **Amended 2026-11-21, by the owner:** after step 42's results (the scores sorted nothing the
+  industry did not), the owner chose to go ahead with step 43 over pausing the line or dropping
+  it: a filing's direction is a different question from a company's exposure.
 ## 2026-11-21: A model proposes, the records decide, by the owner
 
 - **What:** asked in turn whether the project pays for any service or model, whether a language
