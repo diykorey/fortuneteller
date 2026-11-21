@@ -123,8 +123,8 @@ its items.*
 
 ## Technical details
 
-- `scripts/news_moves.py`, two commands: `matrix STORE SEC_DIR` prints the matrix and the
-  counts left out; `sample STORE SEC_DIR` prints the sample's rows. It reads closes with the
+- `scripts/news_moves.py`, two commands on the store at `FT_DB_PATH`: `matrix SEC_DIR` prints the
+  matrix and the counts left out; `sample SEC_DIR` prints the sample's rows. It reads closes with the
   store's own helpers and the items from the saved submissions JSON (`filings.recent` and the
   `files` pages: `form`, `acceptanceDateTime`, `items`).
 - The test, in `tests/test_news_moves.py`, as the seed scripts' tests: the window and the
