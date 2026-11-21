@@ -30,7 +30,8 @@ judged against the rule below written first.
   it lacks: the model blind to prices and to anything after the text, a second reading, and every
   score tested against the moves by the project's bars. No code or data of it is used.
 - **The members:** the S&P 500's on 2020-01-02 by `data/seed/sp500.csv` ([step 36](earnings-sp500.md)),
-  one per filer, with closes in the store and a 10-K on EDGAR filed in 2019; others counted, left
+  one per filer (of two share classes, the first ticker by name, as step 40), with closes in the
+  store and a 10-K on EDGAR filed in 2019; others counted, left
   out.
 - **The text:** each member's last 10-K filed before 2020-01-01, its *Item 1. Business*, the first
   12,000 characters, with the company's name and tickers replaced by "the company". Fetched from
@@ -45,69 +46,91 @@ judged against the rule below written first.
     lending margin; −5 a homebuilder or a utility; 0 a company with no debt and no lending.
   - **Consumer:** how a 5% rise in US consumer spending moves them. +5 a retailer of discretionary
     goods; 0 a defence contractor; −5 none expected (a dollar store at most −1).
-- **The scorer:** the Subscription LLM, in fresh sessions of 25 members each, given only the brief
+- **The scorer:** the Subscription LLM ([step 41](expert-hypotheses.md); a hosted model through
+  the owner's subscription, allowed as an input by the [decision of
+  2026-11-21](../decisions.md#2026-11-21-a-model-proposes-the-records-decide-by-the-owner)), in fresh sessions of 25 members each, given only the brief
   and those members' texts; it writes `ticker,rubric,score,reason` rows to
   `docs/steps/exposure-scores.csv`. The file is committed, and its SHA-256 posted in the pull
   request, before any test exists. Its model name is recorded.
-- **The second reading:** 50 members, every tenth of the file by ticker order, scored again by a
-  fresh session given the same brief and texts.
+- **The second reading:** 50 members, rows *n*, 2*n*, … 50*n* of the file by ticker order (*n* the
+  members ÷ 50, rounded down), scored again by a fresh session given the same brief and texts.
 - **The events and the test,** from 2020-01-01: per rubric, the kinds it names, each with the sign
   the rubric implies: oil, `opec` *oil up* (+) and *oil down* (−); rates, `cpi` *above* (+) and
   *below* (−), `fomc` *hike* (+) and *cut* (−); consumer, `retail` *above* (+) and *below* (−).
   For each event, the **spread** is the mean excess day move (against the S&P 500, as
   `study.excess_spans` gives it, from the close before) of the members scoring +3 or more less
   that of those scoring −3 or less (for consumer, +3 or more against 0 or less). An event is
-  *right* when the spread has the kind's sign. Also the week, from the close before.
-- **The sector baseline:** the same test with each member's score replaced by the mean score of its
-  SIC major group (the first two digits, from the SEC's files). It says whether a company's own
+  *right* when the spread has the kind's sign. Also the week, from the close before. Each flow's
+  events are taken whole, as `follows` takes them: an event sharing its day with another flow's is
+  counted in both.
+- **The sector baseline:** the same test with each member's score replaced by the mean score of the
+  *other* members of its SIC major group (the first two digits of the `sic` in its SEC
+  submissions file, step 36's cache); a member alone in its group is left out of both the
+  baseline and its comparison, counted. It says whether a company's own
   score sorts better than its industry's.
 - `scripts/exposure_test.py` prints, per rubric, kind and span: the events, right, the base, the
   chance, the placebo, the walk-forward, and the same for the sector baseline.
 
 ## The rule, fixed before measuring
 
-*Written 2026-11-21. Seen before: step 40's matrix and sample; step 41's results; no score, no
-10-K text and no spread of this step.*
+*Written 2026-11-21. Seen before: step 40's matrix (8-K items against big moves) and sample; step
+41's results; no score, no 10-K text and no spread of this step. Amended the same day after the
+goldfish, before any text was fetched: the walk-forward, the base's spans, the sector baseline
+left one out, the chance lines, the second reader's bar, the forward log, and the checks below.*
 
 - **A cell answers** when it has at least 10 events, and its right count beats the base at
-  p < 0.01 (one-sided binomial): the base is the share of the 504 closes before 2020 on which the
-  same spread had the kind's sign. A cell the placebo (the events shifted by `follows`' reach)
-  also answers is *the period*.
-- **A cell holds** by the bar of every link: 60% right of at least 30 graded walk-forward from
-  2020, 10 points over the base, p < 0.01.
+  p < 0.01 (one-sided binomial). The base is the share of the 504 spans starting at each of the
+  504 closes before 2020 (a day or a week each, overlapping for the week), with the members and
+  scores fixed as above, whose spread had the kind's sign. A cell `follows`' placebo (the events
+  shifted, as [what follows](what-follows.md) shifts them) also answers is *the period*.
+- **A cell holds** by the bar of every link: 60% right of at least 30 graded walk-forward, 10
+  points over the base, p < 0.01, each event from 2020 predicted by the answer the cell gives on
+  the events from 2020 before it (graded only once that answer is the kind's sign).
 - **The score adds** over its sector when the cell is right on more events than the sector
   baseline's same cell, by a sign test on the events where they differ, p < 0.05.
-- **The chance line:** 0.01 times the cells, 16 (8 kinds, 2 spans).
+- **The chance lines:** for answers, 0.01 times the 16 cells (8 kinds, 2 spans), 0.16; for
+  *adds*, 0.05 times 16, 0.8. Counts at or under a line plus two are read as chance. The sector
+  baseline's cells are reported, not counted.
 - **The second reading agrees** when, per rubric, the two readings' scores are within 2 points on
-  at least 80% of the 50; one rubric short of it stops step 2 for the owner's call.
+  at least 80% of the 50; one rubric short of it stops step 2 for the owner's call (to amend the
+  rubric, or end the step). More than 5 reasons the second reader marks as naming an event after
+  2019 also stop it.
 - **Expected outcome:**
   - At least 450 members scored.
   - Oil answers on both OPEC kinds on the day, and holds on neither (under 30 events).
-  - Rates answers on CPI *above* on the day; FOMC *hike* and *cut* are *too few* or *can't say*.
+  - Rates answers on CPI *above* on the day; FOMC *hike* and *cut* are *too few* or *can't say*
+    (as `follows` prints them: under 10 events, or not an answer).
   - Consumer answers on no kind.
-  - The score adds over its sector in at most one cell: most of a company's exposure is its
-    industry's.
+  - The score adds over its sector in at most 2 cells, within chance: most of a company's
+    exposure is its industry's.
   - Answers beyond these at most the chance line plus two.
   - A count outside its band is recorded, not a stop.
 
 ## How you know it is right
 
-- **The text is blind:** a test on the cache finds no price, no date after 2019 and none of the
-  company's names or tickers in the texts given to the model.
+- **The text is blind:** a test on the cache finds each text's filing date before 2020-01-01 and
+  none of the company's names or tickers in it.
 - **The scores are frozen:** the SHA-256 in the pull request equals the one the tester prints.
 - **The tester is right:** a test on hand-made closes and scores (a spread's sign, the group cut,
-  the base); and two events by hand from the store (the first OPEC *oil up* and the first CPI
-  *above* from 2020): the members in each group, their excess moves, the spread.
-- **The model saw no more:** the second reader also marks any reason naming an event after 2019.
+  the base, the leave-one-out mean); and two events by hand from the store (the first OPEC *oil
+  up* and the first CPI *above* from 2020): the members in each group, their excess moves, the
+  spread, equal to the tester's.
+- **The model's memory:** it knows 2020 to 2026 and may score what happened, not what the text
+  says, in words no reader can catch. No check here can rule it out, so the test from 2020 is
+  read as what the scores sort, not as a forecast; only the forward log (step 5), on events after
+  the scores were frozen, is free of it.
+- **The model saw no more:** the second reader also marks any reason naming an event after 2019,
+  within the bar above.
 
 ## The steps
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | The texts and the brief | `tenk_business.py` and its test; texts for the members in the cache, the counts left out; the brief committed |
-| 2 | The scores | `exposure-scores.csv` committed and its hash posted; the second reading in `docs/steps/exposure-scores-results.txt` |
-| 3 | The tester | `exposure_test.py` and its test; the two hand checks in the results file; `just check` passes |
-| 4 | Results | Every cell judged against the rule; goldfish-reviewed; roadmap, status, changelog updated |
+| 1 | The texts and the brief | The brief committed before the first fetch; `tenk_business.py` and its test; texts for the members in the cache, the blind test passing, the counts left out in `docs/steps/exposure-scores-results.txt` |
+| 2 | The scores | `exposure-scores.csv` committed and its hash posted; the second reading's agreement per rubric and the marked reasons in the results file, within their bars |
+| 3 | The tester | `exposure_test.py` and its test; the two hand checks in the results file, equal to the tester's; `just check` passes |
+| 4 | Results | Every cell judged against the rule; goldfish-reviewed, each finding fixed or answered in the pull request; roadmap, status, changelog updated |
+| 5 | Forward | Each new OPEC+, CPI, Fed and retail event after the scores' commit, its spread per rubric written to `docs/steps/exposure-forward.csv` and graded, to the 2027-01-31 gate; recorded, no bar of its own |
 
 ## What this step does not do
 
