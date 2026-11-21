@@ -1,0 +1,125 @@
+# Who a macro event hits: exposure scores
+
+> Step 42 of the [Roadmap](../roadmap.md#phase-5-the-kinds-the-news-brings), phase 5, chosen
+> 2026-11-21 by the owner ([why](../decisions.md#2026-11-21-scores-read-from-filings-tested-against-moves-by-the-owner)).
+> Terms are in the [Glossary](../glossary.md).
+
+## The goal
+
+**In plain words:** [step 40](news-moves.md) found that most big moves of S&P 500 members come
+with no filing of the company's own, and that those with a cause found were mostly news of their
+industry or of the whole economy. `follows` can say what an OPEC+ cut does to Brent or a hot CPI
+to the 10-year yield, but not which companies such news hits. This step has the Subscription LLM
+read each member's own description of its business and score how it stands to gain or lose from
+three things the record measures (oil, interest rates, consumer spending), then tests whether the
+scores sort the members' moves on those events.
+
+At the end: a frozen file of scores, one row per member and rubric, and for each rubric and each
+kind of event it names, whether the high scorers beat the low scorers in the stated direction,
+judged against the rule below written first.
+
+## The way to reach it
+
+- **Where the pattern comes from:** Andrej Karpathy's [US job market
+  visualizer](https://karpathy.ai/jobs/) ([code](https://github.com/karpathy/jobs)) scrapes the
+  BLS's 342 occupation pages, has a model score each against a rubric with anchored bands (0 to 10,
+  "how much will AI reshape this occupation", each band named by examples) into a JSON line with a
+  rationale, and draws the scores as a treemap. It says of itself "rough LLM estimates, not
+  rigorous predictions": one score each, no second reading, nothing tested against what happened.
+  This step takes the pattern (free text, an anchored rubric, a score and a reason) and adds what
+  it lacks: the model blind to prices and to anything after the text, a second reading, and every
+  score tested against the moves by the project's bars. No code or data of it is used.
+- **The members:** the S&P 500's on 2020-01-02 by `data/seed/sp500.csv` ([step 36](earnings-sp500.md)),
+  one per filer, with closes in the store and a 10-K on EDGAR filed in 2019; others counted, left
+  out.
+- **The text:** each member's last 10-K filed before 2020-01-01, its *Item 1. Business*, the first
+  12,000 characters, with the company's name and tickers replaced by "the company". Fetched from
+  EDGAR by `scripts/tenk_business.py` (saved, one request a second, step 36's User-Agent), into
+  `data/cache/tenk/`. The model is told the year is 2019; it still knows the companies, which is
+  said in the Results' reach.
+- **The rubrics,** each signed from −5 to +5, written in `docs/steps/exposure-brief.md` with its
+  anchors before any text is read:
+  - **Oil:** how a 20% rise in crude, by itself, moves the company's profits. +5 an oil producer;
+    −5 an airline; 0 a software company.
+  - **Rates:** how a one-point rise in US interest rates moves them. +5 a bank living on its
+    lending margin; −5 a homebuilder or a utility; 0 a company with no debt and no lending.
+  - **Consumer:** how a 5% rise in US consumer spending moves them. +5 a retailer of discretionary
+    goods; 0 a defence contractor; −5 none expected (a dollar store at most −1).
+- **The scorer:** the Subscription LLM, in fresh sessions of 25 members each, given only the brief
+  and those members' texts; it writes `ticker,rubric,score,reason` rows to
+  `docs/steps/exposure-scores.csv`. The file is committed, and its SHA-256 posted in the pull
+  request, before any test exists. Its model name is recorded.
+- **The second reading:** 50 members, every tenth of the file by ticker order, scored again by a
+  fresh session given the same brief and texts.
+- **The events and the test,** from 2020-01-01: per rubric, the kinds it names, each with the sign
+  the rubric implies: oil, `opec` *oil up* (+) and *oil down* (−); rates, `cpi` *above* (+) and
+  *below* (−), `fomc` *hike* (+) and *cut* (−); consumer, `retail` *above* (+) and *below* (−).
+  For each event, the **spread** is the mean excess day move (against the S&P 500, as
+  `study.excess_spans` gives it, from the close before) of the members scoring +3 or more less
+  that of those scoring −3 or less (for consumer, +3 or more against 0 or less). An event is
+  *right* when the spread has the kind's sign. Also the week, from the close before.
+- **The sector baseline:** the same test with each member's score replaced by the mean score of its
+  SIC major group (the first two digits, from the SEC's files). It says whether a company's own
+  score sorts better than its industry's.
+- `scripts/exposure_test.py` prints, per rubric, kind and span: the events, right, the base, the
+  chance, the placebo, the walk-forward, and the same for the sector baseline.
+
+## The rule, fixed before measuring
+
+*Written 2026-11-21. Seen before: step 40's matrix and sample; step 41's results; no score, no
+10-K text and no spread of this step.*
+
+- **A cell answers** when it has at least 10 events, and its right count beats the base at
+  p < 0.01 (one-sided binomial): the base is the share of the 504 closes before 2020 on which the
+  same spread had the kind's sign. A cell the placebo (the events shifted by `follows`' reach)
+  also answers is *the period*.
+- **A cell holds** by the bar of every link: 60% right of at least 30 graded walk-forward from
+  2020, 10 points over the base, p < 0.01.
+- **The score adds** over its sector when the cell is right on more events than the sector
+  baseline's same cell, by a sign test on the events where they differ, p < 0.05.
+- **The chance line:** 0.01 times the cells, 16 (8 kinds, 2 spans).
+- **The second reading agrees** when, per rubric, the two readings' scores are within 2 points on
+  at least 80% of the 50; one rubric short of it stops step 2 for the owner's call.
+- **Expected outcome:**
+  - At least 450 members scored.
+  - Oil answers on both OPEC kinds on the day, and holds on neither (under 30 events).
+  - Rates answers on CPI *above* on the day; FOMC *hike* and *cut* are *too few* or *can't say*.
+  - Consumer answers on no kind.
+  - The score adds over its sector in at most one cell: most of a company's exposure is its
+    industry's.
+  - Answers beyond these at most the chance line plus two.
+  - A count outside its band is recorded, not a stop.
+
+## How you know it is right
+
+- **The text is blind:** a test on the cache finds no price, no date after 2019 and none of the
+  company's names or tickers in the texts given to the model.
+- **The scores are frozen:** the SHA-256 in the pull request equals the one the tester prints.
+- **The tester is right:** a test on hand-made closes and scores (a spread's sign, the group cut,
+  the base); and two events by hand from the store (the first OPEC *oil up* and the first CPI
+  *above* from 2020): the members in each group, their excess moves, the spread.
+- **The model saw no more:** the second reader also marks any reason naming an event after 2019.
+
+## The steps
+
+| # | Step | Done when |
+| --- | --- | --- |
+| 1 | The texts and the brief | `tenk_business.py` and its test; texts for the members in the cache, the counts left out; the brief committed |
+| 2 | The scores | `exposure-scores.csv` committed and its hash posted; the second reading in `docs/steps/exposure-scores-results.txt` |
+| 3 | The tester | `exposure_test.py` and its test; the two hand checks in the results file; `just check` passes |
+| 4 | Results | Every cell judged against the rule; goldfish-reviewed; roadmap, status, changelog updated |
+
+## What this step does not do
+
+- **No answer from the model:** a score is an input; only a cell that answers reaches the page,
+  with its counts, as every answer.
+- No new flow, no live call, no page: the treemap (members sized by value, coloured by what
+  followed an event) waits for a cell that answers. No API: the Subscription LLM, by hand.
+- 8-K filings scored for good or bad news are step 43, by the same pattern, after this one.
+
+## Technical details
+
+- `scripts/tenk_business.py`: the 10-K's primary document from each member's submissions JSON
+  (step 36's cache), its text from *Item 1* to *Item 1A* or *Item 2*, names replaced.
+- `scripts/exposure_test.py`: closes and excess moves by `study.excess_spans`; events and kinds by
+  `follows_kinds` (step 41); tests in `tests/test_exposure.py`.
