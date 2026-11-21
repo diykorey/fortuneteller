@@ -1014,6 +1014,56 @@ def _post_page_lines(page: Mapping[str, object], since: date) -> list[str]:
     return lines
 
 
+LONG_RUN_MARKETS = ("SPY / ES", "COMP", "GC / XAU", "BRN", "DXY", "UST10Y / ZN", "BTC")
+HOME = "US home prices"
+
+
+def long_runs(con: duckdb.DuckDBPyConnection, fred_key: str) -> list[dict[str, object]]:
+    """Step 48's thirty pairs: each market's long run over each span, home prices from FRED when
+    ``fred_key`` is set."""
+    runs: list[tuple[str, str, study.LongRun]] = []
+    for market in LONG_RUN_MARKETS:
+        closes = study.stored_closes(market, con)
+        runs += [(market, s, study.long_run(closes, n)) for s, n in study.LONG_RUN_SPANS.items()]
+    if fred_key:
+        months = [
+            sources.DailyClosingPrice(d, v)
+            for d, v in sources.parse_series(sources.fetch_series(fred_key, study.HOME_SERIES))
+        ]
+        runs += [(HOME, s, study.long_run(months, n)) for s, n in study.HOME_SPANS.items()]
+    return [
+        {
+            "market": m,
+            "span": s,
+            "first": r.first.isoformat(),
+            "spans": r.spans,
+            "up": r.up,
+            "down": r.down,
+            "right": r.right,
+            "called": r.called,
+            "p": r.p,
+            "verdict": r.verdict,
+            "now": r.now,
+        }
+        for m, s, r in runs
+    ]
+
+
+def _forecasts(_args: argparse.Namespace) -> int:
+    con = db.get_connection()
+    rows = long_runs(con, _fred_key("forecasts"))
+    for r in rows:
+        print(
+            f"{r['market']:<14} {r['span']:<9} from {r['first']}  spans {r['spans']:>5}"
+            f"  up {r['up']:>5}"
+            f"  down {r['down']:>5}  right {r['right']:>5} of {r['called']:>5}"
+            f"  p {r['p']:.2g}  {r['verdict']:<12} now {r['now']}"
+        )
+    holding = sum(r["verdict"] == "holds" for r in rows)
+    print(f"{len(rows)} pairs, {holding} hold; by chance at p 0.01: {len(rows) * 0.01:.1f}")
+    return 0
+
+
 def _weekly_post(_args: argparse.Namespace) -> int:
     try:
         rows = study.read_calls(settings.calls_path)
@@ -2089,6 +2139,13 @@ def ask_entry(
     if name == "fomc":
         cells += follows_cells(name, con, long=True).cells
     counted = [f.kinds[e.event_id] for e in f.events if e.event_id in f.kinds]
+    latest = f.events[-1]
+    asked = [ask_cell(name, *cell, names) for cell in cells]
+    for c in asked:
+        series = study.MVP_PRICE_SERIES.get(str(c["market"]))
+        if c["kind"] == f.kinds.get(latest.event_id) and series and c["span"] in study.SPANS:
+            first = study.first_reaction_day(latest, series)
+            c["open_until"] = _weekdays_after(first, study.SPANS[str(c["span"])] - 1).isoformat()
     return {
         "name": name,
         "noun": noun,
@@ -2097,8 +2154,20 @@ def ask_entry(
         ],
         "first": flows.release_date(f.events[0]).isoformat(),
         "last": flows.release_date(f.events[-1]).isoformat(),
-        "cells": [ask_cell(name, *cell, names) for cell in cells],
+        "latest": {
+            "day": flows.release_date(latest).isoformat(),
+            "kind": f.kinds.get(latest.event_id),
+        },
+        "cells": asked,
     }
+
+
+def _weekdays_after(day: date, count: int) -> date:
+    """The weekday ``count`` weekdays after ``day``; holidays are not known here."""
+    while count:
+        day += timedelta(days=1)
+        count -= day.weekday() < 5
+    return day
 
 
 # The week ahead (docs/steps/week-ahead.md): the releases `live` calls in the next seven days.
@@ -2609,6 +2678,9 @@ def build_parser() -> argparse.ArgumentParser:
     sub = parser.add_subparsers(dest="command", required=True)
 
     p_init = sub.add_parser("init", help="create the DuckDB file with all tables")
+    sub.add_parser(
+        "forecasts", help="step 48: each market's long run, walk-forward over spans"
+    ).set_defaults(func=_forecasts)
     p_init.set_defaults(func=_init)
 
     p_seed = sub.add_parser("seed", help="load the seed CSVs into the store")

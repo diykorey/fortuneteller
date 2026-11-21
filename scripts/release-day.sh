@@ -56,6 +56,10 @@ git -C "$job_tree" switch -q --discard-changes --detach origin/main ||
 
 export FT_DB_PATH="$main_checkout/data/fortuneteller.duckdb"
 export FT_CACHE_DIR="$main_checkout/data/cache"
+# FRED's key alone, for the Fed's group and home prices (docs/steps/stated-forecasts.md); the
+# rest of .env stays out of the job's environment.
+FT_FRED_API_KEY=$(sed -n 's/^FT_FRED_API_KEY=//p' "$main_checkout/.env" 2>/dev/null | head -1)
+export FT_FRED_API_KEY
 
 # Commits $files as $1 on branch $2 and opens its pull request with body $3. A run repeated on
 # the same day, after a failed push or a morning catch-up, finds the branch the first run made:

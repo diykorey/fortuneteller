@@ -2931,3 +2931,59 @@ def week_visitors(
     if start < first < end:
         return max(ask(start, first), ask(first, end)), True
     return ask(start, end), False
+
+
+# Step 48, stated forecasts (docs/steps/stated-forecasts.md): a market's own past direction over
+# spans that do not overlap, tested walk-forward, stated only where it holds as rung 2 fixed.
+LONG_RUN_WARMUP = 5
+LONG_RUN_SPANS = {"tomorrow": 1, "week": 5, "month": 21, "year": 252}
+HOME_SPANS = {"year": 12}
+HOME_SERIES = "CSUSHPINSA"
+
+
+@dataclass(frozen=True)
+class LongRun:
+    """One market over one span: the forecast now, and its walk-forward record."""
+
+    first: date
+    spans: int
+    up: int
+    down: int
+    right: int
+    called: int
+    p: float
+    verdict: str
+    now: str | None
+
+
+def long_run(closes: Sequence[DailyClosingPrice], length: int) -> LongRun:
+    """Cut ``closes`` forward from the first into spans of ``length`` closes that do not overlap,
+    leaving out an unfinished last one; before each, forecast the direction more of the earlier
+    spans took (none on a tie or before ``LONG_RUN_WARMUP`` of them), and grade it. ``now`` is
+    the forecast for the span ahead."""
+    ends = range(length, len(closes), length)
+    moves = [closes[e].price - closes[e - length].price for e in ends]
+    up = down = right = called = 0
+
+    def ahead() -> str | None:
+        if up + down < LONG_RUN_WARMUP or up == down:
+            return None
+        return "up" if up > down else "down"
+
+    for move in moves:
+        if move == 0:
+            continue
+        went = "up" if move > 0 else "down"
+        said = ahead()
+        if said is not None:
+            called += 1
+            right += said == went
+        up, down = up + (went == "up"), down + (went == "down")
+    p = stats.binomial_p(right, called)
+    if called < 30:
+        verdict = "too few"
+    elif right >= 0.6 * called and p < 0.01:
+        verdict = "holds"
+    else:
+        verdict = "doesn't hold"
+    return LongRun(closes[0].day, len(moves), up, down, right, called, p, verdict, ahead())
