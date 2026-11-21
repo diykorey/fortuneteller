@@ -134,22 +134,23 @@ the second reader's band, and the checks below.*
 every rule's numbers from `scripts/expert_test.py 9a2f138` on a copy of the full store.*
 
 **In plain words:** the expert wrote 40 rules from the record to 2019, all of them testable. Tested
-once on 2020 onward, 5 pass and 1 holds, but every one of the 5 restates an answer the record
-already gave, and two of them only restate how the kind is defined. None of the 14 rules with a
-condition passed: in no case did the condition raise the share of events going the stated way
-(the smallest chance of it, 0.077). The expert's richer rules, a miss after a run-up falling
-harder, a hot CPI biting more when yields were climbing, found no support from 2020; half of them
-had under 10 events to judge. What holds is what `follows` already said: an S&P 500 member's miss
-is followed by its shares trailing the index on the day.
+once on 2020 onward, 5 pass, and every one restates an answer the record already gave; two only
+restate how the kind is defined. None of the 15 rules with a condition passed: in five the
+condition raised the share of events going the stated way, but never by more than chance (the
+smallest chance, 0.077). A miss after a run-up fell no harder than any miss; the hot-CPI rules
+for climbing yields had 5 or 6 events each and could not be judged; 7 of the 15 had under 10.
+Two rules hold walk-forward, both a member's miss followed by its shares trailing the index on
+the day: the plain miss (33), which `follows` already held, and the miss after a run-up (35),
+which holds only as the plain miss does.
 
 | | Expected | Found |
 | --- | --- | --- |
 | Testable as written | at least 30 of 40 | 40 — right |
-| Pass | 0 to 4 | 5 (rules 11, 23, 25, 26, 33) — **wrong**; 23 and 26 are Brent on the day after an OPEC+ announcement, whose kind is Brent's own reaction-day move (`follows` marks that cell *near the kind, not a finding*), so they pass by definition; without them, 3 |
-| Hold | at most 1 | 1, rule 33 (a member's miss, the day *down*, 1,084 right of 1,690) — right; it restates step 36's hold |
-| Conditioned rules under 10 events from 2020 | more than half | 7 of 14, half — **wrong** by one |
+| Pass | 0 to 4 | 5 (rules 11, 23, 25, 26, 33) — **wrong**; 23 and 26 are Brent on the day after an OPEC+ announcement, whose kind is Brent's own reaction-day move (`follows --event opec` marks that cell `(the kind)`), so they pass by definition; without them, 3 |
+| Hold | at most 1 | 2 — **wrong**: rule 33 (a member's miss, the day *down*, 1,084 right of 1,690) and rule 35 (the miss after a 15% run-up, 149 of 237); the verdict is `follows`' own, which applies all three of the bar's parts (the tester prints the verdict, not the base or the chance). 33 restates step 36's hold ([its results](earnings-sp500.md#results)); 35 does not pass, its condition adding nothing |
+| Conditioned rules under 10 events from 2020 | more than half | 7 of 15 — **wrong** (the expert's note said 14; the CSV has 15) |
 | Passes with a condition | at most half | 0 of 5 — right |
-| Second reader's marks | at most 5 | 6 (rules 13 to 18) — **wrong**; none of the six had 10 events, so none was judged |
+| Second reader's marks | at most 5 | by the spec's test, naming an event after 2019, 0 — right. The reader was asked more widely, "naming or plainly relying on" one, and marked 6 (rules 13 to 18, reasoning that matches 2021 to 2023); none of the six had 10 events, so none was judged |
 | Passes against the chance line (0.40) plus two | | 5, over it; all restatements |
 
 - **The passes:** 11, a CPI above the consensus and 5-year breakevens *up* on the day (20 of 28);
@@ -160,9 +161,11 @@ is followed by its shares trailing the index on the day.
   the condition (a miss after a run-up, 176 of 277 down, 64%, against 1,135 of 1,768, 64%); 36
   and 38 were also *the period*.
 - **The checks:** the rules' SHA-256 in pull request #395 equals the tester's; rules 1 and 10
-  recomputed from the store, the same counts; the test passes; `follows`, every flow both runs,
-  byte for byte the same on main's code and this branch's after `follows_cells` was split for the
-  tester.
+  recomputed from the store by a one-off script (its text in the evidence), the same counts;
+  `uv run pytest tests/test_expert_test.py tests/test_expert_pack.py` passes; `follows`, every
+  flow both runs, byte for byte the same on main's code and this branch's (`cmp`, the loop in the
+  evidence) after `follows_cells` was split for the tester. The placebo's amendment landed in the
+  tester's own commit, before its first run.
 - **What it means:** on this record, an expert's story about conditions does not beat the plain
   kind; the expert's value here was choosing which plain cells to watch. The forward log keeps the
   four passes that do not hold, to the gate. A second round, if any, is a new step with a new pack,

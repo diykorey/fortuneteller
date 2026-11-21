@@ -13,7 +13,7 @@ Where the work is and what comes next: the task last finished, the tasks in prog
 ## Last completed
 
 Step 41: hypotheses from an expert reader ([results](steps/expert-hypotheses.md#results)). The
-Subscription LLM's 40 rules from the record to 2019, tested on 2020 onward: 5 pass, 1 holds, all
+Subscription LLM's 40 rules from the record to 2019, tested on 2020 onward: 5 pass, 2 hold, all
 restating the record; no rule with a condition passed.
 
 ## In progress

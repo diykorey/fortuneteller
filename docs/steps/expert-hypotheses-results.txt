@@ -114,3 +114,49 @@ follows on main's code (origin/main 2e978bf) against this branch's, every flow b
 store copy, compared by cmp:
 same fomc, same fomc--after-the-day, same nfp, same nfp--after-the-day, same retail, same retail--after-the-day, same cpi, same cpi--after-the-day, same claims, same claims--after-the-day, same ecb, same ecb--after-the-day, same ceo, same ceo--after-the-day, same opec, same opec--after-the-day, same boe, same boe--after-the-day, same boj, same boj--after-the-day, same war, same war--after-the-day, same crypto, same crypto--after-the-day, same weather, same weather--after-the-day, same flood, same flood--after-the-day, same earnings, same earnings--after-the-day, same additions, same additions--after-the-day, same earnings500, same earnings500--after-the-day, same splits, same splits--after-the-day
 36 of 36 the same.
+
+The hand-check script (scratchpad/m41/hand.py), as run with FT_DB_PATH on the copy:
+  from datetime import datetime
+  from fortuneteller import db, flows, study
+  con = db.get_connection()
+  def day_move(closes, reaction, unit):
+      days = [c.day for c in closes]
+      i = next(k for k, d in enumerate(days) if d >= reaction)
+      return i, study.release_move(closes[i - 1], closes[i], unit)
+  for flow_name, kind, market, cond in (("nfp", "above", "UST5Y / ZF", None), ("cpi", "above", "UST5Y / ZF", ("T5YIE", 63, 20.0))):
+      flow = flows.flow_named(flow_name)
+      kinds = study.release_kinds(flow, con=con)
+      events = [e for e in flows.stored_events(flow, con=con) if e.event_ts >= datetime(2020, 1, 1) and kinds.get(e.event_id) == kind]
+      series = study.MVP_PRICE_SERIES[market]; closes = study.stored_closes(market, con=con)
+      kept = []
+      for e in events:
+          r = study.first_reaction_day(e, series)
+          if cond:
+              on, n, th = cond; cs = study.MVP_PRICE_SERIES[on]; cc = study.stored_closes(on, con=con)
+              rr = study.first_reaction_day(e, cs); days = [c.day for c in cc]
+              b = max(k for k, d in enumerate(days) if d < rr)
+              mv = (cc[b].price - cc[b - n].price) * 100
+              print(f"  {e.event_ts:%Y-%m-%d} {on} {n}-close move {mv:+.1f} bps -> {'kept' if mv > th else 'out'}")
+              if not mv > th: continue
+          kept.append(r)
+      # the base: every day span of the market from the first kept reaction close on, as follows takes it
+      spans = study.span_moves(closes, series.unit, 1)
+      start = min(kept)
+      base = study.base_of([s.move for k, s in spans.items() if k >= start])
+      counts = {o: 0 for o in study.OUTCOMES}
+      for r in kept:
+          k = min(d for d in spans if d >= r)
+          counts[study.outcome(spans[k].move, base.cut)] += 1
+      print(flow_name, kind, market, "events", len(kept), counts, f"cut {base.cut:.3f}")
+
+The cmp loop (scratchpad/m41/cmp.sh), as run:
+  export FT_DB_PATH=/tmp/claude-1000/-home-andriy-orca-workspaces-fortuneteller-orcarun/3419a0af-ff14-4b4a-9572-3c65e1c987bf/scratchpad/m40/store.duckdb
+  export FT_CACHE_DIR=/home/andriy/WorkVolume/work/projects/pet/fortuneteller/data/cache
+  for e in fomc nfp retail cpi claims ecb ceo opec boe boj war crypto weather flood earnings additions earnings500 splits; do
+    for a in "" "--after-the-day"; do
+      (cd /home/andriy/.superset/worktrees/ft-main41 && uv run -q fortuneteller follows --event $e $a > /tmp/claude-1000/-home-andriy-orca-workspaces-fortuneteller-orcarun/3419a0af-ff14-4b4a-9572-3c65e1c987bf/scratchpad/m41/cmp/main-$e$a.txt 2>&1)
+      (cd /home/andriy/orca/workspaces/fortuneteller/orcarun && uv run -q fortuneteller follows --event $e $a > /tmp/claude-1000/-home-andriy-orca-workspaces-fortuneteller-orcarun/3419a0af-ff14-4b4a-9572-3c65e1c987bf/scratchpad/m41/cmp/new-$e$a.txt 2>&1)
+      cmp -s /tmp/claude-1000/-home-andriy-orca-workspaces-fortuneteller-orcarun/3419a0af-ff14-4b4a-9572-3c65e1c987bf/scratchpad/m41/cmp/main-$e$a.txt /tmp/claude-1000/-home-andriy-orca-workspaces-fortuneteller-orcarun/3419a0af-ff14-4b4a-9572-3c65e1c987bf/scratchpad/m41/cmp/new-$e$a.txt && echo "same $e$a" >> /tmp/claude-1000/-home-andriy-orca-workspaces-fortuneteller-orcarun/3419a0af-ff14-4b4a-9572-3c65e1c987bf/scratchpad/m41/cmp.log || echo "DIFFER $e$a" >> /tmp/claude-1000/-home-andriy-orca-workspaces-fortuneteller-orcarun/3419a0af-ff14-4b4a-9572-3c65e1c987bf/scratchpad/m41/cmp.log
+    done
+  done
+  echo ALL DONE >> /tmp/claude-1000/-home-andriy-orca-workspaces-fortuneteller-orcarun/3419a0af-ff14-4b4a-9572-3c65e1c987bf/scratchpad/m41/cmp.log
