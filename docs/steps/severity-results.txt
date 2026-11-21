@@ -89,3 +89,19 @@ The local check, uv run ruff check . && uv run ruff format --check . && uv run m
 before the results commit:
   All checks passed! / 71 files already formatted / Success: no issues found in 11 source files
   741 passed in 526.58s
+
+After the results review, 2026-11-21. Every count above from texts.csv and the two score files:
+python3 -I docs/steps/severity-counts.py data/cache/eightk/texts.csv
+  texts 400 by item {'2.05': 92, '3.02': 219, '5.02': 49, '7.01': 110, '8.01': 148} length 844 4097 8315
+  with a press release 203
+  texts.csv SHA-256 2b86b4abd51ef65f008bb714c3f4746c179e3421415d71f10cb9dbed547b444c
+  scores 400 -4:2 -3:12 -2:29 -1:64 0:211 1:60 2:16 3:5 4:1 bad 43 good 22
+  bad 7.01 16 with a press release 14
+  second reading 50 within 2 50 same side 47 equal 43
+The marks: each second session wrote its marks as a CSV; both files hold the header alone
+(wc -l: 1 and 1), 0 marked. The hand check, its script committed:
+uv run python docs/steps/severity-hand.py <step 40's store copy> data/cache/eightk/texts.csv
+Step 1's counts: no primary document 0 (a failed fetch stops the run, and none did); the window,
+membership and 2.02 checks are the listing's own filters, tested in tests/test_eightk_text.py,
+and the sample test checks each drawn filing's items and one per member-day. The placebo column
+prints - when the cell does not answer, as it is tried only on an answer.
