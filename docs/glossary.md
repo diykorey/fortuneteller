@@ -336,6 +336,13 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **Dev set / test set** — *added 2026-11-14*: the two halves of a labelled set, split by a rule fixed beforehand:
   rules are written and tried on the dev set only, then frozen, and the test set is read once to
   grade them ([a pasted article](steps/article-to-trigger.md)).
+- **Exposure score / rubric / spread** — *added 2026-11-21* ([step 42](steps/exposure-scores.md)):
+  a model's signed score, −5 to +5, of how a company gains or loses from one thing (oil, rates,
+  consumer spending), read from its 10-K by a *rubric* whose bands are named by examples; an
+  event's *spread* is the mean excess move of the high scorers less that of the low scorers.
+- **10-K / SIC** — *added 2026-11-21*: the 10-K is a US company's annual report to the SEC; its
+  Item 1 describes the business. SIC is the Standard Industrial Classification code the SEC files
+  each company under; its first two digits are the major group.
 - **8-K / EDGAR** — *added 2026-11-14*: an 8-K is the filing a US-listed company makes with the SEC
   within days of a major event, such as a chief executive leaving; its exhibit 99 is usually the
   press release. EDGAR is the SEC's public archive of filings. An 8-K with *Item 2.02* furnishes a

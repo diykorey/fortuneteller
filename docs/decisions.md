@@ -11,6 +11,27 @@ amended there with a date.
 Each entry: **what** was decided, **why**, what it **retires**, and **where** the detail is. *By the
 owner* marks a choice the owner made over another on the table.
 
+## 2026-11-21: Scores read from filings, tested against moves, by the owner
+
+- **What:** after reading Andrej Karpathy's US job market visualizer (https://karpathy.ai/jobs/:
+  BLS pages scored by a model against an anchored rubric, a score and a reason each, drawn as a
+  treemap, untested), the owner chose to take its pattern in two steps, exposure first:
+  1. **Step 42, exposure scores:** the Subscription LLM scores each S&P 500 member's 10-K business
+     description on signed, anchored rubrics (oil, rates, consumer spending); the scores are then
+     tested against the members' moves on the OPEC+, CPI, Fed and retail events, by the usual bars,
+     and against a sector baseline.
+  2. **Step 43, filing severity:** the same pattern on 8-K text ("how bad for shareholders, −5 to
+     +5"), to give step 40's filing kinds (restructuring costs, share sales) the direction their
+     item codes lack, so they can become flows.
+  3. **Later, the treemap** for the page and the weekly post: members sized by value, coloured by
+     what followed an event, once a scored cell answers.
+- **Why:** step 40 found most big moves come with an industry's or the economy's news, and the
+  project cannot say which companies such news hits. Karpathy's version is untested; this one adds
+  the safeguards: the model blind to prices and to anything after the text, a second reading with
+  a bar, scores as inputs never answers, and the cost (about 1,500 scores) carried by the
+  Subscription LLM now, an API paid by tokens later, as his runs through OpenRouter.
+- **Retires:** nothing.
+- **Where:** [step 42](steps/exposure-scores.md).
 ## 2026-11-21: A model proposes, the records decide, by the owner
 
 - **What:** asked in turn whether the project pays for any service or model, whether a language
