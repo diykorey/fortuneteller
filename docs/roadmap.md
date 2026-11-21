@@ -194,9 +194,11 @@ step 18 trigger; reading the news into kinds waits in the backlog below.
 | 44 | **[A page a stranger reads](steps/readers.md)**: the first screen on what the page offers and the answers that hold; market names, the statistics in a closed *workings*; the Dow's reports of the next seven days with what followed each kind; the same in the weekly post. For step 23's readers. Chosen 2026-11-21 by the owner, after a first-visitor review | **In progress**: the spec |
 
 **Backlog:** news read into these kinds by a small model on this machine (Gemma 3 4B or Qwen 2.5
-3B), tested on a fresh labelled set: step 20's parked next try, widened to phase 5's kinds.
+3B, or Inkling 2 Mini, a 26B model with about 5B active, *added 2026-11-21*), tested on a fresh labelled set: step 20's parked next try, widened to phase 5's kinds.
 
-Later, not planned in detail, each chosen one at a time after the gate: new kinds of
+Later, not planned in detail, each chosen one at a time after the gate: free expected values
+beside the consensus, the Cleveland Fed's inflation nowcast for CPI and PCE first, then the
+Philadelphia Fed survey's history for GDP ([free sources](free-sources.md), *added 2026-11-21*); new kinds of
 events, each a dated history before a flow (droughts, once a free source dates them by day;
 crypto's own news; OPEC+, floods and earnings were measured in steps 24, 30 and 31); a CEO's
 conduct with no departure (step 20, part 1b); the page's words for the figures, once rung 3's rule allows a percentage; and what-if stories
