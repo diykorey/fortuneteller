@@ -12,9 +12,9 @@ Where the work is and what comes next: the task last finished, the tasks in prog
 
 ## Last completed
 
-Step 39: an exact meet ([results](steps/exact-meet.md#results)). An EPS equal to its forecast, which
-Nasdaq prints as `N/A`, now counts as *as expected*: 119 Dow and 1,685 S&P 500 reports added. The
-Dow's in-line day still holds (229 of 368); its week is now *the period*.
+Step 40: big moves and the news filed with them ([results](steps/news-moves.md#results)). 1.63%
+of S&P 500 member-days are big moves; a results 8-K makes one 19.6 times as likely, but 61.6% have
+no 8-K; read by hand, those are mostly the industry's or the economy's news, or nothing found.
 
 ## In progress
 
