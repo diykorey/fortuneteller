@@ -25,10 +25,10 @@ written first; the rules that pass logged as calls and graded forward as events 
   the close before, and with `--after-the-day` from the reaction close), on a copy of the store
   whose events and closes end on 2019-12-31; `kinds.txt`, every flow with its kinds and every
   market in the store with its unit; and this spec's rule language and bars.
-- **The expert:** a hosted language model through the owner's subscription, run by hand in one
-  fresh session, given only the pack and the brief in `docs/steps/expert-brief.md` (its role, the
-  rule language, "use no knowledge of what happened after 2019"). Its name and version, as the
-  subscription shows them, and the session's text are saved in the results file. It writes 40
+- **The expert:** the *Subscription LLM*, the hosted language model of the owner's subscription,
+  run by hand in one fresh session, given only the pack and the brief in
+  `docs/steps/expert-brief.md` (its role, the rule language, "use no knowledge of what happened
+  after 2019"). Its model name and the session's text are saved in the results file. It writes 40
   rules, each with a line of reasoning, to `docs/steps/expert-hypotheses.csv`. Nothing in it is
   changed after its commit. Later, a model called through an API may run the same brief (not this
   step).

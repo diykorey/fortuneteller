@@ -349,6 +349,9 @@ Terms are grouped by what they are about, alphabetical within each group.
   a language model asked to act as an economics and statistics expert; it writes *rules* (a kind,
   an optional condition before the event, a market, a span, a direction) from a *pack*, the records
   as they stood on a fixed day. A rule is tested by the code, never answered by the model.
+- **Subscription LLM** — *added 2026-11-21* ([step 41](steps/expert-hypotheses.md)): the hosted
+  language model of the owner's subscription, run by hand in a session, not called by the code;
+  each use records its model name. An API model paid by tokens may replace it later.
 - **Chance line** — how many cells, or items, would pass a test at its p by luck alone: each
   test's chance summed, or 0.01 times the tests run at p < 0.01. A count at or under it plus two
   is read as chance ([step 31](steps/earnings.md)).
