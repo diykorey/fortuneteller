@@ -100,3 +100,20 @@ hold. The reports ahead list the S&P 500's members by day, under the three kinds
   cap}]}]}`, or null when the ask failed. `cap` is Nasdaq's `marketCap` (`$150,864,134,000`) read as dollars, 0 when blank.
 - Docs: this spec, step 44's amendment, [scoreboard](scoreboard.md), status, the changelog and
   roadmap row 45.
+
+## Results
+
+**Step 1, the frozen file, 2026-11-21.** `scripts/ask_sp500.py 2026-11-21` ran on the copy in
+about 40 minutes: earnings500 9 cells, additions 3, splits 6 (`data/seed/ask_sp500.json`). The
+five cells of the rule, read from the file:
+
+| Cell | Frozen | Earlier step | Agrees |
+| --- | --- | --- | --- |
+| A miss's day | *down*, holds, 2,506 of 3,798 | step 36: the same | yes |
+| An in-line day | *down*, does not hold, 2,902 of 5,446 | step 36: does not hold, on 3,664 | yes; the count is larger by [step 39](exact-meet.md)'s exact meets (1,685 S&P 500 reports read as *as expected*), merged after step 36 |
+| A miss's week | *down*, does not hold, 2,246 of 3,777 (59.5%) | step 36: the same | yes |
+| A split alone, its day | *up*, holds, 33 of 51 | step 37: the same | yes |
+| An addition's day | *up*, does not hold, 30 of 53 | step 35: the same | yes |
+
+The answers that hold go from seven to nine, as expected: the S&P 500's miss on the day, and a
+split announced alone on the day.

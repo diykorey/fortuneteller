@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FortuneTeller predicts</title>
+<meta name="description" content="What the fortune teller says about the week ahead: what followed past events of the same kind, counted.">
+<meta property="og:title" content="FortuneTeller predicts">
+<meta property="og:description" content="What followed past events of the same kind, counted. An entertainment tool, not financial advice.">
+<meta property="og:url" content="https://diykorey.github.io/fortuneteller/predicts/">
+<meta property="og:image" content="https://diykorey.github.io/fortuneteller/scoreboard/preview.png">
+<link rel="canonical" href="https://diykorey.github.io/fortuneteller/predicts/">
+<script defer src="https://cloud.umami.is/script.js" data-website-id="ed3ca059-ba91-40f1-937c-ace5118ffcb0"
+  data-do-not-track="true" data-domains="diykorey.github.io"></script>
+<style>
+:root {
+  --bg: #f6f4fb;
+  --bg-glow: #e7defd;
+  --card: rgba(255, 255, 255, 0.78);
+  --card-border: rgba(91, 64, 170, 0.14);
+  --ink: #1b1530;
+  --muted: #6a6383;
+  --accent: #6d4aff;
+  --accent-soft: #efe9ff;
+  --up: #0f8a5f;
+  --up-soft: #e3f6ee;
+  --down: #c2410c;
+  --down-soft: #fdece3;
+  --shadow: 0 1px 2px rgba(27, 21, 48, 0.04), 0 12px 32px -12px rgba(60, 40, 140, 0.18);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e0b19;
+    --bg-glow: #2a1d5c;
+    --card: rgba(29, 23, 52, 0.72);
+    --card-border: rgba(180, 160, 255, 0.14);
+    --ink: #f1eefc;
+    --muted: #a69fc2;
+    --accent: #a48bff;
+    --accent-soft: rgba(164, 139, 255, 0.14);
+    --up: #4ade9b;
+    --up-soft: rgba(74, 222, 155, 0.12);
+    --down: #fb9a6b;
+    --down-soft: rgba(251, 154, 107, 0.12);
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 16px 40px -16px rgba(0, 0, 0, 0.6);
+  }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  color: var(--ink);
+  background:
+    radial-gradient(900px 480px at 12% -10%, var(--bg-glow), transparent 70%),
+    radial-gradient(700px 420px at 100% 0%, var(--accent-soft), transparent 70%),
+    var(--bg);
+  background-attachment: fixed;
+}
+main { max-width: 760px; margin: 0 auto; padding: 56px 16px 40px; }
+.brand { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 14px; letter-spacing: 0.02em; }
+.orb {
+  width: 28px; height: 28px; border-radius: 50%; flex: none;
+  background: radial-gradient(circle at 32% 30%, #fff 0 8%, #c9b8ff 22%, var(--accent) 60%, #2b1a73 100%);
+  box-shadow: 0 0 24px rgba(109, 74, 255, 0.45);
+}
+h1 {
+  margin: 18px 0 6px;
+  font-size: clamp(36px, 7vw, 56px);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  font-weight: 800;
+  background: linear-gradient(100deg, var(--ink) 30%, var(--accent));
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+}
+.lede { margin: 0 0 32px; color: var(--muted); max-width: 56ch; }
+.lede b { color: var(--ink); font-weight: 600; }
+ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; counter-reset: p; }
+li.card {
+  counter-increment: p;
+  position: relative;
+  padding: 20px 22px 18px 64px;
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  background: var(--card);
+  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  box-shadow: var(--shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+li.card:hover { transform: translateY(-2px); }
+li.card::before {
+  content: counter(p);
+  position: absolute; left: 20px; top: 20px;
+  width: 30px; height: 30px; border-radius: 10px;
+  display: grid; place-items: center;
+  font-weight: 700; font-size: 14px;
+  color: var(--accent); background: var(--accent-soft);
+}
+.when { font-size: 13px; color: var(--muted); font-weight: 500; letter-spacing: 0.01em; }
+.event { margin: 2px 0 10px; font-size: 19px; font-weight: 700; letter-spacing: -0.01em; }
+.say { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 8px; margin: 0; }
+.if { font-weight: 600; }
+.then {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 3px 10px; border-radius: 999px; font-weight: 600; font-size: 15px;
+}
+.then.up { color: var(--up); background: var(--up-soft); }
+.then.down { color: var(--down); background: var(--down-soft); }
+.record { margin: 12px 0 0; display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--muted); }
+.record a { color: var(--accent); text-decoration: none; font-weight: 600; margin-left: auto; }
+.record a:hover { text-decoration: underline; }
+.empty { padding: 28px; text-align: center; color: var(--muted); border: 1px dashed var(--card-border); border-radius: 20px; }
+footer { margin-top: 36px; font-size: 13px; color: var(--muted); display: grid; gap: 6px; }
+footer a { color: var(--accent); }
+@media (max-width: 520px) {
+  main { padding-top: 36px; }
+  li.card { padding: 18px 16px 16px 56px; }
+  li.card::before { left: 14px; top: 18px; }
+  .record a { margin-left: 0; }
+  .record { flex-wrap: wrap; }
+}
+@media (prefers-reduced-motion: reduce) { li.card { transition: none; } li.card:hover { transform: none; } }
+</style>
+</head>
+<body>
+<main>
+  <div class="brand"><span class="orb" aria-hidden="true"></span>FortuneTeller</div>
+  <h1>Fortuneteller predicts:</h1>
+  <p class="lede">What followed past events of the same kind, counted. <b>Nothing is called until the
+  number lands</b>, so each prediction says what happens <em>if</em> it does. Only answers that held up
+  when replayed are shown.</p>
+  <ol id="predictions"></ol>
+  <footer>
+    <span id="written"></span>
+    <span>An entertainment tool, not financial advice. <a href="../scoreboard/">Every record, every verdict</a>.</span>
+  </footer>
+</main>
+<script id="data" type="application/json">{"written": "2026-11-21", "predictions": [{"day": "2026-11-23", "time": "after the close", "event": "Hewlett Packard Enterprise Company reports earnings", "condition": "If it misses forecasts", "outcome": "its shares trail the S&P 500 the next trading day", "direction": "down", "right": 2506, "graded": 3798, "of": "past S&P 500 reports, replayed", "link": "#ask/earnings500/below"}, {"day": "2026-11-24", "time": "after the close", "event": "Dell Technologies Inc. reports earnings", "condition": "If it misses forecasts", "outcome": "its shares trail the S&P 500 the next trading day", "direction": "down", "right": 2506, "graded": 3798, "of": "past S&P 500 reports, replayed", "link": "#ask/earnings500/below"}, {"day": "2026-11-25", "time": "before the open", "event": "Deere & Company reports earnings", "condition": "If it misses forecasts", "outcome": "its shares trail the S&P 500 that day", "direction": "down", "right": 2506, "graded": 3798, "of": "past S&P 500 reports, replayed", "link": "#ask/earnings500/below"}, {"day": "2026-12-01", "time": "after the close", "event": "CrowdStrike Holdings, Inc. reports earnings", "condition": "If it misses forecasts", "outcome": "its shares trail the S&P 500 the next trading day", "direction": "down", "right": 2506, "graded": 3798, "of": "past S&P 500 reports, replayed", "link": "#ask/earnings500/below"}, {"day": null, "time": null, "event": "A jobs report above the consensus", "condition": "After it", "outcome": "US Treasury 10Y up that day", "direction": "up", "right": 39, "graded": 58, "of": "past events, replayed", "link": "#ask/nfp/above"}, {"day": null, "time": null, "event": "A CPI release above the consensus", "condition": "After it", "outcome": "US 5-year breakeven inflation up that day", "direction": "up", "right": 23, "graded": 31, "of": "past events, replayed", "link": "#ask/cpi/above"}, {"day": null, "time": null, "event": "An OPEC+ decision that sent oil up", "condition": "After it", "outcome": "Gasoline (United States Gasoline Fund) up that day", "direction": "up", "right": 20, "graded": 31, "of": "past events, replayed", "link": "#ask/opec/oil up"}]}</script>
+<script>
+(function () {
+  const data = JSON.parse(document.getElementById('data').textContent);
+  const el = (tag, text, cls) => {
+    const node = document.createElement(tag);
+    if (text !== undefined && text !== null) node.textContent = text;
+    if (cls) node.className = cls;
+    return node;
+  };
+  const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+  // The dated ones not yet passed, New York's day, soonest first; then the undated; five at most.
+  const shown = data.predictions.filter((p) => p.day && p.day >= today)
+    .concat(data.predictions.filter((p) => !p.day)).slice(0, 5);
+  const list = document.getElementById('predictions');
+  const dayName = (iso) => new Date(iso + 'T12:00:00Z').toLocaleDateString('en-US',
+    { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' });
+  if (!shown.length) list.appendChild(el('li', 'No prediction this week. The record is on the scoreboard.', 'empty'));
+  shown.forEach((p) => {
+    const card = el('li', null, 'card');
+    card.appendChild(el('div', (p.day ? dayName(p.day) : 'Whenever it happens') + (p.time ? ' · ' + p.time : ''), 'when'));
+    card.appendChild(el('div', p.event, 'event'));
+    const say = el('p', null, 'say');
+    say.appendChild(el('span', p.condition, 'if'));
+    say.appendChild(el('span', '→'));
+    say.appendChild(el('span', (p.direction === 'up' ? '▲ ' : '▼ ') + p.outcome, 'then ' + p.direction));
+    card.appendChild(say);
+    const record = el('div', null, 'record');
+    record.appendChild(el('span', 'Right ' + p.right.toLocaleString('en-US') + ' of '
+      + p.graded.toLocaleString('en-US') + ' ' + p.of));
+    const link = el('a', 'See the record');
+    link.href = '../scoreboard/' + (p.link || '');
+    record.appendChild(link);
+    card.appendChild(record);
+    list.appendChild(card);
+  });
+  document.getElementById('written').textContent = 'Updated ' + data.written + ', each weekday evening.';
+})();
+</script>
+</body>
+</html>

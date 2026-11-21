@@ -2266,6 +2266,123 @@ def earnings_ahead(
     return {"lines": [earnings_line(k, cells.get(k)) for k in EARNINGS_WORDS], "days": days}
 
 
+# Step 47, the predictions page (docs/steps/predicts.md): one to five dated if-then lines, each
+# from a link or cell that holds, written with the scoreboard each weekday.
+PREDICTS_DATED = 10
+PREDICTS_MIN = 3
+PREDICTS_IF = {
+    "above": "If it beats forecasts",
+    "as expected": "If it matches forecasts",
+    "below": "If it misses forecasts",
+}
+SPAN_WORDS = {
+    "day": "that day",
+    "next": "the next trading day",
+    "week": "over the next week",
+    "month": "over the next month",
+}
+
+
+def _outcome(market: str, name: str, direction: str, span: str) -> str:
+    when = SPAN_WORDS.get(span, span)
+    if market == study.EXCESS_MARKET:
+        side = "beat" if direction == "up" else "trail"
+        return f"its shares {side} the S&P 500 {when}"
+    return f"{name} {'up' if direction == 'up' else 'down'} {when}"
+
+
+def predictions(data: Mapping[str, object]) -> list[dict[str, object]]:
+    """The page's predictions: each release ahead with a link that holds and calls, the largest
+    S&P 500 company reporting each day ahead when a kind's day cell holds, soonest first; then up
+    to ``PREDICTS_MIN`` answers that hold, undated, one per kind not already shown. The page shows
+    the dated ones not yet passed, then the undated, five at most."""
+    names = data.get("market_names") or {}
+    assert isinstance(names, dict)
+    dated: list[dict[str, object]] = []
+    releases = data.get("ahead") or []
+    assert isinstance(releases, list)
+    for r in releases:
+        held = [(m, link) for m, link in r.get("links", {}).items() if link["verdict"] == "holds"]
+        held = [(m, link) for m, link in held if link["above"] is not None]
+        if not held:
+            continue
+        market, link = max(held, key=lambda ml: ml[1]["predictions"])
+        title = ASK_RELEASES.get(r["event"], f"a {r['label']} release")
+        dated.append(
+            {
+                "day": r["day"],
+                "time": f"{r['time']} New York",
+                "event": "The " + title.removeprefix("a "),
+                "condition": f"If it comes in above {r['above']:g} ({r['consensus']:g} expected)",
+                "outcome": _outcome(market, names.get(market, market), link["above"], "day"),
+                "direction": link["above"],
+                "right": link["right"],
+                "graded": link["predictions"],
+                "of": "past releases, replayed",
+                "link": f"#ask/{r['event']}/above",
+            }
+        )
+    ask = data.get("ask") or []
+    assert isinstance(ask, list)
+    group = next((f for f in ask if f["name"] == "earnings500"), None)
+    ahead = data.get("earnings_ahead") or {}
+    assert isinstance(ahead, dict)
+    if group is not None:
+        cells = [
+            c
+            for c in group["cells"]
+            if c["span"] == "day" and c["market"] == study.EXCESS_MARKET and _answered(c)
+        ]
+        for d in ahead.get("days", []):
+            company = max(d["reports"], key=lambda r: r["cap"])
+            for c in cells:
+                dated.append(
+                    {
+                        "day": d["day"],
+                        "time": company["time"],
+                        "event": f"{company['name']} reports earnings",
+                        "condition": PREDICTS_IF[c["kind"]],
+                        "outcome": _outcome(
+                            c["market"],
+                            "",
+                            c["answer"],
+                            "next" if company["time"] == "after the close" else "day",
+                        ),
+                        "direction": c["answer"],
+                        "right": c["right"],
+                        "graded": c["graded"],
+                        "of": "past S&P 500 reports, replayed",
+                        "link": f"#ask/earnings500/{c['kind']}",
+                    }
+                )
+    dated.sort(key=lambda p: (str(p["day"]), str(p["time"])))
+    undated: list[dict[str, object]] = []
+    told = {p["link"] for p in dated}
+    for f in ask:
+        labels = {k["kind"]: k["label"] for k in f["kinds"]}
+        for c in filter(_answered, f["cells"]):
+            link = f"#ask/{f['name']}/{c['kind']}"
+            if len(undated) == PREDICTS_MIN or link in told:
+                continue
+            told.add(link)
+            label = labels[c["kind"]]
+            undated.append(
+                {
+                    "day": None,
+                    "time": None,
+                    "event": label[0].upper() + label[1:],
+                    "condition": "After it",
+                    "outcome": _outcome(c["market"], c["market_name"], c["answer"], c["span"]),
+                    "direction": c["answer"],
+                    "right": c["right"],
+                    "graded": c["graded"],
+                    "of": "past events, replayed",
+                    "link": link,
+                }
+            )
+    return dated[:PREDICTS_DATED] + undated
+
+
 def week_watch(today: date, cache_dir: Path) -> list[dict[str, object]]:
     """Each scheduled event `live` does not call, from the day after ``today`` to ``AHEAD_DAYS``
     after it, oldest first, at its New York time (docs/steps/watch-ahead.md)."""
@@ -2294,6 +2411,7 @@ def week_watch(today: date, cache_dir: Path) -> list[dict[str, object]]:
 
 
 SCOREBOARD_DATA_MARK = "__SCOREBOARD_DATA__"
+PREDICTS_DATA_MARK = "__PREDICTS_DATA__"
 
 
 def _scoreboard(_args: argparse.Namespace) -> int:
@@ -2342,6 +2460,12 @@ def _scoreboard(_args: argparse.Namespace) -> int:
     # Inside <script>, a "<" in the data could end the element; JSON reads < as the same "<".
     embedded = text.replace("<", "\\u003c")
     (out / "index.html").write_text(page.replace(SCOREBOARD_DATA_MARK, embedded))
+    told = {"written": data.get("written"), "predictions": predictions(data)}
+    shown = json.dumps(told, ensure_ascii=False).replace("<", "\\u003c")
+    predicts = out.parent / "predicts"
+    predicts.mkdir(parents=True, exist_ok=True)
+    template = files("fortuneteller").joinpath("predicts.html").read_text()
+    (predicts / "index.html").write_text(template.replace(PREDICTS_DATA_MARK, shown))
     events = data["events"]
     assert isinstance(events, list)
     print(
