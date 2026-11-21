@@ -1,11 +1,11 @@
 """Step 41's test of the expert's rules (docs/steps/expert-hypotheses.md).
 
-`expert_test.py COMMIT` reads docs/steps/expert-hypotheses.csv as committed at COMMIT, prints its
+`expert_check.py COMMIT` reads docs/steps/expert-hypotheses.csv as committed at COMMIT, prints its
 SHA-256, and tests each rule on its events from 2020-01-01 in the store at FT_DB_PATH: the rule's
 cell as `follows` answers it on the kept events, the same rule without its condition, and whether
 it passes and holds by the spec's bars.
 
-Usage: uv run python scripts/expert_test.py COMMIT
+Usage: uv run python scripts/expert_check.py COMMIT
 """
 
 import csv

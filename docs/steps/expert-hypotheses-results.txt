@@ -26,7 +26,7 @@ price, regime or study from 2020 on. Marked 6 of 40:
 
 Step 3: the tester, 2026-11-21, on a copy of the full store (step 40's, closes to 2026-11-20).
 
-$ uv run python scripts/expert_test.py 9a2f138
+$ uv run python scripts/expert_check.py 9a2f138
 rules: docs/steps/expert-hypotheses.csv at 9a2f138, SHA-256 3cd2ec7b795e55da0c8999e2ff90aed9c1426786718f8bf625cb76e501662668
 id  cond   n  dir/n   answer      chance   period  plain dir/n  adds p   walk        passes holds
  1  none   36   21/36   can't say    0.1095  -         21/36     0.0000  0/0 too few      -      -
@@ -160,3 +160,6 @@ The cmp loop (scratchpad/m41/cmp.sh), as run:
     done
   done
   echo ALL DONE >> /tmp/claude-1000/-home-andriy-orca-workspaces-fortuneteller-orcarun/3419a0af-ff14-4b4a-9572-3c65e1c987bf/scratchpad/m41/cmp.log
+
+(The tester was run as scripts/expert_test.py; renamed scripts/expert_check.py after, since pytest
+collects files named *_test.py. The code is unchanged.)

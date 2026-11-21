@@ -45,7 +45,7 @@ written first; the rules that pass logged as calls and graded forward as events 
 - **When a condition is read:** at the close before the event's reaction close, never later. A
   `move` is the market's change over the `closes` closes ending at that close. An `event` is met
   when another event of that kind has its reaction close within the 21 closes ending at it.
-- **The test:** `scripts/expert_test.py` reads the rules from the commit that added them (named in
+- **The test:** `scripts/expert_check.py` reads the rules from the commit that added them (named in
   its output) and, on the full store, keeps each rule's events from 2020-01-01 that meet its
   condition, after `follows`' own rule for overlapping events. It answers them as `follows` does,
   on the base `follows` uses for that market (a company's 504 closes before, as [step
@@ -124,14 +124,14 @@ the second reader's band, and the checks below.*
 - The pack: `follows` output as text, one file per flow and run, with the lines of COIN (listed
   2021, no close before 2020; its closes kept in the copy only because `follows` needs every
   market's) taken out; `events.csv` from the copy.
-- `scripts/expert_test.py` reuses `study.excess_spans`, `study.event_base` and `follows`' answer
+- `scripts/expert_check.py` reuses `study.excess_spans`, `study.event_base` and `follows`' answer
   and placebo; the condition's moves come from `daily_bars`.
-- Tests in `tests/test_expert_test.py`, as the seed scripts' tests.
+- Tests in `tests/test_expert_check.py`, as the seed scripts' tests.
 
 ## Results
 
 *Measured 2026-11-21 ([evidence](expert-hypotheses-results.txt), [the rules](expert-hypotheses.csv));
-every rule's numbers from `scripts/expert_test.py 9a2f138` on a copy of the full store.*
+every rule's numbers from `scripts/expert_check.py 9a2f138` on a copy of the full store.*
 
 **In plain words:** the expert wrote 40 rules from the record to 2019, all of them testable. Tested
 once on 2020 onward, 5 pass, and every one restates an answer the record already gave; two only
@@ -162,7 +162,7 @@ which holds only as the plain miss does.
   and 38 were also *the period*.
 - **The checks:** the rules' SHA-256 in pull request #395 equals the tester's; rules 1 and 10
   recomputed from the store by a one-off script (its text in the evidence), the same counts;
-  `uv run pytest tests/test_expert_test.py tests/test_expert_pack.py` passes; `follows`, every
+  `uv run pytest tests/test_expert_check.py tests/test_expert_pack.py` passes; `follows`, every
   flow both runs, byte for byte the same on main's code and this branch's (`cmp`, the loop in the
   evidence) after `follows_cells` was split for the tester. The placebo's amendment landed in the
   tester's own commit, before its first run.

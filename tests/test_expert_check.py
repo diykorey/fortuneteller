@@ -7,12 +7,12 @@ from types import ModuleType
 from fortuneteller.models import EventInstance
 from fortuneteller.sources import DailyClosingPrice
 
-SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "expert_test.py"
+SCRIPT = Path(__file__).resolve().parents[1] / "scripts" / "expert_check.py"
 
 
 def _script() -> ModuleType:
     sys.path.insert(0, str(SCRIPT.parent))
-    spec = importlib.util.spec_from_file_location("expert_test", SCRIPT)
+    spec = importlib.util.spec_from_file_location("expert_check", SCRIPT)
     assert spec is not None and spec.loader is not None
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
