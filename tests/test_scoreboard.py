@@ -1,11 +1,14 @@
 """The scoreboard: its data holds what the commands print, and each call its popup's numbers."""
 
+import html.parser
 import io
 import json
 import random
 import urllib.request
 import re
-from datetime import date, datetime, time, timedelta
+import shutil
+import subprocess
+from datetime import UTC, date, datetime, time, timedelta
 from pathlib import Path
 
 import duckdb
@@ -501,3 +504,251 @@ def test_the_page_asks_first_and_a_link_can_pick_the_kind() -> None:
     assert ask < page.index("<h2>The week ahead</h2>")
     assert "#ask\\/([^/]+)\\/(.+)$" in page
     assert "history.replaceState(null, '', '#ask/'" in page
+
+
+# Step 44, a page a stranger reads (docs/steps/readers.md).
+
+
+def _cell(kind: str, verdict: str, **marks: object) -> dict[str, object]:
+    cell: dict[str, object] = {
+        "kind": kind,
+        "span": "day",
+        "market": study.EXCESS_MARKET,
+        "answer": "down",
+        "right": 156,
+        "graded": 219,
+        "verdict": verdict,
+        "kind_cell": False,
+        "period": False,
+        "say": f"{kind} {verdict}",
+    }
+    cell.update(marks)
+    return cell
+
+
+def _earnings(cells: list[dict[str, object]]) -> dict[str, object]:
+    kinds = [{"kind": k, "label": k, "events": 1} for k in ("above", "as expected", "below")]
+    return {"name": "earnings", "kinds": kinds, "cells": cells}
+
+
+def test_the_answers_that_hold_are_the_holding_cells_in_asks_order() -> None:
+    # given a flow whose cells hold, hold as the kind's own definition, hold as the period, or not
+    ask = [
+        _earnings(
+            [
+                _cell("below", "holds"),
+                _cell("above", "holds"),
+                _cell("as expected", "holds", kind_cell=True),
+                _cell("as expected", "holds", period=True),
+                _cell("below", "doesn't hold"),
+            ]
+        )
+    ]
+
+    # when the answers that hold are listed
+    held = cli.answers_that_hold(ask)
+
+    # then only the two plain holds are, in the order of the flow's kinds
+    assert held == [
+        {"flow": "earnings", "kind": "above", "say": "above holds"},
+        {"flow": "earnings", "kind": "below", "say": "below holds"},
+    ]
+
+
+def test_each_dow_report_ahead_carries_its_own_kinds_cells() -> None:
+    # given two Dow members and a company outside the Dow reporting, and cells where only the
+    # miss holds
+    reports = {
+        date(2026, 12, 2): [
+            {"symbol": "CRM", "name": "Salesforce, Inc.", "time": "time-after-hours"},
+            {"symbol": "PANW", "name": "Palo Alto Networks, Inc.", "time": "time-pre-market"},
+        ],
+        date(2026, 12, 3): [{"symbol": "NKE", "name": "Nike, Inc.", "time": "time-not-supplied"}],
+    }
+    cells = [
+        _cell("above", "doesn't hold", answer="up"),
+        _cell("as expected", "too few"),
+        _cell("below", "holds"),
+    ]
+
+    # when the reports ahead of Friday 2026-11-27 are listed
+    rows = cli.earnings_ahead(
+        date(2026, 11, 27), [_earnings(cells)], lambda day: reports.get(day, [])
+    )
+
+    # then the two members are, each line its own kind's cell and a direction only where it holds
+    assert [(r["symbol"], r["day"], r["time"]) for r in rows] == [
+        ("CRM", "2026-12-02", "after the close"),
+        ("NKE", "2026-12-03", "time not given"),
+    ]
+    assert rows[0]["lines"] == [
+        "If it beats: did not hold.",
+        "If it is in line: too few to say.",
+        "If it misses: down, right 156 of 219 replayed.",
+    ]
+
+
+def test_a_report_ahead_follows_its_cell_when_the_counts_change() -> None:
+    # given the miss's cell with other counts
+    cells = [_cell("below", "holds", right=40, graded=50)]
+
+    # when a member's report ahead is listed
+    (row,) = cli.earnings_ahead(
+        date(2026, 12, 1),
+        [_earnings(cells)],
+        lambda day: [{"symbol": "CRM", "name": "Salesforce, Inc.", "time": ""}],
+    )[:1]
+
+    # then its line carries those counts, and the kinds without a cell say so
+    assert row["lines"] == [
+        "If it beats: not measured.",
+        "If it is in line: not measured.",
+        "If it misses: down, right 40 of 50 replayed.",
+    ]
+
+
+def test_a_failed_earnings_ask_leaves_the_list_unread(
+    tmp_db: Path, scoreboard_dir: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given a CPI history, and Nasdaq's earnings calendar failing
+    monkeypatch.setattr(settings, "fred_api_key", None)
+    _history(db.get_connection())
+
+    def fail(day: date) -> list[dict[str, str]]:
+        raise sources.CalendarError("Nasdaq earnings: HTTP 403")
+
+    monkeypatch.setattr(sources, "fetch_earnings_day", fail)
+
+    # when the scoreboard is written
+    code = main(["scoreboard"])
+    data = json.loads((scoreboard_dir / "data.json").read_text())
+
+    # then the page is written, its list unread, the answers that hold and the names beside it
+    assert code == 0
+    assert data["earnings_ahead"] is None
+    assert data["holds"] == cli.answers_that_hold(data["ask"])
+    assert data["market_names"]["SPY / ES"] != "SPY / ES"
+
+
+class _Text(html.parser.HTMLParser):
+    """The page's text outside ``<details>``, ``<code>``, ``<script>`` and ``<style>``."""
+
+    SKIP = {"details", "code", "script", "style"}
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.depth = 0
+        self.outside: list[str] = []
+        self.inside: list[str] = []
+
+    def handle_starttag(self, tag: str, attrs: list[tuple[str, str | None]]) -> None:
+        if tag in self.SKIP:
+            self.depth += 1
+        if tag == "h2" and self.depth:
+            self.inside.append("<h2>")
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag in self.SKIP:
+            self.depth -= 1
+
+    def handle_data(self, data: str) -> None:
+        (self.inside if self.depth else self.outside).append(data)
+
+
+@pytest.mark.skipif(shutil.which("google-chrome") is None, reason="needs google-chrome")
+def test_the_page_names_markets_outside_the_workings(tmp_path: Path) -> None:
+    # given the published data, a report ahead and the page's template without the counter
+    data = json.loads(Path("docs/scoreboard/data.json").read_text())
+    data["market_names"] = cli.market_names()
+    data["holds"] = cli.answers_that_hold(data["ask"])
+    data["earnings_ahead"] = [
+        {
+            "day": "2099-01-05",
+            "symbol": "CRM",
+            "name": "Salesforce, Inc.",
+            "time": "after the close",
+            "lines": ["If it misses: down, right 156 of 219 replayed."],
+        }
+    ]
+    template = (Path(cli.__file__).parent / "scoreboard.html").read_text()
+    template = re.sub(
+        r'<script defer src="https://cloud\.umami\.is.*?</script>', "", template, flags=re.S
+    )
+    page = tmp_path / "index.html"
+    page.write_text(
+        template.replace(cli.SCOREBOARD_DATA_MARK, json.dumps(data).replace("<", "\\u003c"))
+    )
+
+    # when Chrome renders it
+    dom = subprocess.run(
+        [
+            "google-chrome",
+            "--headless=new",
+            "--disable-gpu",
+            "--no-sandbox",
+            "--dump-dom",
+            page.as_uri(),
+        ],
+        capture_output=True,
+        text=True,
+        timeout=120,
+        check=True,
+    ).stdout
+    text = _Text()
+    text.feed(dom)
+    outside = " ".join(text.outside)
+
+    # then no market's code is in the text outside the workings, but where its name holds it, which holds the three sections,
+    # and the report ahead and the answers that hold are shown
+    codes = [
+        m
+        for m in data["markets"]
+        if m not in data["market_names"][m]
+        and re.search(rf"(?<![\w/]){re.escape(m)}(?![\w/])", outside)
+    ]
+    assert codes == []
+    assert text.inside.count("<h2>") == 3
+    assert "If it misses: down, right 156 of 219 replayed." in outside
+    assert data["holds"][0]["say"] in outside
+
+
+def test_the_weekly_post_carries_the_first_hold_and_the_reports_ahead() -> None:
+    # given a week with no row, and a page with two answers that hold and a report on each side
+    # of the post's Monday
+    start = datetime(2026, 11, 23, tzinfo=UTC)
+    end = start + timedelta(days=7)
+    page = {
+        "holds": [{"flow": "nfp", "kind": "above", "say": "First."}, {"say": "Second."}],
+        "earnings_ahead": [
+            {
+                "day": "2026-11-27",
+                "symbol": "HD",
+                "name": "Home Depot",
+                "time": "before the open",
+                "lines": ["Old."],
+            },
+            {
+                "day": "2026-12-02",
+                "symbol": "CRM",
+                "name": "Salesforce, Inc.",
+                "time": "after the close",
+                "lines": [
+                    "If it beats: did not hold.",
+                    "If it misses: down, right 156 of 219 replayed.",
+                ],
+            },
+        ],
+    }
+
+    # when the post is drafted
+    lines = cli.weekly_post_lines([], {}, start, end, {}, page)
+
+    # then it carries the first answer and the report from its Monday on, as the page has them
+    assert "An answer that holds: First." in lines
+    assert "Second." not in " ".join(lines)
+    assert (
+        "Salesforce, Inc. (CRM), 2026-12-02, after the close. If it beats: did not hold. "
+        "If it misses: down, right 156 of 219 replayed."
+    ) in lines
+    assert "Old." not in " ".join(lines)
+    assert lines[-1] == cli.DISCLAIMER

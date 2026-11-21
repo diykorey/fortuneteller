@@ -31,6 +31,12 @@ evening job. The first thing delivered beyond this laptop.
   `raw-move` 18 s, `surprise` 44 s, `predict` 17 s; about ten minutes for every flow (*amended
   2026-10-23:* the whole command took 193 s for eight events, the ordinary days being counted once
   per flow rather than once per command).
+- **A page a stranger reads** (*added 2026-11-21*, [step 44](readers.md)): the page opens on
+  what it is and on `holds`, the answers that hold; markets are named by `market_names` outside
+  *the workings*, a closed part holding the replay and statistics grids; `earnings_ahead` lists the
+  Dow's reports of the next seven weekdays, each kind's line from *Ask*'s day cell. *Amends the
+  writing rule above:* on a weekday with nothing to score, the evening job still writes the page
+  and, if it differs, opens and merges `scoreboard-DAY` once its checks pass.
 - **The week ahead** (*added 2026-11-04*, [step 15](week-ahead.md)): `ahead` lists each release
   `live` calls in the next seven days, its consensus, thresholds and each link's rule and record;
   `null` when the calendar cannot be read. The page shows it first. *Added 2026-11-04*

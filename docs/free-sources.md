@@ -23,7 +23,7 @@
 
 | Source | What it gives | Use here |
 | --- | --- | --- |
-| [Cleveland Fed inflation nowcast](https://www.clevelandfed.org/indicators-and-data/inflation-nowcasting) | A forecast of CPI and PCE each business day, from oil and gasoline prices | A second expected value for CPI and PCE, not from TradingView; its download format is unchecked |
+| [Cleveland Fed inflation nowcast](https://www.clevelandfed.org/indicators-and-data/inflation-nowcasting) | A forecast of CPI and PCE each business day, from oil and gasoline prices | *Corrected 2026-11-21:* its CPI nowcast is already step 4's baseline ([accounts](accounts.md)), read by `sources.py`; its PCE series, in the same file, is left out and would be a second expected value for PCE |
 | Atlanta Fed GDPNow ([via FRED](https://fred.stlouisfed.org/search?st=nowcast)) | GDP forecast, updated through the quarter | An expected value for GDP |
 | [Philadelphia Fed Survey of Professional Forecasters](https://www.philadelphiafed.org/surveys-and-data/data-files) | Quarterly forecasts since 1968, mean, median and spread, Excel | A long history of expected values for GDP, jobs and inflation |
 | [Philadelphia Fed Real-Time Data Set](https://www.philadelphiafed.org/surveys-and-data/real-time-data-research/real-time-data-set-for-macroeconomists) | Each series as first published, before revisions | The actual as known on the day |
@@ -61,6 +61,6 @@ Trends; ADP payrolls and Challenger job cuts, if their history is free.
 
 ## The first two, after the gate
 
-By the owner, 2026-11-21: the Cleveland Fed's nowcast as a second expected value for CPI and
-PCE, then the Philadelphia Fed survey's history for GDP, each its own spec after the 2027-01-31
+By the owner, 2026-11-21: the Cleveland Fed's nowcast as a second expected value for PCE
+(*corrected the same day:* its CPI nowcast is in use since step 4), then the Philadelphia Fed survey's history for GDP, each its own spec after the 2027-01-31
 gate ([Roadmap](roadmap.md), *Later*).
