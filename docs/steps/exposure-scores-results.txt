@@ -1,0 +1,12 @@
+Step 42's evidence (docs/steps/exposure-scores.md).
+
+Step 1, the texts. uv run python scripts/tenk_business.py fetch data/cache/earnings/sec500 data/cache/tenk,
+run 2026-11-21 (the members of 2020-01-02 by data/seed/sp500.csv; tickers to filers by the SEC's
+company_tickers.json, as step 40):
+  426 texts; left out: no filer 60, second class 4, no 10-K 9, no Item 1 14
+  blind test: 0 found
+The expected outcome said at least 450 scored; 426 is under it (recorded, not a stop). "No filer"
+is a 2020 member whose ticker the SEC's current listing no longer carries (merged, renamed or
+delisted since), the same gap as step 40's. "No Item 1" is a 10-K whose business section is
+elsewhere (incorporated by reference, or a heading the parser does not read).
+texts.csv SHA-256: 3d4608052de5137e1e2b22a6c0a09dd99e7ae61b76c18540da8815312d8c4a1e

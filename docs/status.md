@@ -19,7 +19,7 @@ no 8-K; read by hand, those are mostly the industry's or the economy's news, or 
 ## In progress
 
 - **Step 42: exposure scores** ([the spec](steps/exposure-scores.md)): the spec, before its
-  goldfish. Next: the 10-K texts and the brief. Then step 43, filing severity.
+  goldfish, and step 1 (426 texts, the blind test clean). Next: the scores. Then step 43, filing severity.
 - **Step 34: a same-day source for earnings** ([the spec](steps/earnings-same-day.md)): step 1
   done, Yahoo's kind is Nasdaq's on 102 of 110 reports (92.7%, bar 90%). Next: the speed, asked on
   each member's report from 2026-11-23 to 2027-01-31.

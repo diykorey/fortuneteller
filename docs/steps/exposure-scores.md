@@ -68,7 +68,7 @@ judged against the rule below written first.
   submissions file, step 36's cache); a member alone in its group is left out of both the
   baseline and its comparison, counted. It says whether a company's own
   score sorts better than its industry's.
-- `scripts/exposure_test.py` prints, per rubric, kind and span: the events, right, the base, the
+- `scripts/exposure_check.py` prints, per rubric, kind and span: the events, right, the base, the
   chance, the placebo, the walk-forward, and the same for the sector baseline.
 
 ## The rule, fixed before measuring
@@ -128,7 +128,7 @@ left one out, the chance lines, the second reader's bar, the forward log, and th
 | --- | --- | --- |
 | 1 | The texts and the brief | The brief committed before the first fetch; `tenk_business.py` and its test; texts for the members in the cache, the blind test passing, the counts left out in `docs/steps/exposure-scores-results.txt` |
 | 2 | The scores | `exposure-scores.csv` committed and its hash posted; the second reading's agreement per rubric and the marked reasons in the results file, within their bars |
-| 3 | The tester | `exposure_test.py` and its test; the two hand checks in the results file, equal to the tester's; `just check` passes |
+| 3 | The tester | `exposure_check.py` and its test; the two hand checks in the results file, equal to the tester's; `just check` passes |
 | 4 | Results | Every cell judged against the rule; goldfish-reviewed, each finding fixed or answered in the pull request; roadmap, status, changelog updated |
 | 5 | Forward | Each new OPEC+, CPI, Fed and retail event after the scores' commit, its spread per rubric written to `docs/steps/exposure-forward.csv` and graded, to the 2027-01-31 gate; recorded, no bar of its own |
 
@@ -144,5 +144,5 @@ left one out, the chance lines, the second reader's bar, the forward log, and th
 
 - `scripts/tenk_business.py`: the 10-K's primary document from each member's submissions JSON
   (step 36's cache), its text from *Item 1* to *Item 1A* or *Item 2*, names replaced.
-- `scripts/exposure_test.py`: closes and excess moves by `study.excess_spans`; events and kinds by
+- `scripts/exposure_check.py`: closes and excess moves by `study.excess_spans`; events and kinds by
   `follows_kinds` (step 41); tests in `tests/test_exposure.py`.
