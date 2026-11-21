@@ -378,7 +378,8 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **Cell** — *added 2026-11-21* ([a page a stranger reads](steps/readers.md)): one kind of event,
   one market and one span, with its counts, its answer and its replay's verdict, as `follows`
   prints a line and *Ask* shows a row. A *kind cell* is read off the kind's own definition (Brent on
-  OPEC+'s *oil up*), so it says nothing beyond the kind.
+  OPEC+'s *oil up*), so it says nothing beyond the kind. A *group* is one kind of event's set of
+  kinds as *Ask*'s menu groups them (the jobs report's above, as expected and below).
 - **The answers that hold / the workings** — *added 2026-11-21* ([a page a stranger
   reads](steps/readers.md)): the answers that hold are the page's first list, every cell whose
   verdict is *holds* less those read off the kind's own definition or read as the period. The workings is the page's

@@ -650,13 +650,13 @@ NASDAQ_EARNINGS_URL = "https://api.nasdaq.com/api/calendar/earnings?date={day}"
 
 
 def fetch_earnings_day(day: date, timeout: float = 60.0) -> list[dict[str, str]]:
-    """Each report Nasdaq lists for ``day``: its ``symbol``, ``name`` and ``time``."""
+    """Each report Nasdaq lists for ``day``: its ``symbol``, ``name``, ``time`` and ``marketCap``."""
     body = _calendar_get(NASDAQ_EARNINGS_URL.format(day=day), f"Nasdaq earnings {day}", timeout)
     try:
         rows = json.loads(body)["data"]["rows"] or []
     except (ValueError, KeyError, TypeError):
         raise CalendarError(f"Nasdaq earnings {day}: an unreadable reply") from None
-    return [{k: str(r.get(k) or "") for k in ("symbol", "name", "time")} for r in rows]
+    return [{k: str(r.get(k) or "") for k in ("symbol", "name", "time", "marketCap")} for r in rows]
 
 
 def calendar_number(text: str | float | None) -> float | None:

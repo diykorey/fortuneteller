@@ -85,11 +85,12 @@ predicted from the ones before it.</p>
 <div class="wrap"><table id="ahead"></table></div>
 <p class="muted" id="ahead-rule"></p>
 
-<h3>Dow companies reporting</h3>
+<h3>S&amp;P 500 companies reporting</h3>
 <p class="muted"><strong>Entertainment, not financial advice. Nothing is said until the report
-lands.</strong> Each Dow company reporting in the next seven weekdays, and what its shares did
-against the S&amp;P 500 on the day after past Dow reports of each kind: a direction only where it
-held.</p>
+lands.</strong> What a company's shares did against the S&amp;P 500 on the day after past S&amp;P
+500 reports of each kind, a direction only where it held; then each company reporting in the next
+seven weekdays.</p>
+<ul id="earnings-lines"></ul>
 <div class="wrap"><table id="earnings-ahead"></table></div>
 
 <h3>Also on the calendar</h3>
@@ -215,22 +216,28 @@ code</summary>
     + 'The threshold is the consensus plus or minus the rule\'s noticeable surprise; below, each market is called the other way. '
     + data.rules.walk_forward;
 
-  // The Dow's reports ahead: each kind's line as written with the data.
+  // The S&P 500's reports ahead: the kinds' lines once, as written with the data, then each day's
+  // companies.
   const reports = byId('earnings-ahead');
-  const reporting = (data.earnings_ahead || []).filter((r) => r.day >= today);
-  reports.appendChild(head(['Day', 'Company', 'What followed past reports']));
-  if (data.earnings_ahead === null || data.earnings_ahead === undefined) {
+  const earnings = data.earnings_ahead;
+  reports.appendChild(head(['Day', 'Reporting']));
+  if (earnings === null || earnings === undefined) {
     reports.appendChild(row([el('td', 'The earnings calendar could not be read on ' + data.written + '.', 'none')]));
-  } else if (!reporting.length) {
-    reports.appendChild(row([el('td', 'No Dow company reports in the seven weekdays from ' + data.written + '.', 'none')]));
+  } else {
+    earnings.lines.forEach((line) => byId('earnings-lines').appendChild(el('li', line)));
+    const reporting = earnings.days.filter((d) => d.day >= today);
+    if (!reporting.length) {
+      reports.appendChild(row([el('td', 'No S&P 500 company reports in the seven weekdays from ' + data.written + '.', 'none')]));
+    }
+    reporting.forEach((d) => {
+      const who = el('td');
+      d.reports.forEach((r, i) => {
+        const name = el('span', (i ? '; ' : '') + r.name + ' (' + r.symbol + ', ' + r.time + ')');
+        who.appendChild(name);
+      });
+      reports.appendChild(row([el('td', d.day + ' (' + d.reports.length + ')'), who]));
+    });
   }
-  reporting.forEach((r) => {
-    const company = el('td', r.name);
-    company.appendChild(el('small', r.symbol));
-    const said = el('td');
-    r.lines.forEach((line) => said.appendChild(el('div', line)));
-    reports.appendChild(row([el('td', r.day + ', ' + r.time), company, said]));
-  });
 
   // Ask the fortune teller: a kind of event, then a table per span, a row per market; the
   // sentences are written with the data, never here.
@@ -256,7 +263,8 @@ code</summary>
     const total = flow.kinds.reduce((sum, k) => sum + k.events, 0);
     byId('ask-about').textContent = counted.label.charAt(0).toUpperCase() + counted.label.slice(1)
       + ': ' + counted.events + ' of the ' + total + ' ' + flow.noun + ' from ' + flow.first
-      + ' to ' + flow.last + '.';
+      + ' to ' + flow.last + '.'
+      + (flow.measured ? ' Measured ' + flow.measured + ', not each evening.' : '');
     const spans = [...new Set(flow.cells.map((c) => c.span))];
     spans.forEach((span) => {
       box.appendChild(el('h3', 'Over the ' + (span === 'day' ? 'day' : 'next ' + span)));

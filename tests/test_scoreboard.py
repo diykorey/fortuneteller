@@ -526,9 +526,9 @@ def _cell(kind: str, verdict: str, **marks: object) -> dict[str, object]:
     return cell
 
 
-def _earnings(cells: list[dict[str, object]]) -> dict[str, object]:
+def _earnings(cells: list[dict[str, object]], name: str = "earnings") -> dict[str, object]:
     kinds = [{"kind": k, "label": k, "events": 1} for k in ("above", "as expected", "below")]
-    return {"name": "earnings", "kinds": kinds, "cells": cells}
+    return {"name": name, "kinds": kinds, "cells": cells}
 
 
 def test_the_answers_that_hold_are_the_holding_cells_in_asks_order() -> None:
@@ -555,55 +555,100 @@ def test_the_answers_that_hold_are_the_holding_cells_in_asks_order() -> None:
     ]
 
 
-def test_each_dow_report_ahead_carries_its_own_kinds_cells() -> None:
-    # given two Dow members and a company outside the Dow reporting, and cells where only the
-    # miss holds
+def test_the_reports_ahead_list_the_sp500s_members_under_the_kinds_lines() -> None:
+    # given two members, one written as Nasdaq writes a class share, and a company outside the
+    # index reporting, and the S&P 500 group's cells where only the miss holds; the Dow's own
+    # group holding everywhere
     reports = {
         date(2026, 12, 2): [
-            {"symbol": "CRM", "name": "Salesforce, Inc.", "time": "time-after-hours"},
-            {"symbol": "PANW", "name": "Palo Alto Networks, Inc.", "time": "time-pre-market"},
+            {
+                "symbol": "CRM",
+                "name": "Salesforce",
+                "time": "time-after-hours",
+                "marketCap": "$150,000",
+            },
+            {
+                "symbol": "ZZZZ",
+                "name": "Not a member",
+                "time": "time-pre-market",
+                "marketCap": "$1",
+            },
         ],
-        date(2026, 12, 3): [{"symbol": "NKE", "name": "Nike, Inc.", "time": "time-not-supplied"}],
+        date(2026, 12, 3): [
+            {"symbol": "BRK/B", "name": "Berkshire", "time": "time-not-supplied", "marketCap": ""}
+        ],
     }
     cells = [
         _cell("above", "doesn't hold", answer="up"),
         _cell("as expected", "too few"),
-        _cell("below", "holds"),
+        _cell("below", "holds", right=2506, graded=3798),
+        _cell("above", "holds", span="week", right=9, graded=9),
     ]
+    dow = _earnings([_cell(k, "holds") for k in ("above", "as expected", "below")])
 
     # when the reports ahead of Friday 2026-11-27 are listed
-    rows = cli.earnings_ahead(
-        date(2026, 11, 27), [_earnings(cells)], lambda day: reports.get(day, [])
+    ahead = cli.earnings_ahead(
+        date(2026, 11, 27),
+        [dow, _earnings(cells, "earnings500")],
+        lambda day: reports.get(day, []),
     )
 
-    # then the two members are, each line its own kind's cell and a direction only where it holds
-    assert [(r["symbol"], r["day"], r["time"]) for r in rows] == [
-        ("CRM", "2026-12-02", "after the close"),
-        ("NKE", "2026-12-03", "time not given"),
-    ]
-    assert rows[0]["lines"] == [
+    # then the lines come once from the S&P 500 group, a direction only where it holds, and the
+    # two members are listed by day
+    assert ahead["lines"] == [
         "If it beats: did not hold.",
         "If it is in line: too few to say.",
-        "If it misses: down, right 156 of 219 replayed.",
+        "If it misses: down, right 2506 of 3798 replayed.",
+    ]
+    assert ahead["days"] == [
+        {
+            "day": "2026-12-02",
+            "reports": [
+                {"symbol": "CRM", "name": "Salesforce", "time": "after the close", "cap": 150000.0}
+            ],
+        },
+        {
+            "day": "2026-12-03",
+            "reports": [
+                {"symbol": "BRK/B", "name": "Berkshire", "time": "time not given", "cap": 0.0}
+            ],
+        },
     ]
 
 
-def test_a_report_ahead_follows_its_cell_when_the_counts_change() -> None:
-    # given the miss's cell with other counts
+def test_the_kinds_lines_follow_their_cells_when_the_counts_change() -> None:
+    # given the S&P 500 miss's cell with other counts, and no other cell
     cells = [_cell("below", "holds", right=40, graded=50)]
 
-    # when a member's report ahead is listed
-    (row,) = cli.earnings_ahead(
-        date(2026, 12, 1),
-        [_earnings(cells)],
-        lambda day: [{"symbol": "CRM", "name": "Salesforce, Inc.", "time": ""}],
-    )[:1]
+    # when the reports ahead are listed
+    ahead = cli.earnings_ahead(date(2026, 12, 1), [_earnings(cells, "earnings500")], lambda d: [])
 
-    # then its line carries those counts, and the kinds without a cell say so
-    assert row["lines"] == [
+    # then the lines carry those counts, and the kinds without a cell say so
+    assert ahead["lines"] == [
         "If it beats: not measured.",
         "If it is in line: not measured.",
         "If it misses: down, right 40 of 50 replayed.",
+    ]
+
+
+def test_the_frozen_sp500_groups_join_ask_with_their_measured_day(
+    tmp_db: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given a frozen file holding one group whose miss holds
+    frozen = tmp_path / "ask_sp500.json"
+    group = _earnings([_cell("below", "holds")], "earnings500")
+    frozen.write_text(json.dumps({"measured": "2026-11-21", "ask": [group]}))
+    monkeypatch.setattr(cli, "SP500_ASK", frozen)
+
+    # when the page's ask is built on an empty store
+    asked = cli.ask_data(db.get_connection())
+
+    # then the group is in it with its day, not among those left out, and its hold is listed
+    (entry,) = [a for a in asked["ask"] if a["name"] == "earnings500"]
+    assert entry["measured"] == "2026-11-21"
+    assert "earnings500" not in [a["name"] for a in asked["ask_left_out"]]
+    assert cli.answers_that_hold(asked["ask"]) == [
+        {"flow": "earnings500", "kind": "below", "say": "below holds"}
     ]
 
 
@@ -661,15 +706,17 @@ def test_the_page_names_markets_outside_the_workings(tmp_path: Path) -> None:
     data = json.loads(Path("docs/scoreboard/data.json").read_text())
     data["market_names"] = cli.market_names()
     data["holds"] = cli.answers_that_hold(data["ask"])
-    data["earnings_ahead"] = [
-        {
-            "day": "2099-01-05",
-            "symbol": "CRM",
-            "name": "Salesforce, Inc.",
-            "time": "after the close",
-            "lines": ["If it misses: down, right 156 of 219 replayed."],
-        }
-    ]
+    data["earnings_ahead"] = {
+        "lines": ["If it misses: down, right 2506 of 3798 replayed."],
+        "days": [
+            {
+                "day": "2099-01-05",
+                "reports": [
+                    {"symbol": "CRM", "name": "Salesforce", "time": "after the close", "cap": 1.0}
+                ],
+            }
+        ],
+    }
     template = (Path(cli.__file__).parent / "scoreboard.html").read_text()
     template = re.sub(
         r'<script defer src="https://cloud\.umami\.is.*?</script>', "", template, flags=re.S
@@ -708,47 +755,42 @@ def test_the_page_names_markets_outside_the_workings(tmp_path: Path) -> None:
     ]
     assert codes == []
     assert text.inside.count("<h2>") == 3
-    assert "If it misses: down, right 156 of 219 replayed." in outside
+    assert "If it misses: down, right 2506 of 3798 replayed." in outside
+    assert "Salesforce (CRM, after the close)" in outside
     assert data["holds"][0]["say"] in outside
 
 
-def test_the_weekly_post_carries_the_first_hold_and_the_reports_ahead() -> None:
-    # given a week with no row, and a page with two answers that hold and a report on each side
-    # of the post's Monday
+def test_the_weekly_post_carries_the_first_hold_and_the_largest_reports_ahead() -> None:
+    # given a week with no row, and a page with two answers that hold, six reports from the post's
+    # Monday and one before it
     start = datetime(2026, 11, 23, tzinfo=UTC)
     end = start + timedelta(days=7)
+    reports = [
+        {"symbol": f"C{i}", "name": f"Company {i}", "time": "before the open", "cap": float(i)}
+        for i in range(6)
+    ]
     page = {
         "holds": [{"flow": "nfp", "kind": "above", "say": "First."}, {"say": "Second."}],
-        "earnings_ahead": [
-            {
-                "day": "2026-11-27",
-                "symbol": "HD",
-                "name": "Home Depot",
-                "time": "before the open",
-                "lines": ["Old."],
-            },
-            {
-                "day": "2026-12-02",
-                "symbol": "CRM",
-                "name": "Salesforce, Inc.",
-                "time": "after the close",
-                "lines": [
-                    "If it beats: did not hold.",
-                    "If it misses: down, right 156 of 219 replayed.",
-                ],
-            },
-        ],
+        "earnings_ahead": {
+            "lines": ["If it misses: down."],
+            "days": [
+                {"day": "2026-11-27", "reports": [{**reports[0], "name": "Old", "cap": 99.0}]},
+                {"day": "2026-11-30", "reports": reports[:3]},
+                {"day": "2026-12-01", "reports": reports[3:]},
+            ],
+        },
     }
 
     # when the post is drafted
     lines = cli.weekly_post_lines([], {}, start, end, {}, page)
 
-    # then it carries the first answer and the report from its Monday on, as the page has them
+    # then it carries the first answer, the five largest of the six from its Monday, largest first,
+    # and the kinds' lines once
     assert "An answer that holds: First." in lines
-    assert "Second." not in " ".join(lines)
-    assert (
-        "Salesforce, Inc. (CRM), 2026-12-02, after the close. If it beats: did not hold. "
-        "If it misses: down, right 156 of 219 replayed."
-    ) in lines
-    assert "Old." not in " ".join(lines)
+    assert "Second." not in " ".join(lines) and "Old" not in " ".join(lines)
+    assert "S&P 500 companies reporting (6), the largest:" in lines
+    named = [line for line in lines if line.startswith("Company ")]
+    assert named[0] == "Company 5 (C5), 2026-12-01, before the open."
+    assert len(named) == 5 and "Company 0" not in " ".join(named)
+    assert lines.count("If it misses: down.") == 1
     assert lines[-1] == cli.DISCLAIMER

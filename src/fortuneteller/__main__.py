@@ -986,23 +986,31 @@ def weekly_post_lines(
     return lines
 
 
+POST_REPORTS = 5
+
+
 def _post_page_lines(page: Mapping[str, object], since: date) -> list[str]:
-    """The page's first answer that holds, and each Dow report ahead from ``since``, as the page
-    has them."""
+    """The page's first answer that holds, and the S&P 500 earnings kinds' lines with the five
+    largest companies reporting from ``since``, as the page has them."""
     lines: list[str] = []
     holds = page.get("holds") or []
     assert isinstance(holds, list)
     if holds:
         lines += ["", "An answer that holds: " + str(holds[0]["say"])]
-    reports = page.get("earnings_ahead") or []
-    assert isinstance(reports, list)
-    coming = [r for r in reports if date.fromisoformat(r["day"]) >= since]
-    if coming:
-        lines += ["", "Dow companies reporting:"]
-        lines += [
-            f"{r['name']} ({r['symbol']}), {r['day']}, {r['time']}. " + " ".join(r["lines"])
-            for r in coming
-        ]
+    ahead = page.get("earnings_ahead") or {}
+    assert isinstance(ahead, dict)
+    reports = [
+        {**r, "day": d["day"]}
+        for d in ahead.get("days", [])
+        if date.fromisoformat(d["day"]) >= since
+        for r in d["reports"]
+    ]
+    if reports:
+        largest = sorted(reports, key=lambda r: -r["cap"])[:POST_REPORTS]
+        lines += ["", f"S&P 500 companies reporting ({len(reports)}), the largest:"]
+        lines += [f"{r['name']} ({r['symbol']}), {r['day']}, {r['time']}." for r in largest]
+        lines += ["What followed past S&P 500 reports, on the day against the index:"]
+        lines += ahead["lines"]
     return lines
 
 
@@ -1837,7 +1845,7 @@ def scoreboard_data(
         "walk_forward": study.TRACK_P_BAR,
     }
     asked = ask_data(con)
-    earnings = None
+    earnings: dict[str, object] | None = None
     if earnings_days is not None:
         try:
             earnings = earnings_ahead(today, asked["ask"], earnings_days)
@@ -1903,6 +1911,16 @@ ASK_DECISIONS = {
     "crypto": {study.HACK: "a crypto hack of $100 million or more"},
     "weather": {study.LANDFALL: "a US hurricane landfall"},
     "flood": {study.FLOOD: "a billion-dollar US flood"},
+    "earnings500": {
+        study.ABOVE: "an S&P 500 company's earnings above the consensus",
+        study.AS_EXPECTED: "an S&P 500 company's earnings in line with the consensus",
+        study.BELOW: "an S&P 500 company's earnings below the consensus",
+    },
+    "additions": {study.ADDED: "a company announced as joining the S&P 500"},
+    "splits": {
+        "alone": "a stock split announced alone",
+        "with a report": "a stock split announced with an earnings report",
+    },
     "earnings": {
         study.ABOVE: "a Dow company's earnings above the consensus",
         study.AS_EXPECTED: "a Dow company's earnings in line with the consensus",
@@ -2036,6 +2054,13 @@ def ask_cell(
     }
 
 
+# Step 45 (docs/steps/sp500-on-the-page.md): the S&P 500's kinds need its members' closes, which
+# only a copy of the store holds, and `follows` on them takes most of an hour; their *ask* is
+# measured once there and frozen here, shown with the day it was measured.
+SP500_FLOWS = ("earnings500", "additions", "splits")
+SP500_ASK = settings.seed_dir / "ask_sp500.json"
+
+
 def ask_data(con: duckdb.DuckDBPyConnection) -> dict[str, list[dict[str, object]]]:
     """The page's *ask*: for each flow ``follows`` measures, its kinds and every cell, the Fed's
     with the quarter and the year; and each flow that cannot be computed, with the reason."""
@@ -2043,31 +2068,37 @@ def ask_data(con: duckdb.DuckDBPyConnection) -> dict[str, list[dict[str, object]
     left_out: list[dict[str, object]] = []
     names = market_names()
     for name, noun in FOLLOWS_NOUNS.items():
-        if name in ("additions", "earnings500", "splits"):
-            continue  # on the page at a later step (docs/steps/sp500-additions.md, earnings-sp500.md)
+        if name in SP500_FLOWS:
+            continue  # measured on a copy of the store, frozen in SP500_ASK (step 45)
         try:
-            f = follows_cells(name, con)
-            cells = list(f.cells)
-            if name == "fomc":
-                cells += follows_cells(name, con, long=True).cells
+            ask.append(ask_entry(name, noun, con, names))
         except FollowsUnavailable as exc:
             left_out.append({"name": name, "noun": noun, "reason": str(exc)})
-            continue
-        counted = [f.kinds[e.event_id] for e in f.events if e.event_id in f.kinds]
-        ask.append(
-            {
-                "name": name,
-                "noun": noun,
-                "kinds": [
-                    {"kind": k, "label": ask_kind(name, k), "events": counted.count(k)}
-                    for k in f.order
-                ],
-                "first": flows.release_date(f.events[0]).isoformat(),
-                "last": flows.release_date(f.events[-1]).isoformat(),
-                "cells": [ask_cell(name, *cell, names) for cell in cells],
-            }
-        )
+    if SP500_ASK.exists():
+        frozen = json.loads(SP500_ASK.read_text())
+        ask += [{**entry, "measured": frozen["measured"]} for entry in frozen["ask"]]
     return {"ask": ask, "ask_left_out": left_out}
+
+
+def ask_entry(
+    name: str, noun: str, con: duckdb.DuckDBPyConnection, names: Mapping[str, str]
+) -> dict[str, object]:
+    """One flow's *ask*: its kinds with their counts, its first and last day, and every cell."""
+    f = follows_cells(name, con)
+    cells = list(f.cells)
+    if name == "fomc":
+        cells += follows_cells(name, con, long=True).cells
+    counted = [f.kinds[e.event_id] for e in f.events if e.event_id in f.kinds]
+    return {
+        "name": name,
+        "noun": noun,
+        "kinds": [
+            {"kind": k, "label": ask_kind(name, k), "events": counted.count(k)} for k in f.order
+        ],
+        "first": flows.release_date(f.events[0]).isoformat(),
+        "last": flows.release_date(f.events[-1]).isoformat(),
+        "cells": [ask_cell(name, *cell, names) for cell in cells],
+    }
 
 
 # The week ahead (docs/steps/week-ahead.md): the releases `live` calls in the next seven days.
@@ -2178,54 +2209,61 @@ def earnings_line(kind: str, cell: Mapping[str, object] | None) -> str:
     return f"{word}: did not hold."
 
 
-def dow_members(day: date) -> set[str]:
-    """The Dow's members on ``day`` by data/seed/dow.csv's dated changes."""
+def sp500_members(day: date) -> set[str]:
+    """The S&P 500's members on ``day`` by data/seed/sp500.csv's dated changes."""
     members: set[str] = set()
-    with (settings.seed_dir / "dow.csv").open(newline="") as f:
+    with (settings.seed_dir / "sp500.csv").open(newline="") as f:
         for row in csv.DictReader(f):
             if date.fromisoformat(row["day"]) <= day:
                 (members.add if row["change"] == "in" else members.discard)(row["ticker"])
     return members
 
 
+def _dollars(text: str) -> float:
+    try:
+        return float(text.replace("$", "").replace(",", ""))
+    except ValueError:
+        return 0.0
+
+
 def earnings_ahead(
     today: date,
     ask: Sequence[Mapping[str, object]],
     fetch: Callable[[date], list[dict[str, str]]],
-) -> list[dict[str, object]]:
-    """Each Dow member's report Nasdaq lists in the ``AHEAD_DAYS`` weekdays after ``today``, with
-    a line per kind from *Ask*'s day cell against the S&P 500."""
-    earnings = next((f for f in ask if f["name"] == "earnings"), None)
+) -> dict[str, object]:
+    """The S&P 500 earnings kinds' lines, from *Ask*'s day cells against the index, and each
+    member's report Nasdaq lists in the ``AHEAD_DAYS`` weekdays after ``today``, by day."""
+    group = next((f for f in ask if f["name"] == "earnings500"), None)
     cells: dict[object, Mapping[str, object]] = {}
-    if earnings is not None:
-        listed = earnings["cells"]
+    if group is not None:
+        listed = group["cells"]
         assert isinstance(listed, list)
         cells = {
             c["kind"]: c
             for c in listed
             if c["span"] == "day" and c["market"] == study.EXCESS_MARKET
         }
-    rows: list[dict[str, object]] = []
+    days: list[dict[str, object]] = []
     day, counted = today, 0
     while counted < AHEAD_DAYS:
         day += timedelta(days=1)
         if day.weekday() >= 5:
             continue
         counted += 1
-        members = dow_members(day)
-        for report in fetch(day):
-            if report["symbol"] not in members:
-                continue
-            rows.append(
-                {
-                    "day": day.isoformat(),
-                    "symbol": report["symbol"],
-                    "name": report["name"],
-                    "time": EARNINGS_TIMES.get(report["time"], "time not given"),
-                    "lines": [earnings_line(k, cells.get(k)) for k in EARNINGS_WORDS],
-                }
-            )
-    return rows
+        members = sp500_members(day)
+        reports = [
+            {
+                "symbol": r["symbol"],
+                "name": r["name"],
+                "time": EARNINGS_TIMES.get(r["time"], "time not given"),
+                "cap": _dollars(r.get("marketCap", "")),
+            }
+            for r in fetch(day)
+            if r["symbol"].replace("/", "-").replace(".", "-") in members
+        ]
+        if reports:
+            days.append({"day": day.isoformat(), "reports": reports})
+    return {"lines": [earnings_line(k, cells.get(k)) for k in EARNINGS_WORDS], "days": days}
 
 
 def week_watch(today: date, cache_dir: Path) -> list[dict[str, object]]:

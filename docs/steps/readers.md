@@ -63,6 +63,9 @@ At the end the published [scoreboard page](scoreboard.md):
   - **Nothing is said before the report lands.** The kind comes from the actual, so the line
     reads *if it misses*, as the week ahead already reads *if above*.
   - **A failed ask** writes *the earnings calendar could not be read*, as the week ahead does.
+  - *Amended 2026-11-21, by the owner ([step 45](sp500-on-the-page.md)):* the list is every S&P
+    500 member's report, under the S&P 500 earnings group's three lines given once, in place of a
+    row per Dow company. Step 44's bars are unchanged.
 - **Written each weekday.** Today the page is written only when `score` commits.
   - The evening job also writes it on a day with nothing to score. If it differs, the job commits
     it in a pull request of its own, `scoreboard-DAY`.
