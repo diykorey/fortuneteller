@@ -130,3 +130,40 @@ up) and step 42's results; no 8-K text, no score and no move of this step.*
   `blind` (names replaced) for the text.
 - `scripts/severity_check.py`: closes and excess moves by `study.excess_spans`; tests in
   `tests/test_severity.py`.
+
+## Results
+
+*Measured 2026-11-21; the evidence, every command and its output, in
+[severity-results.txt](severity-results.txt).*
+
+**In plain words:** the Subscription LLM read 400 S&P 500 members' 8-Ks of 2020 to 2025 and found
+most of them neutral: 43 bad for shareholders, 22 good, 335 neither, far fewer either way than
+expected. A second reading agreed on 47 of the 50 it reread. The score's sign did not say which
+way the shares went: after the bad filings they trailed the index on 27 of 43 days, 63%, against
+the half of any day before 2020, a chance of 0.06, short of the 0.01 an answer needs; after the
+good ones they beat it on 12 of 22, no better than chance. Over the week, neither. Nothing holds.
+A filing's own text, scored by a model, does not yet give step 40's filing kinds a direction;
+the bad side leans the right way, on too few filings to tell.
+
+| Expected (written before) | Found |
+| --- | --- |
+| At least 380 filings scored | 400 — right |
+| 80 to 160 bad, 40 to 120 good | 43 bad, 22 good, 335 neither — **wrong**: the model scored most filings 0 or ±1 |
+| Bad answers on the day | no: 27 of 43 against a base of 0.498, p 0.060 — **wrong** |
+| Good does not answer | no: 12 of 22 against 0.502, p 0.42 — right |
+| Bad does not hold on the day | it does not: no filing graded walk-forward (the cell never answers on the filings before) — right |
+| Neither answers on the week | bad 24 of 43 (p 0.28), good 12 of 22 (p 0.41) — right |
+| Second reading within 2 points on 80%, the same side on 70%; at most 5 marked | 100%, 94%; 0 marked — right |
+
+- **The chance line:** 0 answers of 4 cells, under 0.04 plus two.
+- **The items** (reported, not counted): the bad 7.01 filings (Reg FD notices, mostly with a
+  press release) trailed on 13 of 16 days, p 0.010, at the line but not under it; the bad 2.05
+  filings (restructurings), 23 of 36, p 0.063. Neither is a finding; each is too few.
+- **The reach:** 200 of the 202 members have closes in the store, and every scored filing in a
+  cell is counted. The model may know how a filing turned out (above); the counts say what the
+  scores sort, not what they forecast. The forward log is free of that.
+- **The checks:** the tester prints the scores' SHA-256 posted in pull request #397; the first bad
+  (GM, 2020-02-18) and first good (MMM, 2020-08-13) filings' excess moves recomputed from
+  `daily_bars` by a one-off script (its text and command in the evidence), equal to the tester's
+  (−0.007149, +0.011788); the local check passes.
+- **Step 5:** the forward log, to the 2027-01-31 gate, in `docs/steps/severity-forward.csv`.
