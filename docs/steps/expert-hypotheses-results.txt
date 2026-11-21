@@ -109,3 +109,8 @@ nfp above UST5Y / ZF events 36 {'up': 21, 'about the same': 4, 'down': 11} cut 2
   2026-11-10 T5YIE 63-close move +0.0 bps -> out
 cpi above UST5Y / ZF events 11 {'up': 5, 'about the same': 4, 'down': 2} cut 2.100
 Both equal the tester's rows 1 and 10.
+
+follows on main's code (origin/main 2e978bf) against this branch's, every flow both runs, on step 40's
+store copy, compared by cmp:
+same fomc, same fomc--after-the-day, same nfp, same nfp--after-the-day, same retail, same retail--after-the-day, same cpi, same cpi--after-the-day, same claims, same claims--after-the-day, same ecb, same ecb--after-the-day, same ceo, same ceo--after-the-day, same opec, same opec--after-the-day, same boe, same boe--after-the-day, same boj, same boj--after-the-day, same war, same war--after-the-day, same crypto, same crypto--after-the-day, same weather, same weather--after-the-day, same flood, same flood--after-the-day, same earnings, same earnings--after-the-day, same additions, same additions--after-the-day, same earnings500, same earnings500--after-the-day, same splits, same splits--after-the-day
+36 of 36 the same.
