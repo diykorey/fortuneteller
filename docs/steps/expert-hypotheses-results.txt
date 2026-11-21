@@ -23,3 +23,89 @@ price, regime or study from 2020 on. Marked 6 of 40:
   whose reasoning (CPI moving equities, the VIX and the dollar on the day while the Fed reacts to
   inflation; a soft CPI as "the peak in rates") matches 2021-2023, not the 2010s' record. None names
   an event outright. The closest call left unmarked: 10 (the same condition as 13, generic reasoning).
+
+Step 3: the tester, 2026-11-21, on a copy of the full store (step 40's, closes to 2026-11-20).
+
+$ uv run python scripts/expert_test.py 9a2f138
+rules: docs/steps/expert-hypotheses.csv at 9a2f138, SHA-256 3cd2ec7b795e55da0c8999e2ff90aed9c1426786718f8bf625cb76e501662668
+id  cond   n  dir/n   answer      chance   period  plain dir/n  adds p   walk        passes holds
+ 1  none   36   21/36   can't say    0.1095  -         21/36     0.0000  0/0 too few      -      -
+ 2  none   36   20/36   can't say    0.0568  -         20/36     0.0000  0/0 too few      -      -
+ 3  none   19    8/19   can't say    0.2813  -          8/19     0.0000  0/0 too few      -      -
+ 4  none   36   18/36   can't say    0.0836  -         18/36     0.0000  0/0 too few      -      -
+ 5  none   19   10/19   can't say    0.2673  -         10/19     0.0000  0/0 too few      -      -
+ 6  none   36   21/36   can't say    0.1462  -         21/36     0.0000  0/0 too few      -      -
+ 7  none   26   11/26   can't say    0.0972  -         11/26     0.0000  0/0 too few      -      -
+ 8  none   23   12/23   can't say    0.0738  -         12/23     0.0000  0/0 too few      -      -
+ 9  none   26   11/26   can't say    0.1099  -         11/26     0.0000  0/0 too few      -      -
+10  move   11    5/11   can't say    0.2962  -         15/28     0.8000  0/0 too few      -      -
+11  none   28   20/28   up           0.0002  -         20/28     0.0000  9/12 too few     PASS   -
+12  none   27   15/27   can't say    0.0951  -         15/27     0.0000  0/0 too few      -      -
+13  move    6    4/6    too few         nan  -         19/27     0.7511  0/0 too few      -      -
+14  move    5    4/5    too few         nan  -         12/28     0.1108  0/0 too few      -      -
+15  move    5    3/5    too few         nan  -         12/27     0.3967  0/0 too few      -      -
+16  move    5    3/5    too few         nan  -          9/28     0.1926  0/0 too few      -      -
+17  move    5    3/5    too few         nan  -         11/27     0.3303  0/0 too few      -      -
+18  move    5    2/5    too few         nan  -         10/28     0.5852  0/0 too few      -      -
+19  none   36   18/36   can't say    0.1469  -         18/36     0.0000  0/0 too few      -      -
+20  move   10    6/10   can't say    0.1002  -         18/36     0.3770  0/0 too few      -      -
+21  move   10    4/10   can't say    0.2135  -         13/36     0.5162  0/0 too few      -      -
+22  none   26   15/26   can't say    0.1460  -         15/26     0.0000  0/0 too few      -      -
+23  none   28   18/28   up           0.0002  -         18/28     0.0000  5/11 too few     PASS   -
+24  none   28   14/28   can't say    0.2599  -         14/28     0.0000  0/0 too few      -      -
+25  none   28   18/28   up           0.0041  -         18/28     0.0000  2/5 too few      PASS   -
+26  none   18   16/18   down         0.0000  -         16/18     0.0000  6/8 too few      PASS   -
+27  none   28   14/28   can't say    0.2294  -         14/28     0.0000  0/0 too few      -      -
+28  move    2    0/2    too few         nan  -         14/27     1.0000  0/0 too few      -      -
+29  none    8    4/8    too few         nan  -          4/8      0.0000  0/0 too few      -      -
+30  none    8    3/8    too few         nan  -          3/8      0.0000  0/0 too few      -      -
+31  none   16    4/16   can't say    0.2626  -          4/16     0.0000  0/0 too few      -      -
+32  none   16    8/16   can't say    0.5362  -          8/16     0.0000  0/0 too few      -      -
+33  none 1768  1135/1768 down         0.0000  -       1135/1768   0.0000  1084/1690 holds  PASS   HOLDS
+34  none 8757  4487/8757 up           0.0000  yes     4487/8757   0.0000  4071/7888 doesn't hold -      -
+35  move  277  176/277  down         0.0000  -       1135/1768   0.6167  149/237 holds    -      -
+36  move  799  430/799  up           0.0000  yes     4487/8757   0.0774  368/690 doesn't hold -      -
+37  move  283  163/283  down         0.0000  -       1228/2295   0.0932  152/270 doesn't hold -      -
+38  move  270  160/270  down         0.0000  yes     1010/1767   0.2630  117/198 doesn't hold -      -
+39  move   14   10/14   down         0.0093  -         51/83     0.3179  2/4 too few      -      -
+40  none   29   18/29   can't say    0.0111  -         18/29     0.0000  1/2 too few      -      -
+testable 40 of 40; pass 5; hold 1; chance line 0.40
+
+Columns: n the kept events from 2020; dir/n those in the rule's direction; plain dir/n the same
+rule without its condition; adds p the binomial chance of dir/n at plain's share (0 for no
+condition); walk graded right/graded and its verdict.
+
+The hand checks, the first rule of each condition in the CSV's order (no rule uses 'event'),
+by a one-off script from the store's closes (each day move from the close before to the
+reaction close; the base's cut from every day span from the first kept event on, as follows):
+nfp above UST5Y / ZF events 36 {'up': 21, 'about the same': 4, 'down': 11} cut 2.100
+  2020-07-14 T5YIE 63-close move +33.0 bps -> kept
+  2020-08-12 T5YIE 63-close move +78.0 bps -> kept
+  2020-09-11 T5YIE 63-close move +59.0 bps -> kept
+  2020-12-10 T5YIE 63-close move +29.0 bps -> kept
+  2021-04-13 T5YIE 63-close move +48.0 bps -> kept
+  2021-05-12 T5YIE 63-close move +37.0 bps -> kept
+  2021-06-10 T5YIE 63-close move -10.0 bps -> out
+  2021-07-13 T5YIE 63-close move -4.0 bps -> out
+  2021-11-10 T5YIE 63-close move +43.0 bps -> kept
+  2022-01-12 T5YIE 63-close move +23.0 bps -> kept
+  2022-02-10 T5YIE 63-close move -16.0 bps -> out
+  2022-05-11 T5YIE 63-close move +15.0 bps -> out
+  2022-06-10 T5YIE 63-close move -34.0 bps -> out
+  2022-07-13 T5YIE 63-close move -83.0 bps -> out
+  2022-09-13 T5YIE 63-close move -61.0 bps -> out
+  2022-10-13 T5YIE 63-close move -19.0 bps -> out
+  2023-03-14 T5YIE 63-close move -10.0 bps -> out
+  2023-09-13 T5YIE 63-close move +18.0 bps -> out
+  2024-02-13 T5YIE 63-close move -3.0 bps -> out
+  2024-03-12 T5YIE 63-close move +26.0 bps -> kept
+  2024-04-10 T5YIE 63-close move +25.0 bps -> kept
+  2024-09-11 T5YIE 63-close move -41.0 bps -> out
+  2024-10-10 T5YIE 63-close move +3.0 bps -> out
+  2025-02-12 T5YIE 63-close move +24.0 bps -> kept
+  2026-05-12 T5YIE 63-close move +20.0 bps -> out
+  2026-09-11 T5YIE 63-close move +2.0 bps -> out
+  2026-10-14 T5YIE 63-close move +5.0 bps -> out
+  2026-11-10 T5YIE 63-close move +0.0 bps -> out
+cpi above UST5Y / ZF events 11 {'up': 5, 'about the same': 4, 'down': 2} cut 2.100
+Both equal the tester's rows 1 and 10.
