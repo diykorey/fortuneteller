@@ -345,6 +345,9 @@ Terms are grouped by what they are about, alphabetical within each group.
   member-day is one S&P 500 member on one day it was a member; a big move is its excess day move
   against the index at three standard deviations or more of the 504 before; an 8-K item's lift is
   its share of big moves over the share on all member-days, so 1 means no more than any day.
+- **Chance line** — how many cells, or items, would pass a test at its p by luck alone: each
+  test's chance summed, or 0.01 times the tests run at p < 0.01. A count at or under it plus two
+  is read as chance ([step 31](steps/earnings.md)).
 - **Wayback Machine / User-Agent** — *added 2026-11-15*: the Wayback Machine is the Internet
   Archive's store of web pages as they were captured on given days; a page gone from its address
   can often be read there. A User-Agent is the name a client gives a site with each request;
