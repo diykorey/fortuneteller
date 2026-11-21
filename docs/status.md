@@ -14,7 +14,7 @@ Where the work is and what comes next: the task last finished, the tasks in prog
 
 Step 42: who a macro event hits, exposure scores ([results](steps/exposure-scores.md#results)).
 The Subscription LLM's scores of 426 members' 2019 10-Ks, tested on 2020 onward: only oil on
-OPEC+ *oil down* answers (15 of 18, day and week), near the kind's own definition, and the
+OPEC+ *oil down* answers (15 of 18, day and week), within chance and near the kind, and the
 industry sorts as well; rates and consumer sort nothing; none holds or beats its sector.
 
 ## In progress

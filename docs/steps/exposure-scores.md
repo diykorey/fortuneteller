@@ -76,7 +76,10 @@ judged against the rule below written first.
 *Written 2026-11-21. Seen before: step 40's matrix (8-K items against big moves) and sample; step
 41's results; no score, no 10-K text and no spread of this step. Amended the same day after the
 goldfish, before any text was fetched: the walk-forward, the base's spans, the sector baseline
-left one out, the chance lines, the second reader's bar, the forward log, and the checks below.*
+left one out, the chance lines, the second reader's bar, the forward log, and the checks below.
+Amended the same day: before any text was fetched, the texts given under ids that say nothing
+of the company; before any score was read, the second reading run as two sessions of 25, as the
+scoring was.*
 
 - **A cell answers** when it has at least 10 events, and its right count beats the base at
   p < 0.01 (one-sided binomial). The base is the share of the 504 spans starting at each of the
@@ -153,41 +156,46 @@ left one out, the chance lines, the second reader's bar, the forward log, and th
 [exposure-scores-results.txt](exposure-scores-results.txt).*
 
 **In plain words:** the Subscription LLM scored 426 S&P 500 members from their 2019 business
-sections, and a second reading agreed on all 50 it reread. Tested on events from 2020, the scores
-sort one thing: on the 18 OPEC+ days when Brent fell, the oil producers trailed the airlines and
-cruise lines, on the day (15 of 18) and over the week (15 of 18). But the OPEC kind *is* Brent's
-own move that day, so this says oil-exposed shares follow oil, not what OPEC+ news does; and the
-members' industries alone sort as well (the sector baseline also 15 of 18). On the days Brent
-rose, the same sort was right 17 of 28, no better than chance. Rates sorted nothing on CPI or the
-Fed: banks did not beat utilities and homebuilders on a hot CPI (15 of 28). Consumer spending
-sorted nothing on retail sales. No cell holds walk-forward, and in no cell did a company's own
-score beat its industry's. The scores, read from text, find no more than the industry does.
+sections, and a second reading agreed on all 50 it reread. Tested on events from 2020, two of 16
+cells answer, both on the 18 OPEC+ days when Brent fell: the oil scorers (producers and oilfield
+services) trailed the low scorers (airlines, cruise lines, FedEx), 15 of 18 on the day and over
+the week. Two answers of 16 cells is within the chance line plus two, so by the rule they are read
+as chance. They are also near the kind: the OPEC kind *is* Brent's own move that day, so they say
+oil-exposed shares follow oil, not what OPEC+ news does. The industries alone sort the day as well
+(the sector baseline answers, 15 of 18); over the week it is 15 of 18 too, short of an answer. On
+the days Brent rose, 17 of 28, not an answer. Rates sorted nothing: on a hot CPI, banks beat
+utilities and homebuilders on 15 of 28 days, no more often than on any day before 2020 (0.486).
+Consumer spending sorted nothing on retail sales. Nothing holds walk-forward, and in no cell did a
+company's own score beat its industry's. The scores, read from text, find no more than the
+industry does.
 
 | Expected (written before) | Found |
 | --- | --- |
-| At least 450 members scored | 426, 425 with closes — **wrong** (60 2020 members not in the SEC's current listing) |
+| At least 450 members scored | 426 of the 513 members of 2020-01-02, 425 with closes — **wrong**; left out: 60 not in the SEC's current listing, 4 second share classes, 9 with no 10-K filed in 2019, 14 with no Item 1 read |
 | Oil answers on both OPEC kinds on the day | *oil down* answers, 15 of 18 against a base of 0.522, p 0.0064; *oil up* does not, 17 of 28 against 0.478, p 0.12 — **wrong** in half |
-| Oil holds on neither | neither holds (graded 0 and 1) — right |
+| Oil holds on neither | neither holds: on the day, 1 event graded walk-forward (0 right); on the week, none — right |
 | Rates answers on CPI *above* on the day | no: 15 of 28 against 0.486, p 0.37 — **wrong** |
 | FOMC *hike* and *cut* *too few* or *can't say* | *hike* 12 events, no answer (p 0.57); *cut* 8, under 10 — right |
 | Consumer answers on no kind | none — right |
 | The score adds over its sector in at most 2 cells | 0 (the smallest p 0.23) — right |
-| Answers beyond these at most the chance line plus two (2.16) | 1: oil *oil down* on the week, 15 of 18 against 0.540, p 0.0096 — right |
+| Answers beyond these at most the chance line plus two (2.16) | 1: oil *oil down* on the week, 15 of 18 against 0.540, p 0.0096 — right. All answers, 2, are within the line plus two too: read as chance |
 | Second reading within 2 points on 80% per rubric; at most 5 reasons marked | 100% on each (50 of 50); 0 marked — right |
 
-- **The period:** neither answer is one the placebo also gives.
+- **The period:** neither answer is one the placebo also gives (the tester's *period* column).
 - **The kind:** both answers are on *oil down*, whose kind is Brent's close on the reaction day
   below the close before ([step 24](opec.md)); that oil producers lag on a day oil fell
   is near what the kind says, as step 41's rules 23 and 26 were. No answer is a finding about
   OPEC+.
-- **The sector:** the sector baseline answers the same day cell (15 of 18, the same count); the
-  sign test has no event where the two differ.
+- **The sector:** 11 members alone in their SIC group are left out of it. It answers the same day
+  cell (15 of 18 against 0.534, p 0.0084), and not the week (15 of 18 against 0.558, p 0.014); the
+  sign test has no event in either where the two differ.
+- **The columns:** *walk* is right of graded walk-forward; *period* `-` is no placebo answer.
 - **The reach:** the members are 2020's, read from what they wrote in 2019, and the model knows
   2020 to 2026; no check here rules that out (above), so these counts say what the scores sort, not
   what they forecast. Only the forward log, on events after the scores' commit, is free of it.
 - **The checks:** the tester prints the scores' SHA-256 posted in pull request #396; the first
   OPEC *oil up* (2020-04-13) and CPI *above* (2020-07-14) from 2020 recomputed from `daily_bars`
-  by a one-off script (its text in the evidence), the same spreads (+0.067771, −0.018410);
-  `uv run pytest tests/test_exposure.py tests/test_tenk_business.py` passes.
+  by a one-off script (its text and command in the evidence), the same spreads the tester prints
+  (+0.067771, −0.018410); the gate (`just check`'s steps) passes, 732 tests.
 - **Step 5:** the forward log of every rubric's kinds after the scores' commit, to the 2027-01-31
   gate, in `docs/steps/exposure-forward.csv`.

@@ -97,3 +97,65 @@ equal to the hand's. The hand-check script:
       print("  high:", ", ".join(f"{t} {v:+.2%}" for t, v in sorted(hi.items())))
       print("  low: ", ", ".join(f"{t} {v:+.2%}" for t, v in sorted(lo.items())))
       print(f"  spread by hand {sp:+.6f}")
+
+After the results review, 2026-11-21: the tester extended to print the sector baseline's base,
+p, placebo and walk-forward, the members alone in their SIC group, and each kind's first spread;
+rerun the same way (the counts unchanged):
+  scores: docs/steps/exposure-scores.csv at 2061186b88a150b6c46278fd6bb028766172c62b, SHA-256 b6acac78fd8fccebb9354353e8b0e99b19a3f517ca02a2f6ca355707a57f1f3a
+  members scored 426, with closes 425
+  rubric    kind            span  hi/lo   n   right  base   p        answer  period  walk (right/graded) | sector: hi/lo  n  right  base   p        answer  period  walk | adds k/d  p
+  oil: 11 members alone in their SIC group, left out
+    first event's reaction close 2020-04-13, spread +0.067771
+  oil       opec oil up     day   12/9    28    17  0.478  0.1196   no      -       0/0 -          |  7/9    28    18  0.466  0.0460   no      -       0/0 -     | 0/1 1.0000
+  oil       opec oil up     week  12/9    28    18  0.460  0.0402   no      -       0/1 -          |  7/9    28    18  0.442  0.0262   no      -       0/0 -     | 2/4 0.6875
+    first event's reaction close 2020-03-06, spread -0.099942
+  oil       opec oil down   day   12/9    18    15  0.522  0.0064   yes     -       0/1 -          |  7/9    18    15  0.534  0.0084   yes     -       0/1 -     | 0/0 nan
+  oil       opec oil down   week  12/9    18    15  0.540  0.0096   yes     -       0/0 -          |  7/9    18    15  0.558  0.0141   no      -       0/0 -     | 0/0 nan
+  rates: 11 members alone in their SIC group, left out
+    first event's reaction close 2020-07-14, spread -0.018410
+  rates     cpi above       day   22/46   28    15  0.486  0.3682   no      -       0/0 -          | 17/3    28    20  0.480  0.0104   no      -       0/0 -     | 3/11 0.9673
+  rates     cpi above       week  22/46   28    13  0.470  0.5980   no      -       0/0 -          | 17/3    28    14  0.472  0.4569   no      -       0/0 -     | 3/7 0.7734
+    first event's reaction close 2020-01-14, spread -0.003804
+  rates     cpi below       day   22/46   27    17  0.514  0.1561   no      -       0/0 -          | 17/3    27    16  0.520  0.2874   no      -       0/0 -     | 5/9 0.5000
+  rates     cpi below       week  22/46   27    14  0.530  0.6227   no      -       0/0 -          | 17/3    27    11  0.528  0.9260   no      -       0/0 -     | 5/7 0.2266
+    first event's reaction close 2022-03-16, spread +0.036110
+  rates     fomc hike       day   22/46   12     6  0.486  0.5747   no      -       0/0 -          | 17/3    12     4  0.480  0.9058   no      -       0/0 -     | 2/2 0.2500
+  rates     fomc hike       week  22/46   12     6  0.470  0.5303   no      -       0/0 -          | 17/3    12     7  0.472  0.3145   no      -       0/0 -     | 1/3 0.8750
+    first event's reaction close 2020-03-03, spread -0.045841
+  rates     fomc cut        day   22/46    8     4  0.514  nan      no      -       0/0 -          | 17/3     8     3  0.520  nan      no      -       0/0 -     | 1/1 0.5000
+  rates     fomc cut        week  22/46    8     3  0.530  nan      no      -       0/0 -          | 17/3     8     1  0.528  nan      no      -       0/0 -     | 2/2 0.2500
+  consumer: 11 members alone in their SIC group, left out
+    first event's reaction close 2020-06-16, spread +0.006466
+  consumer  retail above    day   62/169  23    12  0.498  0.4923   no      -       0/0 -          | 33/17   23    14  0.542  0.3337   no      -       0/0 -     | 2/6 0.8906
+  consumer  retail above    week  62/169  23    12  0.476  0.4087   no      -       0/0 -          | 33/17   23    15  0.558  0.2425   no      -       0/0 -     | 1/5 0.9688
+    first event's reaction close 2020-03-17, spread -0.068942
+  consumer  retail below    day   62/169  26    14  0.502  0.4305   no      -       0/0 -          | 33/17   26    14  0.458  0.2659   no      -       0/0 -     | 5/10 0.6230
+  consumer  retail below    week  62/169  26    15  0.524  0.3661   no      -       0/0 -          | 33/17   26    13  0.442  0.3451   no      -       0/0 -     | 4/6 0.3438
+  cells 16; answer 2 (chance line 0.16); adds 0 (chance line 0.80)
+  
+
+The score counts and the second reading's agreement: python3 -I counts.py (scratchpad/m42), from
+the repository root:
+  oil -5:5 -3:4 -2:21 -1:68 0:280 1:28 2:8 3:1 4:6 5:5
+    second reading: within 2 points 50 of 50, equal 45
+  rates -5:2 -4:8 -3:36 -2:41 -1:70 0:219 1:13 2:15 3:9 4:13
+    second reading: within 2 points 50 of 50, equal 39
+  consumer -1:1 0:168 1:140 2:55 3:32 4:28 5:2
+    second reading: within 2 points 50 of 50, equal 40
+  | import collections, csv
+  | first = {(r["id"], r["rubric"]): int(r["score"]) for r in csv.DictReader(open("docs/steps/exposure-scores.csv"))}
+  | second = {(r["id"], r["rubric"]): int(r["score"]) for r in csv.DictReader(open("docs/steps/exposure-second.csv"))}
+  | for rubric in ("oil", "rates", "consumer"):
+  |     d = collections.Counter(v for (_, rb), v in first.items() if rb == rubric)
+  |     print(rubric, " ".join(f"{k}:{d[k]}" for k in sorted(d)))
+  |     pairs = [(first[k], v) for k, v in second.items() if k[1] == rubric]
+  |     near = sum(abs(a - b) <= 2 for a, b in pairs)
+  |     print(f"  second reading: within 2 points {near} of {len(pairs)}, equal {sum(a == b for a, b in pairs)}")
+
+The hand check was run: FT_DB_PATH=<a copy of the store> uv run python hand.py <the store>
+(two copies, as DuckDB opens one file one way).
+
+The gate, uv run ruff check . && uv run ruff format --check . && uv run mypy && uv run pytest -q
+(just check's steps; just is not installed here), before the results commit:
+  All checks passed! / 67 files already formatted / Success: no issues found in 11 source files
+  732 passed in 493.14s

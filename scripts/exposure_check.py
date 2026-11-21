@@ -206,12 +206,17 @@ def main(commit: str, texts: str) -> None:
     answered = adds_count = cells = 0
     print(
         "rubric    kind            span  hi/lo   n   right  base   p        answer  period  "
-        "walk           | sector: hi/lo  n  right  answer | adds k/d  p"
+        "walk (right/graded) | sector: hi/lo  n  right  base   p        answer  period  walk "
+        "| adds k/d  p"
     )
     for rubric, (kinds_of, high, low) in CELLS.items():
         scores = {t: s for t, s in by_rubric[rubric].items() if t in closes}
         own = groups(scores, high, low)
-        sector = groups(sector_scores(scores, sic), high, low)
+        by_sector = sector_scores(scores, sic)
+        sector = groups(by_sector, high, low)
+        print(
+            f"{rubric}: {len(scores) - len(by_sector)} members alone in their SIC group, left out"
+        )
         for flow_name, signs in kinds_of.items():
             events, kinds, _ = loaded[flow_name]
             for kind, sign in signs.items():
@@ -225,6 +230,10 @@ def main(commit: str, texts: str) -> None:
                     cells += 1
                     reach = max(study.PLACEBO_SHIFT, n)
                     a = measure(own, moves[span], days, reactions, sign, reach)
+                    if span == "day" and reactions:
+                        first = days[reactions[0]]
+                        value = spread(own, moves[span], first)
+                        print(f"  first event's reaction close {first}, spread {value:+.6f}")
                     b = measure(sector, moves[span], days, reactions, sign, reach)
                     k, d, p_adds = (
                         adds(a.results, b.results) if a.n == b.n else (0, 0, float("nan"))
@@ -232,13 +241,15 @@ def main(commit: str, texts: str) -> None:
                     answered += a.answered
                     adds_count += p_adds < P_ADDS
                     walk = f"{a.walk[0]}/{a.walk[1]} {'holds' if a.walk[2] else '-'}"
+                    walk_b = f"{b.walk[0]}/{b.walk[1]} {'holds' if b.walk[2] else '-'}"
                     print(
                         f"{rubric:<9} {flow_name + ' ' + kind:<15} {span:<5} "
                         f"{len(own.high):>2}/{len(own.low):<3} {a.n:>3} {a.k:>5}  {a.base:.3f}  "
                         f"{a.p:<8.4f} {'yes' if a.answered else 'no':<7} "
                         f"{'period' if a.period else '-':<7} {walk:<14} | "
                         f"{len(sector.high):>2}/{len(sector.low):<3} {b.n:>3} {b.k:>5}  "
-                        f"{'yes' if b.answered else 'no':<6} | {k}/{d} {p_adds:.4f}"
+                        f"{b.base:.3f}  {b.p:<8.4f} {'yes' if b.answered else 'no':<7} "
+                        f"{'period' if b.period else '-':<7} {walk_b:<9} | {k}/{d} {p_adds:.4f}"
                     )
     print(
         f"cells {cells}; answer {answered} (chance line {P_ANSWER * cells:.2f}); "
