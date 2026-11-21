@@ -1,0 +1,165 @@
+Step 41: hypotheses from an expert reader (docs/steps/expert-hypotheses.md). Evidence.
+
+Step 2: the expert's rules, 2026-11-21.
+The expert: the Subscription LLM, model claude-opus-5-5, one fresh session. Its whole instruction:
+
+  Read the brief at docs/steps/expert-brief.md and follow it exactly. Read only that brief and the
+  files in docs/steps/expert-pack/ (kinds.txt first, then the follows-*.txt files; events.csv if
+  useful). Do not open any other file, run any project code, or search the web.
+  Write your 40 rules as the CSV the brief describes (header line first: id,flow,kind,condition,on,
+  closes,side,threshold,other_flow,other_kind,market,span,direction,reasoning; quote any field
+  containing a comma) to a scratch file and write nothing else anywhere. Then reply with the CSV.
+
+Its reply: the CSV, committed unchanged as docs/steps/expert-hypotheses.csv, with its notes:
+  14 rules with a condition (13 'move': ids 10, 13-18, 20, 21, 28, 35-39); no 'event' condition,
+  "because the overlapping samples from 2020 on would likely be too small"; 17 restate the record
+  (ids 1-5, 7, 9, 11, 12, 19, 22-26, 29, 33, 34, 40); ids 28-32 "may have fewer than 10 events".
+The rules' SHA-256: 3cd2ec7b795e55da0c8999e2ff90aed9c1426786718f8bf625cb76e501662668, posted in pull request #395 before the tester existed.
+
+The second reader: the Subscription LLM, model claude-opus-5-5, a fresh session given only the
+brief and the rules, asked to mark any rule or reasoning naming or plainly relying on an event,
+price, regime or study from 2020 on. Marked 6 of 40:
+  13, 14, 15, 16, 17, 18: CPI rules conditioned on a fast rise in breakevens or the 5-year yield,
+  whose reasoning (CPI moving equities, the VIX and the dollar on the day while the Fed reacts to
+  inflation; a soft CPI as "the peak in rates") matches 2021-2023, not the 2010s' record. None names
+  an event outright. The closest call left unmarked: 10 (the same condition as 13, generic reasoning).
+
+Step 3: the tester, 2026-11-21, on a copy of the full store (step 40's, closes to 2026-11-20).
+
+$ uv run python scripts/expert_check.py 9a2f138
+rules: docs/steps/expert-hypotheses.csv at 9a2f138, SHA-256 3cd2ec7b795e55da0c8999e2ff90aed9c1426786718f8bf625cb76e501662668
+id  cond   n  dir/n   answer      chance   period  plain dir/n  adds p   walk        passes holds
+ 1  none   36   21/36   can't say    0.1095  -         21/36     0.0000  0/0 too few      -      -
+ 2  none   36   20/36   can't say    0.0568  -         20/36     0.0000  0/0 too few      -      -
+ 3  none   19    8/19   can't say    0.2813  -          8/19     0.0000  0/0 too few      -      -
+ 4  none   36   18/36   can't say    0.0836  -         18/36     0.0000  0/0 too few      -      -
+ 5  none   19   10/19   can't say    0.2673  -         10/19     0.0000  0/0 too few      -      -
+ 6  none   36   21/36   can't say    0.1462  -         21/36     0.0000  0/0 too few      -      -
+ 7  none   26   11/26   can't say    0.0972  -         11/26     0.0000  0/0 too few      -      -
+ 8  none   23   12/23   can't say    0.0738  -         12/23     0.0000  0/0 too few      -      -
+ 9  none   26   11/26   can't say    0.1099  -         11/26     0.0000  0/0 too few      -      -
+10  move   11    5/11   can't say    0.2962  -         15/28     0.8000  0/0 too few      -      -
+11  none   28   20/28   up           0.0002  -         20/28     0.0000  9/12 too few     PASS   -
+12  none   27   15/27   can't say    0.0951  -         15/27     0.0000  0/0 too few      -      -
+13  move    6    4/6    too few         nan  -         19/27     0.7511  0/0 too few      -      -
+14  move    5    4/5    too few         nan  -         12/28     0.1108  0/0 too few      -      -
+15  move    5    3/5    too few         nan  -         12/27     0.3967  0/0 too few      -      -
+16  move    5    3/5    too few         nan  -          9/28     0.1926  0/0 too few      -      -
+17  move    5    3/5    too few         nan  -         11/27     0.3303  0/0 too few      -      -
+18  move    5    2/5    too few         nan  -         10/28     0.5852  0/0 too few      -      -
+19  none   36   18/36   can't say    0.1469  -         18/36     0.0000  0/0 too few      -      -
+20  move   10    6/10   can't say    0.1002  -         18/36     0.3770  0/0 too few      -      -
+21  move   10    4/10   can't say    0.2135  -         13/36     0.5162  0/0 too few      -      -
+22  none   26   15/26   can't say    0.1460  -         15/26     0.0000  0/0 too few      -      -
+23  none   28   18/28   up           0.0002  -         18/28     0.0000  5/11 too few     PASS   -
+24  none   28   14/28   can't say    0.2599  -         14/28     0.0000  0/0 too few      -      -
+25  none   28   18/28   up           0.0041  -         18/28     0.0000  2/5 too few      PASS   -
+26  none   18   16/18   down         0.0000  -         16/18     0.0000  6/8 too few      PASS   -
+27  none   28   14/28   can't say    0.2294  -         14/28     0.0000  0/0 too few      -      -
+28  move    2    0/2    too few         nan  -         14/27     1.0000  0/0 too few      -      -
+29  none    8    4/8    too few         nan  -          4/8      0.0000  0/0 too few      -      -
+30  none    8    3/8    too few         nan  -          3/8      0.0000  0/0 too few      -      -
+31  none   16    4/16   can't say    0.2626  -          4/16     0.0000  0/0 too few      -      -
+32  none   16    8/16   can't say    0.5362  -          8/16     0.0000  0/0 too few      -      -
+33  none 1768  1135/1768 down         0.0000  -       1135/1768   0.0000  1084/1690 holds  PASS   HOLDS
+34  none 8757  4487/8757 up           0.0000  yes     4487/8757   0.0000  4071/7888 doesn't hold -      -
+35  move  277  176/277  down         0.0000  -       1135/1768   0.6167  149/237 holds    -      -
+36  move  799  430/799  up           0.0000  yes     4487/8757   0.0774  368/690 doesn't hold -      -
+37  move  283  163/283  down         0.0000  -       1228/2295   0.0932  152/270 doesn't hold -      -
+38  move  270  160/270  down         0.0000  yes     1010/1767   0.2630  117/198 doesn't hold -      -
+39  move   14   10/14   down         0.0093  -         51/83     0.3179  2/4 too few      -      -
+40  none   29   18/29   can't say    0.0111  -         18/29     0.0000  1/2 too few      -      -
+testable 40 of 40; pass 5; hold 1; chance line 0.40
+
+Columns: n the kept events from 2020; dir/n those in the rule's direction; plain dir/n the same
+rule without its condition; adds p the binomial chance of dir/n at plain's share (0 for no
+condition); walk graded right/graded and its verdict.
+
+The hand checks, the first rule of each condition in the CSV's order (no rule uses 'event'),
+by a one-off script from the store's closes (each day move from the close before to the
+reaction close; the base's cut from every day span from the first kept event on, as follows):
+nfp above UST5Y / ZF events 36 {'up': 21, 'about the same': 4, 'down': 11} cut 2.100
+  2020-07-14 T5YIE 63-close move +33.0 bps -> kept
+  2020-08-12 T5YIE 63-close move +78.0 bps -> kept
+  2020-09-11 T5YIE 63-close move +59.0 bps -> kept
+  2020-12-10 T5YIE 63-close move +29.0 bps -> kept
+  2021-04-13 T5YIE 63-close move +48.0 bps -> kept
+  2021-05-12 T5YIE 63-close move +37.0 bps -> kept
+  2021-06-10 T5YIE 63-close move -10.0 bps -> out
+  2021-07-13 T5YIE 63-close move -4.0 bps -> out
+  2021-11-10 T5YIE 63-close move +43.0 bps -> kept
+  2022-01-12 T5YIE 63-close move +23.0 bps -> kept
+  2022-02-10 T5YIE 63-close move -16.0 bps -> out
+  2022-05-11 T5YIE 63-close move +15.0 bps -> out
+  2022-06-10 T5YIE 63-close move -34.0 bps -> out
+  2022-07-13 T5YIE 63-close move -83.0 bps -> out
+  2022-09-13 T5YIE 63-close move -61.0 bps -> out
+  2022-10-13 T5YIE 63-close move -19.0 bps -> out
+  2023-03-14 T5YIE 63-close move -10.0 bps -> out
+  2023-09-13 T5YIE 63-close move +18.0 bps -> out
+  2024-02-13 T5YIE 63-close move -3.0 bps -> out
+  2024-03-12 T5YIE 63-close move +26.0 bps -> kept
+  2024-04-10 T5YIE 63-close move +25.0 bps -> kept
+  2024-09-11 T5YIE 63-close move -41.0 bps -> out
+  2024-10-10 T5YIE 63-close move +3.0 bps -> out
+  2025-02-12 T5YIE 63-close move +24.0 bps -> kept
+  2026-05-12 T5YIE 63-close move +20.0 bps -> out
+  2026-09-11 T5YIE 63-close move +2.0 bps -> out
+  2026-10-14 T5YIE 63-close move +5.0 bps -> out
+  2026-11-10 T5YIE 63-close move +0.0 bps -> out
+cpi above UST5Y / ZF events 11 {'up': 5, 'about the same': 4, 'down': 2} cut 2.100
+Both equal the tester's rows 1 and 10.
+
+follows on main's code (origin/main 2e978bf) against this branch's, every flow both runs, on step 40's
+store copy, compared by cmp:
+same fomc, same fomc--after-the-day, same nfp, same nfp--after-the-day, same retail, same retail--after-the-day, same cpi, same cpi--after-the-day, same claims, same claims--after-the-day, same ecb, same ecb--after-the-day, same ceo, same ceo--after-the-day, same opec, same opec--after-the-day, same boe, same boe--after-the-day, same boj, same boj--after-the-day, same war, same war--after-the-day, same crypto, same crypto--after-the-day, same weather, same weather--after-the-day, same flood, same flood--after-the-day, same earnings, same earnings--after-the-day, same additions, same additions--after-the-day, same earnings500, same earnings500--after-the-day, same splits, same splits--after-the-day
+36 of 36 the same.
+
+The hand-check script (scratchpad/m41/hand.py), as run with FT_DB_PATH on the copy:
+  from datetime import datetime
+  from fortuneteller import db, flows, study
+  con = db.get_connection()
+  def day_move(closes, reaction, unit):
+      days = [c.day for c in closes]
+      i = next(k for k, d in enumerate(days) if d >= reaction)
+      return i, study.release_move(closes[i - 1], closes[i], unit)
+  for flow_name, kind, market, cond in (("nfp", "above", "UST5Y / ZF", None), ("cpi", "above", "UST5Y / ZF", ("T5YIE", 63, 20.0))):
+      flow = flows.flow_named(flow_name)
+      kinds = study.release_kinds(flow, con=con)
+      events = [e for e in flows.stored_events(flow, con=con) if e.event_ts >= datetime(2020, 1, 1) and kinds.get(e.event_id) == kind]
+      series = study.MVP_PRICE_SERIES[market]; closes = study.stored_closes(market, con=con)
+      kept = []
+      for e in events:
+          r = study.first_reaction_day(e, series)
+          if cond:
+              on, n, th = cond; cs = study.MVP_PRICE_SERIES[on]; cc = study.stored_closes(on, con=con)
+              rr = study.first_reaction_day(e, cs); days = [c.day for c in cc]
+              b = max(k for k, d in enumerate(days) if d < rr)
+              mv = (cc[b].price - cc[b - n].price) * 100
+              print(f"  {e.event_ts:%Y-%m-%d} {on} {n}-close move {mv:+.1f} bps -> {'kept' if mv > th else 'out'}")
+              if not mv > th: continue
+          kept.append(r)
+      # the base: every day span of the market from the first kept reaction close on, as follows takes it
+      spans = study.span_moves(closes, series.unit, 1)
+      start = min(kept)
+      base = study.base_of([s.move for k, s in spans.items() if k >= start])
+      counts = {o: 0 for o in study.OUTCOMES}
+      for r in kept:
+          k = min(d for d in spans if d >= r)
+          counts[study.outcome(spans[k].move, base.cut)] += 1
+      print(flow_name, kind, market, "events", len(kept), counts, f"cut {base.cut:.3f}")
+
+The cmp loop (scratchpad/m41/cmp.sh), as run:
+  export FT_DB_PATH=/tmp/claude-1000/-home-andriy-orca-workspaces-fortuneteller-orcarun/3419a0af-ff14-4b4a-9572-3c65e1c987bf/scratchpad/m40/store.duckdb
+  export FT_CACHE_DIR=/home/andriy/WorkVolume/work/projects/pet/fortuneteller/data/cache
+  for e in fomc nfp retail cpi claims ecb ceo opec boe boj war crypto weather flood earnings additions earnings500 splits; do
+    for a in "" "--after-the-day"; do
+      (cd /home/andriy/.superset/worktrees/ft-main41 && uv run -q fortuneteller follows --event $e $a > /tmp/claude-1000/-home-andriy-orca-workspaces-fortuneteller-orcarun/3419a0af-ff14-4b4a-9572-3c65e1c987bf/scratchpad/m41/cmp/main-$e$a.txt 2>&1)
+      (cd /home/andriy/orca/workspaces/fortuneteller/orcarun && uv run -q fortuneteller follows --event $e $a > /tmp/claude-1000/-home-andriy-orca-workspaces-fortuneteller-orcarun/3419a0af-ff14-4b4a-9572-3c65e1c987bf/scratchpad/m41/cmp/new-$e$a.txt 2>&1)
+      cmp -s /tmp/claude-1000/-home-andriy-orca-workspaces-fortuneteller-orcarun/3419a0af-ff14-4b4a-9572-3c65e1c987bf/scratchpad/m41/cmp/main-$e$a.txt /tmp/claude-1000/-home-andriy-orca-workspaces-fortuneteller-orcarun/3419a0af-ff14-4b4a-9572-3c65e1c987bf/scratchpad/m41/cmp/new-$e$a.txt && echo "same $e$a" >> /tmp/claude-1000/-home-andriy-orca-workspaces-fortuneteller-orcarun/3419a0af-ff14-4b4a-9572-3c65e1c987bf/scratchpad/m41/cmp.log || echo "DIFFER $e$a" >> /tmp/claude-1000/-home-andriy-orca-workspaces-fortuneteller-orcarun/3419a0af-ff14-4b4a-9572-3c65e1c987bf/scratchpad/m41/cmp.log
+    done
+  done
+  echo ALL DONE >> /tmp/claude-1000/-home-andriy-orca-workspaces-fortuneteller-orcarun/3419a0af-ff14-4b4a-9572-3c65e1c987bf/scratchpad/m41/cmp.log
+
+(The tester was run as scripts/expert_test.py; renamed scripts/expert_check.py after, since pytest
+collects files named *_test.py. The code is unchanged.)

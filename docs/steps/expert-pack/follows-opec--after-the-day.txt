@@ -1,0 +1,183 @@
+follows: 123 OPEC announcements 1983-07-19 … 2019-12-06: 68 oil up, 55 oil down, spans from the reaction close
+kind     span   market        n  up same down  out/hole  base up/same/down  answer          chance  placebo  walk-forward
+oil up   day    SPY / ES      68  21   23   24      0/0  0.36/0.33/0.30     can't say       0.1879  -        0: 0 right, too few
+oil up   day    UST10Y / ZN   68  21   22   25      0/0  0.32/0.33/0.35     can't say       0.4389  -        0: 0 right, too few
+oil up   day    DXY           68  17   25   26      0/0  0.34/0.33/0.33     can't say       0.0982  -        0: 0 right, too few
+oil up   day    GC / XAU      44  14   12   18      0/0  0.35/0.33/0.31     can't say       0.1889  -        0: 0 right, too few
+oil up   day    VIX           56  24   17   15      0/0  0.32/0.33/0.35     can't say       0.0522  -        0: 0 right, too few
+oil up   day    DAX           59  20   15   24      0/0  0.35/0.33/0.31     can't say       0.1920  -        0: 0 right, too few
+oil up   day    SX5E          21   4    7   10      0/0  0.35/0.33/0.32     can't say       0.0683  -        0: 0 right, too few
+oil up   day    BRN           21   8    7    6      0/0  0.35/0.33/0.32     can't say       0.4475  -        0: 0 right, too few
+oil up   day    EURUSD        28  13    8    7      0/0  0.34/0.33/0.33     can't say       0.1452  -        0: 0 right, too few
+oil up   day    COMP          68  24   19   25      0/0  0.37/0.33/0.29     can't say       0.2076  -        0: 0 right, too few
+oil up   day    UST5Y / ZF    68  26   15   27      0/0  0.32/0.33/0.34     can't say       0.5249  -        0: 0 right, too few
+oil up   day    UKX           67  19   28   20      0/0  0.35/0.33/0.32     can't say       0.0919  -        0: 0 right, too few
+oil up   day    SXXP          26   7   10    9      0/0  0.35/0.33/0.31     can't say       0.3086  -        0: 0 right, too few
+oil up   day    BTC            8   5    2    1      0/0  0.38/0.33/0.28     too few         —       -        0: 0 right, too few
+oil up   day    ITA           22   4    9    9      0/0  0.37/0.33/0.30     can't say       0.0628  -        0: 0 right, too few
+oil up   day    XLE           45  18   16   11      0/0  0.35/0.33/0.31     can't say       0.2111  -        0: 0 right, too few
+oil up   day    CORN          14   5    7    2      0/0  0.32/0.33/0.35     can't say       0.1497  -        0: 0 right, too few
+oil up   day    WEAT          12   3    3    6      0/0  0.30/0.33/0.36     can't say       0.3491  -        0: 0 right, too few
+oil up   day    SOYB          12   5    5    2      0/0  0.32/0.33/0.34     can't say       0.1996  -        0: 0 right, too few
+oil up   day    UGA           20   7    9    4      0/0  0.34/0.33/0.33     can't say       0.1905  -        0: 0 right, too few
+oil up   day    UNG           21   6    4   11      0/0  0.31/0.33/0.36     can't say       0.2492  -        0: 0 right, too few
+oil up   day    XLU           45  14   18   13      0/0  0.36/0.33/0.31     can't say       0.2130  -        0: 0 right, too few
+oil up   day    ITB           22   4    7   11      0/0  0.34/0.33/0.33     can't say       0.0562  -        0: 0 right, too few
+oil up   day    KC            45  11   18   16      0/0  0.33/0.33/0.34     can't say       0.2125  -        0: 0 right, too few
+oil up   day    T5YIE         34  15   10    9      0/0  0.35/0.32/0.34     can't say       0.1699  -        0: 0 right, too few
+oil up   day    GBPUSD        28   8   11    9      0/0  0.33/0.33/0.33     can't say       0.3138  -        0: 0 right, too few
+oil up   day    USDJPY        46  19   14   13      0/0  0.34/0.33/0.33     can't say       0.2252  -        0: 0 right, too few
+oil up   day    NKY           68  26   21   21      0/0  0.35/0.33/0.32     can't say       0.4073  -        0: 0 right, too few
+oil up   day    ETH            3   1    1    1      0/0  0.31/0.33/0.36     too few         —       -        0: 0 right, too few
+oil up   day    ALL           50  19   15   16      0/0  0.35/0.33/0.32     can't say       0.4556  -        0: 0 right, too few
+oil up   week   SPY / ES      68  19   30   19      0/0  0.39/0.33/0.28     can't say       0.0415  -        0: 0 right, too few
+oil up   week   UST10Y / ZN   68  19   28   21      0/0  0.31/0.33/0.36     can't say       0.1008  -        0: 0 right, too few
+oil up   week   DXY           68  22   16   30      0/0  0.33/0.33/0.34     can't say       0.1975  -        0: 0 right, too few
+oil up   week   GC / XAU      44  13   19   12      0/0  0.37/0.33/0.29     can't say       0.1116  -        0: 0 right, too few
+oil up   week   VIX           56  19   19   18      0/0  0.32/0.33/0.35     can't say       0.3752  -        0: 0 right, too few
+oil up   week   DAX           58  20   22   16      0/1  0.38/0.33/0.29     can't say       0.2700  -        0: 0 right, too few
+oil up   week   SX5E          21  10    9    2      0/0  0.36/0.33/0.31     can't say       0.0326  -        0: 0 right, too few
+oil up   week   BRN           20  10    5    5      0/1  0.35/0.33/0.31     can't say       0.2138  -        0: 0 right, too few
+oil up   week   EURUSD        28  10    6   12      0/0  0.34/0.33/0.32     can't say       0.3602  -        0: 0 right, too few
+oil up   week   COMP          68  21   27   20      0/0  0.39/0.33/0.28     can't say       0.1619  -        0: 0 right, too few
+oil up   week   UST5Y / ZF    68  20   23   25      0/0  0.32/0.33/0.35     can't say       0.4098  -        0: 0 right, too few
+oil up   week   UKX           65  23   23   19      0/2  0.37/0.33/0.30     can't say       0.4079  -        0: 0 right, too few
+oil up   week   SXXP          26   9   13    4      0/0  0.38/0.33/0.29     can't say       0.0583  -        1: 0 right, too few
+oil up   week   BTC            8   3    3    2      0/0  0.39/0.33/0.27     too few         —       -        0: 0 right, too few
+oil up   week   ITA           22   7   14    1      0/0  0.40/0.33/0.27     about the same  0.0035  -        1: 1 right, too few
+oil up   week   XLE           45  16   14   15      0/0  0.37/0.33/0.30     can't say       0.4146  -        0: 0 right, too few
+oil up   week   CORN          14   6    3    5      0/0  0.30/0.33/0.37     can't say       0.3560  -        0: 0 right, too few
+oil up   week   WEAT          12   2    6    4      0/0  0.28/0.33/0.39     can't say       0.1781  -        0: 0 right, too few
+oil up   week   SOYB          12   4    4    4      0/0  0.32/0.33/0.35     can't say       0.5952  -        0: 0 right, too few
+oil up   week   UGA           20  11    4    5      0/0  0.35/0.33/0.32     can't say       0.1400  -        0: 0 right, too few
+oil up   week   UNG           21   8    7    6      0/0  0.29/0.33/0.38     can't say       0.2197  -        0: 0 right, too few
+oil up   week   XLU           45  19   12   14      0/0  0.38/0.33/0.29     can't say       0.5274  -        0: 0 right, too few
+oil up   week   ITB           22   9    9    4      0/0  0.35/0.33/0.31     can't say       0.1882  -        0: 0 right, too few
+oil up   week   KC            45  15   13   17      0/0  0.33/0.33/0.34     can't say       0.4586  -        0: 0 right, too few
+oil up   week   T5YIE         34  12   13    9      0/0  0.36/0.28/0.35     can't say       0.1421  -        0: 0 right, too few
+oil up   week   GBPUSD        28   9    7   12      0/0  0.33/0.33/0.33     can't say       0.3276  -        0: 0 right, too few
+oil up   week   USDJPY        46  24    9   13      0/0  0.35/0.33/0.32     can't say       0.0911  -        0: 0 right, too few
+oil up   week   NKY           66  31   19   16      0/2  0.36/0.33/0.30     can't say       0.0753  -        0: 0 right, too few
+oil up   week   ETH            3   0    2    1      0/0  0.30/0.33/0.37     too few         —       -        0: 0 right, too few
+oil up   week   ALL           50  18   17   15      0/0  0.37/0.33/0.30     can't say       0.5129  -        0: 0 right, too few
+oil up   month  SPY / ES      62  32   12   18      4/1  0.44/0.33/0.23     can't say       0.4569  -        0: 0 right, too few
+oil up   month  UST10Y / ZN   61  19   19   23      5/1  0.30/0.33/0.37     can't say       0.5534  -        0: 0 right, too few
+oil up   month  DXY           62  24   20   18      5/0  0.33/0.33/0.34     can't say       0.1942  -        0: 0 right, too few
+oil up   month  GC / XAU      37  13   13   11      3/3  0.39/0.33/0.27     can't say       0.3821  -        0: 0 right, too few
+oil up   month  VIX           51  14   14   23      3/1  0.30/0.33/0.36     can't say       0.2136  -        0: 0 right, too few
+oil up   month  DAX           41  18   11   12     3/14  0.41/0.33/0.26     can't say       0.5195  -        0: 0 right, too few
+oil up   month  SX5E          13   6    3    4      1/6  0.36/0.33/0.30     can't say       0.4915  -        0: 0 right, too few
+oil up   month  BRN           16   6    8    2      1/3  0.36/0.33/0.31     can't say       0.1267  -        0: 0 right, too few
+oil up   month  EURUSD        26   7   11    8      1/0  0.34/0.33/0.33     can't say       0.2204  -        0: 0 right, too few
+oil up   month  COMP          62  27   21   14      4/1  0.43/0.33/0.24     can't say       0.4721  -        0: 0 right, too few
+oil up   month  UST5Y / ZF    61  19   22   20      5/1  0.30/0.33/0.36     can't say       0.3707  -        0: 0 right, too few
+oil up   month  UKX           46  23   10   13     3/17  0.40/0.33/0.27     can't say       0.3535  -        0: 0 right, too few
+oil up   month  SXXP          16   9    4    3      1/8  0.41/0.33/0.26     can't say       0.2436  -        0: 0 right, too few
+oil up   month  BTC            6   6    0    0      1/0  0.42/0.33/0.25     too few         —       -        0: 0 right, too few
+oil up   month  ITA           19   7   10    2      1/1  0.44/0.33/0.23     can't say       0.0648  -        0: 0 right, too few
+oil up   month  XLE           40  14   18    8      3/1  0.38/0.33/0.28     can't say       0.0832  -        0: 0 right, too few
+oil up   month  CORN          12   4    4    4      1/0  0.27/0.33/0.40     can't say       0.4068  -        0: 0 right, too few
+oil up   month  WEAT          10   2    4    4      1/0  0.24/0.33/0.43     can't say       0.4407  -        0: 0 right, too few
+oil up   month  SOYB          10   4    1    5      1/0  0.30/0.33/0.37     can't say       0.6253  -        0: 0 right, too few
+oil up   month  UGA           18   8    9    1      1/0  0.36/0.33/0.31     can't say       0.0313  -        0: 0 right, too few
+oil up   month  UNG           19   5    8    6      1/0  0.25/0.33/0.42     can't say       0.2793  -        0: 0 right, too few
+oil up   month  XLU           40  17   11   12      3/1  0.41/0.33/0.25     can't say       0.4107  -        0: 0 right, too few
+oil up   month  ITB           19   9    8    2      1/1  0.39/0.33/0.28     can't say       0.0978  -        0: 0 right, too few
+oil up   month  KC            37  16   10   11      3/4  0.32/0.33/0.35     can't say       0.1622  -        0: 0 right, too few
+oil up   month  T5YIE         32  13   11    8      1/0  0.36/0.32/0.32     can't say       0.2609  -        0: 0 right, too few
+oil up   month  GBPUSD        26   7    9   10      1/0  0.33/0.33/0.33     can't say       0.3135  -        0: 0 right, too few
+oil up   month  USDJPY        43  19   13   11      2/0  0.34/0.33/0.33     can't say       0.1170  -        0: 0 right, too few
+oil up   month  NKY           48  19   18   11     3/16  0.38/0.33/0.29     can't say       0.2915  -        0: 0 right, too few
+oil up   month  ETH            2   2    0    0      0/0  0.26/0.33/0.41     too few         —       -        0: 0 right, too few
+oil up   month  ALL           45  20   17    8      3/1  0.41/0.33/0.26     can't say       0.1724  -        0: 0 right, too few
+oil down day    SPY / ES      55  18   15   22      0/0  0.36/0.33/0.30     can't say       0.1499  -        0: 0 right, too few
+oil down day    UST10Y / ZN   55  15   15   25      0/0  0.32/0.33/0.35     can't say       0.1255  -        0: 0 right, too few
+oil down day    DXY           55  22   17   16      0/0  0.34/0.33/0.33     can't say       0.2236  -        0: 0 right, too few
+oil down day    GC / XAU      28  14    4   10      0/0  0.36/0.33/0.31     can't say       0.3931  -        0: 0 right, too few
+oil down day    VIX           46  15   16   15      0/0  0.31/0.33/0.35     can't say       0.4510  -        0: 0 right, too few
+oil down day    DAX           47  28   12    7      0/1  0.35/0.33/0.31     up              0.0009  -        19: 9 right, too few
+oil down day    SX5E          13   4    7    2      0/0  0.35/0.33/0.32     can't say       0.1035  -        0: 0 right, too few
+oil down day    BRN           13   7    1    5      0/0  0.34/0.33/0.32     can't say       0.4308  -        0: 0 right, too few
+oil down day    EURUSD        24   6   11    7      0/0  0.34/0.33/0.33     can't say       0.1401  -        3: 1 right, too few
+oil down day    COMP          55  19   15   21      0/0  0.37/0.33/0.29     can't say       0.1826  -        0: 0 right, too few
+oil down day    UST5Y / ZF    55  13   17   25      0/0  0.32/0.33/0.34     can't say       0.0544  -        0: 0 right, too few
+oil down day    UKX           54  22   18   14      0/0  0.35/0.33/0.32     can't say       0.1871  -        0: 0 right, too few
+oil down day    SXXP          23  11   10    2      0/0  0.36/0.33/0.31     can't say       0.0203  -        0: 0 right, too few
+oil down day    BTC            5   3    0    2      0/0  0.38/0.33/0.29     too few         —       -        0: 0 right, too few
+oil down day    ITA           17   3   11    3      0/0  0.37/0.33/0.30     about the same  0.0080  -        0: 0 right, too few
+oil down day    XLE           31   8   10   13      0/0  0.35/0.33/0.32     can't say       0.1318  -        0: 0 right, too few
+oil down day    CORN           8   3    2    3      0/0  0.32/0.33/0.35     too few         —       -        0: 0 right, too few
+oil down day    WEAT           7   4    1    2      0/0  0.30/0.33/0.36     too few         —       -        0: 0 right, too few
+oil down day    SOYB           7   3    1    3      0/0  0.33/0.33/0.34     too few         —       -        0: 0 right, too few
+oil down day    UGA           11   6    1    4      0/0  0.34/0.33/0.33     can't say       0.3972  -        0: 0 right, too few
+oil down day    UNG           13   3    4    6      0/0  0.31/0.33/0.36     can't say       0.3292  -        0: 0 right, too few
+oil down day    XLU           31  11   12    8      0/0  0.36/0.33/0.31     can't say       0.3228  -        0: 0 right, too few
+oil down day    ITB           17   6    3    8      0/0  0.33/0.33/0.33     can't say       0.3901  -        0: 0 right, too few
+oil down day    KC            28   9   10    9      0/1  0.33/0.33/0.34     can't say       0.4645  -        0: 0 right, too few
+oil down day    T5YIE         24   8    7    9      0/0  0.34/0.32/0.34     can't say       0.4857  -        0: 0 right, too few
+oil down day    GBPUSD        24   5   10    9      0/0  0.33/0.33/0.33     can't say       0.2132  -        0: 0 right, too few
+oil down day    USDJPY        36  14   13    9      0/0  0.34/0.33/0.33     can't say       0.2320  -        0: 0 right, too few
+oil down day    NKY           54  19   17   18      0/1  0.35/0.33/0.32     can't say       0.5081  -        0: 0 right, too few
+oil down day    ETH            2   1    0    1      0/0  0.30/0.33/0.37     too few         —       -        0: 0 right, too few
+oil down day    ALL           41  11   17   13      0/0  0.35/0.33/0.32     can't say       0.1732  -        0: 0 right, too few
+oil down week   SPY / ES      55  18   21   16      0/0  0.39/0.33/0.28     can't say       0.2645  -        0: 0 right, too few
+oil down week   UST10Y / ZN   55  17   20   18      0/0  0.31/0.33/0.36     can't say       0.3630  -        0: 0 right, too few
+oil down week   DXY           55  25   13   17      0/0  0.33/0.33/0.34     can't say       0.1128  -        3: 0 right, too few
+oil down week   GC / XAU      28   9   11    8      0/0  0.38/0.33/0.29     can't say       0.3138  -        0: 0 right, too few
+oil down week   VIX           46  10   12   24      0/0  0.32/0.33/0.35     can't say       0.0264  -        0: 0 right, too few
+oil down week   DAX           45  20   16    9      0/3  0.38/0.33/0.29     can't say       0.1193  -        0: 0 right, too few
+oil down week   SX5E          13   4    3    6      0/0  0.35/0.33/0.31     can't say       0.3017  -        0: 0 right, too few
+oil down week   BRN           13   7    1    5      0/0  0.35/0.33/0.31     can't say       0.4636  -        0: 0 right, too few
+oil down week   EURUSD        24   8    6   10      0/0  0.34/0.33/0.32     can't say       0.3630  -        0: 0 right, too few
+oil down week   COMP          55  24   16   15      0/0  0.39/0.33/0.27     can't say       0.4416  -        0: 0 right, too few
+oil down week   UST5Y / ZF    55  21   14   20      0/0  0.31/0.33/0.35     can't say       0.3593  -        0: 0 right, too few
+oil down week   UKX           53  22   20   11      0/1  0.37/0.33/0.30     can't say       0.1174  -        0: 0 right, too few
+oil down week   SXXP          23   7   10    6      0/0  0.38/0.33/0.29     can't say       0.2067  -        0: 0 right, too few
+oil down week   BTC            5   4    1    0      0/0  0.38/0.33/0.29     too few         —       -        0: 0 right, too few
+oil down week   ITA           17   7    4    6      0/0  0.40/0.33/0.27     can't say       0.4191  -        0: 0 right, too few
+oil down week   XLE           31  13    8   10      0/0  0.37/0.33/0.30     can't say       0.5310  -        0: 0 right, too few
+oil down week   CORN           8   3    2    3      0/0  0.30/0.33/0.37     too few         —       -        0: 0 right, too few
+oil down week   WEAT           7   2    4    1      0/0  0.28/0.33/0.39     too few         —       -        0: 0 right, too few
+oil down week   SOYB           7   4    1    2      0/0  0.33/0.33/0.34     too few         —       -        0: 0 right, too few
+oil down week   UGA           11   5    2    4      0/0  0.35/0.33/0.32     can't say       0.5513  -        0: 0 right, too few
+oil down week   UNG           13   6    2    5      0/0  0.29/0.33/0.38     can't say       0.3298  -        0: 0 right, too few
+oil down week   XLU           31  11    8   12      0/0  0.37/0.33/0.29     can't say       0.2767  -        0: 0 right, too few
+oil down week   ITB           17   8    3    6      0/0  0.35/0.33/0.31     can't say       0.4878  -        0: 0 right, too few
+oil down week   KC            28  11    6   11      0/1  0.33/0.33/0.34     can't say       0.5725  -        0: 0 right, too few
+oil down week   T5YIE         24   5    8   11      0/0  0.35/0.29/0.36     can't say       0.1093  -        0: 0 right, too few
+oil down week   GBPUSD        24  10    5    9      0/0  0.33/0.33/0.33     can't say       0.4942  -        0: 0 right, too few
+oil down week   USDJPY        36  16   11    9      0/0  0.35/0.33/0.32     can't say       0.1650  -        0: 0 right, too few
+oil down week   NKY           54  22   10   22      0/1  0.36/0.33/0.30     can't say       0.3269  -        0: 0 right, too few
+oil down week   ETH            2   1    1    0      0/0  0.30/0.33/0.37     too few         —       -        0: 0 right, too few
+oil down week   ALL           41  14   16   11      0/0  0.37/0.33/0.30     can't say       0.2682  -        0: 0 right, too few
+oil down month  SPY / ES      55  18   24   13      0/0  0.44/0.33/0.23     can't say       0.0718  -        0: 0 right, too few
+oil down month  UST10Y / ZN   55  17   19   19      0/0  0.30/0.33/0.37     can't say       0.4568  -        0: 0 right, too few
+oil down month  DXY           55  22   19   14      0/0  0.33/0.33/0.34     can't say       0.0992  -        0: 0 right, too few
+oil down month  GC / XAU      27  11   10    6      0/1  0.40/0.33/0.27     can't say       0.4108  -        0: 0 right, too few
+oil down month  VIX           46  10   19   17      0/0  0.31/0.33/0.36     can't say       0.1608  -        0: 0 right, too few
+oil down month  DAX           33  17   10    6     0/15  0.40/0.33/0.26     can't say       0.1349  -        0: 0 right, too few
+oil down month  SX5E          10   3    3    4      0/3  0.36/0.33/0.30     can't say       0.4018  -        0: 0 right, too few
+oil down month  BRN           13   3    5    5      0/0  0.35/0.33/0.31     can't say       0.2999  -        0: 0 right, too few
+oil down month  EURUSD        24   6    8   10      0/0  0.34/0.33/0.32     can't say       0.1980  -        0: 0 right, too few
+oil down month  COMP          55  21   21   13      0/0  0.43/0.33/0.24     can't say       0.2647  -        0: 0 right, too few
+oil down month  UST5Y / ZF    55  18   17   20      0/0  0.30/0.33/0.36     can't say       0.4698  -        0: 0 right, too few
+oil down month  UKX           38  14   15    9     0/16  0.39/0.33/0.28     can't say       0.2603  -        0: 0 right, too few
+oil down month  SXXP          19   7    7    5      0/4  0.41/0.33/0.26     can't say       0.4573  -        0: 0 right, too few
+oil down month  BTC            5   3    1    1      0/0  0.40/0.33/0.27     too few         —       -        0: 0 right, too few
+oil down month  ITA           17   6    5    6      0/0  0.45/0.33/0.21     can't say       0.1495  -        0: 0 right, too few
+oil down month  XLE           31  13    9    9      0/0  0.39/0.33/0.28     can't say       0.5431  -        0: 0 right, too few
+oil down month  CORN           8   2    1    5      0/0  0.27/0.33/0.40     too few         —       -        0: 0 right, too few
+oil down month  WEAT           7   4    0    3      0/0  0.24/0.33/0.43     too few         —       -        0: 0 right, too few
+oil down month  SOYB           7   2    1    4      0/0  0.31/0.33/0.36     too few         —       -        0: 0 right, too few
+oil down month  UGA           11   4    2    5      0/0  0.36/0.33/0.31     can't say       0.4150  -        0: 0 right, too few
+oil down month  UNG           13   2    3    8      0/0  0.25/0.33/0.42     can't say       0.2218  -        0: 0 right, too few
+oil down month  XLU           31   7   15    9      0/0  0.41/0.33/0.26     can't say       0.0589  -        0: 0 right, too few
+oil down month  ITB           17   3    5    9      0/0  0.37/0.33/0.29     can't say       0.0311  -        0: 0 right, too few
+oil down month  KC            25   7    9    9      0/4  0.32/0.33/0.34     can't say       0.4467  -        0: 0 right, too few
+oil down month  T5YIE         24   6    9    9      0/0  0.35/0.32/0.33     can't say       0.2699  -        0: 0 right, too few
+oil down month  GBPUSD        24   2    8   14      0/0  0.33/0.33/0.33     down            0.0022  -        2: 2 right, too few
+oil down month  USDJPY        36  17    8   11      0/0  0.34/0.33/0.33     can't say       0.1865  -        0: 0 right, too few
+oil down month  NKY           44  17   11   16     0/11  0.37/0.33/0.29     can't say       0.3527  -        0: 0 right, too few
+oil down month  ETH            2   0    1    1      0/0  0.25/0.33/0.41     too few         —       -        0: 0 right, too few
+oil down month  ALL           41  13   17   11      0/0  0.41/0.33/0.26     can't say       0.1735  -        2: 0 right, too few
+by chance: about 4.8 answers on all history, 0.0 holds walk-forward

@@ -11,6 +11,29 @@ amended there with a date.
 Each entry: **what** was decided, **why**, what it **retires**, and **where** the detail is. *By the
 owner* marks a choice the owner made over another on the table.
 
+## 2026-11-21: A model proposes, the records decide, by the owner
+
+- **What:** asked in turn whether the project pays for any service or model, whether a language
+  model will forecast, how one would change the whole, and how the forecasting works, the owner
+  then chose a flow where a language model plays an economics and statistics expert: it reads the
+  records to 2019 and writes rules richer than one kind against one market (a condition before
+  the event, a chain to another market); each rule is tested once on 2020 onward by the bars every
+  answer meets, and those that pass are graded forward. For now the model runs through the
+  owner's subscription, by hand in one session; a model called through an API, paid by tokens, is
+  to be considered later. The answers given on the way stand as written:
+  1. The code calls no paid service and no model: Yahoo, Nasdaq, the SEC and FRED (a free key)
+     for data; GitHub Actions, cron-job.org and Umami's free tier to run and count.
+  2. The forecast stays arithmetic on history (2026-11-04): a model may read the news into a kind
+     (step 20's part 2, after the gate, on this machine) and may propose rules; it never answers.
+  3. A model as the forecaster is declined again: the past cannot test it (it has read the
+     outcomes), and its answer has no counts. It could be tried only as a challenger, its calls
+     logged before the reaction and graded beside the record's.
+- **Why:** the single-kind answers miss what readers ask; a model reads many records quickly, and
+  the bars, a test period it did not see and the forward grading keep its rules honest. A rule
+  chosen from many fits the past by luck, so the chance line counts every rule written.
+- **Retires:** nothing; 2026-11-04 is refined: a model may now propose rules, not only read news.
+- **Where:** [step 41](steps/expert-hypotheses.md).
+
 ## 2026-11-21: Big moves against the news filed with them, by the owner
 
 - **What:** step 40 starts from the moves, not the news: the S&P 500 members' days of a move

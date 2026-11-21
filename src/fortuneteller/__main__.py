@@ -672,6 +672,80 @@ class FollowCells(NamedTuple):
     noun: str
 
 
+def follows_kinds(
+    flow: flows.EventFlow, con: duckdb.DuckDBPyConnection
+) -> tuple[list[EventInstance], dict[int, str], Sequence[str]]:
+    """A flow's stored events, each one's kind by event id, and the kinds' order, as ``follows``
+    reads them; raises ``FollowsUnavailable`` with the reason it cannot."""
+    events = flows.stored_events(flow, con=con)
+    if flow is flows.CEO_FLOW:
+        return events, dict.fromkeys((e.event_id for e in events), study.SCANDAL), (study.SCANDAL,)
+    if flow in (
+        flows.EARNINGS_FLOW,
+        flows.EARNINGS_500_FLOW,
+        flows.ADDITIONS_FLOW,
+        flows.SPLITS_FLOW,
+    ):
+        order = {
+            flows.ADDITIONS_FLOW.cli_name: (study.ADDED,),
+            flows.SPLITS_FLOW.cli_name: study.SPLIT_KINDS,
+        }.get(flow.cli_name, study.SURPRISE_KINDS)
+        return events, study.earnings_kinds(events), order
+    if flow is flows.OPEC_FLOW:
+        return events, study.detail_kinds(events), study.OPEC_KINDS
+    if flow.cli_name in study.ONE_KIND:
+        return events, study.one_kind(flow, events), (study.ONE_KIND[flow.cli_name],)
+    if flow is flows.BOE_FLOW:
+        return events, study.boe_kinds(events, _boe_rates()), study.KINDS
+    if flow is flows.BOJ_FLOW:
+        try:
+            boj_rates = _boj_rates()
+        except sources.CalendarError as exc:
+            raise FollowsUnavailable(
+                f"the BoJ's rates could not be read from TradingView: {exc}"
+            ) from None
+        return events, study.ecb_kinds(events, boj_rates), study.KINDS
+    if flow is flows.ECB_FLOW:
+        return (
+            events,
+            study.ecb_kinds(events, flows.load_ecb_rates(settings.cache_dir)),
+            study.KINDS,
+        )
+    if flow is flows.FED_FLOW:
+        api_key = settings.fred_api_key.get_secret_value() if settings.fred_api_key else ""
+        if not api_key:
+            raise FollowsUnavailable("FT_FRED_API_KEY is not set (see docs/accounts.md)")
+        return events, study.fed_kinds(events, dict(flows.target_rates(api_key))), study.KINDS
+    kinds = study.release_kinds(flow, con=con)
+    if not kinds:
+        raise FollowsUnavailable(
+            f"no surprises for {flow.cli_name} yet; run `fortuneteller load-surprises` first"
+        )
+    return events, kinds, study.SURPRISE_KINDS
+
+
+def follows_of(
+    flow: flows.EventFlow,
+    events: list[EventInstance],
+    kinds: dict[int, str],
+    order: Sequence[str],
+    con: duckdb.DuckDBPyConnection,
+    after: bool = False,
+    long: bool = False,
+) -> tuple[list[EventInstance], list[tuple[str, str, str, study.Follow]]]:
+    """The flow's events with a kind and a record per kind, span and market, on ``kinds``' events."""
+    if flow is flows.CEO_FLOW:
+        return events, study.follow_ceo(events, con=con, after=after)
+    if flow in (
+        flows.EARNINGS_FLOW,
+        flows.EARNINGS_500_FLOW,
+        flows.ADDITIONS_FLOW,
+        flows.SPLITS_FLOW,
+    ):
+        return events, study.follow_companies(events, kinds, order, con=con, after=after)
+    return study.follow_decisions(flow, kinds, order, con=con, after=after, long=long)
+
+
 def follows_cells(
     name: str, con: duckdb.DuckDBPyConnection, after: bool = False, long: bool = False
 ) -> FollowCells:
@@ -689,71 +763,8 @@ def follows_cells(
     if db.count_rows("daily_bars", con=con) == 0:
         raise FollowsUnavailable("no daily_bars stored; run `fortuneteller load-prices` first")
     try:
-        if flow is flows.CEO_FLOW:
-            events = flows.stored_events(flow, con=con)
-            kinds = dict.fromkeys((e.event_id for e in events), study.SCANDAL)
-            order: Sequence[str] = (study.SCANDAL,)
-            cells = study.follow_ceo(events, con=con, after=after)
-        elif flow in (
-            flows.EARNINGS_FLOW,
-            flows.EARNINGS_500_FLOW,
-            flows.ADDITIONS_FLOW,
-            flows.SPLITS_FLOW,
-        ):
-            events = flows.stored_events(flow, con=con)
-            kinds = study.earnings_kinds(events)
-            order = {
-                flows.ADDITIONS_FLOW.cli_name: (study.ADDED,),
-                flows.SPLITS_FLOW.cli_name: study.SPLIT_KINDS,
-            }.get(flow.cli_name, study.SURPRISE_KINDS)
-            cells = study.follow_companies(events, kinds, order, con=con, after=after)
-        elif flow is flows.OPEC_FLOW:
-            kinds = study.detail_kinds(flows.stored_events(flow, con=con))
-            order = study.OPEC_KINDS
-            events, cells = study.follow_decisions(flow, kinds, order, con=con, after=after)
-        elif flow.cli_name in study.ONE_KIND:
-            kinds = study.one_kind(flow, flows.stored_events(flow, con=con))
-            order = (study.ONE_KIND[flow.cli_name],)
-            events, cells = study.follow_decisions(flow, kinds, order, con=con, after=after)
-        elif flow is flows.BOE_FLOW or flow is flows.BOJ_FLOW:
-            stored = flows.stored_events(flow, con=con)
-            if flow is flows.BOE_FLOW:
-                kinds = study.boe_kinds(stored, _boe_rates())
-            else:
-                try:
-                    boj_rates = _boj_rates()
-                except sources.CalendarError as exc:
-                    raise FollowsUnavailable(
-                        f"the BoJ's rates could not be read from TradingView: {exc}"
-                    ) from None
-                kinds = study.ecb_kinds(stored, boj_rates)
-            order = study.KINDS
-            events, cells = study.follow_decisions(flow, kinds, order, con=con, after=after)
-        else:
-            if flow is flows.FED_FLOW or flow is flows.ECB_FLOW:
-                stored = flows.stored_events(flow, con=con)
-                if flow is flows.ECB_FLOW:
-                    kinds = study.ecb_kinds(stored, flows.load_ecb_rates(settings.cache_dir))
-                else:
-                    api_key = (
-                        settings.fred_api_key.get_secret_value() if settings.fred_api_key else ""
-                    )
-                    if not api_key:
-                        raise FollowsUnavailable(
-                            "FT_FRED_API_KEY is not set (see docs/accounts.md)"
-                        )
-                    kinds = study.fed_kinds(stored, dict(flows.target_rates(api_key)))
-                order = study.KINDS
-            else:
-                kinds = study.release_kinds(flow, con=con)
-                order = study.SURPRISE_KINDS
-                if not kinds:
-                    raise FollowsUnavailable(
-                        f"no surprises for {name} yet; run `fortuneteller load-surprises` first"
-                    )
-            events, cells = study.follow_decisions(
-                flow, kinds, order, con=con, after=after, long=long
-            )
+        stored, kinds, order = follows_kinds(flow, con)
+        events, cells = follows_of(flow, stored, kinds, order, con, after, long)
     except (sources.FredError, sources.CalendarError, ValueError) as exc:
         raise FollowsUnavailable(str(exc)) from exc
     if not events:

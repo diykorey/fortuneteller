@@ -1,0 +1,93 @@
+follows: 63 hurricane landfalls 1970-08-03 … 2019-09-06: 63 landfalls, spans from the reaction close
+kind     span   market        n  up same down  out/hole  base up/same/down  answer          chance  placebo  walk-forward
+landfall day    SPY / ES      63  19   23   21      0/0  0.36/0.33/0.31     can't say       0.2680  -        0: 0 right, too few
+landfall day    UST10Y / ZN   63  20   13   30      0/0  0.34/0.31/0.35     can't say       0.1284  -        0: 0 right, too few
+landfall day    DXY           62  15   21   26      0/0  0.33/0.33/0.33     can't say       0.0572  -        8: 2 right, too few
+landfall day    GC / XAU      29  11   14    4      0/0  0.36/0.33/0.31     can't say       0.0683  -        0: 0 right, too few
+landfall day    VIX           42  12   18   12      0/0  0.31/0.33/0.35     can't say       0.1269  -        0: 0 right, too few
+landfall day    DAX           46  10   15   21      0/0  0.35/0.33/0.31     can't say       0.0157  -        6: 0 right, too few
+landfall day    SX5E          16   3    6    7      0/0  0.35/0.33/0.32     can't say       0.1426  -        0: 0 right, too few
+landfall day    BRN           16   6    4    6      0/0  0.34/0.33/0.32     can't say       0.5645  -        0: 0 right, too few
+landfall day    EURUSD        26   7   12    7      0/0  0.34/0.33/0.33     can't say       0.1207  -        0: 0 right, too few
+landfall day    COMP          62  17   25   20      0/0  0.38/0.33/0.29     can't say       0.1355  -        0: 0 right, too few
+landfall day    UST5Y / ZF    63  18   18   27      0/0  0.33/0.33/0.34     can't say       0.1350  -        0: 0 right, too few
+landfall day    UKX           56  18   15   23      0/0  0.35/0.33/0.32     can't say       0.1732  -        0: 0 right, too few
+landfall day    SXXP          26   6   11    9      0/0  0.36/0.33/0.31     can't say       0.2166  -        0: 0 right, too few
+landfall day    BTC            9   3    3    3      0/0  0.38/0.33/0.29     too few         —       -        0: 0 right, too few
+landfall day    ITA           16   3    7    6      0/0  0.37/0.33/0.30     can't say       0.1626  -        0: 0 right, too few
+landfall day    XLE           32  13   12    7      0/0  0.35/0.33/0.32     can't say       0.1887  -        0: 0 right, too few
+landfall day    CORN          12   1    5    6      0/0  0.31/0.33/0.36     can't say       0.0895  -        0: 0 right, too few
+landfall day    WEAT          11   2    7    2      0/0  0.30/0.33/0.37     can't say       0.0384  -        0: 0 right, too few
+landfall day    SOYB          11   3    3    5      0/0  0.32/0.33/0.35     can't say       0.4114  -        0: 0 right, too few
+landfall day    UGA           15   8    4    3      0/0  0.34/0.33/0.33     can't say       0.1240  -        0: 0 right, too few
+landfall day    UNG           16   7    3    6      0/0  0.31/0.33/0.36     can't say       0.3979  -        0: 0 right, too few
+landfall day    XLU           32  10   10   12      0/0  0.36/0.33/0.31     can't say       0.2862  -        0: 0 right, too few
+landfall day    ITB           16   6    6    4      0/0  0.34/0.33/0.33     can't say       0.4029  -        0: 0 right, too few
+landfall day    KC            29  14    8    7      0/0  0.33/0.33/0.34     can't say       0.0855  -        0: 0 right, too few
+landfall day    T5YIE         28  10    9    9      0/0  0.35/0.32/0.34     can't say       0.5250  -        0: 0 right, too few
+landfall day    GBPUSD        26   7    5   14      0/0  0.33/0.33/0.33     can't say       0.0958  -        0: 0 right, too few
+landfall day    USDJPY        36  13    7   16      0/0  0.34/0.33/0.33     can't say       0.3153  -        0: 0 right, too few
+landfall day    NKY           63  25   18   20      0/0  0.35/0.33/0.31     can't say       0.4322  -        0: 0 right, too few
+landfall day    ETH            4   1    0    3      0/0  0.31/0.33/0.36     too few         —       -        0: 0 right, too few
+landfall day    ALL           40  16   13   11      0/0  0.35/0.33/0.32     can't say       0.2911  -        0: 0 right, too few
+landfall week   SPY / ES      61  21   21   19      2/0  0.38/0.33/0.29     can't say       0.3301  -        0: 0 right, too few
+landfall week   UST10Y / ZN   61  22   15   24      2/0  0.32/0.33/0.34     can't say       0.5180  -        0: 0 right, too few
+landfall week   DXY           60  13   20   27      2/0  0.33/0.33/0.34     can't say       0.0213  -        0: 0 right, too few
+landfall week   GC / XAU      28  14    9    5      1/0  0.38/0.33/0.29     can't say       0.0953  -        0: 0 right, too few
+landfall week   VIX           41  13   11   17      1/0  0.32/0.33/0.35     can't say       0.4012  -        0: 0 right, too few
+landfall week   DAX           45  19   11   15      1/0  0.38/0.33/0.29     can't say       0.5338  -        0: 0 right, too few
+landfall week   SX5E          16   3   10    3      0/0  0.36/0.33/0.31     can't say       0.0159  -        1: 0 right, too few
+landfall week   BRN           16   6    5    5      0/0  0.35/0.33/0.31     can't say       0.5816  -        0: 0 right, too few
+landfall week   EURUSD        25  11    5    9      1/0  0.34/0.33/0.33     can't say       0.4549  -        0: 0 right, too few
+landfall week   COMP          60  23   25   12      2/0  0.39/0.33/0.27     can't say       0.1102  -        0: 0 right, too few
+landfall week   UST5Y / ZF    61  20   17   24      2/0  0.33/0.33/0.34     can't say       0.3646  -        0: 0 right, too few
+landfall week   UKX           53  22   14   17      3/0  0.37/0.33/0.30     can't say       0.5005  -        0: 0 right, too few
+landfall week   SXXP          25   8   12    5      1/0  0.38/0.33/0.28     can't say       0.0916  -        0: 0 right, too few
+landfall week   BTC            9   3    4    2      0/0  0.38/0.33/0.28     too few         —       -        0: 0 right, too few
+landfall week   ITA           16   5    6    5      0/0  0.39/0.33/0.27     can't say       0.3875  -        0: 0 right, too few
+landfall week   XLE           31  15    8    8      1/0  0.37/0.33/0.30     can't say       0.2160  -        0: 0 right, too few
+landfall week   CORN          12   6    2    4      0/0  0.28/0.33/0.38     can't say       0.2151  -        0: 0 right, too few
+landfall week   WEAT          11   5    3    3      0/0  0.27/0.33/0.40     can't say       0.1793  -        0: 0 right, too few
+landfall week   SOYB          11   7    2    2      0/0  0.31/0.33/0.36     can't say       0.0611  -        0: 0 right, too few
+landfall week   UGA           15   8    3    4      0/0  0.35/0.33/0.32     can't say       0.2300  -        0: 0 right, too few
+landfall week   UNG           16  10    4    2      0/0  0.29/0.33/0.38     up              0.0057  -        3: 1 right, too few
+landfall week   XLU           31  11    8   12      1/0  0.37/0.33/0.29     can't say       0.2769  -        0: 0 right, too few
+landfall week   ITB           16   5    3    8      0/0  0.36/0.33/0.30     can't say       0.1902  -        0: 0 right, too few
+landfall week   KC            28  12    5   11      1/0  0.34/0.33/0.33     can't say       0.5170  -        0: 0 right, too few
+landfall week   T5YIE         27  14    6    7      1/0  0.36/0.29/0.35     can't say       0.1028  -        0: 0 right, too few
+landfall week   GBPUSD        25   9    7    9      1/0  0.33/0.33/0.33     can't say       0.5883  -        0: 0 right, too few
+landfall week   USDJPY        35  10   14   11      1/0  0.35/0.33/0.32     can't say       0.2521  -        0: 0 right, too few
+landfall week   NKY           60  17   24   19      3/0  0.37/0.33/0.30     can't say       0.1687  -        2: 0 right, too few
+landfall week   ETH            4   2    0    2      0/0  0.31/0.33/0.35     too few         —       -        0: 0 right, too few
+landfall week   ALL           39  15   15    9      1/0  0.37/0.33/0.29     can't say       0.3003  -        0: 0 right, too few
+landfall month  SPY / ES      47  18   15   14     16/0  0.42/0.33/0.24     can't say       0.2501  -        0: 0 right, too few
+landfall month  UST10Y / ZN   47  10   19   18     16/0  0.32/0.33/0.34     can't say       0.1230  -        3: 0 right, too few
+landfall month  DXY           47  15   13   19     15/0  0.33/0.33/0.34     can't say       0.3329  -        0: 0 right, too few
+landfall month  GC / XAU      21  10    6    5      8/0  0.39/0.33/0.27     can't say       0.3682  -        0: 0 right, too few
+landfall month  VIX           31  10    7   14     11/0  0.31/0.33/0.36     can't say       0.4199  -        2: 1 right, too few
+landfall month  DAX           35  13   15    7     11/0  0.41/0.33/0.26     can't say       0.1547  -        0: 0 right, too few
+landfall month  SX5E          13   3    4    6      3/0  0.36/0.33/0.30     can't say       0.1744  -        0: 0 right, too few
+landfall month  BRN           12   4    1    7      3/1  0.36/0.33/0.31     can't say       0.1954  -        0: 0 right, too few
+landfall month  EURUSD        17   4    6    7      8/1  0.34/0.33/0.33     can't say       0.2521  -        0: 0 right, too few
+landfall month  COMP          46  20   12   14     16/0  0.42/0.33/0.24     can't say       0.3472  -        1: 0 right, too few
+landfall month  UST5Y / ZF    47   7   23   17     16/0  0.32/0.33/0.34     can't say       0.0182  -        21: 6 right, too few
+landfall month  UKX           42  18   13   11     14/0  0.39/0.33/0.27     can't say       0.4471  -        0: 0 right, too few
+landfall month  SXXP          18   6    5    7      8/0  0.41/0.33/0.25     can't say       0.1825  -        0: 0 right, too few
+landfall month  BTC            7   2    3    2      2/0  0.41/0.33/0.26     too few         —       -        0: 0 right, too few
+landfall month  ITA           13   2    6    5      3/0  0.44/0.33/0.23     can't say       0.0491  -        0: 0 right, too few
+landfall month  XLE           23  11    5    7      9/0  0.38/0.33/0.28     can't say       0.4740  -        0: 0 right, too few
+landfall month  CORN          10   4    2    4      2/0  0.25/0.33/0.42     can't say       0.3353  -        0: 0 right, too few
+landfall month  WEAT           9   2    6    1      2/0  0.23/0.33/0.43     too few         —       -        0: 0 right, too few
+landfall month  SOYB           9   5    1    3      2/0  0.29/0.33/0.38     too few         —       -        0: 0 right, too few
+landfall month  UGA           12   3    4    5      3/0  0.35/0.33/0.31     can't say       0.3045  -        0: 0 right, too few
+landfall month  UNG           13   3    5    5      3/0  0.25/0.33/0.42     can't say       0.4476  -        0: 0 right, too few
+landfall month  XLU           23   8    9    6      9/0  0.41/0.33/0.26     can't say       0.3489  -        0: 0 right, too few
+landfall month  ITB           13   5    2    6      3/0  0.39/0.33/0.28     can't say       0.2860  -        0: 0 right, too few
+landfall month  KC            21   9    7    5      8/0  0.33/0.33/0.34     can't say       0.1961  -        0: 0 right, too few
+landfall month  T5YIE         20   9    3    8      8/0  0.36/0.32/0.32     can't say       0.5794  -        0: 0 right, too few
+landfall month  GBPUSD        18   4    6    8      8/0  0.33/0.33/0.33     can't say       0.1927  -        0: 0 right, too few
+landfall month  USDJPY        25   6   11    8     10/1  0.34/0.33/0.33     can't say       0.1778  -        0: 0 right, too few
+landfall month  NKY           47  14   19   14     16/0  0.39/0.33/0.28     can't say       0.1894  -        0: 0 right, too few
+landfall month  ETH            3   0    3    0      1/0  0.30/0.33/0.37     too few         —       -        0: 0 right, too few
+landfall month  ALL           29  13   10    6     11/0  0.41/0.33/0.26     can't say       0.3637  -        0: 0 right, too few
+by chance: about 2.5 answers on all history, 0.0 holds walk-forward
