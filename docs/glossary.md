@@ -345,6 +345,10 @@ Terms are grouped by what they are about, alphabetical within each group.
   member-day is one S&P 500 member on one day it was a member; a big move is its excess day move
   against the index at three standard deviations or more of the 504 before; an 8-K item's lift is
   its share of big moves over the share on all member-days, so 1 means no more than any day.
+- **Expert reader / rule / pack** — *added 2026-11-21* ([step 41](steps/expert-hypotheses.md)):
+  a language model asked to act as an economics and statistics expert; it writes *rules* (a kind,
+  an optional condition before the event, a market, a span, a direction) from a *pack*, the records
+  as they stood on a fixed day. A rule is tested by the code, never answered by the model.
 - **Chance line** — how many cells, or items, would pass a test at its p by luck alone: each
   test's chance summed, or 0.01 times the tests run at p < 0.01. A count at or under it plus two
   is read as chance ([step 31](steps/earnings.md)).

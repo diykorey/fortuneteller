@@ -18,6 +18,8 @@ no 8-K; read by hand, those are mostly the industry's or the economy's news, or 
 
 ## In progress
 
+- **Step 41: hypotheses from an expert reader** ([the spec](steps/expert-hypotheses.md)): the
+  spec, before its goldfish. Next: the pack and the brief.
 - **Step 34: a same-day source for earnings** ([the spec](steps/earnings-same-day.md)): step 1
   done, Yahoo's kind is Nasdaq's on 102 of 110 reports (92.7%, bar 90%). Next: the speed, asked on
   each member's report from 2026-11-23 to 2027-01-31.
