@@ -51,7 +51,9 @@ written first; the rules that pass logged as calls and graded forward as events 
   on the base `follows` uses for that market (a company's 504 closes before, as [step
   31](earnings.md); a market's span base, as [what follows](what-follows.md)), with the placebo,
   whose shifted dates have the condition read again at their own close. It answers the same rule
-  without its condition on all the kind's events from 2020.
+  without its condition on all the kind's events from 2020. It does so by handing `follows`' own
+  functions (`study.follow_decisions`, `study.follow_companies`) the kinds of the kept events
+  only, so the base, the placebo and the walk-forward are `follows`' own, from 2020.
 
 ## The rule, fixed before measuring
 
@@ -66,8 +68,10 @@ the second reader's band, and the checks below.*
   the condition adds: the share of its counted events in the stated direction is above the same
   share for the rule without the condition, at p < 0.05 (one-sided binomial, that share the rate).
 - **A rule holds** by the bar of every link: 60% right of at least 30 graded walk-forward, 10
-  points over the base, p < 0.01, each event from 2020 predicted from the rule's events before
-  it, those before 2020 included; only events from 2020 graded.
+  points over the base, p < 0.01, each event from 2020 predicted from the rule's events before it
+  from 2020. *Amended 2026-11-21, after the rules were frozen and before the tester existed:*
+  first written with the events before 2020 in the history; `follows`' walk-forward starts at a
+  cell's first event, so the test runs it on the events from 2020 alone, which makes a hold harder.
 - **The chance line:** 0.01 times the testable rules; passes at or under it plus two are read as
   chance.
 - **Expected outcome:**
