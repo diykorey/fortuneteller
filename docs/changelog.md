@@ -6,6 +6,8 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-21 | Step 47's cards in plain words for a reader without financial training: no codes, *falls behind the average big US stock*, the record as held and failed counts across many companies, *not forecasts* first | [#402](https://github.com/diykorey/fortuneteller/pull/402) |
+| 2026-11-21 | Steps 45 and 47 published: the S&P 500's frozen groups on *Ask* (the answers that hold go from 7 to 9) and its reports ahead; the page *Fortuneteller predicts* at `/predicts/` | [#401](https://github.com/diykorey/fortuneteller/pull/401) |
 | 2026-11-21 | Free sources of US economic statistics surveyed; the Cleveland Fed nowcast and the Philadelphia Fed survey queued after the gate; Inkling 2 Mini added to the backlog's local models | [#399](https://github.com/diykorey/fortuneteller/pull/399) |
 | 2026-11-21 | Step 43: good or bad, read from the filing; the Subscription LLM scored 400 S&P 500 members' 8-Ks of 2020 to 2025 for shareholders; the score's sign did not say which way the shares moved (bad 27 of 43, p 0.06); nothing answers or holds | [#397](https://github.com/diykorey/fortuneteller/pull/397) |
 | 2026-11-21 | Step 42: who a macro event hits, exposure scores; the Subscription LLM scored 426 S&P 500 members' 2019 10-Ks on oil, rates and consumer spending; only oil on OPEC+ *oil down* answers, within chance and near the kind, and no score beats its industry | [#396](https://github.com/diykorey/fortuneteller/pull/396) |

@@ -128,21 +128,37 @@ def test_the_cards_come_from_what_holds_soonest_first() -> None:
     assert [(c["day"], c["event"], c["condition"], c["outcome"]) for c in cards] == [
         (
             "2026-12-02",
-            "Salesforce reports earnings",
-            "If it misses forecasts",
-            "its shares trail the S&P 500 the next trading day",
+            "Salesforce announces its profit for the last three months",
+            "If its profit is lower than Wall Street analysts predicted",
+            "its stock falls behind the average big US stock the next day the market is open:"
+            " it may fall, or rise less",
         ),
         (
             "2026-12-04",
-            "The jobs report",
-            "If it comes in above 100 (50 expected)",
-            "US Treasury 10Y up that day",
+            "The US jobs report",
+            "If the government's monthly count shows more than 100,000 jobs added (economists"
+            " predict about 50,000; the rule waits for a clear surprise)",
+            "the interest the US government pays to borrow money for 10 years goes up that day",
         ),
-        (None, "Nfp below", "After it", "US Treasury 10Y up that day"),
-        (None, "Cpi above", "After it", "US 5-year breakeven up that day"),
+        (
+            None,
+            "When the US jobs report shows fewer new jobs than economists expected",
+            "Then",
+            "the interest the US government pays to borrow money for 10 years goes up that day",
+        ),
+        (
+            None,
+            "When US prices rise faster than economists expected",
+            "Then",
+            "the inflation investors expect over the next 5 years goes up that day",
+        ),
     ]
     assert cards[1]["right"] == 39 and cards[1]["graded"] == 58
-    assert cards[0]["of"] == "past S&P 500 reports, replayed"
+    assert cards[0]["record"] == (
+        "Across 3,798 profit announcements by many big US companies (not just Salesforce),"
+        " this held 2,506 times and failed 1,292 times."
+    )
+    assert cards[1]["record"] == "In 58 past jobs reports, this held 39 times and failed 19 times."
     assert [c["link"] for c in cards].count("#ask/earnings500/below") == 1
     assert all("%" not in json.dumps(c) for c in cards)
 

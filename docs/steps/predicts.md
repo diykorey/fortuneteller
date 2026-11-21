@@ -49,6 +49,20 @@ and one to five cards. The evening job rewrites it each weekday with the scorebo
   - Whether it looks attractive is the owner's call when it is published, from a screenshot at
     both widths.
 
+- **In plain words** (*amended 2026-11-21*, asked by the owner before publishing: "obviously
+  clear for a random person without financial education"). A reader with no financial training
+  (a fresh subagent) read the rendered cards, and its findings set the wording:
+  - no code and no term unexplained: *the interest the US government pays to borrow money for 10
+    years*, not *US Treasury 10Y*; *announces its profit for the last three months*, not
+    *reports earnings*; market hours given in New York time;
+  - a move against the S&P 500 says what it means: *its stock falls behind the average big US
+    stock: it may fall, or rise less*;
+  - the record says whose it is and both sides, as counts: *Across 3,798 profit announcements by
+    many big US companies (not just Dell), this held 2,506 times and failed 1,292 times*;
+  - an earnings card says that no rule passed for a profit that matches or beats the predictions;
+  - the intro opens with *These are not forecasts that something will happen*, says the page
+    gives which way and not by how much, and carries *for fun, not financial advice*.
+
 ## The rule, fixed before measuring
 
 - **Bars:**
