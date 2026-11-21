@@ -49,8 +49,10 @@ written first; the rules that pass logged as calls and graded forward as events 
   its output) and, on the full store, keeps each rule's events from 2020-01-01 that meet its
   condition, after `follows`' own rule for overlapping events. It answers them as `follows` does,
   on the base `follows` uses for that market (a company's 504 closes before, as [step
-  31](earnings.md); a market's span base, as [what follows](what-follows.md)), with the placebo,
-  whose shifted dates have the condition read again at their own close. It answers the same rule
+  31](earnings.md); a market's span base, as [what follows](what-follows.md)), with `follows`' placebo,
+  which shifts the kept events' days (*amended 2026-11-21, before the tester existed:* first
+  written with the condition read again at each shifted close; `follows`' placebo keeps the kept
+  events and shifts them, and the test uses it as it is). It answers the same rule
   without its condition on all the kind's events from 2020. It does so by handing `follows`' own
   functions (`study.follow_decisions`, `study.follow_companies`) the kinds of the kept events
   only, so the base, the placebo and the walk-forward are `follows`' own, from 2020.
