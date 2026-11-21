@@ -84,6 +84,7 @@ drive nothing.
 | Know what a table or column means | [Schema](schema.md) |
 | Know what was simplified, and what would be more precise | [Precision](precision.md) |
 | Know which external services and keys are needed | [Accounts](accounts.md) |
+| Find a free source of US economic statistics not used yet | [Free sources](free-sources.md) |
 | Find a free data source | [Data sources](data-sources.md), about 250, graded |
 | See the kinds of shocks the product should one day answer | [Scenarios](scenarios.md), hypotheses to measure |
 | Look up a term or ticker | [Glossary](glossary.md) |

@@ -11,6 +11,19 @@ amended there with a date.
 Each entry: **what** was decided, **why**, what it **retires**, and **where** the detail is. *By the
 owner* marks a choice the owner made over another on the table.
 
+## 2026-11-21: Free sources surveyed, two expected values queued after the gate, by the owner
+
+- **What:** at the owner's ask, a survey of free sources of US economic statistics and of the
+  research on how markets meet releases, kept as [free sources](free-sources.md). No free
+  consensus with history was found; the Federal Reserve banks' free forecasts are the nearest.
+  The owner chose to keep the survey and plan after the gate: the Cleveland Fed's inflation
+  nowcast as a second expected value for CPI and PCE first, then the Philadelphia Fed survey's
+  history for GDP, on the roadmap's *Later* list.
+- **Why:** the expected value is the part of a surprise the project cannot get free with history;
+  the gate (2027-01-31) holds new work until it is passed.
+- **Retires:** nothing.
+- **Where:** [free sources](free-sources.md); [roadmap](roadmap.md), *Later*.
+
 ## 2026-11-21: Scores read from filings, tested against moves, by the owner
 
 - **What:** after reading Andrej Karpathy's US job market visualizer (https://karpathy.ai/jobs/:
