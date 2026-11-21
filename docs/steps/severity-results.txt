@@ -1,0 +1,14 @@
+Step 43's evidence (docs/steps/filing-severity.md).
+
+Step 1, the sample and the texts. FT_DB_PATH on step 40's store copy (the index's closes), run
+2026-11-21:
+uv run python scripts/eightk_text.py fetch data/cache/earnings/sec500 data/cache/eightk
+  member-days with a filing 18906; sampled 400; left out: {'no filer': 196, 'results that day': 3671}
+  texts 400; {'no item heading': 0, 'no exhibit 99': 197, 'stub': 0}
+  blind test: 0 found []
+  sample test: draw reproduced True; one per member-day True; items kept True
+"results that day" counts member-days with one of the five items left out for a 2.02 filing in
+the same window; "no filer" is tickers of the seed with no SEC submissions file (step 40's count).
+The 400 by item (a filing may carry two): 3.02 219, 8.01 148, 7.01 110, 2.05 92, 5.02 49.
+Texts from 844 to 8,315 characters, the median 4,097; 197 have no exhibit 99, so only their items.
+texts.csv SHA-256: 2b86b4abd51ef65f008bb714c3f4746c179e3421415d71f10cb9dbed547b444c
