@@ -12,15 +12,12 @@ Where the work is and what comes next: the task last finished, the tasks in prog
 
 ## Last completed
 
-Step 39: an exact meet ([results](steps/exact-meet.md#results)). An EPS equal to its forecast, which
-Nasdaq prints as `N/A`, now counts as *as expected*: 119 Dow and 1,685 S&P 500 reports added. The
-Dow's in-line day still holds (229 of 368); its week is now *the period*.
+Step 40: big moves and the news filed with them ([results](steps/news-moves.md#results)). 1.63%
+of S&P 500 member-days are big moves; a results 8-K makes one 19.6 times as likely, but 61.6% have
+no 8-K; read by hand, those are mostly the industry's or the economy's news, or nothing found.
 
 ## In progress
 
-- **Step 40: big moves and the news filed with them** ([the spec](steps/news-moves.md)): step 1
-  done (the matrix, its checks passed); step 2's sample stopped for the owner's call, the second
-  reading disagreeing on 4 of 10, over the 2 allowed.
 - **Step 34: a same-day source for earnings** ([the spec](steps/earnings-same-day.md)): step 1
   done, Yahoo's kind is Nasdaq's on 102 of 110 reports (92.7%, bar 90%). Next: the speed, asked on
   each member's report from 2026-11-23 to 2027-01-31.

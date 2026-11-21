@@ -147,3 +147,24 @@ The second reading: rows 1, then every fourth (sample rows 425, 2125, 3825, 5525
 4 disagreements of 10, over the spec's 2: step 2 stops for the owner's call. Three of the four are
 one gap in the codes: news about the whole economy, which moved a bank more than the index, has
 no code; the first readers called it sector news, the second "nothing found".
+
+Amended by the owner 2026-11-21: the code "market or economy news" added (the spec). All 40 coded
+again by two new readers of 20 rows each (docs/steps/news-moves-sample.csv now holds this coding;
+the first is in the file's git history). Codes over the 40:
+  nothing found 19, peer or sector news 12, market or economy news 5, filed later 1,
+  analyst action 1, company news unfiled 1, legal or regulatory 1.
+
+The second reading again, the same rows, by a new reader given the new codes and the rows' sources:
+  row    coding                   second reading
+  425    peer or sector news      company news, unfiled  (mining.com ties the day to the 09-19
+                                                          dividend release; InvestorPlace to gold)
+  2125   nothing found            nothing found
+  3825   market or economy news   market or economy news
+  5525   nothing found            nothing found
+  7225   peer or sector news      peer or sector news
+  8925   nothing found            nothing found
+  10625  market or economy news   market or economy news
+  12325  market or economy news   market or economy news
+  14025  analyst action           analyst action
+  15725  nothing found            nothing found
+1 disagreement of 10, within the spec's 2: step 2 done.

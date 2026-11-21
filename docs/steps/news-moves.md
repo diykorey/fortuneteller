@@ -135,3 +135,52 @@ its items.*
   `files` pages: `form`, `acceptanceDateTime`, `items`).
 - The test, in `tests/test_news_moves.py`, as the seed scripts' tests: the window and the
   threshold on hand-made rows.
+
+## Results
+
+*Measured 2026-11-21 on a copy of the store ([evidence](news-moves-results.txt), [the
+sample](news-moves-sample.csv)); every number from `scripts/news_moves.py matrix` and `sample`, the
+sample's codes from the CSV.*
+
+**In plain words:** on 1.7 million days of S&P 500 members since 2011, 1.63% were big moves. A
+results filing (2.02) makes a big move 19.6 times as likely as on any day, but only a third of big
+moves (32.6%) came with one; 61.6% came with no 8-K at all. Read by hand, 40 of those unfiled big
+moves were mostly the company's industry or commodity (12) or the whole economy (5); for 19 no free
+source tied a cause to the day. Almost none was the company's own news filed late or never filed
+(2 of 40). No filing kind leans up or down. So the filings explain the company's own news well,
+and most big moves are something else: what moves an industry or the economy, or nothing the free
+sources say.
+
+| | Expected | Found |
+| --- | --- | --- |
+| Big moves | 1.0% to 2.0% of member-days | 27,646 of 1,695,627, 1.63% — right |
+| 2.02 | lift 10 or more; on 35% to 60% of big moves | lift 19.56, goes; on 9,015 of 27,646 (32.6%) — **wrong** on the share |
+| 1.01 | goes, lift 3 to 6 | lift 2.55 (370 big of 8,890), does not go — **wrong**; companies bought out are missing more often (no closes, no filer), so a target's jump is undercounted, not shown here |
+| 7.01 | goes; not on its days with no 2.02 | lift 6.66, goes; with no 2.02, 2.74 — right |
+| 5.02 and 8.01 | lift 1.5 to 3, do not go | 5.02 lift 2.33, does not go — right; 8.01 lift 3.75, goes — **wrong**; with no 2.02 it is 1.74 |
+| 5.07 | lift under 1.5 | 1.28 — right |
+| Items with a direction | no more than the chance line (0.21) plus two | none — right |
+| No 8-K | 30% to 50% of big moves | 17,035 of 27,646, 61.6% — **wrong** |
+| Sample: filed later and company news, unfiled | at least 20 of 40 | 2 (1 and 1) — **wrong** |
+| Sample: analyst action | the largest of the other codes | 1; peer or sector news is 12 — **wrong** |
+| Sample: nothing found | under 10 | 19 — **wrong** |
+
+- **Beyond the expected lines:** other items go with big moves by the bar, on few days each:
+  2.05 (exit or restructuring costs, lift 13.0, 3.54 with no 2.02), 3.02 (unregistered sales of
+  shares, 3.75, 3.13 with no 2.02), 2.06 (impairments, 5.27), 1.04, 3.01 and 5.05 (under 90 days
+  each). Nine of the 21 item rows pass, far over the chance line of 0.21; a pass says the item
+  comes with big moves, not which way.
+- **Left out:** 196 tickers with no filer in the saved files and 26 with no closes, of 820; 8,482
+  member-days of a second share class. The days lean towards survivors.
+- **The checks:** five big moves and five days with no 8-K recomputed from the raw closes (the
+  same to 5 decimals) and checked on EDGAR (the same accessions and minutes; no 8-K in the
+  windows said to have none). The test passes.
+- **The sample's codes:** the first coding stopped step 2 (4 of 10 disagreed, 3 of them news about
+  the whole economy, which had no code); with the owner's new code, the coding and the second
+  reading were taken again: 1 of 10 disagreed (Newmont 2011-09-20, company news or gold), within 2.
+  Several *nothing found* rows may have a cause behind a paywall: the free search seldom covers
+  one day of one company.
+- **What it means for the next kinds:** a filing kind is worth a step of its own when it has a
+  surprise to sign it; 2.05 and 3.02 move shares without a results day. Most unexplained moves
+  are an industry's or the economy's, which the project already measures by flow (oil, CPI, the
+  Fed): a member's move against its sector, not the index, would be the next measure.

@@ -6,6 +6,7 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-21 | Step 40: big moves and the news filed with them; the 8-K items against S&P 500 members' big moves, and 40 unfiled big moves read by hand | PR #394 |
 | 2026-11-20 | Step 39: an exact meet (Nasdaq's `N/A`) read as *as expected*; 119 Dow and 1,685 S&P 500 reports added | PR #392 |
 | 2026-11-20 | Step 38 ended at step 1: no CEO who stayed in the members' 8-Ks; the kind stays parked | PR #391 |
 | 2026-11-20 | Step 37 results: a split announced alone, *up* on the day and holding (33 of 51); in an earnings release *can't say* | PR #390 |
