@@ -18,6 +18,13 @@ the shares trailed on 27 of 43 days (p 0.06), short of an answer; nothing answer
 
 ## In progress
 
+- **Step 45: the S&P 500 on the page** ([the spec](steps/sp500-on-the-page.md)): steps 35 to
+  37's groups on *Ask*, frozen from a copy of the store, and every S&P 500 member's report in the
+  reports ahead. Chosen 2026-11-21 by the owner, after step 44. The frozen file agrees with steps
+  35 to 37; the page is being written. Next: step 46, the loop's safety nets.
+- **Step 47: Fortuneteller predicts** ([the spec](steps/predicts.md)): a page of one to five
+  dated *if* cards from what holds, asked for by the owner 2026-11-21. Spec reviewed, built; it
+  is published with step 45.
 - **Step 44: a page a stranger reads** ([the spec](steps/readers.md)): the first screen on the
   answers that hold, market names outside a closed *workings*, and the Dow's reports of the next
   seven days with what followed each kind, for step 23's readers. Chosen 2026-11-21 by the owner.

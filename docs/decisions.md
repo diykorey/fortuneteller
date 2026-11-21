@@ -11,6 +11,21 @@ amended there with a date.
 Each entry: **what** was decided, **why**, what it **retires**, and **where** the detail is. *By the
 owner* marks a choice the owner made over another on the table.
 
+## 2026-11-21: The postponed list worked through, the page first, by the owner
+
+- **What:** with nothing to build before Monday, the owner asked what had been postponed. Of the
+  items not parked by an earlier decision, the owner chose this order:
+  1. step 45, the S&P 500's measured groups on the page and its reports ahead;
+  2. step 46, the loop's safety nets;
+  3. the `.env` and paths fix from *Known, not yet fixed*, as a small change alongside.
+
+  Everything parked until the gate stays parked.
+- **Why:** step 44's reports ahead held two Dow reports before January. The S&P 500 holds the
+  strongest link measured (a miss's day, 2,506 of 3,798) and dozens of reports a week. The loop is
+  the gate's first bar.
+- **Retires:** nothing.
+- **Where:** [step 45](steps/sp500-on-the-page.md); [roadmap](roadmap.md) row 45.
+
 ## 2026-11-21: Improve for readers before widening, by the owner
 
 - **What:** asked whether to widen or improve, the owner chose to improve, readers first, with the

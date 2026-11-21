@@ -6,6 +6,7 @@ from pathlib import Path
 import pytest
 from pydantic import SecretStr
 
+import fortuneteller.__main__ as cli
 from fortuneteller import db, expectations, flows, sources
 from fortuneteller.config import settings
 
@@ -36,6 +37,8 @@ def no_calendars(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(sources, "_calendar_get", refuse)
     # Nor Nasdaq's earnings calendar (step 44): no report is ahead unless a test serves some.
     monkeypatch.setattr(sources, "fetch_earnings_day", lambda day: [])
+    # The S&P 500's frozen groups (step 45) join the page only where a test gives a file.
+    monkeypatch.setattr(cli, "SP500_ASK", tmp_path / "no_ask_sp500.json")
 
     # No FRED series is fetched either, unless a test serves it (the breakeven: fred_breakeven).
     def refuse_fred(api_key: str, series_id: str, timeout: float = 30.0) -> bytes:

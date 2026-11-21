@@ -158,7 +158,7 @@ if ! git -C "$job_tree" diff --quiet -- "$file"; then
     # The scoreboard (docs/steps/scoreboard.md) is rewritten into the same pull request.
     FT_CALLS_PATH=data/calls.csv uv run --directory "$job_tree" fortuneteller scoreboard ||
         report "fortuneteller scoreboard exited $?"
-    files="$file docs/scoreboard"
+    files="$file docs/scoreboard docs/predicts"
     [ -z "$log_changed" ] || files="$files $log"
     open_pr "Score the calls on $day" "score-$day" \
         "Graded by the evening score at $(date -u +%H:%M:%SZ), after the closes."
@@ -175,14 +175,14 @@ else
     # reports ahead on it stay current; it goes with the triggers' log when that changed.
     FT_CALLS_PATH=data/calls.csv uv run --directory "$job_tree" fortuneteller scoreboard ||
         report "fortuneteller scoreboard exited $?"
-    page_changed=$(git -C "$job_tree" status --porcelain -- docs/scoreboard)
+    page_changed=$(git -C "$job_tree" status --porcelain -- docs/scoreboard docs/predicts)
     if [ -n "$log_changed" ]; then
         files=$log
-        [ -z "$page_changed" ] || files="$files docs/scoreboard"
+        [ -z "$page_changed" ] || files="$files docs/scoreboard docs/predicts"
         open_pr "Grade the triggers on $day" "triggers-$day" \
             "Answered and graded by the evening score at $(date -u +%H:%M:%SZ), after the closes."
     elif [ -n "$page_changed" ]; then
-        files=docs/scoreboard
+        files="docs/scoreboard docs/predicts"
         open_pr "Write the page on $day" "scoreboard-$day" \
             "Written by the evening score at $(date -u +%H:%M:%SZ), with nothing to score."
         if checks_pass "scoreboard-$day"; then

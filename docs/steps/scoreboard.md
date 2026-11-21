@@ -36,7 +36,10 @@ evening job. The first thing delivered beyond this laptop.
   *the workings*, a closed part holding the replay and statistics grids; `earnings_ahead` lists the
   Dow's reports of the next seven weekdays, each kind's line from *Ask*'s day cell. *Amends the
   writing rule above:* on a weekday with nothing to score, the evening job still writes the page
-  and, if it differs, opens and merges `scoreboard-DAY` once its checks pass.
+  and, if it differs, opens and merges `scoreboard-DAY` once its checks pass. *Amended the same
+  day ([step 45](sp500-on-the-page.md)):* `earnings_ahead` is the S&P 500 earnings group's three
+  lines and its members' reports by day; the S&P 500's three groups come frozen from
+  `data/seed/ask_sp500.json`, each with its `measured` day.
 - **The week ahead** (*added 2026-11-04*, [step 15](week-ahead.md)): `ahead` lists each release
   `live` calls in the next seven days, its consensus, thresholds and each link's rule and record;
   `null` when the calendar cannot be read. The page shows it first. *Added 2026-11-04*
