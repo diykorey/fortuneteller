@@ -1,0 +1,6 @@
+follows: 125 S&P 500 additions 2007-09-24 … 2019-12-13: 125 added
+kind  span   market        n  up same down  out/hole  base up/same/down  answer          chance  placebo  walk-forward
+added day    vs S&P 500    83  44    4   35     0/39  0.35/0.33/0.32     can't say       0.3171  -        51: 29 right, doesn't hold
+added week   vs S&P 500    83  34   18   31     0/39  0.37/0.33/0.30     can't say       0.3201  -        0: 0 right, too few
+added month  vs S&P 500    81  28   23   30     0/39  0.40/0.33/0.26     can't say       0.0339  -        2: 0 right, too few
+by chance: about 0.1 answers on all history, 0.0 holds walk-forward

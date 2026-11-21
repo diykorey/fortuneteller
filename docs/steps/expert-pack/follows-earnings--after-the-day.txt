@@ -1,0 +1,12 @@
+follows: 1397 earnings reports 2008-01-10 … 2019-12-19: 908 above, 330 as expected, 159 below, spans from the reaction close
+kind        span   market        n  up same down  out/hole  base up/same/down  answer          chance  placebo  walk-forward
+above       day    vs S&P 500   897 301  230  366      0/2  0.33/0.33/0.33     down            0.0086  -        516: 198 right, doesn't hold
+above       week   vs S&P 500   892 319  234  339      0/7  0.34/0.33/0.33     can't say       0.1755  -        0: 0 right, too few
+above       month  vs S&P 500   885 263  344  278     0/13  0.34/0.33/0.32     about the same  0.0003  period   424: 166 right, doesn't hold
+as expected day    vs S&P 500   326 112   79  135      0/1  0.33/0.33/0.34     can't say       0.1006  -        0: 0 right, too few
+as expected week   vs S&P 500   325 118   95  112      0/2  0.33/0.33/0.33     can't say       0.3762  -        0: 0 right, too few
+as expected month  vs S&P 500   321 106  108  107      0/6  0.33/0.33/0.33     can't say       0.3636  -        0: 0 right, too few
+below       day    vs S&P 500   152  47   26   79      0/0  0.32/0.33/0.34     down            0.0088  -        119: 55 right, doesn't hold
+below       week   vs S&P 500   151  39   47   65      0/1  0.32/0.33/0.35     can't say       0.0423  -        0: 0 right, too few
+below       month  vs S&P 500   148  39   41   68      0/4  0.30/0.33/0.36     can't say       0.0309  -        0: 0 right, too few
+by chance: about 0.3 answers on all history, 0.0 holds walk-forward

@@ -20,8 +20,9 @@ written first; the rules that pass logged as calls and graded forward as events 
 ## The way to reach it
 
 - **The pack the expert reads,** in `docs/steps/expert-pack/`, frozen before the expert runs: the
-  records as they stood at 2019-12-31, and nothing after. Every flow's events to that day (the
-  seeds in `data/seed/`, cut at the day, same columns); `follows` for every flow, both runs (from
+  records as they stood at 2019-12-31, and nothing after. Every flow's events to that day
+  (`events.csv`, the store copy's `event_instances` to that day: time, type, detail, actual,
+  consensus, surprise); `follows` for every flow, both runs (from
   the close before, and with `--after-the-day` from the reaction close), on a copy of the store
   whose events and closes end on 2019-12-31; `kinds.txt`, every flow with its kinds and every
   market in the store with its unit; and this spec's rule language and bars.
@@ -36,7 +37,8 @@ written first; the rules that pass logged as calls and graded forward as events 
   `kind` (a flow and kind of `kinds.txt`, such as `earnings500`, *below*); `condition` (`none`,
   `move` or `event`); for `move`: `on` (a market of `kinds.txt`, or `company`), `closes` (21 or
   63), `side` (`above` or `below`) and `threshold` (in the market's unit: percent for a price, or
-  for the company's own shares, raw; points for a yield); for `event`: `other_flow` and
+  for the company's own shares, raw; basis points for a yield or breakeven, as `kinds.txt` gives
+  each); for `event`: `other_flow` and
   `other_kind` (any flow and kind but the rule's own); `market` (a market of `kinds.txt`, or
   `company`); `span` (`day`, `week`, `month`, from the close before); `direction` (`up` or `down`);
   `reasoning`. A row with a value outside these is *untestable*, counted, not rewritten.
@@ -113,8 +115,9 @@ the second reader's band, and the checks below.*
 
 ## Technical details
 
-- The pack: `follows` output as text, one file per flow and run; the seeds cut by date with the
-  same columns.
+- The pack: `follows` output as text, one file per flow and run, with the lines of COIN (listed
+  2021, no close before 2020; its closes kept in the copy only because `follows` needs every
+  market's) taken out; `events.csv` from the copy.
 - `scripts/expert_test.py` reuses `study.excess_spans`, `study.event_base` and `follows`' answer
   and placebo; the condition's moves come from `daily_bars`.
 - Tests in `tests/test_expert_test.py`, as the seed scripts' tests.

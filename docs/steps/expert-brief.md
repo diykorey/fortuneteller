@@ -32,7 +32,7 @@ about 0.4 would pass by chance alone.
 | `id` | 1 to 40 |
 | `flow`, `kind` | a flow and one of its kinds, as in `kinds.txt` |
 | `condition` | `none`, `move` or `event` |
-| `on`, `closes`, `side`, `threshold` | for `move`: a market of `kinds.txt` or `company`; 21 or 63; `above` or `below`; a number in the market's unit (percent for a price or a company's shares, points for a yield). Empty otherwise |
+| `on`, `closes`, `side`, `threshold` | for `move`: a market of `kinds.txt` or `company`; 21 or 63; `above` or `below`; a number in the market's unit (`pct`, percent, for a price or a company's shares; `bps`, basis points, for a yield or breakeven). Empty otherwise |
 | `other_flow`, `other_kind` | for `event`: another flow and kind, met when one has its reaction close within the 21 closes before. Empty otherwise |
 | `market` | a market of `kinds.txt`, or `company` (the event's own company, against the S&P 500) |
 | `span` | `day`, `week` or `month`, from the close before |

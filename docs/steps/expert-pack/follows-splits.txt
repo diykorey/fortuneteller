@@ -1,0 +1,9 @@
+follows: 56 stock splits 2011-01-21 … 2019-04-18: 45 alone, 11 with a report
+kind          span   market        n  up same down  out/hole  base up/same/down  answer          chance  placebo  walk-forward
+alone         day    vs S&P 500    45  30    9    6      0/0  0.35/0.33/0.32     up              0.0001  -        22: 15 right, too few
+alone         week   vs S&P 500    45  29   11    5      0/0  0.37/0.33/0.29     up              0.0003  -        15: 11 right, too few
+alone         month  vs S&P 500    45  22   12   11      0/0  0.41/0.33/0.25     can't say       0.3088  -        0: 0 right, too few
+with a report day    vs S&P 500    11   8    0    3      0/0  0.34/0.33/0.32     can't say       0.1368  -        0: 0 right, too few
+with a report week   vs S&P 500    11   8    1    2      0/0  0.37/0.33/0.30     can't say       0.1068  -        0: 0 right, too few
+with a report month  vs S&P 500    11   8    3    0      0/0  0.41/0.33/0.25     can't say       0.0285  -        0: 0 right, too few
+by chance: about 0.2 answers on all history, 0.0 holds walk-forward
