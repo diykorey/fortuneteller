@@ -54,7 +54,9 @@ coded sample of big moves no 8-K explains.
   with *N* of them and *n* = N ÷ 40 rounded down, rows *n*, 2*n*, … 40*n*. Each is read from free sources (a web search on the company and the day; EDGAR for an
   8-K filed later) and coded once: *filed later* (an 8-K within the next four closes names it),
   *company news, unfiled* (a press release, guidance at a conference), *analyst action*, *peer or
-  sector news*, *legal or regulatory*, *index change*, *nothing found*. Each with its source in
+  sector news* (its own industry or commodity), *market or economy news* (a data release, a central
+  bank, a crisis, that the company moved with more than the index; *added 2026-11-21 by the owner*,
+  after the second reading stopped step 2, see below), *legal or regulatory*, *index change*, *nothing found*. Each with its source in
   `docs/steps/news-moves-sample.csv`; a *nothing found* row gives the searches made. *Filed later*
   needs the later 8-K to describe the same event the day's news reports.
 - **A script,** `scripts/news_moves.py`, prints the matrix and the sample's days; run on a copy of
@@ -101,6 +103,10 @@ its items.*
   504 closes before, within 0.01 point; and the window's 8-Ks against EDGAR's filing pages, the
   same accessions and acceptance minutes. Five member-days with no 8-K checked the same way on
   EDGAR. Any check that fails stops step 1 until the script is fixed.
+- *Amended 2026-11-21, by the owner:* the first coding stopped step 2 (4 of 10 disagreed, 3 of
+  them news about the whole economy, which had no code). With the new code all 40 are coded again
+  by new readers, and the second reading taken again on the same rows, by the same bar; the first
+  coding and its second reading stay in the results file.
 - A second reading of ten sample rows (1, then every fourth) by a reviewer who sees only the codes
   above, given the row's sources; disagreeing on more than two stops step 2 for the owner's call,
   with both readings recorded.
