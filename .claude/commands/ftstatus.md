@@ -10,7 +10,8 @@ Read:
 - `docs/status.md` (last completed, in progress, next)
 - `docs/roadmap.md` (the steps, the next gate and its date)
 - `README.md`, its *Status* section and **What it predicts**
-- `docs/scoreboard/data.json`, for the live calls' record so far (counts, not probabilities)
+- `docs/scoreboard/data.json`: `calls` for the live calls' record so far (counts, not
+  probabilities), `ahead` for the releases coming up, `written` for how fresh it is
 - `docs/changelog.md`, the top five rows
 - each step spec's *Step 5* forward log named in status (e.g. `docs/steps/*-forward.csv`): how many
   rows are logged and graded so far
