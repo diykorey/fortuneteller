@@ -197,7 +197,7 @@ step 18 trigger; reading the news into kinds waits in the backlog below.
 3B, or Inkling 2 Mini, a 26B model with about 5B active, *added 2026-11-21*), tested on a fresh labelled set: step 20's parked next try, widened to phase 5's kinds.
 
 Later, not planned in detail, each chosen one at a time after the gate: free expected values
-beside the consensus, the Cleveland Fed's inflation nowcast for CPI and PCE first, then the
+beside the consensus, the Cleveland Fed's PCE nowcast first (its CPI nowcast is step 4's baseline already, *corrected 2026-11-21*), then the
 Philadelphia Fed survey's history for GDP ([free sources](free-sources.md), *added 2026-11-21*); new kinds of
 events, each a dated history before a flow (droughts, once a free source dates them by day;
 crypto's own news; OPEC+, floods and earnings were measured in steps 24, 30 and 31); a CEO's

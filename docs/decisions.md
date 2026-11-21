@@ -27,7 +27,8 @@ owner* marks a choice the owner made over another on the table.
   research on how markets meet releases, kept as [free sources](free-sources.md). No free
   consensus with history was found; the Federal Reserve banks' free forecasts are the nearest.
   The owner chose to keep the survey and plan after the gate: the Cleveland Fed's inflation
-  nowcast as a second expected value for CPI and PCE first, then the Philadelphia Fed survey's
+  nowcast as a second expected value for PCE first (*corrected the same day:* its CPI nowcast has
+  been step 4's baseline since 2026-10-05; only its PCE series is unused), then the Philadelphia Fed survey's
   history for GDP, on the roadmap's *Later* list.
 - **Why:** the expected value is the part of a surprise the project cannot get free with history;
   the gate (2027-01-31) holds new work until it is passed.
