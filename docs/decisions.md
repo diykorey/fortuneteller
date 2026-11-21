@@ -11,6 +11,20 @@ amended there with a date.
 Each entry: **what** was decided, **why**, what it **retires**, and **where** the detail is. *By the
 owner* marks a choice the owner made over another on the table.
 
+## 2026-11-21: Big moves against the news filed with them, by the owner
+
+- **What:** step 40 starts from the moves, not the news: the S&P 500 members' days of a move
+  three deviations or more against the index, from 2011, matched with the 8-Ks filed that day,
+  item by item, each against its share on every day; and a hand-read sample of the big moves no
+  8-K explains. Asked how to see which news moves prices, the owner chose this over news sites
+  read after each move.
+- **Why:** the 8-K items are free, dated to the minute and the same on every rerun; news sites
+  are paid or refuse scripts. Reading news only after big moves always finds a reason, so every
+  item is also counted on the days that did not move.
+- **Retires:** nothing. It is a census, not a flow: a kind it finds is measured by a step of its
+  own.
+- **Where:** [step 40](steps/news-moves.md).
+
 ## 2026-11-20: Four more kinds, by the owner
 
 - **What:** asked which kind phase 5 measures next, the owner answered all four offered: S&P 500
