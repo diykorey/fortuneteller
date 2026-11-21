@@ -153,7 +153,7 @@ def test_a_calendar_that_cannot_be_read_leaves_only_the_watch_empty(
             raise sources.CalendarError("TradingView is down")
         return NO_DATA
 
-    def data(rows, con, today, graded, bad, ahead, watch):  # type: ignore[no-untyped-def]
+    def data(rows, con, today, graded, bad, ahead, watch, earnings_days=None):  # type: ignore[no-untyped-def]
         return {"events": [], "data_until": None, "ahead": ahead, "watch": watch}
 
     ahead = [{"day": "2026-11-13", "event": "nfp"}]

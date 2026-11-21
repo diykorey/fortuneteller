@@ -36,7 +36,8 @@ At the end the published [scoreboard page](scoreboard.md):
   - One sentence on what the page is: what followed past events of a kind, counted, an
     entertainment tool.
   - *The answers that hold*: every cell whose verdict is *holds*, less the kind cells (those read
-    off the kind's own definition). Each is shown as its cell's sentence (`say`) and links to its
+    off the kind's own definition) and those the placebo reads as *the period*, as *Ask* marks
+    neither as held. Each is shown as its cell's sentence (`say`) and links to its
     `#ask/FLOW/KIND` address. They are listed in *Ask*'s order of flows, kinds and cells. On
     2026-11-19's data that is seven:
     - the jobs report above → the 10-year and 5-year Treasuries' yields up on the day;
@@ -57,7 +58,8 @@ At the end the published [scoreboard page](scoreboard.md):
     for that kind, the company against the S&P 500 on the day. It is measured from the close
     before, as the rest of the page is.
   - **How each cell reads:** a cell that holds shows its answer and its replay's counts ("down,
-    right 156 of 219 replayed"). Any other cell shows no direction: *did not hold*, or *too few*.
+    right 156 of 219 replayed"). Any other cell shows no direction: *did not hold*, *too few*, or *it reads as the
+    period*.
   - **Nothing is said before the report lands.** The kind comes from the actual, so the line
     reads *if it misses*, as the week ahead already reads *if above*.
   - **A failed ask** writes *the earnings calendar could not be read*, as the week ahead does.
@@ -95,7 +97,7 @@ At the end the published [scoreboard page](scoreboard.md):
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | The first screen and *the answers that hold* | A test writes the page from a stubbed data file of a holding cell, a kind cell that holds, and a cell that does not. Only the first is listed, in *Ask*'s order, and *Ask*'s first pick is its kind |
-| 2 | Names, not codes, and *the workings* | A test reads the written page's text outside the `<details>` as whole words. No code from the data's market list is in it, written as the data writes it (`SPY / ES`, `ALL`, `COIN`). The three sections are inside the `<details>` |
+| 2 | Names, not codes, and *the workings* | A test reads the written page's text outside the `<details>` as whole words. No code from the data's market list is in it, written as the data writes it (`SPY / ES`, `ALL`, `COIN`), but where the market's name holds its code (`DAX`, `VIX (equity volatility)`). Text inside `<code>`, the guess file's format, is not read The three sections are inside the `<details>` |
 | 3 | Earnings ahead | Tests with a stubbed Nasdaq page cover a member reporting, a non-member left out, a row without a time, and a failed ask. Each kind's line carries that kind's own cell from the close before. A holding cell shows its counts, and any other cell no direction |
 | 4 | `weekly-post` gains the week ahead's lines and the first answer that holds | A test on a stubbed week finds each report's line, as on the page, and the first answer's sentence |
 | 5 | The evening job writes the page each weekday | `scripts/release-day.sh` runs `scoreboard` on a day with nothing to score, commits only when the page differs, and waits on an open `scoreboard-` pull request as on the others. Checked on the first evening after it is installed |
@@ -104,7 +106,7 @@ At the end the published [scoreboard page](scoreboard.md):
 ## How you know it is right
 
 - The answers that hold equal, cell for cell, the cells with verdict *holds* that
-  `fortuneteller follows` prints for each flow, less the kind cells
+  `fortuneteller follows` prints for each flow, less the kind cells and the period's
   ([step 29](ask-phase-5.md)'s check).
 - On the published page, each earnings line's three cells equal *Ask*'s day cells for that kind.
   A test swaps the stubbed kinds' counts and checks that the lines follow.

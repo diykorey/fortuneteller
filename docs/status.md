@@ -21,7 +21,8 @@ the shares trailed on 27 of 43 days (p 0.06), short of an answer; nothing answer
 - **Step 44: a page a stranger reads** ([the spec](steps/readers.md)): the first screen on the
   answers that hold, market names outside a closed *workings*, and the Dow's reports of the next
   seven days with what followed each kind, for step 23's readers. Chosen 2026-11-21 by the owner.
-  The spec is written; next, its goldfish review.
+  Spec reviewed; steps 1 to 5 built. Next: the page published, the evening job's first
+  weekday write checked, then the second first-visitor review in the week of 2026-11-30.
 - **Step 42, step 5: the forward log** ([the spec](steps/exposure-scores.md)): each OPEC+, CPI,
   Fed and retail event after the scores' commit, its spread per rubric written to
   `steps/exposure-forward.csv` and graded, to the 2027-01-31 gate.

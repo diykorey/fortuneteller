@@ -644,6 +644,21 @@ def fetch_nasdaq_day(
     )
 
 
+# Step 44 (docs/steps/readers.md): the companies reporting on a day, by Nasdaq's earnings calendar,
+# the page step 31 reads; a day ahead holds no actuals yet.
+NASDAQ_EARNINGS_URL = "https://api.nasdaq.com/api/calendar/earnings?date={day}"
+
+
+def fetch_earnings_day(day: date, timeout: float = 60.0) -> list[dict[str, str]]:
+    """Each report Nasdaq lists for ``day``: its ``symbol``, ``name`` and ``time``."""
+    body = _calendar_get(NASDAQ_EARNINGS_URL.format(day=day), f"Nasdaq earnings {day}", timeout)
+    try:
+        rows = json.loads(body)["data"]["rows"] or []
+    except (ValueError, KeyError, TypeError):
+        raise CalendarError(f"Nasdaq earnings {day}: an unreadable reply") from None
+    return [{k: str(r.get(k) or "") for k in ("symbol", "name", "time")} for r in rows]
+
+
 def calendar_number(text: str | float | None) -> float | None:
     """A calendar value as a number in percent or thousands; ``None`` when blank."""
     if text is None or isinstance(text, (int, float)):

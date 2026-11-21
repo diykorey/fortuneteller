@@ -131,7 +131,7 @@ fi
 
 file=data/score.txt
 waiting=$(gh pr list -R "$repo" --state open --json headRefName \
-    --jq '.[].headRefName | select(startswith("calls-") or startswith("score-") or startswith("triggers-"))') ||
+    --jq '.[].headRefName | select(startswith("calls-") or startswith("score-") or startswith("triggers-") or startswith("scoreboard-"))') ||
     report "gh pr list"
 if [ -n "$waiting" ]; then
     printf 'score: waiting for %s to be merged\n' "$waiting"
@@ -170,8 +170,25 @@ if ! git -C "$job_tree" diff --quiet -- "$file"; then
     else
         echo "score: checks did not pass; score-$day left open for review"
     fi
-elif [ -n "$log_changed" ]; then
-    files=$log
-    open_pr "Grade the triggers on $day" "triggers-$day" \
-        "Answered and graded by the evening score at $(date -u +%H:%M:%SZ), after the closes."
+else
+    # With nothing to score the page is still written (docs/steps/readers.md), so the Dow's
+    # reports ahead on it stay current; it goes with the triggers' log when that changed.
+    FT_CALLS_PATH=data/calls.csv uv run --directory "$job_tree" fortuneteller scoreboard ||
+        report "fortuneteller scoreboard exited $?"
+    page_changed=$(git -C "$job_tree" status --porcelain -- docs/scoreboard)
+    if [ -n "$log_changed" ]; then
+        files=$log
+        [ -z "$page_changed" ] || files="$files docs/scoreboard"
+        open_pr "Grade the triggers on $day" "triggers-$day" \
+            "Answered and graded by the evening score at $(date -u +%H:%M:%SZ), after the closes."
+    elif [ -n "$page_changed" ]; then
+        files=docs/scoreboard
+        open_pr "Write the page on $day" "scoreboard-$day" \
+            "Written by the evening score at $(date -u +%H:%M:%SZ), with nothing to score."
+        if checks_pass "scoreboard-$day"; then
+            merge_pr "scoreboard-$day"
+        else
+            echo "score: checks did not pass; scoreboard-$day left open for review"
+        fi
+    fi
 fi

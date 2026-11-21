@@ -955,9 +955,11 @@ def weekly_post_lines(
     start: datetime,
     end: datetime,
     names: Mapping[str, str],
+    page: Mapping[str, object] | None = None,
 ) -> list[str]:
     """The week's post: its releases, each call logged in it and its grade, the record of graded
-    calls so far, the link and the disclaimer. ``grades`` holds ``_grade``'s word for each row
+    calls so far, the page's first answer that holds and its Dow reports ahead (step 44), the link
+    and the disclaimer. ``grades`` holds ``_grade``'s word for each row
     with a direction, by its place in ``rows``; a call is a row whose outcome is ``call``."""
     week = [r for r in rows if start <= r.logged_at < end]
     last = (end - timedelta(days=1)).date()
@@ -978,7 +980,29 @@ def weekly_post_lines(
         lines.append("No call this week.")
     right = sum(grades.get(i) == "right" for i, _ in calls)
     wrong = sum(grades.get(i) == "wrong" for i, _ in calls)
-    lines += ["", f"The record so far: {right} right, {wrong} wrong.", SCOREBOARD_URL, DISCLAIMER]
+    lines += ["", f"The record so far: {right} right, {wrong} wrong."]
+    lines += _post_page_lines(page or {}, end.date())
+    lines += [SCOREBOARD_URL, DISCLAIMER]
+    return lines
+
+
+def _post_page_lines(page: Mapping[str, object], since: date) -> list[str]:
+    """The page's first answer that holds, and each Dow report ahead from ``since``, as the page
+    has them."""
+    lines: list[str] = []
+    holds = page.get("holds") or []
+    assert isinstance(holds, list)
+    if holds:
+        lines += ["", "An answer that holds: " + str(holds[0]["say"])]
+    reports = page.get("earnings_ahead") or []
+    assert isinstance(reports, list)
+    coming = [r for r in reports if date.fromisoformat(r["day"]) >= since]
+    if coming:
+        lines += ["", "Dow companies reporting:"]
+        lines += [
+            f"{r['name']} ({r['symbol']}), {r['day']}, {r['time']}. " + " ".join(r["lines"])
+            for r in coming
+        ]
     return lines
 
 
@@ -1001,7 +1025,12 @@ def _weekly_post(_args: argparse.Namespace) -> int:
         if r.direction is not None and r.flow in scores
     }
     start, end = study.last_full_week(_now())
-    for line in weekly_post_lines(rows, grades, start, end, market_names()):
+    page = None
+    try:
+        page = json.loads((settings.scoreboard_dir / "data.json").read_text())
+    except (OSError, ValueError) as exc:
+        print(f"weekly-post: the page's data: {exc}", file=sys.stderr)
+    for line in weekly_post_lines(rows, grades, start, end, market_names(), page):
         print(line)
     print()
 
@@ -1687,6 +1716,7 @@ def scoreboard_data(
     bad: Sequence[str] = (),
     ahead: list[dict[str, object]] | None = None,
     watch: list[dict[str, object]] | None = None,
+    earnings_days: Callable[[date], list[dict[str, str]]] | None = None,
 ) -> dict[str, object]:
     """The page's numbers: what ``raw-move``, ``surprise`` and ``predict`` print for every flow
     with releases stored, the calls and the guesses as ``score`` grades them, and the chance count
@@ -1806,6 +1836,13 @@ def scoreboard_data(
         "surprise": study.TRACK_P_BAR,
         "walk_forward": study.TRACK_P_BAR,
     }
+    asked = ask_data(con)
+    earnings = None
+    if earnings_days is not None:
+        try:
+            earnings = earnings_ahead(today, asked["ask"], earnings_days)
+        except sources.CalendarError as exc:
+            print(f"scoreboard: the earnings calendar: {exc}", file=sys.stderr)
     return {
         "written": today.isoformat(),
         "data_until": None if last_close is None else last_close.isoformat(),
@@ -1827,7 +1864,10 @@ def scoreboard_data(
         "handles": handle_counts(graded),
         "ahead": ahead,
         "watch": watch,
-        **ask_data(con),
+        "market_names": market_names(),
+        **asked,
+        "holds": answers_that_hold(asked["ask"]),
+        "earnings_ahead": earnings,
     }
 
 
@@ -2096,6 +2136,98 @@ def week_ahead(
     return sorted(ahead, key=lambda release: str(release["day"]))
 
 
+# Step 44, a page a stranger reads (docs/steps/readers.md): the answers that hold first, and the
+# Dow's reports of the next seven weekdays with what followed each kind.
+EARNINGS_WORDS = {
+    "above": "If it beats",
+    "as expected": "If it is in line",
+    "below": "If it misses",
+}
+EARNINGS_TIMES = {"time-pre-market": "before the open", "time-after-hours": "after the close"}
+
+
+def _answered(cell: Mapping[str, object]) -> bool:
+    return cell["verdict"] == "holds" and not cell["kind_cell"] and not cell["period"]
+
+
+def answers_that_hold(ask: Sequence[Mapping[str, object]]) -> list[dict[str, str]]:
+    """Every cell that holds, less the kind cells and those read as the period, in *Ask*'s order
+    of flows, kinds and cells; each its sentence and the kind it opens."""
+    held = []
+    for flow in ask:
+        kinds = flow["kinds"]
+        cells = flow["cells"]
+        assert isinstance(kinds, list) and isinstance(cells, list)
+        order = [k["kind"] for k in kinds]
+        for c in sorted(filter(_answered, cells), key=lambda c: order.index(c["kind"])):
+            held.append({"flow": str(flow["name"]), "kind": c["kind"], "say": c["say"]})
+    return held
+
+
+def earnings_line(kind: str, cell: Mapping[str, object] | None) -> str:
+    """One kind's line for a report ahead: a direction only from a cell that holds."""
+    word = EARNINGS_WORDS[kind]
+    if cell is None:
+        return f"{word}: not measured."
+    if _answered(cell):
+        return f"{word}: {cell['answer']}, right {cell['right']} of {cell['graded']} replayed."
+    if cell["verdict"] == "holds" and cell["period"]:
+        return f"{word}: it reads as the period, not the report."
+    if cell["verdict"] == "too few":
+        return f"{word}: too few to say."
+    return f"{word}: did not hold."
+
+
+def dow_members(day: date) -> set[str]:
+    """The Dow's members on ``day`` by data/seed/dow.csv's dated changes."""
+    members: set[str] = set()
+    with (settings.seed_dir / "dow.csv").open(newline="") as f:
+        for row in csv.DictReader(f):
+            if date.fromisoformat(row["day"]) <= day:
+                (members.add if row["change"] == "in" else members.discard)(row["ticker"])
+    return members
+
+
+def earnings_ahead(
+    today: date,
+    ask: Sequence[Mapping[str, object]],
+    fetch: Callable[[date], list[dict[str, str]]],
+) -> list[dict[str, object]]:
+    """Each Dow member's report Nasdaq lists in the ``AHEAD_DAYS`` weekdays after ``today``, with
+    a line per kind from *Ask*'s day cell against the S&P 500."""
+    earnings = next((f for f in ask if f["name"] == "earnings"), None)
+    cells: dict[object, Mapping[str, object]] = {}
+    if earnings is not None:
+        listed = earnings["cells"]
+        assert isinstance(listed, list)
+        cells = {
+            c["kind"]: c
+            for c in listed
+            if c["span"] == "day" and c["market"] == study.EXCESS_MARKET
+        }
+    rows: list[dict[str, object]] = []
+    day, counted = today, 0
+    while counted < AHEAD_DAYS:
+        day += timedelta(days=1)
+        if day.weekday() >= 5:
+            continue
+        counted += 1
+        members = dow_members(day)
+        for report in fetch(day):
+            if report["symbol"] not in members:
+                continue
+            rows.append(
+                {
+                    "day": day.isoformat(),
+                    "symbol": report["symbol"],
+                    "name": report["name"],
+                    "time": EARNINGS_TIMES.get(report["time"], "time not given"),
+                    "lines": [earnings_line(k, cells.get(k)) for k in EARNINGS_WORDS],
+                }
+            )
+    return rows
+
+
 def week_watch(today: date, cache_dir: Path) -> list[dict[str, object]]:
     """Each scheduled event `live` does not call, from the day after ``today`` to ``AHEAD_DAYS``
     after it, oldest first, at its New York time (docs/steps/watch-ahead.md)."""
@@ -2158,7 +2290,9 @@ def _scoreboard(_args: argparse.Namespace) -> int:
     except sources.CalendarError as exc:
         print(f"scoreboard: also on the calendar: {exc}", file=sys.stderr)
     try:
-        data = scoreboard_data(rows, con, today, graded, bad, ahead, watch)
+        data = scoreboard_data(
+            rows, con, today, graded, bad, ahead, watch, lambda d: sources.fetch_earnings_day(d)
+        )
     except ValueError as exc:
         print(f"scoreboard: {exc}", file=sys.stderr)
         return 1

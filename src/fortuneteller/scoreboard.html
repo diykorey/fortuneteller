@@ -54,9 +54,16 @@ a { color: inherit; }
 <body>
 <h1>FortuneTeller</h1>
 <p class="muted" id="when"></p>
-<p class="muted">Every call made on a release day, graded on the market's close; every event's
-verdicts for every market; every link's record on the replay. The numbers are the ones
-<a href="https://github.com/diykorey/fortuneteller">the commands</a> print.</p>
+<p><strong>What followed past events, counted.</strong> Pick a kind of event, a jobs report
+above forecasts or an OPEC+ cut, and see what markets did after every past one. An entertainment
+tool, not financial advice. The numbers are the ones
+<a href="https://github.com/diykorey/fortuneteller">the code</a> prints.</p>
+
+<h2 id="answers-that-hold">The answers that hold</h2>
+<p class="muted">Most kinds of event are followed by nothing a count can tell from chance. These
+are the ones that are, and that also held when every past event was answered only from the ones
+before it.</p>
+<ul id="holds"></ul>
 
 <h2 id="ask-the-fortune-teller">Ask the fortune teller</h2>
 <p class="muted"><strong>Entertainment, not financial advice.</strong> Pick a kind of event and see
@@ -77,6 +84,13 @@ threshold. A smaller surprise gets no call. Each market's record is its replay, 
 predicted from the ones before it.</p>
 <div class="wrap"><table id="ahead"></table></div>
 <p class="muted" id="ahead-rule"></p>
+
+<h3>Dow companies reporting</h3>
+<p class="muted"><strong>Entertainment, not financial advice. Nothing is said until the report
+lands.</strong> Each Dow company reporting in the next seven weekdays, and what its shares did
+against the S&amp;P 500 on the day after past Dow reports of each kind: a direction only where it
+held.</p>
+<div class="wrap"><table id="earnings-ahead"></table></div>
 
 <h3>Also on the calendar</h3>
 <p class="muted"><strong>Entertainment, not financial advice.</strong> No call: no direction is given
@@ -108,6 +122,10 @@ record is shown, losses included. A handle is dropped from the page on request; 
 <div class="wrap"><table id="guesses"></table></div>
 <ul class="muted" id="bad-guesses"></ul>
 
+<details id="workings">
+<summary><strong>The workings</strong>: the replays and statistics behind the answers, by market
+code</summary>
+
 <h2>Replay: every release predicted from the ones before it</h2>
 <div class="wrap"><table id="walk"></table></div>
 <p class="muted" id="walk-chance"></p>
@@ -119,6 +137,7 @@ record is shown, losses included. A handle is dropped from the page on request; 
 <h2>Do release days move more than ordinary days?</h2>
 <div class="wrap"><table id="raw"></table></div>
 <p class="muted" id="raw-chance"></p>
+</details>
 
 <script id="data" type="application/json">__SCOREBOARD_DATA__</script>
 <script>
@@ -147,6 +166,8 @@ record is shown, losses included. A handle is dropped from the page on request; 
   const pct = (rate) => Math.round(rate * 100) + '%';
   const p4 = (p) => p.toFixed(4);
   const labels = Object.fromEntries(data.events.map((e) => [e.name, e.label]));
+  const names = data.market_names || {};
+  const nameOf = (m) => names[m] || m;
 
   byId('when').textContent = data.data_until
     ? 'Data to ' + data.data_until + '; written ' + data.written + '.'
@@ -185,7 +206,7 @@ record is shown, losses included. A handle is dropped from the page on request; 
       const event = el('td', first ? r.label : '');
       if (first && r.shared.length) event.appendChild(el('small', 'silent: the day also holds ' + r.shared.join(', ')));
       ahead.appendChild(row([
-        el('td', first ? r.day + ' ' + r.time + ' New York' : ''), event, expected, el('td', market),
+        el('td', first ? r.day + ' ' + r.time + ' New York' : ''), event, expected, el('td', nameOf(market)),
         side('above ' + r.above, l.above), side('below ' + r.below, l.below), recordCell,
       ]));
     });
@@ -193,6 +214,23 @@ record is shown, losses included. A handle is dropped from the page on request; 
   byId('ahead-rule').textContent = 'Written ' + data.written + '; a release whose day has passed is dropped. '
     + 'The threshold is the consensus plus or minus the rule\'s noticeable surprise; below, each market is called the other way. '
     + data.rules.walk_forward;
+
+  // The Dow's reports ahead: each kind's line as written with the data.
+  const reports = byId('earnings-ahead');
+  const reporting = (data.earnings_ahead || []).filter((r) => r.day >= today);
+  reports.appendChild(head(['Day', 'Company', 'What followed past reports']));
+  if (data.earnings_ahead === null || data.earnings_ahead === undefined) {
+    reports.appendChild(row([el('td', 'The earnings calendar could not be read on ' + data.written + '.', 'none')]));
+  } else if (!reporting.length) {
+    reports.appendChild(row([el('td', 'No Dow company reports in the seven weekdays from ' + data.written + '.', 'none')]));
+  }
+  reporting.forEach((r) => {
+    const company = el('td', r.name);
+    company.appendChild(el('small', r.symbol));
+    const said = el('td');
+    r.lines.forEach((line) => said.appendChild(el('div', line)));
+    reports.appendChild(row([el('td', r.day + ', ' + r.time), company, said]));
+  });
 
   // Ask the fortune teller: a kind of event, then a table per span, a row per market; the
   // sentences are written with the data, never here.
@@ -245,10 +283,29 @@ record is shown, losses included. A handle is dropped from the page on request; 
     });
   };
   // A link can pick the kind: #ask/FLOW/KIND, as the address shows once a kind is picked.
-  const asked = decodeURIComponent(location.hash).match(/^#ask\/([^/]+)\/(.+)$/);
-  if (asked && [...askSelect.options].some((o) => o.value === asked[1] + '|' + asked[2])) {
-    askSelect.value = asked[1] + '|' + asked[2];
-  }
+  const holds = data.holds || [];
+  const pick = (hash) => {
+    const asked = decodeURIComponent(hash).match(/^#ask\/([^/]+)\/(.+)$/);
+    if (asked && [...askSelect.options].some((o) => o.value === asked[1] + '|' + asked[2])) {
+      askSelect.value = asked[1] + '|' + asked[2];
+      return true;
+    }
+    return false;
+  };
+  if (!pick(location.hash) && holds.length) askSelect.value = holds[0].flow + '|' + holds[0].kind;
+  window.addEventListener('hashchange', () => {
+    if (!pick(location.hash)) return;
+    showAsk();
+    byId('ask-the-fortune-teller').scrollIntoView();
+  });
+  holds.forEach((h) => {
+    const item = el('li', h.say + ' ');
+    const link = el('a', 'See it');
+    link.href = '#ask/' + [h.flow, h.kind].map(encodeURIComponent).join('/');
+    item.appendChild(link);
+    byId('holds').appendChild(item);
+  });
+  if (!holds.length) byId('holds').appendChild(el('li', 'None yet.'));
   askSelect.addEventListener('change', () => {
     history.replaceState(null, '', '#ask/' + askSelect.value.split('|').map(encodeURIComponent).join('/'));
     showAsk();
@@ -277,7 +334,7 @@ record is shown, losses included. A handle is dropped from the page on request; 
     const grade = el('td', c.grade || '—', c.grade || 'none');
     if (c.note) grade.title = c.note;
     calls.appendChild(row([
-      el('td', c.day), el('td', c.label), el('td', String(c.actual)), el('td', c.market),
+      el('td', c.day), el('td', c.label), el('td', String(c.actual)), el('td', nameOf(c.market)),
       el('td', said), c.record ? el('td', c.record.right + ' of ' + c.record.calls + ' right') : dash(),
       c.band ? el('td', c.band) : dash(), grade,
     ]));
@@ -303,7 +360,7 @@ record is shown, losses included. A handle is dropped from the page on request; 
       ['right', 'wrong', 'void', 'waiting'].includes(g.machine) ? g.machine : 'none');
     guesses.appendChild(row([el('td', g.day), el('td', g.who),
       el('td', Object.hasOwn(labels, g.event) ? labels[g.event] : g.event),
-      el('td', g.market), el('td', g.direction), grade, machine]));
+      el('td', nameOf(g.market)), el('td', g.direction), grade, machine]));
   });
   data.bad_guesses.forEach((note) => byId('bad-guesses').appendChild(el('li', note)));
 
@@ -336,7 +393,7 @@ record is shown, losses included. A handle is dropped from the page on request; 
         + tested.length + ' markets moved more than on an ordinary day' + (movers.length ? ':' : '.');
     }
     const recordCell = el('td', 'No call. ' + record, movers.length ? 'yes' : 'none');
-    movers.forEach(([m, c]) => recordCell.appendChild(el('small', m + ' ' + c.ratio.toFixed(2) + ' times')));
+    movers.forEach(([m, c]) => recordCell.appendChild(el('small', nameOf(m) + ' ' + c.ratio.toFixed(2) + ' times')));
     const event = el('td', w.label);
     event.appendChild(el('small', w.title));
     watch.appendChild(row([el('td', w.day + ' ' + w.time + ' New York'), event, recordCell]));

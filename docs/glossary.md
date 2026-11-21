@@ -381,7 +381,7 @@ Terms are grouped by what they are about, alphabetical within each group.
   OPEC+'s *oil up*), so it says nothing beyond the kind.
 - **The answers that hold / the workings** — *added 2026-11-21* ([a page a stranger
   reads](steps/readers.md)): the answers that hold are the page's first list, every cell whose
-  verdict is *holds* less those read off the kind's own definition. The workings is the page's
+  verdict is *holds* less those read off the kind's own definition or read as the period. The workings is the page's
   closed part holding the replay, *does the move follow* and *release days* sections.
 - **OPEC+ / oil supply surprise** — *added 2026-11-17* ([OPEC+ decisions](steps/opec.md)): OPEC is
   the Organization of the Petroleum Exporting Countries; OPEC+ is OPEC with Russia and other

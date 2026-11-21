@@ -34,6 +34,8 @@ def no_calendars(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
         raise AssertionError(f"a test asked {what}")
 
     monkeypatch.setattr(sources, "_calendar_get", refuse)
+    # Nor Nasdaq's earnings calendar (step 44): no report is ahead unless a test serves some.
+    monkeypatch.setattr(sources, "fetch_earnings_day", lambda day: [])
 
     # No FRED series is fetched either, unless a test serves it (the breakeven: fred_breakeven).
     def refuse_fred(api_key: str, series_id: str, timeout: float = 30.0) -> bytes:
