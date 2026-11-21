@@ -1,0 +1,12 @@
+follows: 13070 S&P 500 earnings reports 2011-01-06 … 2019-12-20: 7769 above, 3214 as expected, 2087 below, spans from the reaction close
+kind        span   market        n  up same down  out/hole  base up/same/down  answer          chance  placebo  walk-forward
+above       day    vs S&P 500   7646 2928 1800 2918    0/113  0.34/0.33/0.33     can't say       0.3672  -        0: 0 right, too few
+above       week   vs S&P 500   7599 2724 2228 2647    0/160  0.34/0.33/0.33     can't say       0.3955  -        510: 173 right, doesn't hold
+above       month  vs S&P 500   7545 2451 2736 2358    0/196  0.35/0.33/0.32     about the same  0.0000  period   7082: 2517 right, doesn't hold
+as expected day    vs S&P 500   3190 1239  721 1230     0/23  0.34/0.33/0.33     can't say       0.4426  -        0: 0 right, too few
+as expected week   vs S&P 500   3167 1159  907 1101     0/46  0.34/0.33/0.33     can't say       0.2865  -        0: 0 right, too few
+as expected month  vs S&P 500   3136 1060 1125  951     0/75  0.34/0.33/0.32     about the same  0.0014  period   2214: 781 right, doesn't hold
+below       day    vs S&P 500   2047 769  447  831     0/37  0.33/0.33/0.34     can't say       0.1405  -        147: 61 right, doesn't hold
+below       week   vs S&P 500   2034 674  570  790     0/50  0.33/0.33/0.34     down            0.0079  -        911: 346 right, doesn't hold
+below       month  vs S&P 500   2018 615  706  697     0/61  0.33/0.33/0.34     can't say       0.0609  -        1168: 384 right, doesn't hold
+by chance: about 0.3 answers on all history, 0.1 holds walk-forward

@@ -1,0 +1,93 @@
+follows: 5 crypto hacks 2014-02-07 … 2018-04-21: 5 hacks, spans from the reaction close
+kind  span   market        n  up same down  out/hole  base up/same/down  answer          chance  placebo  walk-forward
+hack  day    SPY / ES       5   1    2    2      0/0  0.38/0.33/0.29     too few         —       -        0: 0 right, too few
+hack  day    UST10Y / ZN    5   2    2    1      0/0  0.32/0.33/0.34     too few         —       -        0: 0 right, too few
+hack  day    DXY            5   1    2    2      0/0  0.35/0.33/0.32     too few         —       -        0: 0 right, too few
+hack  day    GC / XAU       5   3    0    2      0/0  0.33/0.33/0.33     too few         —       -        0: 0 right, too few
+hack  day    VIX            5   3    2    0      0/0  0.31/0.33/0.36     too few         —       -        0: 0 right, too few
+hack  day    DAX            5   0    3    2      0/0  0.36/0.33/0.31     too few         —       -        0: 0 right, too few
+hack  day    SX5E           5   0    3    2      0/0  0.36/0.33/0.31     too few         —       -        0: 0 right, too few
+hack  day    BRN            5   0    1    4      0/0  0.34/0.33/0.33     too few         —       -        0: 0 right, too few
+hack  day    EURUSD         5   2    1    2      0/0  0.32/0.33/0.35     too few         —       -        0: 0 right, too few
+hack  day    COMP           5   2    1    2      0/0  0.39/0.33/0.28     too few         —       -        0: 0 right, too few
+hack  day    UST5Y / ZF     5   2    3    0      0/0  0.35/0.32/0.33     too few         —       -        0: 0 right, too few
+hack  day    UKX            5   2    2    1      0/0  0.35/0.33/0.32     too few         —       -        0: 0 right, too few
+hack  day    SXXP           5   0    3    2      0/0  0.36/0.33/0.31     too few         —       -        0: 0 right, too few
+hack  day    BTC            4   2    0    2      0/0  0.34/0.33/0.32     too few         —       -        0: 0 right, too few
+hack  day    ITA            5   1    1    3      0/0  0.37/0.33/0.30     too few         —       -        0: 0 right, too few
+hack  day    XLE            5   0    1    4      0/0  0.34/0.33/0.33     too few         —       -        0: 0 right, too few
+hack  day    CORN           5   2    3    0      0/0  0.31/0.33/0.35     too few         —       -        0: 0 right, too few
+hack  day    WEAT           5   4    1    0      0/0  0.30/0.33/0.36     too few         —       -        0: 0 right, too few
+hack  day    SOYB           5   2    3    0      0/0  0.32/0.33/0.35     too few         —       -        0: 0 right, too few
+hack  day    UGA            5   1    2    2      0/0  0.33/0.33/0.34     too few         —       -        0: 0 right, too few
+hack  day    UNG            5   2    2    1      0/0  0.31/0.33/0.35     too few         —       -        0: 0 right, too few
+hack  day    XLU            5   3    0    2      0/0  0.37/0.33/0.29     too few         —       -        0: 0 right, too few
+hack  day    ITB            5   0    2    3      0/0  0.36/0.33/0.31     too few         —       -        0: 0 right, too few
+hack  day    KC             5   3    2    0      0/0  0.33/0.33/0.34     too few         —       -        0: 0 right, too few
+hack  day    T5YIE          5   2    1    2      0/0  0.40/0.17/0.43     too few         —       -        0: 0 right, too few
+hack  day    GBPUSD         5   1    2    2      0/0  0.33/0.33/0.34     too few         —       -        0: 0 right, too few
+hack  day    USDJPY         5   3    0    2      0/0  0.34/0.33/0.33     too few         —       -        0: 0 right, too few
+hack  day    NKY            5   2    1    2      0/0  0.37/0.33/0.30     too few         —       -        0: 0 right, too few
+hack  day    ETH            3   2    0    1      0/0  0.29/0.33/0.37     too few         —       -        0: 0 right, too few
+hack  day    ALL            5   1    1    3      0/0  0.38/0.33/0.29     too few         —       -        0: 0 right, too few
+hack  week   SPY / ES       5   2    1    2      0/0  0.42/0.33/0.24     too few         —       -        0: 0 right, too few
+hack  week   UST10Y / ZN    5   2    3    0      0/0  0.31/0.33/0.36     too few         —       -        0: 0 right, too few
+hack  week   DXY            5   1    1    3      0/0  0.36/0.33/0.31     too few         —       -        0: 0 right, too few
+hack  week   GC / XAU       5   1    3    1      0/0  0.34/0.33/0.32     too few         —       -        0: 0 right, too few
+hack  week   VIX            5   2    1    2      0/0  0.31/0.33/0.36     too few         —       -        0: 0 right, too few
+hack  week   DAX            5   1    2    2      0/0  0.37/0.33/0.29     too few         —       -        0: 0 right, too few
+hack  week   SX5E           5   2    1    2      0/0  0.38/0.33/0.29     too few         —       -        0: 0 right, too few
+hack  week   BRN            5   1    2    2      0/0  0.34/0.33/0.33     too few         —       -        0: 0 right, too few
+hack  week   EURUSD         5   3    1    1      0/0  0.31/0.33/0.36     too few         —       -        0: 0 right, too few
+hack  week   COMP           5   2    1    2      0/0  0.42/0.33/0.24     too few         —       -        0: 0 right, too few
+hack  week   UST5Y / ZF     5   4    1    0      0/0  0.33/0.33/0.34     too few         —       -        0: 0 right, too few
+hack  week   UKX            5   3    0    2      0/0  0.36/0.33/0.31     too few         —       -        0: 0 right, too few
+hack  week   SXXP           5   2    1    2      0/0  0.39/0.33/0.28     too few         —       -        0: 0 right, too few
+hack  week   BTC            4   3    0    1      0/0  0.32/0.33/0.34     too few         —       -        0: 0 right, too few
+hack  week   ITA            5   2    1    2      0/0  0.40/0.33/0.26     too few         —       -        0: 0 right, too few
+hack  week   XLE            5   1    2    2      0/0  0.34/0.33/0.33     too few         —       -        0: 0 right, too few
+hack  week   CORN           5   1    3    1      0/0  0.29/0.33/0.38     too few         —       -        0: 0 right, too few
+hack  week   WEAT           5   2    1    2      0/0  0.28/0.33/0.39     too few         —       -        0: 0 right, too few
+hack  week   SOYB           5   1    3    1      0/0  0.32/0.33/0.35     too few         —       -        0: 0 right, too few
+hack  week   UGA            5   2    1    2      0/0  0.33/0.33/0.33     too few         —       -        0: 0 right, too few
+hack  week   UNG            5   2    1    2      0/0  0.29/0.33/0.38     too few         —       -        0: 0 right, too few
+hack  week   XLU            5   4    0    1      0/0  0.40/0.33/0.27     too few         —       -        0: 0 right, too few
+hack  week   ITB            5   3    1    1      0/0  0.38/0.33/0.29     too few         —       -        0: 0 right, too few
+hack  week   KC             5   2    1    2      0/0  0.32/0.33/0.35     too few         —       -        0: 0 right, too few
+hack  week   T5YIE          5   1    3    1      0/0  0.32/0.33/0.35     too few         —       -        0: 0 right, too few
+hack  week   GBPUSD         5   2    2    1      0/0  0.31/0.33/0.36     too few         —       -        0: 0 right, too few
+hack  week   USDJPY         5   2    0    3      0/0  0.36/0.33/0.31     too few         —       -        0: 0 right, too few
+hack  week   NKY            5   2    1    2      0/0  0.41/0.33/0.26     too few         —       -        0: 0 right, too few
+hack  week   ETH            3   1    1    1      0/0  0.29/0.33/0.38     too few         —       -        0: 0 right, too few
+hack  week   ALL            5   1    2    2      0/0  0.40/0.33/0.26     too few         —       -        0: 0 right, too few
+hack  month  SPY / ES       4   3    0    1      1/0  0.46/0.33/0.20     too few         —       -        0: 0 right, too few
+hack  month  UST10Y / ZN    4   3    1    0      1/0  0.31/0.33/0.36     too few         —       -        0: 0 right, too few
+hack  month  DXY            4   2    1    1      1/0  0.38/0.33/0.28     too few         —       -        0: 0 right, too few
+hack  month  GC / XAU       4   1    0    3      1/0  0.34/0.33/0.33     too few         —       -        0: 0 right, too few
+hack  month  VIX            4   1    1    2      1/0  0.30/0.33/0.36     too few         —       -        0: 0 right, too few
+hack  month  DAX            4   1    2    1      1/0  0.39/0.33/0.28     too few         —       -        0: 0 right, too few
+hack  month  SX5E           4   0    3    1      1/0  0.37/0.33/0.29     too few         —       -        0: 0 right, too few
+hack  month  BRN            3   1    1    1      1/1  0.39/0.33/0.28     too few         —       -        0: 0 right, too few
+hack  month  EURUSD         4   2    0    2      1/0  0.27/0.33/0.39     too few         —       -        0: 0 right, too few
+hack  month  COMP           4   3    0    1      1/0  0.46/0.33/0.21     too few         —       -        0: 0 right, too few
+hack  month  UST5Y / ZF     4   4    0    0      1/0  0.36/0.33/0.31     too few         —       -        0: 0 right, too few
+hack  month  UKX            4   2    1    1      1/0  0.34/0.33/0.33     too few         —       -        0: 0 right, too few
+hack  month  SXXP           4   2    1    1      1/0  0.38/0.33/0.29     too few         —       -        0: 0 right, too few
+hack  month  BTC            3   1    1    1      1/0  0.29/0.33/0.37     too few         —       -        0: 0 right, too few
+hack  month  ITA            4   2    1    1      1/0  0.43/0.33/0.23     too few         —       -        0: 0 right, too few
+hack  month  XLE            4   2    1    1      1/0  0.32/0.33/0.35     too few         —       -        0: 0 right, too few
+hack  month  CORN           4   3    0    1      1/0  0.26/0.33/0.40     too few         —       -        0: 0 right, too few
+hack  month  WEAT           4   3    0    1      1/0  0.26/0.33/0.41     too few         —       -        0: 0 right, too few
+hack  month  SOYB           4   2    2    0      1/0  0.30/0.33/0.37     too few         —       -        0: 0 right, too few
+hack  month  UGA            4   1    1    2      1/0  0.32/0.33/0.34     too few         —       -        0: 0 right, too few
+hack  month  UNG            4   2    0    2      1/0  0.25/0.33/0.42     too few         —       -        0: 0 right, too few
+hack  month  XLU            4   1    1    2      1/0  0.42/0.33/0.25     too few         —       -        0: 0 right, too few
+hack  month  ITB            4   1    1    2      1/0  0.42/0.33/0.25     too few         —       -        0: 0 right, too few
+hack  month  KC             4   2    0    2      1/0  0.30/0.33/0.37     too few         —       -        0: 0 right, too few
+hack  month  T5YIE          4   2    2    0      1/0  0.35/0.30/0.35     too few         —       -        0: 0 right, too few
+hack  month  GBPUSD         4   2    0    2      1/0  0.29/0.33/0.38     too few         —       -        0: 0 right, too few
+hack  month  USDJPY         4   1    2    1      1/0  0.34/0.33/0.32     too few         —       -        0: 0 right, too few
+hack  month  NKY            3   1    1    1      1/1  0.44/0.33/0.23     too few         —       -        0: 0 right, too few
+hack  month  ETH            2   0    1    1      1/0  0.23/0.33/0.43     too few         —       -        0: 0 right, too few
+hack  month  ALL            4   2    0    2      1/0  0.46/0.33/0.21     too few         —       -        0: 0 right, too few
+by chance: about 0.0 answers on all history, 0.0 holds walk-forward

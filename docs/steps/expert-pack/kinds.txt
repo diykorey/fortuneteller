@@ -1,0 +1,73 @@
+Flows and kinds, as follows prints them (the flow is the name given to --event). A macro flow is
+measured on every market below; a company flow on the event's own company against the S&P 500.
+
+additions (company): kinds added
+    follows: 125 S&P 500 additions 2007-09-24 … 2019-12-13: 125 added
+boe (macro): kinds cut, hold, hike
+    follows: 130 BoE decisions 2008-02-07 … 2019-12-19: 9 cuts, 119 holds, 2 hikes
+boj (macro): kinds cut, hold, hike
+    follows: 29 BoJ decisions 2016-06-16 … 2019-12-19: 0 cuts, 29 holds, 0 hikes
+ceo (company): kinds scandal
+    follows: 18 CEO scandals 2005-03-07 … 2019-11-03: 18 scandals
+claims (macro): kinds above, as expected, below
+    follows: 353 jobless claims reports 2013-03-14 … 2019-12-26: 98 above, 120 as expected, 135 below
+cpi (macro): kinds above, as expected, below
+    follows: 141 CPI releases 2008-02-20 … 2019-12-11: 34 above, 56 as expected, 51 below
+crypto (macro): kinds hack
+    follows: 5 crypto hacks 2014-02-07 … 2018-04-21: 5 hacks
+earnings (company): kinds above, as expected, below
+    follows: 1397 earnings reports 2008-01-10 … 2019-12-19: 908 above, 330 as expected, 159 below
+earnings500 (company): kinds above, as expected, below
+    follows: 13070 S&P 500 earnings reports 2011-01-06 … 2019-12-20: 7769 above, 3214 as expected, 2087 below
+ecb (macro): kinds cut, hold, hike
+    follows: 60 ECB decisions 2013-05-02 … 2019-12-12: 7 cuts, 53 holds, 0 hikes
+flood (macro): kinds flood
+    follows: 31 floods 1980-04-10 … 2019-05-20: 31 floods
+fomc (macro): kinds cut, hold, hike
+    follows: 220 Fed decisions 1994-02-04 … 2019-12-11: 32 cuts, 148 holds, 40 hikes
+nfp (macro): kinds above, as expected, below
+    follows: 142 jobs reports 2008-03-07 … 2019-12-06: 33 above, 78 as expected, 31 below
+opec (macro): kinds oil up, oil down
+    follows: 123 OPEC announcements 1983-07-19 … 2019-12-06: 68 oil up, 55 oil down
+retail (macro): kinds above, as expected, below
+    follows: 140 retail sales releases 2008-03-13 … 2019-12-13: 28 above, 76 as expected, 36 below
+splits (company): kinds alone, with a report
+    follows: 56 stock splits 2011-01-21 … 2019-04-18: 45 alone, 11 with a report
+war (macro): kinds violent act
+    follows: 128 violent acts 1970-11-22 … 2019-09-14: 128 violent acts
+weather (macro): kinds landfall
+    follows: 63 hurricane landfalls 1970-08-03 … 2019-09-06: 63 landfalls
+
+Markets in the store (the name to use, its unit, its closes to 2019-12-31):
+
+SPY / ES: pct, from 1970-01-02 (12613 closes)
+UST10Y / ZN: bps, from 1970-01-02 (12511 closes)
+DXY: pct, from 1971-01-04 (12457 closes)
+GC / XAU: pct, from 2000-08-30 (4848 closes)
+VIX: pct, from 1990-01-02 (7559 closes)
+DAX: pct, from 1987-12-30 (8081 closes)
+SX5E: pct, from 2007-03-30 (3191 closes)
+BRN: pct, from 2007-07-30 (3074 closes)
+EURUSD: pct, from 2003-12-01 (4168 closes)
+COMP: pct, from 1971-02-05 (12335 closes)
+UST5Y / ZF: bps, from 1970-01-02 (12511 closes)
+UKX: pct, from 1984-01-03 (9095 closes)
+SXXP: pct, from 2004-04-26 (3943 closes)
+BTC: pct, from 2014-09-17 (1380 closes)
+ITA: pct, from 2006-05-05 (3438 closes)
+XLE: pct, from 1998-12-22 (5290 closes)
+CORN: pct, from 2010-06-09 (2408 closes)
+WEAT: pct, from 2011-09-19 (2085 closes)
+SOYB: pct, from 2011-09-19 (2085 closes)
+UGA: pct, from 2008-02-28 (2982 closes)
+UNG: pct, from 2007-04-18 (3200 closes)
+XLU: pct, from 1998-12-22 (5290 closes)
+ITB: pct, from 2006-05-05 (3438 closes)
+KC: pct, from 2000-01-03 (5007 closes)
+T5YIE: bps, from 2003-01-02 (4253 closes)
+GBPUSD: pct, from 2003-12-01 (4180 closes)
+USDJPY: pct, from 1996-10-30 (6002 closes)
+NKY: pct, from 1970-01-05 (12306 closes)
+ETH: pct, from 2017-11-09 (559 closes)
+ALL: pct, from 1993-06-03 (6694 closes)
+company: the event's own company's shares against the S&P 500 (pct), for the company flows.

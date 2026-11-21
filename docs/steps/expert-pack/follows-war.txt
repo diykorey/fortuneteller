@@ -1,0 +1,93 @@
+follows: 128 violent acts 1970-11-22 … 2019-09-14: 128 violent acts
+kind        span   market        n  up same down  out/hole  base up/same/down  answer          chance  placebo  walk-forward
+violent act day    SPY / ES     126  36   48   42      1/1  0.36/0.33/0.31     can't say       0.1132  -        0: 0 right, too few
+violent act day    UST10Y / ZN  126  35   47   44      1/1  0.34/0.31/0.35     can't say       0.0905  -        0: 0 right, too few
+violent act day    DXY          125  46   40   39      1/1  0.33/0.33/0.33     can't say       0.2664  -        0: 0 right, too few
+violent act day    GC / XAU      29  14   12    3      0/0  0.36/0.33/0.31     can't say       0.0141  -        0: 0 right, too few
+violent act day    VIX           45  18   15   12      0/1  0.32/0.33/0.35     can't say       0.1126  -        0: 0 right, too few
+violent act day    DAX           51  12   22   17      0/1  0.35/0.33/0.31     can't say       0.0922  -        0: 0 right, too few
+violent act day    SX5E          20   4    9    7      0/0  0.35/0.33/0.32     can't say       0.1908  -        0: 0 right, too few
+violent act day    BRN           19   5    7    7      0/0  0.34/0.33/0.32     can't say       0.3412  -        0: 0 right, too few
+violent act day    EURUSD        23   7    9    7      0/0  0.34/0.33/0.33     can't say       0.3490  -        0: 0 right, too few
+violent act day    COMP         125  32   59   34      1/1  0.38/0.33/0.29     about the same  0.0009  -        19: 8 right, too few
+violent act day    UST5Y / ZF   126  32   42   52      1/1  0.33/0.33/0.34     can't say       0.0242  -        0: 0 right, too few
+violent act day    UKX           73  20   33   20      1/1  0.35/0.33/0.32     can't say       0.0231  -        0: 0 right, too few
+violent act day    SXXP          23   6    9    8      0/0  0.36/0.33/0.31     can't say       0.3020  -        0: 0 right, too few
+violent act day    BTC           12   4    6    2      0/0  0.37/0.33/0.29     can't say       0.1782  -        0: 0 right, too few
+violent act day    ITA           21   5   10    6      0/0  0.37/0.33/0.30     can't say       0.1248  -        3: 1 right, too few
+violent act day    XLE           31  11   11    9      0/1  0.35/0.33/0.32     can't say       0.4662  -        0: 0 right, too few
+violent act day    CORN          17   9    3    5      0/0  0.32/0.33/0.35     can't say       0.1608  -        0: 0 right, too few
+violent act day    WEAT          13   5    3    5      0/0  0.30/0.33/0.37     can't say       0.4992  -        0: 0 right, too few
+violent act day    SOYB          13   5    5    3      0/0  0.32/0.33/0.35     can't say       0.3210  -        0: 0 right, too few
+violent act day    UGA           19   5    3   11      0/0  0.34/0.33/0.33     can't say       0.0892  -        0: 0 right, too few
+violent act day    UNG           19   2    8    9      0/0  0.31/0.33/0.36     can't say       0.0568  -        0: 0 right, too few
+violent act day    XLU           31   9   16    6      0/1  0.36/0.33/0.31     can't say       0.0270  -        0: 0 right, too few
+violent act day    ITB           21   6    8    7      0/0  0.34/0.33/0.33     can't say       0.3992  -        0: 0 right, too few
+violent act day    KC            28  10    7   11      0/1  0.33/0.33/0.34     can't say       0.5178  -        0: 0 right, too few
+violent act day    T5YIE         24   6   10    8      0/0  0.35/0.32/0.34     can't say       0.2028  -        0: 0 right, too few
+violent act day    GBPUSD        23  10    2   11      0/0  0.33/0.33/0.33     can't say       0.5027  -        0: 0 right, too few
+violent act day    USDJPY        34  12   11   11      0/0  0.34/0.33/0.33     can't say       0.5253  -        0: 0 right, too few
+violent act day    NKY          123  41   49   33      1/4  0.35/0.33/0.31     can't say       0.0770  -        5: 1 right, too few
+violent act day    ETH            5   2    1    2      0/0  0.30/0.33/0.37     too few         —       -        0: 0 right, too few
+violent act day    ALL           38  11   17   10      0/1  0.35/0.33/0.32     can't say       0.0955  -        0: 0 right, too few
+violent act week   SPY / ES     123  47   37   39      4/1  0.38/0.33/0.29     can't say       0.3598  -        0: 0 right, too few
+violent act week   UST10Y / ZN  122  34   52   36      4/2  0.32/0.33/0.34     can't say       0.0196  -        0: 0 right, too few
+violent act week   DXY          121  41   46   34      4/2  0.33/0.33/0.34     can't say       0.1593  -        1: 0 right, too few
+violent act week   GC / XAU      29  19    8    2      0/0  0.38/0.33/0.29     up              0.0008  -        6: 4 right, too few
+violent act week   VIX           44  17   12   15      1/1  0.32/0.33/0.35     can't say       0.3166  -        0: 0 right, too few
+violent act week   DAX           48  18   14   16      1/3  0.38/0.33/0.29     can't say       0.3948  -        0: 0 right, too few
+violent act week   SX5E          19   8    6    5      0/1  0.37/0.33/0.30     can't say       0.4465  -        0: 0 right, too few
+violent act week   BRN           19  10    5    4      0/0  0.35/0.33/0.31     can't say       0.1354  -        0: 0 right, too few
+violent act week   EURUSD        23   7    7    9      0/0  0.34/0.33/0.32     can't say       0.3614  -        0: 0 right, too few
+violent act week   COMP         122  42   46   34      4/1  0.39/0.33/0.27     can't say       0.1762  -        0: 0 right, too few
+violent act week   UST5Y / ZF   122  29   47   46      4/2  0.33/0.33/0.34     can't say       0.0401  -        0: 0 right, too few
+violent act week   UKX           68  25   22   21      3/4  0.37/0.33/0.30     can't say       0.5152  -        0: 0 right, too few
+violent act week   SXXP          22   8    9    5      0/1  0.38/0.33/0.29     can't say       0.2933  -        0: 0 right, too few
+violent act week   BTC           12   6    6    0      0/0  0.38/0.33/0.29     can't say       0.0323  -        0: 0 right, too few
+violent act week   ITA           21   7    9    5      0/0  0.40/0.33/0.26     can't say       0.2399  -        0: 0 right, too few
+violent act week   XLE           31  13   12    6      0/1  0.37/0.33/0.30     can't say       0.1707  -        0: 0 right, too few
+violent act week   CORN          17   7    7    3      0/0  0.30/0.33/0.37     can't say       0.1024  -        0: 0 right, too few
+violent act week   WEAT          13   2    5    6      0/0  0.27/0.33/0.40     can't say       0.3061  -        0: 0 right, too few
+violent act week   SOYB          13   4    5    4      0/0  0.31/0.33/0.35     can't say       0.4474  -        0: 0 right, too few
+violent act week   UGA           19  11    2    6      0/0  0.35/0.33/0.31     can't say       0.2316  -        0: 0 right, too few
+violent act week   UNG           19   5    6    8      0/0  0.29/0.33/0.38     can't say       0.4766  -        0: 0 right, too few
+violent act week   XLU           31  12   11    8      0/1  0.37/0.33/0.29     can't say       0.4495  -        0: 0 right, too few
+violent act week   ITB           21   4   12    5      0/0  0.36/0.33/0.31     can't say       0.0212  -        1: 1 right, too few
+violent act week   KC            28   9    9   10      0/1  0.34/0.33/0.33     can't say       0.4846  -        0: 0 right, too few
+violent act week   T5YIE         24   9    4   11      0/0  0.36/0.29/0.35     can't say       0.4034  -        0: 0 right, too few
+violent act week   GBPUSD        23  11    5    7      0/0  0.33/0.33/0.33     can't say       0.2359  -        0: 0 right, too few
+violent act week   USDJPY        34  12    9   13      0/0  0.34/0.33/0.32     can't say       0.4303  -        0: 0 right, too few
+violent act week   NKY          120  46   45   29      3/5  0.37/0.33/0.30     can't say       0.1905  -        0: 0 right, too few
+violent act week   ETH            5   4    1    0      0/0  0.28/0.33/0.38     too few         —       -        0: 0 right, too few
+violent act week   ALL           38  19   13    6      0/1  0.37/0.33/0.30     can't say       0.0288  -        1: 0 right, too few
+violent act month  SPY / ES      96  39   34   23     30/2  0.42/0.33/0.24     can't say       0.3687  -        0: 0 right, too few
+violent act month  UST10Y / ZN   93  27   37   29     30/5  0.33/0.33/0.34     can't say       0.1101  -        0: 0 right, too few
+violent act month  DXY           95  24   35   36     29/3  0.33/0.33/0.34     can't say       0.0989  -        0: 0 right, too few
+violent act month  GC / XAU      25  15   10    0      2/2  0.40/0.33/0.27     up              0.0004  -        8: 2 right, too few
+violent act month  VIX           39  12   14   13      5/2  0.30/0.33/0.36     can't say       0.4257  -        0: 0 right, too few
+violent act month  DAX           37  12   18    7      6/9  0.41/0.33/0.26     can't say       0.0383  -        0: 0 right, too few
+violent act month  SX5E          14   6    7    1      2/4  0.39/0.33/0.27     can't say       0.1482  -        0: 0 right, too few
+violent act month  BRN           16   7    4    5      2/1  0.36/0.33/0.31     can't say       0.5001  -        0: 0 right, too few
+violent act month  EURUSD        21   6   12    3      2/0  0.34/0.33/0.33     can't say       0.0212  -        0: 0 right, too few
+violent act month  COMP          95  40   31   24     30/2  0.42/0.33/0.24     can't say       0.4784  -        0: 0 right, too few
+violent act month  UST5Y / ZF    93  26   34   33     30/5  0.33/0.33/0.34     can't say       0.2665  -        0: 0 right, too few
+violent act month  UKX           47  15   18   14    12/16  0.39/0.33/0.27     can't say       0.2680  -        0: 0 right, too few
+violent act month  SXXP          17   9    7    1      2/4  0.41/0.33/0.26     can't say       0.0568  -        0: 0 right, too few
+violent act month  BTC           10   5    3    2      2/0  0.40/0.33/0.27     can't say       0.4180  -        0: 0 right, too few
+violent act month  ITA           18   9    6    3      2/1  0.45/0.33/0.21     can't say       0.4392  -        0: 0 right, too few
+violent act month  XLE           27  13    8    6      3/2  0.38/0.33/0.28     can't say       0.2385  -        0: 0 right, too few
+violent act month  CORN          14   6    4    4      2/1  0.27/0.33/0.40     can't say       0.1788  -        0: 0 right, too few
+violent act month  WEAT          10   4    1    5      2/1  0.26/0.33/0.40     can't say       0.5104  -        0: 0 right, too few
+violent act month  SOYB          10   4    2    4      2/1  0.31/0.33/0.36     can't say       0.5453  -        0: 0 right, too few
+violent act month  UGA           16   9    4    3      2/1  0.36/0.33/0.31     can't say       0.1220  -        0: 0 right, too few
+violent act month  UNG           16   5    6    5      2/1  0.24/0.33/0.42     can't say       0.2861  -        0: 0 right, too few
+violent act month  XLU           27  13    9    5      3/2  0.41/0.33/0.26     can't say       0.2412  -        0: 0 right, too few
+violent act month  ITB           18   8    5    5      2/1  0.38/0.33/0.29     can't say       0.4716  -        0: 0 right, too few
+violent act month  KC            24   8    7    9      2/3  0.33/0.33/0.34     can't say       0.5096  -        0: 0 right, too few
+violent act month  T5YIE         22  11    6    5      2/0  0.35/0.33/0.32     can't say       0.1383  -        0: 0 right, too few
+violent act month  GBPUSD        21   7    8    6      2/0  0.33/0.33/0.33     can't say       0.3996  -        0: 0 right, too few
+violent act month  USDJPY        31   8   11   12      3/0  0.33/0.33/0.34     can't say       0.2800  -        0: 0 right, too few
+violent act month  NKY           83  29   32   22    26/19  0.39/0.33/0.28     can't say       0.1852  -        0: 0 right, too few
+violent act month  ETH            4   2    1    1      1/0  0.24/0.33/0.43     too few         —       -        0: 0 right, too few
+violent act month  ALL           34  17   10    7      3/2  0.41/0.33/0.26     can't say       0.2266  -        0: 0 right, too few
+by chance: about 2.6 answers on all history, 0.0 holds walk-forward

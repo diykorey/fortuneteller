@@ -12,14 +12,18 @@ Where the work is and what comes next: the task last finished, the tasks in prog
 
 ## Last completed
 
-Step 40: big moves and the news filed with them ([results](steps/news-moves.md#results)). 1.63%
-of S&P 500 member-days are big moves; a results 8-K makes one 19.6 times as likely, but 61.6% have
-no 8-K; read by hand, those are mostly the industry's or the economy's news, or nothing found.
+Step 41: hypotheses from an expert reader ([results](steps/expert-hypotheses.md#results)). The
+Subscription LLM's 40 rules from the record to 2019, tested on 2020 onward: 5 pass, 2 hold, all
+restating the record; no rule with a condition passed.
 
 ## In progress
 
 - **Step 42: exposure scores** ([the spec](steps/exposure-scores.md)): the spec, before its
-  goldfish, and step 1 (426 texts, the blind test clean). Next: the scores. Then step 43, filing severity.
+  goldfish (12 findings, 12 fixed), and step 1 (426 texts, the blind test clean). Next: the
+  scores. Then step 43, filing severity.
+- **Step 41, step 5: the forward log** ([the spec](steps/expert-hypotheses.md)): each new event
+  meeting rules 11, 23, 25 or 26 written to `steps/expert-forward.csv` before its reaction close
+  and graded at its span's end, to the 2027-01-31 gate.
 - **Step 34: a same-day source for earnings** ([the spec](steps/earnings-same-day.md)): step 1
   done, Yahoo's kind is Nasdaq's on 102 of 110 reports (92.7%, bar 90%). Next: the speed, asked on
   each member's report from 2026-11-23 to 2027-01-31.

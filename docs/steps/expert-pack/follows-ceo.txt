@@ -1,0 +1,6 @@
+follows: 18 CEO scandals 2005-03-07 … 2019-11-03: 18 scandals
+kind    span   market        n  up same down  out/hole  base up/same/down  answer          chance  placebo  walk-forward
+scandal day    vs S&P 500    18   2    5   11      0/0  0.34/0.33/0.33     can't say       0.0119  -        0: 0 right, too few
+scandal week   vs S&P 500    18   3    4   11      0/0  0.35/0.33/0.32     can't say       0.0211  -        0: 0 right, too few
+scandal month  vs S&P 500    18   2    5   11      0/0  0.37/0.33/0.30     down            0.0028  -        2: 0 right, too few
+by chance: about 0.1 answers on all history, 0.0 holds walk-forward

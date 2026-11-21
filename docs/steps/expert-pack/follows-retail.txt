@@ -1,0 +1,273 @@
+follows: 140 retail sales releases 2008-03-13 … 2019-12-13: 28 above, 76 as expected, 36 below
+kind        span   market        n  up same down  out/hole  base up/same/down  answer          chance  placebo  walk-forward
+above       day    SPY / ES      28  11   12    5      0/0  0.37/0.33/0.29     can't say       0.1907  -        0: 0 right, too few
+above       day    UST10Y / ZN   28  15    5    8      0/0  0.33/0.32/0.35     can't say       0.0817  -        7: 1 right, too few
+above       day    DXY           28  13    7    8      0/0  0.34/0.33/0.32     can't say       0.2302  -        0: 0 right, too few
+above       day    GC / XAU      28  10    9    9      0/0  0.34/0.33/0.32     can't say       0.5607  -        0: 0 right, too few
+above       day    VIX           28   5   11   12      0/0  0.30/0.33/0.36     can't say       0.1399  -        0: 0 right, too few
+above       day    DAX           28  15    9    4      0/0  0.36/0.33/0.31     can't say       0.0196  -        12: 4 right, too few
+above       day    SX5E          28  16    9    3      0/0  0.35/0.33/0.32     up              0.0042  -        15: 5 right, too few
+above       day    BRN           28  11    7   10      0/0  0.34/0.33/0.33     can't say       0.5419  -        0: 0 right, too few
+above       day    EURUSD        28   5    5   18      0/0  0.33/0.33/0.34     down            0.0058  -        0: 0 right, too few
+above       day    COMP          28  11   13    4      0/0  0.38/0.33/0.29     can't say       0.1037  -        0: 0 right, too few
+above       day    UST5Y / ZF    28  13    8    7      0/0  0.33/0.33/0.34     can't say       0.1311  -        3: 0 right, too few
+above       day    UKX           28  14    9    5      0/0  0.35/0.33/0.32     can't say       0.0463  -        5: 0 right, too few
+above       day    SXXP          28  14   12    2      0/0  0.35/0.33/0.32     up              0.0040  -        17: 6 right, too few
+above       day    BTC            9   5    3    1      0/0  0.38/0.33/0.29     too few         —       -        0: 0 right, too few
+above       day    ITA           28  14    9    5      0/0  0.37/0.33/0.30     can't say       0.0855  -        7: 4 right, too few
+above       day    XLE           28   8   13    7      0/0  0.34/0.33/0.32     can't say       0.1037  -        0: 0 right, too few
+above       day    CORN          21   6    8    7      0/0  0.32/0.33/0.35     can't say       0.3987  -        0: 0 right, too few
+above       day    WEAT          18   5    4    9      0/0  0.30/0.33/0.36     can't say       0.3226  -        0: 0 right, too few
+above       day    SOYB          18   3    5   10      0/0  0.32/0.33/0.34     can't say       0.0569  -        0: 0 right, too few
+above       day    UGA           28  13    4   11      0/0  0.34/0.33/0.33     can't say       0.4485  -        0: 0 right, too few
+above       day    UNG           28  10    8   10      0/0  0.30/0.33/0.36     can't say       0.4241  -        0: 0 right, too few
+above       day    XLU           28  14    8    6      0/0  0.36/0.33/0.31     can't say       0.1033  -        0: 0 right, too few
+above       day    ITB           28  12   12    4      0/0  0.34/0.33/0.32     can't say       0.0497  -        0: 0 right, too few
+above       day    KC            28   8   13    7      0/0  0.32/0.33/0.34     can't say       0.1039  -        0: 0 right, too few
+above       day    T5YIE         28  16    6    6      0/0  0.33/0.33/0.34     can't say       0.0255  -        7: 3 right, too few
+above       day    GBPUSD        28   5   13   10      0/0  0.33/0.33/0.34     can't say       0.1037  -        0: 0 right, too few
+above       day    USDJPY        28  15    4    9      0/0  0.34/0.33/0.33     can't say       0.1627  -        0: 0 right, too few
+above       day    NKY           28  13   12    3      0/0  0.35/0.33/0.31     can't say       0.0203  -        0: 0 right, too few
+above       day    ETH            6   2    3    1      0/0  0.30/0.33/0.37     too few         —       -        0: 0 right, too few
+above       day    ALL           28  14    8    6      0/0  0.36/0.33/0.31     can't say       0.1041  -        0: 0 right, too few
+above       week   SPY / ES      28  13   13    2      0/0  0.40/0.33/0.26     can't say       0.0308  -        6: 4 right, too few
+above       week   UST10Y / ZN   28  10   11    7      0/0  0.31/0.33/0.35     can't say       0.2307  -        0: 0 right, too few
+above       week   DXY           28  14   11    3      0/0  0.35/0.33/0.32     up              0.0099  -        5: 2 right, too few
+above       week   GC / XAU      28   8    8   12      0/0  0.36/0.33/0.31     can't say       0.1587  -        0: 0 right, too few
+above       week   VIX           28   6   13    9      0/0  0.31/0.33/0.36     can't say       0.1042  -        0: 0 right, too few
+above       week   DAX           26  11   12    3      0/2  0.37/0.33/0.29     can't say       0.0728  -        0: 0 right, too few
+above       week   SX5E          26   7   14    5      0/2  0.36/0.33/0.31     can't say       0.0247  -        0: 0 right, too few
+above       week   BRN           28   9   11    8      0/0  0.35/0.33/0.32     can't say       0.3141  -        0: 0 right, too few
+above       week   EURUSD        28   4   12   12      0/0  0.33/0.33/0.34     can't say       0.0454  -        0: 0 right, too few
+above       week   COMP          28  13   13    2      0/0  0.41/0.33/0.26     can't say       0.0328  -        7: 4 right, too few
+above       week   UST5Y / ZF    28  11    9    8      0/0  0.32/0.33/0.35     can't say       0.2567  -        0: 0 right, too few
+above       week   UKX           26   7   11    8      0/2  0.36/0.33/0.31     can't say       0.2205  -        0: 0 right, too few
+above       week   SXXP          26  10   11    5      0/2  0.37/0.33/0.29     can't say       0.2197  -        0: 0 right, too few
+above       week   BTC            9   3    3    3      0/0  0.38/0.33/0.29     too few         —       -        0: 0 right, too few
+above       week   ITA           28  17    9    2      0/0  0.40/0.33/0.27     up              0.0058  -        10: 4 right, too few
+above       week   XLE           28  13   10    5      0/0  0.35/0.33/0.31     can't say       0.0804  -        9: 4 right, too few
+above       week   CORN          21   4    9    8      0/0  0.30/0.33/0.37     can't say       0.2403  -        0: 0 right, too few
+above       week   WEAT          18   5    5    8      0/0  0.27/0.33/0.39     can't say       0.5407  -        0: 0 right, too few
+above       week   SOYB          18   4    6    8      0/0  0.32/0.33/0.35     can't say       0.2302  -        0: 0 right, too few
+above       week   UGA           28  11    7   10      0/0  0.34/0.33/0.32     can't say       0.5563  -        0: 0 right, too few
+above       week   UNG           28   9   11    8      0/0  0.28/0.33/0.39     can't say       0.2490  -        0: 0 right, too few
+above       week   XLU           28  12   11    5      0/0  0.38/0.33/0.29     can't say       0.1912  -        4: 0 right, too few
+above       week   ITB           28  16    8    4      0/0  0.37/0.33/0.30     can't say       0.0188  -        0: 0 right, too few
+above       week   KC            28  10    5   13      0/0  0.33/0.33/0.34     can't say       0.3734  -        0: 0 right, too few
+above       week   T5YIE         28  11   11    6      0/0  0.36/0.27/0.37     can't say       0.1061  -        0: 0 right, too few
+above       week   GBPUSD        28   7    8   13      0/0  0.32/0.33/0.34     can't say       0.1582  -        0: 0 right, too few
+above       week   USDJPY        28  13   13    2      0/0  0.34/0.33/0.33     up              0.0046  -        10: 3 right, too few
+above       week   NKY           27  11   14    2      0/1  0.38/0.33/0.29     can't say       0.0334  -        0: 0 right, too few
+above       week   ETH            6   2    3    1      0/0  0.29/0.33/0.37     too few         —       -        0: 0 right, too few
+above       week   ALL           28  13    9    6      0/0  0.39/0.33/0.28     can't say       0.2483  -        1: 0 right, too few
+above       month  SPY / ES      21  12    5    4      6/1  0.46/0.33/0.21     can't say       0.4167  -        0: 0 right, too few
+above       month  UST10Y / ZN   21   8    3   10      6/1  0.31/0.33/0.36     can't say       0.5275  -        0: 0 right, too few
+above       month  DXY           21   8    7    6      6/1  0.36/0.33/0.31     can't say       0.4982  -        0: 0 right, too few
+above       month  GC / XAU      21  10    8    3      6/1  0.37/0.33/0.29     can't say       0.1086  -        0: 0 right, too few
+above       month  VIX           21   7    9    5      6/1  0.29/0.33/0.38     can't say       0.2140  -        0: 0 right, too few
+above       month  DAX           18   5    8    5      3/7  0.41/0.33/0.26     can't say       0.2229  -        2: 0 right, too few
+above       month  SX5E          18   2    9    7      4/6  0.38/0.33/0.29     can't say       0.0411  -        3: 1 right, too few
+above       month  BRN           18   7    6    5      8/2  0.34/0.33/0.33     can't say       0.4127  -        0: 0 right, too few
+above       month  EURUSD        21   5    7    9      7/0  0.31/0.33/0.35     can't say       0.2798  -        0: 0 right, too few
+above       month  COMP          21  11    7    3      6/1  0.46/0.33/0.21     can't say       0.3218  -        0: 0 right, too few
+above       month  UST5Y / ZF    21   7    4   10      6/1  0.32/0.33/0.35     can't say       0.3828  -        0: 0 right, too few
+above       month  UKX           17   6    6    5      3/8  0.37/0.33/0.30     can't say       0.5228  -        0: 0 right, too few
+above       month  SXXP          18   6    6    6      4/6  0.40/0.33/0.27     can't say       0.3354  -        0: 0 right, too few
+above       month  BTC            7   1    4    2      2/0  0.41/0.33/0.26     too few         —       -        0: 0 right, too few
+above       month  ITA           21  11    8    2      6/1  0.45/0.33/0.21     can't say       0.1629  -        0: 0 right, too few
+above       month  XLE           21   8    9    4      6/1  0.36/0.33/0.31     can't say       0.2399  -        0: 0 right, too few
+above       month  CORN          15   3    4    8      5/1  0.27/0.33/0.39     can't say       0.2741  -        0: 0 right, too few
+above       month  WEAT          13   2    5    6      4/1  0.24/0.33/0.43     can't say       0.4076  -        0: 0 right, too few
+above       month  SOYB          13   4    2    7      4/1  0.31/0.33/0.36     can't say       0.3655  -        0: 0 right, too few
+above       month  UGA           21   6    9    6      6/1  0.35/0.33/0.32     can't say       0.2399  -        0: 0 right, too few
+above       month  UNG           21   7    4   10      6/1  0.23/0.33/0.44     can't say       0.3426  -        0: 0 right, too few
+above       month  XLU           21   9    8    4      6/1  0.41/0.33/0.26     can't say       0.3957  -        0: 0 right, too few
+above       month  ITB           21   9    8    4      6/1  0.41/0.33/0.26     can't say       0.3747  -        0: 0 right, too few
+above       month  KC            21   8    4    9      6/1  0.32/0.33/0.35     can't say       0.5825  -        0: 0 right, too few
+above       month  T5YIE         20  10    5    5      8/0  0.34/0.32/0.33     can't say       0.1696  -        0: 0 right, too few
+above       month  GBPUSD        21   8    1   12      7/0  0.32/0.33/0.35     can't say       0.3138  -        0: 0 right, too few
+above       month  USDJPY        21   6    7    8      7/0  0.32/0.33/0.34     can't say       0.4452  -        0: 0 right, too few
+above       month  NKY           16   8    3    5      3/9  0.41/0.33/0.26     can't say       0.5983  -        0: 0 right, too few
+above       month  ETH            5   1    3    1      1/0  0.25/0.33/0.42     too few         —       -        0: 0 right, too few
+above       month  ALL           21  10    8    3      6/1  0.43/0.33/0.23     can't say       0.2772  -        0: 0 right, too few
+as expected day    SPY / ES      76  29   24   23      0/0  0.37/0.33/0.29     can't say       0.5386  -        0: 0 right, too few
+as expected day    UST10Y / ZN   76  30   19   27      0/0  0.33/0.32/0.35     can't say       0.3220  -        0: 0 right, too few
+as expected day    DXY           76  24   30   22      0/0  0.34/0.33/0.32     can't say       0.1553  -        0: 0 right, too few
+as expected day    GC / XAU      76  21   28   27      0/0  0.35/0.33/0.32     can't say       0.1654  -        6: 2 right, too few
+as expected day    VIX           76  22   20   34      0/0  0.30/0.33/0.36     can't say       0.2169  -        0: 0 right, too few
+as expected day    DAX           75  25   20   30      0/1  0.35/0.33/0.31     can't say       0.1545  -        0: 0 right, too few
+as expected day    SX5E          75  22   28   25      0/1  0.35/0.33/0.32     can't say       0.2675  -        0: 0 right, too few
+as expected day    BRN           74  24   28   22      0/2  0.34/0.33/0.32     can't say       0.2396  -        0: 0 right, too few
+as expected day    EURUSD        75  31   19   25      0/1  0.33/0.33/0.34     can't say       0.2370  -        0: 0 right, too few
+as expected day    COMP          76  33   23   20      0/0  0.38/0.33/0.29     can't say       0.2375  -        0: 0 right, too few
+as expected day    UST5Y / ZF    76  27   24   25      0/0  0.33/0.33/0.33     can't say       0.4449  -        0: 0 right, too few
+as expected day    UKX           75  20   29   26      0/1  0.35/0.33/0.32     can't say       0.1584  -        0: 0 right, too few
+as expected day    SXXP          75  23   24   28      0/1  0.35/0.33/0.32     can't say       0.1772  -        0: 0 right, too few
+as expected day    BTC           38  12   13   13      0/0  0.37/0.33/0.29     can't say       0.2750  -        0: 0 right, too few
+as expected day    ITA           76  33   19   24      0/0  0.37/0.33/0.30     can't say       0.4087  -        0: 0 right, too few
+as expected day    XLE           76  31   25   20      0/0  0.35/0.33/0.32     can't say       0.1278  -        0: 0 right, too few
+as expected day    CORN          68  20   24   24      0/0  0.32/0.33/0.35     can't say       0.4099  -        0: 0 right, too few
+as expected day    WEAT          57  12   19   26      0/0  0.30/0.33/0.36     can't say       0.0576  -        0: 0 right, too few
+as expected day    SOYB          57  21   16   20      0/0  0.32/0.33/0.34     can't say       0.4324  -        0: 0 right, too few
+as expected day    UGA           76  26   27   23      0/0  0.34/0.33/0.33     can't say       0.3828  -        0: 0 right, too few
+as expected day    UNG           76  29   25   22      0/0  0.31/0.33/0.36     can't say       0.0777  -        6: 0 right, too few
+as expected day    XLU           76  25   27   24      0/0  0.36/0.33/0.31     can't say       0.3828  -        1: 0 right, too few
+as expected day    ITB           76  23   27   26      0/0  0.34/0.33/0.32     can't say       0.3200  -        0: 0 right, too few
+as expected day    KC            76  17   31   28      0/0  0.33/0.33/0.34     can't say       0.0918  -        0: 0 right, too few
+as expected day    T5YIE         76  21   21   34      0/0  0.34/0.33/0.33     can't say       0.0508  -        0: 0 right, too few
+as expected day    GBPUSD        76  28   22   26      0/0  0.33/0.33/0.34     can't say       0.4217  -        0: 0 right, too few
+as expected day    USDJPY        75  27   22   26      0/1  0.34/0.33/0.33     can't say       0.5274  -        0: 0 right, too few
+as expected day    NKY           76  29   25   22      0/0  0.36/0.33/0.31     can't say       0.3569  -        0: 0 right, too few
+as expected day    ETH           11   4    4    3      0/0  0.31/0.33/0.36     can't say       0.4177  -        0: 0 right, too few
+as expected day    ALL           76  30   21   25      0/0  0.36/0.33/0.31     can't say       0.4891  -        0: 0 right, too few
+as expected week   SPY / ES      76  33   27   16      0/0  0.40/0.33/0.26     can't say       0.2064  -        0: 0 right, too few
+as expected week   UST10Y / ZN   76  24   29   23      0/0  0.32/0.33/0.35     can't say       0.2078  -        0: 0 right, too few
+as expected week   DXY           76  20   30   26      0/0  0.35/0.33/0.32     can't say       0.1494  -        0: 0 right, too few
+as expected week   GC / XAU      76  26   28   22      0/0  0.36/0.33/0.31     can't say       0.2965  -        0: 0 right, too few
+as expected week   VIX           76  18   25   33      0/0  0.31/0.33/0.36     can't say       0.0725  -        0: 0 right, too few
+as expected week   DAX           75  31   28   16      0/1  0.37/0.33/0.29     can't say       0.1102  -        0: 0 right, too few
+as expected week   SX5E          75  27   31   17      0/1  0.36/0.33/0.31     can't say       0.0904  -        0: 0 right, too few
+as expected week   BRN           71  26   29   16      0/5  0.35/0.33/0.32     can't say       0.1129  -        0: 0 right, too few
+as expected week   EURUSD        75  30   28   17      0/1  0.33/0.33/0.34     can't say       0.0281  -        0: 0 right, too few
+as expected week   COMP          76  34   26   16      0/0  0.41/0.33/0.26     can't say       0.1966  -        0: 0 right, too few
+as expected week   UST5Y / ZF    76  22   27   27      0/0  0.32/0.33/0.34     can't say       0.3678  -        0: 0 right, too few
+as expected week   UKX           75  22   30   23      0/1  0.36/0.33/0.31     can't say       0.1352  -        0: 0 right, too few
+as expected week   SXXP          75  28   29   18      0/1  0.37/0.33/0.30     can't say       0.1953  -        0: 0 right, too few
+as expected week   BTC           38  17    9   12      0/0  0.37/0.33/0.29     can't say       0.4728  -        0: 0 right, too few
+as expected week   ITA           76  34   24   18      0/0  0.40/0.33/0.27     can't say       0.2629  -        0: 0 right, too few
+as expected week   XLE           76  32   27   17      0/0  0.35/0.33/0.31     can't say       0.0588  -        0: 0 right, too few
+as expected week   CORN          68  21   26   21      0/0  0.31/0.33/0.36     can't say       0.2303  -        0: 0 right, too few
+as expected week   WEAT          57  10   26   21      0/0  0.27/0.33/0.39     can't say       0.0359  -        7: 1 right, too few
+as expected week   SOYB          57  17   24   16      0/0  0.32/0.33/0.34     can't say       0.1039  -        0: 0 right, too few
+as expected week   UGA           76  28   29   19      0/0  0.35/0.33/0.32     can't say       0.1847  -        0: 0 right, too few
+as expected week   UNG           76  19   26   31      0/0  0.28/0.33/0.38     can't say       0.3090  -        0: 0 right, too few
+as expected week   XLU           76  38   22   16      0/0  0.38/0.33/0.29     can't say       0.0324  -        2: 0 right, too few
+as expected week   ITB           76  30   27   19      0/0  0.36/0.33/0.30     can't say       0.2146  -        0: 0 right, too few
+as expected week   KC            76  26   24   26      0/0  0.33/0.33/0.34     can't say       0.5065  -        0: 0 right, too few
+as expected week   T5YIE         76  27   20   29      0/0  0.36/0.27/0.37     can't say       0.4651  -        0: 0 right, too few
+as expected week   GBPUSD        76  29   26   21      0/0  0.32/0.33/0.34     can't say       0.1138  -        0: 0 right, too few
+as expected week   USDJPY        75  22   29   24      0/1  0.34/0.33/0.32     can't say       0.1952  -        0: 0 right, too few
+as expected week   NKY           75  32   25   18      0/1  0.38/0.33/0.29     can't say       0.1776  -        0: 0 right, too few
+as expected week   ETH           11   5    3    3      0/0  0.31/0.33/0.36     can't say       0.2808  -        0: 0 right, too few
+as expected week   ALL           76  30   28   18      0/0  0.39/0.33/0.28     can't say       0.2965  -        0: 0 right, too few
+as expected month  SPY / ES      55  27   16   12     21/0  0.45/0.33/0.21     can't say       0.5216  -        0: 0 right, too few
+as expected month  UST10Y / ZN   55  19   15   21     21/0  0.31/0.33/0.35     can't say       0.5461  -        0: 0 right, too few
+as expected month  DXY           54  20   16   18     22/0  0.36/0.33/0.31     can't say       0.5163  -        0: 0 right, too few
+as expected month  GC / XAU      54  21   17   16     22/0  0.37/0.33/0.29     can't say       0.5410  -        0: 0 right, too few
+as expected month  VIX           55  15   20   20     21/0  0.29/0.33/0.38     can't say       0.3641  -        0: 0 right, too few
+as expected month  DAX           56  22   16   18     12/8  0.40/0.33/0.26     can't say       0.2986  -        0: 0 right, too few
+as expected month  SX5E          48  17   18   13     19/9  0.37/0.33/0.30     can't say       0.3191  -        0: 0 right, too few
+as expected month  BRN           51  18   15   18     20/5  0.35/0.33/0.32     can't say       0.4789  -        0: 0 right, too few
+as expected month  EURUSD        63  19   18   26     12/1  0.31/0.33/0.35     can't say       0.3031  -        0: 0 right, too few
+as expected month  COMP          55  24   18   13     21/0  0.46/0.33/0.21     can't say       0.3722  -        0: 0 right, too few
+as expected month  UST5Y / ZF    55  20   21   14     21/0  0.32/0.33/0.34     can't say       0.1502  -        0: 0 right, too few
+as expected month  UKX           56  22   18   16     12/8  0.36/0.33/0.30     can't say       0.4089  -        0: 0 right, too few
+as expected month  SXXP          48  21   15   12     19/9  0.39/0.33/0.27     can't say       0.3700  -        0: 0 right, too few
+as expected month  BTC           32  15    9    8      6/0  0.40/0.33/0.27     can't say       0.3850  -        0: 0 right, too few
+as expected month  ITA           55  23   17   15     21/0  0.45/0.33/0.22     can't say       0.2330  -        0: 0 right, too few
+as expected month  XLE           55  20   20   15     21/0  0.36/0.33/0.31     can't say       0.3641  -        0: 0 right, too few
+as expected month  CORN          50  12   17   21     18/0  0.28/0.33/0.38     can't say       0.3073  -        0: 0 right, too few
+as expected month  WEAT          41  12    8   21     16/0  0.24/0.33/0.42     can't say       0.5672  -        0: 0 right, too few
+as expected month  SOYB          41  13   11   17     16/0  0.31/0.33/0.35     can't say       0.4194  -        0: 0 right, too few
+as expected month  UGA           55  18   22   15     21/0  0.35/0.33/0.31     can't say       0.1818  -        0: 0 right, too few
+as expected month  UNG           55  13   17   25     21/0  0.23/0.33/0.43     can't say       0.5339  -        0: 0 right, too few
+as expected month  XLU           55  22   18   15     21/0  0.41/0.33/0.26     can't say       0.4505  -        0: 0 right, too few
+as expected month  ITB           55  17   26   12     21/0  0.40/0.33/0.27     can't say       0.0221  -        5: 1 right, too few
+as expected month  KC            54  16   19   19     22/0  0.32/0.33/0.35     can't say       0.4372  -        0: 0 right, too few
+as expected month  T5YIE         53  16   19   18     23/0  0.35/0.32/0.33     can't say       0.3303  -        0: 0 right, too few
+as expected month  GBPUSD        64  20   21   23     12/0  0.32/0.33/0.35     can't say       0.4867  -        0: 0 right, too few
+as expected month  USDJPY        63  23   25   15     12/1  0.33/0.33/0.34     can't say       0.1038  -        0: 0 right, too few
+as expected month  NKY           47  16   17   14    18/11  0.40/0.33/0.26     can't say       0.2728  -        0: 0 right, too few
+as expected month  ETH           10   3    2    5      1/0  0.27/0.33/0.40     can't say       0.5863  -        0: 0 right, too few
+as expected month  ALL           55  26   20    9     21/0  0.43/0.33/0.24     can't say       0.1485  -        0: 0 right, too few
+below       day    SPY / ES      36  10   15   11      0/0  0.37/0.33/0.29     can't say       0.1868  -        0: 0 right, too few
+below       day    UST10Y / ZN   36   6    5   25      0/0  0.33/0.32/0.35     down            0.0007  -        21: 13 right, too few
+below       day    DXY           36  10   13   13      0/0  0.34/0.33/0.32     can't say       0.2902  -        0: 0 right, too few
+below       day    GC / XAU      36  14   12   10      0/0  0.35/0.33/0.32     can't say       0.3341  -        0: 0 right, too few
+below       day    VIX           36   9   17   10      0/0  0.30/0.33/0.36     can't say       0.0582  -        0: 0 right, too few
+below       day    DAX           35  13   13    9      0/1  0.35/0.33/0.31     can't say       0.3621  -        0: 0 right, too few
+below       day    SX5E          35  12   14    9      0/1  0.35/0.33/0.32     can't say       0.2521  -        0: 0 right, too few
+below       day    BRN           36  15   11   10      0/0  0.34/0.33/0.32     can't say       0.2576  -        0: 0 right, too few
+below       day    EURUSD        36  12   13   11      0/0  0.33/0.33/0.34     can't say       0.4219  -        0: 0 right, too few
+below       day    COMP          36  12   13   11      0/0  0.38/0.33/0.29     can't say       0.4187  -        0: 0 right, too few
+below       day    UST5Y / ZF    36   5    5   26      0/0  0.33/0.33/0.33     down            0.0001  -        24: 16 right, too few
+below       day    UKX           35  14   10   11      0/1  0.35/0.33/0.32     can't say       0.4160  -        0: 0 right, too few
+below       day    SXXP          35  14   12    9      0/1  0.35/0.33/0.32     can't say       0.2726  -        0: 0 right, too few
+below       day    BTC           16   5    6    5      0/0  0.38/0.33/0.29     can't say       0.4433  -        0: 0 right, too few
+below       day    ITA           36  14   13    9      0/0  0.37/0.33/0.30     can't say       0.3830  -        0: 0 right, too few
+below       day    XLE           36  10   12   14      0/0  0.35/0.33/0.32     can't say       0.2080  -        0: 0 right, too few
+below       day    CORN          26   8    9    9      0/0  0.32/0.33/0.35     can't say       0.5188  -        0: 0 right, too few
+below       day    WEAT          24  10    6    8      0/0  0.30/0.33/0.36     can't say       0.2736  -        0: 0 right, too few
+below       day    SOYB          24  11    8    5      0/0  0.33/0.33/0.34     can't say       0.0892  -        3: 0 right, too few
+below       day    UGA           36  14   12   10      0/0  0.34/0.33/0.33     can't say       0.3038  -        0: 0 right, too few
+below       day    UNG           36  11    7   18      0/0  0.31/0.33/0.36     can't say       0.2447  -        0: 0 right, too few
+below       day    XLU           36  12   12   12      0/0  0.36/0.33/0.31     can't say       0.4387  -        0: 0 right, too few
+below       day    ITB           36   8   18   10      0/0  0.34/0.33/0.32     can't say       0.0283  -        0: 0 right, too few
+below       day    KC            36   7   13   16      0/0  0.32/0.33/0.34     can't say       0.0596  -        0: 0 right, too few
+below       day    T5YIE         36   8   10   18      0/0  0.33/0.33/0.33     can't say       0.0375  -        19: 9 right, too few
+below       day    GBPUSD        36  17    5   14      0/0  0.33/0.33/0.34     can't say       0.3408  -        0: 0 right, too few
+below       day    USDJPY        36  10    9   17      0/0  0.34/0.33/0.33     can't say       0.1152  -        0: 0 right, too few
+below       day    NKY           36  13   12   11      0/0  0.36/0.33/0.31     can't say       0.5502  -        0: 0 right, too few
+below       day    ETH            9   3    4    2      0/0  0.30/0.33/0.37     too few         —       -        0: 0 right, too few
+below       day    ALL           36  13    9   14      0/0  0.36/0.33/0.31     can't say       0.3622  -        1: 0 right, too few
+below       week   SPY / ES      36  14   10   12      0/0  0.40/0.33/0.26     can't say       0.3016  -        1: 0 right, too few
+below       week   UST10Y / ZN   36   9   11   16      0/0  0.32/0.33/0.35     can't say       0.1690  -        0: 0 right, too few
+below       week   DXY           36  13   13   10      0/0  0.35/0.33/0.32     can't say       0.4199  -        0: 0 right, too few
+below       week   GC / XAU      36   9   15   12      0/0  0.36/0.33/0.31     can't say       0.1876  -        0: 0 right, too few
+below       week   VIX           36   9   12   15      0/0  0.31/0.33/0.36     can't say       0.2600  -        0: 0 right, too few
+below       week   DAX           35  15    8   12      0/1  0.37/0.33/0.29     can't say       0.5545  -        0: 0 right, too few
+below       week   SX5E          35  12   10   13      0/1  0.36/0.33/0.31     can't say       0.3492  -        0: 0 right, too few
+below       week   BRN           34  14    8   12      0/2  0.35/0.33/0.32     can't say       0.5209  -        0: 0 right, too few
+below       week   EURUSD        36  10   12   14      0/0  0.33/0.33/0.34     can't say       0.3030  -        0: 0 right, too few
+below       week   COMP          36  10   15   11      0/0  0.41/0.33/0.26     can't say       0.1494  -        3: 0 right, too few
+below       week   UST5Y / ZF    36  10   13   13      0/0  0.32/0.33/0.34     can't say       0.3940  -        0: 0 right, too few
+below       week   UKX           35  15   10   10      0/1  0.36/0.33/0.31     can't say       0.3288  -        0: 0 right, too few
+below       week   SXXP          35  15   10   10      0/1  0.37/0.33/0.30     can't say       0.4087  -        0: 0 right, too few
+below       week   BTC           16   5    7    4      0/0  0.39/0.33/0.28     can't say       0.2618  -        0: 0 right, too few
+below       week   ITA           36  12   13   11      0/0  0.40/0.33/0.27     can't say       0.2820  -        0: 0 right, too few
+below       week   XLE           36  13    8   15      0/0  0.36/0.33/0.31     can't say       0.2917  -        1: 0 right, too few
+below       week   CORN          26   8   10    8      0/0  0.31/0.33/0.36     can't say       0.3571  -        0: 0 right, too few
+below       week   WEAT          24  12    4    8      0/0  0.28/0.33/0.39     can't say       0.0745  -        0: 0 right, too few
+below       week   SOYB          24  10    8    6      0/0  0.33/0.33/0.34     can't say       0.2009  -        0: 0 right, too few
+below       week   UGA           36  14   10   12      0/0  0.35/0.33/0.32     can't say       0.5104  -        0: 0 right, too few
+below       week   UNG           36  14   10   12      0/0  0.28/0.33/0.38     can't say       0.1703  -        0: 0 right, too few
+below       week   XLU           36  13   11   12      0/0  0.38/0.33/0.29     can't say       0.3697  -        0: 0 right, too few
+below       week   ITB           36  10   10   16      0/0  0.36/0.33/0.30     can't say       0.0710  -        1: 0 right, too few
+below       week   KC            36  11    9   16      0/0  0.33/0.33/0.34     can't say       0.2513  -        0: 0 right, too few
+below       week   T5YIE         36  10   11   15      0/0  0.36/0.27/0.37     can't say       0.2204  -        0: 0 right, too few
+below       week   GBPUSD        36  14   11   11      0/0  0.32/0.33/0.34     can't say       0.2854  -        0: 0 right, too few
+below       week   USDJPY        36  10   14   12      0/0  0.34/0.33/0.32     can't say       0.2938  -        0: 0 right, too few
+below       week   NKY           35  14   11   10      0/1  0.38/0.33/0.29     can't say       0.5227  -        0: 0 right, too few
+below       week   ETH            9   5    1    3      0/0  0.28/0.33/0.38     too few         —       -        0: 0 right, too few
+below       week   ALL           36  14   14    8      0/0  0.39/0.33/0.28     can't say       0.2938  -        0: 0 right, too few
+below       month  SPY / ES      29  16    6    7      6/0  0.46/0.33/0.21     can't say       0.5554  -        0: 0 right, too few
+below       month  UST10Y / ZN   29  12    7   10      6/0  0.32/0.33/0.35     can't say       0.3332  -        0: 0 right, too few
+below       month  DXY           29  11    9    9      6/0  0.36/0.33/0.31     can't say       0.5472  -        0: 0 right, too few
+below       month  GC / XAU      29  10   11    8      6/0  0.37/0.33/0.30     can't say       0.3642  -        0: 0 right, too few
+below       month  VIX           29   6   12   11      6/0  0.29/0.33/0.38     can't say       0.2321  -        0: 0 right, too few
+below       month  DAX           26  11    8    7      4/5  0.41/0.33/0.26     can't say       0.5909  -        0: 0 right, too few
+below       month  SX5E          27  12    8    7      3/5  0.38/0.33/0.29     can't say       0.3717  -        0: 0 right, too few
+below       month  BRN           23   7    8    8     10/2  0.35/0.33/0.32     can't say       0.4282  -        0: 0 right, too few
+below       month  EURUSD        29   8   11   10      5/1  0.31/0.33/0.35     can't say       0.3642  -        0: 0 right, too few
+below       month  COMP          29  14    9    6      6/0  0.46/0.33/0.21     can't say       0.5630  -        0: 0 right, too few
+below       month  UST5Y / ZF    29   9   10   10      6/0  0.33/0.33/0.34     can't say       0.5089  -        0: 0 right, too few
+below       month  UKX           27   9   10    8      2/6  0.37/0.33/0.29     can't say       0.4108  -        0: 0 right, too few
+below       month  SXXP          27  12    7    8      3/5  0.40/0.33/0.26     can't say       0.5718  -        0: 0 right, too few
+below       month  BTC           12   3    8    1      3/0  0.42/0.33/0.25     can't say       0.0188  -        0: 0 right, too few
+below       month  ITA           29  15    5    9      6/0  0.45/0.33/0.22     can't say       0.3654  -        0: 0 right, too few
+below       month  XLE           29   8   11   10      6/0  0.36/0.33/0.30     can't say       0.2711  -        0: 0 right, too few
+below       month  CORN          20   7    6    7      5/0  0.29/0.33/0.37     can't say       0.4181  -        0: 0 right, too few
+below       month  WEAT          18   5    7    6      5/0  0.24/0.33/0.43     can't say       0.3639  -        0: 0 right, too few
+below       month  SOYB          18   6    4    8      5/0  0.30/0.33/0.36     can't say       0.5291  -        0: 0 right, too few
+below       month  UGA           29   9    8   12      6/0  0.36/0.33/0.31     can't say       0.2257  -        0: 0 right, too few
+below       month  UNG           29   5    9   15      6/0  0.24/0.33/0.43     can't say       0.2305  -        0: 0 right, too few
+below       month  XLU           29  11    8   10      6/0  0.41/0.33/0.25     can't say       0.2391  -        0: 0 right, too few
+below       month  ITB           29  10   10    9      6/0  0.40/0.33/0.27     can't say       0.3536  -        0: 0 right, too few
+below       month  KC            29  11    6   12      6/0  0.32/0.33/0.35     can't say       0.5740  -        0: 0 right, too few
+below       month  T5YIE         28  13    4   11      7/0  0.35/0.32/0.32     can't say       0.5061  -        0: 0 right, too few
+below       month  GBPUSD        30   8   13    9      5/0  0.32/0.33/0.35     can't say       0.1663  -        0: 0 right, too few
+below       month  USDJPY        29   9    9   11      5/1  0.33/0.33/0.34     can't say       0.4313  -        0: 0 right, too few
+below       month  NKY           23   9    9    5      7/5  0.41/0.33/0.26     can't say       0.3492  -        0: 0 right, too few
+below       month  ETH            7   1    5    1      1/0  0.24/0.33/0.43     too few         —       -        0: 0 right, too few
+below       month  ALL           29  12    9    8      6/0  0.43/0.33/0.24     can't say       0.4086  -        0: 0 right, too few
+by chance: about 7.8 answers on all history, 0.0 holds walk-forward
