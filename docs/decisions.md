@@ -11,6 +11,17 @@ amended there with a date.
 Each entry: **what** was decided, **why**, what it **retires**, and **where** the detail is. *By the
 owner* marks a choice the owner made over another on the table.
 
+## 2026-11-21: Improve for readers before widening, by the owner
+
+- **What:** asked whether to widen or improve, the owner chose to improve, readers first, with the
+  Dow's reports called ahead from the links that already hold: step 44, [a page a stranger
+  reads](steps/readers.md). New sources and kinds stay after the gate.
+- **Why:** the page had one visitor, the owner's, by 2026-11-21; a first-visitor review found its
+  first screen jargon and *can't say*, and its week ahead silent. The gate's readers bar is the
+  one no step had worked on, and widening adds *can't say* cells, not readers.
+- **Retires:** nothing.
+- **Where:** [step 44](steps/readers.md); [roadmap](roadmap.md) row 44.
+
 ## 2026-11-21: Scores read from filings, tested against moves, by the owner
 
 - **What:** after reading Andrej Karpathy's US job market visualizer (https://karpathy.ai/jobs/:

@@ -18,6 +18,10 @@ the shares trailed on 27 of 43 days (p 0.06), short of an answer; nothing answer
 
 ## In progress
 
+- **Step 44: a page a stranger reads** ([the spec](steps/readers.md)): the first screen on the
+  answers that hold, market names outside a closed *workings*, and the Dow's reports of the next
+  seven days with what followed each kind, for step 23's readers. Chosen 2026-11-21 by the owner.
+  The spec is written; next, its goldfish review.
 - **Step 42, step 5: the forward log** ([the spec](steps/exposure-scores.md)): each OPEC+, CPI,
   Fed and retail event after the scores' commit, its spread per rubric written to
   `steps/exposure-forward.csv` and graded, to the 2027-01-31 gate.
@@ -58,7 +62,8 @@ the shares trailed on 27 of 43 days (p 0.06), short of an answer; nothing answer
 ## Next
 
 Monday 2026-11-23: step 23's first weekly post, drafted by `weekly-post` and published by the
-owner, and step 33's first refresh. 
+owner, and step 33's first refresh. Then step 44's page, published before the post if it is
+ready.
 
 ## Known, not yet fixed
 
