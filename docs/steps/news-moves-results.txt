@@ -168,3 +168,96 @@ The second reading again, the same rows, by a new reader given the new codes and
   14025  analyst action           analyst action
   15725  nothing found            nothing found
 1 disagreement of 10, within the spec's 2: step 2 done.
+
+The deviation as scripts/news_moves.py computes it (its rolling sums, by a one-off script), on the five big moves:
+  2011-01-03 CLX 0.01179, 2016-04-28 CAH 0.00992, 2020-03-13 PPG 0.01149, 2023-08-04 RMD 0.01426, 2026-11-18 UNH 0.02729:
+  the same as statistics.pstdev's above to 5 decimals.
+
+The first coding's rows (codes of the spec before the owner's amendment):
+     425 2011-09-20 NEM   company news, unfiled
+     850 2012-03-29 CI    nothing found
+    1275 2013-05-01 REGN  peer or sector news
+    1700 2014-04-01 NDAQ  nothing found
+    2125 2014-12-02 CSX   nothing found
+    2550 2015-04-29 RIG   nothing found
+    2975 2015-10-22 BSX   nothing found
+    3400 2016-01-14 CAH   nothing found
+    3825 2016-03-01 C     peer or sector news
+    4250 2016-07-06 ABT   nothing found
+    4675 2016-11-30 COP   peer or sector news
+    5100 2017-10-04 ETR   nothing found
+    5525 2018-03-07 MDLZ  nothing found
+    5950 2018-08-13 LEN   nothing found
+    6375 2018-11-19 MRSH  nothing found
+    6800 2019-04-17 SYK   peer or sector news
+    7225 2019-11-04 NVR   nothing found
+    7650 2020-03-09 OKE   peer or sector news
+    8075 2020-03-16 AIZ   nothing found
+    8500 2020-03-18 CBOE  nothing found
+    8925 2020-03-20 EG    nothing found
+    9350 2020-03-25 BSX   nothing found
+    9775 2020-04-01 VFC   nothing found
+   10200 2020-04-16 MET   nothing found
+   10625 2020-05-26 HBAN  peer or sector news
+   11050 2020-11-04 BAC   peer or sector news
+   11475 2021-02-01 DD    filed later
+   11900 2022-04-21 AES   nothing found
+   12325 2022-11-10 COF   peer or sector news
+   12750 2023-05-25 AMAT  peer or sector news
+   13175 2024-02-01 FTV   analyst action
+   13600 2024-08-02 MET   nothing found
+   14025 2025-01-13 MOS   analyst action
+   14450 2025-04-03 DVN   peer or sector news
+   14875 2025-04-24 APH   company news, unfiled
+   15300 2025-10-16 MET   nothing found
+   15725 2026-02-11 ROP   nothing found
+   16150 2026-05-15 FDS   nothing found
+   16575 2026-07-23 SYK   nothing found
+   17000 2026-11-05 LRCX  peer or sector news
+
+The one-off check script (scratchpad/m40/check.py), as run:
+  import json, sys
+  from datetime import datetime
+  from pathlib import Path
+  from statistics import pstdev
+  sys.path.insert(0, "scripts")
+  import news_moves as nm
+  from fortuneteller import db
+  from fortuneteller.study import EXCESS_OVER, stored_closes
+  from nasdaq_earnings import symbol
+  from sec_8k_times import UNLISTED, MORE_FILERS
+  sec = Path(sys.argv[1])
+  rows, _ = nm.member_days(sec)
+  bigs = sorted((r for r in rows if r[3]), key=lambda r: (r[0], r[1]))
+  nofile = sorted((r for r in rows if not r[4]), key=lambda r: (r[0], r[1]))
+  N = len(bigs); M = len(nofile)
+  listing = json.loads((sec / "company_tickers.json").read_text())
+  ciks = UNLISTED | {row["ticker"]: int(row["cik_str"]) for row in listing.values()}
+  con = db.get_connection()
+  idx = {c.day: c.price for c in stored_closes(EXCESS_OVER, con=con)}
+  days = sorted(idx)
+  def raw(day, ticker):
+      st = [c for c in stored_closes(symbol(ticker), con=con) if c.day in idx]
+      k = [c.day for c in st].index(day)
+      ex = [st[i].price / st[i-1].price - idx[st[i].day] / idx[st[i-1].day] for i in range(k-504, k+1)]
+      return ex[-1], pstdev(ex[:-1])
+  def filed(day, ticker):
+      out = []
+      for cik in [ciks[ticker], *MORE_FILERS.get(ticker, [])]:
+          p = sec / f"CIK{cik:010d}.json"
+          if not p.exists(): continue
+          ix = json.loads(p.read_text()); parts = [ix["filings"]["recent"]] + [json.loads((sec / f["name"]).read_text()) for f in ix["filings"]["files"]]
+          for part in parts:
+              for i, form in enumerate(part["form"]):
+                  if form in ("8-K", "8-K/A"):
+                      st = datetime.fromisoformat(part["acceptanceDateTime"][i].replace("Z", "+00:00"))
+                      w = nm.window_day(st, days)
+                      if w == day or abs((st.date() - day).days) <= 3:
+                          out.append((form, cik, part["accessionNumber"][i], part["acceptanceDateTime"][i], part["items"][i], w == day))
+      return out
+  for label, lst, n in (("big", bigs, N), ("no 8-K", nofile, M)):
+      for j in (0, n // 4, n // 2, 3 * n // 4, n - 1):
+          day, ticker, move, isbig, items = lst[j]
+          ex, sd = raw(day, ticker)
+          print(f"{label} #{j+1} {day} {ticker} script {move:+.5f} hand {ex:+.5f} sd {sd:.5f} 3sd {3*sd:.5f} big {isbig} items {sorted(items)}")
+          for f in filed(day, ticker): print("   ", *f)

@@ -160,7 +160,10 @@ def matrix(sec: Path) -> None:
     share = len(moved) / len(rows)
     up = sum(1 for r in moved if r[2] > 0) / len(moved)
     print(f"member-days {len(rows)}, big {len(moved)} ({share:.2%}), up share {up:.1%}")
-    print("left out (tickers): " + ", ".join(f"{k} {v}" for k, v in sorted(out.items())))
+    print(
+        "left out (no filer and no closes are tickers, second class member-days): "
+        + ", ".join(f"{k} {v}" for k, v in sorted(out.items()))
+    )
     counts = Counter(item for r in rows for item in r[4])
     items = sorted(i for i, c in counts.items() if c >= FLOOR and i)
     rare = {i for i in counts if i not in items}
