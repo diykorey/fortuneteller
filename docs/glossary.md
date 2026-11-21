@@ -380,6 +380,12 @@ Terms are grouped by what they are about, alphabetical within each group.
   prints a line and *Ask* shows a row. A *kind cell* is read off the kind's own definition (Brent on
   OPEC+'s *oil up*), so it says nothing beyond the kind. A *group* is one kind of event's set of
   kinds as *Ask*'s menu groups them (the jobs report's above, as expected and below).
+- **Stated forecast** — *added 2026-11-21* ([stated forecasts](steps/stated-forecasts.md)): a
+  forecast the predictions page gives outright, with no *if*: a **long-run forecast** (a market's
+  own direction over a span, where the direction most past spans took holds walk-forward over
+  spans that do not overlap) or an **after-news forecast** (what follows news that has landed,
+  where its cell holds). Each is kept in `docs/predicts/forecasts.csv` and graded when its span
+  ends.
 - **Predictions page** — *added 2026-11-21* ([Fortuneteller predicts](steps/predicts.md)): the
   page at `/fortuneteller/predicts/` with one to five cards. Each card is an *if* about an event
   ahead, or an answer that holds, with its record as counts. A card is not a *prediction* in the

@@ -60,6 +60,15 @@ stated with its grade once its span has ended:
   true* or *did not*, from the close before its first day to the close of its last. The page
   shows the tally: so many came true, so many did not, so many still open.
 
+- **On the page** (*amended 2026-11-21, after step 1's results and before step 3 was built*):
+  the after-news forecasts first, then one long run per market at its shortest span that holds,
+  three stated forecasts at most, so the *if* cards keep at least two of the five places. Five
+  pairs hold and four of them are two markets at two spans; a reader gains nothing from the S&P
+  500's month and its year side by side. A stated card names its market and span (*The US stock
+  market, over the next month*) and says what will be so: *higher on Mon, Dec 21, 2026 than on
+  Fri, Nov 20, 2026*. Spans are counted in weekdays; a market holiday is not known, so a span's
+  last day can fall one trading day later than its length.
+
 ## The rule, fixed before measuring
 
 - **Bars:** a long-run forecast is shown only if it *holds* (above); an after-news forecast only if
@@ -119,3 +128,26 @@ event. No market outside the list above. No 1-day forecast stated unless it hold
   Tested on N past years, one at a time, this rule held R times and failed W.*
 - **Docs:** this spec, the glossary (*stated forecast*, *long-run forecast*), status, the
   changelog, roadmap row 48 and a decisions entry for the page stating forecasts.
+
+## Results
+
+**Step 1, the long run, 2026-11-21.** `fortuneteller forecasts` on a copy of the store of
+2026-11-21 (closes to 2026-11-20), home prices from FRED to September 2026:
+
+| Market | First close | Tomorrow | Week | Month | Year |
+| --- | --- | --- | --- | --- | --- |
+| S&P 500 | 1970-01-02 | 7,560 of 14,280, no | 1,609 of 2,849, no | **402 of 666, holds** | **37 of 49, holds** |
+| Nasdaq Composite | 1971-02-05 | 7,828 of 14,020, no | 1,619 of 2,802, no | **408 of 658, holds** | **35 of 50, holds** |
+| Gold | 2000-08-30 | 3,450 of 6,526, no | 743 of 1,305, no | 167 of 300, no | 14 of 21, too few |
+| Brent oil | 2007-07-30 | 2,454 of 4,745, no | 487 of 940, no | 114 of 221, no | 5 of 12, too few |
+| Dollar index | 1971-01-04 | 6,742 of 13,653, no | 1,362 of 2,746, no | 318 of 651, no | 23 of 48, no |
+| 10-year Treasury yield | 1970-01-02 | 6,751 of 13,382, no | 1,397 of 2,771, no | 323 of 646, no | 23 of 48, no |
+| Bitcoin | 2014-09-17 | 1,643 of 3,155, no | 340 of 629, no | 81 of 141, no | 3 of 7, too few |
+| US home prices | 1987-01 | | | | **29 of 34, holds** |
+
+Each cell is right of forecasts made; *no* is *doesn't hold*. Five of the 29 pairs hold, all
+saying *up* (0.3 expected by chance), as expected: the S&P 500 and the Nasdaq at a month and a
+year, home prices at a year. No 1-day forecast holds. The S&P 500's tomorrow is right 7,560 of
+14,280 times, p about 1e-12 against a coin, but short of the 60% bar: a day's direction is close
+to a coin, so the page says nothing about tomorrow. The S&P 500 begins in 1970 in the store, not
+1928, so its year has 49 forecasts.

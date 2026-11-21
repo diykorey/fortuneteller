@@ -1018,19 +1018,28 @@ LONG_RUN_MARKETS = ("SPY / ES", "COMP", "GC / XAU", "BRN", "DXY", "UST10Y / ZN",
 HOME = "US home prices"
 
 
-def long_runs(con: duckdb.DuckDBPyConnection, fred_key: str) -> list[dict[str, object]]:
-    """Step 48's thirty pairs: each market's long run over each span, home prices from FRED when
-    ``fred_key`` is set."""
+def home_prices(fred_key: str) -> list[sources.DailyClosingPrice]:
+    """The Case-Shiller national index by month from FRED; none without a key."""
+    if not fred_key:
+        return []
+    payload = sources.fetch_series(fred_key, study.HOME_SERIES)
+    return [sources.DailyClosingPrice(d, v) for d, v in sources.parse_series(payload)]
+
+
+def long_runs(
+    con: duckdb.DuckDBPyConnection, home: Sequence[sources.DailyClosingPrice] = ()
+) -> list[dict[str, object]]:
+    """Step 48's pairs: each market's long run over each span, and home prices' when ``home``
+    holds their months."""
     runs: list[tuple[str, str, study.LongRun]] = []
     for market in LONG_RUN_MARKETS:
-        closes = study.stored_closes(market, con)
+        try:
+            closes = study.stored_closes(market, con)
+        except ValueError:
+            continue
         runs += [(market, s, study.long_run(closes, n)) for s, n in study.LONG_RUN_SPANS.items()]
-    if fred_key:
-        months = [
-            sources.DailyClosingPrice(d, v)
-            for d, v in sources.parse_series(sources.fetch_series(fred_key, study.HOME_SERIES))
-        ]
-        runs += [(HOME, s, study.long_run(months, n)) for s, n in study.HOME_SPANS.items()]
+    if home:
+        runs += [(HOME, s, study.long_run(home, n)) for s, n in study.HOME_SPANS.items()]
     return [
         {
             "market": m,
@@ -1044,6 +1053,7 @@ def long_runs(con: duckdb.DuckDBPyConnection, fred_key: str) -> list[dict[str, o
             "p": r.p,
             "verdict": r.verdict,
             "now": r.now,
+            "latest": home[-1].day.isoformat() if m == HOME else None,
         }
         for m, s, r in runs
     ]
@@ -1051,7 +1061,7 @@ def long_runs(con: duckdb.DuckDBPyConnection, fred_key: str) -> list[dict[str, o
 
 def _forecasts(_args: argparse.Namespace) -> int:
     con = db.get_connection()
-    rows = long_runs(con, _fred_key("forecasts"))
+    rows = long_runs(con, home_prices(_fred_key("forecasts")))
     for r in rows:
         print(
             f"{r['market']:<14} {r['span']:<9} from {r['first']}  spans {r['spans']:>5}"
@@ -2462,6 +2472,216 @@ def _plain_number(value: float, scale: int) -> str:
     return f"{value * scale:,.0f}" if scale > 1 else f"{value:g}"
 
 
+# Step 48, stated forecasts (docs/steps/stated-forecasts.md): what will happen, from a market's
+# own long run where it holds, and after news that has landed where its cell holds; each kept once
+# in forecasts.csv and graded when its span ends.
+STATED_MAX = 3
+FORECAST_FIELDS = (
+    "stated",
+    "kind",
+    "market",
+    "span",
+    "direction",
+    "first",
+    "last",
+    "event",
+    "grade",
+)
+LONG_RUN_WORDS = {"tomorrow": "tomorrow", "week": "week", "month": "month", "year": "year"}
+
+
+def _plain_day(iso: str) -> str:
+    return date.fromisoformat(iso).strftime("%a, %b %-d, %Y")
+
+
+def _plain_month(iso: str) -> str:
+    return date.fromisoformat(iso).strftime("%B %Y")
+
+
+def _months_after(day: date, months: int) -> date:
+    total = day.year * 12 + day.month - 1 + months
+    return date(total // 12, total % 12 + 1, 1)
+
+
+def stated(
+    data: Mapping[str, object], today: date, kept: Sequence[Mapping[str, str]] = ()
+) -> list[dict[str, object]]:
+    """The forecasts the page states on ``today``'s evening, after-news ones first, then one long
+    run per market at its shortest span that holds; ``STATED_MAX`` at most. Each carries the row
+    ``forecasts.csv`` would keep for it under ``row``; a long run still open in ``kept`` is shown
+    as it was kept."""
+    names = data.get("market_names") or {}
+    assert isinstance(names, dict)
+    out: list[dict[str, object]] = []
+    ask = data.get("ask") or []
+    assert isinstance(ask, list)
+    for f in ask:
+        latest = f.get("latest") or {}
+        for c in filter(_answered, f["cells"]):
+            until = c.get("open_until")
+            if until is None or c["span"] == "day" or until < today.isoformat():
+                continue
+            what = PLAIN_MARKETS.get(c["market"], c["market_name"])
+            label = PLAIN_KINDS.get((f["name"], c["kind"]), c["kind"])
+            out.append(
+                {
+                    "stated": True,
+                    "day": None,
+                    "until": until,
+                    "when": f"News of {_plain_day(latest['day'])}",
+                    "event": label[0].upper() + label[1:],
+                    "condition": None,
+                    "outcome": f"{what} higher on {_plain_day(until)} than before the news"
+                    if c["answer"] == "up"
+                    else f"{what} lower on {_plain_day(until)} than before the news",
+                    "direction": c["answer"],
+                    "record": _plain_record(
+                        c["right"], c["graded"], f"In {c['graded']:,} past cases"
+                    ),
+                    "note": "Some of these days may already have passed; it is counted from the"
+                    " close before the news.",
+                    "link": f"#ask/{f['name']}/{c['kind']}",
+                    "row": {
+                        "kind": "after news",
+                        "market": c["market"],
+                        "span": c["span"],
+                        "direction": c["answer"],
+                        "first": latest["day"],
+                        "last": until,
+                        "event": f"{f['name']} {latest['day']}",
+                    },
+                }
+            )
+    runs = data.get("forecasts") or []
+    assert isinstance(runs, list)
+    seen: set[str] = set()
+    for r in runs:
+        if r["verdict"] != "holds" or r["now"] is None or r["market"] in seen:
+            continue
+        seen.add(r["market"])
+        held = [
+            k
+            for k in kept
+            if (k["kind"], k["market"], k["span"]) == ("long run", r["market"], r["span"])
+            and k["last"] >= today.isoformat()
+        ]
+        direction = held[-1]["direction"] if held else str(r["now"])
+        rising = direction == "up"
+        if r["market"] == HOME:
+            home_latest = date.fromisoformat(str(r["latest"]))
+            first, last = _months_after(home_latest, 1), _months_after(home_latest, 12)
+            if held:
+                last = date.fromisoformat(held[-1]["last"])
+                first, home_latest = date.fromisoformat(held[-1]["first"]), _months_after(last, -12)
+            title = (
+                f"US home prices, in the 12 months after {_plain_month(home_latest.isoformat())}"
+            )
+            outcome = (
+                f"{'higher' if rising else 'lower'} in {_plain_month(last.isoformat())}"
+                f" than in {_plain_month(home_latest.isoformat())}"
+            )
+            when = "Next year"
+        else:
+            length = study.LONG_RUN_SPANS[r["span"]]
+            base = today
+            first, last = _weekdays_after(today, 1), _weekdays_after(today, length)
+            if held:
+                base = date.fromisoformat(held[-1]["stated"])
+                first, last = (
+                    date.fromisoformat(held[-1]["first"]),
+                    date.fromisoformat(held[-1]["last"]),
+                )
+            what = PLAIN_MARKETS.get(r["market"], names.get(r["market"], r["market"]))
+            title = f"{what[0].upper()}{what[1:]}, over the next {LONG_RUN_WORDS[r['span']]}"
+            outcome = (
+                f"{'higher' if rising else 'lower'} on {_plain_day(last.isoformat())}"
+                f" than on {_plain_day(base.isoformat())}"
+            )
+            when = f"Next {LONG_RUN_WORDS[r['span']]}"
+        unit = "years" if r["span"] == "year" else f"{r['span']}s"
+        out.append(
+            {
+                "stated": True,
+                "day": None,
+                "until": last.isoformat(),
+                "when": when,
+                "event": title,
+                "condition": None,
+                "outcome": outcome,
+                "direction": direction,
+                "record": _plain_record(
+                    r["right"], r["called"], f"Tested on {r['called']:,} past {unit}, one at a time"
+                ),
+                "note": f"It goes the way most past {unit} went. It says nothing about how far.",
+                "link": "",
+                "row": {
+                    "kind": "long run",
+                    "market": r["market"],
+                    "span": r["span"],
+                    "direction": direction,
+                    "first": first.isoformat(),
+                    "last": last.isoformat(),
+                    "event": "",
+                },
+            }
+        )
+    return out[:STATED_MAX]
+
+
+def keep_forecasts(
+    rows: list[dict[str, str]], told: Sequence[Mapping[str, object]], today: date
+) -> list[dict[str, str]]:
+    """``rows`` with each forecast in ``told`` added once: a long run only when its span starts
+    after every kept row of its market and span has ended, an after-news one once per event,
+    market and span."""
+    kept = list(rows)
+    for t in told:
+        new = t["row"]
+        assert isinstance(new, dict)
+        same = [
+            r
+            for r in kept
+            if (r["kind"], r["market"], r["span"]) == (new["kind"], new["market"], new["span"])
+        ]
+        if new["kind"] == "long run" and any(r["last"] >= new["first"] for r in same):
+            continue
+        if new["kind"] == "after news" and any(r["event"] == new["event"] for r in same):
+            continue
+        kept.append(
+            {"stated": today.isoformat(), **{k: str(v) for k, v in new.items()}, "grade": ""}
+        )
+    return kept
+
+
+def grade_forecasts(
+    rows: list[dict[str, str]], closes: Callable[[str], Sequence[sources.DailyClosingPrice]]
+) -> list[dict[str, str]]:
+    """Each ungraded row whose last day has a close: *came true* if the close of its last day is
+    beyond the last close before its first day in its direction, else *did not*."""
+    graded = []
+    for r in rows:
+        if not r["grade"]:
+            series = closes(r["market"])
+            first, last = date.fromisoformat(r["first"]), date.fromisoformat(r["last"])
+            before = [c for c in series if c.day < first]
+            upto = [c for c in series if c.day <= last]
+            if before and series and series[-1].day >= last:
+                move = upto[-1].price - before[-1].price
+                right = move > 0 if r["direction"] == "up" else move < 0
+                r = {**r, "grade": "came true" if right else "did not"}
+        graded.append(r)
+    return graded
+
+
+def forecast_tally(rows: Sequence[Mapping[str, str]]) -> dict[str, int]:
+    grades = [r["grade"] for r in rows]
+    return {
+        "came_true": grades.count("came true"),
+        "did_not": grades.count("did not"),
+        "open": grades.count(""),
+    }
+
+
 def predictions(data: Mapping[str, object]) -> list[dict[str, object]]:
     """The page's predictions: each release ahead with a link that holds and calls, the largest
     S&P 500 company reporting each day ahead when a kind's day cell holds, soonest first; then up
@@ -2610,6 +2830,39 @@ SCOREBOARD_DATA_MARK = "__SCOREBOARD_DATA__"
 PREDICTS_DATA_MARK = "__PREDICTS_DATA__"
 
 
+def stated_forecasts(
+    con: duckdb.DuckDBPyConnection, data: Mapping[str, object], today: date, kept_path: Path
+) -> dict[str, object]:
+    """Step 48 on the evening's page: the long runs measured, the kept forecasts graded, the new
+    ones kept, and what the page states with the tally."""
+    try:
+        home = home_prices(_fred_key("scoreboard"))
+    except sources.FredError as exc:
+        print(f"scoreboard: home prices: {exc}", file=sys.stderr)
+        home = []
+    runs = long_runs(con, home)
+    rows: list[dict[str, str]] = []
+    if kept_path.exists():
+        with kept_path.open(newline="") as fh:
+            rows = list(csv.DictReader(fh))
+
+    def closes(market: str) -> Sequence[sources.DailyClosingPrice]:
+        return home if market == HOME else study.stored_closes(market, con)
+
+    rows = grade_forecasts(rows, closes)
+    told = stated({**data, "forecasts": runs}, today, rows)
+    rows = keep_forecasts(rows, told, today)
+    with kept_path.open("w", newline="") as fh:
+        writer = csv.DictWriter(fh, FORECAST_FIELDS, lineterminator="\n")
+        writer.writeheader()
+        writer.writerows(rows)
+    return {
+        "stated": [{k: v for k, v in t.items() if k != "row"} for t in told],
+        "tally": forecast_tally(rows),
+        "kept_since": rows[0]["stated"] if rows else None,
+    }
+
+
 def _scoreboard(_args: argparse.Namespace) -> int:
     try:
         rows = study.read_calls(settings.calls_path)
@@ -2656,10 +2909,14 @@ def _scoreboard(_args: argparse.Namespace) -> int:
     # Inside <script>, a "<" in the data could end the element; JSON reads < as the same "<".
     embedded = text.replace("<", "\\u003c")
     (out / "index.html").write_text(page.replace(SCOREBOARD_DATA_MARK, embedded))
-    told = {"written": data.get("written"), "predictions": predictions(data)}
-    shown = json.dumps(told, ensure_ascii=False).replace("<", "\\u003c")
     predicts = out.parent / "predicts"
     predicts.mkdir(parents=True, exist_ok=True)
+    told = {
+        "written": data.get("written"),
+        "predictions": predictions(data),
+        **stated_forecasts(con, data, today, predicts / "forecasts.csv"),
+    }
+    shown = json.dumps(told, ensure_ascii=False).replace("<", "\\u003c")
     template = files("fortuneteller").joinpath("predicts.html").read_text()
     (predicts / "index.html").write_text(template.replace(PREDICTS_DATA_MARK, shown))
     events = data["events"]
