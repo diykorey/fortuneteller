@@ -10,3 +10,13 @@ is a 2020 member whose ticker the SEC's current listing no longer carries (merge
 delisted since), the same gap as step 40's. "No Item 1" is a 10-K whose business section is
 elsewhere (incorporated by reference, or a heading the parser does not read).
 texts.csv SHA-256: 3d4608052de5137e1e2b22a6c0a09dd99e7ae61b76c18540da8815312d8c4a1e
+
+Step 2, the scores. The Subscription LLM, model claude-opus-5-5, in 18 fresh sessions run
+2026-11-21 (17 of 25 members, one of 1), each given only docs/steps/exposure-brief.md and its
+members' texts under their ids. Its rows were joined to the ticker by the cache's key (the ticker
+column added after, never shown to it) and sorted by id and rubric:
+  1,278 rows (426 members x 3 rubrics); none unreadable, none missing, none twice.
+  oil       -5:5 -3:4 -2:21 -1:68 0:280 1:28 2:8 3:1 4:6 5:5      (+3 or more 12, -3 or less 9)
+  rates     -5:2 -4:8 -3:36 -2:41 -1:70 0:219 1:13 2:15 3:9 4:13  (+3 or more 22, -3 or less 46)
+  consumer  -1:1 0:168 1:140 2:55 3:32 4:28 5:2                   (+3 or more 62, 0 or less 169)
+exposure-scores.csv SHA-256: b6acac78fd8fccebb9354353e8b0e99b19a3f517ca02a2f6ca355707a57f1f3a
