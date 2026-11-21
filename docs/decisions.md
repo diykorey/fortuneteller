@@ -21,8 +21,12 @@ owner* marks a choice the owner made over another on the table.
   history for GDP, on the roadmap's *Later* list.
 - **Why:** the expected value is the part of a surprise the project cannot get free with history;
   the gate (2027-01-31) holds new work until it is passed.
+  The same day the owner added Thinking Machines' Inkling 2 Mini (Apache 2.0, 26.4B with
+  about 5B active, released 2026-11-20) to the backlog's local models, beside Gemma 3 4B and
+  Qwen 2.5 3B; its card reports no classification or news benchmark, and on this machine (no
+  GPU, 30 GB) it runs on the CPU, so the labelled set decides.
 - **Retires:** nothing.
-- **Where:** [free sources](free-sources.md); [roadmap](roadmap.md), *Later*.
+- **Where:** [free sources](free-sources.md); [roadmap](roadmap.md), *Later* and *Backlog*.
 
 ## 2026-11-21: Scores read from filings, tested against moves, by the owner
 

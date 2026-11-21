@@ -193,7 +193,7 @@ step 18 trigger; reading the news into kinds waits in the backlog below.
 | 43 | **[Good or bad, read from the filing: 8-K severity](steps/filing-severity.md)**: the Subscription LLM scores 400 S&P 500 members' 8-Ks of 2020 to 2025 (items 2.05, 3.02, 5.02, 7.01, 8.01, no results) from −5 to +5 for shareholders; the score's sign tested against the shares' move on the index, day and week. Chosen 2026-11-21 by the owner, after step 42 | **Done**: 43 bad, 22 good of 400; after bad filings the shares trailed on 27 of 43 days (p 0.06), short of an answer; good no better than chance; nothing holds. Forward to the gate |
 
 **Backlog:** news read into these kinds by a small model on this machine (Gemma 3 4B or Qwen 2.5
-3B), tested on a fresh labelled set: step 20's parked next try, widened to phase 5's kinds.
+3B, or Inkling 2 Mini, a 26B model with about 5B active, *added 2026-11-21*), tested on a fresh labelled set: step 20's parked next try, widened to phase 5's kinds.
 
 Later, not planned in detail, each chosen one at a time after the gate: free expected values
 beside the consensus, the Cleveland Fed's inflation nowcast for CPI and PCE first, then the
