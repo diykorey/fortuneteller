@@ -25,13 +25,16 @@ coded sample of big moves no 8-K explains.
   close. Closes load with `load-prices --companies --seed data/seed/earnings_sp500.csv`, which
   loads the companies in step 36's seed only: a member not in it, or with no closes, is counted and
   left out, so the days lean towards survivors, as step 36's. So is a member with no SEC filer
-  number (CIK) in the saved files below: its days are not counted as *no 8-K*.
+  number (CIK) in the saved files below: its days are not counted as *no 8-K*. Two share classes
+  of one filer (GOOG and GOOGL) make one member-day, the first ticker by name.
 - **A big move:** an excess day move whose size is at least 3 times the standard deviation of the
   company's excess day moves on the 504 closes before it (the day itself not among them; the
   deviation taken about their mean, dividing by 504; the base's span of the company flows,
   [step 31](earnings.md)); a member-day with fewer than 504 closes before is left out. *Big up* or *big down* by its sign.
 - **The filings of a day:** the company's 8-Ks (not 8-K/A) accepted after 16:00:00 New York time
-  on the close before and at or before 16:00:00 on the day, by the acceptance time in the SEC's
+  on the close before (the previous trading close, so a weekend's filings fall to Monday) and at or
+  before 16:00:00 on the day; the SEC gives the time in UTC, turned to New York's by its own
+  daylight saving, by the acceptance time in the SEC's
   submissions files (each company's filing index, every filing listed with its items).
   Step 36 saved them for 624 companies in `data/cache/earnings/sec500`, every page of each
   present; a member missing there is fetched the same way, with `scripts/sec_8k_times.py`'s
@@ -60,7 +63,12 @@ coded sample of big moves no 8-K explains.
 ## The rule, fixed before measuring
 
 *Written 2026-11-21. Seen before: no move and no count of this step; the 8-K items of step 36's
-saved files, as step 36 read them for items 2.02.*
+saved files, as step 36 read them for items 2.02. Amended the same day after the goldfish, before
+any move was read: the chance line's rows named per test; 5.07's lift under 1.5; the direction
+line as a count; the no-2.02 rows judged by the same bar; analyst action "the largest of the other
+codes"; one member-day per filer. Seen by then: 820 tickers in `sp500.csv`, 624 saved filers, 115
+of them with no filing before 2011, and 48,884 8-Ks from 2011 on the older pages, every one with
+its items.*
 
 - **An item goes with big moves** when it has at least 30 member-days, its lift is at least 3, and
   its big moves are more than the all-days share predicts at p < 0.01 (one-sided binomial). Its
@@ -86,7 +94,8 @@ saved files, as step 36 read them for items 2.02.*
 ## How you know it is right
 
 - A test: the window takes an 8-K at 16:01 the close before and at 16:00 the day, not at 16:00
-  the close before or 16:01 the day; the threshold takes a move at 3 deviations and not under.
+  the close before or 16:01 the day, in summer time and in winter time from the SEC's UTC; a
+  Saturday's 8-K falls to Monday; the threshold takes a move at 3 deviations and not under.
 - Five big moves (the first, a quarter, a half, three quarters, the last) checked by hand: the
   excess move against `study.excess_spans` within 0.1 point; the deviation recomputed from the
   504 closes before, within 0.01 point; and the window's 8-Ks against EDGAR's filing pages, the

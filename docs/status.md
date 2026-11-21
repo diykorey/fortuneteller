@@ -19,7 +19,7 @@ Dow's in-line day still holds (229 of 368); its week is now *the period*.
 ## In progress
 
 - **Step 40: big moves and the news filed with them** ([the spec](steps/news-moves.md)): the
-  spec, before its goldfish. Next: the script and the matrix.
+  spec, goldfish-reviewed. Next: the script and the matrix.
 - **Step 34: a same-day source for earnings** ([the spec](steps/earnings-same-day.md)): step 1
   done, Yahoo's kind is Nasdaq's on 102 of 110 reports (92.7%, bar 90%). Next: the speed, asked on
   each member's report from 2026-11-23 to 2027-01-31.
