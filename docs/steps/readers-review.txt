@@ -1,0 +1,47 @@
+Step 44's first-visitor review (docs/steps/readers.md). A fresh reader, given only this prompt.
+
+The prompt:
+
+You are a first-time visitor who clicked a LinkedIn link. You know nothing about this project.
+Fetch https://diykorey.github.io/fortuneteller/scoreboard/ (also fetch
+https://diykorey.github.io/fortuneteller/scoreboard/data.json if the page loads its content from
+it, since the page is rendered by JavaScript). Do not read any repository files or docs. Change
+nothing.
+
+Answer, numbered, briefly and concretely:
+1. Within the first screen, what do you think this page is and what it offers you? Quote the
+   first ~5 lines a visitor sees.
+2. What is the single most interesting thing on the page for an ordinary person (not a trader)?
+   Quote it.
+3. Every word, abbreviation or number you could not understand without help (list them).
+4. What would make you leave within 10 seconds?
+5. What would make you come back next week, or share it? Is there anything dated and upcoming
+   ("on Wednesday X is released, here is what followed the last N times")?
+6. The three changes that would most raise the chance a stranger stays and returns, most
+   important first, each in one sentence.
+Report facts from the page only; say "none" where you found nothing.
+
+The baseline, 2026-11-21 (page written 2026-11-19; rendered in headless Chrome at 1366x800):
+
+1. A statistics dump about markets on economic-release days; it never says what it offers me.
+   First lines: "FortuneTeller / Data to 2026-11-19; written 2026-11-19. / Every call made on a
+   release day, graded on the market's close; every event's verdicts for every market; every
+   link's record on the replay. ... / Ask the fortune teller / Entertainment, not financial
+   advice. Pick a kind of event ..." The default pick is "a Fed rate cut (40)": every row visible
+   reads "can't say".
+2. Behind the menu: "After a CEO's conduct in question, the company against the S&P 500 on the
+   day: up 4, about the same 5, down 17, of 26. ... Answer: down." and "After a violent act
+   setting off an international crisis, Gold over the next week: up 23, about the same 12, down
+   2, of 37. ... Answer: up."
+3. Page words: call, release day, link, replay, "replayed, it held", verdict, cells, band, grade,
+   void, silent, moves / unclear / doesn't / tracks / holds / too few. Statistics: p, p < 0.01,
+   binomial, ratio, corr, hit rate, "chance alone passes about 9.18". Events: CPI, NFP, Fed, RET,
+   PCE, GDP, ECB, HICP, ISM, CLM, IFO, OPEC+, core_pce, consensus, 0.1pp. Markets (21): SPY / ES,
+   UST10Y / ZN, UST5Y / ZF, DXY, GC / XAU, VIX, SX5E, SXXP, UKX, BRN, COMP, ITA, XLE, XLU, ITB,
+   KC, T5YIE, NKY, COIN, UNG, UGA. Numbers: bp, "Actual 203", "0.3".
+4. The first table is a column of "can't say"; the intro is jargon; the calls are rows of
+   "silent"; the bottom is grids of codes and p-values.
+5. The week ahead is PCE, 2026-11-25, with all 14 markets "silent ... no calls yet"; nothing
+   dated a person would care about. "Beat the fortune teller" needs a GitHub pull request.
+6. Open on a plain-words answer with a direction; make the week ahead a dated teaser with "what
+   followed the last N times"; names instead of codes, the statistics behind a details link.

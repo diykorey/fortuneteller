@@ -375,6 +375,10 @@ Terms are grouped by what they are about, alphabetical within each group.
   disabled flag is Umami's browser storage key `umami.disabled`, set to `1` in the owner's browsers
   so their visits are not counted. *Seen* is step 23's verdict when one week of the window reaches
   100 unique visitors; *not seen* when none does.
+- **Cell** — *added 2026-11-21* ([a page a stranger reads](steps/readers.md)): one kind of event,
+  one market and one span, with its counts, its answer and its replay's verdict, as `follows`
+  prints a line and *Ask* shows a row. A *kind cell* is read off the kind's own definition (Brent on
+  OPEC+'s *oil up*), so it says nothing beyond the kind.
 - **The answers that hold / the workings** — *added 2026-11-21* ([a page a stranger
   reads](steps/readers.md)): the answers that hold are the page's first list, every cell whose
   verdict is *holds* less those read off the kind's own definition. The workings is the page's
