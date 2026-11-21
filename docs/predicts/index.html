@@ -107,8 +107,9 @@ li.card::before {
 }
 .then.up { color: var(--up); background: var(--up-soft); }
 .then.down { color: var(--down); background: var(--down-soft); }
+.note { margin: 8px 0 0; font-size: 13px; color: var(--muted); }
 .record { margin: 12px 0 0; display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--muted); }
-.record a { color: var(--accent); text-decoration: none; font-weight: 600; margin-left: auto; }
+.record a { color: var(--accent); text-decoration: none; font-weight: 600; margin-left: auto; white-space: nowrap; }
 .record a:hover { text-decoration: underline; }
 .empty { padding: 28px; text-align: center; color: var(--muted); border: 1px dashed var(--card-border); border-radius: 20px; }
 footer { margin-top: 36px; font-size: 13px; color: var(--muted); display: grid; gap: 6px; }
@@ -127,16 +128,17 @@ footer a { color: var(--accent); }
 <main>
   <div class="brand"><span class="orb" aria-hidden="true"></span>FortuneTeller</div>
   <h1>Fortuneteller predicts:</h1>
-  <p class="lede">What followed past events of the same kind, counted. <b>Nothing is called until the
-  number lands</b>, so each prediction says what happens <em>if</em> it does. Only answers that held up
-  when replayed are shown.</p>
+  <p class="lede"><b>These are not forecasts that something will happen.</b> Each card says: if
+  this news comes out, here is what followed similar news in the past, counted. Nobody knows the
+  news before it comes out. It tells which way, not by how much. Only rules that held up when
+  tested on past events are shown. <b>For fun, not financial advice.</b></p>
   <ol id="predictions"></ol>
   <footer>
     <span id="written"></span>
-    <span>An entertainment tool, not financial advice. <a href="../scoreboard/">Every record, every verdict</a>.</span>
+    <span>For fun, not financial advice. <a href="../scoreboard/">See every number behind it</a>.</span>
   </footer>
 </main>
-<script id="data" type="application/json">{"written": "2026-11-21", "predictions": [{"day": "2026-11-23", "time": "after the close", "event": "Hewlett Packard Enterprise Company reports earnings", "condition": "If it misses forecasts", "outcome": "its shares trail the S&P 500 the next trading day", "direction": "down", "right": 2506, "graded": 3798, "of": "past S&P 500 reports, replayed", "link": "#ask/earnings500/below"}, {"day": "2026-11-24", "time": "after the close", "event": "Dell Technologies Inc. reports earnings", "condition": "If it misses forecasts", "outcome": "its shares trail the S&P 500 the next trading day", "direction": "down", "right": 2506, "graded": 3798, "of": "past S&P 500 reports, replayed", "link": "#ask/earnings500/below"}, {"day": "2026-11-25", "time": "before the open", "event": "Deere & Company reports earnings", "condition": "If it misses forecasts", "outcome": "its shares trail the S&P 500 that day", "direction": "down", "right": 2506, "graded": 3798, "of": "past S&P 500 reports, replayed", "link": "#ask/earnings500/below"}, {"day": "2026-12-01", "time": "after the close", "event": "CrowdStrike Holdings, Inc. reports earnings", "condition": "If it misses forecasts", "outcome": "its shares trail the S&P 500 the next trading day", "direction": "down", "right": 2506, "graded": 3798, "of": "past S&P 500 reports, replayed", "link": "#ask/earnings500/below"}, {"day": null, "time": null, "event": "A jobs report above the consensus", "condition": "After it", "outcome": "US Treasury 10Y up that day", "direction": "up", "right": 39, "graded": 58, "of": "past events, replayed", "link": "#ask/nfp/above"}, {"day": null, "time": null, "event": "A CPI release above the consensus", "condition": "After it", "outcome": "US 5-year breakeven inflation up that day", "direction": "up", "right": 23, "graded": 31, "of": "past events, replayed", "link": "#ask/cpi/above"}, {"day": null, "time": null, "event": "An OPEC+ decision that sent oil up", "condition": "After it", "outcome": "Gasoline (United States Gasoline Fund) up that day", "direction": "up", "right": 20, "graded": 31, "of": "past events, replayed", "link": "#ask/opec/oil up"}]}</script>
+<script id="data" type="application/json">{"written": "2026-11-21", "predictions": [{"day": "2026-11-23", "time": "after the US stock market closes (4 pm New York time)", "event": "Hewlett Packard Enterprise announces its profit for the last three months", "condition": "If its profit is lower than Wall Street analysts predicted", "outcome": "its stock falls behind the average big US stock the next day the market is open: it may fall, or rise less", "direction": "down", "right": 2506, "graded": 3798, "record": "Across 3,798 profit announcements by many big US companies (not just Hewlett Packard Enterprise), this held 2,506 times and failed 1,292 times.", "note": "If its profit matches or beats the predictions, no rule passed our tests.", "link": "#ask/earnings500/below"}, {"day": "2026-11-24", "time": "after the US stock market closes (4 pm New York time)", "event": "Dell Technologies announces its profit for the last three months", "condition": "If its profit is lower than Wall Street analysts predicted", "outcome": "its stock falls behind the average big US stock the next day the market is open: it may fall, or rise less", "direction": "down", "right": 2506, "graded": 3798, "record": "Across 3,798 profit announcements by many big US companies (not just Dell Technologies), this held 2,506 times and failed 1,292 times.", "note": "If its profit matches or beats the predictions, no rule passed our tests.", "link": "#ask/earnings500/below"}, {"day": "2026-11-25", "time": "before the US stock market opens (9:30 am New York time)", "event": "Deere announces its profit for the last three months", "condition": "If its profit is lower than Wall Street analysts predicted", "outcome": "its stock falls behind the average big US stock that day: it may fall, or rise less", "direction": "down", "right": 2506, "graded": 3798, "record": "Across 3,798 profit announcements by many big US companies (not just Deere), this held 2,506 times and failed 1,292 times.", "note": "If its profit matches or beats the predictions, no rule passed our tests.", "link": "#ask/earnings500/below"}, {"day": "2026-12-01", "time": "after the US stock market closes (4 pm New York time)", "event": "CrowdStrike announces its profit for the last three months", "condition": "If its profit is lower than Wall Street analysts predicted", "outcome": "its stock falls behind the average big US stock the next day the market is open: it may fall, or rise less", "direction": "down", "right": 2506, "graded": 3798, "record": "Across 3,798 profit announcements by many big US companies (not just CrowdStrike), this held 2,506 times and failed 1,292 times.", "note": "If its profit matches or beats the predictions, no rule passed our tests.", "link": "#ask/earnings500/below"}, {"day": null, "time": null, "event": "When the US jobs report shows more new jobs than economists expected", "condition": "Then", "outcome": "the interest the US government pays to borrow money for 10 years goes up that day", "direction": "up", "right": 39, "graded": 58, "record": "In 58 past cases, this held 39 times and failed 19 times.", "note": "", "link": "#ask/nfp/above"}, {"day": null, "time": null, "event": "When US prices rise faster than economists expected", "condition": "Then", "outcome": "the inflation investors expect over the next 5 years goes up that day", "direction": "up", "right": 23, "graded": 31, "record": "In 31 past cases, this held 23 times and failed 8 times.", "note": "", "link": "#ask/cpi/above"}, {"day": null, "time": null, "event": "When the big oil-producing countries (OPEC+) make a decision that lifts oil", "condition": "Then", "outcome": "US gasoline prices go up that day", "direction": "up", "right": 20, "graded": 31, "record": "In 31 past cases, this held 20 times and failed 11 times.", "note": "", "link": "#ask/opec/oil up"}]}</script>
 <script>
 (function () {
   const data = JSON.parse(document.getElementById('data').textContent);
@@ -160,13 +162,13 @@ footer a { color: var(--accent); }
     card.appendChild(el('div', p.event, 'event'));
     const say = el('p', null, 'say');
     say.appendChild(el('span', p.condition, 'if'));
-    say.appendChild(el('span', '→'));
+    say.appendChild(el('span', '→', 'arrow'));
     say.appendChild(el('span', (p.direction === 'up' ? '▲ ' : '▼ ') + p.outcome, 'then ' + p.direction));
     card.appendChild(say);
+    if (p.note) card.appendChild(el('p', p.note, 'note'));
     const record = el('div', null, 'record');
-    record.appendChild(el('span', 'Right ' + p.right.toLocaleString('en-US') + ' of '
-      + p.graded.toLocaleString('en-US') + ' ' + p.of));
-    const link = el('a', 'See the record');
+    record.appendChild(el('span', p.record));
+    const link = el('a', 'See every past case');
     link.href = '../scoreboard/' + (p.link || '');
     record.appendChild(link);
     card.appendChild(record);

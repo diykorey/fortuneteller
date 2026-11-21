@@ -2267,35 +2267,137 @@ def earnings_ahead(
 
 
 # Step 47, the predictions page (docs/steps/predicts.md): one to five dated if-then lines, each
-# from a link or cell that holds, written with the scoreboard each weekday.
+# from a link or cell that holds, written with the scoreboard each weekday, in words a reader
+# without financial training follows (amended 2026-11-21): no code, no term unexplained, counts
+# and never a probability or a fraction in words.
 PREDICTS_DATED = 10
 PREDICTS_MIN = 3
-PREDICTS_IF = {
-    "above": "If it beats forecasts",
-    "as expected": "If it matches forecasts",
-    "below": "If it misses forecasts",
+PLAIN_MARKETS = {
+    "SPY / ES": "the US stock market",
+    "COMP": "US tech stocks",
+    "GC / XAU": "the price of gold",
+    "BRN": "the price of oil",
+    "UGA": "US gasoline prices",
+    "UNG": "US natural gas prices",
+    "DXY": "the US dollar",
+    "EURUSD": "the euro against the dollar",
+    "GBPUSD": "the British pound against the dollar",
+    "USDJPY": "the dollar against the Japanese yen",
+    "UST10Y / ZN": "the interest the US government pays to borrow money for 10 years",
+    "UST5Y / ZF": "the interest the US government pays to borrow money for 5 years",
+    "T5YIE": "the inflation investors expect over the next 5 years",
+    "VIX": "the stock market's fear gauge",
+    "XLE": "US energy company stocks",
+    "XLU": "US power and water company stocks",
+    "ITB": "US homebuilder stocks",
+    "ITA": "US defence company stocks",
+    "BTC": "the price of bitcoin",
+    "ETH": "the price of ether",
 }
-SPAN_WORDS = {
+PLAIN_KINDS = {
+    ("nfp", "above"): "The US jobs report shows more new jobs than economists expected",
+    ("nfp", "below"): "The US jobs report shows fewer new jobs than economists expected",
+    ("cpi", "above"): "US prices rise faster than economists expected",
+    ("cpi", "below"): "US prices rise slower than economists expected",
+    ("opec", "oil up"): "The big oil-producing countries (OPEC+) make a decision that lifts oil",
+    ("opec", "oil down"): "The big oil-producing countries (OPEC+) make a decision that drops oil",
+    ("earnings", "above"): "One of the 30 Dow companies earns more than experts expected",
+    ("earnings", "as expected"): "One of the 30 Dow companies earns what experts expected",
+    ("earnings", "below"): "One of the 30 Dow companies earns less than experts expected",
+    ("earnings500", "above"): "A big US company earns more than experts expected",
+    ("earnings500", "as expected"): "A big US company earns what experts expected",
+    ("earnings500", "below"): "A big US company earns less than experts expected",
+    ("splits", "alone"): "A big US company announces a stock split",
+    ("additions", "added"): "A company is announced as joining the 500 biggest US companies",
+}
+PLAIN_IF = {
+    "above": "If its profit beats what Wall Street analysts predicted",
+    "as expected": "If its profit matches what Wall Street analysts predicted",
+    "below": "If its profit is lower than Wall Street analysts predicted",
+}
+PLAIN_TIMES = {
+    "after the close": "after the US stock market closes (4 pm New York time)",
+    "before the open": "before the US stock market opens (9:30 am New York time)",
+}
+PLAIN_WHEN = {
     "day": "that day",
-    "next": "the next trading day",
+    "next": "the next day the market is open",
     "week": "over the next week",
     "month": "over the next month",
 }
+PLAIN_RELEASES = {
+    "nfp": (
+        "The US jobs report",
+        "the government's monthly count shows more than {above} jobs added (economists predict"
+        " about {consensus}; the rule waits for a clear surprise)",
+        1000,
+    ),
+    "cpi": (
+        "The US inflation report",
+        "prices rose more than {above} percent in the month (economists predict {consensus})",
+        1,
+    ),
+}
 
 
-def _outcome(market: str, name: str, direction: str, span: str) -> str:
-    when = SPAN_WORDS.get(span, span)
+def plain_outcome(market: str, direction: str, span: str, name: str = "") -> str:
+    """What followed, in words: "its stock falls behind the average big US stock that day"."""
+    when = PLAIN_WHEN.get(span, span)
     if market == study.EXCESS_MARKET:
-        side = "beat" if direction == "up" else "trail"
-        return f"its shares {side} the S&P 500 {when}"
-    return f"{name} {'up' if direction == 'up' else 'down'} {when}"
+        if direction == "up":
+            return f"its stock gets ahead of the average big US stock {when}: it may rise, or fall less"
+        return f"its stock falls behind the average big US stock {when}: it may fall, or rise less"
+    what = PLAIN_MARKETS.get(market, name or market)
+    verb = "go" if what.endswith(("prices", "stocks")) else "goes"
+    return f"{what} {verb} {'up' if direction == 'up' else 'down'} {when}"
+
+
+COMPANY_SUFFIXES = (
+    " & Company",
+    " & Co.",
+    ",",
+    " Inc.",
+    " Corporation",
+    " Corp.",
+    " Company",
+    " Holdings",
+    " plc",
+    " Ltd.",
+)
+
+
+def plain_company(name: str) -> str:
+    """A company's name without its legal suffixes: "Deere & Company" is "Deere"."""
+    trimmed = True
+    while trimmed:
+        trimmed = False
+        for suffix in COMPANY_SUFFIXES:
+            if name.endswith(suffix) and len(name) > len(suffix):
+                name, trimmed = name[: -len(suffix)].rstrip(), True
+    return name
+
+
+def _plain_record(right: int, graded: int, cases: str) -> str:
+    """The replay's record in words, as counts: "In 58 past jobs reports, this held 39 times and
+    failed 19 times." """
+    return f"{cases}, this held {right:,} times and failed {graded - right:,} times."
+
+
+def _plain_clock(hhmm: str) -> str:
+    """ "08:30" is "8:30 am"."""
+    hour, minute = map(int, hhmm.split(":"))
+    return f"{(hour - 1) % 12 + 1}:{minute:02d} {'am' if hour < 12 else 'pm'}"
+
+
+def _plain_number(value: float, scale: int) -> str:
+    return f"{value * scale:,.0f}" if scale > 1 else f"{value:g}"
 
 
 def predictions(data: Mapping[str, object]) -> list[dict[str, object]]:
     """The page's predictions: each release ahead with a link that holds and calls, the largest
     S&P 500 company reporting each day ahead when a kind's day cell holds, soonest first; then up
     to ``PREDICTS_MIN`` answers that hold, undated, one per kind not already shown. The page shows
-    the dated ones not yet passed, then the undated, five at most."""
+    the dated ones not yet passed, then the undated, five at most. Every card is in plain words."""
     names = data.get("market_names") or {}
     assert isinstance(names, dict)
     dated: list[dict[str, object]] = []
@@ -2307,18 +2409,31 @@ def predictions(data: Mapping[str, object]) -> list[dict[str, object]]:
         if not held:
             continue
         market, link = max(held, key=lambda ml: ml[1]["predictions"])
-        title = ASK_RELEASES.get(r["event"], f"a {r['label']} release")
+        title, shape, scale = PLAIN_RELEASES.get(
+            r["event"],
+            (
+                f"The US {r['label']} report",
+                "it came in above {above} (economists predict {consensus})",
+                1,
+            ),
+        )
+        numbers = {k: _plain_number(r[k], scale) for k in ("above", "consensus")}
         dated.append(
             {
                 "day": r["day"],
-                "time": f"{r['time']} New York",
-                "event": "The " + title.removeprefix("a "),
-                "condition": f"If it comes in above {r['above']:g} ({r['consensus']:g} expected)",
-                "outcome": _outcome(market, names.get(market, market), link["above"], "day"),
+                "time": f"{_plain_clock(r['time'])} New York time",
+                "event": title,
+                "condition": "If " + shape.format(**numbers),
+                "outcome": plain_outcome(market, link["above"], "day", names.get(market, "")),
                 "direction": link["above"],
                 "right": link["right"],
                 "graded": link["predictions"],
-                "of": "past releases, replayed",
+                "record": _plain_record(
+                    link["right"],
+                    link["predictions"],
+                    f"In {link['predictions']:,} past {title.removeprefix('The US ')}s",
+                ),
+                "note": "",
                 "link": f"#ask/{r['event']}/above",
             }
         )
@@ -2335,23 +2450,29 @@ def predictions(data: Mapping[str, object]) -> list[dict[str, object]]:
         ]
         for d in ahead.get("days", []):
             company = max(d["reports"], key=lambda r: r["cap"])
+            after = company["time"] == "after the close"
             for c in cells:
                 dated.append(
                     {
                         "day": d["day"],
-                        "time": company["time"],
-                        "event": f"{company['name']} reports earnings",
-                        "condition": PREDICTS_IF[c["kind"]],
-                        "outcome": _outcome(
-                            c["market"],
-                            "",
-                            c["answer"],
-                            "next" if company["time"] == "after the close" else "day",
+                        "time": PLAIN_TIMES.get(company["time"], "time not announced"),
+                        "event": f"{plain_company(company['name'])} announces its profit"
+                        " for the last three months",
+                        "condition": PLAIN_IF[c["kind"]],
+                        "outcome": plain_outcome(
+                            c["market"], c["answer"], "next" if after else "day"
                         ),
                         "direction": c["answer"],
                         "right": c["right"],
                         "graded": c["graded"],
-                        "of": "past S&P 500 reports, replayed",
+                        "record": _plain_record(
+                            c["right"],
+                            c["graded"],
+                            f"Across {c['graded']:,} profit announcements by many big US"
+                            f" companies (not just {plain_company(company['name'])})",
+                        ),
+                        "note": "If its profit matches or beats the predictions, no rule"
+                        " passed our tests.",
                         "link": f"#ask/earnings500/{c['kind']}",
                     }
                 )
@@ -2365,18 +2486,24 @@ def predictions(data: Mapping[str, object]) -> list[dict[str, object]]:
             if len(undated) == PREDICTS_MIN or link in told:
                 continue
             told.add(link)
-            label = labels[c["kind"]]
+            label = PLAIN_KINDS.get((f["name"], c["kind"]), labels[c["kind"]])
             undated.append(
                 {
                     "day": None,
                     "time": None,
-                    "event": label[0].upper() + label[1:],
-                    "condition": "After it",
-                    "outcome": _outcome(c["market"], c["market_name"], c["answer"], c["span"]),
+                    "event": "When "
+                    + (label if label[:2].isupper() else label[0].lower() + label[1:])
+                    if (f["name"], c["kind"]) in PLAIN_KINDS
+                    else label[0].upper() + label[1:],
+                    "condition": "Then",
+                    "outcome": plain_outcome(c["market"], c["answer"], c["span"], c["market_name"]),
                     "direction": c["answer"],
                     "right": c["right"],
                     "graded": c["graded"],
-                    "of": "past events, replayed",
+                    "record": _plain_record(
+                        c["right"], c["graded"], f"In {c['graded']:,} past cases"
+                    ),
+                    "note": "",
                     "link": link,
                 }
             )
