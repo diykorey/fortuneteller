@@ -15,7 +15,7 @@ from bisect import bisect_left, bisect_right
 from collections import Counter
 from datetime import date, datetime, time
 from pathlib import Path
-from statistics import pstdev
+from math import sqrt
 from zoneinfo import ZoneInfo
 
 sys.path.insert(0, str(Path(__file__).parent))
@@ -42,9 +42,16 @@ def window_day(stamp: datetime, days: list[date]) -> date | None:
     return days[i] if i < len(days) else None
 
 
+def deviation(total: float, squares: float, n: int) -> float:
+    """The standard deviation about the mean, dividing by ``n``, from a sum and a sum of squares."""
+    mean = total / n
+    return sqrt(max(squares / n - mean * mean, 0.0))
+
+
 def big(move: float, before: list[float]) -> bool:
     """A move at least DEVIATIONS standard deviations of the BASE moves before it."""
-    return abs(move) >= DEVIATIONS * pstdev(before)
+    total, squares = sum(before), sum(m * m for m in before)
+    return abs(move) >= DEVIATIONS * deviation(total, squares, len(before))
 
 
 def items_by_day(sec: Path, ciks: list[int], days: list[date]) -> dict[date, set[str]]:
@@ -105,16 +112,20 @@ def member_days(sec: Path) -> tuple[list[tuple[date, str, float, bool, set[str]]
             continue
         items = items_by_day(sec, [cik, *MORE_FILERS.get(ticker, [])], days)
         moves = sorted((day, span.move) for day, span in excess_spans(closes, index, 1).items())
+        total = sum(m for _, m in moves[:BASE])
+        squares = sum(m * m for _, m in moves[:BASE])
         for k in range(BASE, len(moves)):
             day, move = moves[k]
+            sd = deviation(total, squares, BASE)
+            total += move - moves[k - BASE][1]
+            squares += move * move - moves[k - BASE][1] ** 2
             if day < FIRST or not any(a <= day < b for a, b in spans):
                 continue
             if (cik, day) in seen:
                 out["second class"] += 1
                 continue
             seen.add((cik, day))
-            before = [m for _, m in moves[k - BASE : k]]
-            rows.append((day, ticker, move, big(move, before), items.get(day, set())))
+            rows.append((day, ticker, move, abs(move) >= DEVIATIONS * sd, items.get(day, set())))
     return rows, out
 
 

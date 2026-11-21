@@ -125,3 +125,25 @@ EDGAR's company lists (browse-edgar, type 8-K, which lists 8-K/A too), the last 
   BAC 2015-09-14: 2015-07-28. INTU 2019-09-27: 2019-08-22. DGX 2023-06-01: 2023-05-19. ZTS 2026-11-20: 2026-11-05.
   So none in the windows of the two big moves with no 8-K (PPG 2020-03-13, UNH 2026-11-18) or the five no-8-K days.
 Every check passes: moves equal to 5 decimals, deviations recomputed, accessions and minutes the same.
+
+Step 2: the sample (docs/steps/news-moves-sample.csv), coded 2026-11-21 by two readers of 20 rows
+each, given only the codes of the spec and the rows. Codes over the 40:
+  nothing found 24, peer or sector news 11, analyst action 2, company news unfiled 2, filed later 1.
+
+The second reading: rows 1, then every fourth (sample rows 425, 2125, 3825, 5525, 7225, 8925,
+10625, 12325, 14025, 15725), by a third reader given the codes and each row's sources only.
+  row    first reading            second reading
+  425    company news, unfiled    peer or sector news  (gold back above $1,800; the dividend
+                                                        release was 09-19 08:00, before the window)
+  2125   nothing found            nothing found
+  3825   peer or sector news      nothing found        (a market-wide rally led by banks)
+  5525   nothing found            nothing found
+  7225   nothing found            nothing found
+  8925   nothing found            nothing found
+  10625  peer or sector news      nothing found        (a market-wide rally on vaccine news)
+  12325  peer or sector news      nothing found        (the market's rally on a cooler CPI)
+  14025  analyst action           analyst action
+  15725  nothing found            nothing found
+4 disagreements of 10, over the spec's 2: step 2 stops for the owner's call. Three of the four are
+one gap in the codes: news about the whole economy, which moved a bank more than the index, has
+no code; the first readers called it sector news, the second "nothing found".
