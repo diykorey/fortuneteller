@@ -18,7 +18,7 @@ no 8-K; read by hand, those are mostly the industry's or the economy's news, or 
 
 ## In progress
 
-- **Step 41: hypotheses from an expert reader** ([the spec](steps/expert-hypotheses.md)): the
+- **Step 41: hypotheses from an expert reader** ([the spec](steps/expert-hypotheses.md)):
   step 1 done (the pack to 2019 and the brief). Next: the expert's rules.
 - **Step 34: a same-day source for earnings** ([the spec](steps/earnings-same-day.md)): step 1
   done, Yahoo's kind is Nasdaq's on 102 of 110 reports (92.7%, bar 90%). Next: the speed, asked on
