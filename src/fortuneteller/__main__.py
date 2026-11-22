@@ -2399,6 +2399,36 @@ def _plain_record(right: int, graded: int, cases: str) -> str:
 # own long run where it holds, and after news that has landed where its cell holds; each kept once
 # in forecasts.csv and graded when its span ends.
 STATED_MAX = 3
+# The front page shows one card per area (the owner, 2026-11-22, docs/steps/predicts.md).
+AREAS = {
+    **dict.fromkeys(
+        ("SPY / ES", "COMP", "VIX", "DAX", "SX5E", "UKX", "SXXP", "NKY", "ITA", "XLE", "XLU"),
+        "stocks",
+    ),
+    **dict.fromkeys(("ITB", "COIN", "ALL"), "stocks"),
+    **dict.fromkeys(("UST10Y / ZN", "UST5Y / ZF", "T5YIE"), "interest rates and inflation"),
+    **dict.fromkeys(("DXY", "EURUSD", "GBPUSD", "USDJPY"), "currencies"),
+    **dict.fromkeys(("BRN", "UGA", "UNG"), "energy"),
+    "GC / XAU": "gold",
+    **dict.fromkeys(("CORN", "WEAT", "SOYB", "KC"), "food"),
+    **dict.fromkeys(("BTC", "ETH"), "crypto"),
+    "US home prices": "homes",
+}
+
+
+def one_per_area[T](
+    items: Sequence[T], market: Callable[[T], str], taken: Iterable[str]
+) -> list[T]:
+    """The first item of each area not in ``taken``, in order; a market with no area is its own."""
+    seen, out = set(taken), []
+    for item in items:
+        area = AREAS.get(market(item), market(item))
+        if area not in seen:
+            seen.add(area)
+            out.append(item)
+    return out
+
+
 FORECAST_FIELDS = (
     "stated",
     "kind",
@@ -2557,7 +2587,7 @@ def stated(
                 },
             }
         )
-    return out[:STATED_MAX]
+    return one_per_area(out, lambda t: str(t["market"]), ())[:STATED_MAX]
 
 
 def keep_forecasts(
@@ -3028,10 +3058,14 @@ def unlocked(
 
 
 def front_guesses(
-    rows: Sequence[Mapping[str, str]], promoted: set[str], today: date, most: int
+    rows: Sequence[Mapping[str, str]],
+    promoted: set[str],
+    today: date,
+    most: int,
+    taken: Iterable[str] = (),
 ) -> list[Mapping[str, str]]:
     """The open guesses the front page shows: a promoted tag first, then high confidence, then
-    the soonest end date."""
+    the soonest end date; one per area, none in an area of ``taken``."""
     rank = {"high": 0, "medium": 1, "low": 2}
     live = [r for r in _open(rows) if r["last"] >= today.isoformat()]
     live.sort(
@@ -3041,7 +3075,7 @@ def front_guesses(
             r["last"],
         )
     )
-    return live[:most]
+    return one_per_area(live, lambda r: r["market"], taken)[:most]
 
 
 def guess_record(rows: Sequence[Mapping[str, str]], key: str) -> list[dict[str, object]]:
@@ -3174,7 +3208,8 @@ def stated_forecasts(
     guesses = [_ledger_row(r) for r in _read_rows(kept_path.parent / "our-guesses.csv")]
     promoted = {str(t["tag"]) for t in guess_record(guesses, "tag") if t["verdict"] == "holds"}
     write_stats(kept_path.parent / "stats" / "index.html", guesses, promoted)
-    picks = front_guesses(guesses, promoted, today, FRONT_MOST - len(told))
+    taken = {AREAS.get(str(t["market"]), str(t["market"])) for t in told}
+    picks = front_guesses(guesses, promoted, today, FRONT_MOST - len(told), taken)
     approved = _read_rows(kept_path.parent / "front.csv")
     _write_rows(kept_path.parent / "front-next.csv", FRONT_FIELDS, front_rows(picks, approved))
     return {

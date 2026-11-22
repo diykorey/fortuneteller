@@ -34,28 +34,28 @@ def _runs() -> list[dict[str, object]]:
     return rows
 
 
-def test_one_forecast_per_market_that_holds_and_no_other() -> None:
+def test_one_forecast_per_area_that_holds_and_no_other() -> None:
     # given five pairs that hold and two that do not
     data = {"market_names": {}, "ask": [], "forecasts": _runs()}
 
     # when the page's forecasts are chosen on Friday 2026-11-20
     told = cli.stated(data, date(2026, 11, 20))
 
-    # then each market's shortest span that holds is stated, with no if and no percentage
+    # then each area's first market at its shortest span that holds is stated, the tech stocks
+    # left out as a second card on stocks, with no if and no percentage
     assert [t["event"] for t in told] == [
         "The US stock market, over the next month",
-        "US tech stocks, over the next month",
         "US home prices, in the 12 months after August 2026",
     ]
     assert all("condition" not in t and "%" not in json.dumps(t) for t in told)
 
 
 @pytest.mark.skipif(shutil.which("google-chrome") is None, reason="needs google-chrome")
-@pytest.mark.parametrize("width", [420, 1280])
+@pytest.mark.parametrize("width", [300, 1280])
 def test_the_page_shows_up_to_five_forecasts_without_a_sideways_scroll(
     tmp_path: Path, width: int
 ) -> None:
-    # given the page with three stated forecasts, one of them past its span, and front.csv with two
+    # given the page with two stated forecasts (one per area), one of them past its span, and front.csv with two
     # open guesses worded with a comma and a quote and one past its end date, served over a local
     # server, without the counter, reporting its widths once the guesses are read
     told = cli.stated({"market_names": {}, "ask": [], "forecasts": _runs()}, date(2026, 11, 20))
@@ -66,7 +66,7 @@ def test_the_page_shows_up_to_five_forecasts_without_a_sideways_scroll(
         "stated": "2098-12-04",
         "market": "BRN",
         "direction": "down",
-        "last": "2099-01-05",
+        "last": "2099-11-25",
         "statement": 'Oil, we think, will be "lower" on Jan 5.',
         "why": "A guess, made\nover two lines. Then more.",
         "source": "https://example.com/opec",
@@ -85,6 +85,13 @@ def test_the_page_shows_up_to_five_forecasts_without_a_sideways_scroll(
     (tmp_path / "index.html").write_text(
         template.replace(cli.PREDICTS_DATA_MARK, json.dumps(page_data)).replace("</body>", probe)
     )
+    # Chrome's window is 500 pixels wide at least, so a phone's width is a frame of that width
+    (tmp_path / "frame.html").write_text(
+        f"<iframe id='f' src='index.html' style='width:{width}px;height:900px;border:0'></iframe>"
+        "<script>setTimeout(() => { const page = document.getElementById('f').contentDocument;"
+        " document.title = page.title; document.body.innerHTML = page.body.innerHTML }, 4000)"
+        "</script>"
+    )
     handler = functools.partial(http.server.SimpleHTTPRequestHandler, directory=str(tmp_path))
     server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), handler)
     threading.Thread(target=server.serve_forever, daemon=True).start()
@@ -98,9 +105,9 @@ def test_the_page_shows_up_to_five_forecasts_without_a_sideways_scroll(
                 "--disable-gpu",
                 "--no-sandbox",
                 "--virtual-time-budget=10000",
-                f"--window-size={width},900",
+                "--window-size=1400,1000",
                 "--dump-dom",
-                f"http://127.0.0.1:{server.server_address[1]}/index.html",
+                f"http://127.0.0.1:{server.server_address[1]}/frame.html",
             ],
             capture_output=True,
             text=True,
@@ -110,7 +117,7 @@ def test_the_page_shows_up_to_five_forecasts_without_a_sideways_scroll(
     finally:
         server.shutdown()
 
-    # then the headline is there, the passed ones dropped, two tested and two guesses shown with
+    # then the headline is there, the passed ones dropped, one tested and two guesses shown with
     # their words whole, no if-arrow, no sideways scroll
     assert "Fortuneteller predicts:" in re.sub(r"<[^>]+>", "", dom)
     shown = dom[dom.index('<ol id="predictions">') : dom.index("</ol>")]
@@ -121,5 +128,5 @@ def test_the_page_shows_up_to_five_forecasts_without_a_sideways_scroll(
     match = re.search(r"<title>(\d+) (\d+) (\d+)</title>", dom)
     assert match is not None
     scroll, inner, cards = map(int, match.groups())
-    assert cards == 4
+    assert cards == 3
     assert scroll <= inner

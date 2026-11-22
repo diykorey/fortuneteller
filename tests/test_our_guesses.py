@@ -230,10 +230,22 @@ def test_an_evening_counts_once_right_only_if_more_than_half_came_true() -> None
 def test_the_front_page_prefers_a_promoted_tag_then_high_confidence_then_soonest() -> None:
     # given four open guesses
     rows = [
-        {"tag": "momentum", "confidence": "high", "last": "2026-11-27", "grade": ""},
-        {"tag": "jobs", "confidence": "low", "last": "2026-12-21", "grade": ""},
-        {"tag": "other", "confidence": "high", "last": "2026-12-04", "grade": ""},
-        {"tag": "other", "confidence": "medium", "last": "2026-11-25", "grade": ""},
+        {
+            "market": "BTC",
+            "tag": "momentum",
+            "confidence": "high",
+            "last": "2026-11-27",
+            "grade": "",
+        },
+        {"market": "DXY", "tag": "jobs", "confidence": "low", "last": "2026-12-21", "grade": ""},
+        {"market": "BRN", "tag": "other", "confidence": "high", "last": "2026-12-04", "grade": ""},
+        {
+            "market": "GC / XAU",
+            "tag": "other",
+            "confidence": "medium",
+            "last": "2026-11-25",
+            "grade": "",
+        },
     ]
 
     # when three places are filled with jobs promoted
@@ -288,3 +300,31 @@ def test_the_repositorys_front_page_rewords_only_what_it_may() -> None:
 
     # then every row is a guess of the ledger, with its market, direction, dates and link as made
     assert bad == []
+
+
+def test_the_front_page_takes_one_guess_per_area_and_none_where_a_tested_one_is() -> None:
+    # given open guesses on two stock markets, two currencies and oil, all high
+    rows = [
+        {"market": m, "tag": "other", "confidence": "high", "last": last, "grade": ""}
+        for m, last in (
+            ("VIX", "2026-11-25"),
+            ("USDJPY", "2026-11-26"),
+            ("DXY", "2026-11-27"),
+            ("NKY", "2026-11-30"),
+            ("BRN", "2026-12-01"),
+        )
+    ]
+
+    # when four places are filled beside a tested forecast on stocks
+    shown = cli.front_guesses(rows, set(), FRIDAY, 4, {"stocks"})
+
+    # then one currency and oil, soonest first, and no stock market
+    assert [r["market"] for r in shown] == ["USDJPY", "BRN"]
+
+
+def test_every_market_the_guesser_may_name_has_an_area() -> None:
+    # given the markets of the guesses and of the tested forecasts
+    markets = set(cli.study.MVP_PRICE_SERIES) | {cli.HOME}
+
+    # then each has one of the eight areas
+    assert markets <= set(cli.AREAS) and len(set(cli.AREAS.values())) == 8

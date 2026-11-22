@@ -87,7 +87,8 @@ li.card > :not(.icon) { grid-column: 2; min-width: 0; }
 li.guess .kind { color: var(--guess); }
 .top { display: flex; justify-content: space-between; align-items: center; gap: 6px 10px; flex-wrap: wrap; }
 .market { margin: 0; font-size: 22px; font-weight: 800; line-height: 1.25; }
-.badge { font-weight: 800; border-radius: 999px; padding: 4px 12px; font-size: 17px; white-space: nowrap; }
+.badge { font-weight: 800; border-radius: 999px; padding: 4px 12px; font-size: 17px; }
+li.card, .tally li { overflow-wrap: anywhere; }
 .up .badge { background: var(--up-soft); color: var(--up); }
 .down .badge { background: var(--down-soft); color: var(--down); }
 .say { margin: 4px 0 0; font-size: 18px; }
@@ -104,6 +105,7 @@ details.more summary { color: var(--accent); font-weight: 700; cursor: pointer; 
 .empty { padding: 28px; text-align: center; color: var(--muted); border: 2px dashed var(--line); border-radius: 20px; display: block; }
 footer { margin-top: 32px; font-size: 15px; color: var(--muted); display: grid; gap: 8px; }
 @media (max-width: 420px) {
+  .badge { font-size: 16px; padding: 3px 10px; }
   li.card { grid-template-columns: 44px 1fr; gap: 4px 12px; padding: 16px 14px; }
   .icon { width: 44px; height: 44px; font-size: 26px; border-radius: 12px; }
   .market { font-size: 20px; }
@@ -131,7 +133,7 @@ footer { margin-top: 32px; font-size: 15px; color: var(--muted); display: grid; 
     <span>For fun, not financial advice.</span>
   </footer>
 </main>
-<script id="data" type="application/json">{"written": "2026-11-22", "guess_tally": {"came_true": 0, "did_not": 0, "open": 12}, "stated": [{"stated": true, "market": "SPY / ES", "day": null, "until": "2026-12-21", "when": "Stated Sat, Nov 21, 2026 · checked after the close on Mon, Dec 21, 2026", "event": "The US stock market, over the next month", "outcome": "higher on Mon, Dec 21, 2026 than on Fri, Nov 20, 2026", "direction": "up", "record": "Tested on 666 past months, one at a time, this held 402 times and failed 264 times.", "right": 402, "called": 666, "unit": "past months", "note": "It goes the way most past months went. It says nothing about how far.", "link": ""}, {"stated": true, "market": "COMP", "day": null, "until": "2026-12-21", "when": "Stated Sat, Nov 21, 2026 · checked after the close on Mon, Dec 21, 2026", "event": "US tech stocks, over the next month", "outcome": "higher on Mon, Dec 21, 2026 than on Fri, Nov 20, 2026", "direction": "up", "record": "Tested on 658 past months, one at a time, this held 408 times and failed 250 times.", "right": 408, "called": 658, "unit": "past months", "note": "It goes the way most past months went. It says nothing about how far.", "link": ""}, {"stated": true, "market": "US home prices", "day": null, "until": "2027-08-01", "when": "Stated Sat, Nov 21, 2026 · checked when August 2027's figure is out", "event": "US home prices, in the 12 months after August 2026", "outcome": "higher in August 2027 than in August 2026", "direction": "up", "record": "Tested on 34 past years, one at a time, this held 29 times and failed 5 times.", "right": 29, "called": 34, "unit": "past years", "note": "It goes the way most past years went. It says nothing about how far.", "link": ""}], "tally": {"came_true": 0, "did_not": 0, "open": 3}, "kept_since": "2026-11-21"}</script>
+<script id="data" type="application/json">{"written": "2026-11-22", "guess_tally": {"came_true": 0, "did_not": 0, "open": 12}, "stated": [{"stated": true, "market": "SPY / ES", "day": null, "until": "2026-12-21", "when": "Stated Sat, Nov 21, 2026 · checked after the close on Mon, Dec 21, 2026", "event": "The US stock market, over the next month", "outcome": "higher on Mon, Dec 21, 2026 than on Fri, Nov 20, 2026", "direction": "up", "record": "Tested on 666 past months, one at a time, this held 402 times and failed 264 times.", "right": 402, "called": 666, "unit": "past months", "note": "It goes the way most past months went. It says nothing about how far.", "link": ""}, {"stated": true, "market": "US home prices", "day": null, "until": "2027-08-01", "when": "Stated Sat, Nov 21, 2026 · checked when August 2027's figure is out", "event": "US home prices, in the 12 months after August 2026", "outcome": "higher in August 2027 than in August 2026", "direction": "up", "record": "Tested on 34 past years, one at a time, this held 29 times and failed 5 times.", "right": 29, "called": 34, "unit": "past years", "note": "It goes the way most past years went. It says nothing about how far.", "link": ""}], "tally": {"came_true": 0, "did_not": 0, "open": 3}, "kept_since": "2026-11-21"}</script>
 <script>
 (function () {
   const data = JSON.parse(document.getElementById('data').textContent);

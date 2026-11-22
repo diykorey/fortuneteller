@@ -78,6 +78,15 @@ and one to five cards (none to five since 2026-11-22, below). The evening job re
 - **The front door** (*amended 2026-11-22, by the owner*): the site's bare address,
   `docs/index.html`, sends readers here instead of to the scoreboard, which this page links to as
   *Every number behind the tested forecasts*; the scoreboard is restyled to match as its own change.
+- **One card per area** (*amended 2026-11-22, by the owner*, option A of three: one per area, at
+  most two on stocks, or one per area with the guesser asked to cover every area). Three of the
+  five cards were on stocks (the S&P 500, tech stocks, the fear gauge). The 31 markets and home
+  prices fall in eight areas (`AREAS`): stocks, interest rates and inflation, currencies, energy,
+  gold, food, crypto, homes. The tested forecasts take the first of each area, then the guesses
+  fill the places from areas not yet shown, in step 50's order. The tested forecasts no longer
+  shown stay kept and graded in `forecasts.csv`. A render test at 300 pixels wide, in a frame
+  since Chrome's window is 500 wide at least, finds no sideways scroll; it found one, the date
+  badge kept on one line, before the badge was let wrap.
 
 ## The rule, fixed before measuring
 
