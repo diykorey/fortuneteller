@@ -245,3 +245,46 @@ def test_the_front_page_prefers_a_promoted_tag_then_high_confidence_then_soonest
         ("momentum", "2026-11-27"),
         ("other", "2026-12-04"),
     ]
+
+
+def test_the_proposal_takes_the_ledgers_words_and_keeps_the_approved_ones() -> None:
+    # given two picked guesses, the first already approved with the owner's words
+    kept, _ = cli.keep_guesses(_answer(_g(), _g("GC / XAU")), [], FRIDAY)
+    approved = cli.front_rows(kept[:1], [])
+    approved[0] |= {"statement": "Oil will be cheaper on Nov 27.", "why": "Owner's words."}
+
+    # when the evening proposes them
+    rows = cli.front_rows(kept, approved)
+
+    # then the first keeps the owner's words and the second has the ledger's, in order
+    assert [(r["market"], r["statement"], r["why"]) for r in rows] == [
+        ("BRN", "Oil will be cheaper on Nov 27.", "Owner's words."),
+        ("GC / XAU", "Brent oil will be lower on Nov 27 than on Nov 20.", REASONING),
+    ]
+    assert list(rows[0]) == list(cli.FRONT_FIELDS)
+
+
+@pytest.mark.parametrize("field", ["stated", "market", "direction", "last", "source"])
+def test_a_front_row_with_a_locked_field_changed_matches_no_guess(field: str) -> None:
+    # given an approved row, and the same row with one locked field changed
+    kept, _ = cli.keep_guesses(_answer(_g()), [], FRIDAY)
+    row = cli.front_rows(kept, [])[0]
+    changed = row | {field: "changed", "statement": "Reworded."}
+
+    # when checked against the ledger
+    bad = cli.unlocked([row | {"why": "Reworded."}, changed], kept)
+
+    # then only the changed one is refused
+    assert bad == [changed]
+
+
+def test_the_repositorys_front_page_rewords_only_what_it_may() -> None:
+    # given the repository's approved front page and its ledger
+    folder = Path(__file__).parent.parent / "docs" / "predicts"
+    ledger = [cli._ledger_row(r) for r in cli._read_rows(folder / "our-guesses.csv")]
+
+    # when checked
+    bad = cli.unlocked(cli._read_rows(folder / "front.csv"), ledger)
+
+    # then every row is a guess of the ledger, with its market, direction, dates and link as made
+    assert bad == []

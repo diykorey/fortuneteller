@@ -11,6 +11,20 @@ amended there with a date.
 Each entry: **what** was decided, **why**, what it **retires**, and **where** the detail is. *By the
 owner* marks a choice the owner made over another on the table.
 
+## 2026-11-22: The front page's guesses approved by the owner, by the owner
+
+- **What:** the guesses the front page shows wait in a pull request of their own each evening,
+  where the owner rewords, removes or approves them; merging it publishes them. The ledger of every
+  guess is still published the evening it is made, unreviewed. Only the words may change: the
+  market, direction, dates and link are locked by a test.
+- **Why:** the owner asked to "adjust prediction wording … staging to discuss and approve wording
+  before publishing public those 5 only". Of four ways put to them (a pull request each evening,
+  a private page with approve buttons, a hidden preview changed through chat, a second model pass
+  with no person) they chose the pull request: it works from a phone, keeps every change in
+  history and needs nothing new hosted. The ledger stays unreviewed because its timestamp is what
+  shows a guess came before its span.
+- **Where:** [the front page's guesses, approved](steps/front-staging.md), step 51.
+
 ## 2026-11-22: The page as bright cards, by the owner
 
 - **What:** the predictions page is restyled as bright white cards: a market icon and short name,

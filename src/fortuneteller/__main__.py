@@ -2999,28 +2999,32 @@ def _guess(_args: argparse.Namespace) -> int:
     return 0
 
 
-def guess_card(g: Mapping[str, str]) -> dict[str, object]:
-    """A kept guess as the page shows it."""
-    side = "higher" if g["direction"] == "up" else "lower"
-    what = PLAIN_MARKETS.get(g["market"], market_names().get(g["market"], g["market"]))
-    base = date.fromisoformat(g["first"]) - timedelta(days=1)
-    while base.weekday() >= 5:
-        base -= timedelta(days=1)
-    return {
-        "guess": True,
-        "market": g["market"],
-        "made": g["stated"],
-        "why": g.get("reasoning") or g.get("reason") or g.get("statement", ""),
-        "until": g["last"],
-        "when": f"Our guess, made {_plain_day(g['stated'])}",
-        "event": g.get("statement") or f"{what[0].upper()}{what[1:]}",
-        "outcome": f"{what} {side} on {_plain_day(g['last'])} than on {_plain_day(base.isoformat())}",
-        "direction": g["direction"],
-        "record": "Why: " + (g.get("reasoning") or g.get("reason") or g.get("statement", "")),
-        "note": "",
-        "link": "",
-        "source": g.get("source", ""),
-    }
+FRONT_FIELDS = ("stated", "market", "direction", "last", "statement", "why", "source")
+FRONT_LOCKED = ("stated", "market", "direction", "last", "source")
+
+
+def front_rows(
+    picks: Sequence[Mapping[str, str]], approved: Sequence[Mapping[str, str]]
+) -> list[dict[str, str]]:
+    """The front page's proposal (docs/steps/front-staging.md): the picked guesses with the
+    ledger's words, or the owner's for a guess already approved."""
+    kept = {tuple(r.get(f, "") for f in FRONT_LOCKED): r for r in approved}
+    out = []
+    for g in picks:
+        row = {f: g.get(f, "") for f in FRONT_LOCKED}
+        row["statement"] = g.get("statement", "")
+        row["why"] = g.get("reasoning") or g.get("reason") or g.get("statement", "")
+        old = kept.get(tuple(row[f] for f in FRONT_LOCKED))
+        out.append({f: (old or row).get(f, "") for f in FRONT_FIELDS})
+    return out
+
+
+def unlocked(
+    front: Sequence[Mapping[str, str]], ledger: Sequence[Mapping[str, str]]
+) -> list[Mapping[str, str]]:
+    """The rows of ``front.csv`` whose locked fields match no ledger row."""
+    known = {tuple(r.get(f, "") for f in FRONT_LOCKED) for r in ledger}
+    return [r for r in front if tuple(r.get(f, "") for f in FRONT_LOCKED) not in known]
 
 
 def front_guesses(
@@ -3170,10 +3174,10 @@ def stated_forecasts(
     guesses = [_ledger_row(r) for r in _read_rows(kept_path.parent / "our-guesses.csv")]
     promoted = {str(t["tag"]) for t in guess_record(guesses, "tag") if t["verdict"] == "holds"}
     write_stats(kept_path.parent / "stats" / "index.html", guesses, promoted)
+    picks = front_guesses(guesses, promoted, today, FRONT_MOST - len(told))
+    approved = _read_rows(kept_path.parent / "front.csv")
+    _write_rows(kept_path.parent / "front-next.csv", FRONT_FIELDS, front_rows(picks, approved))
     return {
-        "guesses": [
-            guess_card(g) for g in front_guesses(guesses, promoted, today, FRONT_MOST - len(told))
-        ],
         "guess_tally": forecast_tally([g for g in guesses if g.get("grade") != "void"]),
         "stated": [{k: v for k, v in t.items() if k != "row"} for t in told],
         "tally": forecast_tally(rows),

@@ -182,9 +182,33 @@ footer { margin-top: 32px; font-size: 15px; color: var(--muted); display: grid; 
     return 'about ' + Math.round(days / 30.4) + ' months left';
   };
   const cap = (t) => t ? t[0].toUpperCase() + t.slice(1) : t;
+  // The approved guesses (docs/steps/front-staging.md), read from front.csv: quoted fields may hold
+  // commas, doubled quotes and line breaks.
+  const parseCsv = (text) => {
+    const rows = [[]];
+    let field = '', quoted = false;
+    for (let i = 0; i < text.length; i++) {
+      const c = text[i];
+      if (quoted) {
+        if (c === '"' && text[i + 1] === '"') { field += '"'; i++; }
+        else if (c === '"') quoted = false;
+        else field += c;
+      } else if (c === '"') quoted = true;
+      else if (c === ',') { rows[rows.length - 1].push(field); field = ''; }
+      else if (c === '\n') { rows[rows.length - 1].push(field); field = ''; rows.push([]); }
+      else if (c !== '\r') field += c;
+    }
+    if (field || rows[rows.length - 1].length) rows[rows.length - 1].push(field);
+    const head = rows.shift() || [];
+    return rows.filter((r) => r.length === head.length)
+      .map((r) => Object.fromEntries(head.map((h, i) => [h, r[i]])));
+  };
+  const asCard = (r) => ({ guess: true, market: r.market, made: r.stated, until: r.last,
+    direction: r.direction, event: r.statement, why: r.why, source: r.source });
+  const draw = (guesses) => {
   // The tested forecasts, then our guesses, whose span has not ended on New York's day; five at most.
   const open = (p) => !p.until || p.until >= today;
-  const shown = (data.stated || []).filter(open).concat((data.guesses || []).filter(open)).slice(0, 5);
+  const shown = (data.stated || []).filter(open).concat(guesses.filter(open)).slice(0, 5);
   const list = document.getElementById('predictions');
   if (!shown.length) list.appendChild(el('li', 'Nothing passed our tests today, so the fortune teller keeps quiet.', 'empty'));
   shown.forEach((p) => {
@@ -229,7 +253,7 @@ footer { margin-top: 32px; font-size: 15px; color: var(--muted); display: grid; 
       card.appendChild(el('p', p.note, 'why'));
     }
     const links = el('div', null, 'links');
-    if (p.source) {
+    if (p.source && p.source.startsWith('https://')) {
       const news = el('a', 'The news');
       news.href = p.source;
       news.rel = 'noopener nofollow';
@@ -243,6 +267,10 @@ footer { margin-top: 32px; font-size: 15px; color: var(--muted); display: grid; 
     if (links.childNodes.length) card.appendChild(links);
     list.appendChild(card);
   });
+  };
+  fetch('front.csv', { cache: 'no-cache' })
+    .then((r) => (r.ok ? r.text() : ''))
+    .then((text) => draw(parseCsv(text).map(asCard)), () => draw([]));
   document.getElementById('written').textContent = 'Updated ' + at(data.written).toLocaleDateString('en-US',
     { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' }) + '. New guesses each weekday evening.';
   const chip = (name, t) => name + ': ' + t.open + ' open · ' + t.came_true + ' right · ' + t.did_not + ' wrong';
