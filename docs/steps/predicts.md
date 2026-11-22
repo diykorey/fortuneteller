@@ -11,7 +11,7 @@
 to five things the fortune teller says about the days ahead, each with its record.
 
 At the end `https://diykorey.github.io/fortuneteller/predicts/` shows *Fortuneteller predicts:*
-and one to five cards. The evening job rewrites it each weekday with the scoreboard
+and one to five cards (none to five since 2026-11-22, below). The evening job rewrites it each weekday with the scoreboard
 ([step 44](readers.md)).
 
 ## The way to reach it
@@ -86,7 +86,7 @@ and one to five cards. The evening job rewrites it each weekday with the scorebo
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | `predictions` in `__main__.py`, written with the scoreboard to `docs/predicts/index.html` | Tests: a release whose link holds gives a card, and one whose link does not gives none. The largest company of a day is chosen. A kind not holding gives no card. Undated cards fill to three without repeating a shown kind. No card holds a `%` |
-| 2 | The template `src/fortuneteller/predicts.html` | A pytest test in CI renders it in headless Chrome and finds the headline, one to five cards, and no horizontal scroll at both widths |
+| 2 | The template `src/fortuneteller/predicts.html` | A pytest test in CI renders it in headless Chrome and finds the headline, one to five cards (none to five since 2026-11-22), and no horizontal scroll at both widths |
 | 3 | Published | The page is live. Bar 1 is checked by running `predictions` on the published `data.json` and finding each card's link among *the answers that hold* or a holding `ahead` link; bars 2 to 4 on the page. The date and results are written here |
 
 ## How you know it is right

@@ -39,7 +39,11 @@ card links as *The news* so a reader can check it (*amended 2026-11-22*, after t
 run showed a reason stating facts the page could not show). A guess is kept only when no guess of the same market, or of its twin,
   and span is still open: the S&P 500 and the Nasdaq count as one, since they move together and
   two guesses on them would be one bet counted twice. Anything else is dropped and why printed;
-  an answer with no JSON list keeps nothing.
+  an answer with no JSON list keeps nothing. (*Amended 2026-11-22, after the first run into
+  `docs/predicts` kept nothing:* the list is looked for at every `[` of the answer, so a bracket
+  in the prose before it is passed over; and an answer with no list is asked for once more, in
+  the same `guess` run. The evening runs `guess` once; the run that published the first guesses
+  was a run by hand after the change, the one before it kept nothing and nothing of it was kept.)
 - **When a span starts:** the weekday after the evening it is written; a week ends 5 weekdays
   later and a month 21, holidays not known. It is graded, as the tested forecasts are, from the
   close before its first day to the close of its last: *came true* if that move is in its
@@ -66,7 +70,7 @@ run showed a reason stating facts the page could not show). A guess is kept only
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | `fortuneteller guess`: runs the Subscription LLM, checks each guess and appends what passes to `our-guesses.csv`; `scripts/release-day.sh` runs it before each `scoreboard` | Tests (the model stubbed): a guess on a market not listed, a quarter, a `%` or a 31-word reason is dropped; a second guess of an open market and span, or of the Nasdaq while the S&P 500's is open, is not kept; a third guess is not read; a failed or malformed run keeps nothing and ends with 0. The script's two `scoreboard` lines are each preceded by `guess` |
+| 1 | `fortuneteller guess`: runs the Subscription LLM, checks each guess and appends what passes to `our-guesses.csv`; `scripts/release-day.sh` runs it before each `scoreboard` | Tests (the model stubbed): a guess on a market not listed, a quarter, a `%` or a 31-word reason is dropped; a second guess of an open market and span, or of the Nasdaq while the S&P 500's is open, is not kept; a third guess is not read; a guess without an `https` link to its news is dropped; a bracket in prose before the list is passed over; a failed or malformed run keeps nothing and ends with 0 (*amended 2026-11-22* with the two rules above). The script's two `scoreboard` lines are each preceded by `guess` |
 | 2 | The page: tested forecasts, then guesses headed *Our guess*, two tallies, no *if* cards | A rendered test shows two tested forecasts and two guesses in that order, a passed one dropped, five at most, and no arrow of an *if* |
 | 3 | Grading | A test grades a guess from the close before its first day, not its first day's close, and leaves an open one ungraded |
 | 4 | Published | The first guesses are on the live page; their rows and the date are written in Results. The test at 30 graded is a later step of its own, not this one |
@@ -108,13 +112,16 @@ with `claude-opus-5-5`:
 - the first run into `docs/predicts` kept nothing: the answer held no JSON list the check could
   find. A bracket in the prose before the list is now passed over, and an answer with no list is
   asked for once more (a test of each);
-- the next kept two, the first rows of `docs/predicts/our-guesses.csv`:
+- the next, by hand after that change, kept two: the first rows of
+  `docs/predicts/our-guesses.csv`, all columns:
 
-| Market | Span | Direction | First, last day | Why (the model's words) |
-| --- | --- | --- | --- | --- |
-| `COMP` | week | down | 2026-11-23, 2026-11-27 | Tech shares had their worst week since 2020 as fears grew that huge AI spending will not pay off, and Nvidia fell sharply on Friday. |
-| `GC / XAU` | month | down | 2026-11-23, 2026-12-21 | Gold fell to its lowest since September 2025 even while stocks crashed, and traders expect the Fed to raise rates in December. |
+| stated | market | span | direction | first | last | reason | source | model | grade |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| 2026-11-22 | `COMP` | week | down | 2026-11-23 | 2026-11-27 | Tech shares had their worst week since 2020 as fears grew that huge AI spending will not pay off, and Nvidia fell sharply on Friday. | https://www.cnn.com/2026/11/20/investing/us-stocks-anthropic-ai | claude-opus-5-5 | (open) |
+| 2026-11-22 | `GC / XAU` | month | down | 2026-11-23 | 2026-12-21 | Gold fell to its lowest since September 2025 even while stocks crashed, and traders expect the Fed to raise rates in December. | https://sg.finance.yahoo.com/news/snowballing-selloff-global-markets-151205233.html | claude-opus-5-5 | (open) |
 
-The page shows the three tested forecasts, then these two headed *Our guess*, each with a link
-to its news, and two tallies: tested 0 came true, 0 did not, 3 open; guesses 0, 0, 2. The test
-at 30 graded guesses is not yet due.
+`docs/predicts/index.html`, written by `stated_forecasts` (what `fortuneteller scoreboard` calls)
+on a copy of the store, shows the three tested forecasts of `docs/predicts/forecasts.csv`, then
+these two headed *Our guess*, each linked to its news, and two tallies: tested 0 came true, 0 did
+not, 3 open; guesses 0, 0, 2. It is live at `https://diykorey.github.io/fortuneteller/predicts/`
+once this step's pull request is merged. The test at 30 graded guesses is not yet due.
