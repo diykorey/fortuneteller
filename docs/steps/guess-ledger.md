@@ -61,10 +61,13 @@ At the end:
 - **Lessons, monthly:** on the first evening `guess` runs in a month with no version of that
   month, before that evening's guesses, the model reads every review of a guess ending since the
   last version and writes `lessons.md` version *N + 1* (version 1 when there is none), at most 400
-  words, dated. That evening's guesses are made under it; each guess keeps its version, so the
+  words, dated (*amended 2026-11-22:* only when there is at least one review to learn from; a
+  month with none writes no version, as the first evening of 2026-11-22 did). That evening's
+  guesses are made under it; each guess keeps its version, so the
   stats page compares versions.
 - **The front page:** the tested forecasts (three at most), then guesses to make five. It prefers
-  a promoted tag, then *high* confidence, then the soonest end date.
+  a promoted tag, then confidence (*high*, then *medium*, then *low*; *amended 2026-11-22*, the
+  rule had named only *high*), then the soonest end date.
 
 ## The rule, fixed before measuring
 
@@ -108,6 +111,9 @@ more than five forecasts on the front page.
 - **The file:** `docs/predicts/our-guesses.csv`, columns `stated, market, horizon, direction,
   first, last, statement, reasoning, tag, confidence, source, model, lessons, grade, move,
   review`. Step 49's two rows are kept, read with an empty tag and reasoning.
+- **Numbers in a reason** (*amended 2026-11-22*): the reasoning may quote a figure from the news;
+  a share is written *14 in 100*, since a bare *14* lost its unit when the `%` was banned. The
+  ban on a percentage stands for the forecast itself: no chance and no size is claimed.
 - **Tags:** momentum, reversal, interest rates, inflation, jobs, earnings, oil supply, geopolitics,
   policy, sentiment, season, other.
 - **Docs:** this spec, step 49's amendment (two guesses become up to 50, the front page's choice,
@@ -117,11 +123,16 @@ more than five forecasts on the front page.
 
 ## Results
 
-**Step 4, published, 2026-11-22.** `fortuneteller guess`, run on Sunday 2026-11-22 on a copy of
-the store (closes to 2026-11-20), with `claude-opus-5-5` and no lessons yet (version 0), kept 10
-new guesses and dropped none (its printed line: *10 kept, 0 dropped*). The model chose 10, not 50:
-the prompt tells it to skip a market where the news gives no real reason. That is below the
-expected 15 to 50; the first week's evenings will say whether it is so each evening.
+**Step 4, published, 2026-11-22.** `fortuneteller guess`, run by hand on Sunday 2026-11-22, the
+ledger's first evening, on a copy of the store (closes to 2026-11-20), with `claude-opus-5-5`.
+With no review yet, no lessons were written (version 0, as amended above). It printed *10 kept,
+0 dropped*: the model offered 10 and all passed the checks.
+
+**Expected 15 to 50 on each evening of the first week: not met on this one (10).** The prompt
+asks the model to skip a market where the news gives it no real reason; whether that is why it
+offered 10 is not shown by these numbers. The weekday evenings from 2026-11-23 add to the count.
+
+The 10, counted from `docs/predicts/our-guesses.csv` (which also holds step 49's 2 rows):
 
 | Tag | Guesses | Confidence |
 | --- | --- | --- |
@@ -130,8 +141,8 @@ expected 15 to 50; the first week's evenings will say whether it is so each even
 | momentum | 2 (bitcoin, Coinbase) | low |
 | reversal | 2 (the fear gauge, the S&P 500 over a year) | 1 medium, 1 low |
 
-Horizons of the 10: 3 months, 6 quarters and 1 year (from `docs/predicts/our-guesses.csv`,
-with step 49's two). The front page shows the three tested forecasts and the two guesses of
-medium confidence ending soonest: the yen to 2026-12-31 and the fear gauge to 2027-01-15. The
-stats page lists all 12, all open. In the reasons the percent ban left bare numbers (*Nvidia lost
-about 14 in a single day*), so the prompt now asks for *14 in 100* (amended 2026-11-22).
+Horizons of the 10: 3 months, 6 quarters, 1 year. `docs/predicts/index.html`, written by
+`stated_forecasts` (what `fortuneteller scoreboard` calls), shows the three tested forecasts and,
+by the amended rule, the two of medium confidence (none is high, none promoted), soonest first:
+the yen to 2026-12-31 and the fear gauge to 2027-01-15. `docs/predicts/stats/index.html`,
+written the same way, lists all 12 rows, all open.
