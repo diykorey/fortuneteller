@@ -36,6 +36,8 @@ NKY,Nikkei 225,equity_index,asia,Tokyo Stock Exchange,"Closes 15:30 Tokyo, 15:00
 ETH,Ether,crypto,global,Binance / Coinbase / CME,"Yahoo ETH-USD; the UTC day's last price, as bitcoin's (step 27)."
 COIN,Coinbase,single_stock,us,Nasdaq,"Yahoo COIN; the largest US crypto exchange, listed 2021-04-14 (step 27)."
 ALL,Allstate,single_stock,us,NYSE,"Yahoo ALL; a large US home insurer, listed 1993-06-03 (step 28)."
+USDCAD,USD/CAD,fx,us,OTC,"Yahoo CAD=X; up is the Canadian dollar weaker (step 52)."
+TSX,S&P/TSX Composite,equity_index,us,Toronto Stock Exchange,"Yahoo ^GSPTSE; closes 16:00 Toronto (step 52)."
 BA,Boeing,single_stock,us,NYSE,"A CEO scandal of step 20, 2005-03-07; measured against the S&P 500."
 RRGB,Red Robin Gourmet Burgers,single_stock,us,Nasdaq,"A CEO scandal of step 20, 2005-08-11; measured against the S&P 500."
 MMS,Maximus,single_stock,us,NYSE,"A CEO scandal of step 20, 2006-04-24; measured against the S&P 500."

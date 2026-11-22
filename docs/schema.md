@@ -96,7 +96,8 @@ outcomes](steps/more-outcomes.md) adds `BRN`, `EURUSD`, `COMP`, `UST5Y / ZF`, `U
 `CORN`, `WEAT`, `SOYB`, `UGA`, `UNG`, `XLU` and `ITB` (2026-11-04), [coffee](steps/coffee.md)
 `KC` and [the breakeven](steps/breakeven.md) `T5YIE` (2026-11-04), and [other central
 banks](steps/other-central-banks.md) `GBPUSD`, `USDJPY` and `NKY` (2026-11-17), and [crypto](steps/crypto.md) `ETH` and `COIN`
-(2026-11-18), and [weather](steps/weather.md) `ALL` (2026-11-18), so 31 are measured.
+(2026-11-18), [weather](steps/weather.md) `ALL` (2026-11-18), and [Canada](steps/canada.md) `USDCAD` and
+`TSX` (2026-11-22), so 33 are measured.
 
 | Column | Type | Meaning |
 | --- | --- | --- |
@@ -354,6 +355,8 @@ the same day.
 | `NKY` | 13,982 | 1970-01-05 (counted 2026-11-17) |
 | `ETH` | 2,354 | 2017-11-09 (counted 2026-11-18) |
 | `COIN` | 1,407 | 2021-04-14 (counted 2026-11-18) |
+| `USDCAD` | 6,028 | 2003-09-17 (counted 2026-11-22, to 2026-11-19) |
+| `TSX` | 11,900 | 1979-06-29 (counted 2026-11-22, to 2026-11-19) |
 
 A few megabytes in all. `observations` is these same days thinned down to the release days —
 about 2,700 rows for CPI and the five; 45,773 for ten events and sixteen markets on 2026-10-27;

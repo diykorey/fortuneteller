@@ -1,0 +1,222 @@
+Step 52, step 1's evidence (docs/steps/canada.md): a copy of the store of 2026-11-22 (closes to 2026-11-19), run with main's code (6d700f5) as it is, and with this change after the two markets' closes were loaded alone.
+
+$ the Bank of Canada's changes: Valet V39079 (https://www.bankofcanada.ca/valet/observations/V39079/json?start_date=2009-01-01, read 2026-11-22), each change matched to the calendar's decision on its day or the business day before; TradingView's CA 'Interest Rate' rows, 2008-01-01 to 2026-11-22
+calendar decisions 153, 2008-01-22 … 2026-10-28 (to 2026-09-02: 152)
+(each Valet change: its day -> the calendar decision it belongs to, the days between, the new rate)
+valet 2010-06-01 -> 2010-06-01 (0d) 0.5
+valet 2010-07-20 -> 2010-07-20 (0d) 0.75
+valet 2010-09-08 -> 2010-09-08 (0d) 1.0
+valet 2015-01-21 -> 2015-01-21 (0d) 0.75
+valet 2015-07-15 -> 2015-07-15 (0d) 0.5
+valet 2017-07-12 -> 2017-07-12 (0d) 0.75
+valet 2017-09-06 -> 2017-09-06 (0d) 1.0
+valet 2018-01-17 -> 2018-01-17 (0d) 1.25
+valet 2018-07-11 -> 2018-07-11 (0d) 1.5
+valet 2018-10-24 -> 2018-10-24 (0d) 1.75
+valet 2020-03-04 -> 2020-03-04 (0d) 1.25
+valet 2020-03-16 -> 2020-03-13 (3d) 0.75
+valet 2020-03-27 -> 2020-03-27 (0d) 0.25
+valet 2022-03-03 -> 2022-03-02 (1d) 0.5
+valet 2022-04-14 -> 2022-04-13 (1d) 1.0
+valet 2022-06-02 -> 2022-06-01 (1d) 1.5
+valet 2022-07-14 -> 2022-07-13 (1d) 2.5
+valet 2022-09-08 -> 2022-09-07 (1d) 3.25
+valet 2022-10-27 -> 2022-10-26 (1d) 3.75
+valet 2022-12-08 -> 2022-12-07 (1d) 4.25
+valet 2023-01-26 -> 2023-01-25 (1d) 4.5
+valet 2023-06-08 -> 2023-06-07 (1d) 4.75
+valet 2023-07-13 -> 2023-07-12 (1d) 5.0
+valet 2024-06-06 -> 2024-06-05 (1d) 4.75
+valet 2024-07-25 -> 2024-07-24 (1d) 4.5
+valet 2024-09-05 -> 2024-09-04 (1d) 4.25
+valet 2024-10-24 -> 2024-10-23 (1d) 3.75
+valet 2024-12-12 -> 2024-12-11 (1d) 3.25
+valet 2025-01-30 -> 2025-01-29 (1d) 3.0
+valet 2025-03-13 -> 2025-03-12 (1d) 2.75
+valet 2025-09-18 -> 2025-09-17 (1d) 2.5
+valet 2025-10-30 -> 2025-10-29 (1d) 2.25
+valet 2026-10-29 -> 2026-10-28 (1d) 2.5
+the calendar's rows to 2009-04-21 (Toronto day and hour, actual, previous), the Bank's file before Valet:
+   2008-01-22 09:00  4  4.25
+   2008-03-04 09:00  3.5  4
+   2008-04-22 09:00  3  3.5
+   2008-06-10 09:00  3  3
+   2008-07-15 09:00  3  3
+   2008-09-03 09:00  3  3
+   2008-10-21 09:00  2.25  2.5
+   2008-12-09 09:00  1.5  2.25
+   2009-01-20 09:00  1  1.5
+   2009-03-03 09:00  0.5  1
+   2009-04-21 09:00  0.25  0.5
+Valet changes with no calendar decision on their day or the business day before: none
+the days the two disagree: 16 (the calendar's kind is its rate against the last earlier decision's that has one)
+   2008-10-08  calendar lacks it  Bank: cut (unscheduled, 07:00 Toronto, to 2.50 from 3.00)
+   2012-01-17  calendar: no rate  Bank: hold
+   2012-03-08  calendar: no rate  Bank: hold
+   2012-04-17  calendar: no rate  Bank: hold
+   2012-06-05  calendar: no rate  Bank: hold
+   2012-07-17  calendar: no rate  Bank: hold
+   2012-09-05  calendar: no rate  Bank: hold
+   2012-10-23  calendar: no rate  Bank: hold
+   2012-12-04  calendar: no rate  Bank: hold
+   2013-01-23  calendar: no rate  Bank: hold
+   2013-03-06  calendar: no rate  Bank: hold
+   2013-04-17  calendar: no rate  Bank: hold
+   2013-05-29  calendar: no rate  Bank: hold
+   2013-07-17  calendar: no rate  Bank: hold
+   2013-09-04  calendar: no rate  Bank: hold
+   2013-10-23  calendar: no rate  Bank: hold
+with the Bank's changes, every decision after the first, to 2026-10-28: 22 cuts, 112 holds, 19 hikes
+with the Bank's changes, to 2026-09-02: 153 decisions, 22 cuts, 112 holds, 18 hikes
+the calendar's kinds alone, to 2026-09-02: 21 cuts, 97 holds, 18 hikes, 15 with no rate
+data/seed/boc-changes.csv: 42 changes, 2008-01-22 … 2026-10-28
+
+$ load-prices for the two markets: study.store_daily_bars(symbol, ticker, closes to 2026-11-19), then study.store_observations(); rows, first, last
+USDCAD CAD=X 6028 2003-09-17 2026-11-19
+TSX ^GSPTSE 11900 1979-06-29 2026-11-19
+
+$ each daily close of 2026-11-09 … 2026-11-20 against Yahoo's 5-minute bars (interval=5m): CAD=X against the open of the 00:00 London bar, ^GSPTSE against the close of its last bar
+CAD=X gmtoffset Europe/London
+2026-11-09 daily 1.41187 00:00 London open 1.41186 diff +0.001%
+2026-11-10 daily 1.41189 00:00 London open 1.41189 diff +0.000%
+2026-11-11 daily 1.41860 00:00 London open 1.41860 diff +0.000%
+2026-11-12 daily 1.42479 00:00 London open 1.42491 diff -0.008%
+2026-11-13 daily 1.42610 00:00 London open 1.42632 diff -0.015%
+2026-11-16 daily 1.42687 00:00 London open 1.42687 diff +0.000%
+2026-11-17 daily 1.42970 00:00 London open 1.42974 diff -0.003%
+2026-11-18 daily 1.42991 00:00 London open 1.42991 diff +0.000%
+2026-11-19 daily 1.43308 00:00 London open 1.43313 diff -0.003%
+2026-11-20 daily 1.43435 00:00 London open 1.43410 diff +0.017%
+2026-11-22 no bar 1.433899998664856
+2026-11-09 daily 36446.30 last bar 15:55 close 36447.81 diff -0.004%
+2026-11-10 daily 36170.50 last bar 15:55 close 36162.34 diff +0.023%
+2026-11-11 daily 36411.70 last bar 15:55 close 36420.23 diff -0.023%
+2026-11-12 daily 36137.20 last bar 15:55 close 36134.98 diff +0.006%
+2026-11-13 daily 36105.90 last bar 15:55 close 36122.61 diff -0.046%
+2026-11-16 daily 35722.10 last bar 15:55 close 35712.98 diff +0.026%
+2026-11-17 daily 35315.30 last bar 15:55 close 35319.64 diff -0.012%
+2026-11-18 daily 34578.10 last bar 15:55 close 34569.47 diff +0.025%
+2026-11-19 daily 34028.70 last bar 15:55 close 34017.68 diff +0.032%
+2026-11-20 daily 33189.90 last bar 16:00 close 33189.85 diff +0.000%
+
+$ every flow's follows (both runs, the Fed's --long) and raw-move output, main's code before and this change after: the lines left once USDCAD's and TSX's rows and the 'by chance' lines are taken out
+same-but-markets fol-additions-after.txt +0 lines
+same-but-markets fol-additions.txt +0 lines
+same-but-markets fol-boe-after.txt +18 lines
+same-but-markets fol-boe.txt +18 lines
+same-but-markets fol-boj-after.txt +18 lines
+same-but-markets fol-boj.txt +18 lines
+same-but-markets fol-ceo-after.txt +0 lines
+same-but-markets fol-ceo.txt +0 lines
+same-but-markets fol-claims-after.txt +18 lines
+same-but-markets fol-claims.txt +18 lines
+same-but-markets fol-cpi-after.txt +18 lines
+same-but-markets fol-cpi.txt +18 lines
+same-but-markets fol-crypto-after.txt +6 lines
+same-but-markets fol-crypto.txt +6 lines
+same-but-markets fol-earnings-after.txt +0 lines
+same-but-markets fol-earnings.txt +0 lines
+same-but-markets fol-earnings500-after.txt +0 lines
+same-but-markets fol-earnings500.txt +0 lines
+same-but-markets fol-ecb-after.txt +18 lines
+same-but-markets fol-ecb.txt +18 lines
+same-but-markets fol-flood-after.txt +6 lines
+same-but-markets fol-flood.txt +6 lines
+same-but-markets fol-fomc-after.txt +18 lines
+same-but-markets fol-fomc-long.txt +12 lines
+same-but-markets fol-fomc.txt +18 lines
+same-but-markets fol-nfp-after.txt +18 lines
+same-but-markets fol-nfp.txt +18 lines
+same-but-markets fol-opec-after.txt +12 lines
+same-but-markets fol-opec.txt +12 lines
+same-but-markets fol-retail-after.txt +18 lines
+same-but-markets fol-retail.txt +18 lines
+same-but-markets fol-splits-after.txt +0 lines
+same-but-markets fol-splits.txt +0 lines
+same-but-markets fol-war-after.txt +6 lines
+same-but-markets fol-war.txt +6 lines
+same-but-markets fol-weather-after.txt +6 lines
+same-but-markets fol-weather.txt +6 lines
+same-but-markets raw-additions.txt +4 lines
+same-but-markets raw-boe.txt +4 lines
+same-but-markets raw-boj.txt +4 lines
+same-but-markets raw-ceo.txt +4 lines
+same-but-markets raw-claims.txt +4 lines
+same-but-markets raw-cpi.txt +4 lines
+same-but-markets raw-crypto.txt +4 lines
+same-but-markets raw-debt.txt +4 lines
+same-but-markets raw-decpi.txt +4 lines
+same-but-markets raw-deelect.txt +4 lines
+same-but-markets raw-earnings.txt +4 lines
+same-but-markets raw-earnings500.txt +4 lines
+same-but-markets raw-ecb.txt +4 lines
+same-but-markets raw-ecbchief.txt +4 lines
+same-but-markets raw-euelect.txt +4 lines
+same-but-markets raw-fedchair.txt +4 lines
+same-but-markets raw-flood.txt +4 lines
+same-but-markets raw-fomc.txt +4 lines
+same-but-markets raw-frelect.txt +4 lines
+same-but-markets raw-gdp.txt +4 lines
+same-but-markets raw-hicp.txt +4 lines
+same-but-markets raw-ifo.txt +4 lines
+same-but-markets raw-ism.txt +4 lines
+same-but-markets raw-nfp.txt +4 lines
+same-but-markets raw-opec.txt +4 lines
+same-but-markets raw-pce.txt +4 lines
+same-but-markets raw-posts.txt +4 lines
+same-but-markets raw-posts2.txt +4 lines
+same-but-markets raw-retail.txt +4 lines
+same-but-markets raw-splits.txt +4 lines
+same-but-markets raw-summit.txt +4 lines
+same-but-markets raw-tariff.txt +4 lines
+same-but-markets raw-ukelect.txt +4 lines
+same-but-markets raw-uselect.txt +4 lines
+same-but-markets raw-war.txt +4 lines
+same-but-markets raw-weather.txt +4 lines
+same-but-markets raw-zew.txt +4 lines
+
+$ each follows table's rows and chance line ('by chance: about N answers on all history'), before -> after
+flow         run             rows before -> after  chance line before -> after
+additions    reaction close        3 -> 3     0.1 -> 0.1
+additions    close before          3 -> 3     0.1 -> 0.1
+boe          reaction close      279 -> 297   7.8 -> 8.4
+boe          close before        279 -> 297   7.8 -> 8.4
+boj          reaction close      279 -> 297   2.8 -> 3.0
+boj          close before        279 -> 297   2.8 -> 3.0
+ceo          reaction close        3 -> 3     0.1 -> 0.1
+ceo          close before          3 -> 3     0.1 -> 0.1
+claims       reaction close      279 -> 297   8.4 -> 8.9
+claims       close before        279 -> 297   8.4 -> 8.9
+cpi          reaction close      279 -> 297   8.4 -> 8.9
+cpi          close before        279 -> 297   8.4 -> 8.9
+crypto       reaction close       93 -> 99    2.8 -> 3.0
+crypto       close before         93 -> 99    2.8 -> 3.0
+earnings     reaction close        9 -> 9     0.3 -> 0.3
+earnings     close before          9 -> 9     0.3 -> 0.3
+earnings500  reaction close        9 -> 9     0.3 -> 0.3
+earnings500  close before          9 -> 9     0.3 -> 0.3
+ecb          reaction close      279 -> 297   8.2 -> 8.7
+ecb          close before        279 -> 297   8.1 -> 8.7
+flood        reaction close       93 -> 99    2.7 -> 2.9
+flood        close before         93 -> 99    2.7 -> 2.9
+fomc         reaction close      279 -> 297   8.3 -> 8.8
+fomc         close before, long  186 -> 198   2.5 -> 2.6
+fomc         close before        279 -> 297   8.3 -> 8.8
+nfp          reaction close      279 -> 297   8.4 -> 8.9
+nfp          close before        279 -> 297   8.4 -> 8.9
+opec         reaction close      186 -> 198   5.6 -> 5.9
+opec         close before        186 -> 198   5.5 -> 5.9
+retail       reaction close      279 -> 297   8.4 -> 8.9
+retail       close before        279 -> 297   8.4 -> 8.9
+splits       reaction close        6 -> 6     0.2 -> 0.2
+splits       close before          6 -> 6     0.2 -> 0.2
+war          reaction close       93 -> 99    2.7 -> 2.9
+war          close before         93 -> 99    2.7 -> 2.9
+weather      reaction close       93 -> 99    2.8 -> 2.9
+weather      close before         93 -> 99    2.8 -> 2.9
+
+$ fortuneteller scoreboard, data.json's chance before and after, and the rest compared
+before chance {'raw_move': {'cells': 1011, 'p': 0.01, 'by_chance': 10.11}, 'surprise': {'cells': 372, 'p': 0.01, 'by_chance': 3.72}, 'walk_forward': {'cells': 82, 'p': 0.01, 'by_chance': 0.82}}
+after chance  {'raw_move': {'cells': 1078, 'p': 0.01, 'by_chance': 10.78}, 'surprise': {'cells': 396, 'p': 0.01, 'by_chance': 3.96}, 'walk_forward': {'cells': 82, 'p': 0.01, 'by_chance': 0.82}}
+markets 31 -> 33
+identical without USDCAD, TSX and the chance: True

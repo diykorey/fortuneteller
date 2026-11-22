@@ -64,7 +64,7 @@ claims), Fed and ECB decisions, the euro area's and Germany's releases, the Fed 
 president's scheduled statements, and dated shocks (elections, tariff actions, the debt limit,
 summits), against these markets (the S&P 500, the Nasdaq, the 10-year and 5-year yields, the dollar index
 and the euro, gold, Brent, VIX, the DAX, the Euro Stoxx 50, the FTSE 100 and the STOXX 600,
-bitcoin, a defence and an energy ETF, the funds holding corn, wheat, soybean, gasoline and natural gas futures, utilities and homebuilders, coffee, the 5-year breakeven inflation, the pound, the yen and the Nikkei 225, ether, Coinbase and Allstate), 1972 to today, from free sources: each market's measured move around every
+bitcoin, a defence and an energy ETF, the funds holding corn, wheat, soybean, gasoline and natural gas futures, utilities and homebuilders, coffee, the 5-year breakeven inflation, the pound, the yen and the Nikkei 225, ether, Coinbase and Allstate, the Canadian dollar and Toronto's S&P/TSX), 1972 to today, from free sources: each market's measured move around every
 release, how it relates to each surprise, and a walk-forward replay of every link.
 
 ```bash
