@@ -34,7 +34,8 @@ At the end:
   publishes it at once (GitHub Pages serves `docs/` from `main` as it is). No step regenerates the
   page after the merge; the evening's page no longer carries the guesses.
 - **The proposal:** `scoreboard` picks the guesses as step 50 does (a promoted tag, then
-  confidence, then the soonest end date, enough to fill five cards after the tested forecasts) and
+  confidence, then the soonest end date, enough to fill five cards after the tested forecasts;
+  *amended 2026-11-22, by the owner:* one per area, none in an area a tested forecast shows) and
   writes them to `front-next.csv`, with the ledger's statement and reasoning as their words. A
   guess already in `front.csv` keeps its approved words.
 - **The pull request:** the evening score (`scripts/release-day.sh score`) writes the page into

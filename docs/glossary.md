@@ -239,6 +239,9 @@ Terms are grouped by what they are about, alphabetical within each group.
   stitched together from the contract nearest expiry (the *front month*), switching to the next one
   at each expiry (the *roll*). Yahoo's `GC=F`, `BZ=F` and `KC=F` are such series; their price can jump on a roll day
   for reasons unrelated to any event.
+- **Area** — *added 2026-11-22* ([predicts](steps/predicts.md)): one of eight groups of the
+  markets for the front page, which shows one card per area: stocks, interest rates and
+  inflation, currencies, energy, gold, food, crypto, homes (`AREAS` in the code).
 - **Front page** — the predictions page, `docs/predicts/index.html`: the tested forecasts, then
   our guesses, five cards at most.
 - **Front pull request** — *added 2026-11-22* ([step 51](steps/front-staging.md)): the pull

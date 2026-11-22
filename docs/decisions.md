@@ -11,6 +11,15 @@ amended there with a date.
 Each entry: **what** was decided, **why**, what it **retires**, and **where** the detail is. *By the
 owner* marks a choice the owner made over another on the table.
 
+## 2026-11-22: One card per area on the front page, by the owner
+
+- **What:** the front page shows one card per area of markets (eight: stocks, interest rates and
+  inflation, currencies, energy, gold, food, crypto, homes), tested forecasts first.
+- **Why:** the owner saw three of five cards on the stock market and asked for more areas. The
+  guesses already spanned many; the page's choice did not. Of three ways (one per area, at most
+  two on stocks, one per area with the guesser asked to cover every area) they chose the first.
+- **Where:** [Fortuneteller predicts](steps/predicts.md), amended 2026-11-22.
+
 ## 2026-11-22: The site opens on the predictions page, by the owner
 
 - **What:** the site's bare address sends readers to the predictions page, not the scoreboard;
