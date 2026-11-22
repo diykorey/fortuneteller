@@ -266,10 +266,10 @@ def test_the_page_states_a_forecast_first_with_its_record(tmp_path: Path) -> Non
 
     # then the forecast is stated with its record and the tally, and no if-arrow
     shown = dom[dom.index('<ol id="predictions">') : dom.index("</ol>")]
-    assert "The US stock market, over the next year" in shown
-    assert "▲ higher on" in shown and "held 402 times and failed 264 times" in shown
+    assert "US stock market" in shown and "▲ Higher on" in shown and "Will be higher on" in shown
+    assert "came true about 6 times in 10 (402 of 666 past years)" in shown
     assert "→" not in shown
-    assert "1 came true, 0 did not, 2 still open" in dom
+    assert "Tested: 2 open · 1 right · 0 wrong" in dom
 
 
 def test_a_page_written_on_a_saturday_counts_from_friday_s_close() -> None:

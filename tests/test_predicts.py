@@ -99,10 +99,10 @@ def test_the_page_shows_up_to_five_forecasts_without_a_sideways_scroll(
 
     # then the headline is there, the passed one dropped, two tested and two guesses shown, no
     # if-arrow, no sideways scroll
-    assert "Fortuneteller predicts:" in dom
+    assert "Fortuneteller predicts:" in re.sub(r"<[^>]+>", "", dom)
     shown = dom[dom.index('<ol id="predictions">') : dom.index("</ol>")]
     assert "Long passed" not in shown and "→" not in shown
-    assert shown.count("Why: A guess") == 2 and shown.count("Our guess, made") == 2
+    assert shown.count("Why: A guess") == 2 and shown.count("Our guess · made") == 2
     match = re.search(r"<title>(\d+) (\d+) (\d+)</title>", dom)
     assert match is not None
     scroll, inner, cards = map(int, match.groups())

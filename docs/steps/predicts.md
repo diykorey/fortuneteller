@@ -67,6 +67,14 @@ and one to five cards (none to five since 2026-11-22, below). The evening job re
   then; if we cannot forecast better, do not do it at all"). The *if* cards are gone: the page
   shows [stated forecasts](stated-forecasts.md) and [our guesses](our-guesses.md) only. Bar 2
   becomes none to five cards; a page with none says *Nothing passed our tests today*.
+- **Bright cards** (*amended 2026-11-22, by the owner*, option A of five mock-ups: bright cards,
+  a scoreboard list, colour tiles, a newspaper, a swipe deck). A white page with 18px text and
+  strong contrast, kept in dark mode. Each card shows an icon and a short name for its market, a
+  green *▲ Up by* or orange *▼ Down by* its end date, the sentence, the days left, its record (or
+  *No record yet* for a guess) and one line of why; a guess's full reasoning is folded under
+  *Full reasoning*. The explanation is folded under *How it works*, and the two tallies are
+  badges. The stats page takes the same colours. The bars are unchanged; the render tests check
+  the same five cards at phone and desktop widths, with no sideways scroll.
 
 ## The rule, fixed before measuring
 

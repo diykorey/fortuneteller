@@ -11,6 +11,17 @@ amended there with a date.
 Each entry: **what** was decided, **why**, what it **retires**, and **where** the detail is. *By the
 owner* marks a choice the owner made over another on the table.
 
+## 2026-11-22: The page as bright cards, by the owner
+
+- **What:** the predictions page is restyled as bright white cards: a market icon and short name,
+  a green or orange *Up by* or *Down by* its end date, the days left, and one line of why, with
+  the explanation folded away. The stats page matches.
+- **Why:** the owner asked for "bright easy to read page adapt for desktop and mobile phones".
+  Of five mock-ups shown with that evening's forecasts (bright cards, a scoreboard list, colour
+  tiles, a newspaper, a swipe deck) the owner chose the bright cards. They read best for someone
+  with no financial education and look the same on a phone and a desktop.
+- **Where:** [Fortuneteller predicts](steps/predicts.md), amended 2026-11-22.
+
 ## 2026-11-22: Up to 50 guesses an evening, reviewed and learned from, by the owner
 
 - **What:** the guesser makes up to 50 guesses an evening, each with an end date, reasoning, a tag

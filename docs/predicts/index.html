@@ -14,137 +14,124 @@
   data-do-not-track="true" data-domains="diykorey.github.io"></script>
 <style>
 :root {
-  --bg: #f6f4fb;
-  --bg-glow: #e7defd;
-  --card: rgba(255, 255, 255, 0.78);
-  --card-border: rgba(91, 64, 170, 0.14);
-  --ink: #1b1530;
-  --muted: #6a6383;
-  --accent: #6d4aff;
-  --accent-soft: #efe9ff;
-  --up: #0f8a5f;
-  --up-soft: #e3f6ee;
+  --bg: #ffffff;
+  --card: #ffffff;
+  --line: #e5e7eb;
+  --ink: #111827;
+  --text: #374151;
+  --muted: #4b5563;
+  --accent: #7c3aed;
+  --accent-soft: #f5f3ff;
+  --guess: #db2777;
+  --chip: #f3f4f6;
+  --up: #15803d;
+  --up-soft: #dcfce7;
   --down: #c2410c;
-  --down-soft: #fdece3;
-  --shadow: 0 1px 2px rgba(27, 21, 48, 0.04), 0 12px 32px -12px rgba(60, 40, 140, 0.18);
+  --down-soft: #ffedd5;
+  --shadow: 0 6px 20px -12px rgba(0, 0, 0, 0.25);
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #0e0b19;
-    --bg-glow: #2a1d5c;
-    --card: rgba(29, 23, 52, 0.72);
-    --card-border: rgba(180, 160, 255, 0.14);
-    --ink: #f1eefc;
-    --muted: #a69fc2;
-    --accent: #a48bff;
-    --accent-soft: rgba(164, 139, 255, 0.14);
-    --up: #4ade9b;
-    --up-soft: rgba(74, 222, 155, 0.12);
-    --down: #fb9a6b;
-    --down-soft: rgba(251, 154, 107, 0.12);
-    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 16px 40px -16px rgba(0, 0, 0, 0.6);
+    --bg: #111318;
+    --card: #1a1d24;
+    --line: #2d313b;
+    --ink: #f9fafb;
+    --text: #d1d5db;
+    --muted: #b0b6c1;
+    --accent: #b79cff;
+    --accent-soft: #272040;
+    --guess: #f472b6;
+    --chip: #232733;
+    --up: #4ade80;
+    --up-soft: rgba(74, 222, 128, 0.14);
+    --down: #fb923c;
+    --down-soft: rgba(251, 146, 60, 0.14);
+    --shadow: none;
   }
+}
+:root[data-theme="dark"] {
+  --bg: #111318; --card: #1a1d24; --line: #2d313b; --ink: #f9fafb; --text: #d1d5db;
+  --muted: #b0b6c1; --accent: #b79cff; --accent-soft: #272040; --guess: #f472b6; --chip: #232733;
+  --up: #4ade80; --up-soft: rgba(74, 222, 128, 0.14); --down: #fb923c;
+  --down-soft: rgba(251, 146, 60, 0.14); --shadow: none;
 }
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0;
-  min-height: 100vh;
-  font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background: var(--bg);
   color: var(--ink);
-  background:
-    radial-gradient(900px 480px at 12% -10%, var(--bg-glow), transparent 70%),
-    radial-gradient(700px 420px at 100% 0%, var(--accent-soft), transparent 70%),
-    var(--bg);
-  background-attachment: fixed;
+  font: 18px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
-main { max-width: 760px; margin: 0 auto; padding: 56px 16px 40px; }
-.brand { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 14px; letter-spacing: 0.02em; }
-.orb {
-  width: 28px; height: 28px; border-radius: 50%; flex: none;
-  background: radial-gradient(circle at 32% 30%, #fff 0 8%, #c9b8ff 22%, var(--accent) 60%, #2b1a73 100%);
-  box-shadow: 0 0 24px rgba(109, 74, 255, 0.45);
-}
-h1 {
-  margin: 18px 0 6px;
-  font-size: clamp(36px, 7vw, 56px);
-  line-height: 1.05;
-  letter-spacing: -0.03em;
-  font-weight: 800;
-  background: linear-gradient(100deg, var(--ink) 30%, var(--accent));
-  -webkit-background-clip: text; background-clip: text; color: transparent;
-}
-.lede { margin: 0 0 32px; color: var(--muted); max-width: 56ch; }
-.lede b { color: var(--ink); font-weight: 600; }
-ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; counter-reset: p; }
+main { max-width: 720px; margin: 0 auto; padding: 28px 16px 48px; }
+h1 { font-size: clamp(34px, 8vw, 52px); line-height: 1.05; margin: 0 0 8px; font-weight: 850; letter-spacing: -0.03em; }
+h1 span { color: var(--accent); }
+.sub { color: var(--text); margin: 0 0 4px; }
+details.how { margin: 0 0 18px; color: var(--text); font-size: 16px; }
+details.how summary { color: var(--accent); font-weight: 700; cursor: pointer; min-height: 44px; display: flex; align-items: center; }
+details.how p { margin: 0 0 8px; }
+.tally { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 0 20px; padding: 0; list-style: none; }
+.tally li { background: var(--chip); border-radius: 999px; padding: 6px 12px; font-size: 15px; font-weight: 600; }
+ol#predictions { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
 li.card {
-  counter-increment: p;
-  position: relative;
-  padding: 20px 22px 18px 64px;
-  border: 1px solid var(--card-border);
-  border-radius: 20px;
-  background: var(--card);
-  backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-  box-shadow: var(--shadow);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: grid; grid-template-columns: 56px 1fr; gap: 4px 14px;
+  border: 2px solid var(--line); border-radius: 20px; padding: 18px;
+  background: var(--card); box-shadow: var(--shadow);
 }
-li.card:hover { transform: translateY(-2px); }
-li.card::before {
-  content: counter(p);
-  position: absolute; left: 20px; top: 20px;
-  width: 30px; height: 30px; border-radius: 10px;
-  display: grid; place-items: center;
-  font-weight: 700; font-size: 14px;
-  color: var(--accent); background: var(--accent-soft);
+li.card > :not(.icon) { grid-column: 2; min-width: 0; }
+.icon {
+  grid-row: 1 / span 2; width: 56px; height: 56px; border-radius: 16px;
+  display: grid; place-items: center; font-size: 34px; background: var(--accent-soft);
 }
-.when { font-size: 13px; color: var(--muted); font-weight: 500; letter-spacing: 0.01em; }
-.event { margin: 2px 0 10px; font-size: 19px; font-weight: 700; letter-spacing: -0.01em; }
-.say { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 8px; margin: 0; }
-.then {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 3px 10px; border-radius: 999px; font-weight: 600; font-size: 15px;
+.kind { font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); }
+li.guess .kind { color: var(--guess); }
+.top { display: flex; justify-content: space-between; align-items: center; gap: 6px 10px; flex-wrap: wrap; }
+.market { margin: 0; font-size: 22px; font-weight: 800; line-height: 1.25; }
+.badge { font-weight: 800; border-radius: 999px; padding: 4px 12px; font-size: 17px; white-space: nowrap; }
+.up .badge { background: var(--up-soft); color: var(--up); }
+.down .badge { background: var(--down-soft); color: var(--down); }
+.say { margin: 4px 0 0; font-size: 18px; }
+.meta { display: flex; gap: 4px 14px; flex-wrap: wrap; font-size: 15px; color: var(--muted); margin-top: 6px; }
+.meta b { color: var(--ink); }
+.hint { margin: 2px 0 0; font-size: 15px; color: var(--muted); }
+.tally a { color: inherit; text-decoration: none; }
+.why { font-size: 16px; color: var(--text); margin: 8px 0 0; }
+details.more { font-size: 16px; color: var(--text); }
+details.more summary { color: var(--accent); font-weight: 700; cursor: pointer; min-height: 40px; display: flex; align-items: center; }
+.links { display: flex; gap: 16px; flex-wrap: wrap; font-size: 16px; }
+.links a, footer a { color: var(--accent); font-weight: 700; }
+.links a { min-height: 40px; display: inline-flex; align-items: center; }
+.empty { padding: 28px; text-align: center; color: var(--muted); border: 2px dashed var(--line); border-radius: 20px; display: block; }
+footer { margin-top: 32px; font-size: 15px; color: var(--muted); display: grid; gap: 8px; }
+@media (max-width: 420px) {
+  li.card { grid-template-columns: 44px 1fr; gap: 4px 12px; padding: 16px 14px; }
+  .icon { width: 44px; height: 44px; font-size: 26px; border-radius: 12px; }
+  .market { font-size: 20px; }
 }
-.then.up { color: var(--up); background: var(--up-soft); }
-.then.down { color: var(--down); background: var(--down-soft); }
-.tally { white-space: pre-line; margin: -16px 0 20px; font-size: 14px; font-weight: 600; color: var(--accent); }
-.tally:empty { display: none; }
-li.card.guess { border-style: dashed; }
-li.card.guess .when { color: var(--accent); font-weight: 700; }
-li.card.stated { border-color: color-mix(in srgb, var(--accent) 40%, transparent); }
-.note { margin: 8px 0 0; font-size: 13px; color: var(--muted); }
-.record { margin: 12px 0 0; display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--muted); }
-.record a { color: var(--accent); text-decoration: none; font-weight: 600; margin-left: auto; white-space: nowrap; }
-.record a:hover { text-decoration: underline; }
-.empty { padding: 28px; text-align: center; color: var(--muted); border: 1px dashed var(--card-border); border-radius: 20px; }
-footer { margin-top: 36px; font-size: 13px; color: var(--muted); display: grid; gap: 6px; }
-footer a { color: var(--accent); }
-@media (max-width: 520px) {
-  main { padding-top: 36px; }
-  li.card { padding: 18px 16px 16px 56px; }
-  li.card::before { left: 14px; top: 18px; }
-  .record a { margin-left: 0; }
-  .record { flex-wrap: wrap; }
-}
-@media (prefers-reduced-motion: reduce) { li.card { transition: none; } li.card:hover { transform: none; } }
 </style>
 </head>
 <body>
 <main>
-  <div class="brand"><span class="orb" aria-hidden="true"></span>FortuneTeller</div>
-  <h1>Fortuneteller predicts:</h1>
-  <p class="lede">Two kinds of forecast. <b>Tested on the past:</b> where a market went the same way
-  most of the time over a stretch of time, and that kept coming true when tested on history, the
-  fortune teller says it will again. <b>Our guess:</b> a hunch from today's news, with no record
-  behind it yet. Each tells which way, not by how much. Every one is kept and checked when its
-  time is up, and the two are scored apart. <b>For fun, not financial advice.</b></p>
-  <p id="tally" class="tally"></p>
+  <h1>Fortuneteller <span>predicts:</span></h1>
+  <p class="sub">Where markets go next, from history and today's news. Every forecast is checked when its time is up.</p>
+  <details class="how">
+    <summary>How it works</summary>
+    <p><b>Tested on the past:</b> where a market went the same way most of the time over a stretch
+    of time, and that kept coming true when tested on history, the fortune teller says it will
+    again.</p>
+    <p><b>Our guess:</b> a hunch from today's news, with no record behind it yet.</p>
+    <p>Each says which way, not by how much. Every one is kept and checked when its time is up,
+    and the two kinds are scored apart. For fun, not financial advice.</p>
+  </details>
+  <ul id="tally" class="tally"></ul>
   <ol id="predictions"></ol>
   <footer>
     <span id="written"></span>
-    <span>For fun, not financial advice. <a href="../scoreboard/">See every number behind it</a>.</span>
+    <span><a href="stats/">Every guess and how it turned out</a> · <a href="../scoreboard/">Every number behind the tested forecasts</a></span>
+    <span>For fun, not financial advice.</span>
   </footer>
 </main>
-<script id="data" type="application/json">{"written": "2026-11-22", "guesses": [{"guess": true, "until": "2026-12-31", "when": "Our guess, made Sun, Nov 22, 2026", "event": "The dollar will buy fewer Japanese yen on December 31, 2026 than on November 20, 2026.", "outcome": "the dollar against the Japanese yen lower on Thu, Dec 31, 2026 than on Fri, Nov 20, 2026", "direction": "down", "record": "Why: The yen is near 160 per dollar even after close to 100 billion dollars of intervention. A Reuters poll found 86 of economists expect the Bank of Japan to raise rates to 1.50 at its December 17-18 meeting, and Governor Ueda says the bank should keep raising. A rate hike, a government ready to step in again and a nervous stock market all tend to strengthen the yen. I am wrong if the dollar buys more yen at year end than on November 20, for example because the Bank of Japan holds rates or the Fed's hike widens the gap between US and Japanese rates.", "note": "", "link": "", "source": "https://investinglive.com/central-banks/boj-tipped-to-hike-to-1-50-in-december-its-first-three-hike-year-in-37-years/"}, {"guess": true, "until": "2027-01-15", "when": "Our guess, made Sun, Nov 22, 2026", "event": "The stock market's fear gauge will be lower on January 15, 2027 than at Friday's close near 36.", "outcome": "the stock market's fear gauge lower on Fri, Jan 15, 2027 than on Fri, Nov 20, 2026", "direction": "down", "record": "Why: The VIX closed near 36 on November 20 after the S&P 500 fell into a correction and Nvidia lost about 14 in a single day. Readings this high rarely last for weeks, because fear tends to fade once the selling slows, even when prices do not fully recover. I expect it well below 30 by mid-January. I am wrong if the VIX closes on January 15 above Friday's close, for example because the SEC look at Nvidia's accounting grows into a wider crisis or a Fed hike sets off another leg down.", "note": "", "link": "", "source": "https://www.stocktitan.net/articles/stock-market-today-live-november-20-2026"}], "guess_tally": {"came_true": 0, "did_not": 0, "open": 12}, "stated": [{"stated": true, "day": null, "until": "2026-12-21", "when": "Stated Sat, Nov 21, 2026 · checked after the close on Mon, Dec 21, 2026", "event": "The US stock market, over the next month", "outcome": "higher on Mon, Dec 21, 2026 than on Fri, Nov 20, 2026", "direction": "up", "record": "Tested on 666 past months, one at a time, this held 402 times and failed 264 times.", "note": "It goes the way most past months went. It says nothing about how far.", "link": ""}, {"stated": true, "day": null, "until": "2026-12-21", "when": "Stated Sat, Nov 21, 2026 · checked after the close on Mon, Dec 21, 2026", "event": "US tech stocks, over the next month", "outcome": "higher on Mon, Dec 21, 2026 than on Fri, Nov 20, 2026", "direction": "up", "record": "Tested on 658 past months, one at a time, this held 408 times and failed 250 times.", "note": "It goes the way most past months went. It says nothing about how far.", "link": ""}, {"stated": true, "day": null, "until": "2027-08-01", "when": "Stated Sat, Nov 21, 2026 · checked when August 2027's figure is out", "event": "US home prices, in the 12 months after August 2026", "outcome": "higher in August 2027 than in August 2026", "direction": "up", "record": "Tested on 34 past years, one at a time, this held 29 times and failed 5 times.", "note": "It goes the way most past years went. It says nothing about how far.", "link": ""}], "tally": {"came_true": 0, "did_not": 0, "open": 3}, "kept_since": "2026-11-21"}</script>
+<script id="data" type="application/json">{"written": "2026-11-22", "guesses": [{"guess": true, "market": "USDJPY", "made": "2026-11-22", "why": "The yen is near 160 per dollar even after close to 100 billion dollars of intervention. A Reuters poll found 86 of economists expect the Bank of Japan to raise rates to 1.50 at its December 17-18 meeting, and Governor Ueda says the bank should keep raising. A rate hike, a government ready to step in again and a nervous stock market all tend to strengthen the yen. I am wrong if the dollar buys more yen at year end than on November 20, for example because the Bank of Japan holds rates or the Fed's hike widens the gap between US and Japanese rates.", "until": "2026-12-31", "when": "Our guess, made Sun, Nov 22, 2026", "event": "The dollar will buy fewer Japanese yen on December 31, 2026 than on November 20, 2026.", "outcome": "the dollar against the Japanese yen lower on Thu, Dec 31, 2026 than on Fri, Nov 20, 2026", "direction": "down", "record": "Why: The yen is near 160 per dollar even after close to 100 billion dollars of intervention. A Reuters poll found 86 of economists expect the Bank of Japan to raise rates to 1.50 at its December 17-18 meeting, and Governor Ueda says the bank should keep raising. A rate hike, a government ready to step in again and a nervous stock market all tend to strengthen the yen. I am wrong if the dollar buys more yen at year end than on November 20, for example because the Bank of Japan holds rates or the Fed's hike widens the gap between US and Japanese rates.", "note": "", "link": "", "source": "https://investinglive.com/central-banks/boj-tipped-to-hike-to-1-50-in-december-its-first-three-hike-year-in-37-years/"}, {"guess": true, "market": "VIX", "made": "2026-11-22", "why": "The VIX closed near 36 on November 20 after the S&P 500 fell into a correction and Nvidia lost about 14 in a single day. Readings this high rarely last for weeks, because fear tends to fade once the selling slows, even when prices do not fully recover. I expect it well below 30 by mid-January. I am wrong if the VIX closes on January 15 above Friday's close, for example because the SEC look at Nvidia's accounting grows into a wider crisis or a Fed hike sets off another leg down.", "until": "2027-01-15", "when": "Our guess, made Sun, Nov 22, 2026", "event": "The stock market's fear gauge will be lower on January 15, 2027 than at Friday's close near 36.", "outcome": "the stock market's fear gauge lower on Fri, Jan 15, 2027 than on Fri, Nov 20, 2026", "direction": "down", "record": "Why: The VIX closed near 36 on November 20 after the S&P 500 fell into a correction and Nvidia lost about 14 in a single day. Readings this high rarely last for weeks, because fear tends to fade once the selling slows, even when prices do not fully recover. I expect it well below 30 by mid-January. I am wrong if the VIX closes on January 15 above Friday's close, for example because the SEC look at Nvidia's accounting grows into a wider crisis or a Fed hike sets off another leg down.", "note": "", "link": "", "source": "https://www.stocktitan.net/articles/stock-market-today-live-november-20-2026"}], "guess_tally": {"came_true": 0, "did_not": 0, "open": 12}, "stated": [{"stated": true, "market": "SPY / ES", "day": null, "until": "2026-12-21", "when": "Stated Sat, Nov 21, 2026 · checked after the close on Mon, Dec 21, 2026", "event": "The US stock market, over the next month", "outcome": "higher on Mon, Dec 21, 2026 than on Fri, Nov 20, 2026", "direction": "up", "record": "Tested on 666 past months, one at a time, this held 402 times and failed 264 times.", "right": 402, "called": 666, "unit": "past months", "note": "It goes the way most past months went. It says nothing about how far.", "link": ""}, {"stated": true, "market": "COMP", "day": null, "until": "2026-12-21", "when": "Stated Sat, Nov 21, 2026 · checked after the close on Mon, Dec 21, 2026", "event": "US tech stocks, over the next month", "outcome": "higher on Mon, Dec 21, 2026 than on Fri, Nov 20, 2026", "direction": "up", "record": "Tested on 658 past months, one at a time, this held 408 times and failed 250 times.", "right": 408, "called": 658, "unit": "past months", "note": "It goes the way most past months went. It says nothing about how far.", "link": ""}, {"stated": true, "market": "US home prices", "day": null, "until": "2027-08-01", "when": "Stated Sat, Nov 21, 2026 · checked when August 2027's figure is out", "event": "US home prices, in the 12 months after August 2026", "outcome": "higher in August 2027 than in August 2026", "direction": "up", "record": "Tested on 34 past years, one at a time, this held 29 times and failed 5 times.", "right": 29, "called": 34, "unit": "past years", "note": "It goes the way most past years went. It says nothing about how far.", "link": ""}], "tally": {"came_true": 0, "did_not": 0, "open": 3}, "kept_since": "2026-11-21"}</script>
 <script>
 (function () {
   const data = JSON.parse(document.getElementById('data').textContent);
@@ -154,48 +141,121 @@ footer a { color: var(--accent); }
     if (cls) node.className = cls;
     return node;
   };
+  const MARKETS = {
+    'SPY / ES': ['📈', 'US stock market'], 'COMP': ['💻', 'US tech stocks'],
+    'US home prices': ['🏠', 'US home prices'], 'GC / XAU': ['🥇', 'Gold'], 'BRN': ['🛢️', 'Oil'],
+    'UGA': ['⛽', 'US gasoline'], 'UNG': ['🔥', 'US natural gas'], 'DXY': ['💵', 'US dollar'],
+    'EURUSD': ['💶', 'Euro vs dollar'], 'GBPUSD': ['💷', 'British pound vs dollar'],
+    'USDJPY': ['💴', 'The dollar in Japanese yen'], 'UST10Y / ZN': ['🏛️', 'US 10-year interest rate'],
+    'UST5Y / ZF': ['🏛️', 'US 5-year interest rate'], 'T5YIE': ['🛒', 'Expected US inflation'],
+    'VIX': ['😨', 'Market fear gauge'], 'XLE': ['⚡', 'US energy stocks'],
+    'XLU': ['💡', 'US power and water stocks'], 'ITB': ['🏗️', 'US homebuilder stocks'],
+    'ITA': ['🛡️', 'US defence stocks'], 'BTC': ['₿', 'Bitcoin'], 'ETH': ['💎', 'Ether'],
+    'COIN': ['🪙', 'Coinbase shares'], 'NKY': ['🗾', 'Japanese stocks'], 'DAX': ['🇩🇪', 'German stocks'],
+    'UKX': ['🇬🇧', 'British stocks'], 'SX5E': ['🇪🇺', 'European stocks'], 'SXXP': ['🇪🇺', 'European stocks'],
+    'CORN': ['🌽', 'Corn'], 'WEAT': ['🌾', 'Wheat'], 'SOYB': ['🫘', 'Soybeans'], 'KC': ['☕', 'Coffee'],
+    'ALL': ['🏢', 'Allstate shares'],
+  };
+  const HINTS = {
+    'VIX': 'A number that rises when investors are scared and falls when they calm down.',
+    'USDJPY': 'How many Japanese yen one US dollar buys.',
+    'EURUSD': 'How many US dollars one euro buys.', 'GBPUSD': 'How many US dollars one pound buys.',
+    'DXY': 'The US dollar against other big currencies.',
+    'UST10Y / ZN': 'The interest the US government pays to borrow for 10 years.',
+    'UST5Y / ZF': 'The interest the US government pays to borrow for 5 years.',
+    'T5YIE': 'How fast investors expect prices in shops to rise over the next 5 years.',
+    'COMP': 'The Nasdaq: big US technology companies.', 'SPY / ES': 'The S&P 500: the 500 biggest US companies.',
+    'US home prices': 'Typical US home prices across the whole country.',
+  };
   const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+  const thisYear = today.slice(0, 4);
+  const at = (iso) => new Date(iso + 'T12:00:00Z');
+  const short = (iso, monthOnly) => at(iso).toLocaleDateString('en-US', Object.assign(
+    { month: 'short', timeZone: 'UTC' },
+    monthOnly ? { year: 'numeric' } : { day: 'numeric' },
+    !monthOnly && iso.slice(0, 4) !== thisYear ? { year: 'numeric' } : {}));
+  const left = (iso) => {
+    const days = Math.round((at(iso) - at(today)) / 86400000);
+    if (days <= 0) return 'checked tonight';
+    if (days === 1) return '1 day left';
+    if (days < 60) return days + ' days left';
+    return 'about ' + Math.round(days / 30.4) + ' months left';
+  };
+  const cap = (t) => t ? t[0].toUpperCase() + t.slice(1) : t;
   // The tested forecasts, then our guesses, whose span has not ended on New York's day; five at most.
   const open = (p) => !p.until || p.until >= today;
   const shown = (data.stated || []).filter(open).concat((data.guesses || []).filter(open)).slice(0, 5);
   const list = document.getElementById('predictions');
-  const dayName = (iso) => new Date(iso + 'T12:00:00Z').toLocaleDateString('en-US',
-    { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' });
   if (!shown.length) list.appendChild(el('li', 'Nothing passed our tests today, so the fortune teller keeps quiet.', 'empty'));
   shown.forEach((p) => {
-    const card = el('li', null, 'card');
-    if (p.stated) card.classList.add('stated');
-    if (p.guess) card.classList.add('guess');
-    card.appendChild(el('div', p.when || ((p.day ? dayName(p.day) : 'Whenever it happens') + (p.time ? ' · ' + p.time : '')), 'when'));
-    card.appendChild(el('div', p.event, 'event'));
-    const say = el('p', null, 'say');
-    say.appendChild(el('span', (p.direction === 'up' ? '▲ ' : '▼ ') + p.outcome, 'then ' + p.direction));
-    card.appendChild(say);
-    if (p.note) card.appendChild(el('p', p.note, 'note'));
-    const record = el('div', null, 'record');
-    record.appendChild(el('span', p.record));
+    const [icon, name] = MARKETS[p.market] || ['🔮', p.event];
+    const monthly = p.market === 'US home prices';
+    const card = el('li', null, 'card ' + p.direction + (p.guess ? ' guess' : ' stated'));
+    card.appendChild(el('div', icon, 'icon'));
+    card.lastChild.setAttribute('aria-hidden', 'true');
+    card.appendChild(el('div', p.guess ? 'Our guess · made ' + short(p.made) : 'Tested on the past', 'kind'));
+    const top = el('div', null, 'top');
+    top.appendChild(el('h2', name, 'market'));
+    if (p.until) {
+      top.appendChild(el('span', (p.direction === 'up' ? '▲ Higher' : '▼ Lower') + (monthly ? ' in ' : ' on ') + short(p.until, monthly), 'badge'));
+    }
+    card.appendChild(top);
+    if (HINTS[p.market]) card.appendChild(el('p', HINTS[p.market], 'hint'));
+    card.appendChild(el('p', p.guess ? p.event : 'Will be ' + p.outcome + '.', 'say'));
+    const meta = el('div', null, 'meta');
+    if (p.until) {
+      const when = el('span', '⏳ ');
+      when.appendChild(el('b', monthly ? 'checked when the ' + short(p.until, true) + ' figure comes out' : left(p.until)));
+      meta.appendChild(when);
+    }
+    const tenths = p.called ? Math.round(10 * p.right / p.called) : null;
+    meta.appendChild(el('span', p.guess ? 'A guess with no record yet: scored when its time is up'
+      : tenths !== null ? '📊 In the past it came true about ' + tenths + ' times in 10 (' + p.right.toLocaleString('en-US')
+        + ' of ' + p.called.toLocaleString('en-US') + ' ' + p.unit + ')' : '📊 ' + p.record));
+    card.appendChild(meta);
+    if (p.guess) {
+      const why = p.why || '';
+      const cut = why.search(/[.!?](\s|$)/);
+      const first = cut >= 0 ? why.slice(0, cut + 1) : why;
+      card.appendChild(el('p', 'Why: ' + first, 'why'));
+      const rest = why.slice(first.length).trim();
+      if (rest) {
+        const more = el('details', null, 'more');
+        more.appendChild(el('summary', 'Full reasoning'));
+        more.appendChild(el('p', rest));
+        card.appendChild(more);
+      }
+    } else if (p.note) {
+      card.appendChild(el('p', p.note, 'why'));
+    }
+    const links = el('div', null, 'links');
     if (p.source) {
       const news = el('a', 'The news');
       news.href = p.source;
       news.rel = 'noopener nofollow';
-      record.appendChild(news);
+      links.appendChild(news);
     }
     if (p.link) {
       const link = el('a', 'See every past case');
       link.href = '../scoreboard/' + p.link;
-      record.appendChild(link);
+      links.appendChild(link);
     }
-    card.appendChild(record);
+    if (links.childNodes.length) card.appendChild(links);
     list.appendChild(card);
   });
-  document.getElementById('written').textContent = 'Updated ' + data.written + ', each weekday evening.';
-  const line = (name, t) => name + ': ' + t.came_true + ' came true, ' + t.did_not + ' did not, '
-    + t.open + ' still open.';
-  const tallies = [];
-  if (data.tally && data.kept_since) tallies.push(line('Tested on the past, since ' + data.kept_since, data.tally));
+  document.getElementById('written').textContent = 'Updated ' + at(data.written).toLocaleDateString('en-US',
+    { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' }) + '. New guesses each weekday evening.';
+  const chip = (name, t) => name + ': ' + t.open + ' open · ' + t.came_true + ' right · ' + t.did_not + ' wrong';
+  const tally = document.getElementById('tally');
+  if (data.tally && data.kept_since) tally.appendChild(el('li', chip('📊 Tested', data.tally)));
   const g = data.guess_tally;
-  if (g && g.came_true + g.did_not + g.open) tallies.push(line('Our guesses', g));
-  document.getElementById('tally').textContent = tallies.join('\n');
+  if (g && g.came_true + g.did_not + g.open) {
+    const item = el('li');
+    const all = el('a', chip('🔮 Guesses', g) + ' · see all');
+    all.href = 'stats/';
+    item.appendChild(all);
+    tally.appendChild(item);
+  }
 })();
 </script>
 </body>
