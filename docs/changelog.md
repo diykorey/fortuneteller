@@ -6,7 +6,7 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-11-22 | Step 52, step 1: the Canadian dollar and Toronto's S&P/TSX as markets, unsigned; the Bank of Canada's target rate changes since 2008 as a seed; every existing row unchanged | PR to come |
+| 2026-11-22 | Step 52, step 1: the Canadian dollar and Toronto's S&P/TSX as markets, unsigned; the Bank of Canada's target rate changes since 2008 as a seed; every existing row unchanged | [#412](https://github.com/diykorey/fortuneteller/pull/412) |
 | 2026-11-22 | One card per area on the front page (eight areas); the date badge wraps on a narrow phone, checked at 300 pixels | [#410](https://github.com/diykorey/fortuneteller/pull/410) |
 | 2026-11-22 | The scoreboard in the bright cards' design, with a link back to the predictions page; only the styles changed | [#409](https://github.com/diykorey/fortuneteller/pull/409) |
 | 2026-11-22 | The site's bare address opens the predictions page instead of the scoreboard | [#408](https://github.com/diykorey/fortuneteller/pull/408) |

@@ -24,7 +24,11 @@ stocks).
   Rate`, a quarter at a time, as the BoJ's. Read 2026-11-22: 152 decisions from 2008-01-22 to
   2026-09-02, announced at 10:00 Toronto (09:45 from 2023), before New York's and Toronto's close:
   every New York market and Toronto react the same day; the currencies, whose close is 00:00
-  London, the next day, as for every event.
+  London, the next day, as for every event. (*Amended 2026-11-22, after step 1 read the calendar's
+  hours:* 09:00 Toronto to 2012, 10:00 from 2013, 09:45 from 2024; every one before New York's
+  and Toronto's close, so no reaction day changes. 2020-03-13's cut carries the calendar's 11:00;
+  the Bank's pages give no hour and its notes point to the afternoon, so Europe's reaction to that
+  one cut may be read a day early: a known miss.)
 - **The kind, from the Bank's own history,** as the BoE's: the Bank of Canada's published target
   for the overnight rate, every change from 2008-01-01, copied into `data/seed/boc-changes.csv`
   (`day,time,rate`, `time` the Toronto hour of the Bank's announcement; its daily series, Valet
@@ -61,8 +65,11 @@ stocks).
   week within 0.05% of the bar at the close time; a miss is written here with its cause, and a
   close time it shows wrong is fixed before step 2. Both are in the guesser's list and their
   areas, `USDCAD` currencies and `TSX` stocks. **Unsigned,** as step 25's three are, so no live
-  link is added. Europe's and Tokyo's markets react as to any event at that hour: the Bank's 10:00
-  and inflation's 08:30 Toronto are after Europe's close and Tokyo's, so they react the next day.
+  link is added. Europe's and Tokyo's markets react as to any event at that hour: the Bank's hour and
+  inflation's 08:30 Toronto are after Tokyo's close, so Tokyo reacts the next day; Europe closes at
+  11:30 Toronto, after both, so it reacts the same day (*amended 2026-11-22, after step 1:* this
+  read "after Europe's close"; the code places each event by its hour, so only the words were
+  wrong).
 - **Step 17's method, unchanged:** the spans, the base, the answers, the placebo, walk-forward and
   its bars, the chance line, both runs (from the close before, and `--after-the-day`).
 - **Canada's jobs report is left out:** it is published at 08:30 on the same Friday as the US
@@ -73,7 +80,9 @@ stocks).
 - The sources, the kinds, the hours and step 17's bars, unchanged by what the run shows.
 - **Expected outcome, written first:**
   - The headers: `follows: 152 BoC decisions 2008-03-04 … 2026-09-02: 22 cuts, 112 holds, 18
-    hikes` (with any later decision `load-releases` reads added), and for inflation its counts on
+    hikes` (with any later decision `load-releases` reads added; *amended 2026-11-22, after step
+    1, before step 2:* the calendar now lists the hike of 2026-10-28, so `follows: 153 BoC
+    decisions 2008-03-04 … 2026-10-28: 22 cuts, 112 holds, 19 hikes`), and for inflation its counts on
     its 187 days alone, written in step 3 before its table is read.
   - Arithmetic, not a finding: an answer needs 10 events of a kind, and a cell holds only with 30
     graded walk-forward, each after ten earlier ones. So the Bank's cuts (22) and hikes (18) may
