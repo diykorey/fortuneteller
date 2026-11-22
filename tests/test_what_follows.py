@@ -1594,3 +1594,101 @@ def test_follows_for_the_boc_prints_its_table_and_the_page_s_cells_are_its_lines
         assert str(cell["say"]).startswith(f"After {cli.ASK_DECISIONS['boc'][line['kind']]},")
         assert "%" not in str(cell["say"])
     assert [k["events"] for k in boc["kinds"]] == [cuts, holds, hikes]  # type: ignore[index]
+
+
+CACPI = flows.CA_CPI_FLOW
+
+
+def _store_cacpi(prints: Mapping[date, tuple[float, float]]) -> list[flows.EventInstance]:
+    # a Canadian CPI release at 08:30 Toronto on each day, with its actual and TradingView's
+    # forecast, and its surprise row as `load-surprises` stores it
+    db.init_db()
+    events = [
+        CACPI.event_instance(datetime.combine(day, time(8, 30), tzinfo=flows.TORONTO), day)
+        for day in prints
+    ]
+    db.insert_models("event_instances", events)
+    db.insert_models(
+        "surprises",
+        [
+            Surprise(
+                event_id=e.event_id,
+                measure=sources.CA_CPI,
+                baseline="tradingview_forecast",
+                actual_mom=actual,
+                expected_mom=forecast,
+                surprise=actual - forecast,
+            )
+            for e, (actual, forecast) in zip(events, prints.values(), strict=True)
+        ],
+    )
+    return events
+
+
+def test_a_canadian_cpi_release_on_a_us_release_s_day_is_left_out_of_its_kinds(
+    tmp_db: Path,
+) -> None:
+    # given three Canadian CPI releases, above, as expected and below, and a US CPI release on the
+    # day of the first
+    days = [date(2024, 1, 16), date(2024, 2, 20), date(2024, 3, 19)]
+    events = _store_cacpi(dict(zip(days, [(3.4, 3.3), (2.9, 2.9), (2.8, 2.9)], strict=True)))
+    db.insert_models("event_instances", [_report(days[0], CPI)])
+
+    # when the kinds are read, all of them and the ones on its days alone
+    every = study.release_kinds(CACPI)
+    alone = study.lone_release_kinds(CACPI)
+
+    # then the shared day has its kind but is left out of the lone ones
+    assert [every.get(e.event_id) for e in events] == [ABOVE, AS_EXPECTED, BELOW]
+    assert [alone.get(e.event_id) for e in events] == [None, AS_EXPECTED, BELOW]
+
+
+def test_follows_for_canadian_cpi_leaves_out_a_shared_day_and_the_page_s_cells_are_its_lines(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given two markets' closes and 45 Canadian CPI releases, above, as expected and below in turn,
+    # the first sharing its day with a US retail sales release
+    two = {k: study.MVP_PRICE_SERIES[k] for k in ("SPY / ES", "USDCAD")}
+    monkeypatch.setattr(study, "MVP_PRICE_SERIES", two)
+    rng = random.Random(5)
+    closes = _closes([rng.gauss(0, 0.005) for _ in range(1400)])
+    keys = list(range(30, 1380, 30))
+    db.init_db()
+    db.get_connection().executemany(
+        "INSERT INTO daily_bars (instrument, day, close, source) VALUES (?, ?, ?, 'test')",
+        [[m, c.day, c.price] for m in two for c in closes],
+    )
+    prints = ((2.3, 2.2), (2.2, 2.2), (2.2, 2.3))
+    _store_cacpi({closes[k].day: prints[j % 3] for j, k in enumerate(keys)})
+    db.insert_models("event_instances", [_report(closes[keys[0]].day, RETAIL)])
+
+    # when follows prints the table and the page's data is built
+    assert main(["follows", "--event", "cacpi"]) == 0
+    out = capsys.readouterr().out.splitlines()
+    printed = [FOLLOWS_LINE.match(line) for line in out[2:-1]]
+    ask = cli.ask_data(db.get_connection())
+
+    # then the header counts the 44 releases alone, the shared one an above left out, and every
+    # line has one cell on the page, equal field by field
+    first, last = closes[keys[1]].day, closes[keys[-1]].day
+    assert out[0] == (
+        f"follows: 44 Canadian CPI releases {first} … {last}: 14 above, 15 as expected, 15 below"
+    )
+    (cacpi,) = [entry for entry in ask["ask"] if entry["name"] == "cacpi"]
+    cells = {(c["kind"], c["span"], c["market"]): c for c in cacpi["cells"]}  # type: ignore[union-attr]
+    assert len(printed) == len(cells) == 3 * 3 * 2
+    for line in printed:
+        assert line is not None
+        cell = cells[(line["kind"], line["span"], line["market"])]
+        assert [cell["up"], cell["same"], cell["down"]] == [
+            int(line["up"]),
+            int(line["same"]),
+            int(line["down"]),
+        ]
+        shares = [cell["base_up"], cell["base_same"], cell["base_down"]]
+        assert "/".join(f"{s:.2f}" for s in shares) == line["base"]
+        assert (cell["answer"], cell["verdict"]) == (line["answer"], line["verdict"])
+        assert (cell["graded"], cell["right"]) == (int(line["graded"]), int(line["right"]))
+        assert str(cell["say"]).startswith(f"After {cli.ask_kind('cacpi', line['kind'])},")
+        assert "%" not in str(cell["say"])
+    assert [k["events"] for k in cacpi["kinds"]] == [14, 15, 15]  # type: ignore[index]

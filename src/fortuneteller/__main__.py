@@ -630,6 +630,7 @@ FOLLOWS_NOUNS = {
     "earnings500": "S&P 500 earnings reports",
     "splits": "stock splits",
     "boc": "BoC decisions",
+    "cacpi": "Canadian CPI releases",
 }
 
 
@@ -726,7 +727,10 @@ def follows_kinds(
         if not api_key:
             raise FollowsUnavailable("FT_FRED_API_KEY is not set (see docs/accounts.md)")
         return events, study.fed_kinds(events, dict(flows.target_rates(api_key))), study.KINDS
-    kinds = study.release_kinds(flow, con=con)
+    if flow is flows.CA_CPI_FLOW:
+        kinds = study.lone_release_kinds(flow, con=con)
+    else:
+        kinds = study.release_kinds(flow, con=con)
     if not kinds:
         raise FollowsUnavailable(
             f"no surprises for {flow.cli_name} yet; run `fortuneteller load-surprises` first"
@@ -866,6 +870,8 @@ def _triggers(_args: argparse.Namespace) -> int:
                 kinds[name] = study.detail_kinds(events[name])
             elif name in study.ONE_KIND:
                 kinds[name] = study.one_kind(flow, events[name])
+            elif flow is flows.CA_CPI_FLOW:
+                kinds[name] = study.lone_release_kinds(flow, con=con)
             else:
                 kinds[name] = study.release_kinds(flow, con=con)
         closes = {m: study.stored_closes(m, con=con) for m in study.MVP_PRICE_SERIES}
@@ -2032,6 +2038,7 @@ ASK_RELEASES = {
     "retail": "a retail sales release",
     "cpi": "a CPI release",
     "claims": "a jobless claims report",
+    "cacpi": "a Canadian CPI release",
 }
 ASK_SURPRISE = {
     study.ABOVE: "above the consensus",

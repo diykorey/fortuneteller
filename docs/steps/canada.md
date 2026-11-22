@@ -83,7 +83,11 @@ stocks).
     hikes` (with any later decision `load-releases` reads added; *amended 2026-11-22, after step
     1, before step 2:* the calendar now lists the hike of 2026-10-28, so `follows: 153 BoC
     decisions 2008-03-04 … 2026-10-28: 22 cuts, 112 holds, 19 hikes`), and for inflation its counts on
-    its 187 days alone, written in step 3 before its table is read.
+    its 187 days alone, written in step 3 before its table is read (*amended 2026-11-22, in step 3,
+    before the table was read:* `load-releases` now reads 227 releases to 2026-11-16, the two of
+    October and November 2026 added, both alone and both below; so 225 with a kind and 189 alone,
+    the 36 shared unchanged, and the header `follows: 189 Canadian CPI releases 2008-01-25 …
+    2026-11-16: 64 above, 44 as expected, 81 below`).
   - Arithmetic, not a finding: an answer needs 10 events of a kind, and a cell holds only with 30
     graded walk-forward, each after ten earlier ones. So the Bank's cuts (22) and hikes (18) may
     answer on all history but are *too few* walk-forward; only holds (112) and inflation's three
@@ -106,7 +110,7 @@ stocks).
 | --- | --- | --- |
 | 1 | ~~The two markets and the Bank's history~~ **done** 2026-11-22. The two markets and the Bank's history: seed rows, series, `load-prices`, `boc-changes.csv` | `load-prices` stores both; tests: a 10:00 Toronto decision falls on the same day's TSX close and the next day's Canadian dollar close; the closes within 0.05% of the bars, written here; the disagreeing days listed here; on a copy of the store every existing `raw-move`, `follows` and scoreboard row identical, and each chance line before and after written here |
 | 2 | ~~The Bank~~ **done** 2026-11-22. The Bank: flow `boc`, `follows --event boc`, on *Ask*, `boc` a trigger kind (*cut*, *hold*, *hike*) | Tests: a quarter stores its decisions at their UTC time; a change day the calendar lacks is added; a decision's kind is the Bank's change, 2020-03-13 a cut and 2012-01-17 a hold; a `boc` trigger is answered; *Ask*'s `boc` cells equal `follows`', as step 29 checks. On a copy of the store the header as expected, or the difference amended with its date; every other flow's rows unchanged |
-| 3 | Inflation: flow `cacpi`, `follows --event cacpi`, on *Ask*, a trigger kind (*above*, *as expected*, *below*) | Tests: a release's surprise is its actual minus its forecast, its kind *above* from 0.1, a day shared with a US release left out of its table; a `cacpi` trigger is answered; *Ask*'s cells equal `follows`'. The header and its counts written here; every other flow's rows unchanged |
+| 3 | ~~Inflation~~ **done** 2026-11-22. Inflation: flow `cacpi`, `follows --event cacpi`, on *Ask*, a trigger kind (*above*, *as expected*, *below*) | Tests: a release's surprise is its actual minus its forecast, its kind *above* from 0.1, a day shared with a US release left out of its table; a `cacpi` trigger is answered; *Ask*'s cells equal `follows`'. The header and its counts written here; every other flow's rows unchanged |
 | 4 | Results here and in [MVP results](../mvp-results.md), against the expected outcome; the roadmap row | Every judged bullet marked right or wrong with its numbers |
 
 *Step 1, 2026-11-22:* every number is in [the evidence](canada-steps.txt).
@@ -169,6 +173,38 @@ gains the BoC's raw-move entry (37 → 38 events), its raw-move chance 1,078 →
 other entry, and every other flow's *Ask* entry, is the same. On *Ask*, the BoC's 297 cells equal
 `follows --event boc`'s 297 lines field by field. Both runs' tables and walk-forward lines are in
 [the evidence](canada-steps.txt), for step 4 to judge.
+
+*Step 3, 2026-11-22:* on a copy of step 2's store, with Canada's CPI alone loaded (`loaded 227
+Canadian CPI releases, 2008-01-25 … 2026-11-16`, the two of October and November 2026 added by
+TradingView's fourth quarter) and its 225 surprises against TradingView's forecast, `follows
+--event cacpi` prints the header amended above, `follows: 189 Canadian CPI releases 2008-01-25 …
+2026-11-16: 64 above, 44 as expected, 81 below`; the 36 releases with a kind on a US release's
+day are left out. A kind reads the actual at its one decimal, so a print 0.1 off its forecast is
+*above* or *below* whatever the float. Every other flow's `follows` (both runs, and the Fed's
+`--long`) and `raw-move` output, 77 in all, is byte for byte the one before. The scoreboard gains
+inflation's entry (38 → 39 events): its raw-move chance 1,111 → 1,144 cells and its surprise
+chance 396 → 429; walk-forward stays at 82 cells, no market being signed. Every other entry, and
+every other flow's *Ask* entry, is the same. On *Ask*, inflation's 297 cells equal `follows
+--event cacpi`'s 297 lines field by field.
+
+| Run | Answers | Chance line | Walk-forward |
+| --- | --- | --- | --- |
+| From the close before | 2: *as expected*, day, S&P 500 about the same; *below*, week, ether about the same | about 8.9 answers, 0.0 holds | 297 of 297 *too few* (at most 4 graded) |
+| `--after-the-day` | 7: *above*, day, natural gas down; *above*, week, 10-year yield down; *as expected*, day, 10-year yield about the same, FTSE 100 down, STOXX 600 down; *as expected*, week, 10-year yield about the same; *below*, month, natural gas about the same | about 8.9 answers, 0.0 holds | 297 of 297 *too few* (at most 15 graded) |
+
+The Canadian dollar and Toronto's stocks on the day, up / same / down of n, every one *can't say*:
+
+| Kind | Run | USDCAD | TSX |
+| --- | --- | --- | --- |
+| above | close before | 20 / 18 / 26 of 64 | 21 / 18 / 25 of 64 |
+| as expected | close before | 18 / 13 / 13 of 44 | 14 / 17 / 13 of 44 |
+| below | close before | 40 / 20 / 21 of 81 | 33 / 29 / 19 of 81 |
+| above | after the day | 27 / 19 / 18 of 64 | 18 / 24 / 22 of 64 |
+| as expected | after the day | 15 / 16 / 13 of 44 | 13 / 19 / 12 of 44 |
+| below | after the day | 30 / 26 / 25 of 81 | 26 / 24 / 31 of 81 |
+
+`raw-move --event cacpi` reads 189 lone days: the dollar's ratio 1.11 (p 0.14), the TSX's 1.02.
+Both runs' tables are in [the evidence](canada-steps.txt), for step 4 to judge.
 
 ## How you know it is right
 

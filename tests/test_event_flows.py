@@ -895,6 +895,54 @@ def test_a_german_release_is_stored_at_its_frankfurt_time_with_its_surprise(
     ]
 
 
+def test_a_canadian_cpi_release_s_surprise_is_its_actual_less_the_forecast_above_from_0_1(
+    tmp_db: Path, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # given a quarter of Canada's calendar: a print 0.1 over its forecast and one 0.1 under, both
+    # a float's hair inside 0.1 unrounded, one on its forecast, one with no forecast, a row of the
+    # same name on the US calendar and a release not yet out
+    title = sources.TRADINGVIEW_ROWS[sources.CA_CPI].title
+    rows = [
+        _flash_row(title, "2025-01-21T13:30:00.000Z", 2.3, 2.2, country="CA"),
+        _flash_row(title, "2025-02-18T13:30:00.000Z", 2.2, 2.3, country="CA"),
+        _flash_row(title, "2025-03-11T12:30:00.000Z", 2.6, 2.6, country="CA"),
+        _flash_row(title, "2025-03-18T12:30:00.000Z", 2.0, None, country="CA"),
+        _flash_row(title, "2025-01-21T13:30:00.000Z", 9.9, 2.2, country="US"),
+        _flash_row(title, "2025-03-25T12:30:00.000Z", None, 2.4, country="CA"),
+    ]
+    for row, month in zip(rows, ["2024-12", "2025-01", "2025-02", "2025-03"], strict=False):
+        row["referenceDate"] = f"{month}-28T00:00:00Z"
+    _tradingview_quarter(monkeypatch, tmp_path, "CA", rows)
+
+    # when the flow's events are stored, its surprises built and stored, and the kinds read
+    stored, _actuals, surprises = _stored_with_surprises(flows.CA_CPI_FLOW)
+    db.insert_models("surprises", surprises)
+    kinds = study.release_kinds(flows.CA_CPI_FLOW)
+
+    # then four Canadian releases at 08:30 Toronto, a lesser flow; each surprise is the actual less
+    # TradingView's forecast, and the kind is above from 0.1, below from -0.1, as expected between
+    assert flows.CA_CPI_FLOW.lesser
+    assert [(e.event_id, e.country) for e in stored] == [
+        (3920250121, "Canada"),
+        (3920250218, "Canada"),
+        (3920250311, "Canada"),
+        (3920250318, "Canada"),
+    ]
+    assert {e.event_ts.replace(tzinfo=UTC).astimezone(flows.TORONTO).time() for e in stored} == {
+        time(8, 30)
+    }
+    assert [(r.event_id, r.baseline, round(r.surprise, 6)) for r in surprises] == [
+        (3920250121, expectations.TRADINGVIEW_FORECAST, 0.1),
+        (3920250218, expectations.TRADINGVIEW_FORECAST, -0.1),
+        (3920250311, expectations.TRADINGVIEW_FORECAST, 0.0),
+    ]
+    assert kinds == {
+        3920250121: study.ABOVE,
+        3920250218: study.BELOW,
+        3920250311: study.AS_EXPECTED,
+    }
+
+
 def _claims_first_prints(
     monkeypatch: pytest.MonkeyPatch, prints: list[tuple[str, str, str]]
 ) -> None:
