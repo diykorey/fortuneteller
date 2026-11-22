@@ -95,10 +95,58 @@ stocks).
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | The two markets and the Bank's history: seed rows, series, `load-prices`, `boc-changes.csv` | `load-prices` stores both; tests: a 10:00 Toronto decision falls on the same day's TSX close and the next day's Canadian dollar close; the closes within 0.05% of the bars, written here; the disagreeing days listed here; on a copy of the store every existing `raw-move`, `follows` and scoreboard row identical, and each chance line before and after written here |
+| 1 | ~~The two markets and the Bank's history~~ **done** 2026-11-22. The two markets and the Bank's history: seed rows, series, `load-prices`, `boc-changes.csv` | `load-prices` stores both; tests: a 10:00 Toronto decision falls on the same day's TSX close and the next day's Canadian dollar close; the closes within 0.05% of the bars, written here; the disagreeing days listed here; on a copy of the store every existing `raw-move`, `follows` and scoreboard row identical, and each chance line before and after written here |
 | 2 | The Bank: flow `boc`, `follows --event boc`, on *Ask*, `boc` a trigger kind (*cut*, *hold*, *hike*) | Tests: a quarter stores its decisions at their UTC time; a change day the calendar lacks is added; a decision's kind is the Bank's change, 2020-03-13 a cut and 2012-01-17 a hold; a `boc` trigger is answered; *Ask*'s `boc` cells equal `follows`', as step 29 checks. On a copy of the store the header as expected, or the difference amended with its date; every other flow's rows unchanged |
 | 3 | Inflation: flow `cacpi`, `follows --event cacpi`, on *Ask*, a trigger kind (*above*, *as expected*, *below*) | Tests: a release's surprise is its actual minus its forecast, its kind *above* from 0.1, a day shared with a US release left out of its table; a `cacpi` trigger is answered; *Ask*'s cells equal `follows`'. The header and its counts written here; every other flow's rows unchanged |
 | 4 | Results here and in [MVP results](../mvp-results.md), against the expected outcome; the roadmap row | Every judged bullet marked right or wrong with its numbers |
+
+*Step 1, 2026-11-22:* every number is in [the evidence](canada-steps.txt).
+
+- **The Bank's history:** 42 changes of the target for the overnight rate, 2008-01-22 to
+  2026-10-28, in `data/seed/boc-changes.csv`: from 2009-04-21 the Bank's daily series (Valet
+  `V39079`), each change on the calendar's decision of its day or the business day before (Valet
+  gives the effective day from 2022, and 2020-03-16 for the cut announced 2020-03-13); before it
+  the calendar's rows, each of the nine rates of 2008 and 2009 as the calendar gives them, and the
+  unscheduled cut of 2008-10-08 (to 2.50% from 3.00%, 07:00 Toronto). Every Valet change falls on
+  a calendar decision. The calendar now also lists 2026-10-28, a hike to 2.50%, after the spec's
+  reading: with the Bank's changes, 22 cuts, 112 holds and 19 hikes to it; to 2026-09-02, 153
+  decisions with 22 cuts, 112 holds and 18 hikes, as written above.
+- **The disagreeing days:** exactly the 16 expected: 2008-10-08, a cut the calendar lacks, and
+  the 15 decisions with no rate from 2012-01-17 to 2013-10-23, holds by the Bank's history.
+- **The hours:** `time` is the calendar's Toronto hour: 09:00 to 2012, 10:00 from 2013 to 2023,
+  09:45 from 2024, not "10:00 (09:45 from 2023)" as written above; every one is before New York's
+  and Toronto's close, so no reaction day of those markets changes. The calendar gives the
+  emergency cuts 11:00 (2020-03-13) and 09:00 (2020-03-27); the Bank's pages give no hour. Its
+  summary of deliberations has the decision taken after a morning meeting and announced "later
+  that same day", and ING's note of that day says "this afternoon": with Europe's close at 12:30
+  Toronto that week (America's clocks had changed, Europe's not), an afternoon hour would put
+  Europe's reaction on the next day, the calendar's 11:00 on the same day. Left as the calendar
+  gives it, a possible known miss for step 2. Also against the text above: the Bank's 09:00 to
+  10:00 and inflation's 08:30 Toronto are *before* Europe's close (11:30 Toronto), so Europe's
+  markets react the same day, not the next; the code places each by its hour, so only the words
+  are wrong.
+- **The closes**, against Yahoo's 5-minute bars of 2026-11-09 to 2026-11-20: the Canadian dollar's
+  daily close is the 00:00 London bar's open within 0.017% on all ten days; Toronto's is its last
+  bar's close, 15:55 to 16:00, within 0.046% (0.000% to 0.046%). Both within 0.05%.
+- **On a copy of the store** (closes to 2026-11-19), with the two markets' closes loaded alone
+  (`USDCAD` 6,028 from 2003-09-17, `TSX` 11,900 from 1979-06-29): every existing row of every
+  flow's `raw-move` (37 events) and `follows` (18 flows, both runs, and the Fed's `--long`), and
+  every scoreboard entry, is byte for byte the one before; each output gains the two markets' rows.
+  Only the chance lines change, by the added cells: the scoreboard's raw-move chance 1,011 → 1,078
+  cells (10.11 → 10.78), its surprise chance 372 → 396 (3.72 → 3.96), walk-forward unchanged at
+  82; `follows`' lines, answers by chance on all history, before → after:
+
+  | Flow | From the close before | From the reaction close |
+  | --- | --- | --- |
+  | Fed | 8.3 → 8.8 (`--long` 2.5 → 2.6) | 8.3 → 8.8 |
+  | jobs report, retail sales, CPI, claims | 8.4 → 8.9 | 8.4 → 8.9 |
+  | ECB | 8.1 → 8.7 | 8.2 → 8.7 |
+  | BoE | 7.8 → 8.4 | 7.8 → 8.4 |
+  | OPEC | 5.5 → 5.9 | 5.6 → 5.9 |
+  | BoJ, crypto | 2.8 → 3.0 | 2.8 → 3.0 |
+  | weather | 2.8 → 2.9 | 2.8 → 2.9 |
+  | war, floods | 2.7 → 2.9 | 2.7 → 2.9 |
+  | CEO scandals, additions, splits, earnings (Dow and S&P 500) | unchanged, 0.1 to 0.3 | unchanged |
 
 ## How you know it is right
 

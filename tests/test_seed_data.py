@@ -112,6 +112,7 @@ def test_seed_dir_has_no_unexpected_csvs() -> None:
         "earnings_sp500.csv",
         "stock_splits.csv",
         "boe-changes.csv",
+        "boc-changes.csv",
         "fomc_sentiment_dictionary.csv",
     }
     # then exactly those files are present
@@ -251,6 +252,42 @@ def test_boe_changes_are_the_bank_s_bank_rate_changes_since_2008() -> None:
     }
     assert "2020-03-26" not in rates
     assert {row["day"]: row["time"] for row in rows}["2020-03-11"] == "07:00"
+
+
+def test_boc_changes_are_the_bank_s_target_rate_changes_since_2008() -> None:
+    # given the committed changes of the Bank of Canada's target for the overnight rate
+    with (settings.seed_dir / "boc-changes.csv").open(newline="", encoding="utf-8") as handle:
+        reader = csv.DictReader(handle)
+        header = reader.fieldnames
+        rows = list(reader)
+
+    # when their days, hours and rates are read
+    days = [date.fromisoformat(row["day"]) for row in rows]
+    rates = {row["day"]: float(row["rate"]) for row in rows}
+    hours = {row["day"]: row["time"] for row in rows}
+
+    # then 42 changes are there once, in order, each a change from the one before; the days
+    # checked by hand carry the Bank's rate, the unscheduled cut of 2008 and the two emergency
+    # cuts of 2020 among them, and no day of the years the rate stood at 1%
+    assert header == ["day", "time", "rate"]
+    assert len(rows) == 42 and len(set(days)) == 42 and days == sorted(days)
+    assert (days[0], days[-1]) == (date(2008, 1, 22), date(2026, 10, 28))
+    values = [float(row["rate"]) for row in rows]
+    assert all(a != b for a, b in zip(values, values[1:], strict=False))
+    checked = ("2008-10-08", "2009-04-21", "2020-03-13", "2020-03-27", "2023-07-12")
+    assert {d: rates[d] for d in checked} == {
+        "2008-10-08": 2.5,
+        "2009-04-21": 0.25,
+        "2020-03-13": 0.75,
+        "2020-03-27": 0.25,
+        "2023-07-12": 5.0,
+    }
+    assert "2012-01-17" not in rates and "2020-03-16" not in rates
+    assert (hours["2008-10-08"], hours["2017-07-12"], hours["2025-10-29"]) == (
+        "07:00",
+        "10:00",
+        "09:45",
+    )
 
 
 def test_tweet_days_are_inside_the_first_term() -> None:

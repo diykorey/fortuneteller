@@ -63,6 +63,10 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **BoJ** (Bank of Japan) — Japan's central bank; its Policy Board sets the short-term policy
   rate eight times a year, announced when the meeting ends, around midday Tokyo
   ([step 25](steps/other-central-banks.md)).
+- **BoC** (Bank of Canada) — *added 2026-11-22* ([Canada](steps/canada.md)): Canada's central
+  bank; its Governing Council sets the target for the overnight rate eight times a year, announced
+  at 09:00 Toronto to 2012, 10:00 to 2023 and 09:45 from 2024. Its daily series of the target is
+  Valet `V39079`; every change from 2008 is in `data/seed/boc-changes.csv`.
 - **CPI** (Consumer Price Index) — the main US inflation measure, published monthly by the
   **BLS**, usually 8:30 a.m. New York time. The MVP's single event type: frequent, scheduled,
   heavily forecast, and reliably market-moving.
@@ -229,6 +233,8 @@ Terms are grouped by what they are about, alphabetical within each group.
   the clock and therefore reacts to releases outside US stock-market hours.
 - **GBPUSD** — the pound in dollars; *up* is the pound stronger (step 25).
 - **USDJPY** — dollars in yen, Yahoo's `JPY=X`; *up* is the yen weaker (step 25).
+- **USDCAD** — *added 2026-11-22*: dollars in Canadian dollars, Yahoo's `CAD=X`, closed as the
+  euro is, at 00:00 London; *up* is the Canadian dollar weaker ([Canada](steps/canada.md)).
 - **EURUSD** — the euro in dollars, the dollar index's largest weight (58%), so mostly its mirror;
   it takes the dollar index's expected sign reversed. Yahoo's `EURUSD=X`, whose daily close is the
   price at 00:00 London of the bar's own day, so the bar after a US release is the next London
@@ -276,6 +282,9 @@ Terms are grouped by what they are about, alphabetical within each group.
   systemic-stress signal.
 - **SXXP** (STOXX Europe 600) — 600 companies across Europe, computed in Zurich, closing 17:30
   there. Yahoo's `^STOXX`. Takes the DAX's expected sign.
+- **TSX** (S&P/TSX Composite) — *added 2026-11-22* ([Canada](steps/canada.md)): Toronto's main
+  stock index, Canada's largest listed companies, as Yahoo's `^GSPTSE`, closing at 16:00 Toronto
+  (New York's hour and zone). No expected sign.
 - **Ticker / symbol** — the short code identifying an instrument (`SPY`, `^VIX`). **These strings
   are load-bearing here** — they are join keys between seed data, measurements, and predictions, so
   drift silently breaks lookups.
@@ -300,7 +309,7 @@ Terms are grouped by what they are about, alphabetical within each group.
   canonical symbol. Step 2 maps five: `^GSPC` (S&P 500 index), `^TNX`, `DX-Y.NYB` (dollar index),
   `GC=F` (gold futures), `^VIX`; cross-country two, `^GDAXI` and `^STOXX50E`; more outcomes nine,
   `BZ=F`, `EURUSD=X`, `^IXIC`, `^FVX`, `^FTSE`, `^STOXX`, `BTC-USD`, `ITA` and `XLE`; the markets
-  people feel seven, each its own symbol; coffee `KC=F`; step 25 `GBPUSD=X`, `JPY=X` and `^N225`; step 27 `ETH-USD` and `COIN`; step 28 `ALL`. FRED's series for the breakeven is
+  people feel seven, each its own symbol; coffee `KC=F`; step 25 `GBPUSD=X`, `JPY=X` and `^N225`; step 27 `ETH-USD` and `COIN`; step 28 `ALL`; step 52 `CAD=X` and `^GSPTSE`. FRED's series for the breakeven is
   stored as `fred:T5YIE`.
 - **XLE** — the Energy Select Sector SPDR ETF, the US energy sector; oil's equity echo. Closes
   16:00 New York; no expected sign.

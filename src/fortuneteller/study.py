@@ -93,6 +93,8 @@ class PriceSeries(NamedTuple):
 # Coffee (docs/steps/coffee.md) is `KC=F`, ICE's arabica front month, at its 13:30 settlement.
 # The pound and the yen (docs/steps/other-central-banks.md) are stamped as the euro is; the
 # Nikkei 225 closes at 15:30 Tokyo, 15:00 before 2024-11-05, a known miss written in the spec.
+# The Canadian dollar (docs/steps/canada.md) is stamped as the euro is; Toronto's S&P/TSX closes
+# at 16:00 Toronto, New York's zone.
 # A `fred:` ticker is FRED's series: the breakeven (docs/steps/breakeven.md), read at 15:30, the
 # time of the bid quotes the Treasury builds its daily curve from.
 MVP_PRICE_SERIES = {
@@ -127,6 +129,8 @@ MVP_PRICE_SERIES = {
     "ETH": PriceSeries("ETH-USD", "pct", time(23, 59), UTC_ZONE),
     "COIN": PriceSeries("COIN", "pct", time(16, 0), NEW_YORK),
     "ALL": PriceSeries("ALL", "pct", time(16, 0), NEW_YORK),
+    "USDCAD": PriceSeries("CAD=X", "pct", time(0, 0), LONDON),
+    "TSX": PriceSeries("^GSPTSE", "pct", time(16, 0), NEW_YORK),
 }
 
 

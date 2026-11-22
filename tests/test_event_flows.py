@@ -459,6 +459,8 @@ def test_the_more_outcomes_take_their_signs_by_analogy() -> None:
         "ETH": 0,
         "COIN": 0,
         "ALL": 0,
+        "USDCAD": 0,
+        "TSX": 0,
     }
     assert list(signs) == list(study.MVP_PRICE_SERIES)
 
@@ -1151,3 +1153,32 @@ def test_boj_decisions_are_read_from_the_japanese_calendar_with_their_rates(
         (2920240123, "Japan"),
         (2920240319, "Japan"),
     ]
+
+
+@pytest.mark.parametrize(
+    ("at", "expected"),
+    [
+        # a Bank of Canada decision at 10:00 Toronto (14:00 UTC): Toronto's close the same day, the
+        # Canadian dollar's 00:00 London close the next
+        (
+            datetime(2019, 10, 30, 14, 0, tzinfo=UTC),
+            {"TSX": date(2019, 10, 30), "USDCAD": date(2019, 10, 31)},
+        ),
+        # in winter, 10:00 Toronto is 15:00 UTC: the same days
+        (
+            datetime(2019, 12, 4, 15, 0, tzinfo=UTC),
+            {"TSX": date(2019, 12, 4), "USDCAD": date(2019, 12, 5)},
+        ),
+    ],
+)
+def test_a_bank_of_canada_decision_falls_on_toronto_s_close_and_the_next_canadian_dollar_close(
+    at: datetime, expected: dict[str, date]
+) -> None:
+    # given a decision announced at 10:00 Toronto
+    event = _at(at)
+
+    # when its first reaction day is found on each new market
+    days = {m: study.first_reaction_day(event, study.MVP_PRICE_SERIES[m]) for m in expected}
+
+    # then Toronto's stocks react the same day and the Canadian dollar the next
+    assert days == expected

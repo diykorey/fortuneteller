@@ -462,7 +462,8 @@ def with_more_outcomes(signs: dict[str, int]) -> dict[str, int]:
     (docs/steps/breakeven.md), except utilities, which compete with bonds: the 10-year yield's sign
     reversed (docs/steps/signs.md). The pound, the yen and the Nikkei 225 none: a signed market is a
     live link (docs/steps/other-central-banks.md); nor ether or Coinbase
-    (docs/steps/crypto.md), nor Allstate (docs/steps/weather.md)."""
+    (docs/steps/crypto.md), nor Allstate (docs/steps/weather.md), nor the Canadian dollar or
+    Toronto's S&P/TSX (docs/steps/canada.md)."""
     return {
         **signs,
         "BRN": 0,
@@ -489,6 +490,8 @@ def with_more_outcomes(signs: dict[str, int]) -> dict[str, int]:
         "ETH": 0,
         "COIN": 0,
         "ALL": 0,
+        "USDCAD": 0,
+        "TSX": 0,
     }
 
 
