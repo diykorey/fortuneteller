@@ -25,7 +25,8 @@ the shares trailed on 27 of 43 days (p 0.06), short of an answer; nothing answer
   the loop's safety nets.
 - **Step 49: our guesses** ([the spec](steps/our-guesses.md)): the evening's guesses from the
   news beside the tested forecasts, scored apart; no *if* cards. Asked for by the owner
-  2026-11-22. Spec reviewed, built. Next: the first guesses published.
+  2026-11-22. Published with its first two guesses; the evening job guesses each weekday. Next:
+  the test at 30 graded guesses; then step 46.
 - **Step 48: stated forecasts** ([the spec](steps/stated-forecasts.md)): the page says what
   will happen, from the long run and after news, each kept and graded. Asked for by the owner
   2026-11-21. 5 of 29 pairs hold; three forecasts stated and kept, the first graded on

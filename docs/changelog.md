@@ -6,6 +6,7 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-22 | Step 49: our guesses; the predictions page drops its *if* cards and shows the three tested forecasts, then the Subscription LLM's guesses from the day's news, headed *Our guess*, linked to their news, kept before their span and scored apart; the first two: tech stocks down over the week, gold down over the month | PR_49 |
 | 2026-11-21 | Step 48: stated forecasts on the predictions page; 5 of 29 long-run pairs hold walk-forward, all *up* (the S&P 500 and the Nasdaq at a month and a year, US home prices at a year), none for tomorrow; three stated and kept in `forecasts.csv`, graded when their span ends; no after-news forecast qualifies yet | [#403](https://github.com/diykorey/fortuneteller/pull/403) |
 | 2026-11-21 | Step 47's cards in plain words for a reader without financial training: no codes, *falls behind the average big US stock*, the record as held and failed counts across many companies, *not forecasts* first | [#402](https://github.com/diykorey/fortuneteller/pull/402) |
 | 2026-11-21 | Steps 45 and 47 published: the S&P 500's frozen groups on *Ask* (the answers that hold go from 7 to 9) and its reports ahead; the page *Fortuneteller predicts* at `/predicts/` | [#401](https://github.com/diykorey/fortuneteller/pull/401) |

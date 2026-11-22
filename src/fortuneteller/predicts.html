@@ -106,7 +106,7 @@ li.card::before {
 }
 .then.up { color: var(--up); background: var(--up-soft); }
 .then.down { color: var(--down); background: var(--down-soft); }
-.tally { margin: -16px 0 20px; font-size: 14px; font-weight: 600; color: var(--accent); }
+.tally { white-space: pre-line; margin: -16px 0 20px; font-size: 14px; font-weight: 600; color: var(--accent); }
 .tally:empty { display: none; }
 li.card.guess { border-style: dashed; }
 li.card.guess .when { color: var(--accent); font-weight: 700; }
@@ -174,6 +174,12 @@ footer a { color: var(--accent); }
     if (p.note) card.appendChild(el('p', p.note, 'note'));
     const record = el('div', null, 'record');
     record.appendChild(el('span', p.record));
+    if (p.source) {
+      const news = el('a', 'The news');
+      news.href = p.source;
+      news.rel = 'noopener nofollow';
+      record.appendChild(news);
+    }
     if (p.link) {
       const link = el('a', 'See every past case');
       link.href = '../scoreboard/' + p.link;
@@ -189,7 +195,7 @@ footer a { color: var(--accent); }
   if (data.tally && data.kept_since) tallies.push(line('Tested on the past, since ' + data.kept_since, data.tally));
   const g = data.guess_tally;
   if (g && g.came_true + g.did_not + g.open) tallies.push(line('Our guesses', g));
-  document.getElementById('tally').textContent = tallies.join(' ');
+  document.getElementById('tally').textContent = tallies.join('\n');
 })();
 </script>
 </body>

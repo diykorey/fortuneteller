@@ -2651,6 +2651,7 @@ GUESS_FIELDS = (
     "first",
     "last",
     "reason",
+    "source",
     "model",
     "grade",
 )
@@ -2684,11 +2685,16 @@ def keep_guesses(
     answer: str, rows: list[dict[str, str]], today: date
 ) -> tuple[list[dict[str, str]], list[str]]:
     """``rows`` with each acceptable guess in ``answer`` added, and why each other was dropped."""
-    start, end = answer.find("["), answer.rfind("]")
-    try:
-        guesses = json.loads(answer[start : end + 1]) if start >= 0 else None
-    except json.JSONDecodeError:
-        guesses = None
+    guesses = None
+    decoder = json.JSONDecoder()
+    for at in (i for i, ch in enumerate(answer) if ch == "["):
+        try:
+            found, _ = decoder.raw_decode(answer, at)
+        except json.JSONDecodeError:
+            continue
+        if isinstance(found, list):
+            guesses = found
+            break
     if not isinstance(guesses, list):
         return rows, ["the answer held no JSON list"]
     kept, dropped = list(rows), []
@@ -2699,6 +2705,7 @@ def keep_guesses(
             continue
         market, span = g.get("market"), g.get("span")
         direction, reason = g.get("direction"), str(g.get("reason", "")).strip()
+        source = str(g.get("source", "")).strip()
         why = (
             "a market not listed"
             if market not in LONG_RUN_MARKETS
@@ -2712,6 +2719,8 @@ def keep_guesses(
             if len(reason.split()) > GUESS_WORDS
             else "a percent sign"
             if "%" in reason
+            else "no https link to its news"
+            if not source.startswith("https://") or " " in source
             else "one of the same market and span still open"
             if any(
                 GUESS_TWINS.get(r["market"], r["market"]) == GUESS_TWINS.get(str(market), market)
@@ -2734,6 +2743,7 @@ def keep_guesses(
                 "first": first.isoformat(),
                 "last": _weekdays_after(today, GUESS_SPANS[span]).isoformat(),
                 "reason": reason,
+                "source": source,
                 "model": GUESS_MODEL,
                 "grade": "",
             }
@@ -2766,6 +2776,13 @@ def _guess(_args: argparse.Namespace) -> int:
         print(f"guess: no guesses tonight: {exc}", file=sys.stderr)
         return 0
     kept, dropped = keep_guesses(answer, rows, today)
+    if dropped == ["the answer held no JSON list"]:
+        print(f"guess: no JSON list, asking once more: {answer[:200]!r}", file=sys.stderr)
+        try:
+            kept, dropped = keep_guesses(ask_for_guesses(today), rows, today)
+        except (OSError, subprocess.SubprocessError, ValueError, KeyError) as exc:
+            print(f"guess: no guesses tonight: {exc}", file=sys.stderr)
+            return 0
     for why in dropped:
         print(f"guess: dropped {why}", file=sys.stderr)
     _write_rows(path, GUESS_FIELDS, kept)
@@ -2790,6 +2807,7 @@ def guess_card(g: Mapping[str, str]) -> dict[str, object]:
         "record": "Why: " + g["reason"],
         "note": "",
         "link": "",
+        "source": g.get("source", ""),
     }
 
 

@@ -22,6 +22,7 @@ def _g(market: str = "BRN", span: str = "week", **extra: object) -> dict[str, ob
         "span": span,
         "direction": "down",
         "reason": "OPEC+ pumps more.",
+        "source": "https://example.com/opec",
     } | extra
 
 
@@ -130,3 +131,29 @@ def test_a_guess_is_graded_from_the_close_before_its_first_day() -> None:
 
     # then from Friday's 100 to 95 it came true (from Monday's 90 it would not have)
     assert done[0]["grade"] == "came true"
+
+
+def test_a_guess_without_a_link_to_its_news_is_dropped() -> None:
+    # given guesses with no source and with a link that is not https
+    answer = _answer(_g(source=""), _g("GC / XAU", source="http://example.com"))
+
+    # when checked
+    kept, dropped = cli.keep_guesses(answer, [], FRIDAY)
+
+    # then neither is kept
+    assert kept == []
+    assert dropped == [
+        "BRN week: no https link to its news",
+        "GC / XAU week: no https link to its news",
+    ]
+
+
+def test_a_bracket_in_prose_before_the_list_is_passed_over() -> None:
+    # given an answer whose prose holds a bracket before the JSON list
+    answer = "From the news [Reuters, Nov 22]: " + json.dumps([_g()])
+
+    # when checked
+    kept, dropped = cli.keep_guesses(answer, [], FRIDAY)
+
+    # then the list is read
+    assert len(kept) == 1 and dropped == []

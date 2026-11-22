@@ -7,4 +7,5 @@ Markets (use the code exactly): {markets}
 
 Answer with JSON only, a list of objects:
 [{{"market": "CODE", "span": "week" or "month", "direction": "up" or "down",
-   "reason": "one plain sentence, at most 30 words, no percent sign, no jargon, naming the news"}}]
+   "reason": "one plain sentence, at most 30 words, no percent sign, no jargon, naming the news",
+   "source": "the https link of the news article the reason rests on"}}]

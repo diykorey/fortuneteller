@@ -34,7 +34,9 @@ record*) and CLAUDE.md (*never before it*) with the owner's exception, dated 202
   of the markets the tested forecasts measure daily (`SPY / ES`, `COMP`, `GC / XAU`, `BRN`, `DXY`,
   `UST10Y / ZN`, `BTC`; home prices come out monthly and two months late, so a week or a month
   cannot be graded), a week or a month, *up* or *down*, and a reason of at most 30 words (split
-  on spaces) with no `%`. A guess is kept only when no guess of the same market, or of its twin,
+  on spaces) with no `%`, and an `https` link to the news article the reason rests on, which the
+card links as *The news* so a reader can check it (*amended 2026-11-22*, after the first trial
+run showed a reason stating facts the page could not show). A guess is kept only when no guess of the same market, or of its twin,
   and span is still open: the S&P 500 and the Nasdaq count as one, since they move together and
   two guesses on them would be one bet counted twice. Anything else is dropped and why printed;
   an answer with no JSON list keeps nothing.
@@ -91,7 +93,28 @@ percentage. A guess never counts toward a tested forecast's record, nor the othe
   each row), output as
   JSON, a time limit of 10 minutes; the prompt is `src/fortuneteller/guess_prompt.txt`.
 - **The file:** `docs/predicts/our-guesses.csv`, columns `stated, market, span, direction, first, last,
-  reason, model, grade`.
+  reason, source, model, grade`.
 - **Docs:** this spec, step 47's and step 48's amendments, the glossary (*our guess*, *Subscription
   LLM* amended), the Legend's and CLAUDE.md's amendments, and a decisions entry (a guess with no record, labelled, is allowed), status, the changelog and
   roadmap row 49.
+
+## Results
+
+**Step 4, published, 2026-11-22.** `fortuneteller guess` run three times on Sunday 2026-11-22
+with `claude-opus-5-5`:
+
+- a trial into the scratchpad kept one guess, the Nasdaq down over the week. Its reason stated
+  facts the page could not show, so each guess now needs a link to its news (amended above);
+- the first run into `docs/predicts` kept nothing: the answer held no JSON list the check could
+  find. A bracket in the prose before the list is now passed over, and an answer with no list is
+  asked for once more (a test of each);
+- the next kept two, the first rows of `docs/predicts/our-guesses.csv`:
+
+| Market | Span | Direction | First, last day | Why (the model's words) |
+| --- | --- | --- | --- | --- |
+| `COMP` | week | down | 2026-11-23, 2026-11-27 | Tech shares had their worst week since 2020 as fears grew that huge AI spending will not pay off, and Nvidia fell sharply on Friday. |
+| `GC / XAU` | month | down | 2026-11-23, 2026-12-21 | Gold fell to its lowest since September 2025 even while stocks crashed, and traders expect the Fed to raise rates in December. |
+
+The page shows the three tested forecasts, then these two headed *Our guess*, each with a link
+to its news, and two tallies: tested 0 came true, 0 did not, 3 open; guesses 0, 0, 2. The test
+at 30 graded guesses is not yet due.
