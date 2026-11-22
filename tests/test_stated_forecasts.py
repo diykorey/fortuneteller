@@ -255,6 +255,7 @@ def test_the_page_states_a_forecast_first_with_its_record(tmp_path: Path) -> Non
             "--headless=new",
             "--disable-gpu",
             "--no-sandbox",
+            "--virtual-time-budget=5000",
             "--dump-dom",
             page.as_uri(),
         ],

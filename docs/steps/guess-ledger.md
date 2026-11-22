@@ -68,6 +68,9 @@ At the end:
 - **The front page:** the tested forecasts (three at most), then guesses to make five. It prefers
   a promoted tag, then confidence (*high*, then *medium*, then *low*; *amended 2026-11-22*, the
   rule had named only *high*), then the soonest end date.
+  *Amended 2026-11-22, by the owner:* these guesses wait for approval in a pull request of their
+  own before the front page shows them, worded as the owner approves
+  ([step 51](front-staging.md)); the ledger is published as before.
 
 ## The rule, fixed before measuring
 

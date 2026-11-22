@@ -198,3 +198,32 @@ else
         fi
     fi
 fi
+
+# The front page's guesses wait for the owner (docs/steps/front-staging.md): tonight's proposal,
+# written into the evening's pull request as front-next.csv, goes from a fresh main into a pull
+# request of its own that the job never merges. An earlier one is closed when it holds only the
+# job's commit; one the owner or anyone else has added to is left open and tonight proposes nothing.
+if git -C "$job_tree" fetch -q origin && git -C "$job_tree" switch -q --detach origin/main; then
+    cp "$job_tree/docs/predicts/front-next.csv" "$job_tree/docs/predicts/front.csv" 2>/dev/null
+    if ! git -C "$job_tree" diff --quiet -- docs/predicts/front.csv; then
+        busy=
+        for old in $(gh pr list -R "$repo" --state open --json headRefName \
+            --jq '.[].headRefName | select(startswith("front-"))'); do
+            if [ "$(git -C "$job_tree" rev-list --count "origin/main..origin/$old" 2>/dev/null)" = 1 ]; then
+                gh pr close -R "$repo" --delete-branch "$old" || busy=1
+            else
+                busy=1
+            fi
+        done
+        if [ -n "$busy" ]; then
+            git -C "$job_tree" checkout -q -- docs/predicts/front.csv
+            echo "front: an earlier front pull request was added to; tonight proposes nothing"
+        else
+            files=docs/predicts/front.csv
+            open_pr "The front page's guesses, $day" "front-$day" \
+                "Tonight's proposal for the front page's guesses. Reword \`statement\` or \`why\`, or delete a row; the other columns are locked. Merging publishes it; the job never merges it."
+        fi
+    fi
+else
+    report "fetching main for the front page's guesses"
+fi
