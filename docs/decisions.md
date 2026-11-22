@@ -11,6 +11,21 @@ amended there with a date.
 Each entry: **what** was decided, **why**, what it **retires**, and **where** the detail is. *By the
 owner* marks a choice the owner made over another on the table.
 
+## 2026-11-22: Up to 50 guesses an evening, reviewed and learned from, by the owner
+
+- **What:** the guesser makes up to 50 guesses an evening, each with an end date, reasoning, a tag
+  and a confidence. Each is graded by the closes, then reviewed by the model against its own
+  reasoning, and the reviews become numbered monthly lessons the guesser reads. The front page
+  still shows five forecasts at most; a stats page shows every guess.
+- **Why:** the owner asked for "as much as possible reasonable predictions with full explanation"
+  graded so "we would be able to improve ourselves with the time". Of three options (up to 8 a
+  day with a monthly review; no limit; two a day and a stats page) the owner chose a variant of
+  the first with up to 50, each checked as reasonable, clear and not repetitive.
+- **Kept honest by:** an evening's guesses of a kind count as one try, so many guesses do not
+  pass for many proofs; a review never changes a grade; lessons change once a month and are
+  versioned, so versions are compared.
+- **Where:** [The guess ledger](steps/guess-ledger.md).
+
 ## 2026-11-22: No if cards; our guesses beside the record, by the owner
 
 - **What:** the predictions page drops its *if* cards and shows only forecasts: the tested ones

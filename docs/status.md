@@ -23,6 +23,9 @@ the shares trailed on 27 of 43 days (p 0.06), short of an answer; nothing answer
   reports ahead. Chosen 2026-11-21 by the owner, after step 44. Published 2026-11-21; the frozen
   file agrees with steps 35 to 37. Next: step 4's count in the week of 2026-11-30, then step 46,
   the loop's safety nets.
+- **Step 50: the guess ledger** ([the spec](steps/guess-ledger.md)): up to 50 guesses an evening,
+  reviewed and learned from monthly. Asked for by the owner 2026-11-22. Published with its first
+  10. Next: the first week's counts; the first lessons on 2026-12-01; then step 46.
 - **Step 49: our guesses** ([the spec](steps/our-guesses.md)): the evening's guesses from the
   news beside the tested forecasts, scored apart; no *if* cards. Asked for by the owner
   2026-11-22. Published with its first two guesses; the evening job guesses each weekday. Next:

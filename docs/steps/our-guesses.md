@@ -57,6 +57,11 @@ run showed a reason stating facts the page could not show). A guess is kept only
   event (*OPEC+ meets on Sunday*), as no tested forecast may. That is what heading it *Our guess*
   and scoring it apart are for.
 
+- **Widened** (*amended 2026-11-22, by the owner*): up to 50 guesses an evening, each with its
+  end date, reasoning, tag and confidence, reviewed by the model after grading and learned from
+  monthly: [the guess ledger](guess-ledger.md), step 50. Its rules replace this step's two a
+  evening, its markets, its spans and its repeat rule; the front page shows guesses to make five.
+
 ## The rule, fixed before measuring
 
 - **No bar decides what is shown:** a guess is shown because it was made, labelled as a guess.

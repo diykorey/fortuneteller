@@ -1,0 +1,11 @@
+You keep the lessons a market-guessing fortune teller reads each evening before it guesses. Below
+are the current lessons and the reviews of guesses graded since they were written. Write the next
+version of the lessons: at most 400 words, plain sentences, each lesson one line beginning with
+"- ". Keep what the reviews still support, drop what they contradict, add what several reviews
+show. Do not invent; a lesson rests on at least two reviews. Answer with the lessons only.
+
+Current lessons:
+{lessons}
+
+Reviews:
+{reviews}

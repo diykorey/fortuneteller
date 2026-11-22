@@ -1,0 +1,12 @@
+You are reviewing your own past guesses about markets, now that their end dates have passed.
+Each was graded by the market's closes alone (from the close before its first day to the close of
+its end date); the grade is final and you cannot change it.
+
+For each guess, write at most 80 words: which part of the reasoning held, which did not, and
+whether it was right for its reasons or by luck (or wrong despite sound reasoning). Be plain and
+specific; you may search nothing.
+
+Guesses (one JSON object a line):
+{guesses}
+
+Answer with JSON only: [{{"id": <the id>, "review": "..."}}]
