@@ -1182,3 +1182,58 @@ def test_a_bank_of_canada_decision_falls_on_toronto_s_close_and_the_next_canadia
 
     # then Toronto's stocks react the same day and the Canadian dollar the next
     assert days == expected
+
+
+def test_boc_decisions_are_the_calendar_s_at_their_utc_time_and_the_bank_s_cut_it_lacks(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # given a quarter of the Canadian calendar with two decisions, one listed without its rate (as
+    # the 15 of 2012 and 2013 are), other news and one not yet held, and the Bank's changes from
+    # the seed, among them the unscheduled cut of 2008-10-08
+    replies = {
+        date(2008, 10, 1): json.dumps(
+            {
+                "status": "ok",
+                "result": [
+                    {"title": t, "country": "CA", "date": when, "actual": a, "forecast": None}
+                    for t, when, a in (
+                        (sources.RATE_DECISION, "2008-10-21T13:00:00.000Z", 2.25),
+                        ("GDP Growth Rate", "2008-11-28T13:30:00.000Z", 0.3),
+                        (sources.RATE_DECISION, "2008-12-02T14:00:00.000Z", None),
+                        (sources.RATE_DECISION, "2008-12-09T14:00:00.000Z", 1.5),
+                        (sources.RATE_DECISION, "2009-01-20T14:00:00.000Z", None),
+                    )
+                ],
+            }
+        ).encode(),
+    }
+    asked: list[str] = []
+
+    def fetch(
+        start: date, cache_dir: Path, today: date | None = None, country: str = "US"
+    ) -> bytes:
+        asked.append(country)
+        return replies.get(start, b'{"status": "no_data"}')
+
+    monkeypatch.setattr(sources, "fetch_tradingview_quarter", fetch)
+    monkeypatch.setattr(flows, "BOC_FROM", date(2008, 10, 1))
+
+    # when the decisions up to the year's end are loaded
+    listed, added = flows.load_boc_decisions(tmp_path, settings.seed_dir, today=date(2008, 12, 31))
+
+    # then the calendar's three held ones, the one without a rate among them, are at their UTC
+    # time, from the Canadian calendar, the one after today is not, and the cut it lacks is added at
+    # the file's 07:00 Toronto; each is dated by Toronto's day
+    assert set(asked) == {"CA"}
+    assert listed == [
+        datetime(2008, 10, 21, 13, 0, tzinfo=UTC),
+        datetime(2008, 12, 2, 14, 0, tzinfo=UTC),
+        datetime(2008, 12, 9, 14, 0, tzinfo=UTC),
+    ]
+    assert added == [datetime(2008, 10, 8, 11, 0, tzinfo=UTC)]
+    event = flows.decision_instance(flows.BOC_FLOW, added[0], flows.UNSCHEDULED)
+    assert (event.event_id, event.country, event.event_type) == (
+        3820081008,
+        "Canada",
+        "Central-bank decision",
+    )

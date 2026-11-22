@@ -1544,15 +1544,21 @@ def fed_cycles(kinds: Sequence[str]) -> list[int]:
     return cycles
 
 
-# Bank Rate from 2007-12-06, before the first change in data/seed/boe-changes.csv.
+# Bank Rate from 2007-12-06, before the first change in data/seed/boe-changes.csv; the Bank of
+# Canada's target from 2007-12-04, before the first in data/seed/boc-changes.csv.
 BOE_RATE_BEFORE = 5.5
+BOC_RATE_BEFORE = 4.25
 
 
-def boe_kinds(events: Iterable[EventInstance], changes: Mapping[date, float]) -> dict[int, str]:
-    """Each BoE decision's kind by event id, from the Bank's changes (new rate by day): on a
-    change's day a cut or a hike by it, any other a hold; the first decision has none."""
+def boe_kinds(
+    events: Iterable[EventInstance],
+    changes: Mapping[date, float],
+    before: float = BOE_RATE_BEFORE,
+) -> dict[int, str]:
+    """Each BoE (or BoC) decision's kind by event id, from the Bank's changes (new rate by day),
+    the first against ``before``: on a change's day a cut or a hike by it, any other a hold; the
+    first decision has none."""
     by_day = {}
-    before = BOE_RATE_BEFORE
     for day, rate in sorted(changes.items()):
         by_day[day] = CUT if rate < before else HIKE
         before = rate
@@ -2369,6 +2375,7 @@ TRIGGER_KINDS = {
     "ceo": (SCANDAL,),
     "opec": OPEC_KINDS,
     "boe": KINDS,
+    "boc": KINDS,
     "boj": KINDS,
     "war": (VIOLENT_ACT,),
     "crypto": (HACK,),

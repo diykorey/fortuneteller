@@ -105,7 +105,7 @@ stocks).
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~The two markets and the Bank's history~~ **done** 2026-11-22. The two markets and the Bank's history: seed rows, series, `load-prices`, `boc-changes.csv` | `load-prices` stores both; tests: a 10:00 Toronto decision falls on the same day's TSX close and the next day's Canadian dollar close; the closes within 0.05% of the bars, written here; the disagreeing days listed here; on a copy of the store every existing `raw-move`, `follows` and scoreboard row identical, and each chance line before and after written here |
-| 2 | The Bank: flow `boc`, `follows --event boc`, on *Ask*, `boc` a trigger kind (*cut*, *hold*, *hike*) | Tests: a quarter stores its decisions at their UTC time; a change day the calendar lacks is added; a decision's kind is the Bank's change, 2020-03-13 a cut and 2012-01-17 a hold; a `boc` trigger is answered; *Ask*'s `boc` cells equal `follows`', as step 29 checks. On a copy of the store the header as expected, or the difference amended with its date; every other flow's rows unchanged |
+| 2 | ~~The Bank~~ **done** 2026-11-22. The Bank: flow `boc`, `follows --event boc`, on *Ask*, `boc` a trigger kind (*cut*, *hold*, *hike*) | Tests: a quarter stores its decisions at their UTC time; a change day the calendar lacks is added; a decision's kind is the Bank's change, 2020-03-13 a cut and 2012-01-17 a hold; a `boc` trigger is answered; *Ask*'s `boc` cells equal `follows`', as step 29 checks. On a copy of the store the header as expected, or the difference amended with its date; every other flow's rows unchanged |
 | 3 | Inflation: flow `cacpi`, `follows --event cacpi`, on *Ask*, a trigger kind (*above*, *as expected*, *below*) | Tests: a release's surprise is its actual minus its forecast, its kind *above* from 0.1, a day shared with a US release left out of its table; a `cacpi` trigger is answered; *Ask*'s cells equal `follows`'. The header and its counts written here; every other flow's rows unchanged |
 | 4 | Results here and in [MVP results](../mvp-results.md), against the expected outcome; the roadmap row | Every judged bullet marked right or wrong with its numbers |
 
@@ -156,6 +156,19 @@ stocks).
   | weather | 2.8 → 2.9 | 2.8 → 2.9 |
   | war, floods | 2.7 → 2.9 | 2.7 → 2.9 |
   | CEO scandals, additions, splits, earnings (Dow and S&P 500) | unchanged, 0.1 to 0.3 | unchanged |
+
+*Step 2, 2026-11-22:* on a copy of step 1's store, with the Bank of Canada's decisions alone
+loaded (`loaded 154 BoC decisions, 2008-01-22 … 2026-10-28`, `1 from the Bank's changes the
+calendar lacks: 2008-10-08`), `follows --event boc` prints the expected header, `follows: 153 BoC
+decisions 2008-03-04 … 2026-10-28: 22 cuts, 112 holds, 19 hikes`. The calendar lists the 15
+decisions of 2012-01-17 to 2013-10-23 with no rate; the flow keeps each past row without a rate as
+a decision held, so they are holds by the Bank's history, as written above. Every other flow's
+`follows` (both runs, and the Fed's `--long`) and `raw-move` output, 74 in all, is byte for byte
+the one before. `raw-move --event boc` is new (119 lone BoC days on the S&P 500). The scoreboard
+gains the BoC's raw-move entry (37 → 38 events), its raw-move chance 1,078 → 1,111 cells; every
+other entry, and every other flow's *Ask* entry, is the same. On *Ask*, the BoC's 297 cells equal
+`follows --event boc`'s 297 lines field by field. Both runs' tables and walk-forward lines are in
+[the evidence](canada-steps.txt), for step 4 to judge.
 
 ## How you know it is right
 

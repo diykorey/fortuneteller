@@ -197,6 +197,7 @@ def test_the_page_asks_about_each_kind_the_store_answers(
         "weather",
         "flood",
         "earnings",
+        "boc",
     ]
     assert all("%" not in cell["say"] for cell in cpi["cells"])
 

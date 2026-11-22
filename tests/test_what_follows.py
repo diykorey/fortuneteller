@@ -1476,3 +1476,121 @@ def test_a_base_grown_one_move_at_a_time_is_base_of_its_moves() -> None:
     # then each base is base_of's, cut and shares exactly
     assert all(a == b for a, b in grown)
     assert grown[0] == (None, None)
+
+
+def _boc(day: date, at: time = time(10, 0)) -> flows.EventInstance:
+    # a Bank of Canada decision at ``at`` Toronto on ``day``
+    return flows.decision_instance(
+        flows.BOC_FLOW, datetime.combine(day, at, tzinfo=flows.TORONTO).astimezone(UTC)
+    )
+
+
+def test_a_boc_decision_s_kind_is_the_bank_s_change_2020_03_13_a_cut_and_2012_01_17_a_hold() -> (
+    None
+):
+    # given the Bank's changes from the seed, and decisions on the days checked by hand
+    days = [
+        date(2008, 1, 22),
+        date(2008, 10, 8),
+        date(2012, 1, 17),
+        date(2013, 12, 4),
+        date(2020, 3, 13),
+        date(2020, 3, 27),
+        date(2022, 3, 2),
+        date(2026, 10, 28),
+    ]
+    rates = {d: r for d, (_, r) in flows.boc_changes(settings.seed_dir).items()}
+
+    # when their kinds are read
+    kinds = study.boe_kinds([_boc(d) for d in reversed(days)], rates, study.BOC_RATE_BEFORE)
+
+    # then the first has none, and each other is the Bank's: the emergency cuts of 2020 cuts and
+    # the days the calendar gives no rate holds
+    assert [kinds.get(_boc(d).event_id) for d in days] == [
+        None,
+        CUT,
+        HOLD,
+        HOLD,
+        CUT,
+        CUT,
+        HIKE,
+        HIKE,
+    ]
+
+
+def test_the_first_boc_change_is_against_the_rate_before_2008() -> None:
+    # given the decision of 2007-12-04 and the cut of 2008-01-22 to 4% from 4.25%
+    events = [_boc(date(2007, 12, 4)), _boc(date(2008, 1, 22))]
+
+    # when their kinds are read against the target before 2008
+    kinds = study.boe_kinds(events, {date(2008, 1, 22): 4.0}, study.BOC_RATE_BEFORE)
+
+    # then it is a cut
+    assert kinds == {events[1].event_id: CUT}
+
+
+BOC_LINE = re.compile(
+    r"^(?P<kind>cut|hold|hike)\s+(?P<span>day|week|month)\s+(?P<market>.+?)\s+"
+    r"(?P<n>\d+)\s+(?P<up>\d+)\s+(?P<same>\d+)\s+(?P<down>\d+)\s+\d+/\d+\s+"
+    r"(?P<base>[\d.]+/[\d.]+/[\d.]+|—)\s+(?P<answer>up|down|about the same|can't say|too few)\s+"
+    r"\S+\s+\S+\s+(?P<graded>\d+): (?P<right>\d+) right, (?P<verdict>.+)$"
+)
+
+
+def test_follows_for_the_boc_prints_its_table_and_the_page_s_cells_are_its_lines(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given 44 Bank of Canada decisions, the Bank's changes patched to make every third a cut and
+    # every third a hike, and two markets' closes
+    two = {k: study.MVP_PRICE_SERIES[k] for k in ("SPY / ES", "USDCAD")}
+    monkeypatch.setattr(study, "MVP_PRICE_SERIES", two)
+    rng = random.Random(7)
+    closes = _closes([rng.gauss(0, 0.005) for _ in range(1400)])
+    keys = list(range(30, 1350, 30))
+    db.init_db()
+    db.get_connection().executemany(
+        "INSERT INTO daily_bars (instrument, day, close, source) VALUES (?, ?, ?, 'test')",
+        [[m, c.day, c.price] for m in two for c in closes],
+    )
+    db.insert_models("event_instances", [_boc(closes[k].day) for k in keys])
+    changes, rate = {}, 4.0
+    for j, k in enumerate(keys[1:]):
+        if j % 3 != 1:
+            rate += 0.25 if j % 3 == 0 else -0.25
+            changes[closes[k].day] = (time(10, 0), rate)
+    monkeypatch.setattr(flows, "boc_changes", lambda _seed_dir: changes)
+    cuts = sum(1 for j in range(len(keys) - 1) if j % 3 == 2)
+    holds = sum(1 for j in range(len(keys) - 1) if j % 3 == 1)
+    hikes = len(keys) - 1 - cuts - holds
+
+    # when follows prints the Bank's table and the page's data is built
+    assert main(["follows", "--event", "boc"]) == 0
+    out = capsys.readouterr().out.splitlines()
+    printed = [BOC_LINE.match(line) for line in out[2:-1]]
+    ask = cli.ask_data(db.get_connection())
+
+    # then the header counts the Bank's kinds after the first decision, and every line has one cell
+    # on the page, equal field by field, its sentence opening with the Bank's own words
+    first, last = closes[keys[1]].day, closes[keys[-1]].day
+    assert out[0] == (
+        f"follows: {len(keys) - 1} BoC decisions {first} … {last}: "
+        f"{cuts} cuts, {holds} holds, {hikes} hikes"
+    )
+    (boc,) = [entry for entry in ask["ask"] if entry["name"] == "boc"]
+    cells = {(c["kind"], c["span"], c["market"]): c for c in boc["cells"]}  # type: ignore[union-attr]
+    assert len(printed) == len(cells) == 3 * 3 * 2
+    for line in printed:
+        assert line is not None
+        cell = cells[(line["kind"], line["span"], line["market"])]
+        assert [cell["up"], cell["same"], cell["down"]] == [
+            int(line["up"]),
+            int(line["same"]),
+            int(line["down"]),
+        ]
+        shares = [cell["base_up"], cell["base_same"], cell["base_down"]]
+        assert "/".join(f"{s:.2f}" for s in shares) == line["base"]
+        assert (cell["answer"], cell["verdict"]) == (line["answer"], line["verdict"])
+        assert (cell["graded"], cell["right"]) == (int(line["graded"]), int(line["right"]))
+        assert str(cell["say"]).startswith(f"After {cli.ASK_DECISIONS['boc'][line['kind']]},")
+        assert "%" not in str(cell["say"])
+    assert [k["events"] for k in boc["kinds"]] == [cuts, holds, hikes]  # type: ignore[index]
