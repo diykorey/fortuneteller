@@ -11,6 +11,20 @@ amended there with a date.
 Each entry: **what** was decided, **why**, what it **retires**, and **where** the detail is. *By the
 owner* marks a choice the owner made over another on the table.
 
+## 2026-11-22: Canada, China and Switzerland, by the owner
+
+- **What:** three countries' news and markets, one step each: Canada (step 52), China (53),
+  Switzerland (54), each built as step 25 built the Bank of England and the Bank of Japan. Step 46,
+  the loop's safety nets, keeps its date (before 2026-11-25) and goes before step 53.
+- **Why:** the owner asked for areas with no tested forecast to be tested on news, and for one more
+  country, then chose three after a count of each candidate's releases with forecasts on
+  TradingView's calendar (2008 to 2026): Canada about 225 a year's worth of inflation, jobs,
+  retail and the Bank's 152 decisions; China its inflation, trade and factory reports, its loan
+  rate only from 2019; Switzerland its inflation and the SNB's 76 decisions. The ECB, the BoE and
+  the BoJ gave *can't say* on their own currencies, so tested forecasts in currencies are not
+  expected; the new markets are open to the guesser at once.
+- **Where:** [Canada](steps/canada.md); China's and Switzerland's specs follow.
+
 ## 2026-11-22: One card per area on the front page, by the owner
 
 - **What:** the front page shows one card per area of markets (eight: stocks, interest rates and
