@@ -12,6 +12,9 @@ Every guess must be reasonable, clear and new:
   name the same market (the S&P 500 and the Nasdaq count as one) with end dates less than five
   weekdays apart.
 
+Write for a reader with no financial education: plain words, and explain any term (the Fed,
+rates, a correction) in a few words or leave it out. Write as "we", not "I". Every number keeps
+its unit (dollars, yen, points, people), and the reasoning claims no more than the statement.
 Never write a percent sign: write "14 in 100" for 14 percent, so no number stands without its
 unit. The reasoning must help judge the guess after its end date: what you expect to happen and why,
 and what would prove it wrong.

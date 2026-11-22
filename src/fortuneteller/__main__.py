@@ -2449,6 +2449,7 @@ def stated(
             out.append(
                 {
                     "stated": True,
+                    "market": c["market"],
                     "day": None,
                     "until": until,
                     "when": f"News of {_plain_day(latest['day'])}",
@@ -2460,6 +2461,9 @@ def stated(
                     "record": _plain_record(
                         c["right"], c["graded"], f"In {c['graded']:,} past cases"
                     ),
+                    "right": c["right"],
+                    "called": c["graded"],
+                    "unit": "past cases",
                     "note": "Some of these days may already have passed; it is counted from the"
                     " close before the news.",
                     "link": f"#ask/{f['name']}/{c['kind']}",
@@ -2527,6 +2531,7 @@ def stated(
         out.append(
             {
                 "stated": True,
+                "market": r["market"],
                 "day": None,
                 "until": last.isoformat(),
                 "when": when,
@@ -2536,6 +2541,9 @@ def stated(
                 "record": _plain_record(
                     r["right"], r["called"], f"Tested on {r['called']:,} past {unit}, one at a time"
                 ),
+                "right": r["right"],
+                "called": r["called"],
+                "unit": f"past {unit}",
                 "note": f"It goes the way most past {unit} went. It says nothing about how far.",
                 "link": "",
                 "row": {
@@ -3000,6 +3008,9 @@ def guess_card(g: Mapping[str, str]) -> dict[str, object]:
         base -= timedelta(days=1)
     return {
         "guess": True,
+        "market": g["market"],
+        "made": g["stated"],
+        "why": g.get("reasoning") or g.get("reason") or g.get("statement", ""),
         "until": g["last"],
         "when": f"Our guess, made {_plain_day(g['stated'])}",
         "event": g.get("statement") or f"{what[0].upper()}{what[1:]}",
@@ -3084,16 +3095,17 @@ def write_stats(path: Path, rows: Sequence[Mapping[str, str]], promoted: set[str
             for r in guess_record(rows, key)
         ]
         head = (
-            f"<h2>{title}</h2><table><tr><th></th><th>Guesses that came true</th>"
+            f"<h2>{title}</h2><div class='wide'><table><tr><th></th><th>Guesses that came true</th>"
             "<th>Evenings mostly right</th><th>Verdict</th></tr>"
         )
-        return head + "".join(lines) + "</table>" if lines else ""
+        return head + "".join(lines) + "</table></div>" if lines else ""
 
     def item(r: Mapping[str, str]) -> str:
         grade = r.get("grade") or "open"
         parts = [
             f"<li class='{escape(grade.replace(' ', '-'))}'><div class='meta'>{escape(r['stated'])}"
-            f" to {escape(r['last'])} · {escape(r['market'])} {escape(r['direction'])}"
+            f" to {escape(r['last'])} · {escape(PLAIN_MARKETS.get(r['market'], r['market']))}"
+            f" {escape(r['direction'])}"
             f" · {escape(r.get('tag') or '')} · {escape(r.get('confidence') or '')} confidence"
             f" · <b>{escape(grade)}</b>{(' (' + escape(r['move']) + ')') if r.get('move') else ''}</div>",
             f"<p class='statement'>{escape(r.get('statement') or '')}</p>",
@@ -3118,7 +3130,13 @@ def write_stats(path: Path, rows: Sequence[Mapping[str, str]], promoted: set[str
         " judged by its evenings: an evening counts once, right if most of its guesses came true. A kind"
         " is promoted when it has 30 evenings, at least 60 in 100 mostly right, and a chance of under"
         " 1 in 100 that a coin would do as well. For fun, not financial advice.</p>"
-        "<p><a href='../'>Back to Fortuneteller predicts</a> · <a href='../lessons.md'>The lessons</a></p>"
+        "<p><a href='../'>Back to Fortuneteller predicts</a>"
+        + (
+            " · <a href='../lessons.md'>The lessons</a>"
+            if (path.parent.parent / "lessons.md").exists()
+            else ""
+        )
+        + "</p>"
         + "".join(table(k, title) for k, title in STATS_KEYS)
         + "<h2>Every guess, newest first</h2><ol class='all'>"
         + "".join(item(r) for r in newest)

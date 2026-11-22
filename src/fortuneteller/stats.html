@@ -8,24 +8,25 @@
 <script defer src="https://cloud.umami.is/script.js" data-website-id="ed3ca059-ba91-40f1-937c-ace5118ffcb0"
   data-do-not-track="true" data-domains="diykorey.github.io"></script>
 <style>
-:root { --bg: #f6f4fb; --card: #fff; --ink: #1b1530; --muted: #6a6383; --accent: #6d4aff;
-  --line: rgba(91, 64, 170, 0.14); --up: #0f8a5f; --down: #c2410c; }
+:root { --bg: #ffffff; --card: #ffffff; --ink: #111827; --muted: #4b5563; --accent: #7c3aed;
+  --line: #e5e7eb; --up: #15803d; --down: #c2410c; }
 @media (prefers-color-scheme: dark) {
-  :root { --bg: #0e0b19; --card: #1d1734; --ink: #f1eefc; --muted: #a69fc2; --accent: #a48bff;
-    --line: rgba(180, 160, 255, 0.14); --up: #4ade9b; --down: #fb9a6b; }
+  :root { --bg: #111318; --card: #1a1d24; --ink: #f9fafb; --muted: #b0b6c1; --accent: #b79cff;
+    --line: #2d313b; --up: #4ade80; --down: #fb923c; }
 }
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--bg); color: var(--ink);
-  font: 16px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; }
-main { max-width: 860px; margin: 0 auto; padding: 40px 16px; }
+  font: 17px/1.55 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif; }
+main { max-width: 860px; margin: 0 auto; padding: 28px 16px 48px; }
 h1 { font-size: clamp(28px, 6vw, 40px); letter-spacing: -0.02em; margin: 0 0 8px; }
 h2 { margin: 32px 0 10px; font-size: 20px; }
 .lede { color: var(--muted); }
 a { color: var(--accent); }
+.wide { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; background: var(--card); border-radius: 12px; overflow: hidden; font-size: 14px; }
 th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); }
 ol.all { list-style: none; padding: 0; display: grid; gap: 10px; }
-ol.all li { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; overflow-wrap: anywhere; }
+ol.all li { background: var(--card); border: 2px solid var(--line); border-radius: 14px; padding: 14px 16px; overflow-wrap: anywhere; }
 ol.all li.came-true { border-left: 4px solid var(--up); }
 ol.all li.did-not { border-left: 4px solid var(--down); }
 .meta { font-size: 13px; color: var(--muted); }
