@@ -59,6 +59,12 @@ evening job. The first thing delivered beyond this laptop.
 | 2 | ~~The evening job runs it after `score`, in the score pull request~~ **built** 2026-10-26: `scripts/release-day.sh` runs `scoreboard` when `score`'s file differs and commits both; the tail run by hand in a scratch clone; GitHub Pages enabled on `main`, `/docs` (a repository setting, by hand: enabled 2026-10-27; the page answers at <https://diykorey.github.io/fortuneteller/scoreboard/>, and `docs/index.html` sends the bare address there) | The published page shows the latest score pull request's numbers; the [Legend](../legend.md)'s *Release* entry rewritten |
 | 3 | Results: the first release day on the page, the jobs report of 2026-11-06 | Its call rows equal `data/calls.csv` and `score`'s grades |
 
+*Amended 2026-11-22, by the owner:* the page takes the bright cards' design of
+[Fortuneteller predicts](predicts.md): its colours, 17px text, tables in rounded frames that
+scroll sideways on a phone, the answers that hold as cards, dark mode kept, and a link back to the
+predictions page, which the site's bare address now opens. Only the styles changed; the numbers,
+the sections and the script are as they were.
+
 ## Technical details
 
 `scoreboard` in `__main__.py` calls what the reports call (`study.measure_raw_moves`, the surprise
