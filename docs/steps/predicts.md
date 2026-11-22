@@ -75,6 +75,9 @@ and one to five cards (none to five since 2026-11-22, below). The evening job re
   *Full reasoning*. The explanation is folded under *How it works*, and the two tallies are
   badges. The stats page takes the same colours. The bars are unchanged; the render tests check
   the same five cards at phone and desktop widths, with no sideways scroll.
+- **The front door** (*amended 2026-11-22, by the owner*): the site's bare address,
+  `docs/index.html`, sends readers here instead of to the scoreboard, which this page links to as
+  *Every number behind the tested forecasts*; the scoreboard is restyled to match as its own change.
 
 ## The rule, fixed before measuring
 
