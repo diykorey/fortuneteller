@@ -11,6 +11,16 @@ amended there with a date.
 Each entry: **what** was decided, **why**, what it **retires**, and **where** the detail is. *By the
 owner* marks a choice the owner made over another on the table.
 
+## 2026-11-22: The site opens on the predictions page, by the owner
+
+- **What:** the site's bare address sends readers to the predictions page, not the scoreboard;
+  the scoreboard follows in the bright cards' design.
+- **Why:** the owner asked whether the old design was still there. It was the first page readers
+  saw, since the bare address went to the scoreboard. Of three ways put to them (open on the
+  predictions page and restyle the scoreboard, open on the predictions page only, leave both)
+  they chose the first.
+- **Where:** [Fortuneteller predicts](steps/predicts.md), amended 2026-11-22.
+
 ## 2026-11-22: The front page's guesses approved by the owner, by the owner
 
 - **What:** the guesses the front page shows wait in a pull request of their own each evening,

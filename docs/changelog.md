@@ -6,6 +6,7 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-22 | The site's bare address opens the predictions page instead of the scoreboard | [#408](https://github.com/diykorey/fortuneteller/pull/408) |
 | 2026-11-22 | Step 51: the front page's guesses wait for the owner; each evening's proposal goes into a pull request of its own, reworded or removed and published when merged; the market, direction, dates and link are locked by a test; the page reads `front.csv` | [#407](https://github.com/diykorey/fortuneteller/pull/407) |
 | 2026-11-22 | The predictions page as bright cards (option A of five): market icons, a big Up or Down by its date, days left, one line of why; the stats page matches | [#406](https://github.com/diykorey/fortuneteller/pull/406) |
 | 2026-11-22 | Step 50: the guess ledger; up to 50 guesses an evening with end date, reasoning, tag and confidence, graded by the closes, reviewed by the model, learned from in monthly numbered lessons; a stats page of every guess; the first evening kept 10 | [#405](https://github.com/diykorey/fortuneteller/pull/405) |
