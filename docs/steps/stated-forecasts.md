@@ -42,14 +42,14 @@ stated with its grade once its span has ended:
   holds on the evening it is written.
 - **Home prices** (S&P CoreLogic Case-Shiller national index, FRED `CSUSHPINSA`) come out about
   two months late and move with the seasons, so only the year is tested (12 monthly values), and
-  the sentence names the months it covers: *in the 12 months after September 2026*.
+  the sentence names the months it covers: *in the 12 months after August 2026*.
 - **After news:** a cell counts if it is among *the answers that hold* (so not a kind cell and not
   read as the period), its span is a week or a month, and its market is one of the markets the
   store measures by date (a company's own shares are not: they need a company). The flow's latest
   stored event with a kind is the one read. If it is of the cell's kind and its span, counted in
   weekdays from the event's first reaction day, ends on or after the evening the page is written,
-  the forecast is stated: *by Mon, Nov 24, US gasoline prices will be higher than before the
-  report*. It is measured from the close before the event, as the cell is, and the sentence says
+  the forecast is stated: *US gasoline prices higher on Tue, Nov 24, 2026 than before the
+  news*. It is measured from the close before the event, as the cell is, and the sentence says
   so: some of its days may already have passed.
 - **Each forecast is kept once.** The evening job appends to `docs/predicts/forecasts.csv` a
   row per forecast: the day stated, the market, span, direction and kind (*long run* or *after
@@ -66,8 +66,9 @@ stated with its grade once its span has ended:
   pairs hold and four of them are two markets at two spans; a reader gains nothing from the S&P
   500's month and its year side by side. A stated card names its market and span (*The US stock
   market, over the next month*) and says what will be so: *higher on Mon, Dec 21, 2026 than on
-  Fri, Nov 20, 2026*. Spans are counted in weekdays; a market holiday is not known, so a span's
-  last day can fall one trading day later than its length.
+  Fri, Nov 20, 2026*. Spans are counted in weekdays; a market holiday is not known, so a span with
+  one inside it ends a trading day sooner than its length (the month from Fri, Nov 20 holds
+  Thanksgiving and is 20 trading days).
 
 ## The rule, fixed before measuring
 
@@ -95,7 +96,7 @@ stated with its grade once its span has ended:
 | --- | --- | --- |
 | 1 | `long_run(closes, span)` in `study.py`; `fortuneteller forecasts` prints the 29 pairs; Results written | Tests: 41 spans of a rising series give 36 forecasts, all right, *holds*, *up*; a seeded coin of 2,000 days does not hold at a day; spans run forward from the first close and leave an unfinished last span out; 25 monthly values give 2 year spans. Results list each pair's first close, right, of, p and verdict |
 | 2 | After-news forecasts in `stated(data, today)`; `ask_entry` gives each flow's latest event and, on each cell of its kind, the span's last day | Tests: a holding week cell of the latest event's kind gives a forecast on its last day and none the day after; a day cell, a kind cell or a period cell gives none |
-| 3 | The page states the forecasts first, then the *if* cards; `forecasts.csv` kept and graded | Tests: a long-run forecast is not added while its row is open and is added the day after it ends; a row is graded *came true* when its last close is above its first for *up*, and an open row is not graded; the rendered page shows *Over the next year, the US stock market will rise.* from a stub |
+| 3 | The page states the forecasts first, then the *if* cards; `forecasts.csv` kept and graded | Tests: a long-run forecast is not added while its row is open and is added the day after it ends; a row is graded *came true* when its last close is above its first for *up*, and an open row is not graded; the rendered page shows *The US stock market, over the next year* with its record from a stub (*amended 2026-11-21* with the page's wording above) |
 | 4 | Published | The page is live; the date and the first rows of `forecasts.csv` are written in Results |
 
 ## How you know it is right
@@ -124,30 +125,44 @@ event. No market outside the list above. No 1-day forecast stated unless it hold
   Fed's group on *Ask*), and left out with the reason when not.
 - **Code:** `long_run` in `study.py`; `fortuneteller forecasts` prints the table; `scoreboard_data`
   gains `forecasts` (each pair's record and verdict) and `ask_entry` gains `latest`.
-- **Words** follow [plain words](predicts.md): *Over the next year, the US stock market will rise.
-  Tested on N past years, one at a time, this rule held R times and failed W.*
+- **Words** follow [plain words](predicts.md): *The US stock market, over the next month: higher on
+  Mon, Dec 21, 2026 than on Fri, Nov 20, 2026. Tested on 666 past months, one at a time, this held
+  402 times and failed 264 times.* (*Amended 2026-11-21* with the page's wording above.)
 - **Docs:** this spec, the glossary (*stated forecast*, *long-run forecast*), status, the
   changelog, roadmap row 48 and a decisions entry for the page stating forecasts.
 
 ## Results
 
-**Step 1, the long run, 2026-11-21.** `fortuneteller forecasts` on a copy of the store of
-2026-11-21 (closes to 2026-11-20), home prices from FRED to September 2026:
+**Step 1, the long run, 2026-11-21.** `fortuneteller forecasts`, run with `FT_FRED_API_KEY` set
+(which adds the home prices row, read from FRED to August 2026) on a copy of the store of
+2026-11-21 (closes to 2026-11-20). It prints each pair's first close, spans, right of forecasts,
+p, verdict and the direction it says now, and the chance count:
 
 | Market | First close | Tomorrow | Week | Month | Year |
 | --- | --- | --- | --- | --- | --- |
-| S&P 500 | 1970-01-02 | 7,560 of 14,280, no | 1,609 of 2,849, no | **402 of 666, holds** | **37 of 49, holds** |
-| Nasdaq Composite | 1971-02-05 | 7,828 of 14,020, no | 1,619 of 2,802, no | **408 of 658, holds** | **35 of 50, holds** |
-| Gold | 2000-08-30 | 3,450 of 6,526, no | 743 of 1,305, no | 167 of 300, no | 14 of 21, too few |
-| Brent oil | 2007-07-30 | 2,454 of 4,745, no | 487 of 940, no | 114 of 221, no | 5 of 12, too few |
-| Dollar index | 1971-01-04 | 6,742 of 13,653, no | 1,362 of 2,746, no | 318 of 651, no | 23 of 48, no |
-| 10-year Treasury yield | 1970-01-02 | 6,751 of 13,382, no | 1,397 of 2,771, no | 323 of 646, no | 23 of 48, no |
-| Bitcoin | 2014-09-17 | 1,643 of 3,155, no | 340 of 629, no | 81 of 141, no | 3 of 7, too few |
-| US home prices | 1987-01 | | | | **29 of 34, holds** |
+| S&P 500 | 1970-01-02 | 7,560 of 14,280, p 1e-12, no | 1,609 of 2,849, p 2e-12, no | **402 of 666, p 5e-8, holds, up** | **37 of 49, p 0.0002, holds, up** |
+| Nasdaq Composite | 1971-02-05 | 7,828 of 14,020, p 9e-44, no | 1,619 of 2,802, p 9e-17, no | **408 of 658, p 4e-10, holds, up** | **35 of 50, p 0.003, holds, up** |
+| Gold | 2000-08-30 | 3,450 of 6,526, p 2e-6, no | 743 of 1,305, p 3e-7, no | 167 of 300, p 0.03, no | 14 of 21, too few |
+| Brent oil | 2007-07-30 | 2,454 of 4,745, p 0.009, no | 487 of 940, p 0.14, no | 114 of 221, p 0.34, no | 5 of 12, too few |
+| Dollar index | 1971-01-04 | 6,742 of 13,653, p 0.93, no | 1,362 of 2,746, p 0.67, no | 318 of 651, p 0.73, no | 23 of 48, p 0.67, no |
+| 10-year Treasury yield | 1970-01-02 | 6,751 of 13,382, p 0.15, no | 1,397 of 2,771, p 0.34, no | 323 of 646, p 0.52, no | 23 of 48, p 0.67, no |
+| Bitcoin | 2014-09-17 | 1,643 of 3,155, p 0.01, no | 340 of 629, p 0.02, no | 81 of 141, p 0.05, no | 3 of 7, too few |
+| US home prices | 1987-01 | | | | **29 of 34, p 2e-5, holds, up** |
 
-Each cell is right of forecasts made; *no* is *doesn't hold*. Five of the 29 pairs hold, all
-saying *up* (0.3 expected by chance), as expected: the S&P 500 and the Nasdaq at a month and a
-year, home prices at a year. No 1-day forecast holds. The S&P 500's tomorrow is right 7,560 of
-14,280 times, p about 1e-12 against a coin, but short of the 60% bar: a day's direction is close
-to a coin, so the page says nothing about tomorrow. The S&P 500 begins in 1970 in the store, not
-1928, so its year has 49 forecasts.
+*no* is *doesn't hold*. Five of the 29 pairs hold, all saying *up*; about 0.3 would by chance.
+This is the expected outcome: the S&P 500 and the Nasdaq at a month and a year, home prices at a
+year, and no 1-day forecast. The S&P 500's next day goes the way most days went 7,560 of 14,280
+times (53%): more than a coin would, p about 1e-12, but well short of the 60% bar, so the page
+says nothing about tomorrow. The store's S&P 500 begins in 1970, so its year has 49 forecasts.
+
+**Step 2, after news, 2026-11-21.** No after-news forecast is stated, against the expected one or
+two. Of the nine answers that hold, eight are day cells, which are never stated, and the ninth
+(a Dow company's earnings below the forecast, over a week) measures the company's own shares,
+which this step leaves out. So no week or month cell of a market the store measures by date
+holds, and none can be stated until one does. The expectation also named the jobs report of
+2026-11-20; the store's latest is that of 2026-11-06. Read from the `ask` of the page written by
+`fortuneteller scoreboard` on the copy.
+
+**Step 3, the page, 2026-11-21.** The same run kept three forecasts in `forecasts.csv`: the S&P
+500 and the Nasdaq higher on 2026-12-21 than on 2026-11-20 (a month), and US home prices higher in
+August 2027 than in August 2026 (a year).

@@ -2580,24 +2580,27 @@ def stated(
                 f"{'higher' if rising else 'lower'} in {_plain_month(last.isoformat())}"
                 f" than in {_plain_month(home_latest.isoformat())}"
             )
-            when = "Next year"
+            when = f"Checked when {_plain_month(last.isoformat())}'s figure is out"
         else:
             length = study.LONG_RUN_SPANS[r["span"]]
-            base = today
             first, last = _weekdays_after(today, 1), _weekdays_after(today, length)
             if held:
-                base = date.fromisoformat(held[-1]["stated"])
                 first, last = (
                     date.fromisoformat(held[-1]["first"]),
                     date.fromisoformat(held[-1]["last"]),
                 )
+            base = first - timedelta(days=1)
+            while base.weekday() >= 5:
+                base -= timedelta(days=1)
             what = PLAIN_MARKETS.get(r["market"], names.get(r["market"], r["market"]))
             title = f"{what[0].upper()}{what[1:]}, over the next {LONG_RUN_WORDS[r['span']]}"
             outcome = (
                 f"{'higher' if rising else 'lower'} on {_plain_day(last.isoformat())}"
                 f" than on {_plain_day(base.isoformat())}"
             )
-            when = f"Next {LONG_RUN_WORDS[r['span']]}"
+            when = f"Checked after the close on {_plain_day(last.isoformat())}"
+        stated_on = held[-1]["stated"] if held else today.isoformat()
+        when = f"Stated {_plain_day(stated_on)} · {when[0].lower()}{when[1:]}"
         unit = "years" if r["span"] == "year" else f"{r['span']}s"
         out.append(
             {

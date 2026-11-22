@@ -6,6 +6,7 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-21 | Step 48: stated forecasts on the predictions page; 5 of 29 long-run pairs hold walk-forward, all *up* (the S&P 500 and the Nasdaq at a month and a year, US home prices at a year), none for tomorrow; three stated and kept in `forecasts.csv`, graded when their span ends; no after-news forecast qualifies yet | PR_48 |
 | 2026-11-21 | Step 47's cards in plain words for a reader without financial training: no codes, *falls behind the average big US stock*, the record as held and failed counts across many companies, *not forecasts* first | [#402](https://github.com/diykorey/fortuneteller/pull/402) |
 | 2026-11-21 | Steps 45 and 47 published: the S&P 500's frozen groups on *Ask* (the answers that hold go from 7 to 9) and its reports ahead; the page *Fortuneteller predicts* at `/predicts/` | [#401](https://github.com/diykorey/fortuneteller/pull/401) |
 | 2026-11-21 | Free sources of US economic statistics surveyed; the Cleveland Fed nowcast and the Philadelphia Fed survey queued after the gate; Inkling 2 Mini added to the backlog's local models | [#399](https://github.com/diykorey/fortuneteller/pull/399) |

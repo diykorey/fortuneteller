@@ -270,3 +270,17 @@ def test_the_page_states_a_forecast_first_with_its_record(tmp_path: Path) -> Non
     assert "▲ higher on" in shown and "held 402 times and failed 264 times" in shown
     assert "→" not in shown
     assert "1 came true, 0 did not, 2 still open" in dom
+
+
+def test_a_page_written_on_a_saturday_counts_from_friday_s_close() -> None:
+    # given the S&P 500's month holding
+    data = _data([], [_run("SPY / ES", "month")])
+
+    # when the page is written on Saturday 2026-11-21
+    told = cli.stated(data, date(2026, 11, 21))
+
+    # then it runs from Monday and is measured against Friday's close
+    assert told[0]["outcome"] == "higher on Mon, Dec 21, 2026 than on Fri, Nov 20, 2026"
+    assert (
+        told[0]["when"] == "Stated Sat, Nov 21, 2026 · checked after the close on Mon, Dec 21, 2026"
+    )
