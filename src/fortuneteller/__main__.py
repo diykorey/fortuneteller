@@ -2957,6 +2957,7 @@ def _guess(_args: argparse.Namespace) -> int:
     path, lessons_path = folder / "our-guesses.csv", folder / "lessons.md"
     rows = [_ledger_row(r) for r in _read_rows(path)]
     con = db.get_connection()
+    db.init_db(con=con)
 
     def closes(market: str) -> Sequence[sources.DailyClosingPrice]:
         try:
