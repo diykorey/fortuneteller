@@ -114,3 +114,24 @@ more than five forecasts on the front page.
   the repeat rule), the glossary (*horizon*, *try*, *promoted*, *lessons*, and *Subscription LLM*
   for its two new uses, the review and the lessons), a decisions entry (the model reviews itself
   and rewrites its lessons), status, changelog, roadmap row 50.
+
+## Results
+
+**Step 4, published, 2026-11-22.** `fortuneteller guess`, run on Sunday 2026-11-22 on a copy of
+the store (closes to 2026-11-20), with `claude-opus-5-5` and no lessons yet (version 0), kept 10
+new guesses and dropped none (its printed line: *10 kept, 0 dropped*). The model chose 10, not 50:
+the prompt tells it to skip a market where the news gives no real reason. That is below the
+expected 15 to 50; the first week's evenings will say whether it is so each evening.
+
+| Tag | Guesses | Confidence |
+| --- | --- | --- |
+| interest rates | 4 (the dollar index, the yen, the Nikkei, homebuilders) | 1 medium, 3 low |
+| oil supply | 2 (Brent, gasoline) | low |
+| momentum | 2 (bitcoin, Coinbase) | low |
+| reversal | 2 (the fear gauge, the S&P 500 over a year) | 1 medium, 1 low |
+
+Horizons of the 10: 3 months, 6 quarters and 1 year (from `docs/predicts/our-guesses.csv`,
+with step 49's two). The front page shows the three tested forecasts and the two guesses of
+medium confidence ending soonest: the yen to 2026-12-31 and the fear gauge to 2027-01-15. The
+stats page lists all 12, all open. In the reasons the percent ban left bare numbers (*Nvidia lost
+about 14 in a single day*), so the prompt now asks for *14 in 100* (amended 2026-11-22).
