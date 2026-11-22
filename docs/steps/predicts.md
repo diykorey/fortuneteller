@@ -63,6 +63,11 @@ and one to five cards. The evening job rewrites it each weekday with the scorebo
   - the intro opens with *These are not forecasts that something will happen*, says the page
     gives which way and not by how much, and carries *for fun, not financial advice*.
 
+- **Forecasts only** (*amended 2026-11-22, by the owner*: "we need to state without any if
+  then; if we cannot forecast better, do not do it at all"). The *if* cards are gone: the page
+  shows [stated forecasts](stated-forecasts.md) and [our guesses](our-guesses.md) only. Bar 2
+  becomes none to five cards; a page with none says *Nothing passed our tests today*.
+
 ## The rule, fixed before measuring
 
 - **Bars:**

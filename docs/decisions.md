@@ -11,6 +11,19 @@ amended there with a date.
 Each entry: **what** was decided, **why**, what it **retires**, and **where** the detail is. *By the
 owner* marks a choice the owner made over another on the table.
 
+## 2026-11-22: No if cards; our guesses beside the record, by the owner
+
+- **What:** the predictions page drops its *if* cards and shows only forecasts: the tested ones
+  of step 48, and *our guesses*, the Subscription LLM's guesses from the day's news, each headed
+  as a guess, kept before its span starts and scored apart.
+- **Why:** the owner found the *if* cards poor ("we need state without any if then") and said a
+  fortune teller may guess without a past where it makes sense. Of three options put to them
+  (labelled guesses with their own tally; one list; no guesses yet) they chose the first.
+- **Retires:** the Legend's *never a model's opinion* and *what has no past is never shown beside
+  a record*, and CLAUDE.md's *never before it*, for *our guess* cards only; each is amended with
+  this date. Step 47's *if* cards.
+- **Where:** [Our guesses](steps/our-guesses.md), [Fortuneteller predicts](steps/predicts.md).
+
 ## 2026-11-21: The page states forecasts, by the owner
 
 - **What:** the predictions page says what will happen, not only what follows an *if*: a

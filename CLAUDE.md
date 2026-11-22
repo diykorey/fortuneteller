@@ -15,7 +15,9 @@ later step done or in progress, `docs/status.md` has the task in hand, and
 `uv run fortuneteller --help` what each command does. A newcomer, human or agent, starts at
 `docs/README.md`. "Step" has three meanings; `docs/glossary.md` tells them apart.
 **A call is made from the actual once it lands, never before it**, and a statement nobody scheduled
-is never called before it happens.
+is never called before it happens. *Amended 2026-11-22, by the owner:* the one exception is an
+*our guess* on the predictions page, headed as a guess, kept before its span and scored apart
+(`docs/steps/our-guesses.md`).
 
 ## The 2026-08-05 reset — read before planning any work
 

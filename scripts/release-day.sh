@@ -160,6 +160,7 @@ log=data/trigger-log.csv
 log_changed=$(git -C "$job_tree" status --porcelain -- "$log")
 if ! git -C "$job_tree" diff --quiet -- "$file"; then
     # The scoreboard (docs/steps/scoreboard.md) is rewritten into the same pull request.
+    uv run --directory "$job_tree" fortuneteller guess || true
     FT_CALLS_PATH=data/calls.csv uv run --directory "$job_tree" fortuneteller scoreboard ||
         report "fortuneteller scoreboard exited $?"
     files="$file docs/scoreboard docs/predicts"
@@ -177,6 +178,7 @@ if ! git -C "$job_tree" diff --quiet -- "$file"; then
 else
     # With nothing to score the page is still written (docs/steps/readers.md), so the Dow's
     # reports ahead on it stay current; it goes with the triggers' log when that changed.
+    uv run --directory "$job_tree" fortuneteller guess || true
     FT_CALLS_PATH=data/calls.csv uv run --directory "$job_tree" fortuneteller scoreboard ||
         report "fortuneteller scoreboard exited $?"
     page_changed=$(git -C "$job_tree" status --porcelain -- docs/scoreboard docs/predicts)

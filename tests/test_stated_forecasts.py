@@ -140,7 +140,7 @@ def test_a_holding_week_after_news_is_stated_to_its_last_day_and_not_after() -> 
     assert [t["outcome"] for t in on] == [
         "US gasoline prices higher on Tue, Nov 17, 2026 than before the news"
     ]
-    assert on[0]["condition"] is None and after == []
+    assert after == []
 
 
 def test_a_day_cell_a_kind_cell_or_a_period_cell_is_never_stated() -> None:
