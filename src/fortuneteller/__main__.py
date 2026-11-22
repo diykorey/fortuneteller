@@ -629,6 +629,7 @@ FOLLOWS_NOUNS = {
     "additions": "S&P 500 additions",
     "earnings500": "S&P 500 earnings reports",
     "splits": "stock splits",
+    "boc": "BoC decisions",
 }
 
 
@@ -636,11 +637,13 @@ def _decision_kinds(
     flow: flows.EventFlow, events: list[EventInstance], command: str
 ) -> dict[int, str] | None:
     """A central bank's decisions' kinds: the Fed's from FRED's target rate, ``None`` without a
-    key; the ECB's from the calendar's rates; the BoE's from the Bank's changes."""
+    key; the ECB's from the calendar's rates; the BoE's and the BoC's from the Bank's changes."""
     if flow is flows.ECB_FLOW:
         return study.ecb_kinds(events, flows.load_ecb_rates(settings.cache_dir))
     if flow is flows.BOE_FLOW:
         return study.boe_kinds(events, _boe_rates())
+    if flow is flows.BOC_FLOW:
+        return study.boe_kinds(events, _boc_rates(), study.BOC_RATE_BEFORE)
     if flow is flows.BOJ_FLOW:
         return study.ecb_kinds(events, _boj_rates())
     api_key = _fred_key(command)
@@ -656,6 +659,10 @@ def _boj_rates() -> dict[date, float]:
 
 def _boe_rates() -> dict[date, float]:
     return {day: rate for day, (_, rate) in flows.boe_changes(settings.seed_dir).items()}
+
+
+def _boc_rates() -> dict[date, float]:
+    return {day: rate for day, (_, rate) in flows.boc_changes(settings.seed_dir).items()}
 
 
 class FollowsUnavailable(Exception):
@@ -698,6 +705,8 @@ def follows_kinds(
         return events, study.one_kind(flow, events), (study.ONE_KIND[flow.cli_name],)
     if flow is flows.BOE_FLOW:
         return events, study.boe_kinds(events, _boe_rates()), study.KINDS
+    if flow is flows.BOC_FLOW:
+        return events, study.boe_kinds(events, _boc_rates(), study.BOC_RATE_BEFORE), study.KINDS
     if flow is flows.BOJ_FLOW:
         try:
             boj_rates = _boj_rates()
@@ -840,7 +849,13 @@ def _triggers(_args: argparse.Namespace) -> int:
         for name in sorted(names):
             flow = flows.flow_named(name)
             events[name] = flows.stored_events(flow, con=con)
-            if flow in (flows.FED_FLOW, flows.ECB_FLOW, flows.BOE_FLOW, flows.BOJ_FLOW):
+            if flow in (
+                flows.FED_FLOW,
+                flows.ECB_FLOW,
+                flows.BOE_FLOW,
+                flows.BOJ_FLOW,
+                flows.BOC_FLOW,
+            ):
                 decided = _decision_kinds(flow, events[name], "triggers")
                 if decided is None:
                     return 1
@@ -1967,6 +1982,11 @@ ASK_DECISIONS = {
         study.CUT: "a Bank of Japan rate cut",
         study.HOLD: "the Bank of Japan holding its rate",
         study.HIKE: "a Bank of Japan rate hike",
+    },
+    "boc": {
+        study.CUT: "a Bank of Canada rate cut",
+        study.HOLD: "the Bank of Canada holding its rate",
+        study.HIKE: "a Bank of Canada rate hike",
     },
     "war": {study.VIOLENT_ACT: "a violent act setting off an international crisis"},
     "crypto": {study.HACK: "a crypto hack of $100 million or more"},

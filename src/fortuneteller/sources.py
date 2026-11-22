@@ -768,14 +768,21 @@ def parse_ecb_decisions(payload: bytes) -> list[datetime]:
 RATE_DECISION = "Interest Rate"
 
 
-def parse_rate_decisions(payload: bytes, title: str = RATE_DECISION) -> list[datetime]:
+def parse_rate_decisions(
+    payload: bytes, title: str = RATE_DECISION, held_before: datetime | None = None
+) -> list[datetime]:
     """When each held decision titled ``title`` in a TradingView calendar reply was announced, in
-    UTC; one not yet held (no actual) is left out."""
+    UTC; one not yet held (no actual) is left out. With ``held_before``, a row with no actual
+    announced before it is held too: the calendar lists the decision without its rate."""
     try:
         return [
             _utc(row["date"])
             for row in _tradingview_rows(payload)
-            if row["title"] == title and row.get("actual") is not None
+            if row["title"] == title
+            and (
+                row.get("actual") is not None
+                or (held_before is not None and _utc(row["date"]) < held_before)
+            )
         ]
     except MALFORMED_REPLY as exc:
         raise CalendarError(f"TradingView sent an unexpected reply: {exc!r}") from None

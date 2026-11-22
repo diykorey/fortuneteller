@@ -28,8 +28,9 @@ the shares trailed on 27 of 43 days (p 0.06), short of an answer; nothing answer
 - **Step 52: Canada** ([the spec](steps/canada.md)): the Bank of Canada and Canada's inflation,
   the Canadian dollar and Toronto's stocks. Asked for by the owner 2026-11-22, with China (53) and
   Switzerland (54) after it and step 46. Step 1 done: the two markets loaded, every existing
-  row unchanged; the Bank's history disagrees with the calendar on the 16 days expected. Next,
-  step 2, the Bank's flow.
+  row unchanged; the Bank's history disagrees with the calendar on the 16 days expected. Step 2
+  done: `follows --event boc` prints the expected 153 decisions, 22 cuts, 112 holds, 19 hikes,
+  and the Bank is on *Ask*. Next, step 3, Canada's inflation.
 - **Step 51: the front page's guesses, approved** ([the spec](steps/front-staging.md)): each
   evening's front-page guesses wait in a pull request the owner rewords and merges. Asked for by
   the owner 2026-11-22. Next: the first front pull request, from the first evening whose proposal changes.

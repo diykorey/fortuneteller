@@ -604,3 +604,22 @@ def test_a_flood_trigger_is_void(one_market: None) -> None:
     # then it is void, its flow not one triggers reads, and nothing is answered
     assert not [r for r in rows if r.get("answer")]
     assert any("void" in line and "flood is not one of" in line for line in lines)
+
+
+def test_a_boc_trigger_is_answered_not_refused(one_market: None) -> None:
+    # given a Bank of Canada hold at 09:45 Toronto
+    closes = _closes(_wavy(300))
+    day = closes[200].day
+    hold = flows.decision_instance(
+        flows.BOC_FLOW, datetime.combine(day, time(9, 45), tzinfo=flows.TORONTO).astimezone(UTC)
+    )
+    merged = datetime.combine(day, time(10, 0), tzinfo=flows.TORONTO)
+
+    # when filed as a hold before the close
+    rows, lines = _answer(
+        [_trigger(day, HOLD, "boc")], [hold], {hold.event_id: HOLD}, closes, merged, flow="boc"
+    )
+
+    # then it is answered on the market, not refused for its flow
+    assert {r["market"] for r in rows} == {SPY}
+    assert not any("is not one of" in line for line in lines)

@@ -973,13 +973,49 @@ BOE_CHANGES = "boe-changes.csv"
 UNSCHEDULED = "unscheduled"
 
 
-def boe_changes(seed_dir: Path) -> dict[date, tuple[time, float]]:
-    """The Bank's Bank Rate changes from ``seed_dir``: each day's London hour and new rate."""
-    with (seed_dir / BOE_CHANGES).open(newline="") as file:
+def rate_changes(path: Path) -> dict[date, tuple[time, float]]:
+    """A bank's rate changes from a seed file: each day's local hour and new rate."""
+    with path.open(newline="") as file:
         return {
             date.fromisoformat(row["day"]): (time.fromisoformat(row["time"]), float(row["rate"]))
             for row in csv.DictReader(file)
         }
+
+
+def boe_changes(seed_dir: Path) -> dict[date, tuple[time, float]]:
+    """The Bank's Bank Rate changes from ``seed_dir``: each day's London hour and new rate."""
+    return rate_changes(seed_dir / BOE_CHANGES)
+
+
+def calendar_and_changes(
+    start: date,
+    country: str,
+    zone: ZoneInfo,
+    changes: Mapping[date, tuple[time, float]],
+    cache_dir: Path,
+    today: date,
+    rateless_held: bool = False,
+) -> tuple[list[datetime], list[datetime]]:
+    """A bank's decisions announced from ``start`` to ``today``, in UTC and in order: the
+    ``country`` calendar's, and apart, each of its ``changes`` on a day the calendar lacks, at its
+    hour in ``zone``. With ``rateless_held``, a calendar row with no rate before ``today`` is a
+    decision held."""
+    payloads = sources.fetch_tradingview_since(start, cache_dir, today, country)
+    held_before = datetime.combine(today, time(0), zone) if rateless_held else None
+    listed = sorted(
+        {
+            d
+            for payload in payloads
+            for d in sources.parse_rate_decisions(payload, held_before=held_before)
+        }
+    )
+    days = {d.astimezone(zone).date() for d in listed}
+    added = sorted(
+        datetime.combine(day, at, zone).astimezone(UTC)
+        for day, (at, _) in changes.items()
+        if day not in days and start <= day <= today
+    )
+    return listed, added
 
 
 def load_boe_decisions(
@@ -988,15 +1024,9 @@ def load_boe_decisions(
     """Every BoE decision announced from ``BOE_FROM`` to ``today``, in UTC and in order: the
     calendar's, and apart, each change of the Bank's on a day the calendar lacks, at its hour."""
     today = today if today is not None else datetime.now(sources.LONDON).date()
-    payloads = sources.fetch_tradingview_since(BOE_FROM, cache_dir, today, "GB")
-    listed = sorted({d for payload in payloads for d in sources.parse_rate_decisions(payload)})
-    days = {d.astimezone(sources.LONDON).date() for d in listed}
-    added = sorted(
-        datetime.combine(day, at, sources.LONDON).astimezone(UTC)
-        for day, (at, _) in boe_changes(seed_dir).items()
-        if day not in days and day <= today
+    return calendar_and_changes(
+        BOE_FROM, "GB", sources.LONDON, boe_changes(seed_dir), cache_dir, today
     )
-    return listed, added
 
 
 class BoeFlow:
@@ -1034,6 +1064,77 @@ class BoeFlow:
     def scheduled(self, cache_dir: Path, start: date, end: date) -> list[tuple[datetime, str]]:
         return scheduled_rows(
             "GB",
+            self.zone,
+            cache_dir,
+            start,
+            end,
+            lambda day, _, title: title == sources.RATE_DECISION,
+        )
+
+
+# The Bank of Canada's decisions (docs/steps/canada.md): TradingView lists them from 2008-01-22;
+# the Bank's own changes of its target for the overnight rate add the cut of 2008-10-08 it lacks.
+BOC_FROM = date(2008, 1, 1)
+BOC_CHANGES = "boc-changes.csv"
+CANADA = "Canada"
+# Toronto keeps New York's clock.
+TORONTO = sources.NEW_YORK
+
+
+def boc_changes(seed_dir: Path) -> dict[date, tuple[time, float]]:
+    """The Bank of Canada's changes of its target from ``seed_dir``: each day's Toronto hour and
+    new rate."""
+    return rate_changes(seed_dir / BOC_CHANGES)
+
+
+def load_boc_decisions(
+    cache_dir: Path, seed_dir: Path, today: date | None = None
+) -> tuple[list[datetime], list[datetime]]:
+    """Every Bank of Canada decision announced from ``BOC_FROM`` to ``today``, in UTC and in order:
+    the calendar's, and apart, each of the Bank's changes on a day the calendar lacks, at its
+    hour. The calendar lists the 15 decisions of 2012-01-17 to 2013-10-23 without a rate; each is
+    a decision held (docs/steps/canada.md)."""
+    today = today if today is not None else datetime.now(TORONTO).date()
+    return calendar_and_changes(
+        BOC_FROM, "CA", TORONTO, boc_changes(seed_dir), cache_dir, today, rateless_held=True
+    )
+
+
+class BocFlow:
+    """The Bank of Canada's rate decisions from TradingView's calendar, at the time each was
+    announced, and the Bank's changes the calendar lacks. No surprise; a lesser flow."""
+
+    event_type = FOMC_EVENT_TYPE
+    country = CANADA
+    zone = TORONTO
+    type_code = 38
+    cli_name = "boc"
+    label = "BoC"
+    surprise_rule: SurpriseRule | None = None
+    lesser: bool = True
+
+    def events(self, api_key: str) -> EventBatch:
+        listed, added = load_boc_decisions(settings.cache_dir, settings.seed_dir)
+        if not listed:
+            raise sources.CalendarError("TradingView listed no BoC decisions")
+        events = sorted(
+            [decision_instance(self, d) for d in listed]
+            + [decision_instance(self, d, UNSCHEDULED) for d in added],
+            key=lambda e: e.event_ts,
+        )
+        first, last = (release_date(e) for e in (events[0], events[-1]))
+        report = [f"loaded {len(events)} BoC decisions, {first} … {last}"]
+        if added:
+            days = ", ".join(str(d.astimezone(self.zone).date()) for d in added)
+            report.append(f"  {len(added)} from the Bank's changes the calendar lacks: {days}")
+        return EventBatch(events, report)
+
+    def actuals(self, events: Sequence[EventInstance], api_key: str) -> list[Actual]:
+        return []
+
+    def scheduled(self, cache_dir: Path, start: date, end: date) -> list[tuple[datetime, str]]:
+        return scheduled_rows(
+            "CA",
             self.zone,
             cache_dir,
             start,
@@ -1477,7 +1578,7 @@ class LevelFlow:
 
 
 CPI_FLOW, NFP_FLOW, FED_FLOW, ECB_FLOW = CpiFlow(), NfpFlow(), FedFlow(), EcbFlow()
-BOE_FLOW, BOJ_FLOW = BoeFlow(), BojFlow()
+BOE_FLOW, BOJ_FLOW, BOC_FLOW = BoeFlow(), BojFlow(), BocFlow()
 HICP_FLOW = TradingViewFlow(
     CPI_EVENT_TYPE,
     EURO_AREA,
@@ -1920,6 +2021,7 @@ EVENT_FLOWS: list[EventFlow] = [
     ADDITIONS_FLOW,
     EARNINGS_500_FLOW,
     SPLITS_FLOW,
+    BOC_FLOW,
 ]
 
 
