@@ -15,6 +15,7 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import re
 import math
 import statistics
 import subprocess
@@ -29,7 +30,7 @@ from typing import NamedTuple
 
 import duckdb
 
-from . import db, expectations, flows, seed, sources, study
+from . import stats, db, expectations, flows, seed, sources, study
 from .config import settings
 from .models import EventInstance, Surprise
 
@@ -2636,56 +2637,76 @@ SCOREBOARD_DATA_MARK = "__SCOREBOARD_DATA__"
 PREDICTS_DATA_MARK = "__PREDICTS_DATA__"
 
 
-# Step 49, our guesses (docs/steps/our-guesses.md): the Subscription LLM's guesses from the day's
-# news, labelled apart from the tested forecasts, kept before their span starts and graded.
+# Steps 49 and 50, our guesses and the guess ledger (docs/steps/our-guesses.md,
+# docs/steps/guess-ledger.md): the Subscription LLM's guesses from the day's news, up to 50 an
+# evening, each checked, kept before its span, graded by the closes, reviewed by the model against
+# its own reasoning, and the reviews turned monthly into numbered lessons.
 GUESS_MODEL = "claude-opus-5-5"
-GUESS_SPANS = {"week": 5, "month": 21}
-GUESS_MAX = 2
-GUESS_WORDS = 30
+GUESS_MAX = 50
 GUESS_TWINS = {"SPY / ES": "stocks", "COMP": "stocks"}
+GUESS_TAGS = (
+    "momentum",
+    "reversal",
+    "interest rates",
+    "inflation",
+    "jobs",
+    "earnings",
+    "oil supply",
+    "geopolitics",
+    "policy",
+    "sentiment",
+    "season",
+    "other",
+)
+GUESS_CONFIDENCE = ("low", "medium", "high")
+HORIZONS = (("week", 5), ("month", 21), ("quarter", 63), ("year", 261))
+GUESS_APART = 5
 GUESS_FIELDS = (
     "stated",
     "market",
-    "span",
+    "horizon",
     "direction",
     "first",
     "last",
-    "reason",
+    "statement",
+    "reasoning",
+    "tag",
+    "confidence",
     "source",
     "model",
+    "lessons",
     "grade",
+    "move",
+    "review",
 )
+LESSONS_HEAD = re.compile(r"^## Version (\d+), (\d{4}-\d{2}-\d{2})$", re.M)
 
 
-def ask_for_guesses(today: date) -> str:
-    """The Subscription LLM's answer, in a fresh session with web search only."""
-    prompt = files("fortuneteller").joinpath("guess_prompt.txt").read_text()
-    prompt = prompt.format(today=today.isoformat(), markets=", ".join(LONG_RUN_MARKETS))
-    done = subprocess.run(
-        [
-            "claude",
-            "-p",
-            prompt,
-            "--model",
-            GUESS_MODEL,
-            "--allowedTools",
-            "WebSearch",
-            "--output-format",
-            "json",
-        ],
-        capture_output=True,
-        text=True,
-        timeout=600,
-        check=True,
-    )
+def _weekdays_between(start: date, end: date) -> int:
+    count, day = 0, start
+    while day < end:
+        day += timedelta(days=1)
+        count += day.weekday() < 5
+    return count
+
+
+def horizon(today: date, last: date) -> str | None:
+    """The horizon of a guess made on ``today``'s evening ending on ``last``; none past a year."""
+    ahead = _weekdays_between(today, last)
+    return next((name for name, most in HORIZONS if ahead <= most), None)
+
+
+def _run_model(prompt: str, web: bool) -> str:
+    """One fresh Subscription LLM session; its answer's text."""
+    command = ["claude", "-p", prompt, "--model", GUESS_MODEL, "--output-format", "json"]
+    if web:
+        command += ["--allowedTools", "WebSearch"]
+    done = subprocess.run(command, capture_output=True, text=True, timeout=1800, check=True)
     return str(json.loads(done.stdout)["result"])
 
 
-def keep_guesses(
-    answer: str, rows: list[dict[str, str]], today: date
-) -> tuple[list[dict[str, str]], list[str]]:
-    """``rows`` with each acceptable guess in ``answer`` added, and why each other was dropped."""
-    guesses = None
+def _json_list(answer: str) -> list[object] | None:
+    """The first JSON list in ``answer``, at any ``[``; none if there is none."""
     decoder = json.JSONDecoder()
     for at in (i for i, ch in enumerate(answer) if ch == "["):
         try:
@@ -2693,9 +2714,91 @@ def keep_guesses(
         except json.JSONDecodeError:
             continue
         if isinstance(found, list):
-            guesses = found
-            break
-    if not isinstance(guesses, list):
+            return found
+    return None
+
+
+def _prompt(name: str, **fields: str) -> str:
+    return files("fortuneteller").joinpath(name).read_text().format(**fields)
+
+
+def market_list() -> str:
+    names = market_names()
+    return "\n".join(
+        f"{m}: {PLAIN_MARKETS.get(m, names.get(m, m))}" for m in study.MVP_PRICE_SERIES
+    )
+
+
+def _open(rows: Sequence[Mapping[str, str]]) -> list[Mapping[str, str]]:
+    return [r for r in rows if not r.get("grade")]
+
+
+def ask_for_guesses(today: date, rows: Sequence[Mapping[str, str]], lessons: str) -> str:
+    """The model's new guesses for ``today``'s evening, shown the open ones and the lessons."""
+    shown = "\n".join(
+        f"{r['market']} {r.get('horizon', '')} {r['direction']} to {r['last']}: "
+        f"{r.get('statement') or r.get('reason', '')}"
+        for r in _open(rows)
+    )
+    return _run_model(
+        _prompt(
+            "guess_prompt.txt",
+            today=today.isoformat(),
+            markets=market_list(),
+            tags=", ".join(GUESS_TAGS),
+            most=str(GUESS_MAX),
+            open=shown or "(none)",
+            lessons=lessons or "(none yet)",
+        ),
+        web=True,
+    )
+
+
+def _why_not(g: Mapping[str, object], kept: Sequence[Mapping[str, str]], today: date) -> str | None:
+    market, direction = g.get("market"), g.get("direction")
+    statement, reasoning = str(g.get("statement", "")).strip(), str(g.get("reasoning", "")).strip()
+    source = str(g.get("source", "")).strip()
+    try:
+        last = date.fromisoformat(str(g.get("end", "")))
+    except ValueError:
+        return "no end date"
+    reach = horizon(today, last)
+    if market not in study.MVP_PRICE_SERIES:
+        return "a market not listed"
+    if direction not in ("up", "down"):
+        return "a direction not up or down"
+    if last.weekday() >= 5 or _weekdays_between(today, last) < 2 or reach is None:
+        return "an end date not a weekday from the second after tonight to a year"
+    if not statement or len(statement.split()) > 40:
+        return "a statement missing or over 40 words"
+    if not 15 <= len(reasoning.split()) <= 150:
+        return "reasoning not 15 to 150 words"
+    if "%" in statement or "%" in reasoning:
+        return "a percent sign"
+    if g.get("tag") not in GUESS_TAGS:
+        return "a tag not listed"
+    if g.get("confidence") not in GUESS_CONFIDENCE:
+        return "a confidence not low, medium or high"
+    if not source.startswith("https://") or " " in source:
+        return "no https link to its news"
+    group = GUESS_TWINS.get(str(market), str(market))
+    for r in _open(kept):
+        near = abs(
+            _weekdays_between(
+                min(last, date.fromisoformat(r["last"])), max(last, date.fromisoformat(r["last"]))
+            )
+        )
+        if GUESS_TWINS.get(r["market"], r["market"]) == group and near < GUESS_APART:
+            return f"repeats an open guess on {r['market']} ending {r['last']}"
+    return None
+
+
+def keep_guesses(
+    answer: str, rows: list[dict[str, str]], today: date, lessons_version: str = "0"
+) -> tuple[list[dict[str, str]], list[str]]:
+    """``rows`` with each acceptable guess in ``answer`` added, and why each other was dropped."""
+    guesses = _json_list(answer)
+    if guesses is None:
         return rows, ["the answer held no JSON list"]
     kept, dropped = list(rows), []
     first = _weekdays_after(today, 1)
@@ -2703,52 +2806,117 @@ def keep_guesses(
         if not isinstance(g, dict):
             dropped.append(f"not a guess: {g!r}")
             continue
-        market, span = g.get("market"), g.get("span")
-        direction, reason = g.get("direction"), str(g.get("reason", "")).strip()
-        source = str(g.get("source", "")).strip()
-        why = (
-            "a market not listed"
-            if market not in LONG_RUN_MARKETS
-            else "a span not a week or a month"
-            if span not in GUESS_SPANS
-            else "a direction not up or down"
-            if direction not in ("up", "down")
-            else "no reason"
-            if not reason
-            else "a reason over 30 words"
-            if len(reason.split()) > GUESS_WORDS
-            else "a percent sign"
-            if "%" in reason
-            else "no https link to its news"
-            if not source.startswith("https://") or " " in source
-            else "one of the same market and span still open"
-            if any(
-                GUESS_TWINS.get(r["market"], r["market"]) == GUESS_TWINS.get(str(market), market)
-                and r["span"] == span
-                and r["last"] >= first.isoformat()
-                for r in kept
-            )
-            else None
-        )
+        why = _why_not(g, kept, today)
         if why:
-            dropped.append(f"{market} {span}: {why}")
+            dropped.append(f"{g.get('market')} to {g.get('end')}: {why}")
             continue
-        assert isinstance(span, str)
+        last = date.fromisoformat(str(g["end"]))
         kept.append(
             {
                 "stated": today.isoformat(),
-                "market": str(market),
-                "span": span,
-                "direction": str(direction),
+                "market": str(g["market"]),
+                "horizon": str(horizon(today, last)),
+                "direction": str(g["direction"]),
                 "first": first.isoformat(),
-                "last": _weekdays_after(today, GUESS_SPANS[span]).isoformat(),
-                "reason": reason,
-                "source": source,
+                "last": last.isoformat(),
+                "statement": str(g["statement"]).strip(),
+                "reasoning": str(g["reasoning"]).strip(),
+                "tag": str(g["tag"]),
+                "confidence": str(g["confidence"]),
+                "source": str(g["source"]).strip(),
                 "model": GUESS_MODEL,
+                "lessons": lessons_version,
                 "grade": "",
+                "move": "",
+                "review": "",
             }
         )
     return kept, dropped
+
+
+def grade_guesses(
+    rows: list[dict[str, str]], closes: Callable[[str], Sequence[sources.DailyClosingPrice]]
+) -> list[dict[str, str]]:
+    """``grade_forecasts`` on the ledger, keeping each newly graded row's move."""
+    graded = []
+    for r in rows:
+        if r.get("grade"):
+            graded.append(r)
+            continue
+        new = grade_forecasts([r], closes)[0]
+        if new["grade"]:
+            series = closes(r["market"])
+            first, last = date.fromisoformat(r["first"]), date.fromisoformat(r["last"])
+            before = [c for c in series if c.day < first][-1].price
+            after = [c for c in series if c.day <= last][-1].price
+            new = {**new, "move": f"{before:g} to {after:g}"}
+        graded.append(new)
+    return graded
+
+
+def review_guesses(rows: list[dict[str, str]], ask: Callable[[str], str]) -> list[dict[str, str]]:
+    """Each graded row with no review given the model's review of its own reasoning; the grade is
+    never changed."""
+    due = [
+        i
+        for i, r in enumerate(rows)
+        if r.get("grade") and not r.get("review") and r.get("reasoning")
+    ]
+    if not due:
+        return rows
+    listed = "\n".join(
+        json.dumps(
+            {
+                "id": i,
+                "market": rows[i]["market"],
+                "statement": rows[i]["statement"],
+                "reasoning": rows[i]["reasoning"],
+                "grade": rows[i]["grade"],
+                "move": rows[i]["move"],
+                "from": rows[i]["first"],
+                "to": rows[i]["last"],
+            }
+        )
+        for i in due
+    )
+    reviews = _json_list(ask(_prompt("review_prompt.txt", guesses=listed))) or []
+    out = list(rows)
+    for item in reviews:
+        if isinstance(item, dict) and item.get("id") in due:
+            text = " ".join(str(item.get("review", "")).split()[:80])
+            out[int(item["id"])] = {**out[int(item["id"])], "review": text}
+    return out
+
+
+def lessons_version(text: str) -> tuple[int, str | None]:
+    """The latest version's number and date in ``lessons.md``; 0 and none before the first."""
+    found = LESSONS_HEAD.findall(text)
+    return (int(found[0][0]), found[0][1]) if found else (0, None)
+
+
+def update_lessons(
+    text: str, rows: Sequence[Mapping[str, str]], today: date, ask: Callable[[str], str]
+) -> str:
+    """On the first evening of a month without a version, version N + 1 from the reviews since N,
+    newest version first; else ``text`` as it was."""
+    number, dated = lessons_version(text)
+    if dated is not None and dated[:7] == today.isoformat()[:7]:
+        return text
+    since = dated or "0000-00-00"
+    reviews = [r for r in rows if r.get("review") and r["last"] >= since]
+    if not reviews:
+        return text
+    listed = "\n".join(
+        f"- {r['market']} {r['direction']} to {r['last']} ({r['tag']}, {r['confidence']}): "
+        f"{r['grade']}. {r['review']}"
+        for r in reviews
+    )
+    body = ask(_prompt("lessons_prompt.txt", lessons=text or "(none yet)", reviews=listed))
+    body = " ".join(body.split()[:400])
+    head = f"## Version {number + 1}, {today.isoformat()}"
+    title = "# Lessons\n\nWhat the fortune teller's guesser reads each evening, newest first.\n"
+    rest = text.split("\n", 3)[3] if text.startswith("# Lessons") else ""
+    return f"{title}\n{head}\n\n{body}\n\n{rest}".rstrip() + "\n"
 
 
 def _read_rows(path: Path) -> list[dict[str, str]]:
@@ -2761,39 +2929,71 @@ def _read_rows(path: Path) -> list[dict[str, str]]:
 def _write_rows(path: Path, fields: Sequence[str], rows: Sequence[Mapping[str, str]]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", newline="") as fh:
-        writer = csv.DictWriter(fh, fields, lineterminator="\n")
+        writer = csv.DictWriter(fh, fields, lineterminator="\n", extrasaction="ignore")
         writer.writeheader()
-        writer.writerows(rows)
+        writer.writerows([{f: r.get(f, "") for f in fields} for r in rows])
+
+
+def _ledger_row(r: Mapping[str, str]) -> dict[str, str]:
+    """A step 49 row read as the ledger's: its span as a horizon, its reason as its statement."""
+    if "horizon" in r:
+        return dict(r)
+    return {
+        **r,
+        "horizon": r.get("span", ""),
+        "statement": r.get("reason", ""),
+        "reasoning": "",
+        "tag": "",
+        "confidence": "",
+        "lessons": "0",
+        "move": "",
+        "review": "",
+    }
 
 
 def _guess(_args: argparse.Namespace) -> int:
     today = _now().astimezone(sources.NEW_YORK).date()
-    path = settings.scoreboard_dir.parent / "predicts" / "our-guesses.csv"
-    rows = _read_rows(path)
-    try:
-        answer = ask_for_guesses(today)
-    except (OSError, subprocess.SubprocessError, ValueError, KeyError) as exc:
-        print(f"guess: no guesses tonight: {exc}", file=sys.stderr)
-        return 0
-    kept, dropped = keep_guesses(answer, rows, today)
-    if dropped == ["the answer held no JSON list"]:
-        print(f"guess: no JSON list, asking once more: {answer[:200]!r}", file=sys.stderr)
+    folder = settings.scoreboard_dir.parent / "predicts"
+    path, lessons_path = folder / "our-guesses.csv", folder / "lessons.md"
+    rows = [_ledger_row(r) for r in _read_rows(path)]
+    con = db.get_connection()
+
+    def closes(market: str) -> Sequence[sources.DailyClosingPrice]:
         try:
-            kept, dropped = keep_guesses(ask_for_guesses(today), rows, today)
-        except (OSError, subprocess.SubprocessError, ValueError, KeyError) as exc:
-            print(f"guess: no guesses tonight: {exc}", file=sys.stderr)
-            return 0
+            return study.stored_closes(market, con)
+        except ValueError:
+            return []
+
+    rows = grade_guesses(rows, closes)
+    lessons = lessons_path.read_text() if lessons_path.exists() else ""
+    try:
+        rows = review_guesses(rows, lambda prompt: _run_model(prompt, web=False))
+        updated = update_lessons(lessons, rows, today, lambda prompt: _run_model(prompt, web=False))
+        if updated != lessons:
+            lessons_path.write_text(updated)
+            lessons = updated
+        answer = ask_for_guesses(today, rows, lessons)
+        kept, dropped = keep_guesses(answer, rows, today, str(lessons_version(lessons)[0]))
+        if dropped == ["the answer held no JSON list"]:
+            print(f"guess: no JSON list, asking once more: {answer[:200]!r}", file=sys.stderr)
+            kept, dropped = keep_guesses(
+                ask_for_guesses(today, rows, lessons), rows, today, str(lessons_version(lessons)[0])
+            )
+    except (OSError, subprocess.SubprocessError, ValueError, KeyError) as exc:
+        print(f"guess: the model failed: {exc}", file=sys.stderr)
+        _write_rows(path, GUESS_FIELDS, rows)
+        return 0
     for why in dropped:
         print(f"guess: dropped {why}", file=sys.stderr)
     _write_rows(path, GUESS_FIELDS, kept)
-    print(f"guess: {len(kept) - len(rows)} kept")
+    print(f"guess: {len(kept) - len(rows)} kept, {len(dropped)} dropped")
     return 0
 
 
 def guess_card(g: Mapping[str, str]) -> dict[str, object]:
     """A kept guess as the page shows it."""
-    what = PLAIN_MARKETS.get(g["market"], g["market"])
     side = "higher" if g["direction"] == "up" else "lower"
+    what = PLAIN_MARKETS.get(g["market"], market_names().get(g["market"], g["market"]))
     base = date.fromisoformat(g["first"]) - timedelta(days=1)
     while base.weekday() >= 5:
         base -= timedelta(days=1)
@@ -2801,14 +3001,131 @@ def guess_card(g: Mapping[str, str]) -> dict[str, object]:
         "guess": True,
         "until": g["last"],
         "when": f"Our guess, made {_plain_day(g['stated'])}",
-        "event": f"{what[0].upper()}{what[1:]}, over the next {g['span']}",
-        "outcome": f"{side} on {_plain_day(g['last'])} than on {_plain_day(base.isoformat())}",
+        "event": g.get("statement") or f"{what[0].upper()}{what[1:]}",
+        "outcome": f"{what} {side} on {_plain_day(g['last'])} than on {_plain_day(base.isoformat())}",
         "direction": g["direction"],
-        "record": "Why: " + g["reason"],
+        "record": "Why: " + (g.get("reasoning") or g.get("reason") or g.get("statement", "")),
         "note": "",
         "link": "",
         "source": g.get("source", ""),
     }
+
+
+def front_guesses(
+    rows: Sequence[Mapping[str, str]], promoted: set[str], today: date, most: int
+) -> list[Mapping[str, str]]:
+    """The open guesses the front page shows: a promoted tag first, then high confidence, then
+    the soonest end date."""
+    rank = {"high": 0, "medium": 1, "low": 2}
+    live = [r for r in _open(rows) if r["last"] >= today.isoformat()]
+    live.sort(
+        key=lambda r: (
+            r.get("tag") not in promoted,
+            rank.get(r.get("confidence", ""), 3),
+            r["last"],
+        )
+    )
+    return live[:most]
+
+
+def guess_record(rows: Sequence[Mapping[str, str]], key: str) -> list[dict[str, object]]:
+    """The record by ``key`` (tag, confidence, horizon, market or lessons): each guess, and each
+    evening's guesses of the value as one try once all of them are graded, right if more than
+    half came true (a tie is not); rung 2's verdict on the evenings."""
+    groups: dict[str, dict[str, list[bool]]] = {}
+    pending = {(r.get(key) or "(none)", r["stated"]) for r in rows if not r.get("grade")}
+    for r in rows:
+        value = r.get(key) or "(none)"
+        if r.get("grade") not in ("came true", "did not") or (value, r["stated"]) in pending:
+            continue
+        groups.setdefault(value, {}).setdefault(r["stated"], []).append(r["grade"] == "came true")
+    out = []
+    for value, evenings in sorted(groups.items()):
+        each = [g for day in evenings.values() for g in day]
+        tries = [sum(day) * 2 > len(day) for day in evenings.values()]
+        right, n = sum(tries), len(tries)
+        p = stats.binomial_p(right, n)
+        verdict = (
+            "too few" if n < 30 else "holds" if right >= 0.6 * n and p < 0.01 else "doesn't hold"
+        )
+        out.append(
+            {
+                key: value,
+                "guesses": len(each),
+                "came_true": sum(each),
+                "evenings": n,
+                "evenings_right": right,
+                "p": p,
+                "verdict": verdict,
+            }
+        )
+    return out
+
+
+FRONT_MOST = 5
+STATS_KEYS = (
+    ("tag", "Kind of reasoning"),
+    ("confidence", "Confidence"),
+    ("horizon", "Horizon"),
+    ("lessons", "Lessons version"),
+)
+
+
+def write_stats(path: Path, rows: Sequence[Mapping[str, str]], promoted: set[str]) -> None:
+    """The stats page: the tally, the record by kind, and every guess with its grade and review."""
+    from html import escape
+
+    def table(key: str, title: str) -> str:
+        lines = [
+            f"<tr><td>{escape(str(r[key]))}{' (promoted)' if key == 'tag' and r[key] in promoted else ''}</td>"
+            f"<td>{r['came_true']} of {r['guesses']}</td><td>{r['evenings_right']} of {r['evenings']}</td>"
+            f"<td>{r['verdict']}</td></tr>"
+            for r in guess_record(rows, key)
+        ]
+        head = (
+            f"<h2>{title}</h2><table><tr><th></th><th>Guesses that came true</th>"
+            "<th>Evenings mostly right</th><th>Verdict</th></tr>"
+        )
+        return head + "".join(lines) + "</table>" if lines else ""
+
+    def item(r: Mapping[str, str]) -> str:
+        grade = r.get("grade") or "open"
+        parts = [
+            f"<li class='{escape(grade.replace(' ', '-'))}'><div class='meta'>{escape(r['stated'])}"
+            f" to {escape(r['last'])} · {escape(r['market'])} {escape(r['direction'])}"
+            f" · {escape(r.get('tag') or '')} · {escape(r.get('confidence') or '')} confidence"
+            f" · <b>{escape(grade)}</b>{(' (' + escape(r['move']) + ')') if r.get('move') else ''}</div>",
+            f"<p class='statement'>{escape(r.get('statement') or '')}</p>",
+        ]
+        if r.get("reasoning"):
+            parts.append(f"<p><b>Reasoning:</b> {escape(r['reasoning'])}</p>")
+        if r.get("review"):
+            parts.append(f"<p><b>Looking back:</b> {escape(r['review'])}</p>")
+        if r.get("source"):
+            parts.append(
+                f"<p><a href='{escape(r['source'])}' rel='noopener nofollow'>The news</a></p>"
+            )
+        return "".join(parts) + "</li>"
+
+    t = forecast_tally(rows)
+    newest = sorted(rows, key=lambda r: (r["stated"], r["last"]), reverse=True)
+    body = (
+        "<h1>Our guesses: the record</h1>"
+        f"<p class='lede'>Every guess the fortune teller has made, with its reasoning, its grade once its"
+        f" end date passed, and its own look back. {t['came_true']} came true, {t['did_not']} did not,"
+        f" {t['open']} still open. Guesses made on one evening move together, so a kind of reasoning is"
+        " judged by its evenings: an evening counts once, right if most of its guesses came true. A kind"
+        " is promoted when it has 30 evenings, at least 60 in 100 mostly right, and a chance of under"
+        " 1 in 100 that a coin would do as well. For fun, not financial advice.</p>"
+        "<p><a href='../'>Back to Fortuneteller predicts</a> · <a href='../lessons.md'>The lessons</a></p>"
+        + "".join(table(k, title) for k, title in STATS_KEYS)
+        + "<h2>Every guess, newest first</h2><ol class='all'>"
+        + "".join(item(r) for r in newest)
+        + "</ol>"
+    )
+    path.parent.mkdir(parents=True, exist_ok=True)
+    page = files("fortuneteller").joinpath("stats.html").read_text()
+    path.write_text(page.replace("__STATS_BODY__", body))
 
 
 def stated_forecasts(
@@ -2831,15 +3148,14 @@ def stated_forecasts(
     told = stated({**data, "forecasts": runs}, today, rows)
     rows = keep_forecasts(rows, told, today)
     _write_rows(kept_path, FORECAST_FIELDS, rows)
-    guess_path = kept_path.parent / "our-guesses.csv"
-    guesses = grade_forecasts(_read_rows(guess_path), closes)
-    if guesses:
-        _write_rows(guess_path, GUESS_FIELDS, guesses)
+    guesses = [_ledger_row(r) for r in _read_rows(kept_path.parent / "our-guesses.csv")]
+    promoted = {str(t["tag"]) for t in guess_record(guesses, "tag") if t["verdict"] == "holds"}
+    write_stats(kept_path.parent / "stats" / "index.html", guesses, promoted)
     return {
         "guesses": [
-            guess_card(g) for g in sorted(guesses, key=lambda g: g["last"]) if not g["grade"]
+            guess_card(g) for g in front_guesses(guesses, promoted, today, FRONT_MOST - len(told))
         ],
-        "guess_tally": forecast_tally(guesses),
+        "guess_tally": forecast_tally([g for g in guesses if g.get("grade") != "void"]),
         "stated": [{k: v for k, v in t.items() if k != "row"} for t in told],
         "tally": forecast_tally(rows),
         "kept_since": rows[0]["stated"] if rows else None,
