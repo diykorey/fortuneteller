@@ -107,6 +107,9 @@ li.card::before {
 }
 .then.up { color: var(--up); background: var(--up-soft); }
 .then.down { color: var(--down); background: var(--down-soft); }
+.tally { margin: -16px 0 20px; font-size: 14px; font-weight: 600; color: var(--accent); }
+.tally:empty { display: none; }
+li.card.stated { border-color: color-mix(in srgb, var(--accent) 40%, transparent); }
 .note { margin: 8px 0 0; font-size: 13px; color: var(--muted); }
 .record { margin: 12px 0 0; display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--muted); }
 .record a { color: var(--accent); text-decoration: none; font-weight: 600; margin-left: auto; white-space: nowrap; }
@@ -128,10 +131,12 @@ footer a { color: var(--accent); }
 <main>
   <div class="brand"><span class="orb" aria-hidden="true"></span>FortuneTeller</div>
   <h1>Fortuneteller predicts:</h1>
-  <p class="lede"><b>These are not forecasts that something will happen.</b> Each card says: if
-  this news comes out, here is what followed similar news in the past, counted. Nobody knows the
-  news before it comes out. It tells which way, not by how much. Only rules that held up when
-  tested on past events are shown. <b>For fun, not financial advice.</b></p>
+  <p class="lede">The first cards say what will happen: the way a market has gone most often over
+  the same stretch of time, or what followed news like the one that just came out. The rest say
+  what follows <em>if</em> a piece of news comes out, since nobody knows it before it does. Each
+  tells which way, not by how much, and only rules that held up when tested on the past are shown.
+  Every forecast is kept and checked when its time is up. <b>For fun, not financial advice.</b></p>
+  <p id="tally" class="tally"></p>
   <ol id="predictions"></ol>
   <footer>
     <span id="written"></span>
@@ -149,8 +154,10 @@ footer a { color: var(--accent); }
     return node;
   };
   const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
-  // The dated ones not yet passed, New York's day, soonest first; then the undated; five at most.
-  const shown = data.predictions.filter((p) => p.day && p.day >= today)
+  // The stated forecasts whose span has not ended, then the dated ones not yet passed (New York's
+  // day), soonest first, then the undated; five at most.
+  const stated = (data.stated || []).filter((p) => !p.until || p.until >= today);
+  const shown = stated.concat(data.predictions.filter((p) => p.day && p.day >= today))
     .concat(data.predictions.filter((p) => !p.day)).slice(0, 5);
   const list = document.getElementById('predictions');
   const dayName = (iso) => new Date(iso + 'T12:00:00Z').toLocaleDateString('en-US',
@@ -158,23 +165,33 @@ footer a { color: var(--accent); }
   if (!shown.length) list.appendChild(el('li', 'No prediction this week. The record is on the scoreboard.', 'empty'));
   shown.forEach((p) => {
     const card = el('li', null, 'card');
-    card.appendChild(el('div', (p.day ? dayName(p.day) : 'Whenever it happens') + (p.time ? ' · ' + p.time : ''), 'when'));
+    if (p.stated) card.classList.add('stated');
+    card.appendChild(el('div', p.when || ((p.day ? dayName(p.day) : 'Whenever it happens') + (p.time ? ' · ' + p.time : '')), 'when'));
     card.appendChild(el('div', p.event, 'event'));
     const say = el('p', null, 'say');
-    say.appendChild(el('span', p.condition, 'if'));
-    say.appendChild(el('span', '→', 'arrow'));
+    if (p.condition) {
+      say.appendChild(el('span', p.condition, 'if'));
+      say.appendChild(el('span', '→', 'arrow'));
+    }
     say.appendChild(el('span', (p.direction === 'up' ? '▲ ' : '▼ ') + p.outcome, 'then ' + p.direction));
     card.appendChild(say);
     if (p.note) card.appendChild(el('p', p.note, 'note'));
     const record = el('div', null, 'record');
     record.appendChild(el('span', p.record));
-    const link = el('a', 'See every past case');
-    link.href = '../scoreboard/' + (p.link || '');
-    record.appendChild(link);
+    if (p.link) {
+      const link = el('a', 'See every past case');
+      link.href = '../scoreboard/' + p.link;
+      record.appendChild(link);
+    }
     card.appendChild(record);
     list.appendChild(card);
   });
   document.getElementById('written').textContent = 'Updated ' + data.written + ', each weekday evening.';
+  const t = data.tally;
+  if (t && data.kept_since) {
+    document.getElementById('tally').textContent = 'Our stated forecasts since ' + data.kept_since + ': '
+      + t.came_true + ' came true, ' + t.did_not + ' did not, ' + t.open + ' still open.';
+  }
 })();
 </script>
 </body>

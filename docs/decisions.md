@@ -11,6 +11,21 @@ amended there with a date.
 Each entry: **what** was decided, **why**, what it **retires**, and **where** the detail is. *By the
 owner* marks a choice the owner made over another on the table.
 
+## 2026-11-21: The page states forecasts, by the owner
+
+- **What:** the predictions page says what will happen, not only what follows an *if*: a
+  market's own direction over a span where that direction, tested walk-forward over spans that do
+  not overlap, holds by rung 2's bar; and, once news has landed, what follows it where its cell
+  holds. Every stated forecast is kept in `docs/predicts/forecasts.csv` and graded when its span
+  ends; the page shows the tally.
+- **Why:** the owner asked for statements like "next year the cost of real estate will grow".
+  Of three options put to them (both kinds; the long run only; daily calls with no tested
+  record), they chose both; daily calls were not recommended, and step 48 found no market's
+  next day holds.
+- **Retires:** step 47's rule that every card is an *if*. It keeps: no event called before it
+  happens (CLAUDE.md), no percentage, only what holds is shown.
+- **Where:** [Stated forecasts](steps/stated-forecasts.md).
+
 ## 2026-11-21: The postponed list worked through, the page first, by the owner
 
 - **What:** with nothing to build before Monday, the owner asked what had been postponed. Of the

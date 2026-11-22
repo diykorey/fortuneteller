@@ -23,6 +23,10 @@ the shares trailed on 27 of 43 days (p 0.06), short of an answer; nothing answer
   reports ahead. Chosen 2026-11-21 by the owner, after step 44. Published 2026-11-21; the frozen
   file agrees with steps 35 to 37. Next: step 4's count in the week of 2026-11-30, then step 46,
   the loop's safety nets.
+- **Step 48: stated forecasts** ([the spec](steps/stated-forecasts.md)): the page says what
+  will happen, from the long run and after news, each kept and graded. Asked for by the owner
+  2026-11-21. 5 of 29 pairs hold; three forecasts stated and kept, the first graded on
+  2026-12-21. Next: step 4, its first grades in Results; then step 46.
 - **Step 47: Fortuneteller predicts** ([the spec](steps/predicts.md)): a page of one to five
   dated *if* cards from what holds, asked for by the owner 2026-11-21. Published 2026-11-21, then
   reworded for a reader without financial training. Next: step 3's bars checked on the live page.
