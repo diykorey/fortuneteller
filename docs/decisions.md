@@ -18,8 +18,8 @@ owner* marks a choice the owner made over another on the table.
   the loop's safety nets, keeps its date (before 2026-11-25) and goes before step 53.
 - **Why:** the owner asked for areas with no tested forecast to be tested on news, and for one more
   country, then chose three after a count of each candidate's releases with forecasts on
-  TradingView's calendar (2008 to 2026): Canada about 225 a year's worth of inflation, jobs,
-  retail and the Bank's 152 decisions; China its inflation, trade and factory reports, its loan
+  TradingView's calendar (2008 to 2026): Canada its inflation (225 releases), jobs and retail
+  sales, and the Bank's 152 decisions; China its inflation, trade and factory reports, its loan
   rate only from 2019; Switzerland its inflation and the SNB's 76 decisions. The ECB, the BoE and
   the BoJ gave *can't say* on their own currencies, so tested forecasts in currencies are not
   expected; the new markets are open to the guesser at once.
