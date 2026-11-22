@@ -358,7 +358,8 @@ Terms are grouped by what they are about, alphabetical within each group.
   as they stood on a fixed day. A rule is tested by the code, never answered by the model.
 - **Subscription LLM** — *added 2026-11-21* ([step 41](steps/expert-hypotheses.md)): the hosted
   language model of the owner's subscription, run by hand in a session, not called by the code;
-  each use records its model name. An API model paid by tokens may replace it later.
+  each use records its model name. *Amended 2026-11-22:* the evening job calls it for *our
+  guesses* through `claude -p` ([step 49](steps/our-guesses.md)), the one use by the code. An API model paid by tokens may replace it later.
 - **Chance line** — how many cells, or items, would pass a test at its p by luck alone: each
   test's chance summed, or 0.01 times the tests run at p < 0.01. A count at or under it plus two
   is read as chance ([step 31](steps/earnings.md)).
@@ -735,6 +736,10 @@ Terms are grouped by what they are about, alphabetical within each group.
   link's record, every event's verdicts for every market, and the chance count beside each grid.
   The first thing delivered to anyone but this laptop: GitHub Pages serves it at
   <https://diykorey.github.io/fortuneteller/scoreboard/> since 2026-10-27.
+- **Our guess** — *added 2026-11-22* ([our guesses](steps/our-guesses.md)): the Subscription
+  LLM's guess from the day's news, one market up or down over a week or a month, kept in
+  `docs/predicts/our-guesses.csv` before its span starts and graded with its own tally. Not a
+  *guess* (below), which is a person's call on a release.
 - **Guess** — a person's call on a release, up or down for one market, in a file
   `data/guesses/<day>-<handle>.csv` added through a pull request; graded beside the machine's call
   ([beat the fortune teller](steps/beat-the-fortune-teller.md)).

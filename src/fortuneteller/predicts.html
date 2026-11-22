@@ -100,15 +100,16 @@ li.card::before {
 .when { font-size: 13px; color: var(--muted); font-weight: 500; letter-spacing: 0.01em; }
 .event { margin: 2px 0 10px; font-size: 19px; font-weight: 700; letter-spacing: -0.01em; }
 .say { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 8px; margin: 0; }
-.if { font-weight: 600; }
 .then {
   display: inline-flex; align-items: center; gap: 6px;
   padding: 3px 10px; border-radius: 999px; font-weight: 600; font-size: 15px;
 }
 .then.up { color: var(--up); background: var(--up-soft); }
 .then.down { color: var(--down); background: var(--down-soft); }
-.tally { margin: -16px 0 20px; font-size: 14px; font-weight: 600; color: var(--accent); }
+.tally { white-space: pre-line; margin: -16px 0 20px; font-size: 14px; font-weight: 600; color: var(--accent); }
 .tally:empty { display: none; }
+li.card.guess { border-style: dashed; }
+li.card.guess .when { color: var(--accent); font-weight: 700; }
 li.card.stated { border-color: color-mix(in srgb, var(--accent) 40%, transparent); }
 .note { margin: 8px 0 0; font-size: 13px; color: var(--muted); }
 .record { margin: 12px 0 0; display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--muted); }
@@ -131,11 +132,11 @@ footer a { color: var(--accent); }
 <main>
   <div class="brand"><span class="orb" aria-hidden="true"></span>FortuneTeller</div>
   <h1>Fortuneteller predicts:</h1>
-  <p class="lede">The first cards say what will happen: the way a market has gone most often over
-  the same stretch of time, or what followed news like the one that just came out. The rest say
-  what follows <em>if</em> a piece of news comes out, since nobody knows it before it does. Each
-  tells which way, not by how much, and only rules that held up when tested on the past are shown.
-  Every forecast is kept and checked when its time is up. <b>For fun, not financial advice.</b></p>
+  <p class="lede">Two kinds of forecast. <b>Tested on the past:</b> where a market went the same way
+  most of the time over a stretch of time, and that kept coming true when tested on history, the
+  fortune teller says it will again. <b>Our guess:</b> a hunch from today's news, with no record
+  behind it yet. Each tells which way, not by how much. Every one is kept and checked when its
+  time is up, and the two are scored apart. <b>For fun, not financial advice.</b></p>
   <p id="tally" class="tally"></p>
   <ol id="predictions"></ol>
   <footer>
@@ -154,30 +155,31 @@ footer a { color: var(--accent); }
     return node;
   };
   const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
-  // The stated forecasts whose span has not ended, then the dated ones not yet passed (New York's
-  // day), soonest first, then the undated; five at most.
-  const stated = (data.stated || []).filter((p) => !p.until || p.until >= today);
-  const shown = stated.concat(data.predictions.filter((p) => p.day && p.day >= today))
-    .concat(data.predictions.filter((p) => !p.day)).slice(0, 5);
+  // The tested forecasts, then our guesses, whose span has not ended on New York's day; five at most.
+  const open = (p) => !p.until || p.until >= today;
+  const shown = (data.stated || []).filter(open).concat((data.guesses || []).filter(open)).slice(0, 5);
   const list = document.getElementById('predictions');
   const dayName = (iso) => new Date(iso + 'T12:00:00Z').toLocaleDateString('en-US',
     { weekday: 'short', day: 'numeric', month: 'short', timeZone: 'UTC' });
-  if (!shown.length) list.appendChild(el('li', 'No prediction this week. The record is on the scoreboard.', 'empty'));
+  if (!shown.length) list.appendChild(el('li', 'Nothing passed our tests today, so the fortune teller keeps quiet.', 'empty'));
   shown.forEach((p) => {
     const card = el('li', null, 'card');
     if (p.stated) card.classList.add('stated');
+    if (p.guess) card.classList.add('guess');
     card.appendChild(el('div', p.when || ((p.day ? dayName(p.day) : 'Whenever it happens') + (p.time ? ' · ' + p.time : '')), 'when'));
     card.appendChild(el('div', p.event, 'event'));
     const say = el('p', null, 'say');
-    if (p.condition) {
-      say.appendChild(el('span', p.condition, 'if'));
-      say.appendChild(el('span', '→', 'arrow'));
-    }
     say.appendChild(el('span', (p.direction === 'up' ? '▲ ' : '▼ ') + p.outcome, 'then ' + p.direction));
     card.appendChild(say);
     if (p.note) card.appendChild(el('p', p.note, 'note'));
     const record = el('div', null, 'record');
     record.appendChild(el('span', p.record));
+    if (p.source) {
+      const news = el('a', 'The news');
+      news.href = p.source;
+      news.rel = 'noopener nofollow';
+      record.appendChild(news);
+    }
     if (p.link) {
       const link = el('a', 'See every past case');
       link.href = '../scoreboard/' + p.link;
@@ -187,11 +189,13 @@ footer a { color: var(--accent); }
     list.appendChild(card);
   });
   document.getElementById('written').textContent = 'Updated ' + data.written + ', each weekday evening.';
-  const t = data.tally;
-  if (t && data.kept_since) {
-    document.getElementById('tally').textContent = 'Our stated forecasts since ' + data.kept_since + ': '
-      + t.came_true + ' came true, ' + t.did_not + ' did not, ' + t.open + ' still open.';
-  }
+  const line = (name, t) => name + ': ' + t.came_true + ' came true, ' + t.did_not + ' did not, '
+    + t.open + ' still open.';
+  const tallies = [];
+  if (data.tally && data.kept_since) tallies.push(line('Tested on the past, since ' + data.kept_since, data.tally));
+  const g = data.guess_tally;
+  if (g && g.came_true + g.did_not + g.open) tallies.push(line('Our guesses', g));
+  document.getElementById('tally').textContent = tallies.join('\n');
 })();
 </script>
 </body>

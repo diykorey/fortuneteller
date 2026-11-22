@@ -2345,12 +2345,9 @@ def earnings_ahead(
     return {"lines": [earnings_line(k, cells.get(k)) for k in EARNINGS_WORDS], "days": days}
 
 
-# Step 47, the predictions page (docs/steps/predicts.md): one to five dated if-then lines, each
-# from a link or cell that holds, written with the scoreboard each weekday, in words a reader
-# without financial training follows (amended 2026-11-21): no code, no term unexplained, counts
-# and never a probability or a fraction in words.
-PREDICTS_DATED = 10
-PREDICTS_MIN = 3
+# Step 47, the predictions page (docs/steps/predicts.md), in words a reader without financial
+# training follows (amended 2026-11-21): no code, no term unexplained, counts and never a
+# probability. Since 2026-11-22 it states forecasts only (step 48), no if-then cards.
 PLAIN_MARKETS = {
     "SPY / ES": "the US stock market",
     "COMP": "US tech stocks",
@@ -2389,87 +2386,12 @@ PLAIN_KINDS = {
     ("splits", "alone"): "A big US company announces a stock split",
     ("additions", "added"): "A company is announced as joining the 500 biggest US companies",
 }
-PLAIN_IF = {
-    "above": "If its profit beats what Wall Street analysts predicted",
-    "as expected": "If its profit matches what Wall Street analysts predicted",
-    "below": "If its profit is lower than Wall Street analysts predicted",
-}
-PLAIN_TIMES = {
-    "after the close": "after the US stock market closes (4 pm New York time)",
-    "before the open": "before the US stock market opens (9:30 am New York time)",
-}
-PLAIN_WHEN = {
-    "day": "that day",
-    "next": "the next day the market is open",
-    "week": "over the next week",
-    "month": "over the next month",
-}
-PLAIN_RELEASES = {
-    "nfp": (
-        "The US jobs report",
-        "the government's monthly count shows more than {above} jobs added (economists predict"
-        " about {consensus}; the rule waits for a clear surprise)",
-        1000,
-    ),
-    "cpi": (
-        "The US inflation report",
-        "prices rose more than {above} percent in the month (economists predict {consensus})",
-        1,
-    ),
-}
-
-
-def plain_outcome(market: str, direction: str, span: str, name: str = "") -> str:
-    """What followed, in words: "its stock falls behind the average big US stock that day"."""
-    when = PLAIN_WHEN.get(span, span)
-    if market == study.EXCESS_MARKET:
-        if direction == "up":
-            return f"its stock gets ahead of the average big US stock {when}: it may rise, or fall less"
-        return f"its stock falls behind the average big US stock {when}: it may fall, or rise less"
-    what = PLAIN_MARKETS.get(market, name or market)
-    verb = "go" if what.endswith(("prices", "stocks")) else "goes"
-    return f"{what} {verb} {'up' if direction == 'up' else 'down'} {when}"
-
-
-COMPANY_SUFFIXES = (
-    " & Company",
-    " & Co.",
-    ",",
-    " Inc.",
-    " Corporation",
-    " Corp.",
-    " Company",
-    " Holdings",
-    " plc",
-    " Ltd.",
-)
-
-
-def plain_company(name: str) -> str:
-    """A company's name without its legal suffixes: "Deere & Company" is "Deere"."""
-    trimmed = True
-    while trimmed:
-        trimmed = False
-        for suffix in COMPANY_SUFFIXES:
-            if name.endswith(suffix) and len(name) > len(suffix):
-                name, trimmed = name[: -len(suffix)].rstrip(), True
-    return name
 
 
 def _plain_record(right: int, graded: int, cases: str) -> str:
     """The replay's record in words, as counts: "In 58 past jobs reports, this held 39 times and
     failed 19 times." """
     return f"{cases}, this held {right:,} times and failed {graded - right:,} times."
-
-
-def _plain_clock(hhmm: str) -> str:
-    """ "08:30" is "8:30 am"."""
-    hour, minute = map(int, hhmm.split(":"))
-    return f"{(hour - 1) % 12 + 1}:{minute:02d} {'am' if hour < 12 else 'pm'}"
-
-
-def _plain_number(value: float, scale: int) -> str:
-    return f"{value * scale:,.0f}" if scale > 1 else f"{value:g}"
 
 
 # Step 48, stated forecasts (docs/steps/stated-forecasts.md): what will happen, from a market's
@@ -2530,7 +2452,6 @@ def stated(
                     "until": until,
                     "when": f"News of {_plain_day(latest['day'])}",
                     "event": label[0].upper() + label[1:],
-                    "condition": None,
                     "outcome": f"{what} higher on {_plain_day(until)} than before the news"
                     if c["answer"] == "up"
                     else f"{what} lower on {_plain_day(until)} than before the news",
@@ -2609,7 +2530,6 @@ def stated(
                 "until": last.isoformat(),
                 "when": when,
                 "event": title,
-                "condition": None,
                 "outcome": outcome,
                 "direction": direction,
                 "record": _plain_record(
@@ -2685,123 +2605,6 @@ def forecast_tally(rows: Sequence[Mapping[str, str]]) -> dict[str, int]:
     }
 
 
-def predictions(data: Mapping[str, object]) -> list[dict[str, object]]:
-    """The page's predictions: each release ahead with a link that holds and calls, the largest
-    S&P 500 company reporting each day ahead when a kind's day cell holds, soonest first; then up
-    to ``PREDICTS_MIN`` answers that hold, undated, one per kind not already shown. The page shows
-    the dated ones not yet passed, then the undated, five at most. Every card is in plain words."""
-    names = data.get("market_names") or {}
-    assert isinstance(names, dict)
-    dated: list[dict[str, object]] = []
-    releases = data.get("ahead") or []
-    assert isinstance(releases, list)
-    for r in releases:
-        held = [(m, link) for m, link in r.get("links", {}).items() if link["verdict"] == "holds"]
-        held = [(m, link) for m, link in held if link["above"] is not None]
-        if not held:
-            continue
-        market, link = max(held, key=lambda ml: ml[1]["predictions"])
-        title, shape, scale = PLAIN_RELEASES.get(
-            r["event"],
-            (
-                f"The US {r['label']} report",
-                "it came in above {above} (economists predict {consensus})",
-                1,
-            ),
-        )
-        numbers = {k: _plain_number(r[k], scale) for k in ("above", "consensus")}
-        dated.append(
-            {
-                "day": r["day"],
-                "time": f"{_plain_clock(r['time'])} New York time",
-                "event": title,
-                "condition": "If " + shape.format(**numbers),
-                "outcome": plain_outcome(market, link["above"], "day", names.get(market, "")),
-                "direction": link["above"],
-                "right": link["right"],
-                "graded": link["predictions"],
-                "record": _plain_record(
-                    link["right"],
-                    link["predictions"],
-                    f"In {link['predictions']:,} past {title.removeprefix('The US ')}s",
-                ),
-                "note": "",
-                "link": f"#ask/{r['event']}/above",
-            }
-        )
-    ask = data.get("ask") or []
-    assert isinstance(ask, list)
-    group = next((f for f in ask if f["name"] == "earnings500"), None)
-    ahead = data.get("earnings_ahead") or {}
-    assert isinstance(ahead, dict)
-    if group is not None:
-        cells = [
-            c
-            for c in group["cells"]
-            if c["span"] == "day" and c["market"] == study.EXCESS_MARKET and _answered(c)
-        ]
-        for d in ahead.get("days", []):
-            company = max(d["reports"], key=lambda r: r["cap"])
-            after = company["time"] == "after the close"
-            for c in cells:
-                dated.append(
-                    {
-                        "day": d["day"],
-                        "time": PLAIN_TIMES.get(company["time"], "time not announced"),
-                        "event": f"{plain_company(company['name'])} announces its profit"
-                        " for the last three months",
-                        "condition": PLAIN_IF[c["kind"]],
-                        "outcome": plain_outcome(
-                            c["market"], c["answer"], "next" if after else "day"
-                        ),
-                        "direction": c["answer"],
-                        "right": c["right"],
-                        "graded": c["graded"],
-                        "record": _plain_record(
-                            c["right"],
-                            c["graded"],
-                            f"Across {c['graded']:,} profit announcements by many big US"
-                            f" companies (not just {plain_company(company['name'])})",
-                        ),
-                        "note": "If its profit matches or beats the predictions, no rule"
-                        " passed our tests.",
-                        "link": f"#ask/earnings500/{c['kind']}",
-                    }
-                )
-    dated.sort(key=lambda p: (str(p["day"]), str(p["time"])))
-    undated: list[dict[str, object]] = []
-    told = {p["link"] for p in dated}
-    for f in ask:
-        labels = {k["kind"]: k["label"] for k in f["kinds"]}
-        for c in filter(_answered, f["cells"]):
-            link = f"#ask/{f['name']}/{c['kind']}"
-            if len(undated) == PREDICTS_MIN or link in told:
-                continue
-            told.add(link)
-            label = PLAIN_KINDS.get((f["name"], c["kind"]), labels[c["kind"]])
-            undated.append(
-                {
-                    "day": None,
-                    "time": None,
-                    "event": "When "
-                    + (label if label[:2].isupper() else label[0].lower() + label[1:])
-                    if (f["name"], c["kind"]) in PLAIN_KINDS
-                    else label[0].upper() + label[1:],
-                    "condition": "Then",
-                    "outcome": plain_outcome(c["market"], c["answer"], c["span"], c["market_name"]),
-                    "direction": c["answer"],
-                    "right": c["right"],
-                    "graded": c["graded"],
-                    "record": _plain_record(
-                        c["right"], c["graded"], f"In {c['graded']:,} past cases"
-                    ),
-                    "note": "",
-                    "link": link,
-                }
-            )
-    return dated[:PREDICTS_DATED] + undated
-
-
 def week_watch(today: date, cache_dir: Path) -> list[dict[str, object]]:
     """Each scheduled event `live` does not call, from the day after ``today`` to ``AHEAD_DAYS``
     after it, oldest first, at its New York time (docs/steps/watch-ahead.md)."""
@@ -2833,6 +2636,181 @@ SCOREBOARD_DATA_MARK = "__SCOREBOARD_DATA__"
 PREDICTS_DATA_MARK = "__PREDICTS_DATA__"
 
 
+# Step 49, our guesses (docs/steps/our-guesses.md): the Subscription LLM's guesses from the day's
+# news, labelled apart from the tested forecasts, kept before their span starts and graded.
+GUESS_MODEL = "claude-opus-5-5"
+GUESS_SPANS = {"week": 5, "month": 21}
+GUESS_MAX = 2
+GUESS_WORDS = 30
+GUESS_TWINS = {"SPY / ES": "stocks", "COMP": "stocks"}
+GUESS_FIELDS = (
+    "stated",
+    "market",
+    "span",
+    "direction",
+    "first",
+    "last",
+    "reason",
+    "source",
+    "model",
+    "grade",
+)
+
+
+def ask_for_guesses(today: date) -> str:
+    """The Subscription LLM's answer, in a fresh session with web search only."""
+    prompt = files("fortuneteller").joinpath("guess_prompt.txt").read_text()
+    prompt = prompt.format(today=today.isoformat(), markets=", ".join(LONG_RUN_MARKETS))
+    done = subprocess.run(
+        [
+            "claude",
+            "-p",
+            prompt,
+            "--model",
+            GUESS_MODEL,
+            "--allowedTools",
+            "WebSearch",
+            "--output-format",
+            "json",
+        ],
+        capture_output=True,
+        text=True,
+        timeout=600,
+        check=True,
+    )
+    return str(json.loads(done.stdout)["result"])
+
+
+def keep_guesses(
+    answer: str, rows: list[dict[str, str]], today: date
+) -> tuple[list[dict[str, str]], list[str]]:
+    """``rows`` with each acceptable guess in ``answer`` added, and why each other was dropped."""
+    guesses = None
+    decoder = json.JSONDecoder()
+    for at in (i for i, ch in enumerate(answer) if ch == "["):
+        try:
+            found, _ = decoder.raw_decode(answer, at)
+        except json.JSONDecodeError:
+            continue
+        if isinstance(found, list):
+            guesses = found
+            break
+    if not isinstance(guesses, list):
+        return rows, ["the answer held no JSON list"]
+    kept, dropped = list(rows), []
+    first = _weekdays_after(today, 1)
+    for g in guesses[:GUESS_MAX]:
+        if not isinstance(g, dict):
+            dropped.append(f"not a guess: {g!r}")
+            continue
+        market, span = g.get("market"), g.get("span")
+        direction, reason = g.get("direction"), str(g.get("reason", "")).strip()
+        source = str(g.get("source", "")).strip()
+        why = (
+            "a market not listed"
+            if market not in LONG_RUN_MARKETS
+            else "a span not a week or a month"
+            if span not in GUESS_SPANS
+            else "a direction not up or down"
+            if direction not in ("up", "down")
+            else "no reason"
+            if not reason
+            else "a reason over 30 words"
+            if len(reason.split()) > GUESS_WORDS
+            else "a percent sign"
+            if "%" in reason
+            else "no https link to its news"
+            if not source.startswith("https://") or " " in source
+            else "one of the same market and span still open"
+            if any(
+                GUESS_TWINS.get(r["market"], r["market"]) == GUESS_TWINS.get(str(market), market)
+                and r["span"] == span
+                and r["last"] >= first.isoformat()
+                for r in kept
+            )
+            else None
+        )
+        if why:
+            dropped.append(f"{market} {span}: {why}")
+            continue
+        assert isinstance(span, str)
+        kept.append(
+            {
+                "stated": today.isoformat(),
+                "market": str(market),
+                "span": span,
+                "direction": str(direction),
+                "first": first.isoformat(),
+                "last": _weekdays_after(today, GUESS_SPANS[span]).isoformat(),
+                "reason": reason,
+                "source": source,
+                "model": GUESS_MODEL,
+                "grade": "",
+            }
+        )
+    return kept, dropped
+
+
+def _read_rows(path: Path) -> list[dict[str, str]]:
+    if not path.exists():
+        return []
+    with path.open(newline="") as fh:
+        return list(csv.DictReader(fh))
+
+
+def _write_rows(path: Path, fields: Sequence[str], rows: Sequence[Mapping[str, str]]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", newline="") as fh:
+        writer = csv.DictWriter(fh, fields, lineterminator="\n")
+        writer.writeheader()
+        writer.writerows(rows)
+
+
+def _guess(_args: argparse.Namespace) -> int:
+    today = _now().astimezone(sources.NEW_YORK).date()
+    path = settings.scoreboard_dir.parent / "predicts" / "our-guesses.csv"
+    rows = _read_rows(path)
+    try:
+        answer = ask_for_guesses(today)
+    except (OSError, subprocess.SubprocessError, ValueError, KeyError) as exc:
+        print(f"guess: no guesses tonight: {exc}", file=sys.stderr)
+        return 0
+    kept, dropped = keep_guesses(answer, rows, today)
+    if dropped == ["the answer held no JSON list"]:
+        print(f"guess: no JSON list, asking once more: {answer[:200]!r}", file=sys.stderr)
+        try:
+            kept, dropped = keep_guesses(ask_for_guesses(today), rows, today)
+        except (OSError, subprocess.SubprocessError, ValueError, KeyError) as exc:
+            print(f"guess: no guesses tonight: {exc}", file=sys.stderr)
+            return 0
+    for why in dropped:
+        print(f"guess: dropped {why}", file=sys.stderr)
+    _write_rows(path, GUESS_FIELDS, kept)
+    print(f"guess: {len(kept) - len(rows)} kept")
+    return 0
+
+
+def guess_card(g: Mapping[str, str]) -> dict[str, object]:
+    """A kept guess as the page shows it."""
+    what = PLAIN_MARKETS.get(g["market"], g["market"])
+    side = "higher" if g["direction"] == "up" else "lower"
+    base = date.fromisoformat(g["first"]) - timedelta(days=1)
+    while base.weekday() >= 5:
+        base -= timedelta(days=1)
+    return {
+        "guess": True,
+        "until": g["last"],
+        "when": f"Our guess, made {_plain_day(g['stated'])}",
+        "event": f"{what[0].upper()}{what[1:]}, over the next {g['span']}",
+        "outcome": f"{side} on {_plain_day(g['last'])} than on {_plain_day(base.isoformat())}",
+        "direction": g["direction"],
+        "record": "Why: " + g["reason"],
+        "note": "",
+        "link": "",
+        "source": g.get("source", ""),
+    }
+
+
 def stated_forecasts(
     con: duckdb.DuckDBPyConnection, data: Mapping[str, object], today: date, kept_path: Path
 ) -> dict[str, object]:
@@ -2844,10 +2822,7 @@ def stated_forecasts(
         print(f"scoreboard: home prices: {exc}", file=sys.stderr)
         home = []
     runs = long_runs(con, home)
-    rows: list[dict[str, str]] = []
-    if kept_path.exists():
-        with kept_path.open(newline="") as fh:
-            rows = list(csv.DictReader(fh))
+    rows = _read_rows(kept_path)
 
     def closes(market: str) -> Sequence[sources.DailyClosingPrice]:
         return home if market == HOME else study.stored_closes(market, con)
@@ -2855,11 +2830,16 @@ def stated_forecasts(
     rows = grade_forecasts(rows, closes)
     told = stated({**data, "forecasts": runs}, today, rows)
     rows = keep_forecasts(rows, told, today)
-    with kept_path.open("w", newline="") as fh:
-        writer = csv.DictWriter(fh, FORECAST_FIELDS, lineterminator="\n")
-        writer.writeheader()
-        writer.writerows(rows)
+    _write_rows(kept_path, FORECAST_FIELDS, rows)
+    guess_path = kept_path.parent / "our-guesses.csv"
+    guesses = grade_forecasts(_read_rows(guess_path), closes)
+    if guesses:
+        _write_rows(guess_path, GUESS_FIELDS, guesses)
     return {
+        "guesses": [
+            guess_card(g) for g in sorted(guesses, key=lambda g: g["last"]) if not g["grade"]
+        ],
+        "guess_tally": forecast_tally(guesses),
         "stated": [{k: v for k, v in t.items() if k != "row"} for t in told],
         "tally": forecast_tally(rows),
         "kept_since": rows[0]["stated"] if rows else None,
@@ -2916,7 +2896,6 @@ def _scoreboard(_args: argparse.Namespace) -> int:
     predicts.mkdir(parents=True, exist_ok=True)
     told = {
         "written": data.get("written"),
-        "predictions": predictions(data),
         **stated_forecasts(con, data, today, predicts / "forecasts.csv"),
     }
     shown = json.dumps(told, ensure_ascii=False).replace("<", "\\u003c")
@@ -2938,6 +2917,9 @@ def build_parser() -> argparse.ArgumentParser:
     sub = parser.add_subparsers(dest="command", required=True)
 
     p_init = sub.add_parser("init", help="create the DuckDB file with all tables")
+    sub.add_parser(
+        "guess", help="step 49: the evening's guesses from the news, kept in guesses.csv"
+    ).set_defaults(func=_guess)
     sub.add_parser(
         "forecasts", help="step 48: each market's long run, walk-forward over spans"
     ).set_defaults(func=_forecasts)

@@ -63,7 +63,10 @@ Fed cuts rates → EUR/USD
   graded as right.
 - **The answer is arithmetic on history, never a model's opinion.** A model may read the news into
   a trigger and put figures into sentences; nothing paid is used, so a model runs on this
-  machine. (The owner first proposed a model's guess, then chose this.)
+  machine. (The owner first proposed a model's guess, then chose this.) *Amended 2026-11-22, by
+  the owner:* beside the answers, the predictions page may show *our guesses*, a model's guess
+  from the day's news, each headed as a guess, kept before its span and scored apart from the
+  record ([our guesses](steps/our-guesses.md)).
 - **Bare figures first.** Counts and base rates, never a percentage, until rung 3's honesty rule
   allows one; the words *most probably* (at 60%, above the base rate), *could* and *will not*
   wait for that.
@@ -71,7 +74,8 @@ Fed cuts rates → EUR/USD
   work starts with US events and US-traded markets, and widens one country at a time once the US
   answers hold (the euro area and Germany, already stored, next).
 - **What has no past is never shown beside a record:** a what-if about a new technology is
-  labelled as reasoning, if shown at all.
+  labelled as reasoning, if shown at all. *Amended 2026-11-22:* an *our guess* card is the one
+  exception, headed as a guess, with its own tally.
 
 This retires one line of the 2026-10-23 decision, "for news the product is a graded reaction
 record": an event that has happened is answered for the spans after it. A call is still never made

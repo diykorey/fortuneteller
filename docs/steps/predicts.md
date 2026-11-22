@@ -11,7 +11,7 @@
 to five things the fortune teller says about the days ahead, each with its record.
 
 At the end `https://diykorey.github.io/fortuneteller/predicts/` shows *Fortuneteller predicts:*
-and one to five cards. The evening job rewrites it each weekday with the scoreboard
+and one to five cards (none to five since 2026-11-22, below). The evening job rewrites it each weekday with the scoreboard
 ([step 44](readers.md)).
 
 ## The way to reach it
@@ -63,6 +63,11 @@ and one to five cards. The evening job rewrites it each weekday with the scorebo
   - the intro opens with *These are not forecasts that something will happen*, says the page
     gives which way and not by how much, and carries *for fun, not financial advice*.
 
+- **Forecasts only** (*amended 2026-11-22, by the owner*: "we need to state without any if
+  then; if we cannot forecast better, do not do it at all"). The *if* cards are gone: the page
+  shows [stated forecasts](stated-forecasts.md) and [our guesses](our-guesses.md) only. Bar 2
+  becomes none to five cards; a page with none says *Nothing passed our tests today*.
+
 ## The rule, fixed before measuring
 
 - **Bars:**
@@ -81,7 +86,7 @@ and one to five cards. The evening job rewrites it each weekday with the scorebo
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | `predictions` in `__main__.py`, written with the scoreboard to `docs/predicts/index.html` | Tests: a release whose link holds gives a card, and one whose link does not gives none. The largest company of a day is chosen. A kind not holding gives no card. Undated cards fill to three without repeating a shown kind. No card holds a `%` |
-| 2 | The template `src/fortuneteller/predicts.html` | A pytest test in CI renders it in headless Chrome and finds the headline, one to five cards, and no horizontal scroll at both widths |
+| 2 | The template `src/fortuneteller/predicts.html` | A pytest test in CI renders it in headless Chrome and finds the headline, one to five cards (none to five since 2026-11-22), and no horizontal scroll at both widths |
 | 3 | Published | The page is live. Bar 1 is checked by running `predictions` on the published `data.json` and finding each card's link among *the answers that hold* or a holding `ahead` link; bars 2 to 4 on the page. The date and results are written here |
 
 ## How you know it is right
