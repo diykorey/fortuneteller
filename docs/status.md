@@ -25,8 +25,6 @@ the shares trailed on 27 of 43 days (p 0.06), short of an answer; nothing answer
   the loop's safety nets.
 - **The page as bright cards** ([the spec](steps/predicts.md), amended 2026-11-22): the owner's
   option A of five designs. Next: published, then the first week of the ledger.
-- **The scoreboard as bright cards** (the owner, 2026-11-22): the site now opens on the
-  predictions page; the scoreboard restyled to match is next.
 - **Step 51: the front page's guesses, approved** ([the spec](steps/front-staging.md)): each
   evening's front-page guesses wait in a pull request the owner rewords and merges. Asked for by
   the owner 2026-11-22. Next: the first front pull request, from the first evening whose proposal changes.

@@ -16,42 +16,69 @@
 <style>
 :root {
   color-scheme: light dark;
-  --bg: #ffffff; --fg: #1b1b1b; --muted: #6a6a6a; --line: #e4e4e4;
-  --yes: #dcf2e3; --maybe: #fbf0cf; --right: #1a7f37; --wrong: #b3261e;
+  --bg: #ffffff; --card: #ffffff; --fg: #111827; --text: #374151; --muted: #4b5563;
+  --line: #e5e7eb; --accent: #7c3aed; --accent-soft: #f5f3ff; --chip: #f3f4f6;
+  --yes: #dcfce7; --maybe: #fef3c7; --right: #15803d; --wrong: #b91c1c;
+  --shadow: 0 6px 20px -12px rgba(0, 0, 0, 0.25);
 }
 @media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #131313; --fg: #e9e9e9; --muted: #9c9c9c; --line: #2a2a2a;
-    --yes: #173d26; --maybe: #3d3314; --right: #57d38c; --wrong: #f28b82;
+  :root:not([data-theme="light"]) {
+    --bg: #111318; --card: #1a1d24; --fg: #f9fafb; --text: #d1d5db; --muted: #b0b6c1;
+    --line: #2d313b; --accent: #b79cff; --accent-soft: #272040; --chip: #232733;
+    --yes: rgba(74, 222, 128, 0.16); --maybe: rgba(251, 191, 36, 0.16); --right: #4ade80;
+    --wrong: #f87171; --shadow: none;
   }
 }
-body {
-  margin: 0 auto; padding: 24px 16px 48px; max-width: 1200px;
-  background: var(--bg); color: var(--fg);
-  font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+:root[data-theme="dark"] {
+  --bg: #111318; --card: #1a1d24; --fg: #f9fafb; --text: #d1d5db; --muted: #b0b6c1;
+  --line: #2d313b; --accent: #b79cff; --accent-soft: #272040; --chip: #232733;
+  --yes: rgba(74, 222, 128, 0.16); --maybe: rgba(251, 191, 36, 0.16); --right: #4ade80;
+  --wrong: #f87171; --shadow: none;
 }
-h1 { font-size: 1.6rem; margin: 0 0 4px; }
-h2 { font-size: 1.15rem; margin: 40px 0 8px; }
-h3 { font-size: 1rem; margin: 24px 0 8px; }
-p { margin: 4px 0; }
-.muted { color: var(--muted); font-size: .9rem; }
-.wrap { overflow-x: auto; margin-top: 10px; }
-table { border-collapse: collapse; width: 100%; font-size: .9rem; font-variant-numeric: tabular-nums; }
-th, td { padding: 7px 9px; text-align: left; vertical-align: top; white-space: nowrap; border-bottom: 1px solid var(--line); }
-th { color: var(--muted); font-weight: 600; }
-td small { display: block; color: var(--muted); font-size: .8rem; line-height: 1.3; }
-td.yes { background: var(--yes); }
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0 auto; padding: 28px 16px 48px; max-width: 1100px;
+  background: var(--bg); color: var(--fg);
+  font: 17px/1.5 ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+.back { display: inline-flex; align-items: center; min-height: 44px; color: var(--accent); font-weight: 700; text-decoration: none; }
+h1 { font-size: clamp(30px, 7vw, 44px); line-height: 1.1; margin: 0 0 6px; font-weight: 850; letter-spacing: -0.03em; }
+h2 { font-size: 1.4rem; margin: 44px 0 8px; padding-top: 20px; border-top: 2px solid var(--line); font-weight: 800; }
+h3 { font-size: 1.12rem; margin: 28px 0 8px; font-weight: 800; }
+p { margin: 6px 0; }
+.muted { color: var(--muted); font-size: 0.95rem; }
+code { background: var(--chip); border-radius: 6px; padding: 1px 5px; font-size: 0.9em; }
+select { font: inherit; padding: 8px 12px; min-height: 44px; border: 2px solid var(--line); border-radius: 12px; background: var(--card); color: var(--fg); max-width: 100%; }
+ul { padding-left: 1.2em; }
+#holds { list-style: none; padding: 0; display: grid; gap: 10px; margin: 14px 0 0; }
+#holds li { border: 2px solid var(--line); border-left: 6px solid var(--right); border-radius: 16px; padding: 12px 16px; background: var(--card); box-shadow: var(--shadow); }
+.wrap {
+  overflow-x: auto; margin-top: 12px; border: 2px solid var(--line); border-radius: 16px;
+  background: var(--card); box-shadow: var(--shadow);
+}
+.wrap:has(table:empty) { display: none; }
+table { border-collapse: collapse; width: 100%; font-size: 0.92rem; font-variant-numeric: tabular-nums; }
+th, td { padding: 9px 12px; text-align: left; vertical-align: top; white-space: nowrap; border-bottom: 1px solid var(--line); }
+tr:last-child td { border-bottom: 0; }
+th { color: var(--muted); font-weight: 700; background: var(--chip); }
+td small { display: block; color: var(--muted); font-size: 0.8rem; line-height: 1.3; }
+td.yes { background: var(--yes); font-weight: 700; }
 td.maybe { background: var(--maybe); }
 td.no, td.none { color: var(--muted); }
-td.right { color: var(--right); font-weight: 600; }
-td.wrong { color: var(--wrong); font-weight: 600; }
+td.right { color: var(--right); font-weight: 700; }
+td.wrong { color: var(--wrong); font-weight: 700; }
 td.pending, td.void, td.missed, td.waiting { color: var(--muted); }
-a { color: inherit; }
+a { color: var(--accent); }
+details#workings { margin-top: 44px; border: 2px solid var(--line); border-radius: 16px; padding: 4px 16px 16px; background: var(--card); }
+details#workings > summary { cursor: pointer; min-height: 44px; display: flex; align-items: center; color: var(--accent); }
+details#workings h2:first-of-type { border-top: 0; margin-top: 12px; }
 </style>
 <script defer src="https://cloud.umami.is/script.js" data-website-id="ed3ca059-ba91-40f1-937c-ace5118ffcb0"
   data-do-not-track="true" data-domains="diykorey.github.io"></script>
 </head>
 <body>
+<a class="back" href="../predicts/">← Fortuneteller predicts</a>
 <h1>FortuneTeller</h1>
 <p class="muted" id="when"></p>
 <p><strong>What followed past events, counted.</strong> Pick a kind of event, a jobs report
