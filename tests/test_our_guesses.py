@@ -2,7 +2,7 @@
 docs/steps/guess-ledger.md): checked, kept once, graded, reviewed, and learned from monthly."""
 
 import json
-from datetime import date, timedelta
+from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 
 import pytest
@@ -393,3 +393,103 @@ def test_a_kept_guess_and_a_stored_one_get_their_base_rate() -> None:
         cli.with_base_rates([{**rows[0], "base_rate": "0.1"}], lambda m: [])[0]["base_rate"]
         == "0.1"
     )
+
+
+RULE = "The reasoning names the guess's base rate"
+
+
+def test_the_grounded_prompt_holds_the_record_and_the_news_prompt_does_not() -> None:
+    # given an open news guess, the base rates and an open tested forecast
+    kept, _ = cli.keep_guesses(_answer(_g()), [], FRIDAY)
+    rates = "SPY / ES: week 56 in 100, year 74 in 100"
+    forecasts = cli.open_forecasts(
+        [
+            {"kind": "long run", "market": "SPY / ES", "span": "month", "direction": "up"}
+            | {"last": "2026-12-21", "event": "", "grade": ""},
+            {"kind": "long run", "market": "COMP", "span": "week", "direction": "up"}
+            | {"last": "2026-11-20", "event": "", "grade": "came true"},
+        ]
+    )
+
+    # when both prompts are built
+    news = cli.news_prompt(FRIDAY, kept, "be careful")
+    grounded = cli.grounded_prompt(FRIDAY, kept, "be careful", rates, forecasts)
+
+    # then the grounded one holds the table, the open forecast only and the rule; the news one
+    # none of them and is the guess prompt as built before step 55
+    assert rates in grounded and RULE in grounded
+    assert "SPY / ES up over a month to 2026-12-21 (long run)" in grounded
+    assert "COMP" not in forecasts
+    assert rates not in news and RULE not in news and "Tested forecasts" not in news
+    before = cli._prompt(
+        "guess_prompt.txt",
+        today=FRIDAY.isoformat(),
+        markets=cli.market_list(),
+        tags=", ".join(cli.GUESS_TAGS),
+        most=str(cli.GUESS_MAX),
+        open=f"BRN week down to 2026-11-27: {kept[0]['statement']}",
+        lessons="be careful",
+    )
+    assert news == before
+
+
+def test_each_guesser_sees_and_repeats_only_its_own_open_guesses() -> None:
+    # given an open news guess on Brent to Nov 27
+    news, _ = cli.keep_guesses(_answer(_g()), [], FRIDAY)
+
+    # when the grounded guesser guesses the same, then guesses it again
+    grounded, _ = cli.keep_guesses(_answer(_g()), news, FRIDAY, "0", "grounded", "grounded-1")
+    again, dropped = cli.keep_guesses(
+        _answer(_g()), grounded, FRIDAY, "0", "grounded", "grounded-1"
+    )
+
+    # then the first is kept with its guesser and version, the second refused
+    assert [(r["guesser"], r["prompt"]) for r in grounded] == [
+        ("news", "news-1"),
+        ("grounded", "grounded-1"),
+    ]
+    assert len(again) == 2 and "repeats an open guess" in dropped[0]
+    assert (
+        "BRN"
+        not in cli.grounded_prompt(FRIDAY, news, "", "", "")
+        .split("Guesses still open:")[1]
+        .split("Lessons")[0]
+    )
+
+
+def test_the_evening_asks_both_and_a_failed_grounded_call_keeps_the_news_guesses(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # given a model that answers the news prompt and fails the grounded one
+    asked: list[str] = []
+
+    def model(prompt: str, web: bool) -> str:
+        asked.append("grounded" if RULE in prompt else "news")
+        if RULE in prompt:
+            raise OSError("the grounded session timed out")
+        return _answer(_g(end="2026-11-30"))
+
+    monkeypatch.setattr(cli, "_run_model", model)
+    monkeypatch.setattr(cli, "_now", lambda: datetime(2026, 11, 20, 22, tzinfo=UTC))
+    monkeypatch.setattr(cli.settings, "scoreboard_dir", tmp_path / "scoreboard")
+
+    # when the evening runs
+    code = cli.main(["guess"])
+
+    # then both were asked, and the news guess is kept as the news guesser's
+    rows = cli._read_rows(tmp_path / "predicts" / "our-guesses.csv")
+    assert code == 0 and asked == ["news", "grounded"]
+    assert [(r["market"], r["guesser"], r["prompt"]) for r in rows] == [("BRN", "news", "news-1")]
+
+
+def test_a_stored_row_without_a_guesser_is_the_news_guessers() -> None:
+    # given a ledger row from before step 55
+    kept, _ = cli.keep_guesses(_answer(_g()), [], FRIDAY)
+    old = {k: v for k, v in kept[0].items() if k not in ("guesser", "prompt")}
+
+    # when it is read
+    row = cli._ledger_row(old)
+
+    # then it is the news guesser's first prompt
+    assert (row["guesser"], row["prompt"]) == ("news", "news-1")
+    assert cli.grounded_version() == "grounded-1"

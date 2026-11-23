@@ -116,7 +116,10 @@ more than five forecasts on the front page.
   first, last, statement, reasoning, tag, confidence, source, model, lessons, grade, move,
   review`; *amended 2026-11-23* ([step 55](guesses-vs-base-rate.md)): and `base_rate`, the share
   of the market's past runs of the guess's weekdays that went its way, four decimals, filled on
-  the first `guess` run that sees the row. Step 49's two rows are kept, read with an empty tag and reasoning.
+  the first `guess` run that sees the row. Then `guesser` (*news* or *grounded*) and `prompt`
+  (*news-1*, or *grounded-N* from the first line of `grounded_prompt.txt`); a row without them is
+  the news guesser's. The front page and this stats page read the news guesser's rows only, until
+  step 55's step 3. Step 49's two rows are kept, read with an empty tag and reasoning.
 - **Numbers in a reason** (*amended 2026-11-22*): the reasoning may quote a figure from the news;
   a share is written *14 in 100*, since a bare *14* lost its unit when the `%` was banned. The
   ban on a percentage stands for the forecast itself: no chance and no size is claimed.
