@@ -289,19 +289,30 @@ the same.
 **In plain words:** China's four monthly reports, against what forecasters expected, do not tell
 which way markets go. Across the four flows and both runs the answers are fewer than chance gives,
 and the one lean with enough releases to replay, the S&P 500 down on the day exports miss, fails
-the replay. Shanghai's stocks show no lean after any report. The yuan weakens on the day exports
-come in below forecast (25 of 42 days, from the close before), a lean seen once in 24 cells,
-too few to replay and gone from the reaction close.
+the replay. Shanghai's stocks show no lean after any report on the day. The yuan was weaker on
+25 of the 42 days exports came in below forecast, from the close before: one cell of 24, in a run
+whose 9 answers are what chance gives, too few to replay and gone from the reaction close. Outside
+the rule, the yuan moves more than usual on inflation's days, in no set direction, and the
+survey's days, at the turn of a month, are larger than usual on 12 of 35 markets.
 
 - **The sources, the reports, the thresholds, the hours and step 17's bars, unchanged by what the
   run shows: right.** Each amendment above is dated and made before the table it touches was
-  read: the yuan's source after step 1's bar check failed, step 2's header, step 3's headers.
-- **The headers: right,** as amended. `follows: 116 Chinese CPI releases 2012-02-09 … 2026-11-09:
+  read: the yuan's source after step 1's bar check failed, and Shanghai's check moved, after its
+  5-minute bars missed 0.05%, to the exchange's published close (both before any China flow
+  existed); step 2's header; step 3's headers. Git confirms the order only for step 3's
+  (9d94c62, before the tables of 055b747); steps 1 and 2 put each amendment in the commit with
+  its results. Step 3's amendment was reworded in 055b747, "shares 23 of the survey's days" to
+  "49, 23 of them with no other flow", its numbers unchanged.
+- **The headers: right,** as amended, the code's count equal to the count by hand on each. The
+  survey's 82 to 59 is not a gap the rule allows for: "How you know it is right" calls a gap
+  between the code and the hand count larger than the BoE's, the BoJ's and OPEC's days a bug, and
+  here the bug was in the hand count (it left out the euro area's flash inflation), found and
+  amended before the table was read; the code and the corrected hand count agree exactly. `follows: 116 Chinese CPI releases 2012-02-09 … 2026-11-09:
   39 above, 22 as expected, 55 below`; `follows: 59 Chinese PMI releases 2009-05-01 … 2026-08-31:
-  18 above, 19 as expected, 22 below` (amended from 82 before its table was read: the hand count
-  had left out the euro area's flash inflation); `follows: 110 Chinese output releases 2011-07-13
+  18 above, 19 as expected, 22 below`; `follows: 110 Chinese output releases 2011-07-13
   … 2026-11-16: 44 above, 33 as expected, 33 below`; `follows: 127 Chinese trade releases
-  2010-12-10 … 2026-09-08: 41 above, 44 as expected, 42 below`. Each equals the count by hand.
+  2010-12-10 … 2026-09-08: 41 above, 44 as expected, 42 below` (`follows --event` each flow; the
+  hand counts, by a script over the calendar's rows, are in the evidence as "by hand").
 - **The arithmetic: right.** One cell of the 2,520 reached 30 graded: trade's *below*, the S&P 500
   on the day, from the close before, 31. Otherwise at most, from the close before and from the
   reaction close: inflation 5 and 25, the survey 3 and 8, output 17 and 24, trade 23 from the
@@ -309,7 +320,9 @@ too few to replay and gone from the reaction close.
 - **Walk-forward, nothing holds for any of the four flows: right.** The one graded cell, the S&P
   500 *down* after trade *below*, is 13 right of 31, *doesn't hold*; every other cell is *too
   few*. Each `follows` line reads `0.0 holds walk-forward` by chance.
-- **On all history, no more answers than the chance line plus 2: right** in all eight checks:
+- **On all history, no more answers than the chance line plus 2: right** in all eight checks
+  (`follows --event cncpi`, `cnpmi`, `cnip`, `cntrade`, each with and without `--after-the-day`;
+  the chance is each run's `by chance` line):
 
   | Flow | From the close before | From the reaction close | By chance | Bar |
   | --- | --- | --- | --- | --- |
@@ -321,25 +334,33 @@ too few to replay and gone from the reaction close.
   Output's five from the reaction close were first written six in step 3's table; it lists five,
   and `follows --event cnip --after-the-day` prints five.
 - **Shanghai's stocks after each kind of each flow, on the day, *can't say* in both runs: right,**
-  all 24 cells.
+  all 24 cells, chance 0.0164 at the lowest (output *below*, from the close before, 5 / 17 / 10 of
+  32); each cell's counts, base and chance are in step 5's part of the evidence (`follows`, each
+  flow and run).
 - **The yuan after each kind of each flow, on the day, *can't say* in both runs: wrong** for trade
   *below* from the close before (`follows --event cntrade`): `USDCNY` *up*, the yuan weaker, 25
-  up, 8 the same, 9 down of 42 (chance 0.0040), *too few* walk-forward (29 graded, 14 right). From
-  the reaction close the same cell reads 9 / 18 / 15, *can't say*. Right for the other 23 cells;
-  inflation's *as expected* from the reaction close, *up* in step 2 (13 / 14 / 2 of 29), reads 11
-  / 9 / 2 of 22 once output's and trade's days are out, *can't say* (chance 0.0129).
+  up, 8 the same, 9 down of 42 against a base of 0.33 / 0.33 / 0.34 (chance 0.0040), the placebo
+  flagging nothing, *too few* walk-forward (29 graded, 14 right). From the reaction close the same
+  cell reads 9 / 18 / 15, *can't say* (`follows --event cntrade --after-the-day`). Right for the
+  other 23 cells; inflation's *as expected* from the reaction close, *up* in step 2 (13 / 14 / 2
+  of 29), reads 11 / 9 / 2 of 22 once output's and trade's days are out, *can't say* (chance
+  0.0129, `follows --event cncpi --after-the-day`).
 - **Brent after the survey and output above or below, on the day, *can't say* in both runs:
-  right,** all 8 cells.
+  right,** all 8 cells, chance 0.13 at the lowest (output *below*, from the reaction close); each
+  in step 5's part of the evidence.
 - **The two new markets, every existing row unchanged byte for byte: right** (`follows` for every
   flow, both runs and the Fed's `--long`, `raw-move` for every event, `scoreboard`): after step 1
   every row, and after each of steps 2 to 4 every other flow's output, each the one before (the
-  `cmp` lists in the evidence); only the chance lines grew by the cells added (the scoreboard's
+  `cmp` lists in the evidence, and its `data.json` checks: every scoreboard entry other than
+  China's own, and every other *Ask* entry, the same; `earnings_ahead`, read live, is left out of
+  the comparison, its market caps moving between runs); only the chance lines grew by the cells added (the scoreboard's
   raw-move chance 1,078 → 1,142 → 1,177 → 1,247 → 1,282 cells, surprise 396 → 420 → 455 → 525 →
   560, walk-forward 82). The new markets' rows are recorded in the evidence.
 - **The size of the move** (`raw-move --event cncpi`, `cnpmi`, `cnip`, `cntrade`, outside the
-  rule, recorded): on its 116 lone days inflation *moves* the yuan (ratio 1.50, p 0.0034), and only
-  the yuan; Shanghai *doesn't* (0.92). The survey's lone days, the turn of a month, *move* 12 of
-  35 markets, the European indices most (the FTSE 2.14, the Stoxx 600 1.93, the Euro Stoxx 50
+  rule, recorded): on inflation's days alone (125 for the S&P 500, 116 for the yuan, whose closes
+  start in 2010-06) it *moves* the yuan (ratio 1.50, p 0.0034), and only the yuan; Shanghai
+  *doesn't* (0.92). The survey's 84 days alone in `raw-move` (59 in `follows`, which needs a
+  forecast), the turn of a month, *move* 12 of 35 markets, the European indices most (the FTSE 2.14, the Stoxx 600 1.93, the Euro Stoxx 50
   1.91, p 0.0001 each); Shanghai is *unclear* (1.30, p 0.0495), the yuan *doesn't* (0.76). Output
   and trade *move* no market; the yuan is *unclear* after each (1.10, p 0.28; 1.32, p 0.035).
 
