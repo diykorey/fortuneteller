@@ -111,7 +111,7 @@ stocks).
 | 1 | ~~The two markets and the Bank's history~~ **done** 2026-11-22. The two markets and the Bank's history: seed rows, series, `load-prices`, `boc-changes.csv` | `load-prices` stores both; tests: a 10:00 Toronto decision falls on the same day's TSX close and the next day's Canadian dollar close; the closes within 0.05% of the bars, written here; the disagreeing days listed here; on a copy of the store every existing `raw-move`, `follows` and scoreboard row identical, and each chance line before and after written here |
 | 2 | ~~The Bank~~ **done** 2026-11-22. The Bank: flow `boc`, `follows --event boc`, on *Ask*, `boc` a trigger kind (*cut*, *hold*, *hike*) | Tests: a quarter stores its decisions at their UTC time; a change day the calendar lacks is added; a decision's kind is the Bank's change, 2020-03-13 a cut and 2012-01-17 a hold; a `boc` trigger is answered; *Ask*'s `boc` cells equal `follows`', as step 29 checks. On a copy of the store the header as expected, or the difference amended with its date; every other flow's rows unchanged |
 | 3 | ~~Inflation~~ **done** 2026-11-22. Inflation: flow `cacpi`, `follows --event cacpi`, on *Ask*, a trigger kind (*above*, *as expected*, *below*) | Tests: a release's surprise is its actual minus its forecast, its kind *above* from 0.1, a day shared with a US release left out of its table; a `cacpi` trigger is answered; *Ask*'s cells equal `follows`'. The header and its counts written here; every other flow's rows unchanged |
-| 4 | Results here and in [MVP results](../mvp-results.md), against the expected outcome; the roadmap row | Every judged bullet marked right or wrong with its numbers |
+| 4 | ~~Results~~ **done** 2026-11-23. Results here and in [MVP results](../mvp-results.md), against the expected outcome; the roadmap row | Every judged bullet marked right or wrong with its numbers |
 
 *Step 1, 2026-11-22:* every number is in [the evidence](canada-steps.txt).
 
@@ -189,7 +189,7 @@ every other flow's *Ask* entry, is the same. On *Ask*, inflation's 297 cells equ
 
 | Run | Answers | Chance line | Walk-forward |
 | --- | --- | --- | --- |
-| From the close before | 2: *as expected*, day, S&P 500 about the same; *below*, week, ether about the same | about 8.9 answers, 0.0 holds | 297 of 297 *too few* (at most 4 graded) |
+| From the close before | 2: *as expected*, day, S&P 500 about the same; *below*, week, ether about the same | about 8.9 answers, 0.0 holds | 297 of 297 *too few* (at most 27 graded; *corrected 2026-11-23:* this read "at most 4", the evidence's *below*, day, UGA has 27 graded, 9 right) |
 | `--after-the-day` | 7: *above*, day, natural gas down; *above*, week, 10-year yield down; *as expected*, day, 10-year yield about the same, FTSE 100 down, STOXX 600 down; *as expected*, week, 10-year yield about the same; *below*, month, natural gas about the same | about 8.9 answers, 0.0 holds | 297 of 297 *too few* (at most 15 graded) |
 
 The Canadian dollar and Toronto's stocks on the day, up / same / down of n, every one *can't say*:
@@ -205,6 +205,88 @@ The Canadian dollar and Toronto's stocks on the day, up / same / down of n, ever
 
 `raw-move --event cacpi` reads 189 lone days: the dollar's ratio 1.11 (p 0.14), the TSX's 1.02.
 Both runs' tables are in [the evidence](canada-steps.txt), for step 4 to judge.
+
+## Results
+
+*2026-11-23.* Every number is in [the evidence](canada-steps.txt), each command's whole output,
+on steps 1 to 3's copies of the store (closes to 2026-11-19). `follows --event boc` (both runs)
+and `raw-move --event boc` there ran on step 2's store, the BoC alone loaded; `follows --event
+cacpi` (both runs) and `raw-move --event cacpi` on step 3's, with both flows loaded, where the
+BoC's three outputs came out byte for byte the same (step 3's `cmp`).
+
+**In plain words:** on a Bank of Canada day the Canadian dollar moves almost twice as much as on
+an ordinary day (ratio 1.89 on 119 days; by era, 1.88 on the 85 days of 2008 to 2019 but 1.11 on
+the 34 since 2020, `raw-move --event boc`), but which way markets go after a cut, a hold or a hike, or after Canadian
+inflation above or below forecasts, is not told by the news: the leans found are no more than
+chance gives, except the Bank's twelve from the close before, and none holds when replayed. The
+Canadian dollar strengthened on the day of 13 of the Bank's 19 hikes counted from the close
+before, a lean too few to replay; from the reaction close it strengthened on 11 of 19, *can't
+say*.
+
+- **The sources, the kinds, the hours and step 17's bars, unchanged by what the run shows:**
+  **right.** Every amendment above is dated and was made before the table it touches was read:
+  the hours and Europe's reaction day after step 1 (no reaction day changes), the 2026-10-28 hike
+  before step 2, inflation's two new releases before step 3's table. Step 1's own bars were met:
+  the disagreeing days exactly the 16 expected, the closes within 0.05% (the Canadian dollar
+  0.017%, Toronto 0.046%: the one-off check of 2026-11-09 to 2026-11-20 against Yahoo's 5-minute
+  bars, in step 1's part of the evidence).
+- **The headers: right,** as amended. `follows --event boc`: `follows: 153 BoC decisions
+  2008-03-04 … 2026-10-28: 22 cuts, 112 holds, 19 hikes`. `follows --event cacpi`: `follows: 189
+  Canadian CPI releases 2008-01-25 … 2026-11-16: 64 above, 44 as expected, 81 below`.
+- **The arithmetic: right.** The Bank's cuts and hikes are *too few* walk-forward in every cell of
+  both runs, at most 10 graded for a cut and 3 for a hike (`follows --event boc`, each run). Only
+  holds reached 30 graded: six cells, two from the close before and four from the reaction close.
+  Inflation's kinds could hold, but no cell reached 30 graded (at most 27 from the close before, 15
+  from the reaction close; `follows --event cacpi`, each run).
+- **Walk-forward, nothing holds for either flow: right.** The six BoC hold cells with 30 or more
+  graded each *doesn't hold*: from the close before, the 10-year yield over the week, 37 of 96
+  right, and the 5-year, 37 of 89; from the reaction close, utilities (XLU) on the day, 30 of 74,
+  the yen on the day, 9 of 40, the 10-year over the week, 16 of 54, and the 5-year, 27 of 75. Every
+  inflation cell is *too few*. Each `follows` line reads `0.0 holds walk-forward` by chance.
+- **On all history, no more answers than the chance line plus 2: wrong** for the BoC from the
+  close before, right for the other three (`follows`, each run):
+
+  | Flow | Run | Answers | By chance | Bar |
+  | --- | --- | --- | --- | --- |
+  | BoC | from the close before | 12 | 8.8 | 10.8, **missed** |
+  | BoC | from the reaction close | 5 | 8.8 | 10.8, met |
+  | Canada's CPI | from the close before | 2 | 8.9 | 10.9, met |
+  | Canada's CPI | from the reaction close | 7 | 8.9 | 10.9, met |
+
+  The BoC's twelve from the close before: after a cut, the S&P 500, defence (ITA), homebuilders
+  (ITB) and the TSX *down* over the week, ether *down* over the month; after a hold, bitcoin
+  *about the same* and coffee (KC) *down* on the day, the 10-year and 5-year yields *up* over the
+  week (each *doesn't hold*), utilities *about the same* over the month; after a hike, the
+  Canadian dollar stronger (USDCAD *down*) on the day and over the week. Each but the two yields is
+  *too few* walk-forward.
+- **The Canadian dollar after a BoC cut or hike, on the day, *can't say* in both runs: wrong**
+  for a hike from the close before (`follows --event boc`): USDCAD *down*, the Canadian dollar
+  stronger (3 up, 3 same, 13 down of 19, chance 0.0081), *too few* walk-forward (0
+  graded). Right for the other three: a cut, 7 / 7 / 8 of 22 (chance 0.46) and from the reaction
+  close 10 / 7 / 5 (0.17); a hike from the reaction close, 4 / 4 / 11 of 19 (0.048).
+- **The Canadian dollar after inflation above or below, on the day, *can't say* in both runs:
+  right** (`follows --event cacpi`): above, 20 / 18 / 26 of 64 (chance 0.19) and 27 / 19 / 18
+  (0.15); below, 40 / 20 / 21 of 81 (0.015) and 30 / 26 / 25 (0.35).
+- **The two new markets, every existing row unchanged byte for byte: right** (`follows` for
+  every flow, both runs and the Fed's `--long`, `raw-move` for every event, `scoreboard`): after
+  step 1 every row, after step 2 74 outputs and after step 3 77, each the one before (the `cmp`
+  lists in the evidence, and its `data.json` checks: every existing scoreboard entry and *Ask*
+  entry the same); only the
+  chance lines grew by the added cells, as step 1's table above gives (the scoreboard's raw-move
+  chance 1,011 → 1,078 → 1,111 → 1,144 cells, surprise 372 → 396 → 429, walk-forward 82). The
+  new markets' rows are recorded in the evidence. **Toronto's long run cannot be judged:** `forecasts`
+  measures the long runs of seven markets (`LONG_RUN_MARKETS`), and the TSX is not one, so no run
+  of it exists to record. **The one card on stocks: right by the code, not by a command:** the
+  TSX is in `AREAS` as *stocks*, and the front page takes one card per area, so it adds no card.
+- **The size of the move** (`raw-move --event boc`, `--event cacpi`, outside the rule, recorded):
+  on its 119 lone days the BoC *moves* 2 of 33 markets, the Canadian dollar (ratio 1.89, p 0.0001)
+  and energy shares (XLE, 1.37, p 0.0037), and Toronto is *unclear* (1.11, p 0.20). On its 189
+  lone days Canada's CPI *moves* the VIX (1.26, p 0.0096) and the euro (1.23, p 0.0093); the
+  dollar is *unclear* (1.11, p 0.14) and Toronto *doesn't* (1.02).
+
+The expected outcome was **right** on six bullets and **wrong** on two: the Bank's twelve answers
+from the close before, against a bar of 10.8, and the Canadian dollar *down* on the day of a hike
+from the close before. Toronto's long run was not measured, so it is not judged.
 
 ## How you know it is right
 

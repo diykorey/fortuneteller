@@ -703,6 +703,21 @@ Three links hold walk-forward: a miss's day (156 of 219 right) and week (145 of 
 in-line report's day (183 of 303). From the reaction close only a miss's next day still leans
 down, and nothing holds.
 
+## What follows a Bank of Canada decision or Canadian inflation
+
+Measured 2026-11-23. Detail in [Canada](steps/canada.md#results).
+
+153 Bank of Canada decisions from 2008 (22 cuts, 112 holds, 19 hikes), each taken by the Bank's
+own rate (`follows --event boc`), and 189 Canadian inflation releases on days with no US release,
+against TradingView's forecast (64 above, 44 as expected, 81 below; `follows --event cacpi`),
+against every market including the newly added Canadian dollar and Toronto's stocks. The Canadian
+dollar moves almost twice its usual size on a Bank day, but **which way is not told by the
+news**: none of the leans holds when replayed. The Bank's decisions give 12 answers from the close
+before, above chance (8.8) plus 2, and 5 from the reaction close; inflation gives 2 and 7 (chance
+8.9). The Canadian dollar strengthened on the day of 13 of the 19 hikes from the close before,
+too few to replay, and 11 of 19 from the reaction close, *can't say*; after
+inflation above or below it is *can't say*.
+
 ## What comes next
 
 Chosen 2026-10-13: keep score ([rung 4](steps/rung-4-keep-score.md)), done above with the live path
