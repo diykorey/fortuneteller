@@ -771,6 +771,8 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **Lesser release** — a flow whose days count as no other flow's shared or busy days, and whose
   own tables keep only the days it has alone: [jobless claims](steps/jobless-claims.md), out on a
   fifth of all trading days, is the first.
+- **Days alone** — *added 2026-11-23*: a lesser flow's release days that no flow that is not
+  lesser also holds; Canada's, China's and Switzerland's inflation tables keep only these.
 - **Statement flow** — a lesser flow of one person's scheduled speeches and testimonies, with no
   number and so no surprise: the Fed chair's and the ECB president's, in
   [scheduled statements](steps/scheduled-statements.md). `fedchair` and `ecbchief` on the command
