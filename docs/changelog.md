@@ -6,6 +6,7 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-23 | Step 33, step 2: the first earnings refresh, LAST 2026-11-20; one new report, Walmart's of 2026-11-19, *as expected*; no line removed, the hand check against Yahoo passed, every stored id equals the seed's, no answer or verdict changed | PR_LINK |
 | 2026-11-22 | Step 52, step 3: Canada's CPI as the lesser flow `cacpi`, `follows --event cacpi`, `cacpi` triggers and the page's *Ask*; its kind the actual less TradingView's forecast, from 0.1; its table on its 189 days alone; every other flow unchanged | [#414](https://github.com/diykorey/fortuneteller/pull/414) |
 | 2026-11-22 | Step 52, step 2: the Bank of Canada's flow, `follows --event boc`, `boc` triggers and the page's *Ask*; kinds from the Bank's changes, 2008-10-08 added, 2020-03-13 a cut and the rateless days of 2012 and 2013 holds; the expected 153 decisions, every other flow unchanged | [#413](https://github.com/diykorey/fortuneteller/pull/413) |
 | 2026-11-22 | Step 52, step 1: the Canadian dollar and Toronto's S&P/TSX as markets, unsigned; the Bank of Canada's target rate changes since 2008 as a seed; every existing row unchanged | [#412](https://github.com/diykorey/fortuneteller/pull/412) |
