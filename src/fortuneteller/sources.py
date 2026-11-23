@@ -350,6 +350,10 @@ DE_CPI = "de_cpi"
 CA_CPI = "ca_cpi"
 # China's CPI, year on year in percent (docs/steps/china.md).
 CN_CPI = "cn_cpi"
+# China's NBS manufacturing PMI in index points, and its industrial production year on year in
+# percent, each the first line of its release moment (docs/steps/china.md).
+CN_PMI = "cn_pmi"
+CN_IP = "cn_ip"
 NOWCAST = "nowcast"
 ACTUAL = "actual"
 # The chart series step 4 reads, by name in the file; the PCE series are left out.
@@ -905,6 +909,10 @@ DE_CPI_FROM = date(2014, 10, 1)
 CA_CPI_FROM = date(2008, 1, 1)
 # Checked 2026-11-23: China's CPI from 2008-01-24, its forecasts from 2010-12-11.
 CN_CPI_FROM = date(2008, 1, 1)
+# Checked 2026-11-23: the NBS PMI from 2008-01-01, its forecasts from 2009-05-01; industrial
+# production from 2008-01-24, its forecasts from 2010-12-11.
+CN_PMI_FROM = date(2008, 1, 1)
+CN_IP_FROM = date(2008, 1, 1)
 TRADINGVIEW_ROWS = {
     EURO_CORE: TradingViewRow("EU", "Core Inflation Rate YoY Flash", EURO_FLASH_FROM, FRANKFURT),
     EURO_HEADLINE: TradingViewRow("EU", "Inflation Rate YoY Flash", EURO_FLASH_FROM, FRANKFURT),
@@ -915,6 +923,8 @@ TRADINGVIEW_ROWS = {
     DE_CPI: TradingViewRow("DE", "Inflation Rate YoY Prel", DE_CPI_FROM, FRANKFURT),
     CA_CPI: TradingViewRow("CA", "Inflation Rate YoY", CA_CPI_FROM, NEW_YORK),
     CN_CPI: TradingViewRow("CN", "Inflation Rate YoY", CN_CPI_FROM, SHANGHAI),
+    CN_PMI: TradingViewRow("CN", "NBS Manufacturing PMI", CN_PMI_FROM, SHANGHAI),
+    CN_IP: TradingViewRow("CN", "Industrial Production YoY", CN_IP_FROM, SHANGHAI),
 }
 
 

@@ -69,6 +69,13 @@ as Canada's inflation has; the two markets in the guesser's list of markets ([st
   inflation's days shared with them stay in, so step 2's header is `follows: 148 Chinese CPI
   releases …: 53 above, 29 as expected, 66 below`; with their days taken out by hand, the 148 are
   the 116 above, 39, 22 and 55, exactly. Each header is checked again after step 4.)
+  (*Amended 2026-11-23, in step 3, before either table was read:* the survey's hand count of 82
+  left out the euro area's flash inflation, a flow that is not lesser and comes out on the month's
+  last or first day, as the survey does; it shares 23 of the survey's days, and with them taken
+  out the header is `follows: 59 Chinese PMI releases …: 18 above, 19 as expected, 22 below`.
+  Without it the same count gives the 82, 27, 23 and 32 above, exactly. Output's 110 stands. Until
+  `cntrade` exists, inflation's header is `follows: 132 Chinese CPI releases …: 47 above, 26 as
+  expected, 59 below`. Taking out trade's days changes neither the survey's count nor output's.)
 - **The markets.** Yahoo's `CNY=X` (dollars in yuan: *up* is the yuan weaker), 6,364 closes from
   2001, closed as the other currencies at 00:00 London; `000001.SS`, 7,120 closes from 1997,
   closed at 15:00 Shanghai. Each checked as Canada's: the daily closes of the two weeks before step
