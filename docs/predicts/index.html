@@ -134,7 +134,7 @@ footer { margin-top: 32px; font-size: 15px; color: var(--muted); display: grid; 
     <span>Made by <a href="https://www.linkedin.com/in/andriyandrunevchyn/">Andriy Andrunevchyn</a>, CTO and co-founder of <a href="https://soft-innovation.ch/">SSI</a></span>
   </footer>
 </main>
-<script id="data" type="application/json">{"written": "2026-11-22", "guess_tally": {"came_true": 0, "did_not": 0, "open": 12}, "stated": [{"stated": true, "market": "SPY / ES", "day": null, "until": "2026-12-21", "when": "Stated Sat, Nov 21, 2026 · checked after the close on Mon, Dec 21, 2026", "event": "The US stock market, over the next month", "outcome": "higher on Mon, Dec 21, 2026 than on Fri, Nov 20, 2026", "direction": "up", "record": "Tested on 666 past months, one at a time, this held 402 times and failed 264 times.", "right": 402, "called": 666, "unit": "past months", "note": "It goes the way most past months went. It says nothing about how far.", "link": ""}, {"stated": true, "market": "US home prices", "day": null, "until": "2027-08-01", "when": "Stated Sat, Nov 21, 2026 · checked when August 2027's figure is out", "event": "US home prices, in the 12 months after August 2026", "outcome": "higher in August 2027 than in August 2026", "direction": "up", "record": "Tested on 34 past years, one at a time, this held 29 times and failed 5 times.", "right": 29, "called": 34, "unit": "past years", "note": "It goes the way most past years went. It says nothing about how far.", "link": ""}], "tally": {"came_true": 0, "did_not": 0, "open": 3}, "kept_since": "2026-11-21"}</script>
+<script id="data" type="application/json">{"written": "2026-11-23", "guess_tally": {"came_true": 0, "did_not": 0, "open": 25}, "stated": [{"stated": true, "market": "SPY / ES", "day": null, "until": "2026-12-21", "when": "Stated Sat, Nov 21, 2026 · checked after the close on Mon, Dec 21, 2026", "event": "The US stock market, over the next month", "outcome": "higher on Mon, Dec 21, 2026 than on Fri, Nov 20, 2026", "direction": "up", "record": "Tested on 666 past months, one at a time, this held 402 times and failed 264 times.", "right": 402, "called": 666, "unit": "past months", "note": "It goes the way most past months went. It says nothing about how far.", "link": ""}, {"stated": true, "market": "US home prices", "day": null, "until": "2027-08-01", "when": "Stated Sat, Nov 21, 2026 · checked when August 2027's figure is out", "event": "US home prices, in the 12 months after August 2026", "outcome": "higher in August 2027 than in August 2026", "direction": "up", "record": "Tested on 34 past years, one at a time, this held 29 times and failed 5 times.", "right": 29, "called": 34, "unit": "past years", "note": "It goes the way most past years went. It says nothing about how far.", "link": ""}], "tally": {"came_true": 0, "did_not": 0, "open": 3}, "kept_since": "2026-11-21"}</script>
 <script>
 (function () {
   const data = JSON.parse(document.getElementById('data').textContent);
@@ -157,11 +157,20 @@ footer { margin-top: 32px; font-size: 15px; color: var(--muted); display: grid; 
     'COIN': ['🪙', 'Coinbase shares'], 'NKY': ['🗾', 'Japanese stocks'], 'DAX': ['🇩🇪', 'German stocks'],
     'UKX': ['🇬🇧', 'British stocks'], 'SX5E': ['🇪🇺', 'European stocks'], 'SXXP': ['🇪🇺', 'European stocks'],
     'CORN': ['🌽', 'Corn'], 'WEAT': ['🌾', 'Wheat'], 'SOYB': ['🫘', 'Soybeans'], 'KC': ['☕', 'Coffee'],
-    'ALL': ['🏢', 'Allstate shares'],
+    'ALL': ['🏢', 'Allstate shares'], 'USDCAD': ['🍁', 'The dollar in Canadian dollars'],
+    'TSX': ['🍁', 'Canadian stocks'], 'USDCNY': ['🇨🇳', 'The dollar in Chinese yuan'],
+    'SHCOMP': ['🇨🇳', 'Chinese stocks'], 'USDCHF': ['🇨🇭', 'The dollar in Swiss francs'],
+    'SMI': ['🇨🇭', 'Swiss stocks'],
   };
   const HINTS = {
     'VIX': 'A number that rises when investors are scared and falls when they calm down.',
     'USDJPY': 'How many Japanese yen one US dollar buys.',
+    'USDCAD': 'How many Canadian dollars one US dollar buys.',
+    'TSX': "Toronto's S&P/TSX: Canada's biggest companies.",
+    'USDCNY': 'How many Chinese yuan one US dollar buys.',
+    'SHCOMP': "The Shanghai Composite: every company listed in Shanghai.",
+    'USDCHF': 'How many Swiss francs one US dollar buys.',
+    'SMI': "Zurich's Swiss Market Index: Switzerland's biggest companies.",
     'EURUSD': 'How many US dollars one euro buys.', 'GBPUSD': 'How many US dollars one pound buys.',
     'DXY': 'The US dollar against other big currencies.',
     'UST10Y / ZN': 'The interest the US government pays to borrow for 10 years.',
