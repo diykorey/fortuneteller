@@ -101,7 +101,8 @@ the hand check against Yahoo passed, and no answer or verdict on the page change
 
 ## Next
 
-Step 46, the loop's safety nets, after step 52; then China (53) and Switzerland (54).
+Step 53, China, then Switzerland (54), with step 46's live days (2026-11-24 onward) recorded
+alongside.
 
 Monday 2026-11-23: step 23's first weekly post, drafted by `weekly-post` and published by the
 owner. Then step 44's page, published before the post if it is ready.
