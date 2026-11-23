@@ -357,10 +357,19 @@ Terms are grouped by what they are about, alphabetical within each group.
   in a kind's own years, events or not. Unlike an *ordinary day*, a span is never "alone": other
   events fall inside a month or a year by design. Unlike the *drift probability*, it counts every
   span, not earlier releases.
+  *Amended 2026-11-23* ([step 55](steps/guesses-vs-base-rate.md)): for a guess, which has no kind,
+  every run of its length in the market's stored closes before the evening.
 - **Cycle** — *added 2026-11-12* ([part 2](steps/what-follows-long.md)): Fed decisions taken as one
   story. A cut cycle runs from a cut to the last cut before the next hike, holds between included;
   a hike cycle likewise; a run of holds is consecutive holds. Over a quarter or a year an answer
   stands only if it also holds counting each cycle once.
+- **Excess** — *added 2026-11-23* ([step 55](steps/guesses-vs-base-rate.md)): over a set of
+  graded guesses, the number that came true minus the sum of their base rates, often per guess. A
+  guesser that only follows a market's drift scores near zero.
+- **News guesser / grounded guesser** — *added 2026-11-23* ([step 55](steps/guesses-vs-base-rate.md)):
+  the two evening guessers. The news guesser is the guess ledger's, unchanged, the control; the
+  grounded guesser also reads the base rates and the forecasts that hold, and its prompt is
+  refined one numbered change at a time.
 - **Excess move** — *added 2026-11-13* ([step 20, part 1](steps/ceo-scandals.md)): a company's
   move over a span less the S&P 500's over the same closes, in percent: what the company did
   beyond the market.
