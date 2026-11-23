@@ -631,23 +631,24 @@ def test_a_bank_s_trigger_is_answered_not_refused(
     assert not any("is not one of" in line for line in lines)
 
 
-def test_a_cacpi_trigger_is_answered_not_refused(one_market: None) -> None:
-    # given a Canadian CPI release above TradingView's forecast at 08:30 Toronto
+@pytest.mark.parametrize("flow", [flows.CA_CPI_FLOW, flows.CH_CPI_FLOW], ids=["cacpi", "chcpi"])
+def test_a_lesser_cpi_trigger_is_answered_not_refused(
+    one_market: None, flow: flows.TradingViewFlow
+) -> None:
+    # given a Canadian (or Swiss) CPI release above TradingView's forecast at 08:30 Toronto (Zurich)
     closes = _closes(_wavy(300))
     day = closes[200].day
-    release = flows.CA_CPI_FLOW.event_instance(
-        datetime.combine(day, time(8, 30), tzinfo=flows.TORONTO), day
-    )
-    merged = datetime.combine(day, time(9, 0), tzinfo=flows.TORONTO)
+    release = flow.event_instance(datetime.combine(day, time(8, 30), tzinfo=flow.zone), day)
+    merged = datetime.combine(day, time(9, 0), tzinfo=flow.zone)
 
     # when filed as above before the close
     rows, lines = _answer(
-        [_trigger(day, ABOVE, "cacpi")],
+        [_trigger(day, ABOVE, flow.cli_name)],
         [release],
         {release.event_id: ABOVE},
         closes,
         merged,
-        flow="cacpi",
+        flow=flow.cli_name,
     )
 
     # then it is answered on the market, not refused for its flow

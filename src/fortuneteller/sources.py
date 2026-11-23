@@ -348,6 +348,8 @@ DE_IFO = "de_ifo"
 DE_CPI = "de_cpi"
 # Canada's CPI, year on year in percent (docs/steps/canada.md).
 CA_CPI = "ca_cpi"
+# Switzerland's CPI, year on year in percent (docs/steps/switzerland.md).
+CH_CPI = "ch_cpi"
 # China's CPI, year on year in percent (docs/steps/china.md).
 CN_CPI = "cn_cpi"
 # China's NBS manufacturing PMI in index points, and its industrial production year on year in
@@ -918,6 +920,8 @@ CN_PMI_FROM = date(2008, 1, 1)
 CN_IP_FROM = date(2008, 1, 1)
 # Checked 2026-11-23: exports from 2008-01-11, their forecasts from 2010-12-10.
 CN_EXPORTS_FROM = date(2008, 1, 1)
+# Checked 2026-11-23: Switzerland's CPI from 2008-01-04.
+CH_CPI_FROM = date(2008, 1, 1)
 TRADINGVIEW_ROWS = {
     EURO_CORE: TradingViewRow("EU", "Core Inflation Rate YoY Flash", EURO_FLASH_FROM, FRANKFURT),
     EURO_HEADLINE: TradingViewRow("EU", "Inflation Rate YoY Flash", EURO_FLASH_FROM, FRANKFURT),
@@ -931,6 +935,7 @@ TRADINGVIEW_ROWS = {
     CN_PMI: TradingViewRow("CN", "NBS Manufacturing PMI", CN_PMI_FROM, SHANGHAI),
     CN_IP: TradingViewRow("CN", "Industrial Production YoY", CN_IP_FROM, SHANGHAI),
     CN_EXPORTS: TradingViewRow("CN", "Exports YoY", CN_EXPORTS_FROM, SHANGHAI),
+    CH_CPI: TradingViewRow("CH", "Inflation Rate YoY", CH_CPI_FROM, ZURICH),
 }
 
 

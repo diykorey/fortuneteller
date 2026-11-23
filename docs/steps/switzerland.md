@@ -113,7 +113,7 @@ At the end: two markets more, the franc (USD/CHF) and Zurich's SMI; `fortunetell
 | --- | --- | --- |
 | 1 | ~~The two markets~~ **done** 2026-11-23. The two markets and the SNB's history: seed rows, series, `load-prices`, `snb-changes.csv`, the guesser's list and the areas | `load-prices` stores both; tests: a 09:30 Zurich decision falls on the same day's SMI close and the next day's franc and Tokyo closes; `USDCHF` is in the currencies area and `SMI` in stocks; the closes within 0.05%, written here; each change's day and hour copied from the SNB's press release (*amended 2026-11-23:* the hour from the sources above, the releases giving none), and each month's rate in the file equal to the monthly series' on all 2008-01 to 2026-10 months; the days the calendar and the history disagree on listed here, exactly the six expected, or each other amended; on a copy of the store every existing `raw-move`, `follows`, scoreboard and *Ask* row identical, each chance line before and after written here |
 | 2 | ~~The SNB~~ **done** 2026-11-23. The SNB: flow `snb`, `follows --event snb`, on *Ask*, a trigger kind (*cut*, *hold*, *hike*) | Tests: a quarter stores its decisions at their UTC time; an unscheduled change is added at its file's hour, 2015-01-15 at 10:30 Zurich reacting the same day in the SMI and the next in the franc; 2015-01-15 a cut and 2015-03-19 a hold; an `snb` trigger is answered; *Ask*'s cells equal `follows`'. The header as expected, or amended as the rule says; every other flow's `raw-move`, `follows`, scoreboard and *Ask* rows unchanged |
-| 3 | Inflation: flow `chcpi`, `follows --event chcpi`, on *Ask*, a trigger kind (*above*, *as expected*, *below*) | Tests: the surprise is the actual less the forecast, *above* from 0.1; a day shared with a flow that is not lesser left out of its table; a release at 09:15 Zurich in winter (08:15 UTC, after Tokyo's close) reacts the same day in the SMI and the next in Tokyo and the franc; a `chcpi` trigger is answered; *Ask*'s cells equal `follows`'. The header as expected, or amended as the rule says; every other flow's `raw-move`, `follows`, scoreboard and *Ask* rows unchanged |
+| 3 | ~~Inflation~~ **done** 2026-11-24. Inflation: flow `chcpi`, `follows --event chcpi`, on *Ask*, a trigger kind (*above*, *as expected*, *below*) | Tests: the surprise is the actual less the forecast, *above* from 0.1; a day shared with a flow that is not lesser left out of its table; a release at 09:15 Zurich in winter (08:15 UTC, after Tokyo's close) reacts the same day in the SMI and the next in Tokyo and the franc; a `chcpi` trigger is answered; *Ask*'s cells equal `follows`'. The header as expected, or amended as the rule says; every other flow's `raw-move`, `follows`, scoreboard and *Ask* rows unchanged |
 | 4 | Results here and in [MVP results](../mvp-results.md), against the expected outcome; the roadmap row | Every judged bullet marked right or wrong with its numbers |
 
 ## How you know it is right
@@ -194,3 +194,15 @@ scoreboard gains the SNB's raw-move entry (41 → 42 events), its raw-move chanc
 cells; every other entry, and every other flow's *Ask* entry, is the same. On *Ask*, the SNB's 333
 cells equal `follows --event snb`'s 333 lines, as the test checks field by field. Both runs'
 tables and walk-forward lines are in [the evidence](switzerland-steps.txt), for step 4 to judge.
+
+*Step 3, 2026-11-24:* on a copy of step 2's store, with Switzerland's CPI alone loaded (`loaded 227
+Swiss CPI releases, 2008-01-04 … 2026-11-03`, 223 with a forecast, 152 of them alone, 71 shared),
+`follows --event chcpi` prints the expected header, `follows: 152 Swiss CPI releases 2008-02-08 …
+2026-11-03: 47 above, 45 as expected, 60 below`, in both runs. Every other flow's `follows` (both
+runs, and the Fed's `--long`) and `raw-move` output, the SNB's among them, 95 in all, is byte for
+byte the one before. `raw-move --event chcpi` is new (153 lone release days on the S&P 500). The
+scoreboard gains Swiss CPI's raw-move entry (42 → 43 events), its raw-move chance 1,394 → 1,431
+cells and its surprise chance 592 → 629; every other entry, and every other flow's *Ask* entry, is
+the same. On *Ask*, Swiss CPI's 333 cells equal `follows --event chcpi`'s 333 lines, as the test
+checks field by field. Both runs' tables are in [the evidence](switzerland-steps.txt), for step 4
+to judge.

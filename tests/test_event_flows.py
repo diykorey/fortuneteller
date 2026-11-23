@@ -947,6 +947,72 @@ def test_a_canadian_cpi_release_s_surprise_is_its_actual_less_the_forecast_above
     }
 
 
+def test_a_swiss_cpi_release_s_surprise_is_its_actual_less_the_forecast_above_from_0_1(
+    tmp_db: Path, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # given a quarter of Switzerland's calendar: a print 0.1 over its forecast and one 0.1 under,
+    # one on its forecast, one with no forecast, a row of the same name on the Canadian calendar
+    # and a release not yet out
+    title = sources.TRADINGVIEW_ROWS[sources.CH_CPI].title
+    rows = [
+        _flash_row(title, "2025-01-13T07:30:00.000Z", 0.6, 0.5, country="CH"),
+        _flash_row(title, "2025-02-13T07:30:00.000Z", 0.4, 0.5, country="CH"),
+        _flash_row(title, "2025-03-05T07:30:00.000Z", 0.3, 0.3, country="CH"),
+        _flash_row(title, "2025-03-06T07:30:00.000Z", 0.3, None, country="CH"),
+        _flash_row(title, "2025-01-13T07:30:00.000Z", 9.9, 0.5, country="CA"),
+        _flash_row(title, "2025-04-03T06:30:00.000Z", None, 0.3, country="CH"),
+    ]
+    for row, month in zip(rows, ["2024-12", "2025-01", "2025-02", "2025-03"], strict=False):
+        row["referenceDate"] = f"{month}-28T00:00:00Z"
+    _tradingview_quarter(monkeypatch, tmp_path, "CH", rows)
+
+    # when the flow's events are stored, its surprises built and stored, and the kinds read
+    stored, _actuals, surprises = _stored_with_surprises(flows.CH_CPI_FLOW)
+    db.insert_models("surprises", surprises)
+    kinds = study.release_kinds(flows.CH_CPI_FLOW)
+
+    # then four Swiss releases at 08:30 Zurich, a lesser flow; each surprise is the actual less
+    # TradingView's forecast, and the kind is above from 0.1, below from -0.1, as expected between
+    assert flows.CH_CPI_FLOW.lesser
+    assert [(e.event_id, e.country) for e in stored] == [
+        (4520250113, "Switzerland"),
+        (4520250213, "Switzerland"),
+        (4520250305, "Switzerland"),
+        (4520250306, "Switzerland"),
+    ]
+    assert {e.event_ts.replace(tzinfo=UTC).astimezone(sources.ZURICH).time() for e in stored} == {
+        time(8, 30)
+    }
+    assert [(r.event_id, r.baseline, round(r.surprise, 6)) for r in surprises] == [
+        (4520250113, expectations.TRADINGVIEW_FORECAST, 0.1),
+        (4520250213, expectations.TRADINGVIEW_FORECAST, -0.1),
+        (4520250305, expectations.TRADINGVIEW_FORECAST, 0.0),
+    ]
+    assert kinds == {
+        4520250113: study.ABOVE,
+        4520250213: study.BELOW,
+        4520250305: study.AS_EXPECTED,
+    }
+
+
+def test_a_winter_swiss_release_at_09_15_falls_on_zurich_s_close_and_the_next_day_s_tokyo() -> None:
+    # given a Swiss CPI release at 09:15 Zurich, Tuesday 2026-11-03 (08:15 UTC), after Tokyo's close
+    event = flows.CH_CPI_FLOW.event_instance(
+        datetime(2026, 11, 3, 9, 15, tzinfo=sources.ZURICH), date(2026, 11, 3)
+    )
+
+    # when its first reaction day is found on each market
+    markets = ("SMI", "NKY", "USDCHF")
+    days = {m: study.first_reaction_day(event, study.MVP_PRICE_SERIES[m]) for m in markets}
+
+    # then Zurich reacts that Tuesday, Tokyo and the franc on Wednesday
+    assert days == {
+        "SMI": date(2026, 11, 3),
+        "NKY": date(2026, 11, 4),
+        "USDCHF": date(2026, 11, 4),
+    }
+
+
 def test_a_chinese_cpi_release_s_kind_is_its_cpi_against_the_forecast_not_its_ppi(
     tmp_db: Path, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
