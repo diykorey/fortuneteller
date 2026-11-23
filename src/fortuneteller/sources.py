@@ -794,6 +794,7 @@ def calendar_rows(payload: bytes) -> list[tuple[datetime, str, str]]:
 
 
 ECB_DECISION = "ECB Interest Rate Decision"
+SNB_DECISION = "SNB Interest Rate Decision"
 
 
 def parse_ecb_decisions(payload: bytes) -> list[datetime]:

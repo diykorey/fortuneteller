@@ -630,6 +630,7 @@ FOLLOWS_NOUNS = {
     "earnings500": "S&P 500 earnings reports",
     "splits": "stock splits",
     "boc": "BoC decisions",
+    "snb": "SNB decisions",
     "cacpi": "Canadian CPI releases",
     "cncpi": "Chinese CPI releases",
     "cnpmi": "Chinese PMI releases",
@@ -649,6 +650,8 @@ def _decision_kinds(
         return study.boe_kinds(events, _boe_rates())
     if flow is flows.BOC_FLOW:
         return study.boe_kinds(events, _boc_rates(), study.BOC_RATE_BEFORE)
+    if flow is flows.SNB_FLOW:
+        return study.boe_kinds(events, _snb_rates(), study.SNB_RATE_BEFORE)
     if flow is flows.BOJ_FLOW:
         return study.ecb_kinds(events, _boj_rates())
     api_key = _fred_key(command)
@@ -668,6 +671,10 @@ def _boe_rates() -> dict[date, float]:
 
 def _boc_rates() -> dict[date, float]:
     return {day: rate for day, (_, rate) in flows.boc_changes(settings.seed_dir).items()}
+
+
+def _snb_rates() -> dict[date, float]:
+    return {day: rate for day, (_, rate) in flows.snb_changes(settings.seed_dir).items()}
 
 
 class FollowsUnavailable(Exception):
@@ -712,6 +719,8 @@ def follows_kinds(
         return events, study.boe_kinds(events, _boe_rates()), study.KINDS
     if flow is flows.BOC_FLOW:
         return events, study.boe_kinds(events, _boc_rates(), study.BOC_RATE_BEFORE), study.KINDS
+    if flow is flows.SNB_FLOW:
+        return events, study.boe_kinds(events, _snb_rates(), study.SNB_RATE_BEFORE), study.KINDS
     if flow is flows.BOJ_FLOW:
         try:
             boj_rates = _boj_rates()
@@ -863,6 +872,7 @@ def _triggers(_args: argparse.Namespace) -> int:
                 flows.BOE_FLOW,
                 flows.BOJ_FLOW,
                 flows.BOC_FLOW,
+                flows.SNB_FLOW,
             ):
                 decided = _decision_kinds(flow, events[name], "triggers")
                 if decided is None:
@@ -2050,6 +2060,11 @@ ASK_DECISIONS = {
         study.CUT: "a Bank of Canada rate cut",
         study.HOLD: "the Bank of Canada holding its rate",
         study.HIKE: "a Bank of Canada rate hike",
+    },
+    "snb": {
+        study.CUT: "an SNB rate cut",
+        study.HOLD: "the SNB holding its rate",
+        study.HIKE: "an SNB rate hike",
     },
     "war": {study.VIOLENT_ACT: "a violent act setting off an international crisis"},
     "crypto": {study.HACK: "a crypto hack of $100 million or more"},

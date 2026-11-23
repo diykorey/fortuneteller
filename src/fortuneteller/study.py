@@ -1579,6 +1579,8 @@ def fed_cycles(kinds: Sequence[str]) -> list[int]:
 # Canada's target from 2007-12-04, before the first in data/seed/boc-changes.csv.
 BOE_RATE_BEFORE = 5.5
 BOC_RATE_BEFORE = 4.25
+# The SNB's: the midpoint of its LIBOR target range, 2.25% to 3.25%, from 2007-09-13.
+SNB_RATE_BEFORE = 2.75
 
 
 def boe_kinds(
@@ -2416,6 +2418,7 @@ TRIGGER_KINDS = {
     "opec": OPEC_KINDS,
     "boe": KINDS,
     "boc": KINDS,
+    "snb": KINDS,
     "cacpi": SURPRISE_KINDS,
     "cncpi": SURPRISE_KINDS,
     "cnpmi": SURPRISE_KINDS,

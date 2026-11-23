@@ -1400,6 +1400,69 @@ def test_boc_decisions_are_the_calendar_s_at_their_utc_time_and_the_bank_s_cut_i
     )
 
 
+def test_snb_decisions_are_the_calendar_s_at_their_utc_time_and_the_bank_s_cut_it_lacks(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # given a quarter of the Swiss calendar with the decision of 2015-03-19, one listed without its
+    # rate (as the five of 2008 and 2009 are), the LIBOR range's own rows, other news and one not
+    # yet held, and the Bank's changes from the seed, among them the unscheduled cut of 2015-01-15
+    replies = {
+        date(2015, 1, 1): json.dumps(
+            {
+                "status": "ok",
+                "result": [
+                    {"title": t, "country": "CH", "date": when, "actual": a, "forecast": None}
+                    for t, when, a in (
+                        ("Inflation Rate YoY", "2015-02-05T08:15:00.000Z", -0.5),
+                        (sources.SNB_DECISION, "2015-02-26T08:30:00.000Z", None),
+                        (
+                            "Switzerland-Interest Rate-3M Target LIBOR Rate-High",
+                            "2015-03-19T08:30:00.000Z",
+                            -0.25,
+                        ),
+                        (sources.SNB_DECISION, "2015-03-19T08:30:00.000Z", -0.75),
+                        (sources.SNB_DECISION, "2015-06-18T07:30:00.000Z", None),
+                    )
+                ],
+            }
+        ).encode(),
+    }
+    asked: list[str] = []
+
+    def fetch(
+        start: date, cache_dir: Path, today: date | None = None, country: str = "US"
+    ) -> bytes:
+        asked.append(country)
+        return replies.get(start, b'{"status": "no_data"}')
+
+    monkeypatch.setattr(sources, "fetch_tradingview_quarter", fetch)
+    monkeypatch.setattr(flows, "SNB_FROM", date(2015, 1, 1))
+
+    # when the decisions up to the quarter's end are loaded
+    listed, added = flows.load_snb_decisions(tmp_path, settings.seed_dir, today=date(2015, 3, 31))
+
+    # then the calendar's two held ones, the one without a rate among them, are at their UTC time,
+    # from the Swiss calendar, the range's rows and the one after today are not, and the cut it
+    # lacks is added at the file's 10:30 Zurich, reacting in the SMI that day and in the franc the
+    # next
+    assert set(asked) == {"CH"}
+    assert listed == [
+        datetime(2015, 2, 26, 8, 30, tzinfo=UTC),
+        datetime(2015, 3, 19, 8, 30, tzinfo=UTC),
+    ]
+    assert added == [datetime(2015, 1, 15, 9, 30, tzinfo=UTC)]
+    event = flows.decision_instance(flows.SNB_FLOW, added[0], flows.UNSCHEDULED)
+    assert (event.event_id, event.country, event.event_type) == (
+        4420150115,
+        "Switzerland",
+        "Central-bank decision",
+    )
+    days = {
+        m: study.first_reaction_day(event, study.MVP_PRICE_SERIES[m]) for m in ("SMI", "USDCHF")
+    }
+    assert days == {"SMI": date(2015, 1, 15), "USDCHF": date(2015, 1, 16)}
+
+
 @pytest.mark.parametrize(
     ("at", "expected"),
     [
