@@ -33,6 +33,10 @@ the hand check against Yahoo passed, and no answer or verdict on the page change
 
 ## In progress
 
+- **Step 54: Switzerland** ([the spec](steps/switzerland.md)): the Swiss National Bank's
+  decisions, each kind from its own history, and Swiss inflation against its forecast, the franc
+  and the SMI added. Asked for 2026-11-22 by the owner. Spec written. Next: its goldfish review,
+  then step 1, the two markets and the SNB's history.
 - **Step 55: guesses against the base rate** ([the spec](steps/guesses-vs-base-rate.md)): each
   guess carries its base rate; a grounded guesser, given the record, runs beside today's news
   guesser as the control. Asked for 2026-11-23 by the owner. Spec merged (#420); step 1, the
@@ -112,7 +116,8 @@ the hand check against Yahoo passed, and no answer or verdict on the page change
 
 ## Next
 
-Step 54, Switzerland, with step 46's live days (2026-11-24 onward) recorded alongside.
+None queued after step 54; the owner's next choice. Step 46's live days (2026-11-24 onward)
+recorded alongside.
 
 Monday 2026-11-23: step 23's first weekly post, drafted by `weekly-post` and published by the
 owner. Then step 44's page, published before the post if it is ready.
