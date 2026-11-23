@@ -167,6 +167,14 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **Too few** (raw move) — a cell with fewer than ten event days, given no verdict.
 - **PMI** (Purchasing Managers' Index) — a survey-based activity gauge where above 50 means
   expansion, below 50 contraction.
+- **NBS** (National Bureau of Statistics of China) — *added 2026-11-23* ([China](steps/china.md)):
+  publishes China's inflation, factory output, retail sales and GDP, and with a purchasing
+  federation the official PMIs, manufacturing and services.
+- **PPI** (producer price index) — prices factories charge; China publishes it at the same minute
+  as its CPI, so the two share one flow ([China](steps/china.md)).
+- **Release moment** — *added 2026-11-23* ([China](steps/china.md)): the minute a country publishes
+  one or more reports; reports of one moment cannot be told apart, so they make one flow, its
+  kind read from one report named in its spec.
 - **Reference month** — the month a release *measures*, as opposed to the day it is *published*.
   August CPI has an August reference month and a mid-September release date. Confusing the two is
   the classic way to measure the wrong days.
@@ -235,6 +243,9 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **USDJPY** — dollars in yen, Yahoo's `JPY=X`; *up* is the yen weaker (step 25).
 - **USDCAD** — *added 2026-11-22*: dollars in Canadian dollars, Yahoo's `CAD=X`, closed as the
   euro is, at 00:00 London; *up* is the Canadian dollar weaker ([Canada](steps/canada.md)).
+- **USDCNY** — *added 2026-11-23*: dollars in yuan (onshore), Yahoo's `CNY=X`, closed at 00:00
+  London; *up* is the yuan weaker. Held to the dollar from 2008-07 to 2010-06 and kept within a
+  daily band around the central bank's fixing since ([China](steps/china.md)).
 - **EURUSD** — the euro in dollars, the dollar index's largest weight (58%), so mostly its mirror;
   it takes the dollar index's expected sign reversed. Yahoo's `EURUSD=X`, whose daily close is the
   price at 00:00 London of the bar's own day, so the bar after a US release is the next London
@@ -285,6 +296,8 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **TSX** (S&P/TSX Composite) — *added 2026-11-22* ([Canada](steps/canada.md)): Toronto's main
   stock index, Canada's largest listed companies, as Yahoo's `^GSPTSE`, closing at 16:00 Toronto
   (New York's hour and zone). No expected sign.
+- **SHCOMP** (Shanghai Composite) — *added 2026-11-23* ([China](steps/china.md)): every share
+  listed in Shanghai, Yahoo's `000001.SS`, closing at 15:00 Shanghai. No expected sign.
 - **Ticker / symbol** — the short code identifying an instrument (`SPY`, `^VIX`). **These strings
   are load-bearing here** — they are join keys between seed data, measurements, and predictions, so
   drift silently breaks lookups.

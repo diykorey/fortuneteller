@@ -28,6 +28,9 @@ the hand check against Yahoo passed, and no answer or verdict on the page change
 
 ## In progress
 
+- **Step 53: China** ([the spec](steps/china.md)): China's inflation, factory survey, output and
+  exports, each against its forecast, the yuan and Shanghai's stocks added. Asked for 2026-11-22
+  by the owner. Spec written. Next: the goldfish review, then step 1, the two markets.
 - **Step 46: the loop's safety nets** ([the spec](steps/loop-nets.md)): each machine watches the
   other and opens an issue for what it missed; a source's 5xx asked again. Chosen 2026-11-21 by the
   owner. Steps 1 and 2 built. Next: merged before Wednesday 2026-11-25's releases, then step 3,
@@ -101,8 +104,7 @@ the hand check against Yahoo passed, and no answer or verdict on the page change
 
 ## Next
 
-Step 53, China, then Switzerland (54), with step 46's live days (2026-11-24 onward) recorded
-alongside.
+Step 54, Switzerland, with step 46's live days (2026-11-24 onward) recorded alongside.
 
 Monday 2026-11-23: step 23's first weekly post, drafted by `weekly-post` and published by the
 owner. Then step 44's page, published before the post if it is ready.
