@@ -41,6 +41,7 @@ import duckdb
 from . import db, expectations, sources, stats
 from .models import DailyBar, EventInstance, Observation
 from .flows import (
+    CHINA_FLOWS,
     EVENT_FLOWS,
     RELEASE_TIME,
     TARGET_EFFECT_DAYS,
@@ -649,18 +650,29 @@ def surprise_pairs(
 
 def shared_days(flow: EventFlow, con: duckdb.DuckDBPyConnection | None = None) -> dict[int, date]:
     """The flow's stored releases on a day that also holds another flow's, by event id; a lesser
-    flow's releases share nobody's day."""
+    flow's releases share nobody's day, but China's flows share each other's, each read on the
+    weekday it reacts on (docs/steps/china.md)."""
+    china = flow in CHINA_FLOWS
     others = {
-        release_date(event)
+        _alone_day(each, event)
         for each in EVENT_FLOWS
-        if (each.event_type, each.country) != (flow.event_type, flow.country) and not each.lesser
+        if (each.event_type, each.country) != (flow.event_type, flow.country)
+        and (not each.lesser or (china and each in CHINA_FLOWS))
         for event in stored_events(each, con=con)
     }
     return {
         event.event_id: day
         for event in stored_events(flow, con=con)
-        if (day := release_date(event)) in others
+        if (day := _alone_day(flow, event)) in others
     }
+
+
+def _alone_day(flow: EventFlow, event: EventInstance) -> date:
+    """The day a release is told apart on: its own, or for China's flows the first weekday from it."""
+    day = release_date(event)
+    if flow in CHINA_FLOWS and day.weekday() >= 5:
+        return day + timedelta(days=7 - day.weekday())
+    return day
 
 
 def _flow_pairs(
@@ -2402,6 +2414,7 @@ TRIGGER_KINDS = {
     "boe": KINDS,
     "boc": KINDS,
     "cacpi": SURPRISE_KINDS,
+    "cncpi": SURPRISE_KINDS,
     "boj": KINDS,
     "war": (VIOLENT_ACT,),
     "crypto": (HACK,),

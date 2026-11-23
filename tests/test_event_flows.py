@@ -945,6 +945,42 @@ def test_a_canadian_cpi_release_s_surprise_is_its_actual_less_the_forecast_above
     }
 
 
+def test_a_chinese_cpi_release_s_kind_is_its_cpi_against_the_forecast_not_its_ppi(
+    tmp_db: Path, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # given a quarter of China's calendar: CPI 0.1 over its forecast, 0.1 under and on it, each at
+    # 09:30 Beijing, and the PPI of the same minutes, which misses the other way
+    cpi = sources.TRADINGVIEW_ROWS[sources.CN_CPI].title
+    rows = [
+        _flash_row(cpi, "2025-01-09T01:30:00.000Z", 0.1, 0.0, country="CN"),
+        _flash_row(cpi, "2025-02-09T01:30:00.000Z", 0.4, 0.5, country="CN"),
+        _flash_row(cpi, "2025-03-09T01:30:00.000Z", -0.7, -0.7, country="CN"),
+        _flash_row("PPI YoY", "2025-01-09T01:30:00.000Z", -2.3, -2.1, country="CN"),
+        _flash_row("PPI YoY", "2025-02-09T01:30:00.000Z", -2.3, -2.6, country="CN"),
+    ]
+    for row, month in zip(rows, ["2024-12", "2025-01", "2025-02"], strict=False):
+        row["referenceDate"] = f"{month}-28T00:00:00Z"
+    _tradingview_quarter(monkeypatch, tmp_path, "CN", rows)
+
+    # when the flow's events are stored, its surprises built and stored, and the kinds read
+    stored, _actuals, surprises = _stored_with_surprises(flows.CN_CPI_FLOW)
+    db.insert_models("surprises", surprises)
+    kinds = study.release_kinds(flows.CN_CPI_FLOW)
+
+    # then three Chinese releases on Beijing's day at 09:30, a lesser flow, each kind its CPI's:
+    # above, below and as expected, whatever the PPI did
+    assert flows.CN_CPI_FLOW.lesser
+    assert [(e.event_id, e.country) for e in stored] == [
+        (4020250109, "China"),
+        (4020250209, "China"),
+        (4020250309, "China"),
+    ]
+    assert {e.event_ts.replace(tzinfo=UTC).astimezone(sources.SHANGHAI).time() for e in stored} == {
+        time(9, 30)
+    }
+    assert list(kinds.values()) == [study.ABOVE, study.BELOW, study.AS_EXPECTED]
+
+
 def _claims_first_prints(
     monkeypatch: pytest.MonkeyPatch, prints: list[tuple[str, str, str]]
 ) -> None:
