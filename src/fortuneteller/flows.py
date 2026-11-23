@@ -466,7 +466,7 @@ def with_more_outcomes(signs: dict[str, int]) -> dict[str, int]:
     live link (docs/steps/other-central-banks.md); nor ether or Coinbase
     (docs/steps/crypto.md), nor Allstate (docs/steps/weather.md), nor the Canadian dollar or
     Toronto's S&P/TSX (docs/steps/canada.md), nor the yuan or the Shanghai Composite
-    (docs/steps/china.md)."""
+    (docs/steps/china.md), nor the franc or the SMI (docs/steps/switzerland.md)."""
     return {
         **signs,
         "BRN": 0,
@@ -497,6 +497,8 @@ def with_more_outcomes(signs: dict[str, int]) -> dict[str, int]:
         "TSX": 0,
         "USDCNY": 0,
         "SHCOMP": 0,
+        "USDCHF": 0,
+        "SMI": 0,
     }
 
 

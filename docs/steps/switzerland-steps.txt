@@ -1,0 +1,255 @@
+Step 54, step 1's evidence (docs/steps/switzerland.md): a copy of step 53's final store (closes to 2026-11-19, China's four flows loaded); run with main's code as it was after step 53 (out-cn4, sb-cn4), and with this change after the two markets' closes were loaded alone.
+
+$ load-prices for the two markets: study.store_daily_bars(symbol, ticker, closes to 2026-11-19), then study.store_observations(); rows, first, last
+USDCHF CHF=X 6026 2003-09-17 2026-11-19
+SMI ^SSMI 9048 1990-11-09 2026-11-19
+
+$ each daily close of 2026-11-09 … 2026-11-20 against Yahoo's 5-minute bars
+CHF=X: daily close against the 5-minute bars, the 00:00 London bar open (Europe/London)
+  2026-11-09 daily 0.81954 bar 00:00 0.81961 diff -0.009%
+  2026-11-10 daily 0.81952 bar 00:00 0.81952 diff +0.000%
+  2026-11-11 daily 0.82490 bar 00:00 0.82500 diff -0.012%
+  2026-11-12 daily 0.83229 bar 00:00 0.83239 diff -0.012%
+  2026-11-13 daily 0.83593 bar 00:00 0.83595 diff -0.002%
+  2026-11-16 daily 0.83911 bar 00:00 0.83911 diff +0.000%
+  2026-11-17 daily 0.83980 bar 00:00 0.84002 diff -0.026%
+  2026-11-18 daily 0.84129 bar 00:00 0.84133 diff -0.005%
+  2026-11-19 daily 0.84348 bar 00:00 0.84348 diff +0.000%
+  2026-11-20 daily 0.84410 bar 00:00 0.84421 diff -0.013%
+  largest 0.026%
+^SSMI: daily close against the 5-minute bars, the last bar close (Europe/Zurich)
+  2026-11-09 daily 14946.15039 bar 17:25 14943.55957 diff +0.017%
+  2026-11-10 daily 15037.94043 bar 17:25 15065.37012 diff -0.182%
+  2026-11-11 daily 15053.86035 bar 17:25 15046.17969 diff +0.051%
+  2026-11-12 daily 15149.42969 bar 17:25 15139.69043 diff +0.064%
+  2026-11-13 daily 15106.12012 bar 17:25 15102.67969 diff +0.023%
+  2026-11-16 daily 15192.58008 bar 17:25 15204.50977 diff -0.078%
+  2026-11-17 daily 14976.04004 bar 17:25 14969.99023 diff +0.040%
+  2026-11-18 daily 14886.12012 bar 17:25 14889.91016 diff -0.025%
+  2026-11-19 daily 14721.83984 bar 17:25 14749.86035 diff -0.190%
+  2026-11-20 daily 14572.13965 bar 17:25 14567.13965 diff +0.034%
+  largest 0.190%
+The SMI's 5-minute bars end with the 17:25 bar, before the 17:30 close, so its check is the exchange's published close:
+
+$ ^SSMI against SIX's own daily closes (https://www.six-group.com/fqs/charts.json, valor CH0009980894CHF9, read 2026-11-23)
+^SSMI: Yahoo's daily close against SIX's published close (charts.json, valor CH0009980894CHF9)
+  2026-11-09 Yahoo 14946.15 SIX 14946.15 diff +0.0000%
+  2026-11-10 Yahoo 15037.94 SIX 15037.94 diff +0.0000%
+  2026-11-11 Yahoo 15053.86 SIX 15053.86 diff +0.0000%
+  2026-11-12 Yahoo 15149.43 SIX 15149.43 diff -0.0000%
+  2026-11-13 Yahoo 15106.12 SIX 15106.12 diff +0.0000%
+  2026-11-16 Yahoo 15192.58 SIX 15192.58 diff +0.0000%
+  2026-11-17 Yahoo 14976.04 SIX 14976.04 diff +0.0000%
+  2026-11-18 Yahoo 14886.12 SIX 14886.12 diff +0.0000%
+  2026-11-19 Yahoo 14721.84 SIX 14721.84 diff -0.0000%
+  2026-11-20 Yahoo 14572.14 SIX 14572.14 diff -0.0000%
+  largest 0.0000%
+
+$ data/seed/snb-changes.csv against the SNB's monthly official rates (data.snb.ch cube snboffzisa, read 2026-11-23): each month's rate by the file (2.75 before its first change) against the target range's midpoint (UG0, OG0) to 2019-05 and the policy rate (LZ) since
+226 months 2008-01 to 2026-10, 0 different
+
+$ the file's hours against TradingView's CH calendar (SNB Interest Rate Decision, Zurich time); — where the calendar lacks the day
+  2008-10-08 file 13:00 calendar — rate 2.50
+  2008-11-06 file 14:00 calendar — rate 2.00
+  2008-11-20 file 14:00 calendar — rate 1.00
+  2008-12-11 file 09:30 calendar 09:30 rate 0.50
+  2009-03-12 file 14:00 calendar 14:00 rate 0.375
+  2011-08-03 file 09:00 calendar — rate 0.125
+  2014-12-18 file 07:00 calendar — rate -0.25
+  2015-01-15 file 10:30 calendar — rate -0.75
+  2022-06-16 file 09:30 calendar 09:30 rate -0.25
+  2022-09-22 file 09:30 calendar 09:30 rate 0.50
+  2022-12-15 file 09:30 calendar 09:30 rate 1.00
+  2023-03-23 file 09:30 calendar 09:30 rate 1.50
+  2023-06-22 file 09:30 calendar 09:30 rate 1.75
+  2024-03-21 file 09:30 calendar 09:30 rate 1.50
+  2024-06-20 file 09:30 calendar 09:30 rate 1.25
+  2024-09-26 file 09:30 calendar 09:30 rate 1.00
+  2024-12-12 file 09:30 calendar 09:30 rate 0.50
+  2025-03-20 file 09:30 calendar 09:30 rate 0.25
+  2025-06-19 file 09:30 calendar 09:30 rate 0.00
+
+$ each SNB decision's kind by the calendar's own rate (actual against previous) and by the file
+81 decisions (75 on the calendar, 6 added), the first 2008-03-13 with no kind
+disagreeing days: 11
+  2008-06-19: calendar no rate, SNB hold
+  2008-09-18: calendar no rate, SNB hold
+  2008-10-08: calendar lacks, SNB cut
+  2008-11-06: calendar lacks, SNB cut
+  2008-11-20: calendar lacks, SNB cut
+  2008-12-11: calendar no rate, SNB cut
+  2009-03-12: calendar no rate, SNB cut
+  2011-08-03: calendar lacks, SNB cut
+  2014-12-18: calendar lacks, SNB cut
+  2015-01-15: calendar lacks, SNB cut
+  2015-03-19: calendar cut, SNB hold
+
+$ every flow's follows (both runs, the Fed's --long) and raw-move output, before and after: the lines left once the USDCHF and SMI rows and the chance lines are set aside
+same-but-markets fol-additions-after.txt +0 lines
+same-but-markets fol-additions.txt +0 lines
+same-but-markets fol-boc-after.txt +0 lines
+same-but-markets fol-boc.txt +0 lines
+same-but-markets fol-boe-after.txt +18 lines
+same-but-markets fol-boe.txt +18 lines
+same-but-markets fol-boj-after.txt +18 lines
+same-but-markets fol-boj.txt +18 lines
+same-but-markets fol-cacpi-after.txt +0 lines
+same-but-markets fol-cacpi.txt +0 lines
+same-but-markets fol-ceo-after.txt +0 lines
+same-but-markets fol-ceo.txt +0 lines
+same-but-markets fol-claims-after.txt +18 lines
+same-but-markets fol-claims.txt +18 lines
+same-but-markets fol-cncpi-after.txt +18 lines
+same-but-markets fol-cncpi.txt +18 lines
+same-but-markets fol-cnip-after.txt +18 lines
+same-but-markets fol-cnip.txt +18 lines
+same-but-markets fol-cnpmi-after.txt +18 lines
+same-but-markets fol-cnpmi.txt +18 lines
+same-but-markets fol-cntrade-after.txt +18 lines
+same-but-markets fol-cntrade.txt +18 lines
+same-but-markets fol-cpi-after.txt +18 lines
+same-but-markets fol-cpi.txt +18 lines
+same-but-markets fol-crypto-after.txt +6 lines
+same-but-markets fol-crypto.txt +6 lines
+same-but-markets fol-earnings-after.txt +0 lines
+same-but-markets fol-earnings.txt +0 lines
+same-but-markets fol-earnings500-after.txt +0 lines
+same-but-markets fol-earnings500.txt +0 lines
+same-but-markets fol-ecb-after.txt +18 lines
+same-but-markets fol-ecb.txt +18 lines
+same-but-markets fol-flood-after.txt +6 lines
+same-but-markets fol-flood.txt +6 lines
+same-but-markets fol-fomc-after.txt +18 lines
+same-but-markets fol-fomc-long.txt +12 lines
+same-but-markets fol-fomc.txt +18 lines
+same-but-markets fol-nfp-after.txt +18 lines
+same-but-markets fol-nfp.txt +18 lines
+same-but-markets fol-opec-after.txt +12 lines
+same-but-markets fol-opec.txt +12 lines
+same-but-markets fol-retail-after.txt +18 lines
+same-but-markets fol-retail.txt +18 lines
+same-but-markets fol-splits-after.txt +0 lines
+same-but-markets fol-splits.txt +0 lines
+same-but-markets fol-war-after.txt +6 lines
+same-but-markets fol-war.txt +6 lines
+same-but-markets fol-weather-after.txt +6 lines
+same-but-markets fol-weather.txt +6 lines
+same-but-markets raw-additions.txt +4 lines
+same-but-markets raw-boc.txt +0 lines
+same-but-markets raw-boe.txt +4 lines
+same-but-markets raw-boj.txt +4 lines
+same-but-markets raw-cacpi.txt +0 lines
+same-but-markets raw-ceo.txt +4 lines
+same-but-markets raw-claims.txt +4 lines
+same-but-markets raw-cncpi.txt +4 lines
+same-but-markets raw-cnip.txt +4 lines
+same-but-markets raw-cnpmi.txt +4 lines
+same-but-markets raw-cntrade.txt +4 lines
+same-but-markets raw-cpi.txt +4 lines
+same-but-markets raw-crypto.txt +4 lines
+same-but-markets raw-debt.txt +4 lines
+same-but-markets raw-decpi.txt +4 lines
+same-but-markets raw-deelect.txt +4 lines
+same-but-markets raw-earnings.txt +4 lines
+same-but-markets raw-earnings500.txt +4 lines
+same-but-markets raw-ecb.txt +4 lines
+same-but-markets raw-ecbchief.txt +4 lines
+same-but-markets raw-euelect.txt +4 lines
+same-but-markets raw-fedchair.txt +4 lines
+same-but-markets raw-flood.txt +4 lines
+same-but-markets raw-fomc.txt +4 lines
+same-but-markets raw-frelect.txt +4 lines
+same-but-markets raw-gdp.txt +4 lines
+same-but-markets raw-hicp.txt +4 lines
+same-but-markets raw-ifo.txt +4 lines
+same-but-markets raw-ism.txt +4 lines
+same-but-markets raw-nfp.txt +4 lines
+same-but-markets raw-opec.txt +4 lines
+same-but-markets raw-pce.txt +4 lines
+same-but-markets raw-posts.txt +4 lines
+same-but-markets raw-posts2.txt +4 lines
+same-but-markets raw-retail.txt +4 lines
+same-but-markets raw-splits.txt +4 lines
+same-but-markets raw-summit.txt +4 lines
+same-but-markets raw-tariff.txt +4 lines
+same-but-markets raw-ukelect.txt +4 lines
+same-but-markets raw-uselect.txt +4 lines
+same-but-markets raw-war.txt +4 lines
+same-but-markets raw-weather.txt +4 lines
+same-but-markets raw-zew.txt +4 lines
+different: 0
+
+$ follows' chance lines, before -> after
+fol-additions-after.txt: ['by chance: about 0.1 answers on all history, 0.0 holds walk-forward'] -> ['by chance: about 0.1 answers on all history, 0.0 holds walk-forward']
+fol-additions.txt: ['by chance: about 0.1 answers on all history, 0.0 holds walk-forward'] -> ['by chance: about 0.1 answers on all history, 0.0 holds walk-forward']
+fol-boc-after.txt: [] -> []
+fol-boc.txt: [] -> []
+fol-boe-after.txt: ['by chance: about 8.8 answers on all history, 0.0 holds walk-forward'] -> ['by chance: about 9.4 answers on all history, 0.0 holds walk-forward']
+fol-boe.txt: ['by chance: about 8.8 answers on all history, 0.0 holds walk-forward'] -> ['by chance: about 9.4 answers on all history, 0.0 holds walk-forward']
+fol-boj-after.txt: ['by chance: about 3.1 answers on all history, 0.0 holds walk-forward'] -> ['by chance: about 3.3 answers on all history, 0.0 holds walk-forward']
+fol-boj.txt: ['by chance: about 3.1 answers on all history, 0.0 holds walk-forward'] -> ['by chance: about 3.3 answers on all history, 0.0 holds walk-forward']
+fol-cacpi-after.txt: [] -> []
+fol-cacpi.txt: [] -> []
+fol-ceo-after.txt: ['by chance: about 0.1 answers on all history, 0.0 holds walk-forward'] -> ['by chance: about 0.1 answers on all history, 0.0 holds walk-forward']
+fol-ceo.txt: ['by chance: about 0.1 answers on all history, 0.0 holds walk-forward'] -> ['by chance: about 0.1 answers on all history, 0.0 holds walk-forward']
+fol-claims-after.txt: ['by chance: about 9.5 answers on all history, 0.1 holds walk-forward'] -> ['by chance: about 10.0 answers on all history, 0.1 holds walk-forward']
+fol-claims.txt: ['by chance: about 9.5 answers on all history, 0.1 holds walk-forward'] -> ['by chance: about 10.0 answers on all history, 0.1 holds walk-forward']
+fol-cncpi-after.txt: ['by chance: about 9.3 answers on all history, 0.0 holds walk-forward'] -> ['by chance: about 9.9 answers on all history, 0.0 holds walk-forward']
+fol-cncpi.txt: ['by chance: about 9.3 answers on all history, 0.0 holds walk-forward'] -> ['by chance: about 9.9 answers on all history, 0.0 holds walk-forward']
+fol-cnip-after.txt: ['by chance: about 9.4 answers on all history, 0.0 holds walk-forward'] -> ['by chance: about 9.9 answers on all history, 0.0 holds walk-forward']
+fol-cnip.txt: ['by chance: about 9.4 answers on all history, 0.0 holds walk-forward'] -> ['by chance: about 9.9 answers on all history, 0.0 holds walk-forward']
+fol-cnpmi-after.txt: ['by chance: about 8.9 answers on all history, 0.0 holds walk-forward'] -> ['by chance: about 9.5 answers on all history, 0.0 holds walk-forward']
+fol-cnpmi.txt: ['by chance: about 8.9 answers on all history, 0.0 holds walk-forward'] -> ['by chance: about 9.5 answers on all history, 0.0 holds walk-forward']
+fol-cntrade-after.txt: ['by chance: about 9.4 answers on all history, 0.0 holds walk-forward'] -> ['by chance: about 9.9 answers on all history, 0.0 holds walk-forward']
+fol-cntrade.txt: ['by chance: about 9.4 answers on all history, 0.0 holds walk-forward'] -> ['by chance: about 9.9 answers on all history, 0.0 holds walk-forward']
+fol-cpi-after.txt: ['by chance: about 9.5 answers on all history, 0.0 holds walk-forward'] -> ['by chance: about 10.0 answers on all history, 0.0 holds walk-forward']
+fol-cpi.txt: ['by chance: about 9.5 answers on all history, 0.1 holds walk-forward'] -> ['by chance: about 10.0 answers on all history, 0.1 holds walk-forward']
+fol-crypto-after.txt: ['by chance: about 3.1 answers on all history, 0.0 holds walk-forward'] -> ['by chance: about 3.3 answers on all history, 0.0 holds walk-forward']
+fol-crypto.txt: ['by chance: about 3.1 answers on all history, 0.0 holds walk-forward'] -> ['by chance: about 3.3 answers on all history, 0.0 holds walk-forward']
+fol-earnings-after.txt: ['by chance: about 0.3 answers on all history, 0.0 holds walk-forward'] -> ['by chance: about 0.3 answers on all history, 0.0 holds walk-forward']
+fol-earnings.txt: ['by chance: about 0.3 answers on all history, 0.1 holds walk-forward'] -> ['by chance: about 0.3 answers on all history, 0.1 holds walk-forward']
+fol-earnings500-after.txt: ['by chance: about 0.3 answers on all history, 0.1 holds walk-forward'] -> ['by chance: about 0.3 answers on all history, 0.1 holds walk-forward']
+fol-earnings500.txt: ['by chance: about 0.3 answers on all history, 0.1 holds walk-forward'] -> ['by chance: about 0.3 answers on all history, 0.1 holds walk-forward']
+fol-ecb-after.txt: ['by chance: about 9.1 answers on all history, 0.0 holds walk-forward'] -> ['by chance: about 9.6 answers on all history, 0.0 holds walk-forward']
+fol-ecb.txt: ['by chance: about 9.0 answers on all history, 0.0 holds walk-forward'] -> ['by chance: about 9.5 answers on all history, 0.0 holds walk-forward']
+fol-flood-after.txt: ['by chance: about 3.1 answers on all history, 0.0 holds walk-forward'] -> ['by chance: about 3.2 answers on all history, 0.0 holds walk-forward']
+fol-flood.txt: ['by chance: about 3.1 answers on all history, 0.0 holds walk-forward'] -> ['by chance: about 3.2 answers on all history, 0.0 holds walk-forward']
+fol-fomc-after.txt: ['by chance: about 9.4 answers on all history, 0.0 holds walk-forward'] -> ['by chance: about 9.9 answers on all history, 0.0 holds walk-forward']
+fol-fomc-long.txt: ['by chance: about 2.7 answers on all history, 0.0 holds walk-forward'] -> ['by chance: about 2.9 answers on all history, 0.0 holds walk-forward']
+fol-fomc.txt: ['by chance: about 9.4 answers on all history, 0.1 holds walk-forward'] -> ['by chance: about 9.9 answers on all history, 0.1 holds walk-forward']
+fol-nfp-after.txt: ['by chance: about 9.5 answers on all history, 0.1 holds walk-forward'] -> ['by chance: about 10.0 answers on all history, 0.1 holds walk-forward']
+fol-nfp.txt: ['by chance: about 9.5 answers on all history, 0.1 holds walk-forward'] -> ['by chance: about 10.0 answers on all history, 0.1 holds walk-forward']
+fol-opec-after.txt: ['by chance: about 6.3 answers on all history, 0.0 holds walk-forward'] -> ['by chance: about 6.7 answers on all history, 0.0 holds walk-forward']
+fol-opec.txt: ['by chance: about 6.2 answers on all history, 0.0 holds walk-forward'] -> ['by chance: about 6.6 answers on all history, 0.0 holds walk-forward']
+fol-retail-after.txt: ['by chance: about 9.5 answers on all history, 0.0 holds walk-forward'] -> ['by chance: about 10.0 answers on all history, 0.0 holds walk-forward']
+fol-retail.txt: ['by chance: about 9.5 answers on all history, 0.0 holds walk-forward'] -> ['by chance: about 10.0 answers on all history, 0.1 holds walk-forward']
+fol-splits-after.txt: ['by chance: about 0.2 answers on all history, 0.0 holds walk-forward'] -> ['by chance: about 0.2 answers on all history, 0.0 holds walk-forward']
+fol-splits.txt: ['by chance: about 0.2 answers on all history, 0.0 holds walk-forward'] -> ['by chance: about 0.2 answers on all history, 0.0 holds walk-forward']
+fol-war-after.txt: ['by chance: about 3.1 answers on all history, 0.0 holds walk-forward'] -> ['by chance: about 3.2 answers on all history, 0.0 holds walk-forward']
+fol-war.txt: ['by chance: about 3.1 answers on all history, 0.0 holds walk-forward'] -> ['by chance: about 3.2 answers on all history, 0.0 holds walk-forward']
+fol-weather-after.txt: ['by chance: about 3.1 answers on all history, 0.0 holds walk-forward'] -> ['by chance: about 3.3 answers on all history, 0.0 holds walk-forward']
+fol-weather.txt: ['by chance: about 3.1 answers on all history, 0.0 holds walk-forward'] -> ['by chance: about 3.3 answers on all history, 0.0 holds walk-forward']
+
+$ scoreboard data.json, step 53's final store (sb-cn4) against step 1's (sb-ch1): every key but written and earnings_ahead (live market caps)
+  chance {'raw_move': {'cells': 1282, 'p': 0.01, 'by_chance': 12.82}, 'surprise': {'cells': 560, 'p': 0.01, 'by_chance': 5.6}, 'walk_forward': {'cells': 82, 'p': 0.01, 'by_chance': 0.82}} -> {'raw_move': {'cells': 1357, 'p': 0.01, 'by_chance': 13.57}, 'surprise': {'cells': 592, 'p': 0.01, 'by_chance': 5.92}, 'walk_forward': {'cells': 82, 'p': 0.01, 'by_chance': 0.82}}
+  same ahead
+   ask entries removed: 17 added: 17
+  same ask_left_out
+  same bad_guesses
+  same calls
+  same data_until
+   events entries removed: 41 added: 41
+  same guesses
+  same handles
+  same holds
+  DIFFERENT market_names
+   markets entries removed: 0 added: 2
+  same missed
+  same rules
+  same watch
+$ the same, each entry with the USDCHF and SMI cells and the chance figures taken out
+  events: same
+  ask: same
+  market_names: same
+  markets: same
+  market_names in the new only: {'USDCHF': 'USD/CHF', 'SMI': 'Swiss Market Index'}

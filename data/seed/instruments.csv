@@ -40,6 +40,8 @@ USDCAD,USD/CAD,fx,us,OTC,"Yahoo CAD=X; up is the Canadian dollar weaker (step 52
 TSX,S&P/TSX Composite,equity_index,us,Toronto Stock Exchange,"Yahoo ^GSPTSE; closes 16:00 Toronto (step 52)."
 USDCNY,USD/CNY,fx,asia,OTC,"FRED DEXCHUS, the noon buying rate in New York; up is the yuan weaker (step 53)."
 SHCOMP,Shanghai Composite,equity_index,asia,Shanghai Stock Exchange,"Yahoo 000001.SS; closes 15:00 Shanghai (step 53)."
+USDCHF,USD/CHF,fx,europe,OTC,"Yahoo CHF=X; up is the franc weaker (step 54)."
+SMI,Swiss Market Index,equity_index,europe,SIX Swiss Exchange,"Yahoo ^SSMI; closes 17:30 Zurich (step 54)."
 BA,Boeing,single_stock,us,NYSE,"A CEO scandal of step 20, 2005-03-07; measured against the S&P 500."
 RRGB,Red Robin Gourmet Burgers,single_stock,us,Nasdaq,"A CEO scandal of step 20, 2005-08-11; measured against the S&P 500."
 MMS,Maximus,single_stock,us,NYSE,"A CEO scandal of step 20, 2006-04-24; measured against the S&P 500."

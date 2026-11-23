@@ -101,6 +101,7 @@ class PriceSeries(NamedTuple):
 # at 16:00 Toronto, New York's zone. The yuan (docs/steps/china.md) is FRED's noon buying rate in
 # New York, the value Yahoo's `CNY=X` stamps on the next day, kept from 2010-06-21, when its second
 # peg to the dollar ended (held, it does not move); the Shanghai Composite closes at 15:00 Shanghai.
+# The franc (docs/steps/switzerland.md) is stamped as the euro is; the SMI closes at 17:30 Zurich.
 # A `fred:` ticker is FRED's series: the breakeven (docs/steps/breakeven.md), read at 15:30, the
 # time of the bid quotes the Treasury builds its daily curve from.
 MVP_PRICE_SERIES = {
@@ -139,6 +140,8 @@ MVP_PRICE_SERIES = {
     "TSX": PriceSeries("^GSPTSE", "pct", time(16, 0), NEW_YORK),
     "USDCNY": PriceSeries("fred:DEXCHUS", "pct", time(12, 0), NEW_YORK, date(2010, 6, 21)),
     "SHCOMP": PriceSeries("000001.SS", "pct", time(15, 0), SHANGHAI),
+    "USDCHF": PriceSeries("CHF=X", "pct", time(0, 0), LONDON),
+    "SMI": PriceSeries("^SSMI", "pct", time(17, 30), ZURICH),
 }
 
 
