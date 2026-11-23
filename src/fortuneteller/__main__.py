@@ -634,6 +634,7 @@ FOLLOWS_NOUNS = {
     "cncpi": "Chinese CPI releases",
     "cnpmi": "Chinese PMI releases",
     "cnip": "Chinese output releases",
+    "cntrade": "Chinese trade releases",
 }
 
 
@@ -2098,6 +2099,7 @@ ASK_RELEASES = {
     "cncpi": "a Chinese CPI release",
     "cnpmi": "a Chinese factory survey",
     "cnip": "a Chinese industrial output release",
+    "cntrade": "a Chinese trade release",
 }
 ASK_SURPRISE = {
     study.ABOVE: "above the consensus",

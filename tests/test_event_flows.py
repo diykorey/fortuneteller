@@ -1001,9 +1001,17 @@ def test_a_chinese_cpi_release_s_kind_is_its_cpi_against_the_forecast_not_its_pp
             ((5.9, 5.6), (5.8, 5.6), (5.3, 5.6)),
             42,
         ),
+        # exports 2.3pp over, 2.2 over (as expected), and 2.3 under; imports the other way
+        (
+            sources.CN_EXPORTS,
+            flows.CN_TRADE_FLOW,
+            "Imports YoY",
+            ((8.3, 6.0), (8.2, 6.0), (3.7, 6.0)),
+            43,
+        ),
     ],
 )
-def test_a_chinese_survey_s_or_output_s_kind_is_its_named_report_s_not_its_companion_s(
+def test_a_chinese_release_s_kind_is_its_named_report_s_not_its_companion_s(
     tmp_db: Path,
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
@@ -1034,8 +1042,10 @@ def test_a_chinese_survey_s_or_output_s_kind_is_its_named_report_s_not_its_compa
     db.insert_models("surprises", surprises)
     kinds = study.release_kinds(flow)
 
-    # then three lesser Chinese releases, each kind the named report's: above, as expected, below
+    # then three lesser Chinese releases of the flow's event type, each kind the named report's:
+    # above, as expected, below
     assert flow.lesser
+    assert {e.event_type for e in stored} == {flow.event_type}
     assert [(e.event_id, e.country) for e in stored] == [
         (code * 10**8 + 20250109, "China"),
         (code * 10**8 + 20250209, "China"),

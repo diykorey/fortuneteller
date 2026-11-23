@@ -1697,6 +1697,7 @@ def test_follows_for_canadian_cpi_leaves_out_a_shared_day_and_the_page_s_cells_a
 CNCPI = flows.CN_CPI_FLOW
 CNPMI = flows.CN_PMI_FLOW
 CNIP = flows.CN_IP_FLOW
+CNTRADE = flows.CN_TRADE_FLOW
 
 
 def _store_china(
@@ -1790,6 +1791,7 @@ def test_a_chinese_survey_on_a_sunday_before_a_us_survey_s_monday_is_left_out(
         (CNCPI, "Chinese CPI releases", ((0.3, 0.2), (0.2, 0.2), (0.2, 0.3))),
         (CNPMI, "Chinese PMI releases", ((50.4, 50.2), (50.3, 50.2), (50.0, 50.2))),
         (CNIP, "Chinese output releases", ((5.3, 5.0), (5.2, 5.0), (4.7, 5.0))),
+        (CNTRADE, "Chinese trade releases", ((8.3, 6.0), (8.2, 6.0), (3.7, 6.0))),
     ],
 )
 def test_follows_for_a_chinese_flow_prints_its_lone_releases_and_the_page_s_cells_are_its_lines(
