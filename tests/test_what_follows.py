@@ -1695,14 +1695,18 @@ def test_follows_for_canadian_cpi_leaves_out_a_shared_day_and_the_page_s_cells_a
 
 
 CNCPI = flows.CN_CPI_FLOW
+CNPMI = flows.CN_PMI_FLOW
+CNIP = flows.CN_IP_FLOW
 
 
-def _store_cncpi(prints: Mapping[date, tuple[float, float]]) -> list[flows.EventInstance]:
-    # a Chinese CPI release at 09:30 Beijing on each day, with its actual and TradingView's
-    # forecast, and its surprise row as `load-surprises` stores it
+def _store_china(
+    flow: flows.TradingViewFlow, prints: Mapping[date, tuple[float, float]], at: time = time(9, 30)
+) -> list[flows.EventInstance]:
+    # a release of one of China's flows at ``at`` Beijing on each day, with its actual and
+    # TradingView's forecast, and its surprise row as `load-surprises` stores it
     db.init_db()
     events = [
-        CNCPI.event_instance(datetime.combine(day, time(9, 30), tzinfo=sources.SHANGHAI), day)
+        flow.event_instance(datetime.combine(day, at, tzinfo=sources.SHANGHAI), day)
         for day in prints
     ]
     db.insert_models("event_instances", events)
@@ -1711,7 +1715,7 @@ def _store_cncpi(prints: Mapping[date, tuple[float, float]]) -> list[flows.Event
         [
             Surprise(
                 event_id=e.event_id,
-                measure=sources.CN_CPI,
+                measure=flow.measures[0],
                 baseline="tradingview_forecast",
                 actual_mom=actual,
                 expected_mom=forecast,
@@ -1731,7 +1735,7 @@ def test_a_chinese_cpi_release_is_alone_only_on_a_weekday_no_us_release_holds(
     # 2024-06-09 with nothing on their days
     days = [date(2024, 1, 10), date(2024, 3, 9), date(2024, 2, 9), date(2024, 6, 9)]
     prints = [(0.3, 0.2), (0.7, 0.4), (-0.8, -0.5), (0.3, 0.4)]
-    events = _store_cncpi(dict(zip(days, prints, strict=True)))
+    events = _store_china(CNCPI, dict(zip(days, prints, strict=True)))
     db.insert_models("event_instances", [_report(days[0], CPI), _report(date(2024, 3, 11), NFP)])
 
     # when the kinds are read, all of them and the ones on its days alone
@@ -1743,11 +1747,61 @@ def test_a_chinese_cpi_release_is_alone_only_on_a_weekday_no_us_release_holds(
     assert [alone.get(e.event_id) for e in events] == [None, None, BELOW, BELOW]
 
 
-def test_follows_for_chinese_cpi_prints_its_lone_releases_and_the_page_s_cells_are_its_lines(
-    tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+def test_china_s_cpi_and_output_on_one_day_each_leave_that_day_out(tmp_db: Path) -> None:
+    # given Chinese CPI releases on Wednesday 2024-01-10 and Friday 2024-02-09, and output releases
+    # at 10:00 Beijing on that Wednesday and on Monday 2024-03-18, nothing else stored
+    cpi = _store_china(CNCPI, {date(2024, 1, 10): (0.3, 0.2), date(2024, 2, 9): (0.2, 0.2)})
+    output = _store_china(
+        CNIP, {date(2024, 1, 10): (5.3, 5.0), date(2024, 3, 18): (5.2, 5.0)}, time(10, 0)
+    )
+
+    # when each flow's kinds on its days alone are read
+    cpi_alone = study.lone_release_kinds(CNCPI)
+    output_alone = study.lone_release_kinds(CNIP)
+
+    # then the shared Wednesday is in neither table; output is above from 0.3, as expected at 0.2
+    assert [cpi_alone.get(e.event_id) for e in cpi] == [None, AS_EXPECTED]
+    assert [output_alone.get(e.event_id) for e in output] == [None, AS_EXPECTED]
+    assert study.release_kinds(CNIP)[output[0].event_id] == ABOVE
+
+
+def test_a_chinese_survey_on_a_sunday_before_a_us_survey_s_monday_is_left_out(
+    tmp_db: Path,
 ) -> None:
-    # given Shanghai's and the yuan's closes and 45 Chinese CPI releases, above, as expected and
-    # below in turn, the first sharing its day with a US retail sales release
+    # given Chinese surveys at 09:30 Beijing on Sunday 2024-03-31, with the US survey on Monday
+    # 2024-04-01, on Sunday 2024-06-30 with nothing on its Monday, and on Wednesday 2024-01-31
+    days = [date(2024, 3, 31), date(2024, 6, 30), date(2024, 1, 31)]
+    prints = [(50.8, 50.1), (49.5, 49.4), (49.1, 49.3)]
+    events = _store_china(CNPMI, dict(zip(days, prints, strict=True)))
+    db.insert_models("event_instances", [_report(date(2024, 4, 1), flows.flow_named("ism"))])
+
+    # when the kinds are read, all of them and the ones on its days alone
+    every = study.release_kinds(CNPMI)
+    alone = study.lone_release_kinds(CNPMI)
+
+    # then the Sunday before the US survey is left out; above from 0.2 points, as expected at 0.1
+    assert [every.get(e.event_id) for e in events] == [ABOVE, AS_EXPECTED, BELOW]
+    assert [alone.get(e.event_id) for e in events] == [None, AS_EXPECTED, BELOW]
+
+
+@pytest.mark.parametrize(
+    ("flow", "noun", "prints"),
+    [
+        (CNCPI, "Chinese CPI releases", ((0.3, 0.2), (0.2, 0.2), (0.2, 0.3))),
+        (CNPMI, "Chinese PMI releases", ((50.4, 50.2), (50.3, 50.2), (50.0, 50.2))),
+        (CNIP, "Chinese output releases", ((5.3, 5.0), (5.2, 5.0), (4.7, 5.0))),
+    ],
+)
+def test_follows_for_a_chinese_flow_prints_its_lone_releases_and_the_page_s_cells_are_its_lines(
+    tmp_db: Path,
+    capsys: pytest.CaptureFixture[str],
+    monkeypatch: pytest.MonkeyPatch,
+    flow: flows.TradingViewFlow,
+    noun: str,
+    prints: tuple[tuple[float, float], ...],
+) -> None:
+    # given Shanghai's and the yuan's closes and 45 releases of one of China's flows, above, as
+    # expected and below in turn, the first sharing its day with a US retail sales release
     two = {k: study.MVP_PRICE_SERIES[k] for k in ("SHCOMP", "USDCNY")}
     monkeypatch.setattr(study, "MVP_PRICE_SERIES", two)
     rng = random.Random(7)
@@ -1758,23 +1812,20 @@ def test_follows_for_chinese_cpi_prints_its_lone_releases_and_the_page_s_cells_a
         "INSERT INTO daily_bars (instrument, day, close, source) VALUES (?, ?, ?, 'test')",
         [[m, c.day, c.price] for m in two for c in closes],
     )
-    prints = ((0.3, 0.2), (0.2, 0.2), (0.2, 0.3))
-    _store_cncpi({closes[k].day: prints[j % 3] for j, k in enumerate(keys)})
+    _store_china(flow, {closes[k].day: prints[j % 3] for j, k in enumerate(keys)})
     db.insert_models("event_instances", [_report(closes[keys[0]].day, RETAIL)])
 
     # when follows prints the table and the page's data is built
-    assert main(["follows", "--event", "cncpi"]) == 0
+    assert main(["follows", "--event", flow.cli_name]) == 0
     out = capsys.readouterr().out.splitlines()
     printed = [FOLLOWS_LINE.match(line) for line in out[2:-1]]
     ask = cli.ask_data(db.get_connection())
 
     # then the header counts the 44 releases alone, and every line has one cell on the page
     first, last = closes[keys[1]].day, closes[keys[-1]].day
-    assert out[0] == (
-        f"follows: 44 Chinese CPI releases {first} … {last}: 14 above, 15 as expected, 15 below"
-    )
-    (cncpi,) = [entry for entry in ask["ask"] if entry["name"] == "cncpi"]
-    cells = {(c["kind"], c["span"], c["market"]): c for c in cncpi["cells"]}  # type: ignore[union-attr]
+    assert out[0] == (f"follows: 44 {noun} {first} … {last}: 14 above, 15 as expected, 15 below")
+    (entry,) = [entry for entry in ask["ask"] if entry["name"] == flow.cli_name]
+    cells = {(c["kind"], c["span"], c["market"]): c for c in entry["cells"]}  # type: ignore[union-attr]
     assert len(printed) == len(cells) == 3 * 3 * 2
     for line in printed:
         assert line is not None
@@ -1785,5 +1836,5 @@ def test_follows_for_chinese_cpi_prints_its_lone_releases_and_the_page_s_cells_a
             int(line["down"]),
         ]
         assert (cell["answer"], cell["verdict"]) == (line["answer"], line["verdict"])
-        assert str(cell["say"]).startswith(f"After {cli.ask_kind('cncpi', line['kind'])},")
-    assert [k["events"] for k in cncpi["kinds"]] == [14, 15, 15]  # type: ignore[index]
+        assert str(cell["say"]).startswith(f"After {cli.ask_kind(flow.cli_name, line['kind'])},")
+    assert [k["events"] for k in entry["kinds"]] == [14, 15, 15]  # type: ignore[index]

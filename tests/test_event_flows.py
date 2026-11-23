@@ -981,6 +981,69 @@ def test_a_chinese_cpi_release_s_kind_is_its_cpi_against_the_forecast_not_its_pp
     assert list(kinds.values()) == [study.ABOVE, study.BELOW, study.AS_EXPECTED]
 
 
+@pytest.mark.parametrize(
+    ("measure", "flow", "companion", "prints", "code"),
+    [
+        # the NBS factory survey 0.2 points over, on, and 0.2 under its forecast; the services PMI
+        # of the same minute the other way
+        (
+            sources.CN_PMI,
+            flows.CN_PMI_FLOW,
+            "NBS Non Manufacturing PMI",
+            ((50.4, 50.2), (49.9, 49.9), (49.0, 49.2)),
+            41,
+        ),
+        # output 0.3pp over, 0.2 over (as expected), and 0.3 under; retail sales the other way
+        (
+            sources.CN_IP,
+            flows.CN_IP_FLOW,
+            "Retail Sales YoY",
+            ((5.9, 5.6), (5.8, 5.6), (5.3, 5.6)),
+            42,
+        ),
+    ],
+)
+def test_a_chinese_survey_s_or_output_s_kind_is_its_named_report_s_not_its_companion_s(
+    tmp_db: Path,
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+    measure: str,
+    flow: flows.TradingViewFlow,
+    companion: str,
+    prints: tuple[tuple[float, float], ...],
+    code: int,
+) -> None:
+    # given a quarter of China's calendar: the named report's three releases at 09:30 Beijing on
+    # the 9th, and its companion's of the same minutes, which misses the other way
+    title = sources.TRADINGVIEW_ROWS[measure].title
+    stamps = ["2025-01-09T01:30:00.000Z", "2025-02-09T01:30:00.000Z", "2025-03-09T01:30:00.000Z"]
+    rows = [
+        _flash_row(title, stamp, actual, forecast, country="CN")
+        for stamp, (actual, forecast) in zip(stamps, prints, strict=True)
+    ]
+    rows += [
+        _flash_row(companion, stamps[0], 1.0, 2.0, country="CN"),
+        _flash_row(companion, stamps[2], 3.0, 2.0, country="CN"),
+    ]
+    for row, month in zip(rows, ["2024-12", "2025-01", "2025-02"], strict=False):
+        row["referenceDate"] = f"{month}-28T00:00:00Z"
+    _tradingview_quarter(monkeypatch, tmp_path, "CN", rows)
+
+    # when the flow's events are stored, its surprises built and stored, and the kinds read
+    stored, _actuals, surprises = _stored_with_surprises(flow)
+    db.insert_models("surprises", surprises)
+    kinds = study.release_kinds(flow)
+
+    # then three lesser Chinese releases, each kind the named report's: above, as expected, below
+    assert flow.lesser
+    assert [(e.event_id, e.country) for e in stored] == [
+        (code * 10**8 + 20250109, "China"),
+        (code * 10**8 + 20250209, "China"),
+        (code * 10**8 + 20250309, "China"),
+    ]
+    assert list(kinds.values()) == [study.ABOVE, study.AS_EXPECTED, study.BELOW]
+
+
 def _claims_first_prints(
     monkeypatch: pytest.MonkeyPatch, prints: list[tuple[str, str, str]]
 ) -> None:
@@ -1341,6 +1404,12 @@ def test_boc_decisions_are_the_calendar_s_at_their_utc_time_and_the_bank_s_cut_i
         ),
         # a Fed decision at 14:00 New York comes after the noon rate: the yuan's next day
         (datetime(2026, 10, 28, 18, 0, tzinfo=UTC), {"USDCNY": date(2026, 10, 29)}),
+        # an output release at 15:30 Beijing, after Shanghai's close: Shanghai's next day, the yuan's
+        # noon New York rate the same day
+        (
+            datetime(2026, 11, 11, 7, 30, tzinfo=UTC),
+            {"SHCOMP": date(2026, 11, 12), "USDCNY": date(2026, 11, 11)},
+        ),
     ],
 )
 def test_a_chinese_release_falls_on_shanghai_s_close_and_the_yuan_s_noon_rate(

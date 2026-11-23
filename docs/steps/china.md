@@ -69,6 +69,13 @@ as Canada's inflation has; the two markets in the guesser's list of markets ([st
   inflation's days shared with them stay in, so step 2's header is `follows: 148 Chinese CPI
   releases …: 53 above, 29 as expected, 66 below`; with their days taken out by hand, the 148 are
   the 116 above, 39, 22 and 55, exactly. Each header is checked again after step 4.)
+  (*Amended 2026-11-23, in step 3, before either table was read:* the survey's hand count of 82
+  left out the euro area's flash inflation, a flow that is not lesser and comes out on the month's
+  last or first day, as the survey does; it shares 49 of the survey's days, 23 of them with no
+  other flow, and with them taken out the header is `follows: 59 Chinese PMI releases …: 18 above, 19 as expected, 22 below`.
+  Without it the same count gives the 82, 27, 23 and 32 above, exactly. Output's 110 stands. Until
+  `cntrade` exists, inflation's header is `follows: 132 Chinese CPI releases …: 47 above, 26 as
+  expected, 59 below`. Taking out trade's days changes neither the survey's count nor output's.)
 - **The markets.** Yahoo's `CNY=X` (dollars in yuan: *up* is the yuan weaker), 6,364 closes from
   2001, closed as the other currencies at 00:00 London; `000001.SS`, 7,120 closes from 1997,
   closed at 15:00 Shanghai. Each checked as Canada's: the daily closes of the two weeks before step
@@ -113,7 +120,7 @@ as Canada's inflation has; the two markets in the guesser's list of markets ([st
 | --- | --- | --- |
 | 1 | ~~The two markets~~ **done** 2026-11-23. The two markets: seed rows, series, `load-prices`, the guesser's list and the areas | `load-prices` stores both; tests: a 09:30 Beijing release falls on the same day's Shanghai and Tokyo close and the next day's yuan close (*amended 2026-11-23:* the same day's, the yuan at noon New York), a Saturday's on Monday's Shanghai close; `USDCNY` is in the currencies area and `SHCOMP` in stocks; the closes' largest difference from the bars written here, each within 0.05%; on a copy of the store every existing `raw-move`, `follows` and scoreboard row identical, each chance line before and after written here |
 | 2 | ~~Inflation~~ **done** 2026-11-23. Inflation: `cncpi` | Tests: the surprise is the actual less the forecast, *above* from 0.1; a day shared with a US release, and a day shared with `cnip`, left out of its table; a Saturday release dated, for *alone*, on its Monday; a `cncpi` trigger is answered; *Ask*'s cells equal `follows`'. The header equal to the one above, or amended; every other flow's rows unchanged |
-| 3 | The survey and output: `cnpmi`, `cnip` | As step 2, each with its threshold; a survey on a Sunday before a US survey's Monday left out; an output release at 15:30 Beijing reacts at Shanghai's next close |
+| 3 | ~~The survey and output~~ **done** 2026-11-23. The survey and output: `cnpmi`, `cnip` | As step 2, each with its threshold; a survey on a Sunday before a US survey's Monday left out; an output release at 15:30 Beijing reacts at Shanghai's next close |
 | 4 | Trade: `cntrade`, and `Trade data` in `event_types.csv` (tier 3, *both*) and `docs/schema.md` | As step 2; the seed row loads and the flow's events carry it |
 | 5 | Results here and in [MVP results](../mvp-results.md), against the expected outcome; the roadmap row | Every judged bullet marked right or wrong with its numbers |
 
@@ -182,6 +189,38 @@ The yuan and Shanghai's stocks on the day, up / same / down of n:
 
 `raw-move --event cncpi` reads 177 days: the yuan's ratio 1.14 (p 0.18, *unclear*, 153 days),
 Shanghai's 1.00. Both runs' tables are in [the evidence](china-steps.txt), for step 5 to judge.
+
+*Step 3, 2026-11-23:* on a copy of step 2's store, with the survey and output alone loaded
+(`loaded 227 Chinese PMI releases, 2008-01-01 … 2026-10-31`, 193 with a forecast, the first
+2009-05-01; `loaded 207 Chinese output releases, 2008-01-24 … 2026-11-16`, 174, the first
+2010-12-11), `follows` prints the headers amended above: `follows: 59 Chinese PMI releases
+2009-05-01 … 2026-08-31: 18 above, 19 as expected, 22 below`, `follows: 110 Chinese output
+releases 2011-07-13 … 2026-11-16: 44 above, 33 as expected, 33 below`, and inflation's, output's
+days now out, `follows: 132 Chinese CPI releases 2011-07-09 … 2026-11-09: 47 above, 26 as
+expected, 59 below`; each equal to the count by hand. `raw-move --event cncpi` reads 144 days,
+not 177, for the same reason. Every other flow's `follows` and `raw-move` output, 80 in all, is
+byte for byte step 2's. The scoreboard gains the survey's and output's entries (40 events) and
+inflation's has 144 days: its raw-move chance 1,177 → 1,247 cells and its surprise chance 455 →
+525; walk-forward stays at 82 cells. Every other entry, and every other flow's *Ask* entry, is the
+same; the page's watch list gains the survey of 2026-11-30, 09:30 Beijing.
+
+| Flow | Run | Answers | Chance line | Walk-forward |
+| --- | --- | --- | --- | --- |
+| `cnpmi` | close before | 3: *as expected*, day, gold up and the pound about the same; *below*, week, the euro down | about 8.9 | 315 of 315 *too few* (at most 3 graded) |
+| `cnpmi` | after the day | 1: *as expected*, week, the pound down | about 8.9 | 315 of 315 *too few* (at most 8 graded) |
+| `cnip` | close before | 4: *above*, day, wheat up; *as expected*, day, the 10-year about the same; *below*, day, the Nikkei and ether down | about 9.4 | 315 of 315 *too few* (at most 17 graded) |
+| `cnip` | after the day | 6: *above*, day, gold about the same; *as expected*, week, the DAX, the Euro Stoxx 50 and the Stoxx 600 about the same; *below*, week, the 10-year about the same | about 9.4 | 315 of 315 *too few* (at most 24 graded) |
+| `cncpi` | close before | 3: *above*, day, the pound and the Canadian dollar about the same; *above*, week, gasoline up | about 9.4 | 315 of 315 *too few* (at most 15 graded) |
+| `cncpi` | after the day | 4: *above*, week, Brent about the same; *as expected*, day, the yuan up (12 / 12 / 2 of 26), and week, the pound down; *below*, week, the Euro Stoxx 50 about the same | about 9.4 | 315 of 315 *too few* (at most 25 graded) |
+
+Shanghai's stocks, the yuan and Brent after each kind of the survey and output, on the day, in
+both runs: *can't say*, all 36 cells. `raw-move`: the survey's 84 days read *moves* on 12
+markets, the S&P 500, the 10-year, the DAX, the Euro Stoxx 50, the FTSE, the Stoxx 600 and
+Toronto among them (ratio 1.42 to 2.14), the yuan 0.76 and Shanghai 1.30 (p 0.0495, *unclear*, 72
+days); output's yuan 1.10 (p 0.28, *unclear*, 110 days), Shanghai's 0.90. Inflation's yuan, with
+output's days out, reads *moves*, 1.48 (p 0.0025, 132 days), where step 2's read 1.14 (p 0.18,
+153 days).
+Every table is in [the evidence](china-steps.txt), for step 5 to judge.
 
 ## How you know it is right
 

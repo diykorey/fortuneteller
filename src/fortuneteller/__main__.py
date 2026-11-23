@@ -632,6 +632,8 @@ FOLLOWS_NOUNS = {
     "boc": "BoC decisions",
     "cacpi": "Canadian CPI releases",
     "cncpi": "Chinese CPI releases",
+    "cnpmi": "Chinese PMI releases",
+    "cnip": "Chinese output releases",
 }
 
 
@@ -2094,6 +2096,8 @@ ASK_RELEASES = {
     "claims": "a jobless claims report",
     "cacpi": "a Canadian CPI release",
     "cncpi": "a Chinese CPI release",
+    "cnpmi": "a Chinese factory survey",
+    "cnip": "a Chinese industrial output release",
 }
 ASK_SURPRISE = {
     study.ABOVE: "above the consensus",
