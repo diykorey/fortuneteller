@@ -1,0 +1,166 @@
+Step 53, step 1's evidence (docs/steps/china.md): a copy of the store of 2026-11-21 (closes to 2026-11-19), the Canadian dollar's and Toronto's closes loaded with main's code (49585bd) first; run with main's code as it is, and with this change after the two markets' closes were loaded alone.
+
+$ load-prices for the two markets: study.store_daily_bars(symbol, ticker, closes to 2026-11-19, the yuan's from 2010-06-21), then study.store_observations(); rows, first, last
+USDCNY fred:DEXCHUS 4102 2010-06-21 2026-11-13 (FRED's last on 2026-11-23)
+SHCOMP 000001.SS 7118 1997-07-02 2026-11-19
+
+$ Shanghai: each daily close of 2026-11-09 … 2026-11-20 against the exchange's published close (Eastmoney's daily index history, secid 1.000001) and against Yahoo's 5-minute bars
+Eastmoney: 2026-11-09,3660.79 2026-11-10,3663.72 2026-11-11,3680.64 2026-11-12,3655.83 2026-11-13,3634.35 2026-11-16,3602.57 2026-11-17,3584.58 2026-11-18,3587.83 2026-11-19,3577.62 2026-11-20,3533.79
+Yahoo's daily close equals it to the cent on all ten days (largest difference 0.005%). The 5-minute bars:
+000001.SS: daily close against the 5-minute bars, last bar close (Asia/Shanghai)
+  2026-11-09 daily 3660.79199 bar 14:55 3661.21582 diff -0.012%
+  2026-11-10 daily 3663.72290 bar 14:55 3666.15283 diff -0.066%
+  2026-11-11 daily 3680.64307 bar 14:55 3682.24634 diff -0.044%
+  2026-11-12 daily 3655.83008 bar 14:55 3653.60791 diff +0.061%
+  2026-11-13 daily 3634.35303 bar 14:55 3632.59131 diff +0.048%
+  2026-11-16 daily 3602.57007 bar 14:55 3601.25659 diff +0.036%
+  2026-11-17 daily 3584.57910 bar 14:55 3580.09937 diff +0.125%
+  2026-11-18 daily 3587.83203 bar 14:55 3587.70215 diff +0.004%
+  2026-11-19 daily 3577.61694 bar 14:55 3575.79028 diff +0.051%
+  2026-11-20 daily 3533.79297 bar 14:55 3531.11890 diff +0.076%
+  largest 0.125%
+The 1-minute bars of 2026-11-20 end 14:56 3532.39, 14:57 3531.12, 14:58 and 14:59 empty, 15:00 3538.95: the closing auction (14:57 to 15:00) sets the close, which no bar holds.
+
+$ the yuan: Yahoo's CNY=X daily against its 5-minute bars at 00:00 London, and against FRED's DEXCHUS
+CNY=X: daily close against the 5-minute bars, open at 00:00 (Europe/London)
+  2026-11-09 daily 6.67600 no 00:00 bar
+  2026-11-10 daily 6.67270 no 00:00 bar
+  2026-11-11 daily 6.67030 no 00:00 bar
+  2026-11-12 daily 6.67030 no 00:00 bar
+  2026-11-13 daily 6.67040 no 00:00 bar
+  2026-11-16 daily 6.67100 no 00:00 bar
+  2026-11-17 daily 6.66420 no 00:00 bar
+  2026-11-18 daily 6.66590 no 00:00 bar
+  2026-11-19 daily 6.66760 bar 00:00 6.65760 diff +0.150%
+  2026-11-20 daily 6.66650 no 00:00 bar
+  largest 0.150%
+FRED DEXCHUS: 2026-11-09 6.6727, 2026-11-10 6.6703, 2026-11-12 6.6704, 2026-11-13 6.6710 (2026-11-11 a US holiday)
+Yahoo CNY=X daily: 2026-11-10 6.67270, 2026-11-11 6.67030, 2026-11-12 6.67030, 2026-11-13 6.67040, 2026-11-16 6.67100
+Each Yahoo day is DEXCHUS of the business day before, on all four days FRED has published (2026-11-12 repeats 11-10 across the holiday).
+
+$ every flow's follows (both runs, the Fed's --long) and raw-move output, main's code before and this change after: the lines left once USDCNY's and SHCOMP's rows and the 'by chance' lines are taken out
+  same-but-markets fol-additions-after.txt +0 lines
+  same-but-markets fol-additions.txt +0 lines
+  same-but-markets fol-boc-after.txt +0 lines
+  same-but-markets fol-boc.txt +0 lines
+  same-but-markets fol-boe-after.txt +18 lines
+  same-but-markets fol-boe.txt +18 lines
+  same-but-markets fol-boj-after.txt +18 lines
+  same-but-markets fol-boj.txt +18 lines
+  same-but-markets fol-cacpi-after.txt +0 lines
+  same-but-markets fol-cacpi.txt +0 lines
+  same-but-markets fol-ceo-after.txt +0 lines
+  same-but-markets fol-ceo.txt +0 lines
+  same-but-markets fol-claims-after.txt +18 lines
+  same-but-markets fol-claims.txt +18 lines
+  same-but-markets fol-cpi-after.txt +18 lines
+  same-but-markets fol-cpi.txt +18 lines
+  same-but-markets fol-crypto-after.txt +6 lines
+  same-but-markets fol-crypto.txt +6 lines
+  same-but-markets fol-earnings-after.txt +0 lines
+  same-but-markets fol-earnings.txt +0 lines
+  same-but-markets fol-earnings500-after.txt +0 lines
+  same-but-markets fol-earnings500.txt +0 lines
+  same-but-markets fol-ecb-after.txt +18 lines
+  same-but-markets fol-ecb.txt +18 lines
+  same-but-markets fol-flood-after.txt +6 lines
+  same-but-markets fol-flood.txt +6 lines
+  same-but-markets fol-fomc-after.txt +18 lines
+  same-but-markets fol-fomc-long.txt +12 lines
+  same-but-markets fol-fomc.txt +18 lines
+  same-but-markets fol-nfp-after.txt +18 lines
+  same-but-markets fol-nfp.txt +18 lines
+  same-but-markets fol-opec-after.txt +12 lines
+  same-but-markets fol-opec.txt +12 lines
+  same-but-markets fol-retail-after.txt +18 lines
+  same-but-markets fol-retail.txt +18 lines
+  same-but-markets fol-splits-after.txt +0 lines
+  same-but-markets fol-splits.txt +0 lines
+  same-but-markets fol-war-after.txt +6 lines
+  same-but-markets fol-war.txt +6 lines
+  same-but-markets fol-weather-after.txt +6 lines
+  same-but-markets fol-weather.txt +6 lines
+  same-but-markets raw-additions.txt +4 lines
+  same-but-markets raw-boc.txt +0 lines
+  same-but-markets raw-boe.txt +4 lines
+  same-but-markets raw-boj.txt +4 lines
+  same-but-markets raw-cacpi.txt +0 lines
+  same-but-markets raw-ceo.txt +4 lines
+  same-but-markets raw-claims.txt +4 lines
+  same-but-markets raw-cpi.txt +4 lines
+  same-but-markets raw-crypto.txt +4 lines
+  same-but-markets raw-debt.txt +4 lines
+  same-but-markets raw-decpi.txt +4 lines
+  same-but-markets raw-deelect.txt +4 lines
+  same-but-markets raw-earnings.txt +4 lines
+  same-but-markets raw-earnings500.txt +4 lines
+  same-but-markets raw-ecb.txt +4 lines
+  same-but-markets raw-ecbchief.txt +4 lines
+  same-but-markets raw-euelect.txt +4 lines
+  same-but-markets raw-fedchair.txt +4 lines
+  same-but-markets raw-flood.txt +4 lines
+  same-but-markets raw-fomc.txt +4 lines
+  same-but-markets raw-frelect.txt +4 lines
+  same-but-markets raw-gdp.txt +4 lines
+  same-but-markets raw-hicp.txt +4 lines
+  same-but-markets raw-ifo.txt +4 lines
+  same-but-markets raw-ism.txt +4 lines
+  same-but-markets raw-nfp.txt +4 lines
+  same-but-markets raw-opec.txt +4 lines
+  same-but-markets raw-pce.txt +4 lines
+  same-but-markets raw-posts.txt +4 lines
+  same-but-markets raw-posts2.txt +4 lines
+  same-but-markets raw-retail.txt +4 lines
+  same-but-markets raw-splits.txt +4 lines
+  same-but-markets raw-summit.txt +4 lines
+  same-but-markets raw-tariff.txt +4 lines
+  same-but-markets raw-ukelect.txt +4 lines
+  same-but-markets raw-uselect.txt +4 lines
+  same-but-markets raw-war.txt +4 lines
+  same-but-markets raw-weather.txt +4 lines
+  same-but-markets raw-zew.txt +4 lines
+different: 0
+(follows --event boc and cacpi print 'no … stored' on both: the store copy predates Canada's flows; the Fed's three were rerun with the FRED key, all same-but-markets)
+
+$ each follows chance line ('by chance: about N answers on all history, M holds walk-forward'), before -> after
+  fol-additions-after.txt: ['0.1 0.0'] -> ['0.1 0.0']
+  fol-additions.txt: ['0.1 0.0'] -> ['0.1 0.0']
+  fol-boe-after.txt: ['8.4 0.0'] -> ['8.8 0.0']
+  fol-boe.txt: ['8.4 0.0'] -> ['8.8 0.0']
+  fol-boj-after.txt: ['3.0 0.0'] -> ['3.1 0.0']
+  fol-boj.txt: ['3.0 0.0'] -> ['3.1 0.0']
+  fol-ceo-after.txt: ['0.1 0.0'] -> ['0.1 0.0']
+  fol-ceo.txt: ['0.1 0.0'] -> ['0.1 0.0']
+  fol-claims-after.txt: ['8.9 0.1'] -> ['9.5 0.1']
+  fol-claims.txt: ['8.9 0.1'] -> ['9.5 0.1']
+  fol-cpi-after.txt: ['8.9 0.0'] -> ['9.5 0.0']
+  fol-cpi.txt: ['8.9 0.0'] -> ['9.5 0.1']
+  fol-crypto-after.txt: ['3.0 0.0'] -> ['3.1 0.0']
+  fol-crypto.txt: ['3.0 0.0'] -> ['3.1 0.0']
+  fol-earnings-after.txt: ['0.3 0.0'] -> ['0.3 0.0']
+  fol-earnings.txt: ['0.3 0.1'] -> ['0.3 0.1']
+  fol-earnings500-after.txt: ['0.3 0.1'] -> ['0.3 0.1']
+  fol-earnings500.txt: ['0.3 0.1'] -> ['0.3 0.1']
+  fol-ecb-after.txt: ['8.6 0.0'] -> ['9.1 0.0']
+  fol-ecb.txt: ['8.6 0.0'] -> ['9.0 0.0']
+  fol-flood-after.txt: ['2.9 0.0'] -> ['3.1 0.0']
+  fol-flood.txt: ['2.9 0.0'] -> ['3.1 0.0']
+  fol-fomc-after.txt: ['8.8 0.0'] -> ['9.4 0.0']
+  fol-fomc-long.txt: ['2.6 0.0'] -> ['2.7 0.0']
+  fol-fomc.txt: ['8.8 0.1'] -> ['9.4 0.1']
+  fol-nfp-after.txt: ['8.9 0.1'] -> ['9.5 0.1']
+  fol-nfp.txt: ['8.9 0.1'] -> ['9.5 0.1']
+  fol-opec-after.txt: ['5.9 0.0'] -> ['6.3 0.0']
+  fol-opec.txt: ['5.9 0.0'] -> ['6.2 0.0']
+  fol-retail-after.txt: ['8.9 0.0'] -> ['9.5 0.0']
+  fol-retail.txt: ['8.9 0.0'] -> ['9.5 0.0']
+  fol-splits-after.txt: ['0.2 0.0'] -> ['0.2 0.0']
+  fol-splits.txt: ['0.2 0.0'] -> ['0.2 0.0']
+  fol-war-after.txt: ['2.9 0.0'] -> ['3.1 0.0']
+  fol-war.txt: ['2.9 0.0'] -> ['3.1 0.0']
+  fol-weather-after.txt: ['2.9 0.0'] -> ['3.1 0.0']
+  fol-weather.txt: ['2.9 0.0'] -> ['3.1 0.0']
+
+$ the scoreboard's data.json, before and after: every key equal once USDCNY's and SHCOMP's entries, 'written' and 'chance' are taken out; 'markets' gains USDCNY and SHCOMP at its end
+  chance before raw_move 1078 cells (10.78), surprise 396 (3.96), walk_forward 82 (0.82)
+  chance after  raw_move 1142 cells (11.42), surprise 420 (4.20), walk_forward 82 (0.82)

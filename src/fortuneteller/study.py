@@ -62,6 +62,7 @@ from .sources import (
     LONDON,
     NEW_YORK,
     UTC_ZONE,
+    SHANGHAI,
     TOKYO,
     ZURICH,
     DailyClosingPrice,
@@ -79,6 +80,8 @@ class PriceSeries(NamedTuple):
     unit: str
     close: time
     zone: ZoneInfo
+    # The first close kept: the yuan's from the end of its peg (docs/steps/china.md).
+    since: date | None = None
 
 
 # Every market measured: the five MVP instruments, Europe's two stock indices
@@ -94,7 +97,9 @@ class PriceSeries(NamedTuple):
 # The pound and the yen (docs/steps/other-central-banks.md) are stamped as the euro is; the
 # Nikkei 225 closes at 15:30 Tokyo, 15:00 before 2024-11-05, a known miss written in the spec.
 # The Canadian dollar (docs/steps/canada.md) is stamped as the euro is; Toronto's S&P/TSX closes
-# at 16:00 Toronto, New York's zone.
+# at 16:00 Toronto, New York's zone. The yuan (docs/steps/china.md) is FRED's noon buying rate in
+# New York, the value Yahoo's `CNY=X` stamps on the next day, kept from 2010-06-21, when its second
+# peg to the dollar ended (held, it does not move); the Shanghai Composite closes at 15:00 Shanghai.
 # A `fred:` ticker is FRED's series: the breakeven (docs/steps/breakeven.md), read at 15:30, the
 # time of the bid quotes the Treasury builds its daily curve from.
 MVP_PRICE_SERIES = {
@@ -131,6 +136,8 @@ MVP_PRICE_SERIES = {
     "ALL": PriceSeries("ALL", "pct", time(16, 0), NEW_YORK),
     "USDCAD": PriceSeries("CAD=X", "pct", time(0, 0), LONDON),
     "TSX": PriceSeries("^GSPTSE", "pct", time(16, 0), NEW_YORK),
+    "USDCNY": PriceSeries("fred:DEXCHUS", "pct", time(12, 0), NEW_YORK, date(2010, 6, 21)),
+    "SHCOMP": PriceSeries("000001.SS", "pct", time(15, 0), SHANGHAI),
 }
 
 
@@ -176,7 +183,16 @@ def load_daily_bars(api_key: str, con: duckdb.DuckDBPyConnection | None = None) 
             raise YahooError(f"Yahoo sent no usable closes for {ticker}")
         fetched[instrument] = (ticker, closes)
     return {
-        instrument: store_daily_bars(instrument, ticker, closes, con=con)
+        instrument: store_daily_bars(
+            instrument,
+            ticker,
+            [
+                c
+                for c in closes
+                if (since := MVP_PRICE_SERIES[instrument].since) is None or c.day >= since
+            ],
+            con=con,
+        )
         for instrument, (ticker, closes) in fetched.items()
     }
 

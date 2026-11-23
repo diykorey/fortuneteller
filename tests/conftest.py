@@ -65,8 +65,9 @@ def no_calendars(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
 
 @pytest.fixture
 def fred_breakeven(monkeypatch: pytest.MonkeyPatch) -> None:
-    # FRED answers the breakeven on five days around 2022-09-13, the Yahoo fixtures', one without a
-    # value, and a key is set; every other FRED series is refused, so no test reaches FRED
+    # FRED answers the breakeven and the yuan on five days around 2022-09-13, the Yahoo fixtures',
+    # one without a value, and a key is set; every other FRED series is refused, so no test reaches
+    # FRED
     monkeypatch.setattr(settings, "fred_api_key", SecretStr("test-key"))
     observations = [
         {"date": "2022-09-09", "value": "2.54"},
@@ -76,9 +77,13 @@ def fred_breakeven(monkeypatch: pytest.MonkeyPatch) -> None:
         {"date": "2022-09-15", "value": "2.60"},
     ]
 
+    # the yuan's also has a close of its peg, 2009-01-05, which is not kept
+    pegged = [{"date": "2009-01-05", "value": "6.83"}]
+
     def fetch(api_key: str, series_id: str, timeout: float = 30.0) -> bytes:
-        if series_id != "T5YIE":
+        if series_id not in ("T5YIE", "DEXCHUS"):
             raise AssertionError(f"a test asked FRED for {series_id}")
-        return json.dumps({"observations": observations}).encode()
+        sent = pegged + observations if series_id == "DEXCHUS" else observations
+        return json.dumps({"observations": sent}).encode()
 
     monkeypatch.setattr(sources, "fetch_series", fetch)

@@ -461,6 +461,8 @@ def test_the_more_outcomes_take_their_signs_by_analogy() -> None:
         "ALL": 0,
         "USDCAD": 0,
         "TSX": 0,
+        "USDCNY": 0,
+        "SHCOMP": 0,
     }
     assert list(signs) == list(study.MVP_PRICE_SERIES)
 
@@ -1285,3 +1287,51 @@ def test_boc_decisions_are_the_calendar_s_at_their_utc_time_and_the_bank_s_cut_i
         "Canada",
         "Central-bank decision",
     )
+
+
+@pytest.mark.parametrize(
+    ("at", "expected"),
+    [
+        # 09:30 Beijing, Wednesday 2026-11-11: 20:30 the evening before in New York; Shanghai, Tokyo,
+        # New York and the yuan's noon New York rate all react that Wednesday
+        (
+            datetime(2026, 11, 11, 1, 30, tzinfo=UTC),
+            {
+                "SHCOMP": date(2026, 11, 11),
+                "NKY": date(2026, 11, 11),
+                "SPY / ES": date(2026, 11, 11),
+                "USDCNY": date(2026, 11, 11),
+            },
+        ),
+        # a Fed decision at 14:00 New York comes after the noon rate: the yuan's next day
+        (datetime(2026, 10, 28, 18, 0, tzinfo=UTC), {"USDCNY": date(2026, 10, 29)}),
+    ],
+)
+def test_a_chinese_release_falls_on_shanghai_s_close_and_the_yuan_s_noon_rate(
+    at: datetime, expected: dict[str, date]
+) -> None:
+    # given a release at 09:30 Beijing
+    event = _at(at)
+
+    # when its first reaction day is found on each market
+    days = {m: study.first_reaction_day(event, study.MVP_PRICE_SERIES[m]) for m in expected}
+
+    # then Shanghai, Tokyo, New York and the yuan react the same day; the yuan after a Fed decision
+    # the next
+    assert days == expected
+
+
+def test_a_saturday_chinese_release_is_paired_with_monday_s_shanghai_close() -> None:
+    # given a release at 09:30 Beijing on Saturday 2026-11-07 and Shanghai's Friday and Monday closes
+    event = _at(datetime(2026, 11, 7, 1, 30, tzinfo=UTC))
+    closes = [
+        sources.DailyClosingPrice(date(2026, 11, 6), 3600.0),
+        sources.DailyClosingPrice(date(2026, 11, 9), 3660.8),
+    ]
+
+    # when its closes before and after are found
+    day = study.first_reaction_day(event, study.MVP_PRICE_SERIES["SHCOMP"])
+    pair = study.closing_price_before_after(closes, day)
+
+    # then Friday's close is before it and Monday's carries it
+    assert pair == (closes[0], closes[1])

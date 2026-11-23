@@ -463,7 +463,8 @@ def with_more_outcomes(signs: dict[str, int]) -> dict[str, int]:
     reversed (docs/steps/signs.md). The pound, the yen and the Nikkei 225 none: a signed market is a
     live link (docs/steps/other-central-banks.md); nor ether or Coinbase
     (docs/steps/crypto.md), nor Allstate (docs/steps/weather.md), nor the Canadian dollar or
-    Toronto's S&P/TSX (docs/steps/canada.md)."""
+    Toronto's S&P/TSX (docs/steps/canada.md), nor the yuan or the Shanghai Composite
+    (docs/steps/china.md)."""
     return {
         **signs,
         "BRN": 0,
@@ -492,6 +493,8 @@ def with_more_outcomes(signs: dict[str, int]) -> dict[str, int]:
         "ALL": 0,
         "USDCAD": 0,
         "TSX": 0,
+        "USDCNY": 0,
+        "SHCOMP": 0,
     }
 
 

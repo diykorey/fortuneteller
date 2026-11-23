@@ -41,7 +41,8 @@ as Canada's inflation has; the two markets in the guesser's list of markets ([st
   releases since 2015; output at 10:00, and 13:30 on 31 releases of 2011 to 2013; trade from 09:00
   to 11:00. Each is before the close of Shanghai (15:00), Tokyo, Europe and New York on its day,
   so those react that day; the currencies, closed at 00:00 London, the next day, as for every
-  event. Ten releases fall at or after 15:00 Beijing (inflation 1, the survey 1, output 5, trade
+  event (*amended 2026-11-23, step 1:* the yuan, read at noon New York, the same day; see the
+  markets below). Ten releases fall at or after 15:00 Beijing (inflation 1, the survey 1, output 5, trade
   3); the code places each by its hour, so Shanghai's reaction is the next day's close. Trade's
   four releases at 00:00 UTC (2011-06-10, 2012-04-10, 2013-01-10, 2013-07-10) carry a date only
   and are placed at 08:00 Beijing: if they came out after 15:00, Shanghai's reaction day is one
@@ -71,6 +72,15 @@ as Canada's inflation has; the two markets in the guesser's list of markets ([st
   against its last bar's close; each within 0.05%, or the close time fixed before step 2. The yuan
   was held to the dollar from 2008-07 to 2010-06 (one survey forecast falls in it) and moves
   within a daily band since, so its moves are small. **Unsigned**, so no live link is added.
+  (*Amended 2026-11-23, in step 1, before any China flow existed:* the yuan is FRED's `DEXCHUS`,
+  the Federal Reserve's noon buying rate in New York, read at 12:00 New York, and kept from
+  2010-06-21, the end of the second peg. Yahoo's `CNY=X` has no 00:00 London bar on 9 of the ten
+  days and stamps each day with `DEXCHUS` of the business day before, so at 00:00 London it would
+  date an event between noon New York and midnight London a day early. Held, the yuan does not
+  move: from 1994 to 2005 and 2008 to 2010 its median move is zero, which broke `raw-move`. So a
+  China release at 09:30 Beijing reacts in the yuan the same day, not the next; and Shanghai's
+  closes are checked against the exchange's published close, since the 5-minute bars end at 14:57,
+  before the closing auction.)
 - **Step 17's method, unchanged:** the spans, the base, the answers, the placebo, walk-forward and
   its bars, the chance line, both runs (from the close before, and from the reaction close,
   `--after-the-day`).
@@ -97,11 +107,47 @@ as Canada's inflation has; the two markets in the guesser's list of markets ([st
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | The two markets: seed rows, series, `load-prices`, the guesser's list and the areas | `load-prices` stores both; tests: a 09:30 Beijing release falls on the same day's Shanghai and Tokyo close and the next day's yuan close, a Saturday's on Monday's Shanghai close; `USDCNY` is in the currencies area and `SHCOMP` in stocks; the closes' largest difference from the bars written here, each within 0.05%; on a copy of the store every existing `raw-move`, `follows` and scoreboard row identical, each chance line before and after written here |
+| 1 | ~~The two markets~~ **done** 2026-11-23. The two markets: seed rows, series, `load-prices`, the guesser's list and the areas | `load-prices` stores both; tests: a 09:30 Beijing release falls on the same day's Shanghai and Tokyo close and the next day's yuan close (*amended 2026-11-23:* the same day's, the yuan at noon New York), a Saturday's on Monday's Shanghai close; `USDCNY` is in the currencies area and `SHCOMP` in stocks; the closes' largest difference from the bars written here, each within 0.05%; on a copy of the store every existing `raw-move`, `follows` and scoreboard row identical, each chance line before and after written here |
 | 2 | Inflation: `cncpi` | Tests: the surprise is the actual less the forecast, *above* from 0.1; a day shared with a US release, and a day shared with `cnip`, left out of its table; a Saturday release dated, for *alone*, on its Monday; a `cncpi` trigger is answered; *Ask*'s cells equal `follows`'. The header equal to the one above, or amended; every other flow's rows unchanged |
 | 3 | The survey and output: `cnpmi`, `cnip` | As step 2, each with its threshold; a survey on a Sunday before a US survey's Monday left out; an output release at 15:30 Beijing reacts at Shanghai's next close |
 | 4 | Trade: `cntrade`, and `Trade data` in `event_types.csv` (tier 3, *both*) and `docs/schema.md` | As step 2; the seed row loads and the flow's events carry it |
 | 5 | Results here and in [MVP results](../mvp-results.md), against the expected outcome; the roadmap row | Every judged bullet marked right or wrong with its numbers |
+
+*Step 1, 2026-11-23:* every number is in [the evidence](china-steps.txt).
+
+- **The yuan, from FRED** (amended above): `DEXCHUS`, 4,102 closes from 2010-06-21 to
+  2026-11-13, read at 12:00 New York. Yahoo's `CNY=X` stamps each day with `DEXCHUS` of the
+  business day before, equal on all four days FRED has published of the two weeks; its 5-minute
+  bars have a 00:00 London bar on one day of ten, 0.150% from the daily value. FRED publishes
+  `DEXCHUS` a week at a time, so the yuan's latest closes lag by up to a week; with no sign, no
+  live call waits on them.
+- **Shanghai:** `000001.SS`, 7,118 closes from 1997-07-02. Its daily close equals the exchange's
+  published close (Eastmoney) to the cent on all ten days of 2026-11-09 to 2026-11-20; against
+  the last 5-minute bar, 14:55, it differs by 0.004% to 0.125%, the closing auction from 14:57 to
+  15:00 being in no bar.
+- **Tests:** a 09:30 Beijing release reacts in Shanghai, Tokyo, New York and the yuan the same
+  day, a Fed decision at 14:00 New York in the yuan the next; a Saturday's release is paired
+  with Friday's and Monday's Shanghai closes; `USDCNY` is a currency and `SHCOMP` a stock market;
+  a close from the peg is not stored.
+- **On a copy of the store** (of 2026-11-21, closes to 2026-11-19, the Canadian dollar and
+  Toronto loaded first with main's code), with the two markets' closes loaded alone: every
+  existing row of every flow's `raw-move` (39 events) and `follows` (20 flows, both runs, and the
+  Fed's `--long`), 80 outputs, and every scoreboard entry, is byte for byte the one before; each
+  output gains the two markets' rows. The copy holds no BoC or Canadian CPI events, so their
+  `follows` print nothing on either side. Only the chance lines change: the scoreboard's raw-move
+  chance 1,078 → 1,142 cells (10.78 → 11.42), its surprise chance 396 → 420 (3.96 → 4.20),
+  walk-forward unchanged at 82; `follows`' answers by chance on all history, before → after:
+
+  | Flow | From the close before | From the reaction close |
+  | --- | --- | --- |
+  | Fed | 8.8 → 9.4 (`--long` 2.6 → 2.7) | 8.8 → 9.4 |
+  | jobs report, retail sales, CPI, claims | 8.9 → 9.5 | 8.9 → 9.5 |
+  | ECB | 8.6 → 9.0 | 8.6 → 9.1 |
+  | BoE | 8.4 → 8.8 | 8.4 → 8.8 |
+  | OPEC | 5.9 → 6.2 | 5.9 → 6.3 |
+  | BoJ, crypto | 3.0 → 3.1 | 3.0 → 3.1 |
+  | weather, war, floods | 2.9 → 3.1 | 2.9 → 3.1 |
+  | CEO scandals, additions, splits, earnings (Dow and S&P 500) | unchanged, 0.1 to 0.3 | unchanged |
 
 ## How you know it is right
 
