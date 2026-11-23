@@ -38,8 +38,9 @@ the hand check against Yahoo passed, and no answer or verdict on the page change
   exports, each against its forecast, the yuan and Shanghai's stocks added. Asked for 2026-11-22
   by the owner. Step 1 done: the yuan (FRED's noon New York rate, from the peg's end) and
   Shanghai's stocks, every existing row unchanged. Step 2 done: inflation, `cncpi`. Step 3
-  done: the factory survey, `cnpmi`, 59 releases alone, and output, `cnip`, 110. Next: step 4,
-  trade.
+  done: the factory survey, `cnpmi`, 59 releases alone, and output, `cnip`, 110. Step 4 done:
+  trade, `cntrade`, 127; inflation 116, each header the one written before step 1. Next: step 5,
+  the results against the expected outcome.
 - **Step 46: the loop's safety nets** ([the spec](steps/loop-nets.md)): each machine watches the
   other and opens an issue for what it missed; a source's 5xx asked again. Chosen 2026-11-21 by the
   owner. Steps 1 and 2 built. Next: merged before Wednesday 2026-11-25's releases, then step 3,
