@@ -91,6 +91,12 @@ the flagged visit added nothing. At 14:00 EET the private window showed no cooki
 diykorey.github.io, and a copy of the page saved and opened from disk left the count at 1 pageview.
 Step 1 is done.
 
+**The first week, 2026-11-16 to 2026-11-22, read 2026-11-23.** The counter went up on
+2026-11-17, mid-week. `fortuneteller weekly-post` printed `visitors: 8` for the week, and its
+draft: *No call this week*, releases retail sales 2026-11-17 and jobless claims 2026-11-19, the
+record 0 right, 0 wrong. No post went out that week. The row is in
+[the weeks file](be-seen-weeks.csv).
+
 ## How you know it is right
 
 - The page written by `fortuneteller scoreboard` has the tag exactly once; the page opened from a
