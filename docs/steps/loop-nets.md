@@ -35,6 +35,13 @@ days logged within 15 minutes, none missed.
     day (before midnight New York), if no `workflow_dispatch` run was created between 11:00 and
     17:00 UTC that day, it opens *The runner's morning was not started on DAY*. A catch-up after
     midnight skips this check rather than check the wrong day. It never fails the evening.
+    *Amended 2026-11-23, in step 2, before any live run:* the script fixes DAY when it starts, so
+    a catch-up after midnight already has the new day, whose morning may not have come. The check
+    runs only on a New York weekday, from 13:00 New York (the morning window closed in summer and
+    winter), on the day the run started. `score` ends early when a calls pull request waits or
+    rows are pending, so the check runs before each of its three endings, not only the last. A
+    failed `gh run list` skips the check on either machine rather than read an empty list as no
+    run.
   - All four checks are in `fortuneteller`'s two commands below, which read files, so tests can
     replay the incidents; the workflow and the script only fetch the files and open the issue.
     Both machines down at once is not caught.
@@ -42,7 +49,8 @@ days logged within 15 minutes, none missed.
   HTTP 5xx, a timeout or a broken connection, it prints `retrying SOURCE after REASON, in N s` and
   asks again after 30 seconds, then a last time after 90. A 4xx is never retried (Nasdaq's 403 of
   2026-11-10 was not a blip). A process waits at most 300 seconds in all; a wait that would go
-  past it is not taken, and the failure raises at once. A failure that is not retried, or still
+  past it is not taken, and the failure raises at once. *Noted 2026-11-23, in step 2:* a 5xx while `live` polls TradingView can
+  delay a morning row by up to two minutes, inside the 15 minutes the gate allows. A failure that is not retried, or still
   fails, raises the source's own error as today (`FredError`, `YahooError`, ...), so a source down
   for good fails the run at most five minutes later than today, and its issue opens as now.
 - **This changes step 21's shadow rule.** *A shadow run opens no pull request and no issue* gets a
@@ -85,7 +93,8 @@ decide, no popup from the runner, no check of the laptop's evening.
 - **Retry:** `_ask(request, timeout, source)` in `sources.py`; `RETRY_WAITS = (30, 90)`,
   `RETRY_BUDGET = 300` seconds per process; tests patch the sleep.
 - **Files:** `src/fortuneteller/sources.py`, `__main__.py`, `.github/workflows/jobs.yml` (its
-  token gains `issues: write`), `scripts/release-day.sh`, tests. The laptop runs the script from
+  token gains `issues: write`; *amended 2026-11-23, in step 2:* and `actions: read`, which a
+  `permissions` block otherwise sets to none, so `gh run list` would be refused), `scripts/release-day.sh`, tests. The laptop runs the script from
   the main checkout, which is pulled after the merge.
 - **Docs:** this spec, step 21's amendment, a decisions entry, the glossary (*safety net*),
   roadmap row 46, status, changelog.
