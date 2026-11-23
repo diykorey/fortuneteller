@@ -113,6 +113,7 @@ def test_seed_dir_has_no_unexpected_csvs() -> None:
         "stock_splits.csv",
         "boe-changes.csv",
         "boc-changes.csv",
+        "snb-changes.csv",
         "fomc_sentiment_dictionary.csv",
     }
     # then exactly those files are present
@@ -700,3 +701,44 @@ def test_stock_splits_are_members_forward_splits_announced_ahead_in_two_kinds() 
     assert {r["kind"] for r in rows} == {"alone", "with a report"}
     assert all(re.fullmatch(r"\d{10}-\d{2}-\d{6}", r["accession"]) for r in rows)
     assert len({(r["ticker"], r["split_day"]) for r in rows}) == len(rows)
+
+
+def test_snb_changes_are_the_bank_s_rate_changes_since_2008() -> None:
+    # given the committed changes of the SNB's rate: its LIBOR target range's midpoint, its
+    # policy rate from 2019-06 (docs/steps/switzerland.md)
+    with (settings.seed_dir / "snb-changes.csv").open(newline="", encoding="utf-8") as handle:
+        reader = csv.DictReader(handle)
+        header = reader.fieldnames
+        rows = list(reader)
+
+    # when their days, hours and rates are read
+    days = [date.fromisoformat(row["day"]) for row in rows]
+    rates = {row["day"]: float(row["rate"]) for row in rows}
+    hours = {row["day"]: row["time"] for row in rows}
+
+    # then 19 changes are there once, in order, each a change from the one before: the six
+    # unscheduled cuts among them at their hours, 2015-01-15 at 10:30; the switch to the policy
+    # rate in 2019-06 and the hold of 2015-03-19 are not changes
+    assert header == ["day", "time", "rate"]
+    assert len(rows) == 19 and len(set(days)) == 19 and days == sorted(days)
+    assert (days[0], days[-1]) == (date(2008, 10, 8), date(2025, 6, 19))
+    values = [float(row["rate"]) for row in rows]
+    assert all(a != b for a, b in zip(values, values[1:], strict=False))
+    unscheduled = (
+        "2008-10-08",
+        "2008-11-06",
+        "2008-11-20",
+        "2011-08-03",
+        "2014-12-18",
+        "2015-01-15",
+    )
+    assert {d: rates[d] for d in unscheduled} == {
+        "2008-10-08": 2.5,
+        "2008-11-06": 2.0,
+        "2008-11-20": 1.0,
+        "2011-08-03": 0.125,
+        "2014-12-18": -0.25,
+        "2015-01-15": -0.75,
+    }
+    assert hours["2008-10-08"] == "13:00" and hours["2015-01-15"] == "10:30"
+    assert "2015-03-19" not in rates and "2019-06-13" not in rates

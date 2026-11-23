@@ -463,6 +463,8 @@ def test_the_more_outcomes_take_their_signs_by_analogy() -> None:
         "TSX": 0,
         "USDCNY": 0,
         "SHCOMP": 0,
+        "USDCHF": 0,
+        "SMI": 0,
     }
     assert list(signs) == list(study.MVP_PRICE_SERIES)
 
@@ -1434,6 +1436,24 @@ def test_a_chinese_release_falls_on_shanghai_s_close_and_the_yuan_s_noon_rate(
     # then Shanghai, Tokyo, New York and the yuan react the same day; the yuan after a Fed decision
     # the next
     assert days == expected
+
+
+def test_a_swiss_decision_falls_on_zurich_s_close_and_the_next_day_s_franc_and_tokyo() -> None:
+    # given an SNB decision at 09:30 Zurich, Thursday 2026-09-24 (07:30 UTC), after Tokyo's close
+    event = _at(datetime(2026, 9, 24, 7, 30, tzinfo=UTC))
+
+    # when its first reaction day is found on each market
+    markets = ("SMI", "DAX", "SPY / ES", "USDCHF", "NKY")
+    days = {m: study.first_reaction_day(event, study.MVP_PRICE_SERIES[m]) for m in markets}
+
+    # then Zurich, Frankfurt and New York react that Thursday, the franc and Tokyo on Friday
+    assert days == {
+        "SMI": date(2026, 9, 24),
+        "DAX": date(2026, 9, 24),
+        "SPY / ES": date(2026, 9, 24),
+        "USDCHF": date(2026, 9, 25),
+        "NKY": date(2026, 9, 25),
+    }
 
 
 def test_a_saturday_chinese_release_is_paired_with_monday_s_shanghai_close() -> None:

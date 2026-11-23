@@ -35,7 +35,8 @@ At the end:
     `BTC`, `ITA`, `XLE`, `CORN`, `WEAT`, `SOYB`, `UGA`, `UNG`, `XLU`, `ITB`, `KC`, `T5YIE`,
     `GBPUSD`, `USDJPY`, `NKY`, `ETH`, `COIN`, `ALL` (`study.MVP_PRICE_SERIES`); *amended
     2026-11-22* ([Canada](canada.md), step 1): 33, with `USDCAD` and `TSX`; *amended 2026-11-23*
-    ([China](china.md), step 1): 35, with `USDCNY` and `SHCOMP`;
+    ([China](china.md), step 1): 35, with `USDCNY` and `SHCOMP`; *amended 2026-11-23*
+    ([Switzerland](switzerland.md), step 1): 37, with `USDCHF` and `SMI`;
   - *up* or *down*;
   - an end date, a weekday, from the second weekday after the evening to a year ahead;
   - a statement of at most 40 words with no `%`;
@@ -105,7 +106,7 @@ At the end:
 
 ## What this step does not do
 
-No market outside the 31 (33 from 2026-11-22, with `USDCAD` and `TSX`; 35 from 2026-11-23, with `USDCNY` and `SHCOMP`). No size of move. No percentage. No change to the tested forecasts. No
+No market outside the 31 (33 from 2026-11-22, with `USDCAD` and `TSX`; 35 from 2026-11-23, with `USDCNY` and `SHCOMP`; 37 the same day, with `USDCHF` and `SMI`). No size of move. No percentage. No change to the tested forecasts. No
 more than five forecasts on the front page.
 
 ## Technical details

@@ -331,14 +331,16 @@ def test_every_market_the_guesser_may_name_has_an_area() -> None:
     assert markets <= set(cli.AREAS) and len(set(cli.AREAS.values())) == 8
 
 
-def test_the_yuan_is_a_currency_and_shanghai_a_stock_market() -> None:
-    # given China's two markets (docs/steps/china.md)
-    markets = ("USDCNY", "SHCOMP")
+@pytest.mark.parametrize("markets", [("USDCNY", "SHCOMP"), ("USDCHF", "SMI")])
+def test_a_country_s_currency_is_a_currency_and_its_index_a_stock_market(
+    markets: tuple[str, str],
+) -> None:
+    # given a country's two markets: China's and Switzerland's (docs/steps/china.md, switzerland.md)
 
     # when their areas are read
     areas = [cli.AREAS[m] for m in markets]
 
-    # then the yuan is with the currencies and Shanghai with the stocks
+    # then the currency is with the currencies and the index with the stocks
     assert areas == ["currencies", "stocks"]
 
 
