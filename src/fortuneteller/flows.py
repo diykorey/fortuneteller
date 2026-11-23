@@ -58,6 +58,7 @@ GDP_EVENT_TYPE = "GDP growth"
 MANUFACTURING_EVENT_TYPE = "Manufacturing survey"
 CLAIMS_EVENT_TYPE = "Jobless claims"
 OTHER_MACRO_EVENT_TYPE = "Other macro data (GDP/PMI/PCE/retail/claims)"
+TRADE_EVENT_TYPE = "Trade data"
 INVESTOR_SURVEY_EVENT_TYPE = "Investor sentiment survey"
 BUSINESS_SURVEY_EVENT_TYPE = "Business climate survey"
 UNITED_STATES = "United States"
@@ -735,6 +736,13 @@ CN_IP_SURPRISE_RULE = replace(
     combinations=((sources.CN_IP, TRADINGVIEW_FORECAST),),
     noticeable=0.3,
     step="0.3pp",
+)
+# China's exports from 2.3pp, two thirds of their median miss (docs/steps/china.md).
+CN_TRADE_SURPRISE_RULE = replace(
+    CN_CPI_SURPRISE_RULE,
+    combinations=((sources.CN_EXPORTS, TRADINGVIEW_FORECAST),),
+    noticeable=2.3,
+    step="2.3pp",
 )
 
 
@@ -1731,6 +1739,19 @@ CN_IP_FLOW = TradingViewFlow(
     surprise_rule=CN_IP_SURPRISE_RULE,
     lesser=True,
 )
+CN_TRADE_FLOW = TradingViewFlow(
+    TRADE_EVENT_TYPE,
+    CHINA,
+    sources.SHANGHAI,
+    43,
+    "cntrade",
+    "NTR",
+    (sources.CN_EXPORTS,),
+    PERCENT,
+    "Chinese trade releases",
+    surprise_rule=CN_TRADE_SURPRISE_RULE,
+    lesser=True,
+)
 CA_CPI_FLOW = TradingViewFlow(
     CPI_EVENT_TYPE,
     CANADA,
@@ -2114,10 +2135,11 @@ EVENT_FLOWS: list[EventFlow] = [
     CN_CPI_FLOW,
     CN_PMI_FLOW,
     CN_IP_FLOW,
+    CN_TRADE_FLOW,
 ]
 # China's flows: each reads its days alone on the weekday it reacts on, without the others' days
 # (docs/steps/china.md).
-CHINA_FLOWS: tuple[EventFlow, ...] = (CN_CPI_FLOW, CN_PMI_FLOW, CN_IP_FLOW)
+CHINA_FLOWS: tuple[EventFlow, ...] = (CN_CPI_FLOW, CN_PMI_FLOW, CN_IP_FLOW, CN_TRADE_FLOW)
 
 
 def called_live(flow: EventFlow) -> bool:

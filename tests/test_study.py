@@ -218,9 +218,11 @@ def test_event_keys_match_the_seed_reference_tables() -> None:
     # when a mapped event is built
     event = to_event_instance(FirstRelease(date(2026, 8, 1), date(2026, 9, 11), 334.131), CPI_FLOW)
 
-    # then its join keys exist exactly as written
+    # then its join keys exist exactly as written, and every flow's event type and country too
     assert event.event_type in column("event_types.csv", "event_type")
     assert event.country in column("countries.csv", "country")
+    assert {f.event_type for f in flows.EVENT_FLOWS} <= column("event_types.csv", "event_type")
+    assert {f.country for f in flows.EVENT_FLOWS} <= column("countries.csv", "country")
 
 
 def _store(time_zone: str = "UTC") -> duckdb.DuckDBPyConnection:
@@ -306,6 +308,7 @@ def test_load_releases_prints_count_range_and_skipped_months(
                 (sources.CN_CPI, 12, 1),
                 (sources.CN_PMI, 28, 1),
                 (sources.CN_IP, 17, 2),
+                (sources.CN_EXPORTS, 7, 3),
             )
         },
     }
@@ -453,8 +456,9 @@ def test_load_releases_prints_count_range_and_skipped_months(
     report += "loaded 1 Chinese CPI releases, 2025-02-12 … 2025-02-12\n"
     report += "loaded 1 Chinese PMI releases, 2025-02-28 … 2025-02-28\n"
     report += "loaded 1 Chinese output releases, 2025-02-17 … 2025-02-17\n"
+    report += "loaded 1 Chinese trade releases, 2025-02-07 … 2025-02-07\n"
     assert capsys.readouterr().out == report * 2
-    assert db.count_rows("event_instances", con=db.get_connection()) == 56
+    assert db.count_rows("event_instances", con=db.get_connection()) == 57
 
 
 def test_load_releases_stores_nothing_when_any_flow_fails(

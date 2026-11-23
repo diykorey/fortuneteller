@@ -2417,6 +2417,7 @@ TRIGGER_KINDS = {
     "cncpi": SURPRISE_KINDS,
     "cnpmi": SURPRISE_KINDS,
     "cnip": SURPRISE_KINDS,
+    "cntrade": SURPRISE_KINDS,
     "boj": KINDS,
     "war": (VIOLENT_ACT,),
     "crypto": (HACK,),
