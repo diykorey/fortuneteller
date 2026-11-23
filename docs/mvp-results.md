@@ -733,6 +733,20 @@ weakened on the day of 25 of 42 export misses from the close before, too few to 
 from the reaction close. Inflation's days are larger than usual for the yuan (ratio 1.50,
 `raw-move --event cncpi`), with no direction.
 
+## What follows an SNB decision or Swiss inflation
+
+Measured 2026-11-24. Detail in [Switzerland](steps/switzerland.md#results).
+
+80 Swiss National Bank decisions from 2008 (14 cuts, 61 holds, 5 hikes), each taken by the Bank's
+own rate (`follows --event snb`), and 152 Swiss inflation releases on days no other report
+shares, against TradingView's forecast (47 above, 45 as expected, 60 below; `follows --event
+chcpi`), against every market including the newly added franc and Zurich's SMI. **Neither tells
+which way markets go**: each flow gives fewer answers than chance in both runs (the SNB 3 and 4
+against 5.8, inflation 5 and 9 against 10.0), and the four leans with enough events to replay
+fail it. The franc moves 1.88 times its usual size on an SNB day (`raw-move --event snb`), in no
+set direction; after a cut, a hold or any inflation print, neither the franc nor the SMI leans
+either way on the day.
+
 ## What comes next
 
 Chosen 2026-10-13: keep score ([rung 4](steps/rung-4-keep-score.md)), done above with the live path

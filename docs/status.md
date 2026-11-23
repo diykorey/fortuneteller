@@ -12,6 +12,11 @@ Where the work is and what comes next: the task last finished, the tasks in prog
 
 ## Last completed
 
+Step 54: Switzerland ([results](steps/switzerland.md#results)). 80 SNB decisions, each kind from
+the Bank's own history, and 152 Swiss inflation releases on their days alone, the franc and the SMI
+added: nothing holds walk-forward and both flows' answers are below chance; the franc moves 1.9
+times its usual size on an SNB day, in no set direction.
+
 Step 53: China ([results](steps/china.md#results)). China's inflation, factory survey, output
 and trade, each against its forecast, on their days alone (116, 59, 110 and 127 releases), the
 yuan and Shanghai's stocks added: nothing holds walk-forward and every flow's answers are below
@@ -33,13 +38,6 @@ the hand check against Yahoo passed, and no answer or verdict on the page change
 
 ## In progress
 
-- **Step 54: Switzerland** ([the spec](steps/switzerland.md)): the Swiss National Bank's
-  decisions, each kind from its own history, and Swiss inflation against its forecast, the franc
-  and the SMI added. Asked for 2026-11-22 by the owner. Step 1 done: the franc and the SMI, the
-  SNB's 19 changes since 2008, every existing row unchanged. Step 2 done: `follows --event snb`
-  prints the expected 80 decisions, 14 cuts, 61 holds, 5 hikes, and the SNB is on *Ask*. Step 3
-  done: `follows --event chcpi` prints the expected 152 releases alone, and Swiss inflation is on
-  *Ask*. Next: step 4, the results.
 - **Step 55: guesses against the base rate** ([the spec](steps/guesses-vs-base-rate.md)): each
   guess carries its base rate; a grounded guesser, given the record, runs beside today's news
   guesser as the control. Asked for 2026-11-23 by the owner. Spec merged (#420); step 1, the
