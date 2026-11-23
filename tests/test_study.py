@@ -323,6 +323,7 @@ def test_load_releases_prints_count_range_and_skipped_months(
         "GB": (sources.RATE_DECISION, "2025-02-06T12:00:00.000Z"),
         "JP": (sources.RATE_DECISION, "2025-01-24T03:00:00.000Z"),
         "CA": (sources.RATE_DECISION, "2025-01-29T14:45:00.000Z"),
+        "CH": (sources.SNB_DECISION, "2025-03-20T08:30:00.000Z"),
     }
     monkeypatch.setattr(
         sources,
@@ -402,6 +403,7 @@ def test_load_releases_prints_count_range_and_skipped_months(
     )
     (tmp_db.parent / "boe-changes.csv").write_text("day,time,rate\n2020-03-11,07:00,0.25\n")
     (tmp_db.parent / "boc-changes.csv").write_text("day,time,rate\n2020-03-13,11:00,0.75\n")
+    (tmp_db.parent / "snb-changes.csv").write_text("day,time,rate\n2015-01-15,10:30,-0.75\n")
     monkeypatch.setattr(settings, "seed_dir", tmp_db.parent)
 
     # when the command runs twice
@@ -457,8 +459,10 @@ def test_load_releases_prints_count_range_and_skipped_months(
     report += "loaded 1 Chinese PMI releases, 2025-02-28 … 2025-02-28\n"
     report += "loaded 1 Chinese output releases, 2025-02-17 … 2025-02-17\n"
     report += "loaded 1 Chinese trade releases, 2025-02-07 … 2025-02-07\n"
+    report += "loaded 2 SNB decisions, 2015-01-15 … 2025-03-20\n"
+    report += "  1 from the Bank's changes the calendar lacks: 2015-01-15\n"
     assert capsys.readouterr().out == report * 2
-    assert db.count_rows("event_instances", con=db.get_connection()) == 57
+    assert db.count_rows("event_instances", con=db.get_connection()) == 59
 
 
 def test_load_releases_stores_nothing_when_any_flow_fails(
