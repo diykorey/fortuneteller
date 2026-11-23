@@ -12,9 +12,9 @@ Where the work is and what comes next: the task last finished, the tasks in prog
 
 ## Last completed
 
-Step 43: good or bad, read from the filing ([results](steps/filing-severity.md#results)). The
-Subscription LLM's scores of 400 members' 8-Ks of 2020 to 2025: 43 bad, 22 good; after bad ones
-the shares trailed on 27 of 43 days (p 0.06), short of an answer; nothing answers or holds.
+Step 33, step 2: the first earnings refresh ([results](steps/earnings-current.md#results)). One
+new report, Walmart's of 2026-11-19 (EPS $0.65 against $0.64, *as expected*). No line removed,
+the hand check against Yahoo passed, and no answer or verdict on the page changed.
 
 ## In progress
 
@@ -67,9 +67,9 @@ the shares trailed on 27 of 43 days (p 0.06), short of an answer; nothing answer
 - **Step 34: a same-day source for earnings** ([the spec](steps/earnings-same-day.md)): step 1
   done, Yahoo's kind is Nasdaq's on 102 of 110 reports (92.7%, bar 90%). Next: the speed, asked on
   each member's report from 2026-11-23 to 2027-01-31.
-- **Step 33: the earnings kept current** ([the spec](steps/earnings-current.md)): step 1 done, the
-  scripts take the last day and fetch the recent pages again. Next: the first refresh, Monday
-  2026-11-23, with the weekly post.
+- **Step 33: the earnings kept current** ([the spec](steps/earnings-current.md)): steps 1 and 2
+  done; the first refresh, 2026-11-23, added Walmart's report of 2026-11-19 and changed no answer.
+  Next: the refresh of Monday 2026-11-30, LAST 2026-11-27.
 - **Step 23: be seen, and count it** ([the spec](steps/be-seen.md)): a cookie-free Umami counter
   on the page and a weekly LinkedIn post drafted by `weekly-post`, both the owner's choice. Step 1
   done: the counter is live and counts a visit once, read through Umami's share link. The first
@@ -95,8 +95,7 @@ the shares trailed on 27 of 43 days (p 0.06), short of an answer; nothing answer
 ## Next
 
 Monday 2026-11-23: step 23's first weekly post, drafted by `weekly-post` and published by the
-owner, and step 33's first refresh. Then step 44's page, published before the post if it is
-ready.
+owner. Then step 44's page, published before the post if it is ready.
 
 ## Known, not yet fixed
 

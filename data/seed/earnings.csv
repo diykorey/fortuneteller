@@ -2210,3 +2210,4 @@ day,time,ticker,eps,forecast,surprise,kind
 2026-11-17,11:18,HD,3.86,3.86,N/A,as expected
 2026-11-17,11:30,DIS,1.77,1.67,5.99,above
 2026-11-17,21:20,NVDA,2.68,2.47,8.5,above
+2026-11-19,11:58,WMT,0.65,0.64,1.56,as expected

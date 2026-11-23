@@ -65,7 +65,7 @@ At the end: a refresh, run by hand in a session each Monday, adds the week's rep
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | The two scripts take the last day and fetch again as above | The byte-for-byte check and the test pass |
-| 2 | The first refresh, 2026-11-23 | Its pull request holds the new rows, the diff check, the hand check and the page's change; merged before the evening job |
+| 2 | ~~The first refresh, 2026-11-23~~ **done** 2026-11-23 | Its pull request holds the new rows, the diff check, the hand check and the page's change; merged before the evening job |
 | 3 | Each Monday after, to the gate (2027-01-31) | One pull request a week, as step 2; then reconsidered at the gate |
 
 ## What this step does not do
@@ -79,3 +79,45 @@ At the end: a refresh, run by hand in a session each Monday, adds the week's rep
   `REFETCH_DAYS = 21`, takes the day so the test needs no clock. `scripts/sec_8k_times.py`:
   `_get(..., again=True)` for the current index.
 - Docs: [step 31](earnings.md) gets a dated line naming this step; roadmap, status, changelog.
+
+## Results
+
+### Step 2: the first refresh, 2026-11-23
+
+*2026-11-23, LAST 2026-11-20.* Every line quoted is in [the evidence](earnings-current-results.txt),
+on step 31's caches and a copy of the real store of 2026-11-21 01:05.
+
+**In plain words:** Nasdaq had filled Walmart's report of 2026-11-19 by Monday: EPS $0.65 against
+$0.64 expected, a surprise of 1.56%, so *as expected*. It is the one new report, nothing older
+changed, and every answer and verdict on the page stays as it was.
+
+The counts are larger than the spec's because [step 39](exact-meet.md) added 119 exact
+meets after the spec was written: the seed held 2,211 reports, not 2,092, and the in-line day
+stood at 229 of 368, not 183 of 303.
+
+- **The new rows** (`scripts/nasdaq_earnings.py seed data/cache/earnings/nasdaq
+  data/cache/earnings/sec 2026-11-20`: `wrote 2212 reports`, above 1513, as expected 457, below
+  242): one, `2026-11-19,11:58,WMT,0.65,0.64,1.56,as expected`. Expected exactly this one. Right.
+- **History unchanged** (`git diff -U0 data/seed/earnings.csv`): one line added, none removed and
+  none changed. 13 of the refetched pages (2026-11-02 to 2026-11-18) changed bytes, but no
+  member's line in the seed changed with them. Right.
+- **The seed test** (`uv run pytest -q tests/test_seed_data.py -k earnings`, 3 passed): Walmart a
+  member on 2026-11-19 (`data/seed/dow.csv`, in since 2008), 1.56% *as expected* at ±2%, an 8-K
+  with Item 2.02 accepted 2026-11-19 11:58:52 UTC. Right.
+- **The hand check** (Yahoo's earnings history, finance.yahoo.com/quote/WMT/analysis,
+  2026-11-23, quarter ending 10/31/2026): EPS 0.65 against Nasdaq's 0.65, estimate 0.64 against
+  0.64, both within $0.02; the 8-K at 06:58 New York, before the open, so it reacts that day
+  (the time from the 8-K, as in step 31). Pass. Yahoo prints the surprise as 2.16%, which would be *above* on its rounding of the
+  estimate. The kind is Nasdaq's, so this is recorded, not a miss.
+- **The ids** (the reload script in the evidence, on the copy): `ids: 2212 of 2212 stored equal
+  the seed's`. Walmart was alone on its day, so no id shifted. Right.
+- **The page's change** (`follows --event earnings`, before and after, on the copy): the header
+  goes from 2,211 reports to 2,212, and one cell changes its counts. *as expected*'s day goes from
+  451 to 452 reports (Walmart's day was up against the S&P 500), still *down*, and walk-forward
+  goes from 368 graded with 229 right to 369 with 229 right (62.1%). It still holds and is still
+  the cell nearest its bar. `--after-the-day` changes only its header. No answer or verdict
+  changed. Right.
+
+The expected outcome was **right**: exactly one new row, Walmart's of 2026-11-19, no line
+removed, and no answer or verdict changed. Nasdaq had filled the report by 2026-11-23, four days after it.
+

@@ -1,0 +1,148 @@
+Step 33's first refresh (docs/steps/earnings-current.md#results), run 2026-11-23, LAST 2026-11-20, the caches step 31's (data/cache/earnings/nasdaq, data/cache/earnings/sec).
+
+$ uv run python -I scripts/nasdaq_earnings.py fetch data/cache/earnings/nasdaq 2026-11-20
+4928 pages saved; 0 failed
+(13 of the pages refetched, 2026-11-02 to 2026-11-18, changed bytes; no member's line in the seed changed with them)
+
+$ uv run python -I scripts/sec_8k_times.py fetch data/cache/earnings/sec
+(each of the 40 members' current filing index fetched again; Walmart's newest 8-K with Item 2.02: 2026-11-19T11:58:52Z, 0000104169-26-000168)
+
+$ uv run python -I scripts/nasdaq_earnings.py seed data/cache/earnings/nasdaq data/cache/earnings/sec 2026-11-20
+wrote 2212 reports to data/seed/earnings.csv: above 1513, as expected 457, below 242
+left out: no 8-K 5, no kind 8
+no 8-K: 2008-01-30 MRK, 2008-04-21 MRK, 2009-05-15 HPQ, 2017-04-21 GE, 2017-10-24 RTX
+
+$ git diff -U0 data/seed/earnings.csv
+diff --git a/data/seed/earnings.csv b/data/seed/earnings.csv
+index 8e0aa47..b8bf21e 100644
+--- a/data/seed/earnings.csv
++++ b/data/seed/earnings.csv
+@@ -2212,0 +2213 @@ day,time,ticker,eps,forecast,surprise,kind
++2026-11-19,11:58,WMT,0.65,0.64,1.56,as expected
+
+$ uv run pytest -q tests/test_seed_data.py -k earnings
+3 passed, 70 deselected
+
+The hand check, Walmart 2026-11-19, against Yahoo's earnings history (finance.yahoo.com/quote/WMT/analysis, 2026-11-23, quarter 10/31/2026: estimate 0.64, actual 0.65, surprise 2.16%)
+Walmart  2026-11-19  EPS Nasdaq 0.65 Yahoo 0.65  pass   estimate Nasdaq 0.64 Yahoo 0.64  pass   8-K 11:58 UTC = 06:58 New York, before the open: that day   pass
+
+On a copy of the real store (2026-11-21 01:05; 2211 earnings reports stored, closes to 2026-11-19):
+$ FT_DB_PATH=copy fortuneteller follows --event earnings            (before)
+follows: 2211 earnings reports 2008-01-10 … 2026-11-17: 1513 above, 456 as expected, 242 below
+kind        span   market        n  up same down  out/hole  base up/same/down  answer          chance  placebo  walk-forward
+above       day    vs S&P 500   1499 788  129  582      0/5  0.33/0.33/0.34     up              0.0000  period   1356: 707 right, doesn't hold
+above       week   vs S&P 500   1492 692  246  554     0/10  0.33/0.33/0.33     up              0.0000  -        1100: 505 right, doesn't hold
+above       month  vs S&P 500   1476 572  418  486     0/17  0.33/0.33/0.33     up              0.0026  -        647: 248 right, doesn't hold
+as expected day    vs S&P 500   451 131   43  277      0/2  0.33/0.33/0.34     down            0.0000  -        368: 229 right, holds
+as expected week   vs S&P 500   449 129   75  245      0/3  0.33/0.33/0.34     down            0.0000  period   387: 212 right, doesn't hold
+as expected month  vs S&P 500   442 136   99  207      0/7  0.33/0.33/0.34     down            0.0003  -        299: 138 right, doesn't hold
+below       day    vs S&P 500   235  44   22  169      0/0  0.32/0.33/0.35     down            0.0000  -        219: 156 right, holds
+below       week   vs S&P 500   234  40   34  160      0/1  0.31/0.33/0.35     down            0.0000  -        217: 145 right, holds
+below       month  vs S&P 500   228  37   59  132      0/4  0.30/0.33/0.37     down            0.0000  -        202: 113 right, doesn't hold
+by chance: about 0.3 answers on all history, 0.1 holds walk-forward
+
+$ FT_DB_PATH=copy fortuneteller follows --event earnings --after-the-day            (before)
+follows: 2211 earnings reports 2008-01-10 … 2026-11-17: 1513 above, 456 as expected, 242 below, spans from the reaction close
+kind        span   market        n  up same down  out/hole  base up/same/down  answer          chance  placebo  walk-forward
+above       day    vs S&P 500   1498 531  352  615      0/6  0.33/0.33/0.34     can't say       0.0179  -        732: 280 right, doesn't hold
+above       week   vs S&P 500   1490 522  391  577     0/11  0.33/0.33/0.33     can't say       0.0723  -        0: 0 right, too few
+above       month  vs S&P 500   1473 437  546  490     0/17  0.34/0.33/0.33     about the same  0.0014  period   1012: 368 right, doesn't hold
+as expected day    vs S&P 500   451 149  105  197      0/2  0.33/0.33/0.34     can't say       0.0117  -        10: 2 right, too few
+as expected week   vs S&P 500   449 155  123  171      0/3  0.33/0.33/0.34     can't say       0.2733  -        0: 0 right, too few
+as expected month  vs S&P 500   442 142  147  153      0/7  0.33/0.33/0.34     can't say       0.3633  -        0: 0 right, too few
+below       day    vs S&P 500   235  74   42  119      0/0  0.32/0.33/0.35     down            0.0037  -        184: 85 right, doesn't hold
+below       week   vs S&P 500   234  67   70   97      0/1  0.31/0.33/0.35     can't say       0.0812  -        0: 0 right, too few
+below       month  vs S&P 500   228  59   66  103      0/4  0.30/0.33/0.37     can't say       0.0214  -        0: 0 right, too few
+by chance: about 0.3 answers on all history, 0.0 holds walk-forward
+
+$ FT_DB_PATH=copy uv run python reload_check.py copy data/seed/earnings.csv            (the reload, as load-releases stores the flow, and the id check; the script below. It was run twice, the second time to print into this file; the reload line is the first run's, before Walmart was stored)
+reload: loaded 2212 earnings reports, 2008-01-10 … 2026-11-19 ; stored before 2211
+ids: 2212 of 2212 stored equal the seed's (2212 in the seed)
+
+$ FT_DB_PATH=copy fortuneteller follows --event earnings            (after)
+follows: 2212 earnings reports 2008-01-10 … 2026-11-19: 1513 above, 457 as expected, 242 below
+kind        span   market        n  up same down  out/hole  base up/same/down  answer          chance  placebo  walk-forward
+above       day    vs S&P 500   1499 788  129  582      0/5  0.33/0.33/0.34     up              0.0000  period   1356: 707 right, doesn't hold
+above       week   vs S&P 500   1492 692  246  554     0/10  0.33/0.33/0.33     up              0.0000  -        1100: 505 right, doesn't hold
+above       month  vs S&P 500   1476 572  418  486     0/17  0.33/0.33/0.33     up              0.0026  -        647: 248 right, doesn't hold
+as expected day    vs S&P 500   452 132   43  277      0/2  0.33/0.33/0.34     down            0.0000  -        369: 229 right, holds
+as expected week   vs S&P 500   449 129   75  245      0/3  0.33/0.33/0.34     down            0.0000  period   387: 212 right, doesn't hold
+as expected month  vs S&P 500   442 136   99  207      0/7  0.33/0.33/0.34     down            0.0003  -        299: 138 right, doesn't hold
+below       day    vs S&P 500   235  44   22  169      0/0  0.32/0.33/0.35     down            0.0000  -        219: 156 right, holds
+below       week   vs S&P 500   234  40   34  160      0/1  0.31/0.33/0.35     down            0.0000  -        217: 145 right, holds
+below       month  vs S&P 500   228  37   59  132      0/4  0.30/0.33/0.37     down            0.0000  -        202: 113 right, doesn't hold
+by chance: about 0.3 answers on all history, 0.1 holds walk-forward
+
+$ FT_DB_PATH=copy fortuneteller follows --event earnings --after-the-day            (after)
+follows: 2212 earnings reports 2008-01-10 … 2026-11-19: 1513 above, 457 as expected, 242 below, spans from the reaction close
+kind        span   market        n  up same down  out/hole  base up/same/down  answer          chance  placebo  walk-forward
+above       day    vs S&P 500   1498 531  352  615      0/6  0.33/0.33/0.34     can't say       0.0179  -        732: 280 right, doesn't hold
+above       week   vs S&P 500   1490 522  391  577     0/11  0.33/0.33/0.33     can't say       0.0723  -        0: 0 right, too few
+above       month  vs S&P 500   1473 437  546  490     0/17  0.34/0.33/0.33     about the same  0.0014  period   1012: 368 right, doesn't hold
+as expected day    vs S&P 500   451 149  105  197      0/2  0.33/0.33/0.34     can't say       0.0117  -        10: 2 right, too few
+as expected week   vs S&P 500   449 155  123  171      0/3  0.33/0.33/0.34     can't say       0.2733  -        0: 0 right, too few
+as expected month  vs S&P 500   442 142  147  153      0/7  0.33/0.33/0.34     can't say       0.3633  -        0: 0 right, too few
+below       day    vs S&P 500   235  74   42  119      0/0  0.32/0.33/0.35     down            0.0037  -        184: 85 right, doesn't hold
+below       week   vs S&P 500   234  67   70   97      0/1  0.31/0.33/0.35     can't say       0.0812  -        0: 0 right, too few
+below       month  vs S&P 500   228  59   66  103      0/4  0.30/0.33/0.37     can't say       0.0214  -        0: 0 right, too few
+by chance: about 0.3 answers on all history, 0.0 holds walk-forward
+
+$ diff before after: the header, and one line
+1c1
+< follows: 2211 earnings reports 2008-01-10 … 2026-11-17: 1513 above, 456 as expected, 242 below
+---
+> follows: 2212 earnings reports 2008-01-10 … 2026-11-19: 1513 above, 457 as expected, 242 below
+6c6
+< as expected day    vs S&P 500   451 131   43  277      0/2  0.33/0.33/0.34     down            0.0000  -        368: 229 right, holds
+---
+> as expected day    vs S&P 500   452 132   43  277      0/2  0.33/0.33/0.34     down            0.0000  -        369: 229 right, holds
+$ diff before after, --after-the-day: the header only
+1c1
+< follows: 2211 earnings reports 2008-01-10 … 2026-11-17: 1513 above, 456 as expected, 242 below, spans from the reaction close
+---
+> follows: 2212 earnings reports 2008-01-10 … 2026-11-19: 1513 above, 457 as expected, 242 below, spans from the reaction close
+
+--- reload_check.py ---
+"""Step 33's reload on a copy: store the seed's earnings as load-releases does, then check every
+stored report's id, detail and minute against the seed, computed apart from the flow."""
+import csv
+import sys
+from datetime import UTC, datetime
+
+import duckdb
+
+from fortuneteller import flows
+
+store, seed = sys.argv[1], sys.argv[2]
+con = duckdb.connect(store)
+before = con.execute(
+    "select count(*) from event_instances where event_type = 'Earnings release'"
+).fetchone()
+batch = flows.EARNINGS_FLOW.load(flows.Path(seed), datetime.now(UTC))
+flows.store_events(batch.events, con=con)
+print("reload:", batch.report[0], "; stored before", before[0])
+
+with open(seed, newline="") as handle:
+    rows = list(csv.DictReader(handle))
+by_day: dict[str, list[dict[str, str]]] = {}
+for row in rows:
+    by_day.setdefault(row["day"], []).append(row)
+expected = {}
+for day, reports in by_day.items():
+    for n, row in enumerate(sorted(reports, key=lambda r: r["ticker"])):
+        code = n * 10**10 + 34 * 10**8 + int(day.replace("-", ""))
+        expected[code] = (f"{row['ticker']} {row['kind']}", f"{day} {row['time']}")
+stored = {
+    i: (d, ts.strftime("%Y-%m-%d %H:%M"))
+    for i, d, ts in con.execute(
+        "select event_id, detail, event_ts from event_instances "
+        "where event_type = 'Earnings release'"
+    ).fetchall()
+}
+equal = sum(1 for i, v in stored.items() if expected.get(i) == v)
+print(f"ids: {equal} of {len(stored)} stored equal the seed's ({len(expected)} in the seed)")
+for i in sorted(set(stored) ^ set(expected)):
+    print("only in", "store" if i in stored else "seed", i, stored.get(i) or expected.get(i))
+for i in sorted(set(stored) & set(expected)):
+    if stored[i] != expected[i]:
+        print("differs", i, stored[i], expected[i])
