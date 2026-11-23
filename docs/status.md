@@ -72,8 +72,8 @@ the hand check against Yahoo passed, and no answer or verdict on the page change
   Next: the refresh of Monday 2026-11-30, LAST 2026-11-27.
 - **Step 23: be seen, and count it** ([the spec](steps/be-seen.md)): a cookie-free Umami counter
   on the page and a weekly LinkedIn post drafted by `weekly-post`, both the owner's choice. Step 1
-  done: the counter is live and counts a visit once, read through Umami's share link. Next: the
-  first post, after step 22's page is checked.
+  done: the counter is live and counts a visit once, read through Umami's share link. The first
+  week's row: 8 visitors, no post. Next: the first post, published by the owner.
 - **Step 21: the loop off the laptop** ([the spec](steps/loop-off-the-laptop.md)): the jobs on
   GitHub Actions. Step 1 done: every source answers the runner; the store cannot be rebuilt from
   empty (TradingView rewrote 2025's claims weeks), so it must travel encrypted. Step 2, the shadow
