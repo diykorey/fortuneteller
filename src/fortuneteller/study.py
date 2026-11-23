@@ -2977,6 +2977,20 @@ class LongRun:
     now: str | None
 
 
+def base_rate(
+    closes: Sequence[DailyClosingPrice], before: date, n: int, direction: str
+) -> float | None:
+    """Step 55 (docs/steps/guesses-vs-base-rate.md): the share of every run, overlapping, from one
+    close before ``before`` to the close ``n`` later, whose move went ``direction``; an unchanged
+    run counts against both. None when there is no such run."""
+    prices = [c.price for c in closes if c.day < before]
+    moves = [prices[i + n] - prices[i] for i in range(len(prices) - n)] if n > 0 else []
+    if not moves:
+        return None
+    went = sum(m > 0 if direction == "up" else m < 0 for m in moves)
+    return went / len(moves)
+
+
 def long_run(closes: Sequence[DailyClosingPrice], length: int) -> LongRun:
     """Cut ``closes`` forward from the first into spans of ``length`` closes that do not overlap,
     leaving out an unfinished last one; before each, forecast the direction more of the earlier

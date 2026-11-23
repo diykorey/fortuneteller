@@ -8,6 +8,7 @@ from pathlib import Path
 import pytest
 
 import fortuneteller.__main__ as cli
+from fortuneteller import study
 from fortuneteller.sources import DailyClosingPrice
 
 FRIDAY = date(2026, 11, 20)
@@ -328,3 +329,67 @@ def test_every_market_the_guesser_may_name_has_an_area() -> None:
 
     # then each has one of the eight areas
     assert markets <= set(cli.AREAS) and len(set(cli.AREAS.values())) == 8
+
+
+def _closes(*prices: float) -> list[DailyClosingPrice]:
+    start = date(2026, 1, 1)
+    return [DailyClosingPrice(start + timedelta(days=i), p) for i, p in enumerate(prices)]
+
+
+def test_the_base_rate_is_the_share_of_runs_that_went_its_way() -> None:
+    # given five closes: runs of 1 close go up, up, down, up
+    closes = _closes(10, 11, 12, 11, 13)
+
+    # when the base rate is asked over runs of 1 close, before a day after them all
+    up = study.base_rate(closes, date(2027, 1, 1), 1, "up")
+    down = study.base_rate(closes, date(2027, 1, 1), 1, "down")
+
+    # then 3 of 4 runs went up and 1 of 4 down
+    assert (up, down) == (0.75, 0.25)
+
+
+def test_an_unchanged_run_counts_against_both_directions() -> None:
+    # given runs of 2 closes: 10 to 12 up, 11 to 11 unchanged
+    closes = _closes(10, 11, 12, 11)
+
+    # when the base rate is asked both ways
+    up = study.base_rate(closes, date(2027, 1, 1), 2, "up")
+    down = study.base_rate(closes, date(2027, 1, 1), 2, "down")
+
+    # then the unchanged run counts as neither
+    assert (up, down) == (0.5, 0.0)
+
+
+def test_closes_on_or_after_the_evening_are_not_used() -> None:
+    # given four closes, then a fall on and after the evening of Jan 4
+    closes = _closes(10, 11, 12, 13, 5, 1)
+
+    # when the base rate is asked for a guess made on Jan 5's evening
+    rate = study.base_rate(closes, date(2026, 1, 5), 1, "up")
+
+    # then only the runs among Jan 1 to 4 count
+    assert rate == 1.0
+    assert study.base_rate(closes[:1], date(2026, 1, 5), 1, "up") is None
+
+
+def test_a_kept_guess_and_a_stored_one_get_their_base_rate() -> None:
+    # given a down guess for the five weekdays Nov 23 to 27, and a stored row without a base rate
+    kept, _ = cli.keep_guesses(_answer(_g()), [], FRIDAY)
+    stored = {**kept[0], "market": "GC / XAU", "base_rate": ""}
+    del stored["base_rate"]
+    prices = [100.0 + (i % 7) for i in range(40)]
+    closes = [
+        DailyClosingPrice(date(2026, 9, 1) + timedelta(days=i), p) for i, p in enumerate(prices)
+    ]
+
+    # when the base rates are filled
+    rows = cli.with_base_rates([kept[0], stored], lambda m: closes)
+
+    # then each is the share of 5-close runs before Friday that fell, and a set one is kept
+    expected = study.base_rate(closes, FRIDAY, 5, "down")
+    assert expected is not None
+    assert [r["base_rate"] for r in rows] == [f"{expected:.4f}"] * 2
+    assert (
+        cli.with_base_rates([{**rows[0], "base_rate": "0.1"}], lambda m: [])[0]["base_rate"]
+        == "0.1"
+    )

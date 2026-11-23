@@ -2798,6 +2798,7 @@ GUESS_FIELDS = (
     "grade",
     "move",
     "review",
+    "base_rate",
 )
 LESSONS_HEAD = re.compile(r"^## Version (\d+), (\d{4}-\d{2}-\d{2})$", re.M)
 
@@ -2949,9 +2950,26 @@ def keep_guesses(
                 "grade": "",
                 "move": "",
                 "review": "",
+                "base_rate": "",
             }
         )
     return kept, dropped
+
+
+def with_base_rates(
+    rows: list[dict[str, str]], closes: Callable[[str], Sequence[sources.DailyClosingPrice]]
+) -> list[dict[str, str]]:
+    """``rows`` with each missing base rate filled from its market's closes before its evening,
+    over the weekdays from its first day to its end date (docs/steps/guesses-vs-base-rate.md)."""
+    out = []
+    for r in rows:
+        if not r.get("base_rate"):
+            stated = date.fromisoformat(r["stated"])
+            n = _weekdays_between(stated, date.fromisoformat(r["last"]))
+            rate = study.base_rate(closes(r["market"]), stated, n, r["direction"])
+            r = {**r, "base_rate": "" if rate is None else f"{rate:.4f}"}
+        out.append(r)
+    return out
 
 
 def grade_guesses(
@@ -3068,6 +3086,7 @@ def _ledger_row(r: Mapping[str, str]) -> dict[str, str]:
         "lessons": "0",
         "move": "",
         "review": "",
+        "base_rate": "",
     }
 
 
@@ -3106,6 +3125,7 @@ def _guess(_args: argparse.Namespace) -> int:
         return 0
     for why in dropped:
         print(f"guess: dropped {why}", file=sys.stderr)
+    kept = with_base_rates(kept, closes)
     _write_rows(path, GUESS_FIELDS, kept)
     print(f"guess: {len(kept) - len(rows)} kept, {len(dropped)} dropped")
     return 0
