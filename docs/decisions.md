@@ -11,6 +11,21 @@ amended there with a date.
 Each entry: **what** was decided, **why**, what it **retires**, and **where** the detail is. *By the
 owner* marks a choice the owner made over another on the table.
 
+## 2026-11-23: Guesses are judged against the base rate, with a control guesser, by the owner
+
+- **What:** a guess counts as skill only by how far guesses beat their markets' base rates (the
+  *excess*), not by how many came true. A *grounded guesser*, given the base rates and the
+  forecasts that hold, runs each evening beside today's *news guesser*, which stays unchanged as
+  the control; the grounded prompt is refined one numbered change at a time, each judged against
+  the control.
+- **Why:** the owner's aim is guesses that come true more often than the base rate. Of three ways
+  (score only; give the guesser the record; the same with a control) the owner chose the control:
+  run side by side, the same market moves hit both guessers, so the difference is the prompt's,
+  where one after the other a calm month against a falling one would decide it. Steps 41 to 43
+  showed the model finds no rule the record lacks, so here it is given the record instead.
+- **Retires:** nothing; the guess ledger's count of guesses that came true stays beside the excess.
+- **Where:** [guesses against the base rate](steps/guesses-vs-base-rate.md), step 55.
+
 ## 2026-11-23: Readers follow on LinkedIn, no sign-up on the site, by the owner
 
 - **What:** a reader who wants the results follows the owner on LinkedIn, where the Monday post

@@ -28,6 +28,10 @@ the hand check against Yahoo passed, and no answer or verdict on the page change
 
 ## In progress
 
+- **Step 55: guesses against the base rate** ([the spec](steps/guesses-vs-base-rate.md)): each
+  guess carries its base rate; a grounded guesser, given the record, runs beside today's news
+  guesser as the control. Asked for 2026-11-23 by the owner. Spec written. Next: the goldfish
+  review, then step 1, the base rate on every row.
 - **Step 53: China** ([the spec](steps/china.md)): China's inflation, factory survey, output and
   exports, each against its forecast, the yuan and Shanghai's stocks added. Asked for 2026-11-22
   by the owner. Spec written. Next: the goldfish review, then step 1, the two markets.
