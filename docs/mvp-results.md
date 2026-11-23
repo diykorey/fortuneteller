@@ -718,6 +718,21 @@ before, above chance (8.8) plus 2, and 5 from the reaction close; inflation give
 too few to replay, and 11 of 19 from the reaction close, *can't say*; after
 inflation above or below it is *can't say*.
 
+## What follows China's inflation, factory survey, output and trade
+
+Measured 2026-11-23. Detail in [China](steps/china.md#results).
+
+China's four monthly reports, each against TradingView's forecast and counted only on days no
+other report shares: 116 inflation releases (`follows --event cncpi`), 59 factory surveys
+(`--event cnpmi`), 110 industrial output releases (`--event cnip`) and 127 trade releases
+(`--event cntrade`), against every market including the newly added yuan and Shanghai's stocks.
+**None tells which way markets go**: each flow gives fewer answers than chance (8.9 to 9.4) in
+both runs, and the one lean with enough releases to replay, the S&P 500 down on the day exports
+miss, fails it (13 right of 31). Shanghai's stocks show no lean after any report. The yuan
+weakened on the day of 25 of 42 export misses from the close before, too few to replay, and not
+from the reaction close. Inflation's days are larger than usual for the yuan (ratio 1.50,
+`raw-move --event cncpi`), with no direction.
+
 ## What comes next
 
 Chosen 2026-10-13: keep score ([rung 4](steps/rung-4-keep-score.md)), done above with the live path

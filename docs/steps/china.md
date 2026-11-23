@@ -122,7 +122,7 @@ as Canada's inflation has; the two markets in the guesser's list of markets ([st
 | 2 | ~~Inflation~~ **done** 2026-11-23. Inflation: `cncpi` | Tests: the surprise is the actual less the forecast, *above* from 0.1; a day shared with a US release, and a day shared with `cnip`, left out of its table; a Saturday release dated, for *alone*, on its Monday; a `cncpi` trigger is answered; *Ask*'s cells equal `follows`'. The header equal to the one above, or amended; every other flow's rows unchanged |
 | 3 | ~~The survey and output~~ **done** 2026-11-23. The survey and output: `cnpmi`, `cnip` | As step 2, each with its threshold; a survey on a Sunday before a US survey's Monday left out; an output release at 15:30 Beijing reacts at Shanghai's next close |
 | 4 | ~~Trade~~ **done** 2026-11-23. Trade: `cntrade`, and `Trade data` in `event_types.csv` (tier 3, *both*) and `docs/schema.md` | As step 2; the seed row loads and the flow's events carry it |
-| 5 | Results here and in [MVP results](../mvp-results.md), against the expected outcome; the roadmap row | Every judged bullet marked right or wrong with its numbers |
+| 5 | ~~Results~~ **done** 2026-11-23. Results here and in [MVP results](../mvp-results.md), against the expected outcome; the roadmap row | Every judged bullet marked right or wrong with its numbers |
 
 *Step 1, 2026-11-23:* every number is in [the evidence](china-steps.txt).
 
@@ -209,7 +209,7 @@ same; the page's watch list gains the survey of 2026-11-30, 09:30 Beijing.
 | `cnpmi` | close before | 3: *as expected*, day, gold up and the pound about the same; *below*, week, the euro down | about 8.9 | 315 of 315 *too few* (at most 3 graded) |
 | `cnpmi` | after the day | 1: *as expected*, week, the pound down | about 8.9 | 315 of 315 *too few* (at most 8 graded) |
 | `cnip` | close before | 4: *above*, day, wheat up; *as expected*, day, the 10-year about the same; *below*, day, the Nikkei and ether down | about 9.4 | 315 of 315 *too few* (at most 17 graded) |
-| `cnip` | after the day | 6: *above*, day, gold about the same; *as expected*, week, the DAX, the Euro Stoxx 50 and the Stoxx 600 about the same; *below*, week, the 10-year about the same | about 9.4 | 315 of 315 *too few* (at most 24 graded) |
+| `cnip` | after the day | 5 (*corrected 2026-11-23, in step 5:* first written 6): *above*, day, gold about the same; *as expected*, week, the DAX, the Euro Stoxx 50 and the Stoxx 600 about the same; *below*, week, the 10-year about the same | about 9.4 | 315 of 315 *too few* (at most 24 graded) |
 | `cncpi` | close before | 3: *above*, day, the pound and the Canadian dollar about the same; *above*, week, gasoline up | about 9.4 | 315 of 315 *too few* (at most 15 graded) |
 | `cncpi` | after the day | 4: *above*, week, Brent about the same; *as expected*, day, the yuan up (12 / 12 / 2 of 26), and week, the pound down; *below*, week, the Euro Stoxx 50 about the same | about 9.4 | 315 of 315 *too few* (at most 25 graded) |
 
@@ -280,4 +280,68 @@ next close whatever the gap. No sign for the two markets, no live call on China.
 
 ## Results
 
-Not yet measured.
+*2026-11-23.* Every number is in [the evidence](china-steps.txt), each command's whole output, on
+steps 1 to 4's copies of the store (closes to 2026-11-19). The judged tables are step 4's, with
+all four flows loaded: `follows --event cntrade` and `--event cncpi` (both runs) as printed there,
+`--event cnpmi` and `--event cnip` as printed in step 3, which step 4's `cmp` found byte for byte
+the same.
+
+**In plain words:** China's four monthly reports, against what forecasters expected, do not tell
+which way markets go. Across the four flows and both runs the answers are fewer than chance gives,
+and the one lean with enough releases to replay, the S&P 500 down on the day exports miss, fails
+the replay. Shanghai's stocks show no lean after any report. The yuan weakens on the day exports
+come in below forecast (25 of 42 days, from the close before), a lean seen once in 24 cells,
+too few to replay and gone from the reaction close.
+
+- **The sources, the reports, the thresholds, the hours and step 17's bars, unchanged by what the
+  run shows: right.** Each amendment above is dated and made before the table it touches was
+  read: the yuan's source after step 1's bar check failed, step 2's header, step 3's headers.
+- **The headers: right,** as amended. `follows: 116 Chinese CPI releases 2012-02-09 … 2026-11-09:
+  39 above, 22 as expected, 55 below`; `follows: 59 Chinese PMI releases 2009-05-01 … 2026-08-31:
+  18 above, 19 as expected, 22 below` (amended from 82 before its table was read: the hand count
+  had left out the euro area's flash inflation); `follows: 110 Chinese output releases 2011-07-13
+  … 2026-11-16: 44 above, 33 as expected, 33 below`; `follows: 127 Chinese trade releases
+  2010-12-10 … 2026-09-08: 41 above, 44 as expected, 42 below`. Each equals the count by hand.
+- **The arithmetic: right.** One cell of the 2,520 reached 30 graded: trade's *below*, the S&P 500
+  on the day, from the close before, 31. Otherwise at most, from the close before and from the
+  reaction close: inflation 5 and 25, the survey 3 and 8, output 17 and 24, trade 23 from the
+  reaction close (`follows`, each flow and run).
+- **Walk-forward, nothing holds for any of the four flows: right.** The one graded cell, the S&P
+  500 *down* after trade *below*, is 13 right of 31, *doesn't hold*; every other cell is *too
+  few*. Each `follows` line reads `0.0 holds walk-forward` by chance.
+- **On all history, no more answers than the chance line plus 2: right** in all eight checks:
+
+  | Flow | From the close before | From the reaction close | By chance | Bar |
+  | --- | --- | --- | --- | --- |
+  | Inflation | 3 | 4 | 9.3 | 11.3 |
+  | The survey | 3 | 1 | 8.9 | 10.9 |
+  | Output | 4 | 5 | 9.4 | 11.4 |
+  | Trade | 9 | 6 | 9.4 | 11.4 |
+
+  Output's five from the reaction close were first written six in step 3's table; it lists five,
+  and `follows --event cnip --after-the-day` prints five.
+- **Shanghai's stocks after each kind of each flow, on the day, *can't say* in both runs: right,**
+  all 24 cells.
+- **The yuan after each kind of each flow, on the day, *can't say* in both runs: wrong** for trade
+  *below* from the close before (`follows --event cntrade`): `USDCNY` *up*, the yuan weaker, 25
+  up, 8 the same, 9 down of 42 (chance 0.0040), *too few* walk-forward (29 graded, 14 right). From
+  the reaction close the same cell reads 9 / 18 / 15, *can't say*. Right for the other 23 cells;
+  inflation's *as expected* from the reaction close, *up* in step 2 (13 / 14 / 2 of 29), reads 11
+  / 9 / 2 of 22 once output's and trade's days are out, *can't say* (chance 0.0129).
+- **Brent after the survey and output above or below, on the day, *can't say* in both runs:
+  right,** all 8 cells.
+- **The two new markets, every existing row unchanged byte for byte: right** (`follows` for every
+  flow, both runs and the Fed's `--long`, `raw-move` for every event, `scoreboard`): after step 1
+  every row, and after each of steps 2 to 4 every other flow's output, each the one before (the
+  `cmp` lists in the evidence); only the chance lines grew by the cells added (the scoreboard's
+  raw-move chance 1,078 → 1,142 → 1,177 → 1,247 → 1,282 cells, surprise 396 → 420 → 455 → 525 →
+  560, walk-forward 82). The new markets' rows are recorded in the evidence.
+- **The size of the move** (`raw-move --event cncpi`, `cnpmi`, `cnip`, `cntrade`, outside the
+  rule, recorded): on its 116 lone days inflation *moves* the yuan (ratio 1.50, p 0.0034), and only
+  the yuan; Shanghai *doesn't* (0.92). The survey's lone days, the turn of a month, *move* 12 of
+  35 markets, the European indices most (the FTSE 2.14, the Stoxx 600 1.93, the Euro Stoxx 50
+  1.91, p 0.0001 each); Shanghai is *unclear* (1.30, p 0.0495), the yuan *doesn't* (0.76). Output
+  and trade *move* no market; the yuan is *unclear* after each (1.10, p 0.28; 1.32, p 0.035).
+
+The expected outcome was **right** on seven bullets and **wrong** on one: the yuan weaker on the
+day exports come in below forecast, from the close before, too few to replay.
