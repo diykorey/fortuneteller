@@ -4803,3 +4803,115 @@ below       month  TSX           38  15   12   11     11/5  0.44/0.33/0.22     c
 below       month  USDCNY        39  12   12   15     12/3  0.31/0.33/0.36     can't say       0.5162  -        0: 0 right, too few
 below       month  SHCOMP        31  11    9   11     5/18  0.36/0.33/0.31     can't say       0.4527  -        0: 0 right, too few
 by chance: about 9.3 answers on all history, 0.0 holds walk-forward
+
+Step 5's evidence: the scoreboard checks of steps 3 and 4, and the judged day cells on step 4's store.
+
+$ scoreboard data.json, cn2 store against cn3: every key but written and earnings_ahead (live market caps)
+  chance {'raw_move': {'cells': 1177, 'p': 0.01, 'by_chance': 11.77}, 'surprise': {'cells': 455, 'p': 0.01, 'by_chance': 4.55}, 'walk_forward': {'cells': 82, 'p': 0.01, 'by_chance': 0.82}} -> {'raw_move': {'cells': 1247, 'p': 0.01, 'by_chance': 12.47}, 'surprise': {'cells': 525, 'p': 0.01, 'by_chance': 5.25}, 'walk_forward': {'cells': 82, 'p': 0.01, 'by_chance': 0.82}}
+  same data_until
+  same markets
+  same rules
+   events entries removed: ['cncpi'] added: ['cncpi', 'cnip', 'cnpmi']
+  same calls
+  same missed
+  same guesses
+  same bad_guesses
+  same handles
+  same ahead
+   watch entries removed: [] added: ['cnpmi']
+  same market_names
+   ask entries removed: ['cncpi'] added: ['cncpi', 'cnip', 'cnpmi']
+  same ask_left_out
+  same holds
+$ scoreboard data.json, cn3 store against cn4: every key but written and earnings_ahead (live market caps)
+  chance {'raw_move': {'cells': 1247, 'p': 0.01, 'by_chance': 12.47}, 'surprise': {'cells': 525, 'p': 0.01, 'by_chance': 5.25}, 'walk_forward': {'cells': 82, 'p': 0.01, 'by_chance': 0.82}} -> {'raw_move': {'cells': 1282, 'p': 0.01, 'by_chance': 12.82}, 'surprise': {'cells': 560, 'p': 0.01, 'by_chance': 5.6}, 'walk_forward': {'cells': 82, 'p': 0.01, 'by_chance': 0.82}}
+  same data_until
+  same markets
+  same rules
+   events entries removed: ['cncpi'] added: ['cncpi', 'cntrade']
+  same calls
+  same missed
+  same guesses
+  same bad_guesses
+  same handles
+  same ahead
+  same watch
+  same market_names
+   ask entries removed: ['cncpi'] added: ['cncpi', 'cntrade']
+  same ask_left_out
+  same holds
+
+$ follows --event <flow> (both runs; -after is --after-the-day) on step 4's store: Shanghai's, the yuan's and Brent's day cells, each with its base and chance
+flow: kind span market n up same down out/hole base up/same/down answer chance placebo walk-forward
+cncpi: above       day    BRN           39  15   18    6      0/0  0.35/0.33/0.32     can't say       0.0610  -        0: 0 r
+cncpi: above       day    USDCNY        39  18    6   15      0/0  0.33/0.33/0.33     can't say       0.3721  -        0: 0 r
+cncpi: above       day    SHCOMP        39  15    9   15      0/0  0.35/0.33/0.32     can't say       0.4640  -        0: 0 r
+cncpi: as expected day    BRN           22   9    8    5      0/0  0.35/0.33/0.32     can't say       0.2765  -        0: 0 r
+cncpi: as expected day    USDCNY        22   5    7   10      0/0  0.34/0.33/0.33     can't say       0.1374  -        0: 0 r
+cncpi: as expected day    SHCOMP        22   6    4   12      0/0  0.35/0.33/0.31     can't say       0.0757  -        0: 0 r
+cncpi: below       day    BRN           55  19   18   18      0/0  0.35/0.33/0.32     can't say       0.5064  -        0: 0 r
+cncpi: below       day    USDCNY        55  20   15   20      0/0  0.33/0.33/0.33     can't say       0.5616  -        0: 0 r
+cncpi: below       day    SHCOMP        54  18   23   13      0/1  0.35/0.33/0.32     can't say       0.0985  -        0: 0 r
+cncpi-after: above       day    BRN           38  14   11   13      0/1  0.35/0.33/0.32     can't say       0.5561  -        
+cncpi-after: above       day    USDCNY        39  17   10   12      0/0  0.33/0.33/0.33     can't say       0.2345  -        
+cncpi-after: above       day    SHCOMP        39  15   15    9      0/0  0.35/0.33/0.32     can't say       0.2191  -        
+cncpi-after: as expected day    BRN           22   6    7    9      0/0  0.35/0.33/0.32     can't say       0.2338  -        
+cncpi-after: as expected day    USDCNY        22  11    9    2      0/0  0.34/0.33/0.33     can't say       0.0129  -        
+cncpi-after: as expected day    SHCOMP        22   7    7    8      0/0  0.35/0.33/0.31     can't say       0.4082  -        
+cncpi-after: below       day    BRN           55  20   18   17      0/0  0.35/0.33/0.32     can't say       0.4927  -        
+cncpi-after: below       day    USDCNY        55  17   13   25      0/0  0.33/0.33/0.33     can't say       0.1406  -        
+cncpi-after: below       day    SHCOMP        54  18   22   14      0/1  0.35/0.33/0.32     can't say       0.1565  -        
+cnpmi: above       day    BRN           18   5    8    5      0/0  0.35/0.33/0.32     can't say       0.2233  -        0: 0 r
+cnpmi: above       day    USDCNY        17   3    7    7      0/1  0.33/0.33/0.34     can't say       0.1766  -        0: 0 r
+cnpmi: above       day    SHCOMP        16   7    5    4      0/2  0.35/0.33/0.32     can't say       0.3236  -        0: 0 r
+cnpmi: as expected day    BRN           19   5    8    6      0/0  0.35/0.33/0.32     can't say       0.2791  -        0: 0 r
+cnpmi: as expected day    USDCNY        19   7    7    5      0/0  0.33/0.33/0.33     can't say       0.3841  -        0: 0 r
+cnpmi: as expected day    SHCOMP        15   9    1    5      0/4  0.35/0.33/0.32     can't say       0.2608  -        0: 0 r
+cnpmi: below       day    BRN           21   4    9    8      0/1  0.35/0.33/0.32     can't say       0.1495  -        0: 0 r
+cnpmi: below       day    USDCNY        21   7    8    6      0/0  0.33/0.33/0.34     can't say       0.3996  -        0: 0 r
+cnpmi: below       day    SHCOMP        19   9    6    4      0/3  0.35/0.33/0.32     can't say       0.1738  -        1: 0 r
+cnpmi-after: above       day    BRN           18   6    7    5      0/0  0.35/0.33/0.32     can't say       0.3918  -        
+cnpmi-after: above       day    USDCNY        17   5    9    3      0/1  0.33/0.33/0.34     can't say       0.0754  -        
+cnpmi-after: above       day    SHCOMP        13   6    5    2      0/5  0.35/0.33/0.32     can't say       0.1735  -        
+cnpmi-after: as expected day    BRN           19   6    3   10      0/0  0.35/0.33/0.32     can't say       0.1743  -        
+cnpmi-after: as expected day    USDCNY        19   4   10    5      0/0  0.33/0.33/0.33     can't say       0.0649  -        
+cnpmi-after: as expected day    SHCOMP        16  10    3    3      0/3  0.35/0.33/0.32     can't say       0.0627  -        
+cnpmi-after: below       day    BRN           20   8    4    8      0/2  0.35/0.33/0.32     can't say       0.5181  -        
+cnpmi-after: below       day    USDCNY        21   3    9    9      0/0  0.33/0.33/0.34     can't say       0.0762  -        
+cnpmi-after: below       day    SHCOMP        18   4    8    6      0/4  0.35/0.33/0.32     can't say       0.2233  -        
+cnip: above       day    BRN           44  14   17   13      0/0  0.35/0.33/0.32     can't say       0.2747  -        0: 0 ri
+cnip: above       day    USDCNY        44  16   10   18      0/0  0.33/0.33/0.33     can't say       0.4348  -        0: 0 ri
+cnip: above       day    SHCOMP        44  18   12   14      0/0  0.35/0.33/0.32     can't say       0.3854  -        0: 0 ri
+cnip: as expected day    BRN           32   7   13   12      0/1  0.35/0.33/0.32     can't say       0.1335  -        0: 0 ri
+cnip: as expected day    USDCNY        33   9    9   15      0/0  0.34/0.33/0.33     can't say       0.1478  -        0: 0 ri
+cnip: as expected day    SHCOMP        32  13   13    6      0/1  0.35/0.33/0.31     can't say       0.1268  -        0: 0 ri
+cnip: below       day    BRN           33  16    7   10      0/0  0.35/0.33/0.32     can't say       0.2356  -        0: 0 ri
+cnip: below       day    USDCNY        32   8   11   13      0/0  0.33/0.33/0.33     can't say       0.1922  -        0: 0 ri
+cnip: below       day    SHCOMP        32   5   17   10      0/1  0.35/0.33/0.32     can't say       0.0164  -        0: 0 ri
+cnip-after: above       day    BRN           44  14   15   15      0/0  0.35/0.33/0.32     can't say       0.4009  -        0
+cnip-after: above       day    USDCNY        44  18   11   15      0/0  0.33/0.33/0.33     can't say       0.3625  -        0
+cnip-after: above       day    SHCOMP        44  15   14   15      0/0  0.35/0.33/0.32     can't say       0.4814  -        0
+cnip-after: as expected day    BRN           33   7   13   13      0/0  0.35/0.33/0.32     can't say       0.0936  -        0
+cnip-after: as expected day    USDCNY        33  13    9   11      0/0  0.34/0.33/0.33     can't say       0.4302  -        0
+cnip-after: as expected day    SHCOMP        32  10   10   12      0/1  0.35/0.33/0.32     can't say       0.3181  -        0
+cnip-after: below       day    BRN           33   8   12   13      0/0  0.35/0.33/0.32     can't say       0.1343  -        0
+cnip-after: below       day    USDCNY        32  16    7    9      0/0  0.33/0.33/0.33     can't say       0.1139  -        0
+cnip-after: below       day    SHCOMP        33  15    6   12      0/0  0.35/0.33/0.32     can't say       0.4578  -        0
+cntrade: above       day    BRN           41  10   12   19      0/0  0.35/0.33/0.32     can't say       0.0394  -        0: 0
+cntrade: above       day    USDCNY        41  12   10   19      0/0  0.33/0.33/0.34     can't say       0.1516  -        0: 0
+cntrade: above       day    SHCOMP        41  17   15    9      0/0  0.35/0.33/0.32     can't say       0.1212  -        0: 0
+cntrade: as expected day    BRN           44  13   11   20      0/0  0.35/0.33/0.32     can't say       0.0942  -        0: 0
+cntrade: as expected day    USDCNY        44  19   14   11      0/0  0.33/0.33/0.33     can't say       0.0988  -        0: 0
+cntrade: as expected day    SHCOMP        44  16   18   10      0/0  0.35/0.33/0.32     can't say       0.1816  -        0: 0
+cntrade: below       day    BRN           42  12   16   14      0/0  0.35/0.33/0.32     can't say       0.3075  -        0: 0
+cntrade: below       day    USDCNY        42  25    8    9      0/0  0.33/0.33/0.34     up              0.0040  -        29: 
+cntrade: below       day    SHCOMP        41  11   19   11      0/1  0.35/0.33/0.32     can't say       0.0570  -        0: 0
+cntrade-after: above       day    BRN           41  14   14   13      0/0  0.35/0.33/0.32     can't say       0.5146  -      
+cntrade-after: above       day    USDCNY        41  11   14   16      0/0  0.33/0.33/0.34     can't say       0.2341  -      
+cntrade-after: above       day    SHCOMP        41  13   12   16      0/0  0.35/0.33/0.32     can't say       0.2772  -      
+cntrade-after: as expected day    BRN           44  18   12   14      0/0  0.35/0.33/0.32     can't say       0.3957  -      
+cntrade-after: as expected day    USDCNY        44  20    8   16      0/0  0.33/0.33/0.33     can't say       0.3048  -      
+cntrade-after: as expected day    SHCOMP        44  11   16   17      0/0  0.35/0.33/0.32     can't say       0.1225  -      
+cntrade-after: below       day    BRN           42  17   11   14      0/0  0.35/0.33/0.32     can't say       0.4684  -      
+cntrade-after: below       day    USDCNY        42   9   18   15      0/0  0.33/0.33/0.34     can't say       0.1271  -      
+cntrade-after: below       day    SHCOMP        40  12   17   11      0/2  0.35/0.33/0.32     can't say       0.1444  -      

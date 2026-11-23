@@ -12,6 +12,11 @@ Where the work is and what comes next: the task last finished, the tasks in prog
 
 ## Last completed
 
+Step 53: China ([results](steps/china.md#results)). China's inflation, factory survey, output
+and trade, each against its forecast, on their days alone (116, 59, 110 and 127 releases), the
+yuan and Shanghai's stocks added: nothing holds walk-forward and every flow's answers are below
+chance; the yuan weakens on the day exports miss (25 of 42), too few to replay.
+
 Step 46, steps 1 and 2: the retry and the watches ([results](steps/loop-nets.md#results)). Every
 source's 5xx, timeout or broken connection is asked again after 30 and 90 s, 300 s a process at
 most; `unlogged` and `unstarted` find the incidents of 2026-11-17 and 2026-11-19 on their real
@@ -34,13 +39,6 @@ the hand check against Yahoo passed, and no answer or verdict on the page change
   base rate on every row, merged (#421); step 2, the grounded guesser, merged (#423); step 3,
   `fortuneteller excess`, the stats page and the grounded lessons, built. Next: the hand check of
   the first three grounded guesses' base rates, then the readings on 2027-01-31 and 2027-04-30.
-- **Step 53: China** ([the spec](steps/china.md)): China's inflation, factory survey, output and
-  exports, each against its forecast, the yuan and Shanghai's stocks added. Asked for 2026-11-22
-  by the owner. Step 1 done: the yuan (FRED's noon New York rate, from the peg's end) and
-  Shanghai's stocks, every existing row unchanged. Step 2 done: inflation, `cncpi`. Step 3
-  done: the factory survey, `cnpmi`, 59 releases alone, and output, `cnip`, 110. Step 4 done:
-  trade, `cntrade`, 127; inflation 116, each header the one written before step 1. Next: step 5,
-  the results against the expected outcome.
 - **Step 46: the loop's safety nets** ([the spec](steps/loop-nets.md)): each machine watches the
   other and opens an issue for what it missed; a source's 5xx asked again. Chosen 2026-11-21 by the
   owner. Steps 1 and 2 built. Next: merged before Wednesday 2026-11-25's releases, then step 3,
