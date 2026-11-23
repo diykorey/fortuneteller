@@ -3092,7 +3092,11 @@ def lessons_version(text: str) -> tuple[int, str | None]:
 
 
 def update_lessons(
-    text: str, rows: Sequence[Mapping[str, str]], today: date, ask: Callable[[str], str]
+    text: str,
+    rows: Sequence[Mapping[str, str]],
+    today: date,
+    ask: Callable[[str], str],
+    record: str = "",
 ) -> str:
     """On the first evening of a month without a version, version N + 1 from the reviews since N,
     newest version first; else ``text`` as it was."""
@@ -3108,6 +3112,8 @@ def update_lessons(
         f"{r['grade']}. {r['review']}"
         for r in reviews
     )
+    if record:
+        listed += f"\n\nEach kind of reasoning against its base rates:\n{record}"
     body = ask(_prompt("lessons_prompt.txt", lessons=text or "(none yet)", reviews=listed))
     body = " ".join(body.split()[:400])
     head = f"## Version {number + 1}, {today.isoformat()}"
@@ -3209,7 +3215,9 @@ def guess_as(
     guesses kept; a failed model call keeps ``rows`` as they were."""
     lessons = lessons_path.read_text() if lessons_path.exists() else ""
     try:
-        updated = update_lessons(lessons, _mine(rows, guesser), today, ask)
+        mine = _mine(rows, guesser)
+        record = tag_against_base(mine) if guesser == "grounded" else ""
+        updated = update_lessons(lessons, mine, today, ask, record)
         if updated != lessons:
             lessons_path.write_text(updated)
             lessons = updated
@@ -3314,6 +3322,144 @@ def guess_record(rows: Sequence[Mapping[str, str]], key: str) -> list[dict[str, 
     return out
 
 
+# Step 55 (docs/steps/guesses-vs-base-rate.md): the guesses judged against their base rates.
+EXCESS_LEAST = 60
+EXCESS_CHANCE = 0.01
+KEEP_EVENINGS = 15
+AGAINST_EVENINGS = 30
+AGAINST_P = 0.05
+FROZEN_FROM = date(2027, 2, 1)
+GRADED = ("came true", "did not")
+
+
+def counted_guesses(rows: Sequence[Mapping[str, str]]) -> list[Mapping[str, str]]:
+    """The graded rows with a base rate, once per guesser, market (the S&P 500 and the Nasdaq as
+    one) and ISO week of the end date: the first stated kept, by stated date then row order."""
+    seen: set[tuple[object, ...]] = set()
+    out = []
+    for r in sorted(rows, key=lambda r: r["stated"]):
+        if r.get("grade") not in GRADED or not r.get("base_rate"):
+            continue
+        week = date.fromisoformat(r["last"]).isocalendar()[:2]
+        key = (r.get("guesser", "news"), GUESS_TWINS.get(r["market"], r["market"]), week)
+        if key not in seen:
+            seen.add(key)
+            out.append(r)
+    return out
+
+
+def _excess(rows: Sequence[Mapping[str, str]]) -> tuple[int, float, int]:
+    graded = [r for r in rows if r.get("grade") in GRADED and r.get("base_rate")]
+    right = sum(r["grade"] == "came true" for r in graded)
+    return right, sum(float(r["base_rate"]) for r in graded), len(graded)
+
+
+def excess_record(rows: Sequence[Mapping[str, str]], guesser: str) -> dict[str, object]:
+    """One guesser's counted guesses against their base rates, and the verdict by step 55's bar."""
+    counted = [r for r in counted_guesses(rows) if r.get("guesser", "news") == guesser]
+    right, expected, n = _excess(counted)
+    chance = stats.poisson_binomial_tail(right, [float(r["base_rate"]) for r in counted])
+    if n < EXCESS_LEAST:
+        verdict = "too few"
+    elif right > expected and chance < EXCESS_CHANCE:
+        verdict = "beats its base rate"
+    else:
+        verdict = "does not beat its base rate"
+    return {
+        "guesser": guesser,
+        "counted": n,
+        "right": right,
+        "expected": expected,
+        "excess": right - expected,
+        "chance": chance,
+        "verdict": verdict,
+    }
+
+
+def evenings_against(
+    rows: Sequence[Mapping[str, str]],
+    version: str | None = None,
+    since: date | None = None,
+    counted: bool = True,
+) -> dict[str, int]:
+    """The evenings on which both guessers have graded guesses, and on how many the grounded
+    guesser's excess per guess was higher or lower than the news guesser's (ties left out).
+    With ``version``, only that prompt's evenings, each once all its week-horizon guesses of both
+    guessers are graded; with ``counted``, each guesser's guesses once per market and week."""
+    higher = lower = 0
+    for evening in sorted({r["stated"] for r in rows if r.get("guesser") == "grounded"}):
+        if since and evening < since.isoformat():
+            continue
+        tonight = [r for r in rows if r["stated"] == evening]
+        if version and not any(r.get("prompt") == version for r in tonight):
+            continue
+        if version and any(r.get("horizon") == "week" and not r.get("grade") for r in tonight):
+            continue
+        per_guess = []
+        for guesser in ("news", "grounded"):
+            mine = _mine(tonight, guesser)
+            right, expected, n = _excess(counted_guesses(mine) if counted else mine)
+            per_guess.append((right - expected) / n if n else None)
+        news, grounded = per_guess
+        if news is None or grounded is None or news == grounded:
+            continue
+        higher, lower = higher + (grounded > news), lower + (grounded < news)
+    return {"higher": higher, "lower": lower}
+
+
+def version_verdict(tally: Mapping[str, int]) -> str:
+    """Step 55's rule for a prompt version: kept or reverted after enough evenings."""
+    evenings = tally["higher"] + tally["lower"]
+    if evenings < KEEP_EVENINGS:
+        return "too few"
+    return "keep" if tally["higher"] * 2 > evenings else "revert"
+
+
+def against_verdict(tally: Mapping[str, int]) -> tuple[str, float]:
+    """Step 55's rule for the frozen grounded guesser against the news guesser."""
+    evenings = tally["higher"] + tally["lower"]
+    p = stats.binomial_p(tally["higher"], evenings)
+    if evenings < AGAINST_EVENINGS:
+        return "too few", p
+    return ("grounded beats news" if p < AGAINST_P else "grounded does not beat news"), p
+
+
+def tag_against_base(rows: Sequence[Mapping[str, str]]) -> str:
+    """Each tag's counted guesses that came true against those its base rates expected."""
+    lines = []
+    for tag in sorted({r.get("tag", "") for r in rows if r.get("tag")}):
+        right, expected, n = _excess(counted_guesses([r for r in rows if r.get("tag") == tag]))
+        if n:
+            lines.append(
+                f"- {tag}: {right} of {n} came true, {expected:.1f} expected from base rates"
+            )
+    return "\n".join(lines)
+
+
+def _excess_command(_args: argparse.Namespace) -> int:
+    folder = settings.scoreboard_dir.parent / "predicts"
+    rows = [_ledger_row(r) for r in _read_rows(folder / "our-guesses.csv")]
+    for guesser in ("news", "grounded"):
+        r = excess_record(rows, guesser)
+        print(
+            f"{guesser}: {r['counted']} counted, {r['right']} came true, {r['expected']:.1f}"
+            f" expected, excess {r['excess']:+.1f}, chance {r['chance']:.4f}: {r['verdict']}"
+        )
+    version = grounded_version()
+    tally = evenings_against(rows, version=version)
+    print(
+        f"{version} against news: higher on {tally['higher']}, lower on {tally['lower']}:"
+        f" {version_verdict(tally)}"
+    )
+    frozen = evenings_against(rows, since=FROZEN_FROM, counted=False)
+    verdict, p = against_verdict(frozen)
+    print(
+        f"from {FROZEN_FROM}: higher on {frozen['higher']}, lower on {frozen['lower']},"
+        f" p {p:.4f}: {verdict}"
+    )
+    return 0
+
+
 FRONT_MOST = 5
 STATS_KEYS = (
     ("tag", "Kind of reasoning"),
@@ -3323,7 +3469,12 @@ STATS_KEYS = (
 )
 
 
-def write_stats(path: Path, rows: Sequence[Mapping[str, str]], promoted: set[str]) -> None:
+def write_stats(
+    path: Path,
+    rows: Sequence[Mapping[str, str]],
+    promoted: set[str],
+    ledger: Sequence[Mapping[str, str]] = (),
+) -> None:
     """The stats page: the tally, the record by kind, and every guess with its grade and review."""
     from html import escape
 
@@ -3360,6 +3511,24 @@ def write_stats(path: Path, rows: Sequence[Mapping[str, str]], promoted: set[str
             )
         return "".join(parts) + "</li>"
 
+    def against_base(ledger: Sequence[Mapping[str, str]]) -> str:
+        records = [excess_record(ledger, g) for g in ("news", "grounded")]
+        if not any(r["counted"] for r in records):
+            return ""
+        lines = "".join(
+            f"<tr><td>{r['guesser']}</td><td>{r['right']} of {r['counted']}</td>"
+            f"<td>{float(str(r['expected'])):.1f}</td><td>{float(str(r['excess'])):+.1f}</td>"
+            f"<td>{r['verdict']}</td></tr>"
+            for r in records
+        )
+        return (
+            "<h2>Against the base rate</h2><p>A guess that a market keeps its usual drift comes true"
+            " often without skill, so each guess is set against its base rate: how often its market"
+            " moved its way over a span of the same length before. Counted once per market and week."
+            "</p><div class='wide'><table><tr><th>Guesser</th><th>Came true</th>"
+            "<th>Expected</th><th>Excess</th><th>Verdict</th></tr>" + lines + "</table></div>"
+        )
+
     t = forecast_tally(rows)
     newest = sorted(rows, key=lambda r: (r["stated"], r["last"]), reverse=True)
     body = (
@@ -3377,6 +3546,7 @@ def write_stats(path: Path, rows: Sequence[Mapping[str, str]], promoted: set[str
             else ""
         )
         + "</p>"
+        + against_base(ledger)
         + "".join(table(k, title) for k, title in STATS_KEYS)
         + "<h2>Every guess, newest first</h2><ol class='all'>"
         + "".join(item(r) for r in newest)
@@ -3410,7 +3580,7 @@ def stated_forecasts(
     ledger = [_ledger_row(r) for r in _read_rows(kept_path.parent / "our-guesses.csv")]
     guesses = [g for g in ledger if g["guesser"] == "news"]
     promoted = {str(t["tag"]) for t in guess_record(guesses, "tag") if t["verdict"] == "holds"}
-    write_stats(kept_path.parent / "stats" / "index.html", guesses, promoted)
+    write_stats(kept_path.parent / "stats" / "index.html", guesses, promoted, ledger)
     taken = {AREAS.get(str(t["market"]), str(t["market"])) for t in told}
     picks = front_guesses(guesses, promoted, today, FRONT_MOST - len(told), taken)
     approved = _read_rows(kept_path.parent / "front.csv")
@@ -3497,6 +3667,9 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser(
         "guess", help="step 49: the evening's guesses from the news, kept in guesses.csv"
     ).set_defaults(func=_guess)
+    sub.add_parser(
+        "excess", help="step 55: each guesser's guesses against their base rates"
+    ).set_defaults(func=_excess_command)
     sub.add_parser(
         "forecasts", help="step 48: each market's long run, walk-forward over spans"
     ).set_defaults(func=_forecasts)

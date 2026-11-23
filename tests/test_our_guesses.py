@@ -504,3 +504,118 @@ def test_a_stored_row_without_a_guesser_is_the_news_guessers() -> None:
     # then it is the news guesser's first prompt
     assert (row["guesser"], row["prompt"]) == ("news", "news-1")
     assert cli.grounded_version() == "grounded-1"
+
+
+def _row(market: str = "BRN", last: str = "2026-11-27", **extra: str) -> dict[str, str]:
+    row = {
+        "stated": "2026-11-20",
+        "market": market,
+        "horizon": "week",
+        "direction": "up",
+        "last": last,
+        "tag": "momentum",
+        "confidence": "low",
+        "grade": "came true",
+        "base_rate": "0.5",
+        "guesser": "news",
+        "prompt": "news-1",
+    }
+    return row | extra
+
+
+def test_a_bet_is_counted_once_per_guesser_market_and_week() -> None:
+    # given two Brent guesses ending in one week, the S&P 500 and the Nasdaq in one week, the
+    # same Brent guess by the grounded guesser, and an open guess
+    rows = [
+        _row(),
+        _row(last="2026-11-26", grade="did not"),
+        _row("SPY / ES"),
+        _row("COMP"),
+        _row(guesser="grounded", prompt="grounded-1"),
+        _row("GC / XAU", grade=""),
+    ]
+
+    # when the guesses are counted
+    counted = cli.counted_guesses(rows)
+
+    # then the first Brent, the S&P 500 and the grounded Brent count
+    assert [(r["market"], r["guesser"], r["last"]) for r in counted] == [
+        ("BRN", "news", "2026-11-27"),
+        ("SPY / ES", "news", "2026-11-27"),
+        ("BRN", "grounded", "2026-11-27"),
+    ]
+
+
+def _weeks(count: int, right: int, rate: str = "0.5") -> list[dict[str, str]]:
+    first = date(2026, 1, 2)
+    return [
+        _row(
+            last=(first + timedelta(weeks=i)).isoformat(),
+            grade="came true" if i < right else "did not",
+            base_rate=rate,
+        )
+        for i in range(count)
+    ]
+
+
+def test_a_guesser_beats_its_base_rate_only_with_enough_guesses_and_a_small_chance() -> None:
+    # given 60 guesses at a base rate of one half: 60 right, 59 of 59 right, and 32 of 60 right
+    # when each is judged
+    many = cli.excess_record(_weeks(60, 60), "news")
+    few = cli.excess_record(_weeks(59, 59), "news")
+    near = cli.excess_record(_weeks(60, 32), "news")
+
+    # then only the first beats it; the second has too few; the third is within chance
+    assert many["verdict"] == "beats its base rate" and many["excess"] == 30
+    assert few["verdict"] == "too few"
+    assert near["verdict"] == "does not beat its base rate" and near["excess"] == 2
+
+
+def test_a_version_is_judged_on_its_evenings_against_the_news_guesser() -> None:
+    # given evenings where the grounded guesser beat, lost, tied, and one with a week guess open
+    def evening(
+        day: str, news: str, grounded: str, open_week: bool = False
+    ) -> list[dict[str, str]]:
+        rows = [
+            _row(stated=day, grade=news),
+            _row(stated=day, grade=grounded, guesser="grounded", prompt="grounded-2"),
+        ]
+        if open_week:
+            rows.append(_row("GC / XAU", stated=day, grade=""))
+        return rows
+
+    rows = (
+        evening("2026-12-01", "did not", "came true")
+        + evening("2026-12-02", "came true", "did not")
+        + evening("2026-12-03", "came true", "came true")
+        + evening("2026-12-04", "did not", "came true", open_week=True)
+        + [_row(stated="2026-12-05", guesser="grounded", prompt="grounded-1", grade="came true")]
+    )
+
+    # when version 2's evenings are tallied
+    tally = cli.evenings_against(rows, version="grounded-2")
+
+    # then one higher and one lower count; the tie, the open evening and version 1's are left out
+    assert tally == {"higher": 1, "lower": 1}
+    assert cli.version_verdict(tally) == "too few"
+    assert cli.version_verdict({"higher": 8, "lower": 7}) == "keep"
+    assert cli.version_verdict({"higher": 7, "lower": 8}) == "revert"
+    assert cli.against_verdict({"higher": 21, "lower": 9})[0] == "grounded beats news"
+    assert cli.against_verdict({"higher": 19, "lower": 10})[0] == "too few"
+
+
+def test_the_grounded_lessons_are_given_each_tag_against_its_base_rates() -> None:
+    # given two graded grounded guesses of one tag, each with a review
+    rows = [
+        _row(guesser="grounded", review="It held."),
+        _row("GC / XAU", guesser="grounded", grade="did not", base_rate="0.6", review="Luck."),
+    ]
+    asked: list[str] = []
+
+    # when the lessons are written with the tag record
+    record = cli.tag_against_base(rows)
+    cli.update_lessons("", rows, date(2026, 12, 1), lambda p: asked.append(p) or "Learn.", record)
+
+    # then the record reads 1 of 2 against 1.1 expected, and the model was given it
+    assert record == "- momentum: 1 of 2 came true, 1.1 expected from base rates"
+    assert record in asked[0]
