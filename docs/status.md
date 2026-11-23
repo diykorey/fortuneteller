@@ -12,6 +12,11 @@ Where the work is and what comes next: the task last finished, the tasks in prog
 
 ## Last completed
 
+Step 52: Canada ([results](steps/canada.md#results)). 153 Bank of Canada decisions and 189
+Canadian inflation releases on their days alone, the Canadian dollar and Toronto's stocks added:
+nothing holds walk-forward; the Bank's 12 answers from the close before exceed chance plus 2, and
+the Canadian dollar strengthens on the day of 13 of 19 hikes, too few to replay.
+
 Step 33, step 2: the first earnings refresh ([results](steps/earnings-current.md#results)). One
 new report, Walmart's of 2026-11-19 (EPS $0.65 against $0.64, *as expected*). No line removed,
 the hand check against Yahoo passed, and no answer or verdict on the page changed.
@@ -25,14 +30,6 @@ the hand check against Yahoo passed, and no answer or verdict on the page change
   the loop's safety nets.
 - **The page as bright cards** ([the spec](steps/predicts.md), amended 2026-11-22): the owner's
   option A of five designs. Next: published, then the first week of the ledger.
-- **Step 52: Canada** ([the spec](steps/canada.md)): the Bank of Canada and Canada's inflation,
-  the Canadian dollar and Toronto's stocks. Asked for by the owner 2026-11-22, with China (53) and
-  Switzerland (54) after it and step 46. Step 1 done: the two markets loaded, every existing
-  row unchanged; the Bank's history disagrees with the calendar on the 16 days expected. Step 2
-  done: `follows --event boc` prints the expected 153 decisions, 22 cuts, 112 holds, 19 hikes,
-  and the Bank is on *Ask*. Step 3 done: `follows --event cacpi` prints 189 Canadian CPI
-  releases on their days alone, 64 above, 44 as expected, 81 below, and inflation is on *Ask*.
-  Next, step 4, the results.
 - **Step 51: the front page's guesses, approved** ([the spec](steps/front-staging.md)): each
   evening's front-page guesses wait in a pull request the owner rewords and merges. Asked for by
   the owner 2026-11-22. Next: the first front pull request, from the first evening whose proposal changes.
@@ -93,6 +90,8 @@ the hand check against Yahoo passed, and no answer or verdict on the page change
   [Decisions](decisions.md) (2026-11-10, 2026-11-11) and PRs #280 and #290.
 
 ## Next
+
+Step 46, the loop's safety nets, after step 52; then China (53) and Switzerland (54).
 
 Monday 2026-11-23: step 23's first weekly post, drafted by `weekly-post` and published by the
 owner. Then step 44's page, published before the post if it is ready.
