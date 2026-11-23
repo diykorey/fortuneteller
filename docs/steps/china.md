@@ -65,6 +65,10 @@ as Canada's inflation has; the two markets in the guesser's list of markets ([st
 
   The code's own count may differ by the flows the hand count left out (the BoE, the BoJ, OPEC);
   any difference is written here with a dated amendment before that flow's table is read.
+  (*Amended 2026-11-23, in step 2, before its table was read:* until `cnip` and `cntrade` exist,
+  inflation's days shared with them stay in, so step 2's header is `follows: 148 Chinese CPI
+  releases …: 53 above, 29 as expected, 66 below`; with their days taken out by hand, the 148 are
+  the 116 above, 39, 22 and 55, exactly. Each header is checked again after step 4.)
 - **The markets.** Yahoo's `CNY=X` (dollars in yuan: *up* is the yuan weaker), 6,364 closes from
   2001, closed as the other currencies at 00:00 London; `000001.SS`, 7,120 closes from 1997,
   closed at 15:00 Shanghai. Each checked as Canada's: the daily closes of the two weeks before step
@@ -108,7 +112,7 @@ as Canada's inflation has; the two markets in the guesser's list of markets ([st
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~The two markets~~ **done** 2026-11-23. The two markets: seed rows, series, `load-prices`, the guesser's list and the areas | `load-prices` stores both; tests: a 09:30 Beijing release falls on the same day's Shanghai and Tokyo close and the next day's yuan close (*amended 2026-11-23:* the same day's, the yuan at noon New York), a Saturday's on Monday's Shanghai close; `USDCNY` is in the currencies area and `SHCOMP` in stocks; the closes' largest difference from the bars written here, each within 0.05%; on a copy of the store every existing `raw-move`, `follows` and scoreboard row identical, each chance line before and after written here |
-| 2 | Inflation: `cncpi` | Tests: the surprise is the actual less the forecast, *above* from 0.1; a day shared with a US release, and a day shared with `cnip`, left out of its table; a Saturday release dated, for *alone*, on its Monday; a `cncpi` trigger is answered; *Ask*'s cells equal `follows`'. The header equal to the one above, or amended; every other flow's rows unchanged |
+| 2 | ~~Inflation~~ **done** 2026-11-23. Inflation: `cncpi` | Tests: the surprise is the actual less the forecast, *above* from 0.1; a day shared with a US release, and a day shared with `cnip`, left out of its table; a Saturday release dated, for *alone*, on its Monday; a `cncpi` trigger is answered; *Ask*'s cells equal `follows`'. The header equal to the one above, or amended; every other flow's rows unchanged |
 | 3 | The survey and output: `cnpmi`, `cnip` | As step 2, each with its threshold; a survey on a Sunday before a US survey's Monday left out; an output release at 15:30 Beijing reacts at Shanghai's next close |
 | 4 | Trade: `cntrade`, and `Trade data` in `event_types.csv` (tier 3, *both*) and `docs/schema.md` | As step 2; the seed row loads and the flow's events carry it |
 | 5 | Results here and in [MVP results](../mvp-results.md), against the expected outcome; the roadmap row | Every judged bullet marked right or wrong with its numbers |
@@ -148,6 +152,36 @@ as Canada's inflation has; the two markets in the guesser's list of markets ([st
   | BoJ, crypto | 3.0 → 3.1 | 3.0 → 3.1 |
   | weather, war, floods | 2.9 → 3.1 | 2.9 → 3.1 |
   | CEO scandals, additions, splits, earnings (Dow and S&P 500) | unchanged, 0.1 to 0.3 | unchanged |
+
+*Step 2, 2026-11-23:* on a copy of step 1's store, with China's CPI alone loaded (`loaded 226
+Chinese CPI releases, 2008-01-24 … 2026-11-09`, 192 with TradingView's forecast, the first
+2010-12-11), `follows --event cncpi` prints the header amended above, `follows: 148 Chinese CPI
+releases 2010-12-11 … 2026-11-09: 53 above, 29 as expected, 66 below`: 44 releases with a kind
+share a weekday with a flow that is not lesser, read on the Beijing date or, at a weekend, the
+Monday after. Every other flow's `follows` (both runs, and the Fed's `--long`) and `raw-move`
+output, 80 in all, is byte for byte the one before, chance lines too. The scoreboard gains
+inflation's entry (38 events): its raw-move chance 1,142 → 1,177 cells and its surprise chance
+420 → 455; walk-forward stays at 82 cells. Every other entry, and every other flow's *Ask* entry,
+is the same. On *Ask*, inflation's 315 cells equal `follows --event cncpi`'s 315 lines.
+
+| Run | Answers | Chance line | Walk-forward |
+| --- | --- | --- | --- |
+| From the close before | 2: *above*, day, the Canadian dollar about the same; *as expected*, day, wheat down | about 9.4 answers, 0.0 holds | 315 of 315 *too few* (at most 17 graded) |
+| `--after-the-day` | 6: *above*, week, Brent about the same; *as expected*, day, the 10-year and 5-year yields up, the yuan up (13 / 14 / 2 of 29), and week, the pound down; *below*, week, the Euro Stoxx 50 about the same | about 9.4 answers, 0.0 holds | 315 of 315 *too few* (at most 15 graded) |
+
+The yuan and Shanghai's stocks on the day, up / same / down of n:
+
+| Kind | Run | USDCNY | SHCOMP |
+| --- | --- | --- | --- |
+| above | close before | 23 / 10 / 20 of 53, *can't say* | 22 / 12 / 19 of 53, *can't say* |
+| as expected | close before | *can't say* | *can't say* |
+| below | close before | 22 / 23 / 21 of 66, *can't say* | 22 / 26 / 16 of 64, *can't say* |
+| above | after the day | 24 / 15 / 14 of 53, *can't say* | 17 / 22 / 14 of 53, *can't say* |
+| as expected | after the day | 13 / 14 / 2 of 29, *up* | *can't say* |
+| below | after the day | 20 / 18 / 28 of 66, *can't say* | 23 / 23 / 19 of 65, *can't say* |
+
+`raw-move --event cncpi` reads 177 days: the yuan's ratio 1.14 (p 0.18, *unclear*, 153 days),
+Shanghai's 1.00. Both runs' tables are in [the evidence](china-steps.txt), for step 5 to judge.
 
 ## How you know it is right
 

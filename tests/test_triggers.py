@@ -647,3 +647,27 @@ def test_a_cacpi_trigger_is_answered_not_refused(one_market: None) -> None:
     # then it is answered on the market, not refused for its flow
     assert {r["market"] for r in rows} == {SPY}
     assert not any("is not one of" in line for line in lines)
+
+
+def test_a_cncpi_trigger_is_answered_not_refused(one_market: None) -> None:
+    # given a Chinese CPI release above TradingView's forecast at 09:30 Beijing
+    closes = _closes(_wavy(300))
+    day = closes[200].day
+    release = flows.CN_CPI_FLOW.event_instance(
+        datetime.combine(day, time(9, 30), tzinfo=sources.SHANGHAI), day
+    )
+    merged = datetime.combine(day, time(9, 45), tzinfo=sources.SHANGHAI)
+
+    # when filed as above before the close
+    rows, lines = _answer(
+        [_trigger(day, ABOVE, "cncpi")],
+        [release],
+        {release.event_id: ABOVE},
+        closes,
+        merged,
+        flow="cncpi",
+    )
+
+    # then it is answered on the market, not refused for its flow
+    assert {r["market"] for r in rows} == {SPY}
+    assert not any("is not one of" in line for line in lines)

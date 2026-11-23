@@ -1692,3 +1692,98 @@ def test_follows_for_canadian_cpi_leaves_out_a_shared_day_and_the_page_s_cells_a
         assert str(cell["say"]).startswith(f"After {cli.ask_kind('cacpi', line['kind'])},")
         assert "%" not in str(cell["say"])
     assert [k["events"] for k in cacpi["kinds"]] == [14, 15, 15]  # type: ignore[index]
+
+
+CNCPI = flows.CN_CPI_FLOW
+
+
+def _store_cncpi(prints: Mapping[date, tuple[float, float]]) -> list[flows.EventInstance]:
+    # a Chinese CPI release at 09:30 Beijing on each day, with its actual and TradingView's
+    # forecast, and its surprise row as `load-surprises` stores it
+    db.init_db()
+    events = [
+        CNCPI.event_instance(datetime.combine(day, time(9, 30), tzinfo=sources.SHANGHAI), day)
+        for day in prints
+    ]
+    db.insert_models("event_instances", events)
+    db.insert_models(
+        "surprises",
+        [
+            Surprise(
+                event_id=e.event_id,
+                measure=sources.CN_CPI,
+                baseline="tradingview_forecast",
+                actual_mom=actual,
+                expected_mom=forecast,
+                surprise=actual - forecast,
+            )
+            for e, (actual, forecast) in zip(events, prints.values(), strict=True)
+        ],
+    )
+    return events
+
+
+def test_a_chinese_cpi_release_is_alone_only_on_a_weekday_no_us_release_holds(
+    tmp_db: Path,
+) -> None:
+    # given four Chinese CPI releases: Wednesday 2024-01-10 with a US CPI release that day,
+    # Saturday 2024-03-09 with a US jobs report the Monday after, Friday 2024-02-09 and Sunday
+    # 2024-06-09 with nothing on their days
+    days = [date(2024, 1, 10), date(2024, 3, 9), date(2024, 2, 9), date(2024, 6, 9)]
+    prints = [(0.3, 0.2), (0.7, 0.4), (-0.8, -0.5), (0.3, 0.4)]
+    events = _store_cncpi(dict(zip(days, prints, strict=True)))
+    db.insert_models("event_instances", [_report(days[0], CPI), _report(date(2024, 3, 11), NFP)])
+
+    # when the kinds are read, all of them and the ones on its days alone
+    every = study.release_kinds(CNCPI)
+    alone = study.lone_release_kinds(CNCPI)
+
+    # then the weekday's shared release and the Saturday's, read on its Monday, are left out
+    assert [every.get(e.event_id) for e in events] == [ABOVE, ABOVE, BELOW, BELOW]
+    assert [alone.get(e.event_id) for e in events] == [None, None, BELOW, BELOW]
+
+
+def test_follows_for_chinese_cpi_prints_its_lone_releases_and_the_page_s_cells_are_its_lines(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given Shanghai's and the yuan's closes and 45 Chinese CPI releases, above, as expected and
+    # below in turn, the first sharing its day with a US retail sales release
+    two = {k: study.MVP_PRICE_SERIES[k] for k in ("SHCOMP", "USDCNY")}
+    monkeypatch.setattr(study, "MVP_PRICE_SERIES", two)
+    rng = random.Random(7)
+    closes = _closes([rng.gauss(0, 0.005) for _ in range(1400)])
+    keys = list(range(30, 1380, 30))
+    db.init_db()
+    db.get_connection().executemany(
+        "INSERT INTO daily_bars (instrument, day, close, source) VALUES (?, ?, ?, 'test')",
+        [[m, c.day, c.price] for m in two for c in closes],
+    )
+    prints = ((0.3, 0.2), (0.2, 0.2), (0.2, 0.3))
+    _store_cncpi({closes[k].day: prints[j % 3] for j, k in enumerate(keys)})
+    db.insert_models("event_instances", [_report(closes[keys[0]].day, RETAIL)])
+
+    # when follows prints the table and the page's data is built
+    assert main(["follows", "--event", "cncpi"]) == 0
+    out = capsys.readouterr().out.splitlines()
+    printed = [FOLLOWS_LINE.match(line) for line in out[2:-1]]
+    ask = cli.ask_data(db.get_connection())
+
+    # then the header counts the 44 releases alone, and every line has one cell on the page
+    first, last = closes[keys[1]].day, closes[keys[-1]].day
+    assert out[0] == (
+        f"follows: 44 Chinese CPI releases {first} … {last}: 14 above, 15 as expected, 15 below"
+    )
+    (cncpi,) = [entry for entry in ask["ask"] if entry["name"] == "cncpi"]
+    cells = {(c["kind"], c["span"], c["market"]): c for c in cncpi["cells"]}  # type: ignore[union-attr]
+    assert len(printed) == len(cells) == 3 * 3 * 2
+    for line in printed:
+        assert line is not None
+        cell = cells[(line["kind"], line["span"], line["market"])]
+        assert [cell["up"], cell["same"], cell["down"]] == [
+            int(line["up"]),
+            int(line["same"]),
+            int(line["down"]),
+        ]
+        assert (cell["answer"], cell["verdict"]) == (line["answer"], line["verdict"])
+        assert str(cell["say"]).startswith(f"After {cli.ask_kind('cncpi', line['kind'])},")
+    assert [k["events"] for k in cncpi["kinds"]] == [14, 15, 15]  # type: ignore[index]

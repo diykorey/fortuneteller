@@ -11,7 +11,7 @@ from __future__ import annotations
 import csv
 import statistics
 from collections.abc import Callable, Iterable, Mapping, Sequence
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import UTC, date, datetime, time, timedelta
 from pathlib import Path
 from typing import Protocol
@@ -716,6 +716,11 @@ CA_CPI_SURPRISE_RULE = SurpriseRule(
     predicted_from=TRADINGVIEW_FORECAST,
     kind_decimals=1,
 )
+# China's CPI: TradingView's forecast, noticeable from 0.1pp, two thirds of its median miss rounded
+# to the print's step; no market signed (docs/steps/china.md).
+CN_CPI_SURPRISE_RULE = replace(
+    CA_CPI_SURPRISE_RULE, combinations=((sources.CN_CPI, TRADINGVIEW_FORECAST),)
+)
 
 
 # The flows.
@@ -1094,6 +1099,7 @@ BOC_CHANGES = "boc-changes.csv"
 CANADA = "Canada"
 # Toronto keeps New York's clock.
 TORONTO = sources.NEW_YORK
+CHINA = "China"
 
 
 def boc_changes(seed_dir: Path) -> dict[date, tuple[time, float]]:
@@ -1671,6 +1677,19 @@ DE_CPI_FLOW = TradingViewFlow(
     surprise_rule=DE_CPI_SURPRISE_RULE,
     lesser=True,
 )
+CN_CPI_FLOW = TradingViewFlow(
+    CPI_EVENT_TYPE,
+    CHINA,
+    sources.SHANGHAI,
+    40,
+    "cncpi",
+    "NCP",
+    (sources.CN_CPI,),
+    PERCENT,
+    "Chinese CPI releases",
+    surprise_rule=CN_CPI_SURPRISE_RULE,
+    lesser=True,
+)
 CA_CPI_FLOW = TradingViewFlow(
     CPI_EVENT_TYPE,
     CANADA,
@@ -2051,7 +2070,11 @@ EVENT_FLOWS: list[EventFlow] = [
     SPLITS_FLOW,
     BOC_FLOW,
     CA_CPI_FLOW,
+    CN_CPI_FLOW,
 ]
+# China's flows: each reads its days alone on the weekday it reacts on, without the others' days
+# (docs/steps/china.md).
+CHINA_FLOWS: tuple[EventFlow, ...] = (CN_CPI_FLOW,)
 
 
 def called_live(flow: EventFlow) -> bool:
