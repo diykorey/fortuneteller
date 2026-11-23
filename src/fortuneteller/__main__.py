@@ -1608,6 +1608,59 @@ def _log_calls(calls: Sequence[study.LoggedCall], live: bool, released: datetime
     return 0
 
 
+def unlogged(day: date, ours: Path, theirs: Sequence[Path]) -> list[tuple[str, str]]:
+    """Each (flow, market) row of ``day`` in the log ``ours`` that no log of ``theirs`` holds; an
+    empty file holds none. Only the three columns are read, so a log of any age can be compared."""
+
+    def rows(path: Path) -> list[tuple[str, str]]:
+        with path.open(newline="") as log:
+            return [
+                (r["flow"], r["instrument"])
+                for r in csv.DictReader(log)
+                if r["day"] == day.isoformat()
+            ]
+
+    held = {row for path in theirs for row in rows(path)}
+    return [row for row in dict.fromkeys(rows(ours)) if row not in held]
+
+
+def _unlogged(args: argparse.Namespace) -> int:
+    for flow, market in unlogged(args.day, args.ours, args.theirs):
+        print(f"{args.day} {flow}: {market}")
+    return 0
+
+
+# When the outside timer asks the runner (docs/steps/loop-off-the-laptop.md), in UTC: the morning at
+# 07:30 New York, 11:30 or 12:30 UTC; the evening at 18:30 New York, 22:30 or 23:30 UTC.
+MORNING_ASKED = (11, 6)
+EVENING_ASKED = (22, 8)
+
+
+def unstarted(day: date, runs: Sequence[Mapping[str, str]], evening: bool) -> str | None:
+    """The run of ``day`` the outside timer asked for and nobody started, if any: none among
+    ``runs``, the jobs workflow's runs as ``gh run list --json createdAt,event`` gives them, was
+    started on demand in its window. The schedule's runs are not the timer's."""
+    hour, hours = EVENING_ASKED if evening else MORNING_ASKED
+    start = datetime.combine(day, datetime.min.time(), UTC) + timedelta(hours=hour)
+    end = start + timedelta(hours=hours)
+    for run in runs:
+        created = datetime.fromisoformat(run["createdAt"])
+        if run["event"] == "workflow_dispatch" and start <= created < end:
+            return None
+    which = "evening" if evening else "morning"
+    return (
+        f"the runner's {which} of {day} was not started: no workflow_dispatch run was created "
+        f"from {start:%Y-%m-%d %H:%M} to {end:%Y-%m-%d %H:%M} UTC"
+    )
+
+
+def _unstarted(args: argparse.Namespace) -> int:
+    missing = unstarted(args.day, json.loads(args.runs.read_text()), args.evening)
+    if missing is not None:
+        print(missing)
+    return 0
+
+
 def _score(_args: argparse.Namespace) -> int:
     try:
         rows = study.read_calls(settings.calls_path)
@@ -3457,6 +3510,28 @@ def build_parser() -> argparse.ArgumentParser:
         "score", help="grade the calls logged in data/calls.csv, beside the replay"
     )
     p_score.set_defaults(func=_score)
+
+    p_unlogged = sub.add_parser(
+        "unlogged",
+        help="each (flow, market) row of DAY in the log OURS that no log THEIRS holds; step 46",
+    )
+    p_unlogged.add_argument("day", type=date.fromisoformat, help="the day, YYYY-MM-DD")
+    p_unlogged.add_argument("ours", type=Path, help="the runner's data/calls.csv")
+    p_unlogged.add_argument("theirs", type=Path, nargs="+", help="each branch's data/calls.csv")
+    p_unlogged.set_defaults(func=_unlogged)
+
+    p_unstarted = sub.add_parser(
+        "unstarted",
+        help="the runner's morning or evening of DAY, if no run was started for it; step 46",
+    )
+    asked = p_unstarted.add_mutually_exclusive_group(required=True)
+    asked.add_argument("--morning", action="store_false", dest="evening")
+    asked.add_argument("--evening", action="store_true", dest="evening")
+    p_unstarted.add_argument("day", type=date.fromisoformat, help="the day, YYYY-MM-DD")
+    p_unstarted.add_argument(
+        "runs", type=Path, help="the jobs workflow's runs, as gh run list --json createdAt,event"
+    )
+    p_unstarted.set_defaults(func=_unstarted)
 
     p_scoreboard = sub.add_parser(
         "scoreboard",

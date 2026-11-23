@@ -6,6 +6,7 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-23 | Step 46, steps 1 and 2: every source asked again after a 5xx, a timeout or a broken connection, at 30 and 90 s, 300 s a process at most, a 4xx never; `unlogged` and `unstarted`, run by the runner's morning and the laptop's evening, each opening an issue for what was missed; the incidents of 2026-11-17 and 2026-11-19 replayed on their real rows and runs | PR to come |
 | 2026-11-23 | Step 33, step 2: the first earnings refresh, LAST 2026-11-20; one new report, Walmart's of 2026-11-19, *as expected*; no line removed, the hand check against Yahoo passed, every stored id equals the seed's, no answer or verdict changed | [#416](https://github.com/diykorey/fortuneteller/pull/416) |
 | 2026-11-23 | Step 23: the first week's row, 2026-11-16 to 2026-11-22: 8 unique visitors, no post | [#415](https://github.com/diykorey/fortuneteller/pull/415) |
 | 2026-11-22 | Step 52, step 3: Canada's CPI as the lesser flow `cacpi`, `follows --event cacpi`, `cacpi` triggers and the page's *Ask*; its kind the actual less TradingView's forecast, from 0.1; its table on its 189 days alone; every other flow unchanged | [#414](https://github.com/diykorey/fortuneteller/pull/414) |

@@ -12,15 +12,17 @@ Where the work is and what comes next: the task last finished, the tasks in prog
 
 ## Last completed
 
-Step 33, step 2: the first earnings refresh ([results](steps/earnings-current.md#results)). One
-new report, Walmart's of 2026-11-19 (EPS $0.65 against $0.64, *as expected*). No line removed,
-the hand check against Yahoo passed, and no answer or verdict on the page changed.
+Step 46, steps 1 and 2: the retry and the watches ([results](steps/loop-nets.md#results)). Every
+source's 5xx, timeout or broken connection is asked again after 30 and 90 s, 300 s a process at
+most; `unlogged` and `unstarted` find the incidents of 2026-11-17 and 2026-11-19 on their real
+rows and runs, and nothing on the days that went right.
 
 ## In progress
 
 - **Step 46: the loop's safety nets** ([the spec](steps/loop-nets.md)): each machine watches the
   other and opens an issue for what it missed; a source's 5xx asked again. Chosen 2026-11-21 by the
-  owner. Spec reviewed. Next: the build, merged before Wednesday 2026-11-25's releases.
+  owner. Steps 1 and 2 built. Next: merged before Wednesday 2026-11-25's releases, then step 3,
+  live on the first two release days from 2026-11-24.
 
 - **Step 45: the S&P 500 on the page** ([the spec](steps/sp500-on-the-page.md)): steps 35 to
   37's groups on *Ask*, frozen from a copy of the store, and every S&P 500 member's report in the

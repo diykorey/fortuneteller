@@ -133,12 +133,35 @@ $kept"
     exit 0
 fi
 
+# The laptop's evening watches the runner's morning (docs/steps/loop-nets.md): no run started on
+# demand from 11:00 to 17:00 UTC today opens an issue. Only an evening run on its own weekday,
+# past 13:00 New York when that window has closed, checks; a catch-up after midnight carries the
+# next day, whose morning may be ahead, and skips it. It never fails the evening.
+watch_morning() {
+    [ "$(TZ=America/New_York date +%u)" -le 5 ] && [ "$(TZ=America/New_York date +%H)" -ge 13 ] &&
+        [ "$(TZ=America/New_York date +%F)" = "$day" ] || return 0
+    local runs missing
+    runs=$(mktemp)
+    if gh run list -R "$repo" -w jobs.yml --json createdAt,event -L 50 >"$runs"; then
+        missing=$(uv run --directory "$job_tree" fortuneteller unstarted --morning "$day" "$runs")
+        if [ -n "$missing" ]; then
+            printf '%s\n' "$missing"
+            gh issue create -R "$repo" --title "The runner's morning was not started on $day" \
+                --body "$missing" || echo "the issue could not be opened"
+        fi
+    else
+        echo "gh run list failed; the runner's morning is not checked"
+    fi
+    rm -f "$runs"
+}
+
 file=data/score.txt
 waiting=$(gh pr list -R "$repo" --state open --json headRefName \
     --jq '.[].headRefName | select(startswith("calls-") or startswith("score-") or startswith("triggers-") or startswith("scoreboard-"))') ||
     report "gh pr list"
 if [ -n "$waiting" ]; then
     printf 'score: waiting for %s to be merged\n' "$waiting"
+    watch_morning
     exit 0
 fi
 for command in load-releases load-prices load-surprises; do
@@ -151,6 +174,7 @@ FT_CALLS_PATH=data/calls.csv uv run --directory "$job_tree" fortuneteller score 
 cat "$job_tree/$file"
 if grep -q '^pending: ' "$job_tree/$file"; then
     echo "score: rows pending; nothing committed"
+    watch_morning
     exit 0
 fi
 # The owner's triggers (docs/steps/trigger-file.md) are answered and graded; their log goes into
@@ -227,3 +251,4 @@ if git -C "$job_tree" fetch -q origin && git -C "$job_tree" switch -q --detach o
 else
     report "fetching main for the front page's guesses"
 fi
+watch_morning

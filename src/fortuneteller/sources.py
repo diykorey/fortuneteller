@@ -13,6 +13,7 @@ import html
 import http.client
 import json
 import re
+import sys
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -20,6 +21,7 @@ from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 from datetime import date, datetime, timedelta
 from pathlib import Path
+from time import sleep
 from typing import Any
 from zoneinfo import ZoneInfo
 
@@ -40,6 +42,40 @@ UTC_ZONE = ZoneInfo("UTC")
 MALFORMED_REPLY = (ValueError, KeyError, IndexError, TypeError)
 # Network failures urllib does not wrap in URLError, e.g. a read that times out or a dropped reply.
 NETWORK_FAILURE = (OSError, http.client.HTTPException)
+
+# A source that fails for a minute is asked again (docs/steps/loop-nets.md): after a 5xx, a timeout
+# or a broken connection, once after each wait, never past the seconds a process may wait in all.
+RETRY_WAITS = (30, 90)
+RETRY_BUDGET = 300
+_waited = 0
+
+
+def _ask(request: urllib.request.Request | str, timeout: float, source: str) -> bytes:
+    """The body of the reply to ``request``. A 4xx, or a failure the budget leaves no wait for, is
+    raised as urllib raised it, for the caller to word as its source's error."""
+    global _waited
+    for wait in (*RETRY_WAITS, None):
+        try:
+            with urllib.request.urlopen(request, timeout=timeout) as response:
+                body: bytes = response.read()
+                return body
+        except NETWORK_FAILURE as exc:
+            if isinstance(exc, urllib.error.HTTPError) and exc.code < 500:
+                raise
+            if wait is None or _waited + wait > RETRY_BUDGET:
+                raise
+            # The reason never quotes the failure's text, which may hold the URL and FRED's key.
+            if isinstance(exc, urllib.error.HTTPError):
+                reason = f"HTTP {exc.code}"
+                exc.close()
+            elif isinstance(exc, urllib.error.URLError) and isinstance(exc.reason, BaseException):
+                reason = type(exc.reason).__name__
+            else:
+                reason = type(exc).__name__
+        print(f"retrying {source} after {reason}, in {wait} s", file=sys.stderr)
+        sleep(wait)
+        _waited += wait
+    raise AssertionError("unreachable: the last ask returns or raises")
 
 
 # FRED
@@ -83,9 +119,7 @@ def _fred_get(api_key: str, params: dict[str, str], timeout: float) -> bytes:
     query = {**params, "api_key": api_key, "file_type": "json"}
     url = f"{FRED_OBSERVATIONS_URL}?{urllib.parse.urlencode(query)}"
     try:
-        with urllib.request.urlopen(url, timeout=timeout) as response:
-            body: bytes = response.read()
-            return body
+        return _ask(url, timeout, "FRED")
     except urllib.error.HTTPError as exc:
         # FRED echoes the request URL, key included, in its error body.
         detail = exc.read().decode("utf-8", errors="replace")
@@ -235,9 +269,7 @@ def fetch_daily_bars(ticker: str, timeout: float = 30.0) -> bytes:
     url = f"{YAHOO_CHART_URL}{urllib.parse.quote(ticker, safe='')}?{urllib.parse.urlencode(params)}"
     request = urllib.request.Request(url, headers=BROWSER_HEADERS)
     try:
-        with urllib.request.urlopen(request, timeout=timeout) as response:
-            body: bytes = response.read()
-            return body
+        return _ask(request, timeout, f"Yahoo {ticker}")
     except urllib.error.HTTPError as exc:
         raise YahooError(f"Yahoo returned HTTP {exc.code} for {ticker}") from None
     except urllib.error.URLError as exc:
@@ -344,9 +376,7 @@ class ClevelandError(RuntimeError):
 def fetch_nowcasts(timeout: float = 30.0) -> bytes:
     """Return the raw Cleveland Fed chart data: every month's daily nowcast path since 2013."""
     try:
-        with urllib.request.urlopen(CLEVELAND_NOWCAST_URL, timeout=timeout) as response:
-            body: bytes = response.read()
-            return body
+        return _ask(CLEVELAND_NOWCAST_URL, timeout, "the Cleveland Fed")
     except urllib.error.HTTPError as exc:
         raise ClevelandError(f"Cleveland Fed returned HTTP {exc.code}") from None
     except urllib.error.URLError as exc:
@@ -429,9 +459,7 @@ def fetch_fed_page(url: str, timeout: float = 30.0) -> bytes:
     """Return one of the Fed's calendar pages."""
     request = urllib.request.Request(url, headers=BROWSER_HEADERS)
     try:
-        with urllib.request.urlopen(request, timeout=timeout) as response:
-            body: bytes = response.read()
-            return body
+        return _ask(request, timeout, f"the Fed {url}")
     except urllib.error.HTTPError as exc:
         raise FedError(f"the Fed returned HTTP {exc.code} for {url}") from None
     except urllib.error.URLError as exc:
@@ -607,9 +635,7 @@ class CalendarError(RuntimeError):
 def _calendar_get(url: str, what: str, timeout: float) -> bytes:
     request = urllib.request.Request(url, headers=CALENDAR_HEADERS)
     try:
-        with urllib.request.urlopen(request, timeout=timeout) as response:
-            body: bytes = response.read()
-            return body
+        return _ask(request, timeout, what)
     except urllib.error.HTTPError as exc:
         raise CalendarError(f"{what}: HTTP {exc.code}") from None
     except urllib.error.URLError as exc:
@@ -972,8 +998,7 @@ def _umami_get(url: str, headers: dict[str, str], timeout: float) -> Any:
         url, headers={**BROWSER_HEADERS, **headers, "Accept": "application/json"}
     )
     try:
-        with urllib.request.urlopen(request, timeout=timeout) as response:
-            return json.loads(response.read())
+        return json.loads(_ask(request, timeout, "Umami"))
     except urllib.error.HTTPError as exc:
         raise UmamiError(f"Umami returned HTTP {exc.code}") from None
     except urllib.error.URLError as exc:

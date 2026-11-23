@@ -60,8 +60,8 @@ days logged within 15 minutes, none missed.
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | The retry | Tests: a fetch answered 500, 500, then 200 returns the 200 after two printed retries; answered 500 three times raises the source's error; a 403 or 404 is asked once; with less budget left than the next wait, the failure raises at once |
-| 2 | The watches | Tests replaying the incidents: `unlogged` with the runner's claims rows of 2026-11-19 against `main` before PR #364 prints the five; after it, nothing. `unstarted --evening 2026-11-17` with that week's run list prints it; with 2026-11-18's, nothing. `unstarted --morning` with no run that day prints it. `bash -n scripts/release-day.sh` passes |
+| 1 | ~~The retry~~ **done 2026-11-23**; [results](#results) | Tests: a fetch answered 500, 500, then 200 returns the 200 after two printed retries; answered 500 three times raises the source's error; a 403 or 404 is asked once; with less budget left than the next wait, the failure raises at once |
+| 2 | ~~The watches~~ **done 2026-11-23**; [results](#results) | Tests replaying the incidents: `unlogged` with the runner's claims rows of 2026-11-19 against `main` before PR #364 prints the five; after it, nothing. `unstarted --evening 2026-11-17` with that week's run list prints it; with 2026-11-18's, nothing. `unstarted --morning` with no run that day prints it. `bash -n scripts/release-day.sh` passes |
 | 3 | Live | Results: the two days, each machine's morning and evening, and the issues opened |
 
 ## How you know it is right
@@ -89,3 +89,43 @@ decide, no popup from the runner, no check of the laptop's evening.
   the main checkout, which is pulled after the merge.
 - **Docs:** this spec, step 21's amendment, a decisions entry, the glossary (*safety net*),
   roadmap row 46, status, changelog.
+
+## Results
+
+### Steps 1 and 2: the retry and the watches, 2026-11-23
+
+**In plain words:** a source that answers 500 is asked again twice and the third answer is used;
+a 403 or 404 is asked once. Replayed on the real rows and runs, the watches find the five claims
+rows of 2026-11-19 that `main` lacked until PR #364, and the runner's evening of 2026-11-17 that
+the outside timer never asked; they find nothing on the days that went right. Nothing measured
+changed: the tests that were there pass unchanged.
+
+The tests are in `tests/test_loop_nets.py`; their real data, trimmed, in `tests/data/`.
+
+- **The retry.** Every request in `sources.py` (FRED, Yahoo, the Cleveland Fed, the Fed's pages,
+  Nasdaq and TradingView, Umami) goes through `_ask`, and each still raises its own error with
+  today's words. FRED answered 500, 500, 200 returns the 200 after waits of 30 and 90 s, printing
+  `retrying FRED after HTTP 500, in 30 s` and `..., in 90 s`; 500 three times raises `FredError`
+  with the key `<redacted>`, as before, and no retry line holds it. Yahoo's 403 and 404 are asked
+  once and raise `YahooError` without a wait. A timeout and a refused connection are asked again,
+  the line naming only the failure's kind (`TimeoutError`, `ConnectionRefusedError`), since its
+  text can hold the URL with FRED's key. With 29 s of the budget left a 503 raises at once; three
+  failing fetches in one process wait 30, 90, 30, 90 and 30 s, 270 in all.
+- **`unlogged`.** The runner's rows of 2026-11-19 (run 44524466043's artifact, logged 13:30 UTC)
+  against `main` before PR #364 print the five claims rows, UST10Y / ZN, DXY, EURUSD, UST5Y / ZF and
+  XLU; against `main` after it (the laptop's rows, logged 14:07 UTC), nothing, nor with a calls
+  branch holding them, nor with an empty file beside them, as `git show` leaves for a branch
+  without the log.
+- **`unstarted`.** On the real runs of 2026-11-16 to 2026-11-20: `--evening 2026-11-17` prints the
+  evening not started (only the schedule ran that night); `--evening 2026-11-18` prints nothing (the
+  timer's 23:30 UTC ask); `--morning 2026-11-16` prints the morning not started; each morning of
+  2026-11-17 to 2026-11-20 is found started.
+- **The script.** `bash -n scripts/release-day.sh` passes, as a test. The laptop's check is called
+  at each of `score`'s three ends that do not fail (waiting on a pull request, rows pending, done),
+  so a day whose calls wait for review is checked too. Its own day is made concrete as a weekday in
+  New York, past 13:00 there, when the morning's window has closed in either offset, and still the
+  day the run started; a catch-up after midnight carries the next day and skips the check.
+- **The workflow.** The watches are one step after the morning call, run even when `live` failed.
+  Listing the runs needs the token's `actions: read` beside `issues: write`: a `permissions` block
+  sets every scope it does not name to none. A failed `gh run list` skips the check rather than
+  open an issue on an empty list, on both machines.

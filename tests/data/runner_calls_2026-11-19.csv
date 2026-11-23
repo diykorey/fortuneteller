@@ -1,0 +1,11 @@
+logged_at,flow,day,actual,instrument,outcome,direction,probability,band_low,band_high
+2026-11-17T13:30:13+00:00,retail,2026-11-17,0.2,UST10Y / ZN,small,,,,
+2026-11-17T13:30:13+00:00,retail,2026-11-17,0.2,DXY,small,,,,
+2026-11-17T13:30:13+00:00,retail,2026-11-17,0.2,EURUSD,small,,,,
+2026-11-17T13:30:13+00:00,retail,2026-11-17,0.2,UST5Y / ZF,small,,,,
+2026-11-17T13:30:13+00:00,retail,2026-11-17,0.2,XLU,small,,,,
+2026-11-19T13:30:16+00:00,claims,2026-11-19,203,UST10Y / ZN,silent,,,,
+2026-11-19T13:30:16+00:00,claims,2026-11-19,203,DXY,silent,,,,
+2026-11-19T13:30:16+00:00,claims,2026-11-19,203,EURUSD,silent,,,,
+2026-11-19T13:30:16+00:00,claims,2026-11-19,203,UST5Y / ZF,silent,,,,
+2026-11-19T13:30:16+00:00,claims,2026-11-19,203,XLU,silent,,,,
