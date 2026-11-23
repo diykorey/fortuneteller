@@ -67,6 +67,12 @@ Terms are grouped by what they are about, alphabetical within each group.
   bank; its Governing Council sets the target for the overnight rate eight times a year, announced
   at 09:00 Toronto to 2012, 10:00 to 2023 and 09:45 from 2024. Its daily series of the target is
   Valet `V39079`; every change from 2008 is in `data/seed/boc-changes.csv`.
+- **SNB** (Swiss National Bank) — *added 2026-11-23* ([Switzerland](steps/switzerland.md)):
+  Switzerland's central bank; it sets its rate at a quarterly assessment, announced at 09:30
+  Zurich, and has also moved between them. Until 2019-06 it set a target range for three-month
+  franc LIBOR, read here by its midpoint; since, its policy rate.
+- **Minimum exchange rate** — *added 2026-11-23* ([Switzerland](steps/switzerland.md)): the SNB's
+  floor of 1.20 francs to the euro, set 2011-09-06 and ended 2015-01-15; not a rate decision.
 - **CPI** (Consumer Price Index) — the main US inflation measure, published monthly by the
   **BLS**, usually 8:30 a.m. New York time. The MVP's single event type: frequent, scheduled,
   heavily forecast, and reliably market-moving.
@@ -243,6 +249,8 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **USDJPY** — dollars in yen, Yahoo's `JPY=X`; *up* is the yen weaker (step 25).
 - **USDCAD** — *added 2026-11-22*: dollars in Canadian dollars, Yahoo's `CAD=X`, closed as the
   euro is, at 00:00 London; *up* is the Canadian dollar weaker ([Canada](steps/canada.md)).
+- **USDCHF** — *added 2026-11-23*: dollars in francs, Yahoo's `CHF=X`, closed as the euro is, at
+  00:00 London; *up* is the franc weaker ([Switzerland](steps/switzerland.md)).
 - **USDCNY** — *added 2026-11-23*: dollars in yuan (onshore), FRED's `DEXCHUS`, the Federal
   Reserve's noon buying rate in New York, kept from 2010-06-21; *up* is the yuan weaker. Held to the dollar from 2008-07 to 2010-06 and kept within a
   daily band around the central bank's fixing since ([China](steps/china.md)).
@@ -298,6 +306,9 @@ Terms are grouped by what they are about, alphabetical within each group.
   (New York's hour and zone). No expected sign.
 - **SHCOMP** (Shanghai Composite) — *added 2026-11-23* ([China](steps/china.md)): every share
   listed in Shanghai, Yahoo's `000001.SS`, closing at 15:00 Shanghai. No expected sign.
+- **SMI** (Swiss Market Index) — *added 2026-11-23* ([Switzerland](steps/switzerland.md)):
+  Zurich's main stock index, Switzerland's largest listed companies, Yahoo's `^SSMI`, closing at
+  17:30 Zurich. No expected sign.
 - **Ticker / symbol** — the short code identifying an instrument (`SPY`, `^VIX`). **These strings
   are load-bearing here** — they are join keys between seed data, measurements, and predictions, so
   drift silently breaks lookups.
