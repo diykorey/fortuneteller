@@ -83,7 +83,7 @@ row order); the rest set aside so one bet is not counted many times.
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | The base rate on every row | Tests: closes up on 3 of 4 runs of *n* gives 0.75 for *up* and 0.25 for *down*; an unchanged run counts against both; *n* = 1 gives the share of up days; a close on or after the evening changes nothing. Stored guesses get theirs from the history before their evening |
+| 1 | ~~The base rate on every row~~ **built** 2026-11-23 | Tests: closes up on 3 of 4 runs of *n* gives 0.75 for *up* and 0.25 for *down*; an unchanged run counts against both; *n* = 1 gives the share of up days; a close on or after the evening changes nothing. Stored guesses get theirs from the history before their evening |
 | 2 | The grounded guesser | Tests (the model stubbed): `guess` asks both; the grounded prompt holds the base-rate table, the open forecasts and the rule's sentence, the news prompt none of them and equal to the one built before this step; each row names its guesser and version; a grounded guess repeating an open news guess is kept, one repeating an open grounded guess refused; a failed grounded call keeps the news guesses |
 | 3 | `fortuneteller excess`, the stats page and the lessons | Tests: the once-per-market-and-week count with the twins as one; each guesser's excess and the chance; a version's evenings against the news guesser; the grounded lessons given each tag's right against expected |
 | 4 | Readings on 2027-01-31 and 2027-04-30 | Each verdict against the rule above, numbers from `fortuneteller excess` |

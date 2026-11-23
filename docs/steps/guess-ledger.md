@@ -114,7 +114,9 @@ more than five forecasts on the front page.
   `review_prompt.txt` and `lessons_prompt.txt`.
 - **The file:** `docs/predicts/our-guesses.csv`, columns `stated, market, horizon, direction,
   first, last, statement, reasoning, tag, confidence, source, model, lessons, grade, move,
-  review`. Step 49's two rows are kept, read with an empty tag and reasoning.
+  review`; *amended 2026-11-23* ([step 55](guesses-vs-base-rate.md)): and `base_rate`, the share
+  of the market's past runs of the guess's weekdays that went its way, four decimals, filled on
+  the first `guess` run that sees the row. Step 49's two rows are kept, read with an empty tag and reasoning.
 - **Numbers in a reason** (*amended 2026-11-22*): the reasoning may quote a figure from the news;
   a share is written *14 in 100*, since a bare *14* lost its unit when the `%` was banned. The
   ban on a percentage stands for the forecast itself: no chance and no size is claimed.
