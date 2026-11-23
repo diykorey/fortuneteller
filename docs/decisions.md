@@ -11,6 +11,17 @@ amended there with a date.
 Each entry: **what** was decided, **why**, what it **retires**, and **where** the detail is. *By the
 owner* marks a choice the owner made over another on the table.
 
+## 2026-11-23: The runner may open issues
+
+- **What:** the runner's morning opens an issue when the laptop has not logged the day's calls by
+  08:45 New York, or when its own evening was never started; the laptop's evening opens one when
+  the runner's morning was never started. A source's 5xx is asked again twice before it fails.
+- **Why:** a machine that sleeps or a timer that never asks cannot report itself: the jobs report
+  of 2026-11-06 and the evening of 2026-11-17 went unseen, and one HTTP 500 lost 2026-11-19's
+  evening. The gate needs four straight weeks of release days, none missed.
+- **Retires:** step 21's "a shadow run opens no pull request and no issue", for these two issues.
+- **Where:** [the loop's safety nets](steps/loop-nets.md), step 46.
+
 ## 2026-11-22: Canada, China and Switzerland, by the owner
 
 - **What:** three countries' news and markets, one step each: Canada (step 52), China (53),

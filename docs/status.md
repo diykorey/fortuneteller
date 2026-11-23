@@ -18,6 +18,10 @@ the hand check against Yahoo passed, and no answer or verdict on the page change
 
 ## In progress
 
+- **Step 46: the loop's safety nets** ([the spec](steps/loop-nets.md)): each machine watches the
+  other and opens an issue for what it missed; a source's 5xx asked again. Chosen 2026-11-21 by the
+  owner. Spec reviewed. Next: the build, merged before Wednesday 2026-11-25's releases.
+
 - **Step 45: the S&P 500 on the page** ([the spec](steps/sp500-on-the-page.md)): steps 35 to
   37's groups on *Ask*, frozen from a copy of the store, and every S&P 500 member's report in the
   reports ahead. Chosen 2026-11-21 by the owner, after step 44. Published 2026-11-21; the frozen

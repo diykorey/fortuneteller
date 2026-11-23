@@ -704,6 +704,8 @@ Terms are grouped by what they are about, alphabetical within each group.
   keeps the encrypted store as one.
 - **Outside timer** — a service outside GitHub that asks GitHub's API to start a workflow at a set
   time, since GitHub's own schedule can start hours late; step 21's is two jobs at cron-job.org.
+- **Safety net** — a check that tells of a failure the failing part cannot report itself: a
+  machine that slept, a timer that never asked, a source down for a minute (roadmap step 46).
 - **Shadow run** — a new way of running a job beside the old one, both logging, every row compared,
   before the old one is retired (roadmap step 21).
 - **The gate** — a dated check of several steps together against bars fixed in advance; a miss is

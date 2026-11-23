@@ -217,7 +217,9 @@ first run left nothing to undo. Two counting days are still needed by 2026-12-18
   `gh run list -w jobs.yml` as a `workflow_dispatch` run started within a minute of the ask.
 - A run on a weekday with no release exits 0 and commits nothing, as the laptop's does.
 - Two runs never write the store at once: the workflow has one concurrency group for both steps.
-- A shadow run opens no pull request and no issue.
+- A shadow run opens no pull request and no issue. *Amended 2026-11-23, by step 46
+  ([the safety nets](loop-nets.md)):* its morning opens two issues, *The laptop did not log DAY's
+  calls* and *The runner's evening was not started on DAY*, and nothing else.
 - The store restored on the next run holds the closes the previous evening uploaded.
 - Without `FT_STORE_KEY`, a run fails before any command and opens an issue; it never rebuilds.
 - The release asset cannot be read without the key (`tar` refuses the downloaded file).
