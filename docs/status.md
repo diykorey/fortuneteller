@@ -36,7 +36,9 @@ the hand check against Yahoo passed, and no answer or verdict on the page change
 - **Step 54: Switzerland** ([the spec](steps/switzerland.md)): the Swiss National Bank's
   decisions, each kind from its own history, and Swiss inflation against its forecast, the franc
   and the SMI added. Asked for 2026-11-22 by the owner. Step 1 done: the franc and the SMI, the
-  SNB's 19 changes since 2008, every existing row unchanged. Next: step 2, the SNB's decisions.
+  SNB's 19 changes since 2008, every existing row unchanged. Step 2 done: `follows --event snb`
+  prints the expected 80 decisions, 14 cuts, 61 holds, 5 hikes, and the SNB is on *Ask*. Next:
+  step 3, Swiss inflation.
 - **Step 55: guesses against the base rate** ([the spec](steps/guesses-vs-base-rate.md)): each
   guess carries its base rate; a grounded guesser, given the record, runs beside today's news
   guesser as the control. Asked for 2026-11-23 by the owner. Spec merged (#420); step 1, the

@@ -606,18 +606,24 @@ def test_a_flood_trigger_is_void(one_market: None) -> None:
     assert any("void" in line and "flood is not one of" in line for line in lines)
 
 
-def test_a_boc_trigger_is_answered_not_refused(one_market: None) -> None:
-    # given a Bank of Canada hold at 09:45 Toronto
+@pytest.mark.parametrize(
+    ("flow", "at"), [(flows.BOC_FLOW, time(9, 45)), (flows.SNB_FLOW, time(9, 30))]
+)
+def test_a_bank_s_trigger_is_answered_not_refused(
+    one_market: None, flow: flows.EventFlow, at: time
+) -> None:
+    # given a hold of the Bank of Canada at 09:45 Toronto, or of the SNB at 09:30 Zurich
     closes = _closes(_wavy(300))
     day = closes[200].day
     hold = flows.decision_instance(
-        flows.BOC_FLOW, datetime.combine(day, time(9, 45), tzinfo=flows.TORONTO).astimezone(UTC)
+        flow, datetime.combine(day, at, tzinfo=flow.zone).astimezone(UTC)
     )
-    merged = datetime.combine(day, time(10, 0), tzinfo=flows.TORONTO)
+    merged = datetime.combine(day, time(10, 0), tzinfo=flow.zone)
 
     # when filed as a hold before the close
+    name = flow.cli_name
     rows, lines = _answer(
-        [_trigger(day, HOLD, "boc")], [hold], {hold.event_id: HOLD}, closes, merged, flow="boc"
+        [_trigger(day, HOLD, name)], [hold], {hold.event_id: HOLD}, closes, merged, flow=name
     )
 
     # then it is answered on the market, not refused for its flow

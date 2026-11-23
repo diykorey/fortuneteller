@@ -1040,18 +1040,19 @@ def calendar_and_changes(
     cache_dir: Path,
     today: date,
     rateless_held: bool = False,
+    title: str = sources.RATE_DECISION,
 ) -> tuple[list[datetime], list[datetime]]:
     """A bank's decisions announced from ``start`` to ``today``, in UTC and in order: the
-    ``country`` calendar's, and apart, each of its ``changes`` on a day the calendar lacks, at its
-    hour in ``zone``. With ``rateless_held``, a calendar row with no rate before ``today`` is a
-    decision held."""
+    ``country`` calendar's rows titled ``title``, and apart, each of its ``changes`` on a day the
+    calendar lacks, at its hour in ``zone``. With ``rateless_held``, a calendar row with no rate
+    before ``today`` is a decision held."""
     payloads = sources.fetch_tradingview_since(start, cache_dir, today, country)
     held_before = datetime.combine(today, time(0), zone) if rateless_held else None
     listed = sorted(
         {
             d
             for payload in payloads
-            for d in sources.parse_rate_decisions(payload, held_before=held_before)
+            for d in sources.parse_rate_decisions(payload, title, held_before=held_before)
         }
     )
     days = {d.astimezone(zone).date() for d in listed}
@@ -1186,6 +1187,81 @@ class BocFlow:
             start,
             end,
             lambda day, _, title: title == sources.RATE_DECISION,
+        )
+
+
+# The SNB's decisions (docs/steps/switzerland.md): TradingView lists them from 2008-03-13; the
+# Bank's own changes add the six unscheduled moves it lacks.
+SNB_FROM = date(2008, 1, 1)
+SNB_CHANGES = "snb-changes.csv"
+SWITZERLAND = "Switzerland"
+
+
+def snb_changes(seed_dir: Path) -> dict[date, tuple[time, float]]:
+    """The SNB's rate changes from ``seed_dir``: each day's Zurich hour and new rate."""
+    return rate_changes(seed_dir / SNB_CHANGES)
+
+
+def load_snb_decisions(
+    cache_dir: Path, seed_dir: Path, today: date | None = None
+) -> tuple[list[datetime], list[datetime]]:
+    """Every SNB decision announced from ``SNB_FROM`` to ``today``, in UTC and in order: the
+    calendar's, and apart, each of the Bank's changes on a day the calendar lacks, at its hour.
+    The calendar lists the five decisions of 2008-03-13 to 2009-03-12 without a rate; each is a
+    decision held (docs/steps/switzerland.md)."""
+    today = today if today is not None else datetime.now(sources.ZURICH).date()
+    return calendar_and_changes(
+        SNB_FROM,
+        "CH",
+        sources.ZURICH,
+        snb_changes(seed_dir),
+        cache_dir,
+        today,
+        rateless_held=True,
+        title=sources.SNB_DECISION,
+    )
+
+
+class SnbFlow:
+    """The SNB's rate decisions from TradingView's calendar, at the time each was announced, and
+    the Bank's changes the calendar lacks. No surprise; a lesser flow."""
+
+    event_type = FOMC_EVENT_TYPE
+    country = SWITZERLAND
+    zone = sources.ZURICH
+    type_code = 44
+    cli_name = "snb"
+    label = "SNB"
+    surprise_rule: SurpriseRule | None = None
+    lesser: bool = True
+
+    def events(self, api_key: str) -> EventBatch:
+        listed, added = load_snb_decisions(settings.cache_dir, settings.seed_dir)
+        if not listed:
+            raise sources.CalendarError("TradingView listed no SNB decisions")
+        events = sorted(
+            [decision_instance(self, d) for d in listed]
+            + [decision_instance(self, d, UNSCHEDULED) for d in added],
+            key=lambda e: e.event_ts,
+        )
+        first, last = (release_date(e) for e in (events[0], events[-1]))
+        report = [f"loaded {len(events)} SNB decisions, {first} … {last}"]
+        if added:
+            days = ", ".join(str(d.astimezone(self.zone).date()) for d in added)
+            report.append(f"  {len(added)} from the Bank's changes the calendar lacks: {days}")
+        return EventBatch(events, report)
+
+    def actuals(self, events: Sequence[EventInstance], api_key: str) -> list[Actual]:
+        return []
+
+    def scheduled(self, cache_dir: Path, start: date, end: date) -> list[tuple[datetime, str]]:
+        return scheduled_rows(
+            "CH",
+            self.zone,
+            cache_dir,
+            start,
+            end,
+            lambda day, _, title: title == sources.SNB_DECISION,
         )
 
 
@@ -1624,7 +1700,7 @@ class LevelFlow:
 
 
 CPI_FLOW, NFP_FLOW, FED_FLOW, ECB_FLOW = CpiFlow(), NfpFlow(), FedFlow(), EcbFlow()
-BOE_FLOW, BOJ_FLOW, BOC_FLOW = BoeFlow(), BojFlow(), BocFlow()
+BOE_FLOW, BOJ_FLOW, BOC_FLOW, SNB_FLOW = BoeFlow(), BojFlow(), BocFlow(), SnbFlow()
 HICP_FLOW = TradingViewFlow(
     CPI_EVENT_TYPE,
     EURO_AREA,
@@ -2138,6 +2214,7 @@ EVENT_FLOWS: list[EventFlow] = [
     CN_PMI_FLOW,
     CN_IP_FLOW,
     CN_TRADE_FLOW,
+    SNB_FLOW,
 ]
 # China's flows: each reads its days alone on the weekday it reacts on, without the others' days
 # (docs/steps/china.md).

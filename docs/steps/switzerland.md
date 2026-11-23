@@ -112,7 +112,7 @@ At the end: two markets more, the franc (USD/CHF) and Zurich's SMI; `fortunetell
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | ~~The two markets~~ **done** 2026-11-23. The two markets and the SNB's history: seed rows, series, `load-prices`, `snb-changes.csv`, the guesser's list and the areas | `load-prices` stores both; tests: a 09:30 Zurich decision falls on the same day's SMI close and the next day's franc and Tokyo closes; `USDCHF` is in the currencies area and `SMI` in stocks; the closes within 0.05%, written here; each change's day and hour copied from the SNB's press release (*amended 2026-11-23:* the hour from the sources above, the releases giving none), and each month's rate in the file equal to the monthly series' on all 2008-01 to 2026-10 months; the days the calendar and the history disagree on listed here, exactly the six expected, or each other amended; on a copy of the store every existing `raw-move`, `follows`, scoreboard and *Ask* row identical, each chance line before and after written here |
-| 2 | The SNB: flow `snb`, `follows --event snb`, on *Ask*, a trigger kind (*cut*, *hold*, *hike*) | Tests: a quarter stores its decisions at their UTC time; an unscheduled change is added at its file's hour, 2015-01-15 at 10:30 Zurich reacting the same day in the SMI and the next in the franc; 2015-01-15 a cut and 2015-03-19 a hold; an `snb` trigger is answered; *Ask*'s cells equal `follows`'. The header as expected, or amended as the rule says; every other flow's `raw-move`, `follows`, scoreboard and *Ask* rows unchanged |
+| 2 | ~~The SNB~~ **done** 2026-11-23. The SNB: flow `snb`, `follows --event snb`, on *Ask*, a trigger kind (*cut*, *hold*, *hike*) | Tests: a quarter stores its decisions at their UTC time; an unscheduled change is added at its file's hour, 2015-01-15 at 10:30 Zurich reacting the same day in the SMI and the next in the franc; 2015-01-15 a cut and 2015-03-19 a hold; an `snb` trigger is answered; *Ask*'s cells equal `follows`'. The header as expected, or amended as the rule says; every other flow's `raw-move`, `follows`, scoreboard and *Ask* rows unchanged |
 | 3 | Inflation: flow `chcpi`, `follows --event chcpi`, on *Ask*, a trigger kind (*above*, *as expected*, *below*) | Tests: the surprise is the actual less the forecast, *above* from 0.1; a day shared with a flow that is not lesser left out of its table; a release at 09:15 Zurich in winter (08:15 UTC, after Tokyo's close) reacts the same day in the SMI and the next in Tokyo and the franc; a `chcpi` trigger is answered; *Ask*'s cells equal `follows`'. The header as expected, or amended as the rule says; every other flow's `raw-move`, `follows`, scoreboard and *Ask* rows unchanged |
 | 4 | Results here and in [MVP results](../mvp-results.md), against the expected outcome; the roadmap row | Every judged bullet marked right or wrong with its numbers |
 
@@ -181,3 +181,16 @@ for the two markets, no live call on Switzerland.
   | BoJ, crypto, weather | 3.1 → 3.3 | 3.1 → 3.3 |
   | war, floods | 3.1 → 3.2 | 3.1 → 3.2 |
   | CEO scandals, additions, splits, earnings (Dow and S&P 500) | unchanged, 0.1 to 0.3 | unchanged |
+
+*Step 2, 2026-11-23:* on a copy of step 1's store, with the SNB's decisions alone loaded
+(`loaded 81 SNB decisions, 2008-03-13 … 2026-09-24`, `6 from the Bank's changes the calendar
+lacks: 2008-10-08, 2008-11-06, 2008-11-20, 2011-08-03, 2014-12-18, 2015-01-15`), `follows --event
+snb` prints the expected header, `follows: 80 SNB decisions 2008-06-19 … 2026-09-24: 14 cuts, 61
+holds, 5 hikes`, in both runs. The calendar lists the five decisions of 2008-03-13 to 2009-03-12
+with no rate; the flow keeps each as a decision held, its kind the Bank's history's. Every other
+flow's `follows` (both runs, and the Fed's `--long`) and `raw-move` output, 92 in all, is byte for
+byte the one before. `raw-move --event snb` is new (56 lone SNB days on the S&P 500). The
+scoreboard gains the SNB's raw-move entry (41 → 42 events), its raw-move chance 1,357 → 1,394
+cells; every other entry, and every other flow's *Ask* entry, is the same. On *Ask*, the SNB's 333
+cells equal `follows --event snb`'s 333 lines, as the test checks field by field. Both runs'
+tables and walk-forward lines are in [the evidence](switzerland-steps.txt), for step 4 to judge.

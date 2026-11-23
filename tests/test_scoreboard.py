@@ -198,6 +198,7 @@ def test_the_page_asks_about_each_kind_the_store_answers(
         "flood",
         "earnings",
         "boc",
+        "snb",
         "cacpi",
         "cncpi",
         "cnpmi",
