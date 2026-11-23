@@ -199,6 +199,7 @@ def test_the_page_asks_about_each_kind_the_store_answers(
         "earnings",
         "boc",
         "snb",
+        "chcpi",
         "cacpi",
         "cncpi",
         "cnpmi",

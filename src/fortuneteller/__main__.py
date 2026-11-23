@@ -631,6 +631,7 @@ FOLLOWS_NOUNS = {
     "splits": "stock splits",
     "boc": "BoC decisions",
     "snb": "SNB decisions",
+    "chcpi": "Swiss CPI releases",
     "cacpi": "Canadian CPI releases",
     "cncpi": "Chinese CPI releases",
     "cnpmi": "Chinese PMI releases",
@@ -740,7 +741,7 @@ def follows_kinds(
         if not api_key:
             raise FollowsUnavailable("FT_FRED_API_KEY is not set (see docs/accounts.md)")
         return events, study.fed_kinds(events, dict(flows.target_rates(api_key))), study.KINDS
-    if flow in (flows.CA_CPI_FLOW, *flows.CHINA_FLOWS):
+    if flow in (flows.CA_CPI_FLOW, flows.CH_CPI_FLOW, *flows.CHINA_FLOWS):
         kinds = study.lone_release_kinds(flow, con=con)
     else:
         kinds = study.release_kinds(flow, con=con)
@@ -884,7 +885,7 @@ def _triggers(_args: argparse.Namespace) -> int:
                 kinds[name] = study.detail_kinds(events[name])
             elif name in study.ONE_KIND:
                 kinds[name] = study.one_kind(flow, events[name])
-            elif flow in (flows.CA_CPI_FLOW, *flows.CHINA_FLOWS):
+            elif flow in (flows.CA_CPI_FLOW, flows.CH_CPI_FLOW, *flows.CHINA_FLOWS):
                 kinds[name] = study.lone_release_kinds(flow, con=con)
             else:
                 kinds[name] = study.release_kinds(flow, con=con)
@@ -2111,6 +2112,7 @@ ASK_RELEASES = {
     "cpi": "a CPI release",
     "claims": "a jobless claims report",
     "cacpi": "a Canadian CPI release",
+    "chcpi": "a Swiss CPI release",
     "cncpi": "a Chinese CPI release",
     "cnpmi": "a Chinese factory survey",
     "cnip": "a Chinese industrial output release",

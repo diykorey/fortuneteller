@@ -2420,6 +2420,7 @@ TRIGGER_KINDS = {
     "boc": KINDS,
     "snb": KINDS,
     "cacpi": SURPRISE_KINDS,
+    "chcpi": SURPRISE_KINDS,
     "cncpi": SURPRISE_KINDS,
     "cnpmi": SURPRISE_KINDS,
     "cnip": SURPRISE_KINDS,

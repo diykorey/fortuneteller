@@ -746,6 +746,11 @@ CN_TRADE_SURPRISE_RULE = replace(
     noticeable=2.3,
     step="2.3pp",
 )
+# Switzerland's CPI: TradingView's forecast, noticeable from 0.1pp, the print's own step and its
+# median miss; no market signed (docs/steps/switzerland.md).
+CH_CPI_SURPRISE_RULE = replace(
+    CA_CPI_SURPRISE_RULE, combinations=((sources.CH_CPI, TRADINGVIEW_FORECAST),)
+)
 
 
 # The flows.
@@ -1843,6 +1848,19 @@ CA_CPI_FLOW = TradingViewFlow(
     surprise_rule=CA_CPI_SURPRISE_RULE,
     lesser=True,
 )
+CH_CPI_FLOW = TradingViewFlow(
+    CPI_EVENT_TYPE,
+    SWITZERLAND,
+    sources.ZURICH,
+    45,
+    "chcpi",
+    "SCP",
+    (sources.CH_CPI,),
+    PERCENT,
+    "Swiss CPI releases",
+    surprise_rule=CH_CPI_SURPRISE_RULE,
+    lesser=True,
+)
 RETAIL_FLOW = LevelFlow(
     RETAIL_EVENT_TYPE,
     4,
@@ -2215,6 +2233,7 @@ EVENT_FLOWS: list[EventFlow] = [
     CN_IP_FLOW,
     CN_TRADE_FLOW,
     SNB_FLOW,
+    CH_CPI_FLOW,
 ]
 # China's flows: each reads its days alone on the weekday it reacts on, without the others' days
 # (docs/steps/china.md).

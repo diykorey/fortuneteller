@@ -1644,12 +1644,14 @@ def test_follows_for_a_bank_prints_its_table_and_the_page_s_cells_are_its_lines(
 CACPI = flows.CA_CPI_FLOW
 
 
-def _store_cacpi(prints: Mapping[date, tuple[float, float]]) -> list[flows.EventInstance]:
-    # a Canadian CPI release at 08:30 Toronto on each day, with its actual and TradingView's
-    # forecast, and its surprise row as `load-surprises` stores it
+def _store_cacpi(
+    prints: Mapping[date, tuple[float, float]], flow: flows.TradingViewFlow = CACPI
+) -> list[flows.EventInstance]:
+    # a Canadian (or Swiss) CPI release at 08:30 Toronto (Zurich) on each day, with its actual and
+    # TradingView's forecast, and its surprise row as `load-surprises` stores it
     db.init_db()
     events = [
-        CACPI.event_instance(datetime.combine(day, time(8, 30), tzinfo=flows.TORONTO), day)
+        flow.event_instance(datetime.combine(day, time(8, 30), tzinfo=flow.zone), day)
         for day in prints
     ]
     db.insert_models("event_instances", events)
@@ -1658,7 +1660,7 @@ def _store_cacpi(prints: Mapping[date, tuple[float, float]]) -> list[flows.Event
         [
             Surprise(
                 event_id=e.event_id,
-                measure=sources.CA_CPI,
+                measure=flow.measures[0],
                 baseline="tradingview_forecast",
                 actual_mom=actual,
                 expected_mom=forecast,
@@ -1688,12 +1690,41 @@ def test_a_canadian_cpi_release_on_a_us_release_s_day_is_left_out_of_its_kinds(
     assert [alone.get(e.event_id) for e in events] == [None, AS_EXPECTED, BELOW]
 
 
-def test_follows_for_canadian_cpi_leaves_out_a_shared_day_and_the_page_s_cells_are_its_lines(
-    tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+def test_a_swiss_cpi_release_on_a_us_jobs_report_s_day_is_left_out_of_its_kinds(
+    tmp_db: Path,
 ) -> None:
-    # given two markets' closes and 45 Canadian CPI releases, above, as expected and below in turn,
-    # the first sharing its day with a US retail sales release
-    two = {k: study.MVP_PRICE_SERIES[k] for k in ("SPY / ES", "USDCAD")}
+    # given three Swiss CPI releases, above, as expected and below, and a US jobs report on the
+    # day of the first
+    days = [date(2024, 3, 8), date(2024, 4, 4), date(2024, 5, 2)]
+    prints = [(1.3, 1.2), (1.0, 1.0), (1.3, 1.4)]
+    events = _store_cacpi(dict(zip(days, prints, strict=True)), flows.CH_CPI_FLOW)
+    db.insert_models("event_instances", [_report(days[0], NFP)])
+
+    # when the kinds are read, all of them and the ones on its days alone
+    every = study.release_kinds(flows.CH_CPI_FLOW)
+    alone = study.lone_release_kinds(flows.CH_CPI_FLOW)
+
+    # then the shared day has its kind but is left out of the lone ones
+    assert [every.get(e.event_id) for e in events] == [ABOVE, AS_EXPECTED, BELOW]
+    assert [alone.get(e.event_id) for e in events] == [None, AS_EXPECTED, BELOW]
+
+
+@pytest.mark.parametrize(
+    ("flow", "currency", "noun"),
+    [(CACPI, "USDCAD", "Canadian"), (flows.CH_CPI_FLOW, "USDCHF", "Swiss")],
+    ids=["cacpi", "chcpi"],
+)
+def test_follows_for_a_lesser_cpi_leaves_out_a_shared_day_and_the_page_s_cells_are_its_lines(
+    tmp_db: Path,
+    capsys: pytest.CaptureFixture[str],
+    monkeypatch: pytest.MonkeyPatch,
+    flow: flows.TradingViewFlow,
+    currency: str,
+    noun: str,
+) -> None:
+    # given two markets' closes and 45 Canadian or Swiss CPI releases, above, as expected and
+    # below in turn, the first sharing its day with a US retail sales release
+    two = {k: study.MVP_PRICE_SERIES[k] for k in ("SPY / ES", currency)}
     monkeypatch.setattr(study, "MVP_PRICE_SERIES", two)
     rng = random.Random(5)
     closes = _closes([rng.gauss(0, 0.005) for _ in range(1400)])
@@ -1704,11 +1735,12 @@ def test_follows_for_canadian_cpi_leaves_out_a_shared_day_and_the_page_s_cells_a
         [[m, c.day, c.price] for m in two for c in closes],
     )
     prints = ((2.3, 2.2), (2.2, 2.2), (2.2, 2.3))
-    _store_cacpi({closes[k].day: prints[j % 3] for j, k in enumerate(keys)})
+    _store_cacpi({closes[k].day: prints[j % 3] for j, k in enumerate(keys)}, flow)
     db.insert_models("event_instances", [_report(closes[keys[0]].day, RETAIL)])
 
     # when follows prints the table and the page's data is built
-    assert main(["follows", "--event", "cacpi"]) == 0
+    name = flow.cli_name
+    assert main(["follows", "--event", name]) == 0
     out = capsys.readouterr().out.splitlines()
     printed = [FOLLOWS_LINE.match(line) for line in out[2:-1]]
     ask = cli.ask_data(db.get_connection())
@@ -1717,9 +1749,9 @@ def test_follows_for_canadian_cpi_leaves_out_a_shared_day_and_the_page_s_cells_a
     # line has one cell on the page, equal field by field
     first, last = closes[keys[1]].day, closes[keys[-1]].day
     assert out[0] == (
-        f"follows: 44 Canadian CPI releases {first} … {last}: 14 above, 15 as expected, 15 below"
+        f"follows: 44 {noun} CPI releases {first} … {last}: 14 above, 15 as expected, 15 below"
     )
-    (cacpi,) = [entry for entry in ask["ask"] if entry["name"] == "cacpi"]
+    (cacpi,) = [entry for entry in ask["ask"] if entry["name"] == name]
     cells = {(c["kind"], c["span"], c["market"]): c for c in cacpi["cells"]}  # type: ignore[union-attr]
     assert len(printed) == len(cells) == 3 * 3 * 2
     for line in printed:
@@ -1734,7 +1766,7 @@ def test_follows_for_canadian_cpi_leaves_out_a_shared_day_and_the_page_s_cells_a
         assert "/".join(f"{s:.2f}" for s in shares) == line["base"]
         assert (cell["answer"], cell["verdict"]) == (line["answer"], line["verdict"])
         assert (cell["graded"], cell["right"]) == (int(line["graded"]), int(line["right"]))
-        assert str(cell["say"]).startswith(f"After {cli.ask_kind('cacpi', line['kind'])},")
+        assert str(cell["say"]).startswith(f"After {cli.ask_kind(name, line['kind'])},")
         assert "%" not in str(cell["say"])
     assert [k["events"] for k in cacpi["kinds"]] == [14, 15, 15]  # type: ignore[index]
 
