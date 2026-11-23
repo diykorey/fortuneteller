@@ -15,7 +15,7 @@ Where the work is and what comes next: the task last finished, the tasks in prog
 Step 54: Switzerland ([results](steps/switzerland.md#results)). 80 SNB decisions, each kind from
 the Bank's own history, and 152 Swiss inflation releases on their days alone, the franc and the SMI
 added: nothing holds walk-forward and both flows' answers are below chance; the franc moves 1.9
-times its usual size on an SNB day, in no set direction.
+times its usual size on the SNB's days alone, in no set direction.
 
 Step 53: China ([results](steps/china.md#results)). China's inflation, factory survey, output
 and trade, each against its forecast, on their days alone (116, 59, 110 and 127 releases), the

@@ -743,7 +743,8 @@ shares, against TradingView's forecast (47 above, 45 as expected, 60 below; `fol
 chcpi`), against every market including the newly added franc and Zurich's SMI. **Neither tells
 which way markets go**: each flow gives fewer answers than chance in both runs (the SNB 3 and 4
 against 5.8, inflation 5 and 9 against 10.0), and the four leans with enough events to replay
-fail it. The franc moves 1.88 times its usual size on an SNB day (`raw-move --event snb`), in no
+fail it. The franc moves 1.88 times its usual size on the 56 days an SNB decision has alone (`raw-move
+--event snb`), in no
 set direction; after a cut, a hold or any inflation print, neither the franc nor the SMI leans
 either way on the day.
 

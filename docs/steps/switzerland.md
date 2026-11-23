@@ -56,7 +56,9 @@ At the end: two markets more, the franc (USD/CHF) and Zurich's SMI; `fortunetell
     (*Amended 2026-11-23, in step 1:* the calendar and the history disagree on 11 days, not six:
     the six it lacks; four with no rate on the calendar, 2008-06-19, 2008-09-18, 2008-12-11 and
     2009-03-12 (holds the first two, cuts the last two); and 2015-03-19, a hold the calendar reads
-    as a cut. The five are the ones named in the bullet above; none is new.)
+    as a cut. The five are the ones the bullet above names: the four from "none for 2008 to
+    2009-03" and 2015-03-19; none is new. *Reworded 2026-11-24* from "named in the bullet above",
+    after the results' goldfish review; the days unchanged.)
   - With the SNB's history: 81 decisions, 80 with a kind: 14 cuts (the six unscheduled, the
     scheduled 2008-12-11 and 2009-03-12, and six from 2024-03-21 to 2025-06-19), 61 holds, 5 hikes
     (2022-06-16 to 2023-06-22). The event
@@ -152,10 +154,11 @@ output, on steps 1 to 3's copies of the store (closes to 2026-11-19). The judged
 and `--after-the-day`; step 3's `cmp` found the SNB's outputs byte for byte step 2's.
 
 **In plain words:** the Swiss National Bank's decisions and Swiss inflation against forecasts do
-not tell which way markets go, the franc and Zurich's stocks included. No lean holds when replayed
-in order, and each flow gives fewer answers than chance in both runs. The franc moves almost twice
-its usual size on an SNB day, but in no set direction. On the day of a cut or a hold, and of each
-kind of inflation print, neither the franc nor the SMI leans either way.
+not tell which way markets go. No lean holds when replayed in order, and each flow gives fewer
+answers than chance in both runs. On the 56 days the SNB has to itself, the franc moves almost
+twice its usual size, but in no set direction. On the day of a cut or a hold, and of each kind of
+inflation print, neither the franc nor the SMI leans either way; the SMI fell in the week after 9
+of 13 cuts, too few to replay.
 
 - **The sources, the kinds, the hours and step 17's bars, unchanged by what the run shows: right.**
   The two amendments, the hours and the disagreements, are dated and were made in step 1, before
@@ -188,13 +191,18 @@ kind of inflation print, neither the franc nor the SMI leans either way.
 Outside the rule, recorded, not judged: `raw-move --event snb` finds the franc's moves on 56 SNB
 days alone 1.88 times other days' (p 0.0001, *moves*), the dollar index's and the euro's 1.50 and
 1.46, and the SMI's 1.03 (*doesn't*); on inflation's 153 days the franc's are 1.14 (*unclear*), the
-SMI's 1.04. After an SNB hold the S&P 500 rose on 31 of 61 days and the VIX fell on 32, each an
-answer from the close before, too few graded to replay (26 and 24). The SMI fell in the week after
-9 of 13 cuts from the reaction close, an answer, none graded.
+SMI's 1.04 on its 152. After an SNB hold the S&P 500 rose on 31 of 61 days and the VIX fell on 32,
+each an answer from the close before (`follows --event snb`), too few graded to replay (26 and
+24). The SMI fell in the week after 9 of 13 cuts from the reaction close (`follows --event snb
+--after-the-day`, chance 0.0098), an answer, none graded.
 
-*Step 1, 2026-11-23:* every number is in [the evidence](switzerland-steps.txt).
+*Step 1, 2026-11-23:* every number is in [the evidence](switzerland-steps.txt). The close checks,
+the monthly check and the disagreement list are one-off checks, not commands; each heading in the
+evidence says what was run, and its whole output follows it. The chance lines are `follows`'
+last line, each flow and run.
 
-- **The franc:** `CHF=X`, 6,026 closes from 2003-09-17 to 2026-11-19. Its daily close is within
+- **The franc:** `CHF=X`, 6,026 closes from 2003-09-17 to 2026-11-19 (6,027 when counted for the
+  spec, the store's copy ending a day earlier, as the SMI's 9,048 against 9,049). Its daily close is within
   0.026% of the 00:00 London 5-minute bar's open on all ten days of 2026-11-09 to 2026-11-20.
 - **The SMI:** `^SSMI`, 9,048 closes from 1990-11-09. Its 5-minute bars end with the 17:25 bar,
   0.000% to 0.190% from the daily close, so it is checked against the exchange's published close:
