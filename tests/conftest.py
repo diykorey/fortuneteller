@@ -35,6 +35,9 @@ def no_calendars(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
         raise AssertionError(f"a test asked {what}")
 
     monkeypatch.setattr(sources, "_calendar_get", refuse)
+    # A source that fails is asked again (step 46) without waiting, each test with the whole budget.
+    monkeypatch.setattr(sources, "sleep", lambda seconds: None)
+    monkeypatch.setattr(sources, "_waited", 0)
     # Nor Nasdaq's earnings calendar (step 44): no report is ahead unless a test serves some.
     monkeypatch.setattr(sources, "fetch_earnings_day", lambda day: [])
     # The S&P 500's frozen groups (step 45) join the page only where a test gives a file.

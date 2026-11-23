@@ -12,6 +12,11 @@ Where the work is and what comes next: the task last finished, the tasks in prog
 
 ## Last completed
 
+Step 46, steps 1 and 2: the retry and the watches ([results](steps/loop-nets.md#results)). Every
+source's 5xx, timeout or broken connection is asked again after 30 and 90 s, 300 s a process at
+most; `unlogged` and `unstarted` find the incidents of 2026-11-17 and 2026-11-19 on their real
+rows and runs, and nothing on the days that went right.
+
 Step 52: Canada ([results](steps/canada.md#results)). 153 Bank of Canada decisions and 189
 Canadian inflation releases on their days alone, the Canadian dollar and Toronto's stocks added:
 nothing holds walk-forward; the Bank's 12 answers from the close before exceed chance plus 2, and
@@ -22,6 +27,11 @@ new report, Walmart's of 2026-11-19 (EPS $0.65 against $0.64, *as expected*). No
 the hand check against Yahoo passed, and no answer or verdict on the page changed.
 
 ## In progress
+
+- **Step 46: the loop's safety nets** ([the spec](steps/loop-nets.md)): each machine watches the
+  other and opens an issue for what it missed; a source's 5xx asked again. Chosen 2026-11-21 by the
+  owner. Steps 1 and 2 built. Next: merged before Wednesday 2026-11-25's releases, then step 3,
+  live on the first two release days from 2026-11-24.
 
 - **Step 45: the S&P 500 on the page** ([the spec](steps/sp500-on-the-page.md)): steps 35 to
   37's groups on *Ask*, frozen from a copy of the store, and every S&P 500 member's report in the
@@ -91,7 +101,8 @@ the hand check against Yahoo passed, and no answer or verdict on the page change
 
 ## Next
 
-Step 46, the loop's safety nets, after step 52; then China (53) and Switzerland (54).
+Step 53, China, then Switzerland (54), with step 46's live days (2026-11-24 onward) recorded
+alongside.
 
 Monday 2026-11-23: step 23's first weekly post, drafted by `weekly-post` and published by the
 owner. Then step 44's page, published before the post if it is ready.

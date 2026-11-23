@@ -1,6 +1,7 @@
 # The release-day job and the evening score on a runner (docs/steps/loop-off-the-laptop.md).
-# Step 2, the shadow run: beside the laptop, committing and opening nothing; the day's rows and the
-# evening's files are uploaded as the run's artifact. The store travels as an encrypted release
+# Step 2, the shadow run: beside the laptop, committing and opening nothing but the morning's two
+# issues of step 46 (docs/steps/loop-nets.md); the day's rows and the evening's files are uploaded
+# as the run's artifact. The store travels as an encrypted release
 # asset (docs/decisions.md, 2026-11-14).
 name: Jobs
 
@@ -18,6 +19,9 @@ on:
 permissions:
   contents: write
   pull-requests: read
+  # The morning's watches (docs/steps/loop-nets.md) list the runs and open their issues.
+  actions: read
+  issues: write
 
 concurrency:
   group: jobs
@@ -80,6 +84,61 @@ jobs:
           git diff -U0 -- data/calls.csv | tee out/calls.diff
           cp data/calls.csv out/
           exit "$status"
+
+      # Step 46, the safety nets (docs/steps/loop-nets.md): the morning watches the laptop's
+      # morning and its own evening before, and opens an issue for what was missed; one that
+      # cannot be opened fails nothing. Run also when `live` failed, since the evening is checked
+      # every weekday.
+      - name: The watches
+        if: ${{ !cancelled() && steps.plan.outputs.step == 'live' }}
+        run: |
+          day=$(TZ=America/New_York date +%F)
+          issue() {
+            gh issue create -R "$REPO" --title "$1" --body "$2" || echo "could not open: $1"
+          }
+          # The laptop's rows are due by 08:45 New York, in main or a calls-* branch; checked
+          # only when this run logged rows of its own to compare.
+          if grep -q '^+[0-9]' out/calls.diff 2>/dev/null; then
+            at=$(TZ=America/New_York date -d "08:45" +%s)
+            now=$(date +%s)
+            if [ "$now" -lt "$at" ]; then
+              echo "waiting $((at - now))s for 08:45 New York"
+              sleep $((at - now))
+            fi
+            git fetch -q --prune origin '+refs/heads/main:refs/remotes/origin/main' \
+              '+refs/heads/calls-*:refs/remotes/origin/calls-*'
+            theirs=()
+            for ref in $(git for-each-ref --format='%(refname:short)' refs/remotes/origin/main \
+              'refs/remotes/origin/calls-*'); do
+              file="$RUNNER_TEMP/theirs-${#theirs[@]}.csv"
+              git show "$ref:data/calls.csv" >"$file" || : >"$file"
+              echo "$ref: $(grep -c ",$day," "$file") rows of $day"
+              theirs+=("$file")
+            done
+            missing=$(uv run fortuneteller unlogged "$day" data/calls.csv "${theirs[@]}")
+            if [ -n "$missing" ]; then
+              echo "$missing"
+              issue "The laptop did not log $day's calls" "$missing"
+            fi
+          fi
+          # The outside timer asks the evening every weekday; Monday checks Friday's.
+          case $(TZ=America/New_York date +%u) in
+            1) before=$(date -d "$day -3 days" +%F) ;;
+            [2-5]) before=$(date -d "$day -1 day" +%F) ;;
+            *) before= ;;
+          esac
+          if [ -n "$before" ]; then
+            if gh run list -R "$REPO" -w jobs.yml --json createdAt,event -L 50 \
+              >"$RUNNER_TEMP/runs.json"; then
+              missing=$(uv run fortuneteller unstarted --evening "$before" "$RUNNER_TEMP/runs.json")
+              if [ -n "$missing" ]; then
+                echo "$missing"
+                issue "The runner's evening was not started on $before" "$missing"
+              fi
+            else
+              echo "gh run list failed; the evening of $before is not checked"
+            fi
+          fi
 
       - name: The evening loads and grading
         if: steps.plan.outputs.step == 'score'

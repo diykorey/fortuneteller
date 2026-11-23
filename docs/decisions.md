@@ -11,6 +11,28 @@ amended there with a date.
 Each entry: **what** was decided, **why**, what it **retires**, and **where** the detail is. *By the
 owner* marks a choice the owner made over another on the table.
 
+## 2026-11-23: Readers follow on LinkedIn, no sign-up on the site, by the owner
+
+- **What:** a reader who wants the results follows the owner on LinkedIn, where the Monday post
+  gives them; the site gets no email list, feed or sign-up. The first post tells a story (the
+  laptop that slept through the jobs report, the patterns that failed, the one that held) and
+  asks readers to follow.
+- **Why:** of three options (follow on LinkedIn, an email list, an RSS feed) the owner chose the
+  one with nothing to build; step 23 already makes the profile the channel.
+- **Retires:** nothing.
+- **Where:** [be seen](steps/be-seen.md), step 23.
+
+## 2026-11-23: The runner may open issues
+
+- **What:** the runner's morning opens an issue when the laptop has not logged the day's calls by
+  08:45 New York, or when its own evening was never started; the laptop's evening opens one when
+  the runner's morning was never started. A source's 5xx is asked again twice before it fails.
+- **Why:** a machine that sleeps or a timer that never asks cannot report itself: the jobs report
+  of 2026-11-06 and the evening of 2026-11-17 went unseen, and one HTTP 500 lost 2026-11-19's
+  evening. The gate needs four straight weeks of release days, none missed.
+- **Retires:** step 21's "a shadow run opens no pull request and no issue", for these two issues.
+- **Where:** [the loop's safety nets](steps/loop-nets.md), step 46.
+
 ## 2026-11-22: Canada, China and Switzerland, by the owner
 
 - **What:** three countries' news and markets, one step each: Canada (step 52), China (53),
