@@ -200,6 +200,8 @@ def test_the_page_asks_about_each_kind_the_store_answers(
         "boc",
         "cacpi",
         "cncpi",
+        "cnpmi",
+        "cnip",
     ]
     assert all("%" not in cell["say"] for cell in cpi["cells"])
 

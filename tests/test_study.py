@@ -304,6 +304,8 @@ def test_load_releases_prints_count_range_and_skipped_months(
                 (sources.DE_CPI, 14, 13),
                 (sources.CA_CPI, 18, 13),
                 (sources.CN_CPI, 12, 1),
+                (sources.CN_PMI, 28, 1),
+                (sources.CN_IP, 17, 2),
             )
         },
     }
@@ -449,8 +451,10 @@ def test_load_releases_prints_count_range_and_skipped_months(
     report += "  1 from the Bank's changes the calendar lacks: 2020-03-13\n"
     report += "loaded 1 Canadian CPI releases, 2025-02-18 … 2025-02-18\n"
     report += "loaded 1 Chinese CPI releases, 2025-02-12 … 2025-02-12\n"
+    report += "loaded 1 Chinese PMI releases, 2025-02-28 … 2025-02-28\n"
+    report += "loaded 1 Chinese output releases, 2025-02-17 … 2025-02-17\n"
     assert capsys.readouterr().out == report * 2
-    assert db.count_rows("event_instances", con=db.get_connection()) == 54
+    assert db.count_rows("event_instances", con=db.get_connection()) == 56
 
 
 def test_load_releases_stores_nothing_when_any_flow_fails(
