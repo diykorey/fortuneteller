@@ -34,6 +34,16 @@ At the end: two markets more, the franc (USD/CHF) and Zurich's SMI; `fortunetell
   decision on a change's day is a *cut* or a *hike* by it; any other decision after the first is a
   *hold*; the first has no kind; a change the calendar lacks is added as an unscheduled decision.
   The 2019-06-13 switch from the range (midpoint −0.75%) to the policy rate (−0.75%) is a hold.
+  (*Amended 2026-11-23, in step 1, before any Swiss flow existed:* the SNB's press releases give
+  no hour, so `time` is the calendar's for the scheduled changes and, for the six unscheduled,
+  the hour the sources allow: 2008-10-08 13:00, the hour of the joint statement with the Fed
+  (07:00 New York); 2015-01-15 10:30, the SNB's own account; 2011-08-03 09:00, between the
+  release's file, made 08:57, and the first news report, 10:05; 2014-12-18 07:00, a news report
+  stamped about 07:10 being the first; 2008-11-06 and 2008-11-20 14:00, before the first news
+  reports found, Swissinfo's at 14:18 and one at 13:25 London (14:25 Zurich). Any hour from 07:30 to 17:30 Zurich gives the same reaction days, Tokyo
+  and the currencies the next day, Europe, Zurich and New York the same; 2014-12-18 at 07:00, before
+  Tokyo's close, reacts in Tokyo the same day. Only the two of 2008-11 have no lower bound: had
+  either come before 07:30, Tokyo's reaction to it would be read a day late.)
   - The calendar's own rates cannot give the kind: it has none for 2008 to 2009-03, and it
     lists 2015-03-19 at −0.75% from 0.125%, a cut, where the SNB held: the cuts to −0.75% came in
     two of its six unscheduled moves, which the calendar lacks.
@@ -43,6 +53,10 @@ At the end: two markets more, the franc (USD/CHF) and Zurich's SMI; `fortunetell
     other month of 2008 to 2015 but those of the scheduled cuts of 2008-12-11 and 2009-03-12. Any other disagreement is written here
     with a dated amendment before step 2. The minimum exchange rate of 2011-09-06 changed no rate
     and is not a decision.
+    (*Amended 2026-11-23, in step 1:* the calendar and the history disagree on 11 days, not six:
+    the six it lacks; four with no rate on the calendar, 2008-06-19, 2008-09-18, 2008-12-11 and
+    2009-03-12 (holds the first two, cuts the last two); and 2015-03-19, a hold the calendar reads
+    as a cut. The five are the ones named in the bullet above; none is new.)
   - With the SNB's history: 81 decisions, 80 with a kind: 14 cuts (the six unscheduled, the
     scheduled 2008-12-11 and 2009-03-12, and six from 2024-03-21 to 2025-06-19), 61 holds, 5 hikes
     (2022-06-16 to 2023-06-22). The event
@@ -97,7 +111,7 @@ At the end: two markets more, the franc (USD/CHF) and Zurich's SMI; `fortunetell
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | The two markets and the SNB's history: seed rows, series, `load-prices`, `snb-changes.csv`, the guesser's list and the areas | `load-prices` stores both; tests: a 09:30 Zurich decision falls on the same day's SMI close and the next day's franc and Tokyo closes; `USDCHF` is in the currencies area and `SMI` in stocks; the closes within 0.05%, written here; each change's day and hour copied from the SNB's press release, and each month's rate in the file equal to the monthly series' on all 2008-01 to 2026-10 months; the days the calendar and the history disagree on listed here, exactly the six expected, or each other amended; on a copy of the store every existing `raw-move`, `follows`, scoreboard and *Ask* row identical, each chance line before and after written here |
+| 1 | ~~The two markets~~ **done** 2026-11-23. The two markets and the SNB's history: seed rows, series, `load-prices`, `snb-changes.csv`, the guesser's list and the areas | `load-prices` stores both; tests: a 09:30 Zurich decision falls on the same day's SMI close and the next day's franc and Tokyo closes; `USDCHF` is in the currencies area and `SMI` in stocks; the closes within 0.05%, written here; each change's day and hour copied from the SNB's press release (*amended 2026-11-23:* the hour from the sources above, the releases giving none), and each month's rate in the file equal to the monthly series' on all 2008-01 to 2026-10 months; the days the calendar and the history disagree on listed here, exactly the six expected, or each other amended; on a copy of the store every existing `raw-move`, `follows`, scoreboard and *Ask* row identical, each chance line before and after written here |
 | 2 | The SNB: flow `snb`, `follows --event snb`, on *Ask*, a trigger kind (*cut*, *hold*, *hike*) | Tests: a quarter stores its decisions at their UTC time; an unscheduled change is added at its file's hour, 2015-01-15 at 10:30 Zurich reacting the same day in the SMI and the next in the franc; 2015-01-15 a cut and 2015-03-19 a hold; an `snb` trigger is answered; *Ask*'s cells equal `follows`'. The header as expected, or amended as the rule says; every other flow's `raw-move`, `follows`, scoreboard and *Ask* rows unchanged |
 | 3 | Inflation: flow `chcpi`, `follows --event chcpi`, on *Ask*, a trigger kind (*above*, *as expected*, *below*) | Tests: the surprise is the actual less the forecast, *above* from 0.1; a day shared with a flow that is not lesser left out of its table; a release at 09:15 Zurich in winter (08:15 UTC, after Tokyo's close) reacts the same day in the SMI and the next in Tokyo and the franc; a `chcpi` trigger is answered; *Ask*'s cells equal `follows`'. The header as expected, or amended as the rule says; every other flow's `raw-move`, `follows`, scoreboard and *Ask* rows unchanged |
 | 4 | Results here and in [MVP results](../mvp-results.md), against the expected outcome; the roadmap row | Every judged bullet marked right or wrong with its numbers |
@@ -132,4 +146,38 @@ for the two markets, no live call on Switzerland.
 
 ## Results
 
-Not yet measured.
+*Step 1, 2026-11-23:* every number is in [the evidence](switzerland-steps.txt).
+
+- **The franc:** `CHF=X`, 6,026 closes from 2003-09-17 to 2026-11-19. Its daily close is within
+  0.026% of the 00:00 London 5-minute bar's open on all ten days of 2026-11-09 to 2026-11-20.
+- **The SMI:** `^SSMI`, 9,048 closes from 1990-11-09. Its 5-minute bars end with the 17:25 bar,
+  0.000% to 0.190% from the daily close, so it is checked against the exchange's published close:
+  equal to SIX's to the cent on all ten days.
+- **The SNB's history:** `snb-changes.csv`, 19 changes from 2008-10-08 to 2025-06-19; each of the
+  226 months of 2008-01 to 2026-10 carries the SNB's monthly rate, none different. The hours are
+  the calendar's on all 11 scheduled changes, and for the six unscheduled those amended above.
+- **The disagreements:** 11, the six unscheduled cuts and the five amended above, none new.
+- **Tests:** a 09:30 Zurich decision reacts in Zurich, Frankfurt and New York the same day, in
+  the franc and Tokyo the next; `USDCHF` is a currency and `SMI` a stock market; the SNB file holds
+  19 changes in order, the six unscheduled at their rates, 2015-03-19 and 2019-06-13 not among them.
+- **On a copy of the store** (step 53's final, closes to 2026-11-19), with the two markets' closes
+  loaded alone: every existing row of every flow's `raw-move` (43 events) and `follows` (24 flows,
+  both runs, and the Fed's `--long`), 92 outputs, and every scoreboard and *Ask* entry, is the one
+  before once the two markets' rows are taken out. The copy holds no BoC or Canadian CPI events,
+  so their `follows` print nothing on either side. Only the chance lines change: the scoreboard's
+  raw-move chance 1,282 → 1,357 cells (12.82 → 13.57), its surprise chance 560 → 592 (5.60 →
+  5.92), walk-forward unchanged at 82; `follows`' answers by chance on all history, before → after:
+
+  | Flow | From the close before | From the reaction close |
+  | --- | --- | --- |
+  | Fed | 9.4 → 9.9 (`--long` 2.7 → 2.9) | 9.4 → 9.9 |
+  | jobs report, retail sales, CPI, claims | 9.5 → 10.0 | 9.5 → 10.0 |
+  | ECB | 9.0 → 9.5 | 9.1 → 9.6 |
+  | BoE | 8.8 → 9.4 | 8.8 → 9.4 |
+  | China's CPI | 9.3 → 9.9 | 9.3 → 9.9 |
+  | China's survey | 8.9 → 9.5 | 8.9 → 9.5 |
+  | China's output, trade | 9.4 → 9.9 | 9.4 → 9.9 |
+  | OPEC | 6.2 → 6.6 | 6.3 → 6.7 |
+  | BoJ, crypto, weather | 3.1 → 3.3 | 3.1 → 3.3 |
+  | war, floods | 3.1 → 3.2 | 3.1 → 3.2 |
+  | CEO scandals, additions, splits, earnings (Dow and S&P 500) | unchanged, 0.1 to 0.3 | unchanged |

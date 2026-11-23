@@ -309,6 +309,9 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **SMI** (Swiss Market Index) — *added 2026-11-23* ([Switzerland](steps/switzerland.md)):
   Zurich's main stock index, Switzerland's largest listed companies, Yahoo's `^SSMI`, closing at
   17:30 Zurich. No expected sign.
+- **SIX** (SIX Swiss Exchange) — *added 2026-11-23* ([Switzerland](steps/switzerland.md)): Zurich's
+  stock exchange, which computes the SMI and publishes its official close, the one the SMI's
+  closes are checked against.
 - **Ticker / symbol** — the short code identifying an instrument (`SPY`, `^VIX`). **These strings
   are load-bearing here** — they are join keys between seed data, measurements, and predictions, so
   drift silently breaks lookups.

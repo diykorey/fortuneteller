@@ -365,8 +365,8 @@ the same day.
 | `TSX` | 11,900 | 1979-06-29 (counted 2026-11-22, to 2026-11-19) |
 | `USDCNY` | 4,102 | 2010-06-21, the peg's end (counted 2026-11-23, to 2026-11-13, FRED's last) |
 | `SHCOMP` | 7,118 | 1997-07-02 (counted 2026-11-23, to 2026-11-19) |
-| `USDCHF` | COUNT_CHF | FIRST_CHF (counted 2026-11-23, to 2026-11-19) |
-| `SMI` | COUNT_SMI | FIRST_SMI (counted 2026-11-23, to 2026-11-19) |
+| `USDCHF` | 6,026 | 2003-09-17 (counted 2026-11-23, to 2026-11-19) |
+| `SMI` | 9,048 | 1990-11-09 (counted 2026-11-23, to 2026-11-19) |
 
 A few megabytes in all. `observations` is these same days thinned down to the release days —
 about 2,700 rows for CPI and the five; 45,773 for ten events and sixteen markets on 2026-10-27;
