@@ -34,6 +34,8 @@ LONDON = ZoneInfo("Europe/London")
 # The STOXX indices are computed in Zurich.
 ZURICH = ZoneInfo("Europe/Zurich")
 TOKYO = ZoneInfo("Asia/Tokyo")
+# China's releases and Shanghai's close (docs/steps/china.md).
+SHANGHAI = ZoneInfo("Asia/Shanghai")
 # Bitcoin trades every hour of every day; Yahoo's daily bar is the UTC day.
 UTC_ZONE = ZoneInfo("UTC")
 

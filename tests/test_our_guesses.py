@@ -328,3 +328,14 @@ def test_every_market_the_guesser_may_name_has_an_area() -> None:
 
     # then each has one of the eight areas
     assert markets <= set(cli.AREAS) and len(set(cli.AREAS.values())) == 8
+
+
+def test_the_yuan_is_a_currency_and_shanghai_a_stock_market() -> None:
+    # given China's two markets (docs/steps/china.md)
+    markets = ("USDCNY", "SHCOMP")
+
+    # when their areas are read
+    areas = [cli.AREAS[m] for m in markets]
+
+    # then the yuan is with the currencies and Shanghai with the stocks
+    assert areas == ["currencies", "stocks"]

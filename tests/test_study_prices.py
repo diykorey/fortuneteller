@@ -318,9 +318,11 @@ def test_loading_every_instrument_twice_changes_no_row_count(
             "ALL": 4,
             "USDCAD": 4,
             "TSX": 4,
+            "USDCNY": 4,
+            "SHCOMP": 4,
         }
     )
-    assert db.count_rows("daily_bars", con=con) == 134
+    assert db.count_rows("daily_bars", con=con) == 142
     assert con.execute(
         "SELECT DISTINCT source FROM daily_bars WHERE instrument = 'T5YIE'"
     ).fetchall() == [("fred:T5YIE",)]
@@ -332,7 +334,7 @@ def test_tickers_cover_the_mvp_instruments_by_exact_symbol() -> None:
         symbols = {row["symbol"] for row in csv.DictReader(handle)}
 
     # when the MVP ticker table is compared with it
-    # then all 33 instruments are there, each spelled exactly as the join key
+    # then all 35 instruments are there, each spelled exactly as the join key
     assert list(MVP_PRICE_SERIES) == [
         "SPY / ES",
         "UST10Y / ZN",
@@ -367,6 +369,8 @@ def test_tickers_cover_the_mvp_instruments_by_exact_symbol() -> None:
         "ALL",
         "USDCAD",
         "TSX",
+        "USDCNY",
+        "SHCOMP",
     ]
     assert set(MVP_PRICE_SERIES) <= symbols
 

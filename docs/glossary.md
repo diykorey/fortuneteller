@@ -243,8 +243,8 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **USDJPY** — dollars in yen, Yahoo's `JPY=X`; *up* is the yen weaker (step 25).
 - **USDCAD** — *added 2026-11-22*: dollars in Canadian dollars, Yahoo's `CAD=X`, closed as the
   euro is, at 00:00 London; *up* is the Canadian dollar weaker ([Canada](steps/canada.md)).
-- **USDCNY** — *added 2026-11-23*: dollars in yuan (onshore), Yahoo's `CNY=X`, closed at 00:00
-  London; *up* is the yuan weaker. Held to the dollar from 2008-07 to 2010-06 and kept within a
+- **USDCNY** — *added 2026-11-23*: dollars in yuan (onshore), FRED's `DEXCHUS`, the Federal
+  Reserve's noon buying rate in New York, kept from 2010-06-21; *up* is the yuan weaker. Held to the dollar from 2008-07 to 2010-06 and kept within a
   daily band around the central bank's fixing since ([China](steps/china.md)).
 - **EURUSD** — the euro in dollars, the dollar index's largest weight (58%), so mostly its mirror;
   it takes the dollar index's expected sign reversed. Yahoo's `EURUSD=X`, whose daily close is the

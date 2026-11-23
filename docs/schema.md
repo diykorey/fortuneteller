@@ -96,8 +96,9 @@ outcomes](steps/more-outcomes.md) adds `BRN`, `EURUSD`, `COMP`, `UST5Y / ZF`, `U
 `CORN`, `WEAT`, `SOYB`, `UGA`, `UNG`, `XLU` and `ITB` (2026-11-04), [coffee](steps/coffee.md)
 `KC` and [the breakeven](steps/breakeven.md) `T5YIE` (2026-11-04), and [other central
 banks](steps/other-central-banks.md) `GBPUSD`, `USDJPY` and `NKY` (2026-11-17), and [crypto](steps/crypto.md) `ETH` and `COIN`
-(2026-11-18), [weather](steps/weather.md) `ALL` (2026-11-18), and [Canada](steps/canada.md) `USDCAD` and
-`TSX` (2026-11-22), so 33 are measured.
+(2026-11-18), [weather](steps/weather.md) `ALL` (2026-11-18), [Canada](steps/canada.md) `USDCAD` and
+`TSX` (2026-11-22), and [China](steps/china.md) `USDCNY` (FRED's `DEXCHUS`) and `SHCOMP`
+(2026-11-23), so 35 are measured.
 
 | Column | Type | Meaning |
 | --- | --- | --- |
@@ -357,6 +358,8 @@ the same day.
 | `COIN` | 1,407 | 2021-04-14 (counted 2026-11-18) |
 | `USDCAD` | 6,028 | 2003-09-17 (counted 2026-11-22, to 2026-11-19) |
 | `TSX` | 11,900 | 1979-06-29 (counted 2026-11-22, to 2026-11-19) |
+| `USDCNY` | 4,102 | 2010-06-21, the peg's end (counted 2026-11-23, to 2026-11-13, FRED's last) |
+| `SHCOMP` | 7,118 | 1997-07-02 (counted 2026-11-23, to 2026-11-19) |
 
 A few megabytes in all. `observations` is these same days thinned down to the release days —
 about 2,700 rows for CPI and the five; 45,773 for ten events and sixteen markets on 2026-10-27;
