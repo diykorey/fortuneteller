@@ -714,7 +714,8 @@ against every market including the newly added Canadian dollar and Toronto's sto
 dollar moves almost twice its usual size on a Bank day, but **which way is not told by the
 news**: none of the leans holds when replayed. The Bank's decisions give 12 answers from the close
 before, above chance (8.8) plus 2, and 5 from the reaction close; inflation gives 2 and 7 (chance
-8.9). The Canadian dollar strengthened on the day of 13 of the 19 hikes, too few to replay; after
+8.9). The Canadian dollar strengthened on the day of 13 of the 19 hikes from the close before,
+too few to replay, and 11 of 19 from the reaction close, *can't say*; after
 inflation above or below it is *can't say*.
 
 ## What comes next

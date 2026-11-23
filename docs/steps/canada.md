@@ -189,7 +189,7 @@ every other flow's *Ask* entry, is the same. On *Ask*, inflation's 297 cells equ
 
 | Run | Answers | Chance line | Walk-forward |
 | --- | --- | --- | --- |
-| From the close before | 2: *as expected*, day, S&P 500 about the same; *below*, week, ether about the same | about 8.9 answers, 0.0 holds | 297 of 297 *too few* (at most 4 graded) |
+| From the close before | 2: *as expected*, day, S&P 500 about the same; *below*, week, ether about the same | about 8.9 answers, 0.0 holds | 297 of 297 *too few* (at most 27 graded; *corrected 2026-11-23:* this read "at most 4", the evidence's *below*, day, UGA has 27 graded, 9 right) |
 | `--after-the-day` | 7: *above*, day, natural gas down; *above*, week, 10-year yield down; *as expected*, day, 10-year yield about the same, FTSE 100 down, STOXX 600 down; *as expected*, week, 10-year yield about the same; *below*, month, natural gas about the same | about 8.9 answers, 0.0 holds | 297 of 297 *too few* (at most 15 graded) |
 
 The Canadian dollar and Toronto's stocks on the day, up / same / down of n, every one *can't say*:
@@ -208,21 +208,28 @@ Both runs' tables are in [the evidence](canada-steps.txt), for step 4 to judge.
 
 ## Results
 
-*2026-11-23.* Every number is in [the evidence](canada-steps.txt): steps 1 to 3's copies of the
-store (closes to 2026-11-19), the last with both flows loaded, each command's whole output.
+*2026-11-23.* Every number is in [the evidence](canada-steps.txt), each command's whole output,
+on steps 1 to 3's copies of the store (closes to 2026-11-19). `follows --event boc` (both runs)
+and `raw-move --event boc` there ran on step 2's store, the BoC alone loaded; `follows --event
+cacpi` (both runs) and `raw-move --event cacpi` on step 3's, with both flows loaded, where the
+BoC's three outputs came out byte for byte the same (step 3's `cmp`).
 
 **In plain words:** on a Bank of Canada day the Canadian dollar moves almost twice as much as on
-an ordinary day, but which way markets go after a cut, a hold or a hike, or after Canadian
+an ordinary day (ratio 1.89 on 119 days; by era, 1.88 on the 85 days of 2008 to 2019 but 1.11 on
+the 34 since 2020, `raw-move --event boc`), but which way markets go after a cut, a hold or a hike, or after Canadian
 inflation above or below forecasts, is not told by the news: the leans found are no more than
 chance gives, except the Bank's twelve from the close before, and none holds when replayed. The
-Canadian dollar strengthened on the day of 13 of the Bank's 19 hikes, a lean too few to replay.
+Canadian dollar strengthened on the day of 13 of the Bank's 19 hikes counted from the close
+before, a lean too few to replay; from the reaction close it strengthened on 11 of 19, *can't
+say*.
 
 - **The sources, the kinds, the hours and step 17's bars, unchanged by what the run shows:**
   **right.** Every amendment above is dated and was made before the table it touches was read:
   the hours and Europe's reaction day after step 1 (no reaction day changes), the 2026-10-28 hike
   before step 2, inflation's two new releases before step 3's table. Step 1's own bars were met:
   the disagreeing days exactly the 16 expected, the closes within 0.05% (the Canadian dollar
-  0.017%, Toronto 0.046%).
+  0.017%, Toronto 0.046%: the one-off check of 2026-11-09 to 2026-11-20 against Yahoo's 5-minute
+  bars, in step 1's part of the evidence).
 - **The headers: right,** as amended. `follows --event boc`: `follows: 153 BoC decisions
   2008-03-04 … 2026-10-28: 22 cuts, 112 holds, 19 hikes`. `follows --event cacpi`: `follows: 189
   Canadian CPI releases 2008-01-25 … 2026-11-16: 64 above, 44 as expected, 81 below`.
@@ -262,7 +269,9 @@ Canadian dollar strengthened on the day of 13 of the Bank's 19 hikes, a lean too
   (0.15); below, 40 / 20 / 21 of 81 (0.015) and 30 / 26 / 25 (0.35).
 - **The two new markets, every existing row unchanged byte for byte: right** (`follows` for
   every flow, both runs and the Fed's `--long`, `raw-move` for every event, `scoreboard`): after
-  step 1 every row, after step 2 74 outputs and after step 3 77, each the one before; only the
+  step 1 every row, after step 2 74 outputs and after step 3 77, each the one before (the `cmp`
+  lists in the evidence, and its `data.json` checks: every existing scoreboard entry and *Ask*
+  entry the same); only the
   chance lines grew by the added cells, as step 1's table above gives (the scoreboard's raw-move
   chance 1,011 → 1,078 → 1,111 → 1,144 cells, surprise 372 → 396 → 429, walk-forward 82). The
   new markets' rows are recorded in the evidence. **Toronto's long run cannot be judged:** `forecasts`
