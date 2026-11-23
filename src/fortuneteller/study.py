@@ -1981,6 +1981,15 @@ def release_kinds(flow: EventFlow, con: duckdb.DuckDBPyConnection | None = None)
     }
 
 
+def lone_release_kinds(
+    flow: EventFlow, con: duckdb.DuckDBPyConnection | None = None
+) -> dict[int, str]:
+    """Each stored release's kind, as ``release_kinds``, on the days the flow has alone: a day
+    another flow's release shares is left out (Canada's CPI, docs/steps/canada.md)."""
+    shared = shared_days(flow, con=con)
+    return {i: kind for i, kind in release_kinds(flow, con=con).items() if i not in shared}
+
+
 def surprise_kind(
     rule: SurpriseRule, actual: float, expected: float, surprise: float | None = None
 ) -> str:
@@ -2376,6 +2385,7 @@ TRIGGER_KINDS = {
     "opec": OPEC_KINDS,
     "boe": KINDS,
     "boc": KINDS,
+    "cacpi": SURPRISE_KINDS,
     "boj": KINDS,
     "war": (VIOLENT_ACT,),
     "crypto": (HACK,),

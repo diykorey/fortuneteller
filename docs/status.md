@@ -30,7 +30,9 @@ the shares trailed on 27 of 43 days (p 0.06), short of an answer; nothing answer
   Switzerland (54) after it and step 46. Step 1 done: the two markets loaded, every existing
   row unchanged; the Bank's history disagrees with the calendar on the 16 days expected. Step 2
   done: `follows --event boc` prints the expected 153 decisions, 22 cuts, 112 holds, 19 hikes,
-  and the Bank is on *Ask*. Next, step 3, Canada's inflation.
+  and the Bank is on *Ask*. Step 3 done: `follows --event cacpi` prints 189 Canadian CPI
+  releases on their days alone, 64 above, 44 as expected, 81 below, and inflation is on *Ask*.
+  Next, step 4, the results.
 - **Step 51: the front page's guesses, approved** ([the spec](steps/front-staging.md)): each
   evening's front-page guesses wait in a pull request the owner rewords and merges. Asked for by
   the owner 2026-11-22. Next: the first front pull request, from the first evening whose proposal changes.

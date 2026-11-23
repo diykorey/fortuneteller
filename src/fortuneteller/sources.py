@@ -312,6 +312,8 @@ CLAIMS_SERIES_ID = "ICSA"
 DE_ZEW = "de_zew"
 DE_IFO = "de_ifo"
 DE_CPI = "de_cpi"
+# Canada's CPI, year on year in percent (docs/steps/canada.md).
+CA_CPI = "ca_cpi"
 NOWCAST = "nowcast"
 ACTUAL = "actual"
 # The chart series step 4 reads, by name in the file; the PCE series are left out.
@@ -869,6 +871,8 @@ CLAIMS_FROM = date(2013, 1, 1)
 ZEW_FROM = date(2013, 10, 1)
 IFO_FROM = date(2018, 1, 1)
 DE_CPI_FROM = date(2014, 10, 1)
+# Checked 2026-11-22: Canada's CPI from 2008-01-25.
+CA_CPI_FROM = date(2008, 1, 1)
 TRADINGVIEW_ROWS = {
     EURO_CORE: TradingViewRow("EU", "Core Inflation Rate YoY Flash", EURO_FLASH_FROM, FRANKFURT),
     EURO_HEADLINE: TradingViewRow("EU", "Inflation Rate YoY Flash", EURO_FLASH_FROM, FRANKFURT),
@@ -877,6 +881,7 @@ TRADINGVIEW_ROWS = {
     DE_ZEW: TradingViewRow("DE", "ZEW Economic Sentiment Index", ZEW_FROM, FRANKFURT),
     DE_IFO: TradingViewRow("DE", "Ifo Business Climate", IFO_FROM, FRANKFURT),
     DE_CPI: TradingViewRow("DE", "Inflation Rate YoY Prel", DE_CPI_FROM, FRANKFURT),
+    CA_CPI: TradingViewRow("CA", "Inflation Rate YoY", CA_CPI_FROM, NEW_YORK),
 }
 
 

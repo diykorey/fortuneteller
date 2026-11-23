@@ -701,6 +701,18 @@ def _german_rule(
 ZEW_SURPRISE_RULE = _german_rule(sources.DE_ZEW, GERMAN_SURVEY_EXPECTED_SIGN, 3.5, "3.5 points")
 IFO_SURPRISE_RULE = _german_rule(sources.DE_IFO, GERMAN_SURVEY_EXPECTED_SIGN, 0.5, "0.5 points")
 DE_CPI_SURPRISE_RULE = _german_rule(sources.DE_CPI, EURO_EXPECTED_SIGN, 0.1, "0.1pp")
+# Canada's CPI: TradingView's forecast, noticeable from 0.1pp, the print's own step and its median
+# miss; the actual rounded to that step before its kind is read. No market signed, so no live link
+# (docs/steps/canada.md).
+CA_CPI_SURPRISE_RULE = SurpriseRule(
+    ((sources.CA_CPI, TRADINGVIEW_FORECAST),),
+    dict.fromkeys(EURO_EXPECTED_SIGN, 0),
+    0.1,
+    "0.1pp",
+    alone=True,
+    predicted_from=TRADINGVIEW_FORECAST,
+    kind_decimals=1,
+)
 
 
 # The flows.
@@ -1656,6 +1668,19 @@ DE_CPI_FLOW = TradingViewFlow(
     surprise_rule=DE_CPI_SURPRISE_RULE,
     lesser=True,
 )
+CA_CPI_FLOW = TradingViewFlow(
+    CPI_EVENT_TYPE,
+    CANADA,
+    TORONTO,
+    39,
+    "cacpi",
+    "CCP",
+    (sources.CA_CPI,),
+    PERCENT,
+    "Canadian CPI releases",
+    surprise_rule=CA_CPI_SURPRISE_RULE,
+    lesser=True,
+)
 RETAIL_FLOW = LevelFlow(
     RETAIL_EVENT_TYPE,
     4,
@@ -2022,6 +2047,7 @@ EVENT_FLOWS: list[EventFlow] = [
     EARNINGS_500_FLOW,
     SPLITS_FLOW,
     BOC_FLOW,
+    CA_CPI_FLOW,
 ]
 
 
