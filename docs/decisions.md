@@ -11,6 +11,17 @@ amended there with a date.
 Each entry: **what** was decided, **why**, what it **retires**, and **where** the detail is. *By the
 owner* marks a choice the owner made over another on the table.
 
+## 2026-11-24: Nasdaq's cached refusals asked again, after step 57, by the owner
+
+- **What:** the 324 Nasdaq calendar days cached as "Error while calling vendor" are deleted and
+  asked again once (about 22 minutes at Nasdaq's pace), as a small change after step 57; every
+  output is compared before and after, and each expected value recovered is listed.
+- **Why:** step 57's R1 found them read since as days without releases; R1 keeps no new refusal
+  but left these, so that nothing measured changed within step 57.
+- **Retires:** [Precision](precision.md)'s *Now* for them, once done.
+- **Where:** [Status](status.md); [Precision](precision.md), *Nasdaq's refusals kept before step
+  57*, which reaches `main` with R1 (#451).
+
 ## 2026-11-24: Bitcoin's and ether's weekend closes, from Yahoo, after step 58, by the owner
 
 - **What:** the price loader keeps Saturday's and Sunday's closes for bitcoin and ether, which
