@@ -43,6 +43,9 @@ Eleven pull requests, in this order, the ones that can lose an evening's work fi
 5. **R1, the cache.** A reply is cached only once its parser accepted it, never TradingView's
    `no_data` or an error status, nor Nasdaq's `data: null`; it is written to a temporary file and
    moved into place.
+   *Amended 2026-11-24, before building:* Nasdaq's "No record found" (code 1002) is a day without
+   releases and is kept; its "Error while calling vendor" (2004) is not. The 328 refusals already
+   cached are left, so nothing measured changes; [Precision](../precision.md) holds them.
 6. **R2, a moved release.** Loading a flow's events replaces that flow's events, its observations
    and surprises first, in one transaction, so an event whose date moved leaves no copy behind.
    *Amended 2026-11-24, while building:* an event the source no longer gives is removed only when
