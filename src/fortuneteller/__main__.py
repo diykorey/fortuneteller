@@ -2813,6 +2813,10 @@ GUESS_TAGS = (
 GUESS_CONFIDENCE = ("low", "medium", "high")
 HORIZONS = (("week", 5), ("month", 21), ("quarter", 63), ("year", 261))
 GUESS_APART = 5
+# Step 56 (docs/steps/honest-page.md): no guess on a single company, and a guess written by hand
+# (its prompt `by-hand`) counts in neither guesser's record, lessons or comparison.
+GUESS_LEFT_OUT = ("COIN", "ALL")
+BY_HAND = "by-hand"
 GUESS_FIELDS = (
     "stated",
     "market",
@@ -2833,6 +2837,7 @@ GUESS_FIELDS = (
     "base_rate",
     "guesser",
     "prompt",
+    "made",
 )
 GROUNDED_SPANS = (("week", 5), ("month", 21), ("quarter", 63), ("year", 252))
 LESSONS_HEAD = re.compile(r"^## Version (\d+), (\d{4}-\d{2}-\d{2})$", re.M)
@@ -2881,7 +2886,9 @@ def _prompt(name: str, **fields: str) -> str:
 def market_list() -> str:
     names = market_names()
     return "\n".join(
-        f"{m}: {PLAIN_MARKETS.get(m, names.get(m, m))}" for m in study.MVP_PRICE_SERIES
+        f"{m}: {PLAIN_MARKETS.get(m, names.get(m, m))}"
+        for m in study.MVP_PRICE_SERIES
+        if m not in GUESS_LEFT_OUT
     )
 
 
@@ -2890,7 +2897,19 @@ def _open(rows: Sequence[Mapping[str, str]]) -> list[Mapping[str, str]]:
 
 
 def _mine(rows: Sequence[Mapping[str, str]], guesser: str) -> list[Mapping[str, str]]:
-    return [r for r in rows if r.get("guesser", "news") == guesser]
+    return [r for r in rows if r.get("guesser", "news") == guesser and r.get("prompt") != BY_HAND]
+
+
+def guess_start(r: Mapping[str, str]) -> date:
+    """Step 56: the day of the first close in the guess's market after it was made; a row without
+    ``made`` counts as made at 23:59 New York on its stated day."""
+    stated = date.fromisoformat(r["stated"])
+    made = (
+        datetime.fromisoformat(r["made"])
+        if r.get("made")
+        else datetime(stated.year, stated.month, stated.day, 23, 59, tzinfo=sources.NEW_YORK)
+    )
+    return study.first_close_after(made, study.MVP_PRICE_SERIES[r["market"]])
 
 
 def _guess_fields(today: date, rows: Sequence[Mapping[str, str]], lessons: str) -> dict[str, str]:
@@ -2968,6 +2987,8 @@ def _why_not(
     reach = horizon(today, last)
     if market not in study.MVP_PRICE_SERIES:
         return "a market not listed"
+    if market in GUESS_LEFT_OUT:
+        return "a single company"
     if direction not in ("up", "down"):
         return "a direction not up or down"
     if last.weekday() >= 5 or _weekdays_between(today, last) < 2 or reach is None:
@@ -3003,8 +3024,10 @@ def keep_guesses(
     lessons_version: str = "0",
     guesser: str = "news",
     prompt: str = "news-1",
+    made: datetime | None = None,
 ) -> tuple[list[dict[str, str]], list[str]]:
-    """``rows`` with each acceptable guess in ``answer`` added, and why each other was dropped."""
+    """``rows`` with each acceptable guess in ``answer`` added, and why each other was dropped;
+    each kept one written at ``made`` (aware)."""
     guesses = _json_list(answer)
     if guesses is None:
         return rows, ["the answer held no JSON list"]
@@ -3040,6 +3063,7 @@ def keep_guesses(
                 "base_rate": "",
                 "guesser": guesser,
                 "prompt": prompt,
+                "made": made.astimezone(UTC).isoformat(timespec="seconds") if made else "",
             }
         )
     return kept, dropped
@@ -3054,7 +3078,7 @@ def with_base_rates(
     for r in rows:
         if not r.get("base_rate"):
             stated = date.fromisoformat(r["stated"])
-            n = _weekdays_between(stated, date.fromisoformat(r["last"]))
+            n = _weekdays_between(guess_start(r), date.fromisoformat(r["last"]))
             rate = study.base_rate(closes(r["market"]), stated, n, r["direction"])
             r = {**r, "base_rate": "" if rate is None else f"{rate:.4f}"}
         out.append(r)
@@ -3064,20 +3088,21 @@ def with_base_rates(
 def grade_guesses(
     rows: list[dict[str, str]], closes: Callable[[str], Sequence[sources.DailyClosingPrice]]
 ) -> list[dict[str, str]]:
-    """``grade_forecasts`` on the ledger, keeping each newly graded row's move."""
+    """Each ungraded ledger row whose end date has a close: *came true* if the last close on or
+    before its end date is beyond its baseline, the first close after it was made (step 56), in
+    its direction; its move kept with the grade."""
     graded = []
     for r in rows:
-        if r.get("grade"):
-            graded.append(r)
-            continue
-        new = grade_forecasts([r], closes)[0]
-        if new["grade"]:
+        if not r.get("grade"):
             series = closes(r["market"])
-            first, last = date.fromisoformat(r["first"]), date.fromisoformat(r["last"])
-            before = [c for c in series if c.day < first][-1].price
-            after = [c for c in series if c.day <= last][-1].price
-            new = {**new, "move": f"{before:g} to {after:g}"}
-        graded.append(new)
+            start, last = guess_start(r), date.fromisoformat(r["last"])
+            since = [c for c in series if start <= c.day <= last]
+            if since and series[-1].day >= last:
+                move = since[-1].price - since[0].price
+                right = move > 0 if r["direction"] == "up" else move < 0
+                grade = "came true" if right else "did not"
+                r = {**r, "grade": grade, "move": f"{since[0].price:g} to {since[-1].price:g}"}
+        graded.append(r)
     return graded
 
 
@@ -3253,12 +3278,24 @@ def guess_as(
             lessons = updated
         number = str(lessons_version(lessons)[0])
         kept, dropped = keep_guesses(
-            _run_model(build(rows, lessons), web=True), rows, today, number, guesser, version
+            _run_model(build(rows, lessons), web=True),
+            rows,
+            today,
+            number,
+            guesser,
+            version,
+            _now(),
         )
         if dropped == ["the answer held no JSON list"]:
             print(f"guess: {guesser}: no JSON list, asking once more", file=sys.stderr)
             kept, dropped = keep_guesses(
-                _run_model(build(rows, lessons), web=True), rows, today, number, guesser, version
+                _run_model(build(rows, lessons), web=True),
+                rows,
+                today,
+                number,
+                guesser,
+                version,
+                _now(),
             )
     except (OSError, subprocess.SubprocessError, ValueError, KeyError) as exc:
         print(f"guess: {guesser}: the model failed: {exc}", file=sys.stderr)
@@ -3368,7 +3405,7 @@ def counted_guesses(rows: Sequence[Mapping[str, str]]) -> list[Mapping[str, str]
     seen: set[tuple[object, ...]] = set()
     out = []
     for r in sorted(rows, key=lambda r: r["stated"]):
-        if r.get("grade") not in GRADED or not r.get("base_rate"):
+        if r.get("grade") not in GRADED or not r.get("base_rate") or r.get("prompt") == BY_HAND:
             continue
         week = date.fromisoformat(r["last"]).isocalendar()[:2]
         key = (r.get("guesser", "news"), GUESS_TWINS.get(r["market"], r["market"]), week)
@@ -3513,7 +3550,7 @@ def write_stats(
             f"<tr><td>{escape(str(r[key]))}{' (promoted)' if key == 'tag' and r[key] in promoted else ''}</td>"
             f"<td>{r['came_true']} of {r['guesses']}</td><td>{r['evenings_right']} of {r['evenings']}</td>"
             f"<td>{r['verdict']}</td></tr>"
-            for r in guess_record(rows, key)
+            for r in guess_record([r for r in rows if r.get("prompt") != BY_HAND], key)
         ]
         head = (
             f"<h2>{title}</h2><div class='wide'><table><tr><th></th><th>Guesses that came true</th>"
@@ -3609,7 +3646,8 @@ def stated_forecasts(
     _write_rows(kept_path, FORECAST_FIELDS, rows)
     ledger = [_ledger_row(r) for r in _read_rows(kept_path.parent / "our-guesses.csv")]
     guesses = [g for g in ledger if g["guesser"] == "news"]
-    promoted = {str(t["tag"]) for t in guess_record(guesses, "tag") if t["verdict"] == "holds"}
+    own = [g for g in guesses if g.get("prompt") != BY_HAND]
+    promoted = {str(t["tag"]) for t in guess_record(own, "tag") if t["verdict"] == "holds"}
     write_stats(kept_path.parent / "stats" / "index.html", guesses, promoted, ledger)
     taken = {AREAS.get(str(t["market"]), str(t["market"])) for t in told}
     picks = front_guesses(guesses, promoted, today, FRONT_MOST - len(told), taken)

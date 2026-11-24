@@ -39,6 +39,8 @@ def _g(market: str = "BRN", end: str = "2026-11-27", **extra: object) -> dict[st
     ("guess", "why"),
     [
         (_g("AAPL"), "a market not listed"),
+        (_g("COIN"), "a single company"),
+        (_g("ALL"), "a single company"),
         (_g(direction="flat"), "a direction not up or down"),
         (_g(end="2026-11-28"), "an end date not a weekday from the second after tonight to a year"),
         (_g(end="2026-11-23"), "an end date not a weekday from the second after tonight to a year"),
@@ -133,9 +135,11 @@ def test_a_failed_run_keeps_the_rows_and_does_not_stop_the_evening(
     assert cli._read_rows(folder / "our-guesses.csv") == kept
 
 
-def test_a_guess_is_graded_from_the_close_before_its_first_day() -> None:
-    # given a down guess for Nov 23 to 27: Friday 100, Monday 90, the 27th 95
-    kept, _ = cli.keep_guesses(_answer(_g()), [], FRIDAY)
+def test_a_guess_is_graded_from_the_first_close_after_it_was_made() -> None:
+    # given a down Brent guess made Friday 18:00 New York for Nov 23 to 27: Friday 100 (settled
+    # at 14:30, before it), Monday 90, the 27th 95
+    made = datetime(2026, 11, 20, 23, 0, tzinfo=UTC)
+    kept, _ = cli.keep_guesses(_answer(_g()), [], FRIDAY, made=made)
     prices = {20: 100.0, 23: 90.0, 24: 91.0, 25: 92.0, 26: 94.0, 27: 95.0}
     closes = [DailyClosingPrice(date(2026, 11, d), p) for d, p in prices.items()]
 
@@ -143,9 +147,80 @@ def test_a_guess_is_graded_from_the_close_before_its_first_day() -> None:
     early = cli.grade_guesses(kept, lambda m: closes[:-1])
     done = cli.grade_guesses(kept, lambda m: closes)
 
-    # then it is open, then came true from Friday's 100 (from Monday's 90 it would not have)
+    # then it is open, then did not come true from Monday's 90 (from Friday's 100, seen before it
+    # was made, it would have)
+    assert kept[0]["made"] == "2026-11-20T23:00:00+00:00"
     assert early[0]["grade"] == ""
-    assert (done[0]["grade"], done[0]["move"]) == ("came true", "100 to 95")
+    assert (done[0]["grade"], done[0]["move"]) == ("did not", "90 to 95")
+
+
+@pytest.mark.parametrize(
+    ("market", "made", "start"),
+    [
+        # Monday 18:00 New York is Tuesday 08:00 in Tokyo, before its 15:30 close
+        ("NKY", datetime(2026, 11, 23, 23, 0, tzinfo=UTC), date(2026, 11, 24)),
+        # Monday 18:00 New York is 23:00 London, before Tuesday's 00:00 bar
+        ("EURUSD", datetime(2026, 11, 23, 23, 0, tzinfo=UTC), date(2026, 11, 24)),
+        # Monday 19:30 New York is Tuesday 00:30 London, after Tuesday's bar
+        ("EURUSD", datetime(2026, 11, 24, 0, 30, tzinfo=UTC), date(2026, 11, 25)),
+        # Monday 19:30 New York after the US change of clocks is 23:30 London, still on GMT
+        ("EURUSD", datetime(2027, 3, 15, 23, 30, tzinfo=UTC), date(2027, 3, 16)),
+        # a guess made at the very instant of Tokyo's close has seen it
+        ("NKY", datetime(2026, 11, 24, 6, 30, tzinfo=UTC), date(2026, 11, 25)),
+        # Sunday 15:00 New York, before bitcoin's 23:59 UTC close
+        ("BTC", datetime(2026, 11, 22, 20, 0, tzinfo=UTC), date(2026, 11, 22)),
+    ],
+)
+def test_a_guess_starts_from_its_market_s_first_close_after_it_was_made(
+    market: str, made: datetime, start: date
+) -> None:
+    # given a guess made at ``made``
+    row = {"stated": "2026-11-23", "market": market, "made": made.isoformat()}
+
+    # when its start is read
+    # then it is the first day whose close in that market comes after it
+    assert cli.guess_start(row) == start
+
+
+def test_a_weekend_bitcoin_guess_is_graded_from_monday_s_close() -> None:
+    # given an up bitcoin guess made Sunday, and bitcoin's closes stored on weekdays only
+    made = datetime(2026, 11, 22, 20, 0, tzinfo=UTC)
+    kept, _ = cli.keep_guesses(
+        _answer(_g("BTC", direction="up")), [], date(2026, 11, 22), made=made
+    )
+    prices = {20: 100.0, 23: 80.0, 24: 81.0, 25: 82.0, 26: 83.0, 27: 90.0}
+    closes = [DailyClosingPrice(date(2026, 11, d), p) for d, p in prices.items()]
+
+    # when graded
+    done = cli.grade_guesses(kept, lambda m: closes)
+
+    # then from Monday's 80, not Friday's 100, which the weekend's fall had already left behind
+    assert (done[0]["grade"], done[0]["move"]) == ("came true", "80 to 90")
+
+
+def test_a_row_made_unknown_counts_as_made_late_on_its_stated_day() -> None:
+    # given a Nikkei row with no time it was made, stated Monday
+    row = {"stated": "2026-11-23", "market": "NKY", "made": ""}
+
+    # when its start is read
+    # then it is as if made at 23:59 New York, Tuesday 13:59 in Tokyo: Tuesday's close
+    assert cli.guess_start(row) == date(2026, 11, 24)
+
+
+def test_a_base_rate_counts_the_weekdays_from_the_guess_s_start() -> None:
+    # given an S&P 500 guess made Monday 18:00 New York ending Friday, and rising closes before
+    made = datetime(2026, 11, 23, 23, 0, tzinfo=UTC).isoformat()
+    row = {"stated": "2026-11-23", "market": "SPY / ES", "direction": "up", "last": "2026-11-27"}
+    closes = [
+        DailyClosingPrice(date(2026, 1, 1) + timedelta(days=i), 100.0 + i) for i in range(200)
+    ]
+
+    # when its base rate is filled
+    [filled] = cli.with_base_rates([row | {"made": made}], lambda m: closes)
+
+    # then it is over spans of 3 weekdays, Tuesday's close to Friday's
+    expected = study.base_rate(closes, date(2026, 11, 23), 3, "up")
+    assert filled["base_rate"] == f"{expected:.4f}"
 
 
 def test_a_review_is_kept_on_a_graded_row_and_never_changes_its_grade() -> None:
@@ -621,3 +696,30 @@ def test_the_grounded_lessons_are_given_each_tag_against_its_base_rates() -> Non
     # then the record reads 1 of 2 against 1.1 expected, and the model was given it
     assert record == "- momentum: 1 of 2 came true, 1.1 expected from base rates"
     assert record in asked[0]
+
+
+def test_a_hand_made_guess_is_in_no_guesser_s_record_but_still_shown() -> None:
+    # given a graded news guess, and a graded hand-made one on another market
+    rows = [_row(), _row("WEAT", prompt="by-hand")]
+
+    # when counted, judged, read as the news guesser's own, and picked for the front page
+    counted = cli.counted_guesses(rows)
+    record = cli.excess_record(rows, "news")
+    mine = cli._mine(rows, "news")
+    open_rows = [r | {"grade": ""} for r in rows]
+    picks = cli.front_guesses(open_rows, set(), date(2026, 11, 20), 5)
+
+    # then only the news guess counts, yet both may reach the front page
+    assert [r["market"] for r in counted] == ["BRN"]
+    assert record["counted"] == 1
+    assert [r["market"] for r in mine] == ["BRN"]
+    assert sorted(r["market"] for r in picks) == ["BRN", "WEAT"]
+
+
+def test_the_guesser_is_not_offered_a_single_company() -> None:
+    # given the markets the guesser is shown
+    listed = [line.split(":")[0] for line in cli.market_list().splitlines()]
+
+    # then neither Coinbase nor Allstate is among them, and the other 35 are
+    assert "COIN" not in listed and "ALL" not in listed
+    assert len(listed) == len(study.MVP_PRICE_SERIES) - 2 == 35

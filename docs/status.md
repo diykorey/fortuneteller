@@ -39,8 +39,9 @@ the hand check against Yahoo passed, and no answer or verdict on the page change
 ## In progress
 
 - **Step 56: what the page claims, corrected** ([the spec](steps/honest-page.md)): the business
-  review's eight required fixes of 2026-11-24, chosen by the owner that day. Next: the spec's
-  goldfish review, then step 1, the guess baseline.
+  review's eight required fixes of 2026-11-24, chosen by the owner that day. Spec reviewed; step 1
+  built: each guess graded from its market's first close after it was made, hand-made guesses in
+  no guesser's record, no single companies. Next: step 2, cards that stay until graded.
 - **Step 55: guesses against the base rate** ([the spec](steps/guesses-vs-base-rate.md)): each
   guess carries its base rate; a grounded guesser, given the record, runs beside today's news
   guesser as the control. Asked for 2026-11-23 by the owner. Spec merged (#420); step 1, the

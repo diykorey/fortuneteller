@@ -29,9 +29,12 @@ you know it is right* says.
   first close after `made`, read with each market's close time and zone in
   `study.MVP_PRICE_SERIES`, as an event's reaction day is: a close at the very instant of `made`
   counts as seen. A row without `made` takes the time of the commit that first added it to the
-  ledger, which is never earlier than it was written. No ledger row is graded yet (the first ends
+  ledger, which is never earlier than it was written; *amended 2026-11-24*, step 1: written into
+  the ledger by step 1, and a row still without one counts as made at 23:59 New York on its stated
+  day. No ledger row is graded yet (the first ends
   2026-11-27), so every row takes the new baseline and no grade changes. Its base rate counts the
-  weekdays from that close to its end date; a base rate already filled is recomputed.
+  weekdays from that close to its end date; a base rate already filled is recomputed (none was
+  filled when step 1 was built).
 - **Hand-made guesses apart (found while checking the review, 2026-11-24).** The two guesses added by hand that day carry
   `guesser` *news* and `prompt` *by-hand*, so they would count in the control guesser's record,
   its lessons and step 55's comparison. From now on a `by-hand` row counts in neither guesser's
@@ -133,4 +136,20 @@ counted as one group), the legal opinion, and rewriting the public history.
 
 ## Results
 
-Not yet measured.
+### Step 1: the baseline
+
+The hand count, written 2026-11-24 before the code ran: each row's `made` (the commit that added
+it), in its market's zone against its close, and the day its baseline close falls on. All 14 equal
+the code's `guess_start`, and no base rate had been filled.
+
+| Rows | `made` (UTC) | Read against | Baseline close |
+| --- | --- | --- | --- |
+| `COMP`, `GC / XAU` | 2026-11-22 07:20:00 (735fd77) | Sunday in New York | Monday 2026-11-23 |
+| `VIX`, `SPY / ES`, `DXY`, `COIN`, `BRN`, `UGA`, `ITB` | 2026-11-22 09:08:01 (3e0345c) | Sunday in New York | Monday 2026-11-23 |
+| `USDJPY` | the same | after Sunday's 00:00 London bar | Monday 2026-11-23 |
+| `BTC` | the same | before Sunday's 23:59 UTC close, which is not stored | Monday 2026-11-23 |
+| `NKY` | the same | 18:08 Sunday in Tokyo; Monday is a holiday in Japan | Tuesday 2026-11-24 |
+| `WEAT`, `UST10Y / ZN` | 2026-11-24 00:02:59 (0adfa50) | 19:02 Monday in New York, after the close | Tuesday 2026-11-24 |
+
+Before, the twelve rows of 2026-11-22 started from Friday 2026-11-20's close; the two of
+2026-11-24 already started from Tuesday's.
