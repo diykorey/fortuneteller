@@ -17,9 +17,11 @@ import csv
 import json
 import re
 import math
+import os
 import statistics
 import subprocess
 import sys
+import tempfile
 import textwrap
 import time
 from collections.abc import Callable, Iterable, Mapping, Sequence
@@ -2866,11 +2868,18 @@ def horizon(today: date, last: date) -> str | None:
 
 
 def _run_model(prompt: str, web: bool) -> str:
-    """One fresh Subscription LLM session; its answer's text."""
+    """One fresh Subscription LLM session; its answer's text. It reads untrusted news, so it gets
+    no tool but web search, none of the user's settings, hooks or servers, an environment of
+    ``PATH`` and ``HOME`` alone and an empty folder (step 57, R6, docs/steps/technical-fixes.md)."""
+    tools = "WebSearch" if web else ""
     command = ["claude", "-p", prompt, "--model", GUESS_MODEL, "--output-format", "json"]
-    if web:
-        command += ["--allowedTools", "WebSearch"]
-    done = subprocess.run(command, capture_output=True, text=True, timeout=1800, check=True)
+    command += ["--tools", tools, "--allowedTools", tools, "--strict-mcp-config"]
+    command += ["--setting-sources", "project"]
+    env = {name: os.environ[name] for name in ("PATH", "HOME") if name in os.environ}
+    with tempfile.TemporaryDirectory() as empty:
+        done = subprocess.run(
+            command, capture_output=True, text=True, timeout=1800, check=True, env=env, cwd=empty
+        )
     return str(json.loads(done.stdout)["result"])
 
 
