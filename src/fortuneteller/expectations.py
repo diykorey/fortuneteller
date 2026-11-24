@@ -429,6 +429,22 @@ def published(value: float, decimals: int, row: float | None) -> bool:
     return row is not None and abs(round(value, decimals) - row) < 0.5 * 10**-decimals
 
 
+# TradingView's forecast fills in where Nasdaq has none, the one expected value not checked against
+# the first print: one more than this many times the actual, or less than its inverse, is a slip of
+# units (a percent read as a fraction, thousands as units) and is refused (step 57, R10,
+# docs/steps/technical-fixes.md).
+FALLBACK_SCALE = 20.0
+
+
+def out_of_scale(forecast: float, actual: float) -> bool:
+    """Whether ``forecast`` is more than ``FALLBACK_SCALE`` times ``actual``, or less than its
+    inverse; never when either is zero."""
+    if forecast == 0 or actual == 0:
+        return False
+    ratio = abs(forecast / actual)
+    return ratio > FALLBACK_SCALE or ratio < 1 / FALLBACK_SCALE
+
+
 def match_consensus(
     actuals: Iterable[Actual],
     released: Mapping[int, date],
@@ -463,6 +479,12 @@ def match_consensus(
         check = checks.get((check_name, day))
         if not candidates:
             if check is not None and (actual.measure, day) not in UNREADABLE_CONSENSUS:
+                if out_of_scale(check, actual.value):
+                    left_out.append(
+                        f"{where}: TradingView {check:g}, over {FALLBACK_SCALE:g} times from the "
+                        f"actual {actual.value:g}"
+                    )
+                    continue
                 consensus[(actual.event_id, actual.measure)] = check
                 filled_in.append(f"{where}: TradingView {check:g}")
             continue

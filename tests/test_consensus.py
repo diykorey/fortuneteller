@@ -222,6 +222,29 @@ def test_no_row_or_two_rows_matching_the_first_print_are_refused(
         _match(rows)
 
 
+@pytest.mark.parametrize(
+    ("forecast", "kept"), [(31.0, False), (310.0, False), (0.93, True), (-0.31, True)]
+)
+def test_a_fallback_forecast_out_of_scale_is_refused(forecast: float, kept: bool) -> None:
+    # given no Nasdaq row, and TradingView's forecast 100 or 1,000 times the actual 0.31, or 3
+    # times it, or of the other sign
+    checks = [CalendarRow("Core Inflation Rate MoM", DAY, 0.3, forecast)]
+
+    # when the consensus is matched
+    consensus, left_out, filled_in = _match([], checks)
+
+    # then a slip of units is left out and named; the others fill in
+    if kept:
+        assert consensus == {(1, sources.CORE): forecast}
+        assert left_out == []
+    else:
+        assert consensus == {}
+        assert filled_in == []
+        assert left_out == [
+            f"core on 2026-09-11: TradingView {forecast:g}, over 20 times from the actual 0.31"
+        ]
+
+
 def test_a_named_unreadable_day_is_left_out_not_refused() -> None:
     # given core CPI on 2008-10-16, whose Nasdaq actual is not our first print
     actual = Actual(1, sources.CORE, date(2008, 9, 1), 0.14, "percent")
