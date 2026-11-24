@@ -56,7 +56,9 @@ At the end: two markets more, the franc (USD/CHF) and Zurich's SMI; `fortunetell
     (*Amended 2026-11-23, in step 1:* the calendar and the history disagree on 11 days, not six:
     the six it lacks; four with no rate on the calendar, 2008-06-19, 2008-09-18, 2008-12-11 and
     2009-03-12 (holds the first two, cuts the last two); and 2015-03-19, a hold the calendar reads
-    as a cut. The five are the ones named in the bullet above; none is new.)
+    as a cut. The five are the ones the bullet above names: the four from "none for 2008 to
+    2009-03" and 2015-03-19; none is new. *Reworded 2026-11-24* from "named in the bullet above",
+    after the results' goldfish review; the days unchanged.)
   - With the SNB's history: 81 decisions, 80 with a kind: 14 cuts (the six unscheduled, the
     scheduled 2008-12-11 and 2009-03-12, and six from 2024-03-21 to 2025-06-19), 61 holds, 5 hikes
     (2022-06-16 to 2023-06-22). The event
@@ -114,7 +116,7 @@ At the end: two markets more, the franc (USD/CHF) and Zurich's SMI; `fortunetell
 | 1 | ~~The two markets~~ **done** 2026-11-23. The two markets and the SNB's history: seed rows, series, `load-prices`, `snb-changes.csv`, the guesser's list and the areas | `load-prices` stores both; tests: a 09:30 Zurich decision falls on the same day's SMI close and the next day's franc and Tokyo closes; `USDCHF` is in the currencies area and `SMI` in stocks; the closes within 0.05%, written here; each change's day and hour copied from the SNB's press release (*amended 2026-11-23:* the hour from the sources above, the releases giving none), and each month's rate in the file equal to the monthly series' on all 2008-01 to 2026-10 months; the days the calendar and the history disagree on listed here, exactly the six expected, or each other amended; on a copy of the store every existing `raw-move`, `follows`, scoreboard and *Ask* row identical, each chance line before and after written here |
 | 2 | ~~The SNB~~ **done** 2026-11-23. The SNB: flow `snb`, `follows --event snb`, on *Ask*, a trigger kind (*cut*, *hold*, *hike*) | Tests: a quarter stores its decisions at their UTC time; an unscheduled change is added at its file's hour, 2015-01-15 at 10:30 Zurich reacting the same day in the SMI and the next in the franc; 2015-01-15 a cut and 2015-03-19 a hold; an `snb` trigger is answered; *Ask*'s cells equal `follows`'. The header as expected, or amended as the rule says; every other flow's `raw-move`, `follows`, scoreboard and *Ask* rows unchanged |
 | 3 | ~~Inflation~~ **done** 2026-11-24. Inflation: flow `chcpi`, `follows --event chcpi`, on *Ask*, a trigger kind (*above*, *as expected*, *below*) | Tests: the surprise is the actual less the forecast, *above* from 0.1; a day shared with a flow that is not lesser left out of its table; a release at 09:15 Zurich in winter (08:15 UTC, after Tokyo's close) reacts the same day in the SMI and the next in Tokyo and the franc; a `chcpi` trigger is answered; *Ask*'s cells equal `follows`'. The header as expected, or amended as the rule says; every other flow's `raw-move`, `follows`, scoreboard and *Ask* rows unchanged |
-| 4 | Results here and in [MVP results](../mvp-results.md), against the expected outcome; the roadmap row | Every judged bullet marked right or wrong with its numbers |
+| 4 | ~~Results~~ **done** 2026-11-24. Results here and in [MVP results](../mvp-results.md), against the expected outcome; the roadmap row | Every judged bullet marked right or wrong with its numbers |
 
 ## How you know it is right
 
@@ -146,9 +148,61 @@ for the two markets, no live call on Switzerland.
 
 ## Results
 
-*Step 1, 2026-11-23:* every number is in [the evidence](switzerland-steps.txt).
+*2026-11-24.* Every number is in [the evidence](switzerland-steps.txt), each command's whole
+output, on steps 1 to 3's copies of the store (closes to 2026-11-19). The judged tables are step
+3's, with both flows loaded: `follows --event snb` and `--event chcpi`, each from the close before
+and `--after-the-day`; step 3's `cmp` found the SNB's outputs byte for byte step 2's.
 
-- **The franc:** `CHF=X`, 6,026 closes from 2003-09-17 to 2026-11-19. Its daily close is within
+**In plain words:** the Swiss National Bank's decisions and Swiss inflation against forecasts do
+not tell which way markets go. No lean holds when replayed in order, and each flow gives fewer
+answers than chance in both runs. On the 56 days the SNB has to itself, the franc moves almost
+twice its usual size, but in no set direction. On the day of a cut or a hold, and of each kind of
+inflation print, neither the franc nor the SMI leans either way; the SMI fell in the week after 9
+of 13 cuts, too few to replay.
+
+- **The sources, the kinds, the hours and step 17's bars, unchanged by what the run shows: right.**
+  The two amendments, the hours and the disagreements, are dated and were made in step 1, before
+  either flow existed (git: the step 1 commit, before step 2's).
+- **The headers: right,** each equal to the count by hand written before step 1: `follows: 80 SNB
+  decisions 2008-06-19 … 2026-09-24: 14 cuts, 61 holds, 5 hikes` and `follows: 152 Swiss CPI
+  releases 2008-02-08 … 2026-11-03: 47 above, 45 as expected, 60 below` (`follows --event snb`,
+  `--event chcpi`, both runs).
+- **The arithmetic: right.** The hikes (5) are *too few* in every cell; no cut cell is graded
+  walk-forward; the most graded cells are holds' and inflation's, at most 26 and 45 for the SNB,
+  36 and 33 for inflation, from the close before and from the reaction close (`follows`).
+- **Walk-forward, nothing holds, for either flow: right.** Four cells reached 30 graded, and each
+  *doesn't hold*: after an SNB hold, utilities on the day, 20 right of 45, and over the month, 18
+  of 43 (from the reaction close); after inflation below, the S&P 500 over the month, 11 of 36
+  (from the close before), and Brent on the day, 15 of 33 (from the reaction close).
+- **On all history, no more answers than chance plus 2: right,** in all four checks. The SNB 3
+  and 4 answers against a chance line of 5.8 (limit 7.8); inflation 5 and 9 against 10.0 (limit
+  12.0), from the close before and from the reaction close (`follows`' last line).
+- **The franc after an SNB cut, on the day, *can't say* in both runs: right** (6 up, 3 the same, 5
+  down of 14, chance 0.52; 4/6/4, 0.31).
+- **The franc after inflation above or below, on the day, *can't say* in both runs: right** (above
+  13/17/17 of 47, 0.26, and 20/17/10, 0.061; below 25/17/18 of 60, 0.22, and 22/13/25, 0.33).
+- **The SMI on the day after an SNB cut or hold and after each kind of inflation, *can't say* in
+  both runs, after a hike *too few*: right.** The nearest: after a cut, 2 up, 4 the same, 8 down of
+  14, chance 0.034, and after a hold 14/27/20 of 61, 0.049, both from the reaction close; the bar is
+  0.01.
+- **Every existing row unchanged: right,** byte for byte at each step (92, 92 and 95 outputs; the
+  scoreboard and *Ask* gaining only the new entries), as recorded per step below.
+
+Outside the rule, recorded, not judged: `raw-move --event snb` finds the franc's moves on 56 SNB
+days alone 1.88 times other days' (p 0.0001, *moves*), the dollar index's and the euro's 1.50 and
+1.46, and the SMI's 1.03 (*doesn't*); on inflation's 153 days the franc's are 1.14 (*unclear*), the
+SMI's 1.04 on its 152. After an SNB hold the S&P 500 rose on 31 of 61 days and the VIX fell on 32,
+each an answer from the close before (`follows --event snb`), too few graded to replay (26 and
+24). The SMI fell in the week after 9 of 13 cuts from the reaction close (`follows --event snb
+--after-the-day`, chance 0.0098), an answer, none graded.
+
+*Step 1, 2026-11-23:* every number is in [the evidence](switzerland-steps.txt). The close checks,
+the monthly check and the disagreement list are one-off checks, not commands; each heading in the
+evidence says what was run, and its whole output follows it. The chance lines are `follows`'
+last line, each flow and run.
+
+- **The franc:** `CHF=X`, 6,026 closes from 2003-09-17 to 2026-11-19 (6,027 when counted for the
+  spec, the store's copy ending a day earlier, as the SMI's 9,048 against 9,049). Its daily close is within
   0.026% of the 00:00 London 5-minute bar's open on all ten days of 2026-11-09 to 2026-11-20.
 - **The SMI:** `^SSMI`, 9,048 closes from 1990-11-09. Its 5-minute bars end with the 17:25 bar,
   0.000% to 0.190% from the daily close, so it is checked against the exchange's published close:
