@@ -11,6 +11,18 @@ amended there with a date.
 Each entry: **what** was decided, **why**, what it **retires**, and **where** the detail is. *By the
 owner* marks a choice the owner made over another on the table.
 
+## 2026-11-24: Bitcoin's and ether's weekend closes, from Yahoo, after step 58, by the owner
+
+- **What:** the price loader keeps Saturday's and Sunday's closes for bitcoin and ether, which
+  Yahoo already sends and the loader drops for every market; a small step 59, after the publishing
+  schedule. No new crypto source (Binance, Coinbase, CoinDesk).
+- **Why:** a crypto guess made at a weekend is graded from Monday's close, and a weekend's news
+  reaches crypto's price before any stored close. The prices are already free from Yahoo; Binance
+  refuses US addresses, where the runner of step 21 works, and CoinDesk is news, whose reading
+  (step 20) is parked until the 2027-01-31 gate.
+- **Retires:** nothing.
+- **Where:** [Roadmap](roadmap.md), row 59.
+
 ## 2026-11-24: Correct what the page claims before widening, by the owner
 
 - **What:** the required fixes of two outside reviews of 2026-11-24 come before any new flow: the
