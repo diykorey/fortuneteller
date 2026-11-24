@@ -63,7 +63,7 @@ def test_nasdaq_is_asked_the_next_day_and_a_past_day_is_kept(
 
     def answer(url: str, what: str, timeout: float) -> bytes:
         asked.append(url)
-        return b"{}"
+        return b'{"data": {"rows": []}}'
 
     monkeypatch.setattr(sources, "_calendar_get", answer)
     today = date(2026, 10, 9)
@@ -76,6 +76,75 @@ def test_nasdaq_is_asked_the_next_day_and_a_past_day_is_kept(
     # then each asks for the day after; the past day comes from the cache the second time
     assert [url.rsplit("=", 1)[1] for url in asked] == ["2026-09-12", "2026-10-09"]
     assert sorted(p.name for p in (tmp_path / "nasdaq").iterdir()) == ["2026-09-11.json"]
+
+
+@pytest.mark.parametrize(
+    ("fetch", "reply"),
+    [
+        ("nasdaq", b'{"data": null, "status": {"rCode": 400}}'),
+        (
+            "nasdaq",
+            b'{"data": null, "status": {"rCode": 200, "bCodeMessage": [{"code": 2004, '
+            b'"errorMessage": "Economic Events Calendar: Error while calling vendor"}]}}',
+        ),
+        ("nasdaq", b"<html>busy</html>"),
+        ("tradingview", b'{"status": "no_data"}'),
+        ("tradingview", b'{"status": "error", "errmsg": "limit"}'),
+    ],
+)
+def test_a_refusal_for_a_past_day_is_not_kept(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch, fetch: str, reply: bytes
+) -> None:
+    # given a source that refuses, for a day or a quarter already past
+    monkeypatch.setattr(sources, "_calendar_get", lambda url, what, timeout: reply)
+    today = date(2026, 10, 9)
+
+    # when it is read
+    if fetch == "nasdaq":
+        sources.fetch_nasdaq_day(date(2026, 9, 11), tmp_path, today)
+    else:
+        sources.fetch_tradingview_quarter(date(2026, 4, 1), tmp_path, today)
+
+    # then nothing is kept, so the next run asks again
+    assert not list(tmp_path.rglob("*"))
+
+
+def test_nasdaq_s_no_record_found_is_kept_as_a_day_without_releases(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given Nasdaq's answer for a past day with nothing on it
+    reply = (
+        b'{"data": null, "status": {"rCode": 200, "bCodeMessage": [{"code": 1002, '
+        b'"errorMessage": "Economic Events Calendar: No record found."}]}}'
+    )
+    monkeypatch.setattr(sources, "_calendar_get", lambda url, what, timeout: reply)
+
+    # when it is read
+    sources.fetch_nasdaq_day(date(2026, 9, 10), tmp_path, date(2026, 10, 9))
+
+    # then it is kept
+    assert (tmp_path / "nasdaq" / "2026-09-10.json").read_bytes() == reply
+
+
+def test_a_cache_write_cut_short_leaves_no_file(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given a sound reply for a past day, and a write killed before the file is moved into place
+    monkeypatch.setattr(
+        sources, "_calendar_get", lambda url, what, timeout: b'{"data": {"rows": []}}'
+    )
+
+    def killed(source: object, target: object) -> None:
+        raise KeyboardInterrupt
+
+    monkeypatch.setattr(sources.os, "replace", killed)
+
+    # when it is read
+    with pytest.raises(KeyboardInterrupt):
+        sources.fetch_nasdaq_day(date(2026, 9, 11), tmp_path, date(2026, 10, 9))
+
+    # then no file is left, whole or part
+    assert [p for p in tmp_path.rglob("*") if p.is_file()] == []
 
 
 def test_tradingview_rows_are_on_their_new_york_day_and_an_empty_quarter_is_none() -> None:

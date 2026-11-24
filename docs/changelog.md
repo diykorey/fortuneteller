@@ -6,6 +6,7 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-24 | Step 57, R1: a reply is cached only once it is sound (TradingView's `ok`, a Nasdaq day's data or its "No record found", a Fed page not empty), written beside its place and moved in; the 324 Nasdaq vendor errors already cached are left and listed in Precision | [#451](https://github.com/diykorey/fortuneteller/pull/451) |
 | 2026-11-24 | Step 57, R11 corrected: on an evening with the log changed, the switch to main for the triggers put back main's `front-next.csv` before tonight's was kept aside, so the front pull request proposed nothing (2026-11-23's fault, brought back by #446); tonight's is now kept before the switch, and the test checks the front pull request | [#449](https://github.com/diykorey/fortuneteller/pull/449) |
 | 2026-11-24 | Step 57, R6: the evening unit loads no `.env`; the model `guess` starts gets web search alone (none for the review), none of the user's settings, hooks or servers, `PATH` and `HOME` alone, and an empty folder | [#448](https://github.com/diykorey/fortuneteller/pull/448) |
 | 2026-11-24 | Step 57, R11: on an evening with nothing scored, the pages and the guess ledger go in a pull request merged on passing checks, the triggers' log in one of its own; the script tested end to end against a local origin with `gh`, `uv` and `git push` stood in | [#446](https://github.com/diykorey/fortuneteller/pull/446) |
