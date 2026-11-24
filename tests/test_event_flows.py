@@ -719,6 +719,82 @@ def test_live_previews_a_statement_ahead_with_its_flow_s_movers(
     ]
 
 
+class _GivenFlow:
+    """CPI's flow, giving the releases it is handed."""
+
+    def __init__(self, releases: list[FirstRelease]) -> None:
+        self.releases = releases
+
+    def __getattr__(self, name: str) -> object:
+        return getattr(flows.CPI_FLOW, name)
+
+    def events(self, api_key: str) -> EventBatch:
+        return EventBatch([flows.to_event_instance(r, flows.CPI_FLOW) for r in self.releases], [])
+
+
+def test_a_release_whose_date_moved_leaves_one_event_and_its_rows_follow_it(
+    tmp_db: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given CPI's August release stored on the 13th, with an observation and a surprise, and the
+    # source now dating it the 14th; NFP stored beside it
+    con = db.get_connection()
+    db.init_db(con=con)
+    month = date(2022, 8, 1)
+    flows.store_releases(flows.CPI_FLOW, [FirstRelease(month, date(2022, 9, 13), 1.0)], con=con)
+    flows.store_releases(flows.NFP_FLOW, [FirstRelease(month, date(2022, 9, 2), 1.0)], con=con)
+    old = flows.event_id(flows.CPI_FLOW, date(2022, 9, 13))
+    con.execute("INSERT INTO observations (event_id, instrument) VALUES (?, 'SPY / ES')", [old])
+    con.execute("INSERT INTO surprises (event_id, measure, baseline) VALUES (?, 'm', 'b')", [old])
+    moved = _GivenFlow([FirstRelease(month, date(2022, 9, 14), 1.0)])
+    monkeypatch.setattr(flows, "EVENT_FLOWS", [moved])
+
+    # when the releases are loaded
+    flows.load_releases("key", con=con)
+
+    # then CPI has the one event, on the 14th, the old one's rows are gone, and NFP's is kept
+    ids = [r[0] for r in con.execute("SELECT event_id FROM event_instances ORDER BY 1").fetchall()]
+    new = flows.event_id(flows.CPI_FLOW, date(2022, 9, 14))
+    assert ids == sorted([new, flows.event_id(flows.NFP_FLOW, date(2022, 9, 2))])
+    assert con.execute("SELECT count(*) FROM observations").fetchone() == (0,)
+    assert con.execute("SELECT count(*) FROM surprises").fetchone() == (0,)
+
+
+def test_an_event_the_source_stops_listing_is_kept(
+    tmp_db: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given CPI's August and September releases stored, and the source now giving August alone
+    con = db.get_connection()
+    db.init_db(con=con)
+    august = FirstRelease(date(2022, 8, 1), date(2022, 9, 13), 1.0)
+    september = FirstRelease(date(2022, 9, 1), date(2022, 10, 13), 1.0)
+    flows.store_releases(flows.CPI_FLOW, [august, september], con=con)
+    monkeypatch.setattr(flows, "EVENT_FLOWS", [_GivenFlow([august])])
+
+    # when the releases are loaded
+    flows.load_releases("key", con=con)
+
+    # then September's stays: nothing new was given near it
+    assert db.count_rows("event_instances", con=con) == 2
+
+
+def test_a_flow_that_gives_no_events_keeps_its_stored_ones(
+    tmp_db: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given CPI's release stored, and the flow now giving nothing
+    con = db.get_connection()
+    db.init_db(con=con)
+    flows.store_releases(
+        flows.CPI_FLOW, [FirstRelease(date(2022, 8, 1), date(2022, 9, 13), 1.0)], con=con
+    )
+    monkeypatch.setattr(flows, "EVENT_FLOWS", [_GivenFlow([])])
+
+    # when the releases are loaded
+    flows.load_releases("key", con=con)
+
+    # then the stored event stays
+    assert db.count_rows("event_instances", con=con) == 1
+
+
 def test_load_releases_reports_a_calendar_failure(
     tmp_db: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
 ) -> None:
