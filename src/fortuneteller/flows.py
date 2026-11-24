@@ -2267,14 +2267,60 @@ def flow_named(cli_name: str) -> EventFlow:
     return next(flow for flow in EVENT_FLOWS if flow.cli_name == cli_name)
 
 
+# How far a corrected release date may move and still be the same release (step 57, R2).
+MOVED_WITHIN = timedelta(days=7)
+
+
 def load_releases(api_key: str, con: duckdb.DuckDBPyConnection | None = None) -> list[str]:
-    """Run every flow, then store all their events: nothing is stored unless every flow succeeds."""
-    batches = [flow.events(api_key) for flow in EVENT_FLOWS]
-    report: list[str] = []
-    for batch in batches:
-        store_events(batch.events, con=con)
-        report += batch.report
-    return report
+    """Run every flow, then store all their events: nothing is stored unless every flow succeeds.
+
+    An event whose date was corrected is removed with its observations and surprises (step 57, R2,
+    docs/steps/technical-fixes.md); one a source stops listing is kept. DuckDB refuses
+    a row's removal in the transaction that removed the rows referring to it, so those go first, in
+    a transaction of their own; they are rebuilt by ``load-prices`` and ``load-surprises``.
+    """
+    batches = [(flow, flow.events(api_key)) for flow in EVENT_FLOWS]
+    connection = con if con is not None else db.get_connection()
+    gone = [
+        i
+        for flow, batch in batches
+        if batch.events
+        for i in events_not_given(flow, batch, connection)
+    ]
+    for tables in (("observations", "surprises"), ("event_instances",)):
+        connection.begin()
+        try:
+            for table in tables:
+                for event_id in gone:
+                    connection.execute(f"DELETE FROM {table} WHERE event_id = ?", [event_id])
+            if tables == ("event_instances",):
+                for _flow, batch in batches:
+                    store_events(batch.events, con=connection)
+            connection.commit()
+        except BaseException:
+            connection.rollback()
+            raise
+    return [line for _flow, batch in batches for line in batch.report]
+
+
+def events_not_given(
+    flow: EventFlow, batch: EventBatch, con: duckdb.DuckDBPyConnection
+) -> list[int]:
+    """The ids of ``flow``'s stored events that ``batch`` has moved: no longer given, with an event
+    ``batch`` gives that is not stored within ``MOVED_WITHIN`` of it. One the source merely stops
+    listing is kept (TradingView's current quarter dropped every speech by 2026-11-24)."""
+    given = {event.event_id for event in batch.events}
+    stored = {
+        row[0]
+        for row in con.execute(
+            "SELECT event_id FROM event_instances WHERE event_id % 10000000000 // 100000000 = ?",
+            [flow.type_code],
+        ).fetchall()
+    }
+    new = [event_date(i) for i in given - stored]
+    return sorted(
+        i for i in stored - given if any(abs(day - event_date(i)) <= MOVED_WITHIN for day in new)
+    )
 
 
 def load_surprises(api_key: str, con: duckdb.DuckDBPyConnection | None = None) -> list[Surprise]:

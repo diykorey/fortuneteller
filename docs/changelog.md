@@ -6,6 +6,7 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-24 | Step 57, R2: `load-releases` removes an event whose date was corrected (a new one of its flow given within 7 days), with its observations and surprises; one a source stops listing is kept. On a copy of the store none was removed; TradingView's current quarter was found to list no speeches | [#452](https://github.com/diykorey/fortuneteller/pull/452) |
 | 2026-11-24 | Step 57, R1: a reply is cached only once it is sound (TradingView's `ok`, a Nasdaq day's data or its "No record found", a Fed page not empty), written beside its place and moved in; the 324 Nasdaq vendor errors already cached are left and listed in Precision | [#451](https://github.com/diykorey/fortuneteller/pull/451) |
 | 2026-11-24 | Step 57, R5, part 1: the jobs start `scripts/job-start.sh`, which runs `release-day.sh` from the job's own worktree at `origin/main`, copied out under the job's lock, never the development checkout's; the store's part waits for the owner | [#450](https://github.com/diykorey/fortuneteller/pull/450) |
 | 2026-11-24 | Sources by country surveyed: official release calendars, data and news feeds for the US, the euro area, Germany, France, the UK, Switzerland, Japan, China and Canada, each fetched; no republishable free consensus found; GDELT the one multi-country news source whose terms allow reuse | [#447](https://github.com/diykorey/fortuneteller/pull/447) |
