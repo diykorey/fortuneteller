@@ -17,7 +17,7 @@ owner* marks a choice the owner made over another on the table.
   business review's eight first, as [step 56](steps/honest-page.md); then the technical review's,
   step 57, one pull request each; then the publishing schedule, step 58. Within step 56, by the
   owner: the page shows counts, not tenths; the consensus figures leave the public seeds and the
-  history stays; the maker holds no position in any market shown; guesses name no single company;
+  history stays; the maker has no money in any market shown; guesses name no single company;
   guesses stay on the front page with a look of their own.
 - **Why:** the reviews found that the page claims more than its numbers: guesses graded from a
   price their writer had already seen past, long-run drift labelled a tested forecast, a guess

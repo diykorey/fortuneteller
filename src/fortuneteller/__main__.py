@@ -970,6 +970,11 @@ def _read_article(args: argparse.Namespace) -> int:
 SCOREBOARD_URL = "https://diykorey.github.io/fortuneteller/scoreboard/"
 UMAMI_SHARE = "7PW46kYjf9EyzI0H"
 DISCLAIMER = "An entertainment tool, not advice."
+# Step 56 (docs/steps/honest-page.md): a cell of the day of the news, wherever a reader meets it.
+DAY_NOTE = (
+    "A move on the day is counted from the close before the news, so much of it can come before"
+    " you read the headline."
+)
 # The releases the morning job calls, as a post names them.
 POST_NAMES = {
     "cpi": "CPI",
@@ -1033,7 +1038,7 @@ def _post_page_lines(page: Mapping[str, object], since: date) -> list[str]:
     holds = page.get("holds") or []
     assert isinstance(holds, list)
     if holds:
-        lines += ["", "An answer that holds: " + str(holds[0]["say"])]
+        lines += ["", "An answer that holds: " + str(holds[0]["say"]), DAY_NOTE]
     ahead = page.get("earnings_ahead") or {}
     assert isinstance(ahead, dict)
     reports = [
@@ -1048,6 +1053,8 @@ def _post_page_lines(page: Mapping[str, object], since: date) -> list[str]:
         lines += [f"{r['name']} ({r['symbol']}), {r['day']}, {r['time']}." for r in largest]
         lines += ["What followed past S&P 500 reports, on the day against the index:"]
         lines += ahead["lines"]
+        if not holds:
+            lines.append(DAY_NOTE)
     return lines
 
 

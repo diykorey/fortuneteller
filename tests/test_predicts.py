@@ -56,7 +56,7 @@ def test_the_page_shows_up_to_five_forecasts_without_a_sideways_scroll(
     tmp_path: Path, width: int
 ) -> None:
     # given the page with two stated forecasts (one per area), one of them past its span, and front.csv with two
-    # open guesses worded with a comma and a quote and one past its end date, served over a local
+    # open guesses (one withdrawn) worded with a comma and a quote and one past its end date, served over a local
     # server, without the counter, reporting its widths once the guesses are read
     told = cli.stated({"market_names": {}, "ask": [], "forecasts": _runs()}, date(2026, 11, 20))
     stated = [{k: v for k, v in t.items() if k != "row"} for t in told]
@@ -72,7 +72,8 @@ def test_the_page_shows_up_to_five_forecasts_without_a_sideways_scroll(
         "source": "https://example.com/opec",
     }
     gone = guess | {"last": "2001-01-05", "statement": "Gone by now."}
-    cli._write_rows(tmp_path / "front.csv", cli.FRONT_FIELDS, [guess, guess, gone])
+    taken_back = guess | {"withdrawn": "2098-12-10"}
+    cli._write_rows(tmp_path / "front.csv", cli.FRONT_FIELDS, [guess, taken_back, gone])
     page_data = {"written": "2026-11-20", "stated": stated, "tally": None, "kept_since": None}
     template = (Path(cli.__file__).parent / "predicts.html").read_text()
     template = re.sub(
@@ -124,7 +125,11 @@ def test_the_page_shows_up_to_five_forecasts_without_a_sideways_scroll(
     assert "Long passed" not in shown and "Gone by now" not in shown and "→" not in shown
     assert shown.count('Oil, we think, will be "lower" on Jan 5.') == 2
     assert shown.count("Why: A guess, made\nover two lines.") == 2
-    assert shown.count("Our guess · made") == 2
+    assert shown.count("💭 Our guess · made") == 2
+    assert shown.count('class="card guess') == 2 and "card down guess" not in shown
+    assert shown.count("We took this guess back on Dec 10") == 1
+    assert " in 10" not in shown
+    assert "The maker has no money in any market shown." in dom
     match = re.search(r"<title>(\d+) (\d+) (\d+)</title>", dom)
     assert match is not None
     scroll, inner, cards = map(int, match.groups())

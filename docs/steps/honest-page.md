@@ -64,10 +64,14 @@ you know it is right* says.
   reader (*Ask*, the link preview, the weekly LinkedIn post that `weekly-post` drafts), one line
   says: "Counted from the close before the news, so much of this move can come before you read the
   headline." The OPEC *oil up* to gasoline cell adds: "Oil's own move that day decides this kind,
-  so this mostly repeats it."
+  so this mostly repeats it." *Amended 2026-11-24, by the owner's approval of the printed words:*
+  the line reads "A move on the day is counted from the close before the news, so much of it can
+  come before you read the headline.", and the OPEC one "Oil's own move that day decides this kind
+  of decision, so this mostly repeats it."
 - **No conflicts (advice rules).** Beside the footer's name: "The maker holds no position in any market
   shown." The legal opinion is the owner's errand; the questions for it are listed in the pull
-  request.
+  request. *Amended 2026-11-24, after the plain-words check found "position" unclear, by the
+  owner's approval:* "The maker has no money in any market shown."
 - **The consensus figures (licence).** The earnings flows read only `day`, `time`, `ticker` and
   `kind`. The scripts still make each kind from the source's figures as they fetch them, and keep
   the figures in `data/cache/` (not committed), where a later check can read them. `eps`, `forecast` and `surprise` leave `data/seed/earnings.csv` and
@@ -135,6 +139,30 @@ counted as one group), the legal opinion, and rewriting the public history.
   `docs/schema.md` if a stored column changes; the glossary; status; the changelog; roadmap row 56.
 
 ## Results
+
+### Step 3: the words
+
+The long-run cards are labelled *The usual way*, and their badge and line say "Usually higher".
+Their record is the counts alone ("Went this way in 402 of 666 past months"). A guess card is
+labelled "💭 Our guess", with a grey badge on a pale card with a dashed border. A withdrawn card
+says when it was taken back. The page counts the guesses it has ever shown. The footer says "The
+maker has no money in any market shown." The day-of-news line is on the scoreboard's holds, on
+*Ask*, in the weekly post and on the link preview; the OPEC note is on its cell.
+
+Tests (`tests/test_predicts.py`, `tests/test_stated_forecasts.py`): no guess card has the *up*
+or *down* class, no card says "in 10", and the footer and the withdrawn note are present. Every
+number, cell and answer is the same before and after: only the words changed.
+
+The page was rendered in headless Chrome with the live data and the three cards, one of them
+marked withdrawn. At 390 and 1280 pixels wide, in light and dark, nothing was cut off or
+overlapping.
+
+A fresh reader with no financial training read the drafted page. They found five problems:
+"drift" was unclear; the usual-way cards looked like forecasts; "holds no position" was jargon;
+the counts at the top did not match the cards; and the cards still named November 20 although
+they are now graded from November 23. Each was fixed. The owner approved the words, printed in
+full in the console, on 2026-11-24 ("A"). The three cards on the page now name November 23, and
+Brent's card drops Friday's price of 92.57 dollars.
 
 ### Step 2: the cards that stay
 
