@@ -44,6 +44,11 @@ year, which only the Fed's decisions have), and a trigger file may name `opec`.
   maturities and Brent is the front month. It prints, marked `(the kind)`, and is left out of the
   answers counted against chance and of the expected outcome. Its week and month, and every span
   from the reaction close, are judged.
+  *Amended 2026-11-24, by [step 57's R3](technical-fixes.md):* every market's spans are judged from
+  its first close at or after Brent's reaction close, since every span from the close before, and
+  Europe's and gold's from their own reaction close, hold the close that reads the kind. The run
+  from the close before still prints, each row marked `(not judged)`. Gasoline's day after *oil
+  up* (31 replayed, 20 right), the one answer that held, is gone with it: no OPEC cell holds.
 - **A live trigger's kind** is the sign of Brent's move over its reaction day, close to close,
   read when that close is in; the trigger is answered from the reaction close. Step 1 counts how
   often that sign agrees with the surprise's on the 80 announcements since Brent's first close

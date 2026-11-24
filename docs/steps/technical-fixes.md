@@ -69,6 +69,10 @@ Eleven pull requests, in this order, the ones that can lose an evening's work fi
     York, Brent at 14:30). Each market's cells are judged, for the chance line, the walk-forward,
     the scoreboard and *Ask*, only from its first close after Brent's reaction close; the run from
     the close before is still printed, marked *not judged*.
+    *Amended 2026-11-24, in building:* "first close after" is read as at or after, so Brent's own
+    cells start at its reaction close; `--after-the-day` gives the same judged run, since Europe's
+    and gold's reaction closes come before Brent's; a live OPEC trigger is answered the same way;
+    and the kind cell, `(the kind)` and `kind_cell`, retire, as no judged cell holds that close.
 11. **R4, shared by reaction close.** Today a release's day is *shared* when another flow has a
     release on the same calendar date, each in its own zone, for every flow. From now on it is
     shared in a market when another flow's event reaches that market at the same reaction close,
