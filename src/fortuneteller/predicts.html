@@ -85,6 +85,8 @@ li.card > :not(.icon) { grid-column: 2; min-width: 0; }
 }
 .kind { font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); }
 li.guess .kind { color: var(--guess); }
+li.withdrawn { opacity: 0.75; }
+.withdrawn-note { font-style: italic; color: var(--muted); }
 .top { display: flex; justify-content: space-between; align-items: center; gap: 6px 10px; flex-wrap: wrap; }
 .market { margin: 0; font-size: 22px; font-weight: 800; line-height: 1.25; }
 .badge { font-weight: 800; border-radius: 999px; padding: 4px 12px; font-size: 17px; }
@@ -216,7 +218,7 @@ footer { margin-top: 32px; font-size: 15px; color: var(--muted); display: grid; 
       .map((r) => Object.fromEntries(head.map((h, i) => [h, r[i]])));
   };
   const asCard = (r) => ({ guess: true, market: r.market, made: r.stated, until: r.last,
-    direction: r.direction, event: r.statement, why: r.why, source: r.source });
+    direction: r.direction, event: r.statement, why: r.why, source: r.source, withdrawn: r.withdrawn });
   const draw = (guesses) => {
   // The tested forecasts, then our guesses, whose span has not ended on New York's day; five at most.
   const open = (p) => !p.until || p.until >= today;
@@ -249,6 +251,10 @@ footer { margin-top: 32px; font-size: 15px; color: var(--muted); display: grid; 
       : tenths !== null ? '📊 In the past it came true about ' + tenths + ' times in 10 (' + p.right.toLocaleString('en-US')
         + ' of ' + p.called.toLocaleString('en-US') + ' ' + p.unit + ')' : '📊 ' + p.record));
     card.appendChild(meta);
+    if (p.withdrawn) {
+      card.classList.add('withdrawn');
+      card.appendChild(el('p', 'We took this guess back on ' + short(p.withdrawn) + '. It stays here and is still scored.', 'withdrawn-note'));
+    }
     if (p.guess) {
       const why = p.why || '';
       const cut = why.search(/[.!?](\s|$)/);
@@ -288,6 +294,8 @@ footer { margin-top: 32px; font-size: 15px; color: var(--muted); display: grid; 
   const chip = (name, t) => name + ': ' + t.open + ' open · ' + t.came_true + ' right · ' + t.did_not + ' wrong';
   const tally = document.getElementById('tally');
   if (data.tally && data.kept_since) tally.appendChild(el('li', chip('📊 Tested', data.tally)));
+  const f = data.front_tally;
+  if (f && f.came_true + f.did_not + f.open) tally.appendChild(el('li', chip('🃏 Shown on this page', f)));
   const g = data.guess_tally;
   if (g && g.came_true + g.did_not + g.open) {
     const item = el('li');

@@ -136,6 +136,20 @@ counted as one group), the legal opinion, and rewriting the public history.
 
 ## Results
 
+### Step 2: the cards that stay
+
+The cause of #434: the evening job copied `front-next.csv` into `front.csv` after switching its
+tree to a fresh `main`. The file is tracked, so the switch had put back `main`'s copy, committed
+2026-11-22 18:32 before the owner reworded the cards; #434's `front.csv` is byte for byte that
+copy. Tonight's proposal (in #433) was never read. When the evening's own pull request merges
+first, as it does on an evening with no trigger, `main` holds tonight's copy and the bug hides.
+The job now keeps tonight's file aside before the switch.
+
+Tests (`tests/test_our_guesses.py`): a shown guess stays first in the owner's words when not
+picked again; one deleted comes back withdrawn that evening; with five staying no new guess is
+picked; a graded one leaves; `shown` is set once and the tally counts every shown guess. The
+page shows each card to its end date, as before; the proposal keeps it to its grade.
+
 ### Step 1: the baseline
 
 The hand count, written 2026-11-24 before the code ran: each row's `made` (the commit that added

@@ -227,8 +227,13 @@ fi
 # written into the evening's pull request as front-next.csv, goes from a fresh main into a pull
 # request of its own that the job never merges. An earlier one is closed when it holds only the
 # job's commit; one the owner or anyone else has added to is left open and tonight proposes nothing.
+# Tonight's proposal is kept aside first: front-next.csv is tracked, so the switch to main puts back
+# main's copy, which is an earlier evening's when tonight's pull request is not merged (2026-11-23,
+# docs/steps/honest-page.md).
+proposal=$(mktemp)
+cp "$job_tree/docs/predicts/front-next.csv" "$proposal" 2>/dev/null
 if git -C "$job_tree" fetch -q origin && git -C "$job_tree" switch -q --detach origin/main; then
-    cp "$job_tree/docs/predicts/front-next.csv" "$job_tree/docs/predicts/front.csv" 2>/dev/null
+    [ -s "$proposal" ] && cp "$proposal" "$job_tree/docs/predicts/front.csv"
     if ! git -C "$job_tree" diff --quiet -- docs/predicts/front.csv; then
         busy=
         for old in $(gh pr list -R "$repo" --state open --json headRefName \
@@ -251,4 +256,5 @@ if git -C "$job_tree" fetch -q origin && git -C "$job_tree" switch -q --detach o
 else
     report "fetching main for the front page's guesses"
 fi
+rm -f "$proposal"
 watch_morning

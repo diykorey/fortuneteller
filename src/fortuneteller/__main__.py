@@ -2838,6 +2838,7 @@ GUESS_FIELDS = (
     "guesser",
     "prompt",
     "made",
+    "shown",
 )
 GROUNDED_SPANS = (("week", 5), ("month", 21), ("quarter", 63), ("year", 252))
 LESSONS_HEAD = re.compile(r"^## Version (\d+), (\d{4}-\d{2}-\d{2})$", re.M)
@@ -3064,6 +3065,7 @@ def keep_guesses(
                 "guesser": guesser,
                 "prompt": prompt,
                 "made": made.astimezone(UTC).isoformat(timespec="seconds") if made else "",
+                "shown": "",
             }
         )
     return kept, dropped
@@ -3306,7 +3308,7 @@ def guess_as(
     return kept
 
 
-FRONT_FIELDS = ("stated", "market", "direction", "last", "statement", "why", "source")
+FRONT_FIELDS = ("stated", "market", "direction", "last", "statement", "why", "source", "withdrawn")
 FRONT_LOCKED = ("stated", "market", "direction", "last", "source")
 
 
@@ -3324,6 +3326,59 @@ def front_rows(
         old = kept.get(tuple(row[f] for f in FRONT_LOCKED))
         out.append({f: (old or row).get(f, "") for f in FRONT_FIELDS})
     return out
+
+
+def _locked(r: Mapping[str, str]) -> tuple[str, ...]:
+    return tuple(r.get(f, "") for f in FRONT_LOCKED)
+
+
+def mark_shown(
+    ledger: Sequence[Mapping[str, str]], front: Sequence[Mapping[str, str]], today: date
+) -> list[dict[str, str]]:
+    """Step 56 (docs/steps/honest-page.md): the ledger with each row on the published front page
+    given ``today`` as ``shown``, the evening the job first finds it there; kept once set."""
+    on = {_locked(r) for r in front}
+    return [
+        {**r, "shown": r.get("shown") or (today.isoformat() if _locked(r) in on else "")}
+        for r in ledger
+    ]
+
+
+def staying(
+    approved: Sequence[Mapping[str, str]], ledger: Sequence[Mapping[str, str]], today: date
+) -> list[dict[str, str]]:
+    """Step 56: the front page's cards that stay, each shown guess not yet graded: as the owner
+    left it in ``approved``, or, if the owner deleted it, back with the ledger's words and marked
+    withdrawn ``today``."""
+    words = {_locked(r): r for r in approved}
+    out = []
+    for g in ledger:
+        if not g.get("shown") or g.get("grade"):
+            continue
+        old = words.get(_locked(g))
+        if old is None:
+            old = front_rows([g], [])[0] | {"withdrawn": today.isoformat()}
+        out.append({f: old.get(f, "") for f in FRONT_FIELDS})
+    return out
+
+
+def front_proposal(
+    told: Sequence[str],
+    approved: Sequence[Mapping[str, str]],
+    guesses: Sequence[Mapping[str, str]],
+    ledger: Sequence[Mapping[str, str]],
+    promoted: set[str],
+    today: date,
+) -> list[dict[str, str]]:
+    """Tonight's front page guesses: the cards that stay first, then new picks from ``guesses``
+    in the room the tested forecasts on ``told``'s markets and the staying cards leave of five,
+    none in an area either holds."""
+    stay = staying(approved, ledger, today)
+    taken = {AREAS.get(m, m) for m in [*told, *(r["market"] for r in stay)]}
+    on = {_locked(r) for r in stay}
+    fresh = [g for g in guesses if _locked(g) not in on]
+    room = max(0, FRONT_MOST - len(told) - len(stay))
+    return stay + front_rows(front_guesses(fresh, promoted, today, room, taken), approved)
 
 
 def unlocked(
@@ -3644,16 +3699,22 @@ def stated_forecasts(
     told = stated({**data, "forecasts": runs}, today, rows)
     rows = keep_forecasts(rows, told, today)
     _write_rows(kept_path, FORECAST_FIELDS, rows)
-    ledger = [_ledger_row(r) for r in _read_rows(kept_path.parent / "our-guesses.csv")]
+    ledger_path = kept_path.parent / "our-guesses.csv"
+    approved = _read_rows(kept_path.parent / "front.csv")
+    ledger = mark_shown([_ledger_row(r) for r in _read_rows(ledger_path)], approved, today)
+    if ledger:
+        _write_rows(ledger_path, GUESS_FIELDS, ledger)
     guesses = [g for g in ledger if g["guesser"] == "news"]
     own = [g for g in guesses if g.get("prompt") != BY_HAND]
     promoted = {str(t["tag"]) for t in guess_record(own, "tag") if t["verdict"] == "holds"}
     write_stats(kept_path.parent / "stats" / "index.html", guesses, promoted, ledger)
-    taken = {AREAS.get(str(t["market"]), str(t["market"])) for t in told}
-    picks = front_guesses(guesses, promoted, today, FRONT_MOST - len(told), taken)
-    approved = _read_rows(kept_path.parent / "front.csv")
-    _write_rows(kept_path.parent / "front-next.csv", FRONT_FIELDS, front_rows(picks, approved))
+    proposal = front_proposal(
+        [str(t["market"]) for t in told], approved, guesses, ledger, promoted, today
+    )
+    _write_rows(kept_path.parent / "front-next.csv", FRONT_FIELDS, proposal)
+    shown = [g for g in ledger if g.get("shown") and g.get("grade") != "void"]
     return {
+        "front_tally": forecast_tally(shown),
         "guess_tally": forecast_tally([g for g in guesses if g.get("grade") != "void"]),
         "stated": [{k: v for k, v in t.items() if k != "row"} for t in told],
         "tally": forecast_tally(rows),

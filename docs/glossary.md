@@ -443,6 +443,9 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **Made** (a guess) — *added 2026-11-24* ([step 56](steps/honest-page.md)): the UTC time a guess
   was written; its baseline is its market's first close after it, so its writer never sees past
   the price it is graded from. A row without it counts as made at 18:00 New York on its stated day.
+- **Shown** (a guess) — *added 2026-11-24* ([step 56](steps/honest-page.md)): the ledger's date
+  of the evening the job first found a guess on the published front page; a shown guess stays
+  there until it is graded, and the page's tally *Shown on this page* counts every one.
 - **The usual way** — *added 2026-11-24* ([step 56](steps/honest-page.md)): the page's label for a
   long-run forecast: the direction a market most often took over a stretch of time, its normal
   drift, not a forecast from news.

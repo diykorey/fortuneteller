@@ -723,3 +723,85 @@ def test_the_guesser_is_not_offered_a_single_company() -> None:
     # then neither Coinbase nor Allstate is among them, and the other 35 are
     assert "COIN" not in listed and "ALL" not in listed
     assert len(listed) == len(study.MVP_PRICE_SERIES) - 2 == 35
+
+
+TODAY = date(2026, 11, 25)
+
+
+def _front(r: dict[str, str], **extra: str) -> dict[str, str]:
+    return {f: r.get(f, "") for f in cli.FRONT_LOCKED} | {"statement": "Owner's words."} | extra
+
+
+def test_a_shown_guess_stays_with_the_owner_s_words_though_not_picked_again() -> None:
+    # given an open Brent guess shown on the front page in the owner's words, and a newer guess
+    shown = _row(grade="", shown="2026-11-22")
+    newer = _row("DXY", grade="", confidence="high")
+    approved = [_front(shown)]
+
+    # when tonight's proposal is made
+    proposal = cli.front_proposal([], approved, [newer, shown], [shown, newer], set(), TODAY)
+
+    # then Brent stays first, as the owner left it, and the newer guess fills the room
+    assert [(r["market"], r["statement"]) for r in proposal] == [
+        ("BRN", "Owner's words."),
+        ("DXY", ""),
+    ]
+
+
+def test_a_shown_guess_the_owner_deleted_comes_back_withdrawn() -> None:
+    # given an open guess shown earlier and no longer in front.csv
+    shown = _row(grade="", shown="2026-11-22", statement="Ledger words.")
+
+    # when tonight's proposal is made
+    [row] = cli.front_proposal([], [], [], [shown], set(), TODAY)
+
+    # then it is back, with the ledger's words, withdrawn tonight
+    assert (row["market"], row["statement"], row["withdrawn"]) == (
+        "BRN",
+        "Ledger words.",
+        "2026-11-25",
+    )
+
+
+def test_with_five_cards_staying_no_new_guess_is_picked() -> None:
+    # given five shown open guesses in five areas, and a new one
+    markets = ["BRN", "DXY", "SPY / ES", "GC / XAU", "BTC"]
+    shown = [_row(m, grade="", shown="2026-11-22") for m in markets]
+    new = _row("WEAT", grade="", confidence="high")
+
+    # when tonight's proposal is made
+    proposal = cli.front_proposal(
+        [], [_front(r) for r in shown], [new], [*shown, new], set(), TODAY
+    )
+
+    # then the five stay and the new one waits
+    assert [r["market"] for r in proposal] == markets
+
+
+def test_a_graded_guess_leaves_the_front_page() -> None:
+    # given a shown guess now graded
+    done = _row(shown="2026-11-22")
+
+    # when tonight's proposal is made
+    # then it is gone
+    assert cli.front_proposal([], [_front(done)], [], [done], set(), TODAY) == []
+
+
+def test_the_front_tally_counts_every_guess_once_shown_withdrawn_ones_too() -> None:
+    # given a ledger: one on the published front page tonight, one shown before, one never
+    ledger = [
+        _row(grade=""),
+        _row("DXY", grade="did not", shown="2026-11-22"),
+        _row("BTC", grade=""),
+    ]
+
+    # when the rows shown are marked
+    marked = cli.mark_shown(ledger, [_front(ledger[0], withdrawn="2026-11-25")], TODAY)
+
+    # then the first is marked tonight, the second keeps its date, the third is not shown
+    assert [r["shown"] for r in marked] == ["2026-11-25", "2026-11-22", ""]
+    assert cli.forecast_tally([r for r in marked if r["shown"]]) == {
+        "came_true": 0,
+        "did_not": 1,
+        "open": 1,
+    }
