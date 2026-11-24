@@ -169,6 +169,21 @@ Its fourth quarter of 2026 comes from a new feed ([jobless claims](steps/jobless
 | Revised figures | A week's claims are revised once the next week is out; the actual is FRED's `ICSA` first print where FRED has the same week on the same day, else TradingView's. Other flows' actuals are still TradingView's as shown | Each flow's first print from its own agency, or TradingView's figure kept as first seen | Another flow's stored actual differs from its first print |
 | Forecasts after the release | ISM's forecast for 2026-11-02 was 54.6 that evening and 54.5 on 2026-11-05; each rebuild takes the forecast as shown that day | The forecast kept as first seen before the release | A second forecast changes after its release, or one changes a graded call |
 
+## Nasdaq's refusals kept before step 57
+
+Until step 57's R1 (2026-11-24), a Nasdaq calendar day was cached whatever the reply. The main
+checkout's cache then held 328 days answered with `data: null`: 4 "No record found" (a day with
+no releases, still kept) and 324 "Error while calling vendor", 319 of them Thursdays from 2013 to
+2021, read since as days without releases. R1 keeps no new refusal but leaves these files, so
+nothing measured changes.
+
+- **Now:** the 324 stay cached and read as days with no Nasdaq rows; which releases they cost
+  an expected value is not counted yet.
+- **Better:** delete them and ask Nasdaq again, about 22 minutes once at its pace; any day it
+  still refuses is then asked on every run.
+- **Trigger:** a verdict that rests on releases from 2013 to 2021 on Thursdays, or the owner's
+  word; the outputs before and after are then compared, as for any change to the store.
+
 ## Steps 1–2 — choices already built in
 
 | Choice | Now | More precise | Trigger |

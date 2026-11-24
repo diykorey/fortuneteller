@@ -12,6 +12,7 @@ from __future__ import annotations
 import html
 import http.client
 import json
+import os
 import re
 import sys
 import urllib.error
@@ -594,7 +595,7 @@ def statement_text(payload: bytes) -> str:
 
 def fetch_statement(day: date, url: str, cache_dir: Path) -> bytes:
     """The statement of ``day``, kept under ``cache_dir/fed`` once fetched: it never changes."""
-    return _cached(cache_dir / "fed" / f"{day}.html", True, lambda: fetch_fed_page(url))
+    return _cached(cache_dir / "fed" / f"{day}.html", True, lambda: fetch_fed_page(url), bool)
 
 
 def fetch_series(api_key: str, series_id: str, timeout: float = 30.0) -> bytes:
@@ -656,15 +657,45 @@ def _calendar_get(url: str, what: str, timeout: float) -> bytes:
         raise CalendarError(f"{what} failed: {exc}") from None
 
 
-def _cached(path: Path, final: bool, fetch: Callable[[], bytes]) -> bytes:
-    """A reply kept in ``path`` once it can no longer change; fetched while it still might."""
+def _cached(
+    path: Path, final: bool, fetch: Callable[[], bytes], sound: Callable[[bytes], bool]
+) -> bytes:
+    """A reply kept in ``path`` once it can no longer change; fetched while it still might. Only a
+    reply ``sound`` accepts is kept, written beside ``path`` and moved into place, so a refusal or a
+    write cut short is never read back as the answer (step 57, R1, docs/steps/technical-fixes.md)."""
     if path.exists():
         return path.read_bytes()
     body = fetch()
-    if final:
+    if final and sound(body):
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_bytes(body)
+        part = path.with_name(path.name + ".part")
+        try:
+            part.write_bytes(body)
+            os.replace(part, path)
+        finally:
+            part.unlink(missing_ok=True)
     return body
+
+
+def _nasdaq_sound(body: bytes) -> bool:
+    """A day's calendar, or Nasdaq's "No record found" (code 1002), the one refusal that is an
+    answer: a day with no releases. "Error while calling vendor" (2004) is not kept."""
+    document = _json_document(body)
+    if isinstance(document.get("data"), dict):
+        return True
+    status = document.get("status")
+    codes = status.get("bCodeMessage") if isinstance(status, dict) else None
+    return isinstance(codes, list) and any(
+        isinstance(c, dict) and c.get("code") == 1002 for c in codes
+    )
+
+
+def _json_document(body: bytes) -> dict[str, Any]:
+    try:
+        document = json.loads(body)
+    except ValueError:
+        return {}
+    return document if isinstance(document, dict) else {}
 
 
 def fetch_nasdaq_day(
@@ -681,6 +712,7 @@ def fetch_nasdaq_day(
         cache_dir / "nasdaq" / f"{day}.json",
         asked < today,
         lambda: _calendar_get(NASDAQ_CALENDAR_URL.format(day=asked), f"Nasdaq {day}", timeout),
+        _nasdaq_sound,
     )
 
 
@@ -758,6 +790,7 @@ def fetch_tradingview_quarter(
         cache_dir / "tradingview" / name,
         end < today,
         lambda: _calendar_get(url, f"TradingView {start}", timeout),
+        lambda body: _json_document(body).get("status") == "ok",
     )
 
 
