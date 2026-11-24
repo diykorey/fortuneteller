@@ -40,6 +40,11 @@ Eleven pull requests, in this order, the ones that can lose an evening's work fi
    switches the job's own worktree, then runs `release-day.sh` from it; the job's store and cache
    move to `~/.local/share/fortuneteller/` (copied once); the commands that only read open the store
    read-only, and a locked store prints one line instead of a trace.
+   *Amended 2026-11-24, by the owner, before building the store part:* the job keeps the one store
+   it shares with the sessions, since a copy would go stale on the S&P 500 companies' prices and on
+   every load done by hand. Each job command waits for a held store, trying every 15 seconds for up
+   to 30 minutes (`FT_DB_WAIT=1800`), then stops with one line naming the holder; outside the jobs
+   it stops at once, in the same line.
 5. **R1, the cache.** A reply is cached only once its parser accepted it, never TradingView's
    `no_data` or an error status, nor Nasdaq's `data: null`; it is written to a temporary file and
    moved into place.
@@ -111,7 +116,7 @@ releases count as alone. Written 2026-11-24, before any is built.
 | 1 | R7 | Test: an answer with a list for `market` and one with direction *sideways* drop with their reasons while a good guess is kept; the ledger is written when the lessons fail |
 | 2 | R11 | The evening's script run against a scratch repository with the log and the pages both changed: two pull requests, the pages' one merged on passing checks, the triggers' left open |
 | 3 | R6 | The unit has no `EnvironmentFile`; test: the model is started with only `PATH` and `HOME`, in an empty folder, with only web search allowed |
-| 4 | R5 | The units run the job tree's script; the store and cache under `~/.local/share/fortuneteller/`, the copy's table row counts equal the old store's; a read-only command runs while another process holds the store; the timers reloaded, and the next evening run's pull requests opened from the new store |
+| 4 | R5 | The units run the job tree's script; the store and cache under `~/.local/share/fortuneteller/`, the copy's table row counts equal the old store's; a read-only command runs while another process holds the store; the timers reloaded, and the next evening run's pull requests opened from the new store. *Amended 2026-11-24:* the store stays shared; tests: a held store stops a command in one line naming its holder, and with a wait it opens once the holder lets go |
 | 5 | R1 | Tests: `no_data`, an error status and `data: null` are not cached; a cache write killed halfway leaves no file |
 | 6 | R2 | Test: an event whose date moves leaves one event, and its observations follow it; on the store copy, every removed event is one a date correction moved |
 | 7 | R8 | Tests: two appends of one call log it once; a duplicated row scores once |

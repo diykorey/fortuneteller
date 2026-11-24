@@ -1,5 +1,8 @@
 """Tests for the M0-05 database helper (db.py)."""
 
+import subprocess
+import sys
+import time
 from datetime import date
 from pathlib import Path
 
@@ -218,3 +221,54 @@ def test_replace_rows_swaps_the_matching_rows_only() -> None:
     db.replace_rows("daily_bars", [], "instrument = ?", ["VIX"], con=con)
     # then VIX is gone and DXY is untouched
     assert con.execute("SELECT instrument FROM daily_bars").fetchall() == [("DXY",)]
+
+
+def _hold(path: Path, seconds: float) -> subprocess.Popen[bytes]:
+    # another process holding the store for ``seconds``, started once it has the lock
+    code = f"import duckdb, time; c = duckdb.connect({str(path)!r}); print(flush=True); time.sleep({seconds})"
+    holder = subprocess.Popen([sys.executable, "-c", code], stdout=subprocess.PIPE)
+    assert holder.stdout is not None
+    holder.stdout.readline()
+    return holder
+
+
+def test_a_held_store_fails_at_once_in_one_line(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given a store another process holds, and no wait
+    path = tmp_path / "test_held.duckdb"
+    monkeypatch.setattr(settings, "db_path", path)
+    holder = _hold(path, 30)
+
+    # when it is opened
+    try:
+        with pytest.raises(SystemExit) as stopped:
+            db.get_connection()
+    finally:
+        holder.kill()
+
+    # then it stops with one line naming the store and its holder
+    message = str(stopped.value)
+    assert "\n" not in message
+    assert message.startswith(f"the store {path} is held by ")
+    assert f"PID {holder.pid}" in message
+
+
+def test_a_job_waits_for_the_store_until_it_is_free(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given a store held for two seconds, and a wait of a minute tried every half second
+    path = tmp_path / "test_held.duckdb"
+    monkeypatch.setattr(settings, "db_path", path)
+    monkeypatch.setattr(settings, "db_wait", 60)
+    monkeypatch.setattr(db, "LOCK_RETRY_SECONDS", 0.5)
+    holder = _hold(path, 2)
+    started = time.monotonic()
+
+    # when it is opened
+    con = db.get_connection()
+
+    # then it opens once the holder lets go
+    assert con.execute("SELECT 1").fetchone() == (1,)
+    assert time.monotonic() - started >= 1
+    holder.wait()

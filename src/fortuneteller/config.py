@@ -29,6 +29,8 @@ class Settings(BaseSettings):
     # SecretStr so the value cannot print itself in a traceback or repr; read it with
     # .get_secret_value() at the call site.
     fred_api_key: SecretStr | None = None
+    # Seconds to wait for a store another process holds; 0 fails at once. The jobs wait 30 minutes.
+    db_wait: float = 0
 
     model_config = SettingsConfigDict(env_prefix="FT_", env_file=".env")
 
