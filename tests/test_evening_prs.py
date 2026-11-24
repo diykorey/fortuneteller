@@ -23,7 +23,9 @@ UV = """#!/usr/bin/env bash
 dir=$3
 case "$5" in
     triggers) echo "2026-11-23,a trigger,graded" >> "$dir/data/trigger-log.csv" ;;
-    scoreboard) echo '{"written": "tonight"}' > "$dir/docs/scoreboard/data.json" ;;
+    scoreboard)
+        echo '{"written": "tonight"}' > "$dir/docs/scoreboard/data.json"
+        printf 'stated,market\ntonight,BTC\n' > "$dir/docs/predicts/front-next.csv" ;;
     score) echo "nothing to score" ;;
 esac
 exit 0
@@ -49,7 +51,9 @@ def _stub(folder: Path, name: str, body: str) -> None:
     path.chmod(0o755)
 
 
-def test_the_pages_are_merged_apart_from_the_triggers_log(tmp_path: Path) -> None:
+def test_the_pages_are_merged_apart_from_the_triggers_log_and_the_front_keeps_tonight_s(
+    tmp_path: Path,
+) -> None:
     # given an origin with the pages, the log and an unchanged score, a checkout of it, and
     # gh, uv, git push, sleep and notify-send stood in for
     seed = tmp_path / "seed"
@@ -101,8 +105,8 @@ def test_the_pages_are_merged_apart_from_the_triggers_log(tmp_path: Path) -> Non
         timeout=120,
     )
 
-    # then the pages' pull request holds the pages alone and is merged, and the triggers' holds
-    # the log alone and is left for a person
+    # then the pages' pull request holds the pages alone and is merged, the triggers' holds the
+    # log alone and is left for a person, and the front's holds tonight's proposal
     log = calls.read_text()
     assert run.returncode == 0, run.stdout + log
     day = next(w for w in log.split() if w.startswith("scoreboard-")).removeprefix("scoreboard-")
@@ -112,8 +116,9 @@ def test_the_pages_are_merged_apart_from_the_triggers_log(tmp_path: Path) -> Non
     assert "--merge triggers-" not in log
     pages = _git(job, "show", "--name-only", "--format=", "scoreboard-" + day).split()
     trigger = _git(job, "show", "--name-only", "--format=", "triggers-" + day).split()
-    assert pages == ["docs/scoreboard/data.json"]
+    assert pages == ["docs/predicts/front-next.csv", "docs/scoreboard/data.json"]
     assert trigger == ["data/trigger-log.csv"]
+<<<<<<< HEAD
 
 
 def test_the_job_runs_its_own_tree_s_script_at_origin_main(tmp_path: Path) -> None:
@@ -147,3 +152,8 @@ def test_the_job_runs_its_own_tree_s_script_at_origin_main(tmp_path: Path) -> No
 
     # then origin/main's script ran, from the job's tree, not the checkout's beside the starter
     assert run.stdout == "tree score\n", run.stderr
+=======
+    assert "--head front-" + day in log
+    front = _git(job, "show", f"front-{day}:docs/predicts/front.csv")
+    assert front == "stated,market\ntonight,BTC\n"
+>>>>>>> origin/main
