@@ -66,7 +66,11 @@ catching up at a login that morning) exits 0, since the timer's own run follows.
 `scripts/release-day.sh live` keeps its worktree at `~/.local/share/fortuneteller/release-day`, pushes
 over HTTPS with `gh`'s credentials (no SSH agent under systemd) and writes its whole output to the
 journal, and to the issue when it fails. `gh`'s token is in the desktop keyring, so the job runs
-only while the user is logged in; no linger. Installing, once its pull request is merged:
+only while the user is logged in; no linger. *Amended 2026-11-24, by [step 57](technical-fixes.md)
+(R5):* both units start `scripts/job-start.sh`, which, under the job's lock, switches the worktree
+to `origin/main` and copies its `release-day.sh` out to run, so a branch or an edit in the
+development checkout never runs; without the worktree it runs the checkout's copy, which makes it.
+Installing, once its pull request is merged:
 
 ```bash
 ln -s "$PWD"/scripts/systemd/fortuneteller-release-day.* ~/.config/systemd/user/
