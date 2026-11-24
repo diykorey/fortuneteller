@@ -101,6 +101,9 @@ percentage. A guess never counts toward a tested forecast's record, nor the othe
 - **The run:** `claude -p` with `--allowedTools WebSearch`, `--model claude-opus-5-5` (kept in
   each row), output as
   JSON, a time limit of 10 minutes; the prompt is `src/fortuneteller/guess_prompt.txt`.
+  *Amended 2026-11-24, by [step 57](technical-fixes.md) (R6):* the model also gets `--tools
+  WebSearch` (none for the review), `--strict-mcp-config` and `--setting-sources project`, an
+  environment of `PATH` and `HOME` alone, and an empty temporary folder to run in.
 - **The file:** `docs/predicts/our-guesses.csv`, columns `stated, market, span, direction, first, last,
   reason, source, model, grade`.
 - **Docs:** this spec, step 47's and step 48's amendments, the glossary (*our guess*, *Subscription
