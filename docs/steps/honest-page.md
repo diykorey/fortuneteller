@@ -98,7 +98,7 @@ the page says.
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | The ledger: `made`, the baseline, `by-hand` rows apart, 35 markets | Tests: a Nikkei guess made Monday 18:00 New York starts from Tuesday's Tokyo close; a euro guess made Monday 18:00 New York (winter) from Tuesday's 00:00 London bar; one made Monday 19:30 New York from Wednesday's; a bitcoin guess made Sunday 15:00 New York from Monday 00:00 UTC; a guess made at a close's very instant from the next; the same across the March change of clocks; a `by-hand` row in no guesser's record, lessons or comparison, and still on the stats page, the front page's picks and the tally; `COIN` dropped with its reason. The hand count equal to the code's |
+| 1 | The ledger: `made`, the baseline, `by-hand` rows apart, 35 markets | Tests: a Nikkei guess made Monday 18:00 New York starts from Tuesday's Tokyo close; a euro guess made Monday 18:00 New York (winter) from Tuesday's 00:00 London bar; one made Monday 19:30 New York from Wednesday's; a bitcoin guess made Sunday 15:00 New York from Monday's close (its weekend closes are not stored, 635 or 636 a weekday and none on Saturday or Sunday, read 2026-11-24); a guess made at a close's very instant from the next; the same across the March change of clocks; a `by-hand` row in no guesser's record, lessons or comparison, and still on the stats page, the front page's picks and the tally; `COIN` dropped with its reason. The hand count equal to the code's |
 | 2 | The front page: cards stay until graded, *withdrawn*, five at most, the front tally, the dropped words found and fixed | Tests: a shown guess missing from tomorrow's picks stays; with five staying, no new pick shows; a withdrawn one shows its date and is in the front tally; the inputs of 2026-11-23's proposal give back the approved words. The cause written here |
 | 3 | The words: *the usual way*, counts, the guess card, reactions marked, the no-position line | Tests: no guess card carries the *up* or *down* badge class; no card says "in 10". The page seen in the browser at phone and desktop width, light and dark, nothing cut off or overlapping; a fresh reader with no financial training, as [predicts](predicts.md) has one, explains each card back correctly; the owner approves the words, printed in full in the console |
 | 4 | The seeds without the consensus figures | The two seeds' columns are `day,time,ticker,kind`; the earnings outputs identical on a copy of the store |
@@ -107,7 +107,7 @@ the page says.
 ## How you know it is right
 
 - **No guess can see its baseline:** step 1's tests place guesses just before and just after a
-  close in Tokyo, London's 00:00 bar and bitcoin's UTC day; each starts from the first close
+  close in Tokyo, London's 00:00 bar and bitcoin's 23:59 UTC close; each starts from the first close
   strictly after it was made.
 - **Nothing measured changes:** steps 3 and 4 compare every output on a copy of the store, as the
   country steps do.
