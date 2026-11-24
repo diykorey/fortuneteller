@@ -442,7 +442,7 @@ Terms are grouped by what they are about, alphabetical within each group.
   kinds as *Ask*'s menu groups them (the jobs report's above, as expected and below).
 - **Made** (a guess) — *added 2026-11-24* ([step 56](steps/honest-page.md)): the UTC time a guess
   was written; its baseline is its market's first close after it, so its writer never sees past
-  the price it is graded from. A row without it counts as made at 18:00 New York on its stated day.
+  the price it is graded from. A row without it counts as made at 23:59 New York on its stated day.
 - **Shown** (a guess) — *added 2026-11-24* ([step 56](steps/honest-page.md)): the ledger's date
   of the evening the job first found a guess on the published front page; a shown guess stays
   there until it is graded, and the page's tally *Shown on this page* counts every one.
@@ -451,7 +451,8 @@ Terms are grouped by what they are about, alphabetical within each group.
   drift, not a forecast from news.
 - **Withdrawn** (a front-page card) — *added 2026-11-24* ([step 56](steps/honest-page.md)): a guess
   the owner takes off the front page while it is open; it stays shown, marked with its date,
-  until its end date, and is graded in the ledger as any other.
+  until its end date, stays in the evening's proposal until it is graded, and is graded in the
+  ledger as any other.
 - **Stated forecast** — *added 2026-11-21* ([stated forecasts](steps/stated-forecasts.md)): a
   forecast the predictions page gives outright, with no *if*: a **long-run forecast** (a market's
   own direction over a span, where the direction most past spans took holds walk-forward over

@@ -12,6 +12,12 @@ Where the work is and what comes next: the task last finished, the tasks in prog
 
 ## Last completed
 
+Step 56: what the page claims, corrected ([results](steps/honest-page.md#results)). Each guess
+is graded from its market's first close after it was made; a card shown stays until graded; the
+long-run cards say they are the usual way, with counts; guesses look like hunches; the earnings
+seeds hold no consensus figures. Nothing measured changed; ten base rates were corrected by a
+weekday.
+
 Step 54: Switzerland ([results](steps/switzerland.md#results)). 80 SNB decisions, each kind from
 the Bank's own history, and 152 Swiss inflation releases on their days alone, the franc and the SMI
 added: nothing holds walk-forward and both flows' answers are below chance; the franc moves 1.9
@@ -38,11 +44,6 @@ the hand check against Yahoo passed, and no answer or verdict on the page change
 
 ## In progress
 
-- **Step 56: what the page claims, corrected** ([the spec](steps/honest-page.md)): the business
-  review's eight required fixes of 2026-11-24, chosen by the owner that day. Spec reviewed; step 1
-  built: each guess graded from its market's first close after it was made, hand-made guesses in
-  no guesser's record, no single companies; step 2 built: a shown card stays until graded or is
-  marked withdrawn, and #434's lost words found (a stale copy). Next: step 3, the words.
 - **Step 55: guesses against the base rate** ([the spec](steps/guesses-vs-base-rate.md)): each
   guess carries its base rate; a grounded guesser, given the record, runs beside today's news
   guesser as the control. Asked for 2026-11-23 by the owner. Spec merged (#420); step 1, the

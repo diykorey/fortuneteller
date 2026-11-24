@@ -2909,15 +2909,17 @@ def _mine(rows: Sequence[Mapping[str, str]], guesser: str) -> list[Mapping[str, 
 
 
 def guess_start(r: Mapping[str, str]) -> date:
-    """Step 56: the day of the first close in the guess's market after it was made; a row without
-    ``made`` counts as made at 23:59 New York on its stated day."""
+    """Step 56: the day of the first close in the guess's market after it was made, a weekend
+    rolled to Monday, as no weekend close is stored; a row without ``made`` counts as made at 23:59
+    New York on its stated day."""
     stated = date.fromisoformat(r["stated"])
     made = (
         datetime.fromisoformat(r["made"])
         if r.get("made")
         else datetime(stated.year, stated.month, stated.day, 23, 59, tzinfo=sources.NEW_YORK)
     )
-    return study.first_close_after(made, study.MVP_PRICE_SERIES[r["market"]])
+    day = study.first_close_after(made, study.MVP_PRICE_SERIES[r["market"]])
+    return day + timedelta(days=7 - day.weekday()) if day.weekday() >= 5 else day
 
 
 def _guess_fields(today: date, rows: Sequence[Mapping[str, str]], lessons: str) -> dict[str, str]:
