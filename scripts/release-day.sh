@@ -206,12 +206,10 @@ else
     FT_CALLS_PATH=data/calls.csv uv run --directory "$job_tree" fortuneteller scoreboard ||
         report "fortuneteller scoreboard exited $?"
     page_changed=$(git -C "$job_tree" status --porcelain -- docs/scoreboard docs/predicts)
-    if [ -n "$log_changed" ]; then
-        files=$log
-        [ -z "$page_changed" ] || files="$files docs/scoreboard docs/predicts"
-        open_pr "Grade the triggers on $day" "triggers-$day" \
-            "Answered and graded by the evening score at $(date -u +%H:%M:%SZ), after the closes."
-    elif [ -n "$page_changed" ]; then
+    # The pages, the guess ledger among them, go in a pull request merged on passing checks; the
+    # triggers' log in one of its own that waits for a person, so the evening's guesses never wait
+    # with it (step 57, R11, docs/steps/technical-fixes.md; #433 held them on 2026-11-23).
+    if [ -n "$page_changed" ]; then
         files="docs/scoreboard docs/predicts"
         open_pr "Write the page on $day" "scoreboard-$day" \
             "Written by the evening score at $(date -u +%H:%M:%SZ), with nothing to score."
@@ -220,6 +218,12 @@ else
         else
             echo "score: checks did not pass; scoreboard-$day left open for review"
         fi
+    fi
+    if [ -n "$log_changed" ]; then
+        git -C "$job_tree" switch -q --detach origin/main || report "git switch for the triggers"
+        files=$log
+        open_pr "Grade the triggers on $day" "triggers-$day" \
+            "Answered and graded by the evening score at $(date -u +%H:%M:%SZ), after the closes."
     fi
 fi
 

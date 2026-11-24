@@ -2,6 +2,7 @@
 docs/steps/guess-ledger.md): checked, kept once, graded, reviewed, and learned from monthly."""
 
 import json
+import subprocess
 from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 
@@ -848,3 +849,34 @@ def test_the_front_tally_counts_every_guess_once_shown_withdrawn_ones_too() -> N
         "did_not": 1,
         "open": 1,
     }
+
+
+def test_the_model_gets_web_search_alone_no_settings_and_no_secrets(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    # given a secret in the environment and a model call that is recorded, not run
+    monkeypatch.setenv("FT_STORE_KEY", "secret")
+    seen: dict[str, object] = {}
+
+    def run(command: list[str], **kwargs: object) -> subprocess.CompletedProcess[str]:
+        seen.update(command=command, **kwargs)
+        seen["files"] = list(Path(str(kwargs["cwd"])).iterdir())
+        return subprocess.CompletedProcess(command, 0, json.dumps({"result": "[]"}), "")
+
+    monkeypatch.setattr(cli.subprocess, "run", run)
+
+    # when the guesser asks with the web, and the reviewer without
+    cli._run_model("guess", web=True)
+    web = seen["command"]
+    cli._run_model("review", web=False)
+    plain = seen["command"]
+
+    # then only PATH and HOME reach it, in an empty folder, with web search the one tool, and
+    # none of the user's settings or servers
+    assert isinstance(web, list) and isinstance(plain, list)
+    assert set(seen["env"]) <= {"PATH", "HOME"}  # type: ignore[arg-type]
+    assert seen["files"] == []
+    assert web[web.index("--tools") + 1] == "WebSearch"
+    assert plain[plain.index("--tools") + 1] == ""
+    assert "--strict-mcp-config" in web
+    assert web[web.index("--setting-sources") + 1] == "project"
