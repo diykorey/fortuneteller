@@ -6,6 +6,7 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-24 | Step 57, R5, part 1: the jobs start `scripts/job-start.sh`, which runs `release-day.sh` from the job's own worktree at `origin/main`, copied out under the job's lock, never the development checkout's; the store's part waits for the owner | [#450](https://github.com/diykorey/fortuneteller/pull/450) |
 | 2026-11-24 | Sources by country surveyed: official release calendars, data and news feeds for the US, the euro area, Germany, France, the UK, Switzerland, Japan, China and Canada, each fetched; no republishable free consensus found; GDELT the one multi-country news source whose terms allow reuse | [#447](https://github.com/diykorey/fortuneteller/pull/447) |
 | 2026-11-24 | Step 57, R11 corrected: on an evening with the log changed, the switch to main for the triggers put back main's `front-next.csv` before tonight's was kept aside, so the front pull request proposed nothing (2026-11-23's fault, brought back by #446); tonight's is now kept before the switch, and the test checks the front pull request | [#449](https://github.com/diykorey/fortuneteller/pull/449) |
 | 2026-11-24 | Step 57, R6: the evening unit loads no `.env`; the model `guess` starts gets web search alone (none for the review), none of the user's settings, hooks or servers, `PATH` and `HOME` alone, and an empty folder | [#448](https://github.com/diykorey/fortuneteller/pull/448) |
