@@ -6,6 +6,7 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-24 | Step 57, R11 corrected: on an evening with the log changed, the switch to main for the triggers put back main's `front-next.csv` before tonight's was kept aside, so the front pull request proposed nothing (2026-11-23's fault, brought back by #446); tonight's is now kept before the switch, and the test checks the front pull request | [#449](https://github.com/diykorey/fortuneteller/pull/449) |
 | 2026-11-24 | Step 57, R11: on an evening with nothing scored, the pages and the guess ledger go in a pull request merged on passing checks, the triggers' log in one of its own; the script tested end to end against a local origin with `gh`, `uv` and `git push` stood in | [#446](https://github.com/diykorey/fortuneteller/pull/446) |
 | 2026-11-24 | Step 57, R7: a guess with a field not text (a list, a number) is dropped with its reason, and a `TypeError` keeps the evening's rows, so one bad answer no longer loses the evening's grades and guesses | [#445](https://github.com/diykorey/fortuneteller/pull/445) |
 | 2026-11-24 | Step 57: the technical review's required fixes, the spec | [#444](https://github.com/diykorey/fortuneteller/pull/444) |

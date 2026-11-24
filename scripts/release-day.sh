@@ -10,9 +10,12 @@ main_checkout=${FT_MAIN_CHECKOUT:?the checkout whose database and cache the job 
 job_tree=${FT_JOB_TREE:?the worktree the job works in}
 day=$(TZ=America/New_York date +%F)
 out=$(mktemp)
+# Tonight's front-page proposal, kept aside from the evening's branch switches
+# (docs/steps/front-staging.md).
+proposal=$(mktemp)
 # Everything goes to $out, the issue's body if the run fails; the journal gets it at the end.
 exec 3>&1 >>"$out" 2>&1
-trap 'cat "$out" >&3; rm -f "$out"' EXIT
+trap 'cat "$out" >&3; rm -f "$out" "$proposal"' EXIT
 
 case $step in
     live) title="Release-day job failed on $day" ;;
@@ -220,6 +223,8 @@ else
         fi
     fi
     if [ -n "$log_changed" ]; then
+        # Tonight's proposal is kept aside before the switch puts back main's copy (below).
+        cp "$job_tree/docs/predicts/front-next.csv" "$proposal" 2>/dev/null
         git -C "$job_tree" switch -q --detach origin/main || report "git switch for the triggers"
         files=$log
         open_pr "Grade the triggers on $day" "triggers-$day" \
@@ -234,8 +239,7 @@ fi
 # Tonight's proposal is kept aside first: front-next.csv is tracked, so the switch to main puts back
 # main's copy, which is an earlier evening's when tonight's pull request is not merged (2026-11-23,
 # docs/steps/honest-page.md).
-proposal=$(mktemp)
-cp "$job_tree/docs/predicts/front-next.csv" "$proposal" 2>/dev/null
+[ -s "$proposal" ] || cp "$job_tree/docs/predicts/front-next.csv" "$proposal" 2>/dev/null
 if git -C "$job_tree" fetch -q origin && git -C "$job_tree" switch -q --detach origin/main; then
     [ -s "$proposal" ] && cp "$proposal" "$job_tree/docs/predicts/front.csv"
     if ! git -C "$job_tree" diff --quiet -- docs/predicts/front.csv; then
@@ -260,5 +264,4 @@ if git -C "$job_tree" fetch -q origin && git -C "$job_tree" switch -q --detach o
 else
     report "fetching main for the front page's guesses"
 fi
-rm -f "$proposal"
 watch_morning
