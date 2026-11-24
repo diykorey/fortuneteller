@@ -44,6 +44,9 @@ the hand check against Yahoo passed, and no answer or verdict on the page change
 
 ## In progress
 
+- **Step 57: the technical review's required fixes** ([the spec](steps/technical-fixes.md)):
+  eleven fixes, one pull request each, chosen by the owner on 2026-11-24. Next: the spec reviewed,
+  then R7, a bad guess dropped instead of stopping the evening.
 - **Step 55: guesses against the base rate** ([the spec](steps/guesses-vs-base-rate.md)): each
   guess carries its base rate; a grounded guesser, given the record, runs beside today's news
   guesser as the control. Asked for 2026-11-23 by the owner. Spec merged (#420); step 1, the
@@ -123,9 +126,8 @@ the hand check against Yahoo passed, and no answer or verdict on the page change
 
 ## Next
 
-Step 57: the technical review's required fixes of 2026-11-24, each its own pull request; then
-step 58, the publishing schedule (draft 14:00 New York, a reminder at 16:00, published at 18:00,
-every day), chosen by the owner the same day.
+Step 58, the publishing schedule (draft 14:00 New York, a reminder at 16:00, published at 18:00,
+every day), chosen by the owner on 2026-11-24.
 
 ## Known, not yet fixed
 
