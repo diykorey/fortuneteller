@@ -21,7 +21,7 @@ At the end: both seeds carry the exact meets as *as expected*, and `follows --ev
   with both figures given and equal is *as expected*; with the figures unequal or either missing,
   the report has no kind and is left out, as before (counted); Nasdaq also prints `N/A` for a
   forecast of $0, where no percent exists. A loss is written `($0.17)`. The seed's `surprise`
-  column keeps Nasdaq's `N/A`. Nothing else changes: the bar, the 8-K's minute, the members. An
+  column keeps Nasdaq's `N/A`. *Amended 2026-11-24, by [step 56](honest-page.md):* the seeds keep `day,time,ticker,kind`; the EPS, forecast and surprise go to `data/cache/figures/`, not committed. Nothing else changes: the bar, the 8-K's minute, the members. An
   event's id counts the reports of its day, so a new row renumbers its day's others; earnings
   have no live calls and nothing kept refers to those ids. The `raw-move` and scoreboard cells
   of the two flows change with the rows; they are not judged here.

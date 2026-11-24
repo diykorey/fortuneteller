@@ -140,6 +140,22 @@ counted as one group), the legal opinion, and rewriting the public history.
 
 ## Results
 
+### Step 4: the seeds without the consensus figures
+
+Both seeds now hold `day,time,ticker,kind`: 2,212 rows in `earnings.csv` and 25,983 in
+`earnings_sp500.csv`, the same rows as before without the three figures. No two rows were the
+same on the four columns kept, so no row was merged. From now on `scripts/nasdaq_earnings.py seed`
+writes the full rows to `data/cache/figures/`, which is not committed, under the seed's name.
+`scripts/yahoo_earnings.py agree` reads Nasdaq's figures from there. The test that checks each
+kind against its surprise reads the same files and is skipped where they are absent, as in CI.
+
+On two copies of the store of 2026-11-24 01:25, the three earnings flows (`earnings`,
+`earnings500`, `splits`) were loaded from `main`'s seeds into one copy and from this step's into
+the other. Their events are the same: 2,212, 25,983 and 105. Every output is byte for byte the
+same on both copies: `follows` and `follows --after-the-day`, `raw-move` and `raw-move --week` for
+each flow, and the scoreboard's `data.json` and page, *Ask* among them. The only line that
+differs is the scoreboard's "written to", which names each copy's own folder.
+
 ### Step 3: the words
 
 The long-run cards are labelled *The usual way*, and their badge and line say "Usually higher".

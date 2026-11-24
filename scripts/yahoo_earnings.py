@@ -5,7 +5,8 @@
 saves each reply as DIR/ASKED/TICKER.json, ASKED the minute asked (UTC); step 2 runs it every 30
 minutes on a report's evening from the crontab. `agree DIR NASDAQ_DIR` matches each saved
 quarter to step 31's report of the same ticker and fiscal quarter and prints both kinds, the
-agreement, and the scale check.
+agreement, and the scale check, Nasdaq's figures read from data/cache/figures/earnings.csv,
+which `nasdaq_earnings.py seed` writes.
 
 Usage: uv run python -I scripts/yahoo_earnings.py fetch DIR [TICKER...]
        uv run python -I scripts/yahoo_earnings.py agree DIR NASDAQ_DIR
@@ -100,7 +101,7 @@ def agree(folder: Path, nasdaq: Path) -> None:
         -1
     ]
     pages = nasdaq_quarters(nasdaq)
-    with Path("data/seed/earnings.csv").open(newline="") as handle:
+    with Path("data/cache/figures/earnings.csv").open(newline="") as handle:
         seed = list(csv.DictReader(handle))
     matched, same, scale_off, not_yet, unmatched = [], 0, [], 0, []
     for reply in sorted(newest.glob("*.json")):

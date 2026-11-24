@@ -96,7 +96,7 @@ index named above.*
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | The seed: `data/seed/dow.csv` (`day,ticker,change`: in or out) and `data/seed/earnings.csv` (`day,time,ticker,eps,forecast,surprise,kind`, time in UTC) from the cached pages | The members test and the kind test pass; the ten hand checks pass as written above; the counts and the reports left out, by reason, in `docs/steps/earnings-steps.txt` |
+| 1 | The seed: `data/seed/dow.csv` (`day,ticker,change`: in or out) and `data/seed/earnings.csv` (`day,time,ticker,eps,forecast,surprise,kind`, time in UTC) from the cached pages *Amended 2026-11-24, by [step 56](honest-page.md):* the seed keeps `day,time,ticker,kind`; the EPS, forecast and surprise go to `data/cache/figures/`, not committed. | The members test and the kind test pass; the ten hand checks pass as written above; the counts and the reports left out, by reason, in `docs/steps/earnings-steps.txt` |
 | 2 | The ids and the flow: `follows --event earnings`; the members' closes by `load-prices --companies` | The minute test and the ids test pass; the outputs above unchanged on a copy of the store, in `docs/steps/earnings-steps.txt` |
 | 3 | Results | Each bullet of the rule judged right or wrong, with its numbers and command; a goldfish review, each finding fixed or answered |
 
