@@ -86,6 +86,7 @@ drive nothing.
 | Know which external services and keys are needed | [Accounts](accounts.md) |
 | Find a free source of US economic statistics not used yet | [Free sources](free-sources.md) |
 | Find a free data source | [Data sources](data-sources.md), about 250, graded |
+| Find a free source for a country's releases, or its financial news feeds | [Sources by country](country-sources.md) |
 | See the kinds of shocks the product should one day answer | [Scenarios](scenarios.md), hypotheses to measure |
 | Look up a term or ticker | [Glossary](glossary.md) |
 | Know what the reference CSVs contain | [legacy/data/](legacy/data/README.md), still accurate |
