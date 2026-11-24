@@ -35,6 +35,41 @@ def _g(market: str = "BRN", end: str = "2026-11-27", **extra: object) -> dict[st
     } | extra
 
 
+def test_a_guess_with_a_list_for_a_field_is_dropped_and_the_others_kept() -> None:
+    # given an answer with a list for a market, a direction sideways and one good guess
+    answer = _answer(_g(["SPX"]), _g("GC / XAU", direction="sideways"), _g())
+
+    # when it is kept
+    kept, dropped = cli.keep_guesses(answer, [], FRIDAY)
+
+    # then the good one is kept and the two others are dropped with their reasons, nothing raised
+    assert [r["market"] for r in kept] == ["BRN"]
+    assert [d.split(": ", 1)[1] for d in dropped] == [
+        "market not text",
+        "a direction not up or down",
+    ]
+
+
+def test_a_guesser_that_raises_a_type_error_keeps_the_evening_s_rows(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given rows already graded tonight, and a model call that raises a TypeError
+    rows = [_row()]
+
+    def broken(prompt: str, web: bool = False) -> str:
+        raise TypeError("unhashable type: 'list'")
+
+    monkeypatch.setattr(cli, "_run_model", broken)
+
+    # when the guesser runs
+    out = cli.guess_as(
+        "news", "news-1", tmp_path / "lessons.md", lambda r, s: "", rows, FRIDAY, broken
+    )
+
+    # then the rows come back as they were, for the ledger to be written
+    assert out == rows
+
+
 @pytest.mark.parametrize(
     ("guess", "why"),
     [
@@ -52,6 +87,9 @@ def _g(market: str = "BRN", end: str = "2026-11-27", **extra: object) -> dict[st
         (_g(tag="vibes"), "a tag not listed"),
         (_g(confidence="certain"), "a confidence not low, medium or high"),
         (_g(source="http://example.com"), "no https link to its news"),
+        (_g(["SPX"]), "market not text"),
+        (_g(direction=["up"]), "direction not text"),
+        (_g(confidence=2), "confidence not text"),
     ],
 )
 def test_each_check_refuses_its_case(guess: dict[str, object], why: str) -> None:
