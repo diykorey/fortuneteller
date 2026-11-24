@@ -149,19 +149,28 @@ counted as one group), the legal opinion, and rewriting the public history.
 Each bullet of *The rule, fixed before anything is shown*, against what the steps found.
 
 - **Every ledger row keeps its grade; each open row's baseline is its market's first close after
-  `made`: right, once corrected here.** None of the 35 rows is graded (the ledger's `grade`
-  column, 2026-11-24), so no grade changed. Step 1's hand count equals the close grading takes,
-  the first stored close on or after `guess_start`, on every row. It is not equal to
-  `guess_start` itself on every row, as step 1's Results said. For the ten rows made on Sunday
-  2026-11-22 in a market whose next close was Monday's, `guess_start` gave the Sunday. Grading was
+  `made`: wrong at step 1, right after step 5's fix.** None of the 35 rows is graded (the
+  ledger's `grade` column, 2026-11-24), so no grade changed. Step 1's hand count was to equal the
+  code's `guess_start` on every row, and it did not. For ten rows made on Sunday 2026-11-22,
+  `guess_start` gave the Sunday itself, as their market's Sunday close (bitcoin's) or no Sunday
+  close at all still lay ahead: `COMP`, `GC / XAU`, `VIX`, `SPY / ES`, `DXY`, `BTC`, `COIN`,
+  `BRN`, `UGA`, `ITB`. `USDJPY`, past Sunday's 00:00 London bar, already got Monday. Grading was
   unaffected, but their base rates counted one weekday too many. Step 5 rolls a weekend start to
   Monday (`guess_start`; tests: a bitcoin guess made Sunday, and two S&P 500 guesses made Sunday
   and Friday after the close, each start Monday) and recomputes those ten. A holiday is not rolled:
   `NKY`'s start is Monday 2026-11-23, a holiday in Tokyo, and grading takes Tuesday's close. Its
   base rate counts weekdays, holidays among them, as every base rate does.
-- **Each recomputed base rate listed, old beside new: right**, every row in the table below.
-  Printed with `with_base_rates` (the evening job's `fortuneteller guess` fills them so) on a copy
-  of the store of 2026-11-24 01:25. The guess made by hand on 2026-11-24 had none before step 1.
+- **Each recomputed base rate listed, old beside new: right**, every row in the table below:
+  before step 1 and after it from the ledger in git, after step 5 from `with_base_rates`, which
+  `fortuneteller guess` runs to fill the ledger, on a copy of the store of 2026-11-24 01:25.
+- **Step 1's tests:** `test_a_guess_starts_from_its_market_s_first_close_after_it_was_made`
+  (Tokyo, London's bar in winter and after the March change of clocks, a close's very instant,
+  bitcoin on Sunday, and from step 5 the S&P 500 on Sunday and on Friday evening),
+  `test_a_weekend_bitcoin_guess_is_graded_from_monday_s_close`,
+  `test_a_row_made_unknown_counts_as_made_late_on_its_stated_day` and
+  `test_a_base_rate_counts_the_weekdays_from_the_guess_s_start`, all passing with `uv run pytest`.
+  Each starts a guess from the first close strictly after it was made, so no guess sees its
+  baseline. The guess made by hand on 2026-11-24 had none before step 1.
 - **`fortuneteller excess` counts no `by-hand` row: right, by test only.**
   `test_a_hand_made_guess_is_in_no_guesser_s_record_but_still_shown` counts one graded news guess
   and leaves out the hand-made one. On the store, `fortuneteller excess` prints "0 counted" for
@@ -169,18 +178,23 @@ Each bullet of *The rule, fixed before anything is shown*, against what the step
 - **A guess naming `COIN` or `ALL` is dropped with its reason: right.** The guesser's check list
   test drops both as "a single company", and `test_the_guesser_is_not_offered_a_single_company`
   finds 35 markets offered.
-- **Every stated forecast's record, grade and hold unchanged: right.** On two copies of the store of 2026-11-24 01:25,
+- **Every stated forecast's record, grade and hold unchanged: right.** Step 1 stopped grading
+  guesses with `grade_forecasts` and left that function as it was. On two copies of the store of 2026-11-24 01:25,
   `fortuneteller scoreboard` was run with the code before step 3 (#440's merge) and after it
   (#441's). The page data `data.json`, the stated forecasts and *Ask* among it, is byte for byte
   the same, and the ledger it rewrites too. `fortuneteller weekly-post` differs by one line, the
   day-of-news note step 3 adds.
-- **At most five cards on the front page every evening, a card shown staying until graded:
-  right.** The proposal fills only what the staying cards leave of five
-  (`test_with_five_cards_staying_no_new_guess_is_picked`). With the fixed code, 2026-11-23's own
+- **At most five cards on the front page every evening: right; a card shown staying until
+  graded: wrong as the rule was written.** The proposal fills only what the staying cards leave of
+  five (`test_with_five_cards_staying_no_new_guess_is_picked`). The page drops a card at its end
+  date, a day or so before it is graded; only the proposal keeps it until graded. Step 2's Results
+  said so, and the rule was amended at step 5 to what was built, rather than the page changed.
+  With the fixed code, in a one-off script calling `front_proposal`, 2026-11-23's own
   inputs (the approved `front.csv` of 2026-11-22, #434's ledger and the three open tested
   forecasts) give back the three approved cards in the owner's words.
 - **The earnings outputs identical after step 4: right**, as step 4's Results say.
-- **The words read clearly and were approved before they were published: right.** The owner
+- **The words read clearly and were approved before they were published: approved, and each card
+  explained back; four points of the page still unclear.** The owner
   approved them on 2026-11-24. After the five fixes, a fresh reader with no financial training
   read the page and explained each of the five cards back correctly: what it says, by when, and
   how it will be checked. They named the two *usual way* cards as not forecasts from news, and the
@@ -190,7 +204,8 @@ Each bullet of *The rule, fixed before anything is shown*, against what the step
   - "ever shown here" beside "Guesses: 25" is unclear;
   - a guess *made Nov 22* compares with *November 23*;
   - the usual-way card starts on November 20 while the guesses start on November 23.
-  These are left to the owner, and none changes a number.
+  The first was among step 3's five findings and is not fixed: the count includes a third stated
+  forecast whose card is not shown. These are left to the owner, and none changes a number.
 
 | Stated | Market | Guesser | Before step 1 | Step 1 | Step 5 |
 | --- | --- | --- | --- | --- | --- |
@@ -259,7 +274,8 @@ maker has no money in any market shown." The day-of-news line is on the scoreboa
 
 Tests (`tests/test_predicts.py`, `tests/test_stated_forecasts.py`): no guess card has the *up*
 or *down* class, no card says "in 10", and the footer and the withdrawn note are present. Every
-number, cell and answer is the same before and after: only the words changed.
+number, cell and answer is the same before and after: only the words changed (*written before
+the check; step 5's comparison on a copy of the store bears it out*).
 
 The page was rendered in headless Chrome with the live data and the three cards, one of them
 marked withdrawn. At 390 and 1280 pixels wide, in light and dark, nothing was cut off or
@@ -268,7 +284,8 @@ overlapping.
 A fresh reader with no financial training read the drafted page. They found five problems:
 "drift" was unclear; the usual-way cards looked like forecasts; "holds no position" was jargon;
 the counts at the top did not match the cards; and the cards still named November 20 although
-they are now graded from November 23. Each was fixed. The owner approved the words, printed in
+they are now graded from November 23. Each was fixed (*corrected at step 5:* but the
+first count still includes a stated forecast whose card is not shown). The owner approved the words, printed in
 full in the console, on 2026-11-24 ("A"). The three cards on the page now name November 23, and
 Brent's card drops Friday's price of 92.57 dollars.
 
@@ -291,7 +308,7 @@ amended at step 5 to say so).
 
 The hand count, written 2026-11-24 before the code ran: each row's `made` (the commit that added
 it), in its market's zone against its close, and the day its baseline close falls on. They equal the
-code's `guess_start` on every row.
+code's `guess_start` on every row. *Corrected at step 5:* not on ten rows, step 5's Results.
 
 | Rows | `made` (UTC) | Read against | Baseline close |
 | --- | --- | --- | --- |
@@ -310,7 +327,7 @@ Before, the twelve rows of 2026-11-22 started from Friday 2026-11-20's close; th
 started from Tuesday's; under the old rule, the close before the first weekday after the evening,
 they started from Monday's, which is why their base rates move below. *Amended
 2026-11-24:* #433, which held the job's 22 guesses of 2026-11-23, was merged by the owner's choice
-after this table was first written, and the hand-made wheat row dropped for the job's own; the 21
+after this table was first written, and the hand-made wheat row dropped for the job's own; the 22
 rows of 2026-11-23 were counted by hand the same way before the code ran, and all 35 equal it.
 
 The base rates had been filled by the evening job under the old rule, so each is recomputed (old,

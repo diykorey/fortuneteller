@@ -16,7 +16,7 @@ Step 56: what the page claims, corrected ([results](steps/honest-page.md#results
 is graded from its market's first close after it was made; a card shown stays until graded; the
 long-run cards say they are the usual way, with counts; guesses look like hunches; the earnings
 seeds hold no consensus figures. Nothing measured changed; ten base rates were corrected by a
-weekday.
+weekday, and a card leaves the page at its end date, a day before its grade.
 
 Step 54: Switzerland ([results](steps/switzerland.md#results)). 80 SNB decisions, each kind from
 the Bank's own history, and 152 Swiss inflation releases on their days alone, the franc and the SMI
