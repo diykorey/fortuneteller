@@ -118,7 +118,9 @@ def test_the_pages_are_merged_apart_from_the_triggers_log_and_the_front_keeps_to
     trigger = _git(job, "show", "--name-only", "--format=", "triggers-" + day).split()
     assert pages == ["docs/predicts/front-next.csv", "docs/scoreboard/data.json"]
     assert trigger == ["data/trigger-log.csv"]
-<<<<<<< HEAD
+    assert "--head front-" + day in log
+    front = _git(job, "show", f"front-{day}:docs/predicts/front.csv")
+    assert front == "stated,market\ntonight,BTC\n"
 
 
 def test_the_job_runs_its_own_tree_s_script_at_origin_main(tmp_path: Path) -> None:
@@ -152,8 +154,3 @@ def test_the_job_runs_its_own_tree_s_script_at_origin_main(tmp_path: Path) -> No
 
     # then origin/main's script ran, from the job's tree, not the checkout's beside the starter
     assert run.stdout == "tree score\n", run.stderr
-=======
-    assert "--head front-" + day in log
-    front = _git(job, "show", f"front-{day}:docs/predicts/front.csv")
-    assert front == "stated,market\ntonight,BTC\n"
->>>>>>> origin/main
