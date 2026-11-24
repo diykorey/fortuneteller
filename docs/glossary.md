@@ -273,6 +273,9 @@ Terms are grouped by what they are about, alphabetical within each group.
   request `front-DAY` the evening score opens with that evening's proposal of the front page's
   guesses in `docs/predicts/front.csv`; the owner rewords or removes them and merges it, and the
   job never does.
+- **Hand-made guess** — *added 2026-11-24* ([step 56](steps/honest-page.md)): a ledger row
+  whose `prompt` is `by-hand`, written outside the evening job and approved by the owner; on the
+  stats page and the front page as any guess, in neither guesser's record, lessons or comparison.
 - **FX** (Foreign Exchange) — the currency market.
 - **Gold / XAU / GC** — gold; `XAU` is its currency-style code, `GC` its COMEX futures symbol. A
   haven asset, sensitive to real interest rates.
@@ -437,6 +440,15 @@ Terms are grouped by what they are about, alphabetical within each group.
   prints a line and *Ask* shows a row. A *kind cell* is read off the kind's own definition (Brent on
   OPEC+'s *oil up*), so it says nothing beyond the kind. A *group* is one kind of event's set of
   kinds as *Ask*'s menu groups them (the jobs report's above, as expected and below).
+- **Made** (a guess) — *added 2026-11-24* ([step 56](steps/honest-page.md)): the UTC time a guess
+  was written; its baseline is its market's first close after it, so its writer never sees past
+  the price it is graded from. A row without it counts as made at 18:00 New York on its stated day.
+- **The usual way** — *added 2026-11-24* ([step 56](steps/honest-page.md)): the page's label for a
+  long-run forecast: the direction a market most often took over a stretch of time, its normal
+  drift, not a forecast from news.
+- **Withdrawn** (a front-page card) — *added 2026-11-24* ([step 56](steps/honest-page.md)): a guess
+  the owner takes off the front page while it is open; it stays shown, marked with its date,
+  until its end date, and is graded in the ledger as any other.
 - **Stated forecast** — *added 2026-11-21* ([stated forecasts](steps/stated-forecasts.md)): a
   forecast the predictions page gives outright, with no *if*: a **long-run forecast** (a market's
   own direction over a span, where the direction most past spans took holds walk-forward over
