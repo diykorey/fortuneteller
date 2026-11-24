@@ -45,8 +45,9 @@ the hand check against Yahoo passed, and no answer or verdict on the page change
 ## In progress
 
 - **Step 57: the technical review's required fixes** ([the spec](steps/technical-fixes.md)):
-  eleven fixes, one pull request each, chosen by the owner on 2026-11-24. Next: the spec reviewed,
-  then R7, a bad guess dropped instead of stopping the evening.
+  eleven fixes, one pull request each, chosen by the owner on 2026-11-24. Spec merged (#444); R7
+  (#445) and R11 built: a bad guess dropped with its reason; the evening's pages merged apart from
+  the triggers' log. Next: R6, the evening's model without `.env`.
 - **Step 55: guesses against the base rate** ([the spec](steps/guesses-vs-base-rate.md)): each
   guess carries its base rate; a grounded guesser, given the record, runs beside today's news
   guesser as the control. Asked for 2026-11-23 by the owner. Spec merged (#420); step 1, the
