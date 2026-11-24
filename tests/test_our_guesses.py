@@ -167,8 +167,12 @@ def test_a_guess_is_graded_from_the_first_close_after_it_was_made() -> None:
         ("EURUSD", datetime(2027, 3, 15, 23, 30, tzinfo=UTC), date(2027, 3, 16)),
         # a guess made at the very instant of Tokyo's close has seen it
         ("NKY", datetime(2026, 11, 24, 6, 30, tzinfo=UTC), date(2026, 11, 25)),
-        # Sunday 15:00 New York, before bitcoin's 23:59 UTC close
-        ("BTC", datetime(2026, 11, 22, 20, 0, tzinfo=UTC), date(2026, 11, 22)),
+        # Sunday 15:00 New York, before bitcoin's 23:59 UTC close, which is not stored: Monday's
+        ("BTC", datetime(2026, 11, 22, 20, 0, tzinfo=UTC), date(2026, 11, 23)),
+        # Sunday 02:20 New York, the S&P 500's next close is Monday's
+        ("SPY / ES", datetime(2026, 11, 22, 7, 20, tzinfo=UTC), date(2026, 11, 23)),
+        # Friday 18:00 New York, after the close: Monday's
+        ("SPY / ES", datetime(2026, 11, 20, 23, 0, tzinfo=UTC), date(2026, 11, 23)),
     ],
 )
 def test_a_guess_starts_from_its_market_s_first_close_after_it_was_made(
@@ -461,7 +465,8 @@ def test_closes_on_or_after_the_evening_are_not_used() -> None:
 
 
 def test_a_kept_guess_and_a_stored_one_get_their_base_rate() -> None:
-    # given a down guess for the five weekdays Nov 23 to 27, and a stored row without a base rate
+    # given a down guess made Friday evening, graded from Monday Nov 23's close to Friday Nov 27's,
+    # and a stored row without a base rate
     kept, _ = cli.keep_guesses(_answer(_g()), [], FRIDAY)
     stored = {**kept[0], "market": "GC / XAU", "base_rate": ""}
     del stored["base_rate"]
@@ -473,8 +478,8 @@ def test_a_kept_guess_and_a_stored_one_get_their_base_rate() -> None:
     # when the base rates are filled
     rows = cli.with_base_rates([kept[0], stored], lambda m: closes)
 
-    # then each is the share of 5-close runs before Friday that fell, and a set one is kept
-    expected = study.base_rate(closes, FRIDAY, 5, "down")
+    # then each is the share of 4-close runs before Friday that fell, and a set one is kept
+    expected = study.base_rate(closes, FRIDAY, 4, "down")
     assert expected is not None
     assert [r["base_rate"] for r in rows] == [f"{expected:.4f}"] * 2
     assert (
