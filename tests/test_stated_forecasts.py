@@ -267,7 +267,11 @@ def test_the_page_states_a_forecast_first_with_its_record(tmp_path: Path) -> Non
 
     # then the forecast is stated with its record and the tally, and no if-arrow
     shown = dom[dom.index('<ol id="predictions">') : dom.index("</ol>")]
-    assert "US stock market" in shown and "▲ Usually higher on" in shown and "Usually higher on" in shown
+    assert (
+        "US stock market" in shown
+        and "▲ Usually higher on" in shown
+        and "Usually higher on" in shown
+    )
     assert "Went this way in 402 of 666 past years" in shown and " in 10" not in shown
     assert "The usual way" in shown
     assert "→" not in shown
