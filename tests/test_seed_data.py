@@ -482,22 +482,19 @@ def _report_kind(row: dict[str, str], kind: Callable[[float], str]) -> str | Non
     return kind(float(row["surprise"]))
 
 
-def test_earnings_rows_are_members_reports_with_their_kind() -> None:
+def test_earnings_rows_are_members_reports_without_the_source_s_figures() -> None:
     # given the committed reports
     with (settings.seed_dir / "earnings.csv").open(newline="", encoding="utf-8") as handle:
         reader = csv.DictReader(handle)
         header = reader.fieldnames
         rows = list(reader)
 
-    # when each row's kind is read against its surprise
-    def kind(surprise: float) -> str:
-        return "above" if surprise >= 2.0 else "below" if surprise <= -2.0 else "as expected"
+    # when each row is read against the Dow's members on its day
 
-    # then every row is a member's on its day (a day either side, the 8-K's), its kind the
-    # surprise's at ±2%, and Microsoft's report of 2026-10-28 is at its 8-K's minute
-    assert header == ["day", "time", "ticker", "eps", "forecast", "surprise", "kind"]
-    assert all(row["kind"] == _report_kind(row, kind) for row in rows)
-    assert (kind(2.0), kind(1.9), kind(-2.0)) == ("above", "as expected", "below")
+    # then the seed holds no EPS, forecast or surprise; every row is a member's on its day (a day
+    # either side, the 8-K's), and Microsoft's report of 2026-10-28 is at its 8-K's minute
+    assert header == ["day", "time", "ticker", "kind"]
+    assert {r["kind"] for r in rows} == {"above", "as expected", "below"}
     assert all(
         any(
             row["ticker"] in _dow_members(date.fromisoformat(row["day"]) + timedelta(days=d))
@@ -507,6 +504,29 @@ def test_earnings_rows_are_members_reports_with_their_kind() -> None:
     )
     msft = [r for r in rows if r["ticker"] == "MSFT" and r["day"] == "2026-10-28"]
     assert [(r["time"], r["kind"]) for r in msft] == [("20:04", "above")]
+
+
+@pytest.mark.parametrize("name", ["earnings.csv", "earnings_sp500.csv"])
+def test_each_report_s_kind_is_its_surprise_s_in_the_figures_kept_aside(name: str) -> None:
+    # given the figures the seed script keeps out of the repository, where they were fetched
+    figures = Path("data/cache/figures") / name
+    if not figures.exists():
+        pytest.skip("Nasdaq's figures are kept only where the seed script ran")
+    with figures.open(newline="", encoding="utf-8") as handle:
+        rows = list(csv.DictReader(handle))
+    with (settings.seed_dir / name).open(newline="", encoding="utf-8") as handle:
+        seed = list(csv.DictReader(handle))
+
+    # when each row's kind is read against its surprise
+    def kind(surprise: float) -> str:
+        return "above" if surprise >= 2.0 else "below" if surprise <= -2.0 else "as expected"
+
+    # then its kind is the surprise's at ±2%, and the seed is the figures' rows without them
+    assert all(row["kind"] == _report_kind(row, kind) for row in rows)
+    assert (kind(2.0), kind(1.9), kind(-2.0)) == ("above", "as expected", "below")
+    assert [[r[c] for c in ("day", "time", "ticker", "kind")] for r in rows] == [
+        list(r.values()) for r in seed
+    ]
 
 
 def test_the_8_k_kept_is_the_nearest_to_the_calendar_s_day() -> None:
@@ -640,10 +660,12 @@ def test_sp500_members_stay_near_five_hundred_and_okta_joins_on_its_effective_da
     assert okta == [(date(2026, 11, 4), "KVUE", "out"), (date(2026, 11, 4), "OKTA", "in")]
 
 
-def test_s_p_500_earnings_rows_are_members_reports_with_their_kind() -> None:
+def test_s_p_500_earnings_rows_are_members_reports_without_the_source_s_figures() -> None:
     # given the committed reports and the members' changes
     with (settings.seed_dir / "earnings_sp500.csv").open(newline="", encoding="utf-8") as handle:
-        rows = list(csv.DictReader(handle))
+        reader = csv.DictReader(handle)
+        header = reader.fieldnames
+        rows = list(reader)
     changes = _members("sp500.csv")
 
     def members(day: date) -> set[str]:
@@ -653,15 +675,12 @@ def test_s_p_500_earnings_rows_are_members_reports_with_their_kind() -> None:
                 (held.add if c == "in" else held.discard)(t)
         return held
 
-    # when each row's kind is read against its surprise, and a sample's company on its day
-    def kind(surprise: float) -> str:
-        return "above" if surprise >= 2.0 else "below" if surprise <= -2.0 else "as expected"
-
+    # when a sample's company is read on its day
     sample = rows[:: max(1, len(rows) // 40)]
 
-    # then every kind is the surprise's at ±2%, every report is from 2011, and each sampled
+    # then the seed holds no EPS, forecast or surprise, every report is from 2011, and each sampled
     # report's company is a member within a day of it (the 8-K's day)
-    assert all(row["kind"] == _report_kind(row, kind) for row in rows)
+    assert header == ["day", "time", "ticker", "kind"]
     assert min(row["day"] for row in rows) >= "2011-01-03"
     assert all(
         any(

@@ -6,6 +6,8 @@ REFETCH_DAYS of today, which Nasdaq may still be filling (docs/steps/earnings-cu
 `seed DIR SEC_DIR [LAST]` writes data/seed/earnings.csv
 from the saved pages, data/seed/dow.csv and the filing indexes `scripts/sec_8k_times.py` saved:
 each member's report with a kind and an 8-K with Item 2.02, and prints the reports left out.
+The seed holds the day, time, ticker and kind; Nasdaq's EPS, forecast and surprise go to
+data/cache/figures/ under the seed's name, never committed (docs/steps/honest-page.md).
 
 With `--members FILE --out FILE --first DAY` (step 36, docs/steps/earnings-sp500.md) `seed` keeps
 another index's members from DAY and writes FILE; a member with no filing index saved is *no 8-K*;
@@ -31,6 +33,7 @@ REFETCH_DAYS = 21
 URL = "https://api.nasdaq.com/api/calendar/earnings?date={day}"
 HEADERS = {"User-Agent": "Mozilla/5.0", "Accept": "application/json"}
 SEED = Path("data/seed/earnings.csv")
+FIGURES = Path("data/cache/figures")
 NEW_YORK = ZoneInfo("America/New_York")
 BAR = 2.0
 
@@ -199,10 +202,15 @@ def seed(
                 )
             )
     rows = sorted(set(rows))
-    with out.open("w", newline="", encoding="utf-8") as handle:
+    FIGURES.mkdir(parents=True, exist_ok=True)
+    with (FIGURES / out.name).open("w", newline="", encoding="utf-8") as handle:
         writer = csv.writer(handle, lineterminator="\n")
         writer.writerow(["day", "time", "ticker", "eps", "forecast", "surprise", "kind"])
         writer.writerows(rows)
+    with out.open("w", newline="", encoding="utf-8") as handle:
+        writer = csv.writer(handle, lineterminator="\n")
+        writer.writerow(["day", "time", "ticker", "kind"])
+        writer.writerows(sorted({(r[0], r[1], r[2], r[6]) for r in rows}))
     kinds = Counter(r[6] for r in rows)
     print(
         f"wrote {len(rows)} reports to {out}: "
