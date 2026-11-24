@@ -38,6 +38,9 @@ the hand check against Yahoo passed, and no answer or verdict on the page change
 
 ## In progress
 
+- **Step 56: what the page claims, corrected** ([the spec](steps/honest-page.md)): the business
+  review's eight required fixes of 2026-11-24, chosen by the owner that day. Next: the spec's
+  goldfish review, then step 1, the guess baseline.
 - **Step 55: guesses against the base rate** ([the spec](steps/guesses-vs-base-rate.md)): each
   guess carries its base rate; a grounded guesser, given the record, runs beside today's news
   guesser as the control. Asked for 2026-11-23 by the owner. Spec merged (#420); step 1, the
@@ -117,11 +120,9 @@ the hand check against Yahoo passed, and no answer or verdict on the page change
 
 ## Next
 
-None queued after step 54; the owner's next choice. Step 46's live days (2026-11-24 onward)
-recorded alongside.
-
-Monday 2026-11-23: step 23's first weekly post, drafted by `weekly-post` and published by the
-owner. Then step 44's page, published before the post if it is ready.
+Step 57: the technical review's required fixes of 2026-11-24, each its own pull request; then
+step 58, the publishing schedule (draft 14:00 New York, a reminder at 16:00, published at 18:00,
+every day), chosen by the owner the same day.
 
 ## Known, not yet fixed
 
