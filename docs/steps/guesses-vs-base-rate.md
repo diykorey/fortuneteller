@@ -43,7 +43,10 @@ the grounded guesser's frozen prompt beats the news guesser.
   against every run in its market's stored closes before the evening from one close to the close
   *n* later, overlapping; the base rate is the share whose move went the guess's way (an
   unchanged close counts against it, as in the grade). Kept with the guess, never changed. A
-  holiday inside the span makes the grade one close shorter than *n*; accepted.
+  holiday inside the span makes the grade one close shorter than *n*; accepted. *Amended
+  2026-11-24* ([step 56](honest-page.md), step 1, before any base rate was filled): *n* counts the
+  weekdays after the guess's first close after it was made, to the end date, the closes its grade
+  spans; a `by-hand` row counts for neither guesser.
 - **The grounded guesser** is the news guesser's prompt plus: each market's base rate *up* over
   5, 21, 63 and 252 closes; the rows of `docs/predicts/forecasts.csv` still open; and one rule:
   the reasoning names the guess's base rate and why the news should beat it. Up to 50 guesses an

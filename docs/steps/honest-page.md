@@ -29,9 +29,12 @@ you know it is right* says.
   first close after `made`, read with each market's close time and zone in
   `study.MVP_PRICE_SERIES`, as an event's reaction day is: a close at the very instant of `made`
   counts as seen. A row without `made` takes the time of the commit that first added it to the
-  ledger, which is never earlier than it was written. No ledger row is graded yet (the first ends
+  ledger, which is never earlier than it was written; *amended 2026-11-24*, step 1: written into
+  the ledger by step 1, and a row still without one counts as made at 23:59 New York on its stated
+  day. No ledger row is graded yet (the first ends
   2026-11-27), so every row takes the new baseline and no grade changes. Its base rate counts the
-  weekdays from that close to its end date; a base rate already filled is recomputed.
+  weekdays from that close to its end date; a base rate already filled is recomputed (none was
+  filled when step 1 was built).
 - **Hand-made guesses apart (found while checking the review, 2026-11-24).** The two guesses added by hand that day carry
   `guesser` *news* and `prompt` *by-hand*, so they would count in the control guesser's record,
   its lessons and step 55's comparison. From now on a `by-hand` row counts in neither guesser's
@@ -133,4 +136,36 @@ counted as one group), the legal opinion, and rewriting the public history.
 
 ## Results
 
-Not yet measured.
+### Step 1: the baseline
+
+The hand count, written 2026-11-24 before the code ran: each row's `made` (the commit that added
+it), in its market's zone against its close, and the day its baseline close falls on. They equal the
+code's `guess_start` on every row.
+
+| Rows | `made` (UTC) | Read against | Baseline close |
+| --- | --- | --- | --- |
+| `COMP`, `GC / XAU` | 2026-11-22 07:20:00 (735fd77) | Sunday in New York | Monday 2026-11-23 |
+| `VIX`, `SPY / ES`, `DXY`, `COIN`, `BRN`, `UGA`, `ITB` | 2026-11-22 09:08:01 (3e0345c) | Sunday in New York | Monday 2026-11-23 |
+| `USDJPY` | the same | after Sunday's 00:00 London bar | Monday 2026-11-23 |
+| `BTC` | the same | before Sunday's 23:59 UTC close, which is not stored | Monday 2026-11-23 |
+| `NKY` | the same | 18:08 Sunday in Tokyo; Monday is a holiday in Japan | Tuesday 2026-11-24 |
+| `UST10Y / ZN` | 2026-11-24 00:02:59 (0adfa50) | 19:02 Monday in New York, after the close | Tuesday 2026-11-24 |
+| The job's 21 of 2026-11-23 but `ETH` | 2026-11-23 23:25:41 (1ef7ff7, merged with #433) | after every close of Monday: New York, Europe, Tokyo, Shanghai, London's bar | Tuesday 2026-11-24 |
+| `ETH` of 2026-11-23 | the same | before Monday's 23:59 UTC close | Monday 2026-11-23 |
+
+Before, the twelve rows of 2026-11-22 started from Friday 2026-11-20's close; the job's of
+2026-11-23 and the hand-made one of 2026-11-24 already started from Tuesday's. *Amended
+2026-11-24:* #433, which held the job's 22 guesses of 2026-11-23, was merged by the owner's choice
+after this table was first written, and the hand-made wheat row dropped for the job's own; the 21
+rows of 2026-11-23 were counted by hand the same way before the code ran, and all 35 equal it.
+
+The base rates had been filled by the evening job under the old rule, so each is recomputed (old,
+new), unchanged where the span keeps its weekdays: `USDJPY` of 2026-11-22 0.4690, 0.4662; `NKY`
+0.4217, 0.4254; and every row of 2026-11-23 but `ETH`, each by at most 0.0062: `EURUSD` 0.5049,
+0.5041; `GBPUSD` 0.4901, 0.4902; `XLE` 0.4190, 0.4213; `UNG` 0.5799, 0.5794; `UST5Y / ZF`
+0.4924, 0.4911; `T5YIE` 0.4657, 0.4653; `DAX` 0.6401, 0.6389; `SHCOMP` 0.5103, 0.5094; `USDCNY`
+0.5734, 0.5716; `USDCHF` 0.5628, 0.5624; `KC` 0.4929, 0.4963; `WEAT` 0.5825, 0.5887; the grounded
+guesser's `UNG` 0.6392, 0.6362; `ITB` 0.4164, 0.4147; `VIX` 0.5439, 0.5422; `BRN` 0.4517,
+0.4520; `XLU` 0.3876, 0.3878; `T5YIE` 0.4584, 0.4597; `USDJPY` 0.4694, 0.4731; `GC / XAU` 0.4377,
+0.4409; `USDCAD` 0.5110, 0.5086. The hand-made `UST10Y / ZN` gets its first, 0.4856. Read with
+`fortuneteller guess`'s own `with_base_rates` on the store of 2026-11-24, its last close 2026-11-20.

@@ -274,6 +274,13 @@ def release_move(before: DailyClosingPrice, after: DailyClosingPrice, unit: str)
     raise ValueError(f"unknown unit {unit!r}: expected 'pct' or 'bps'")
 
 
+def first_close_after(at: datetime, series: PriceSeries) -> date:
+    """The first day whose close comes after ``at`` (aware): the next day if ``at`` is at or after
+    that day's close, both read in the market's own time zone."""
+    local = at.astimezone(series.zone)
+    return local.date() + timedelta(days=1 if local.time() >= series.close else 0)
+
+
 def first_reaction_day(event: EventInstance, series: PriceSeries) -> date:
     """The first day whose close can carry the event: the next day if it came at or after the close,
     both read in the market's own time zone.
@@ -281,8 +288,7 @@ def first_reaction_day(event: EventInstance, series: PriceSeries) -> date:
     Passed to ``closing_price_before_after``, this pairs the last close before the event with the
     first after it: a Fed decision at 14:00 reacts in gold, which closes at 13:30, the next day.
     """
-    announced = event.event_ts.replace(tzinfo=UTC).astimezone(series.zone)
-    return announced.date() + timedelta(days=1 if announced.time() >= series.close else 0)
+    return first_close_after(event.event_ts.replace(tzinfo=UTC), series)
 
 
 def stored_closes(

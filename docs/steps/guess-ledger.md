@@ -36,7 +36,9 @@ At the end:
     `GBPUSD`, `USDJPY`, `NKY`, `ETH`, `COIN`, `ALL` (`study.MVP_PRICE_SERIES`); *amended
     2026-11-22* ([Canada](canada.md), step 1): 33, with `USDCAD` and `TSX`; *amended 2026-11-23*
     ([China](china.md), step 1): 35, with `USDCNY` and `SHCOMP`; *amended 2026-11-23*
-    ([Switzerland](switzerland.md), step 1): 37, with `USDCHF` and `SMI`;
+    ([Switzerland](switzerland.md), step 1): 37, with `USDCHF` and `SMI`; *amended 2026-11-24*
+    ([step 56](honest-page.md), step 1): 35, without `COIN` and `ALL`, single companies, each
+    dropped as *a single company*; Coinbase's open guess is graded as before;
   - *up* or *down*;
   - an end date, a weekday, from the second weekday after the evening to a year ahead;
   - a statement of at most 40 words with no `%`;
@@ -56,6 +58,9 @@ At the end:
 - **Graded by the closes alone:** from the close before the first weekday after the evening to
   the last close on or before the end date (so a holiday's end date takes the day before), once
   a close on or after the end date is stored, as step 49 grades. Its move is kept with the grade.
+  *Amended 2026-11-24* ([step 56](honest-page.md), step 1, before any row was graded): from its
+  market's first close after it was made (`made`), read with the market's close time and zone,
+  so its writer has seen no close it is graded from; every row so far takes this baseline.
 - **The review:** in the same `guess` run that grades a guess, before tonight's guesses, the model
   is given its statement, reasoning,
   grade and the market's move, and writes at most 80 words: which part of the reasoning held,
@@ -122,6 +127,11 @@ more than five forecasts on the front page.
   (*news-1*, or *grounded-N* from the first line of `grounded_prompt.txt`); a row without them is
   the news guesser's. The front page and this stats page read the news guesser's rows only, until
   step 55's step 3. Step 49's two rows are kept, read with an empty tag and reasoning.
+  *Amended 2026-11-24* ([step 56](honest-page.md), step 1): then `made`, the UTC time the guess
+  was written, to the second; the rows before it carry the time of the commit that first added
+  them, and a row without one counts as made at 23:59 New York on its stated day. A row whose
+  `prompt` is `by-hand` was written outside the job, approved by the owner: it is shown as any
+  guess and counts in neither guesser's record, lessons or comparison.
 - **Numbers in a reason** (*amended 2026-11-22*): the reasoning may quote a figure from the news;
   a share is written *14 in 100*, since a bare *14* lost its unit when the `%` was banned. The
   ban on a percentage stands for the forecast itself: no chance and no size is claimed.
