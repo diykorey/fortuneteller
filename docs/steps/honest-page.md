@@ -139,8 +139,8 @@ counted as one group), the legal opinion, and rewriting the public history.
 ### Step 1: the baseline
 
 The hand count, written 2026-11-24 before the code ran: each row's `made` (the commit that added
-it), in its market's zone against its close, and the day its baseline close falls on. All 14 equal
-the code's `guess_start`, and no base rate had been filled.
+it), in its market's zone against its close, and the day its baseline close falls on. They equal the
+code's `guess_start` on every row.
 
 | Rows | `made` (UTC) | Read against | Baseline close |
 | --- | --- | --- | --- |
@@ -149,7 +149,23 @@ the code's `guess_start`, and no base rate had been filled.
 | `USDJPY` | the same | after Sunday's 00:00 London bar | Monday 2026-11-23 |
 | `BTC` | the same | before Sunday's 23:59 UTC close, which is not stored | Monday 2026-11-23 |
 | `NKY` | the same | 18:08 Sunday in Tokyo; Monday is a holiday in Japan | Tuesday 2026-11-24 |
-| `WEAT`, `UST10Y / ZN` | 2026-11-24 00:02:59 (0adfa50) | 19:02 Monday in New York, after the close | Tuesday 2026-11-24 |
+| `UST10Y / ZN` | 2026-11-24 00:02:59 (0adfa50) | 19:02 Monday in New York, after the close | Tuesday 2026-11-24 |
+| The job's 21 of 2026-11-23 but `ETH` | 2026-11-23 23:25:41 (1ef7ff7, merged with #433) | after every close of Monday: New York, Europe, Tokyo, Shanghai, London's bar | Tuesday 2026-11-24 |
+| `ETH` of 2026-11-23 | the same | before Monday's 23:59 UTC close | Monday 2026-11-23 |
 
-Before, the twelve rows of 2026-11-22 started from Friday 2026-11-20's close; the two of
-2026-11-24 already started from Tuesday's.
+Before, the twelve rows of 2026-11-22 started from Friday 2026-11-20's close; the job's of
+2026-11-23 and the hand-made one of 2026-11-24 already started from Tuesday's. *Amended
+2026-11-24:* #433, which held the job's 22 guesses of 2026-11-23, was merged by the owner's choice
+after this table was first written, and the hand-made wheat row dropped for the job's own; the 21
+rows of 2026-11-23 were counted by hand the same way before the code ran, and all 35 equal it.
+
+The base rates had been filled by the evening job under the old rule, so each is recomputed (old,
+new), unchanged where the span keeps its weekdays: `USDJPY` of 2026-11-22 0.4690, 0.4662; `NKY`
+0.4217, 0.4254; and every row of 2026-11-23 but `ETH`, each by at most 0.0062: `EURUSD` 0.5049,
+0.5041; `GBPUSD` 0.4901, 0.4902; `XLE` 0.4190, 0.4213; `UNG` 0.5799, 0.5794; `UST5Y / ZF`
+0.4924, 0.4911; `T5YIE` 0.4657, 0.4653; `DAX` 0.6401, 0.6389; `SHCOMP` 0.5103, 0.5094; `USDCNY`
+0.5734, 0.5716; `USDCHF` 0.5628, 0.5624; `KC` 0.4929, 0.4963; `WEAT` 0.5825, 0.5887; the grounded
+guesser's `UNG` 0.6392, 0.6362; `ITB` 0.4164, 0.4147; `VIX` 0.5439, 0.5422; `BRN` 0.4517,
+0.4520; `XLU` 0.3876, 0.3878; `T5YIE` 0.4584, 0.4597; `USDJPY` 0.4694, 0.4731; `GC / XAU` 0.4377,
+0.4409; `USDCAD` 0.5110, 0.5086. The hand-made `UST10Y / ZN` gets its first, 0.4856. Read with
+`fortuneteller guess`'s own `with_base_rates` on the store of 2026-11-24, its last close 2026-11-20.
