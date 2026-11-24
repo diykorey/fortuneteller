@@ -45,9 +45,17 @@ At the end:
   on branch `front-DAY` (DAY New York's date, `YYYY-MM-DD`). It never merges it. A front pull
   request the owner or anyone else has added a commit to is left open, and that evening proposes
   nothing, so no rewording is thrown away. Until the owner merges one, the page keeps the guesses last approved, each
-  shown while its end date has not passed.
+  shown while its end date has not passed. *Amended 2026-11-24* ([step 56](honest-page.md), step
+  2): the job keeps tonight's `front-next.csv` aside before it switches to `main`. On 2026-11-23
+  the evening's pull request stayed open (#433), so the switch put back `main`'s copy of
+  2026-11-22, written before the owner's rewording, and #434 proposed those words.
 - **What the owner may change:** `statement` and `why`, or remove a row, or add one copied from
-  an open ledger guess. `stated`, `market`,
+  an open ledger guess. *Amended 2026-11-24* ([step 56](honest-page.md), step 2): a guess once
+  on the published page stays until it is graded. The ledger's `shown` keeps the evening the job
+  first found it in `front.csv`, and the proposal puts every shown, ungraded guess first, in the
+  owner's words, then new picks in the room left of five. To take one back the owner writes the
+  date in `withdrawn`, and the card says so; a shown guess deleted from `front.csv` comes back
+  withdrawn that evening. The page's tally *Shown on this page* counts every guess with `shown`. `stated`, `market`,
   `direction`, `last` and `source` are locked: a test reads the two files and fails when a row of
   `front.csv` matches no ledger row on all five. The grade reads only the ledger, so a rewording
   cannot change it; the review and the lessons read the ledger's words, so the model learns from
