@@ -45,6 +45,14 @@ Eleven pull requests, in this order, the ones that can lose an evening's work fi
    moved into place.
 6. **R2, a moved release.** Loading a flow's events replaces that flow's events, its observations
    and surprises first, in one transaction, so an event whose date moved leaves no copy behind.
+   *Amended 2026-11-24, while building:* an event the source no longer gives is removed only when
+   the source gives a new event of the flow within 7 days of it, a moved date; one it merely stops
+   listing is kept. Replacing every event removed six speeches on a copy of the store (the Fed
+   chair's of 2026-10-15, the ECB president's of 2026-10-01, 14, 17, 21 and 27): TradingView's
+   current quarter lists no speeches at all on 2026-11-24, for the US or the euro area. DuckDB
+   refuses a row's removal in the transaction that removed the rows referring to it, so the
+   observations and surprises go first, in a transaction of their own; both are rebuilt each
+   evening.
 7. **R8, a call logged twice.** The call log is appended under a file lock after reading it again;
    `score` keeps one call per flow, day and market, the earliest logged.
 8. **R9, float noise at the cut.** A move in basis points is rounded to six decimals.
