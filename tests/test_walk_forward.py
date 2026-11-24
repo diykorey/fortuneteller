@@ -1,6 +1,7 @@
 """Rung 2's walk-forward: each release predicted only from the releases before it."""
 
 import random
+from dataclasses import replace
 from datetime import UTC, date, datetime, time, timedelta
 from pathlib import Path
 
@@ -885,12 +886,29 @@ def test_an_empty_or_unterminated_log_keeps_its_rows_apart(tmp_path: Path) -> No
     unterminated.write_text(unterminated.read_text().rstrip("\n"))
 
     # when a row is added to each
+    other = replace(call, instrument="SPY / ES")
     study.append_calls(empty, [call])
-    study.append_calls(unterminated, [call])
+    study.append_calls(unterminated, [other])
 
     # then each reads back whole
     assert study.read_calls(empty) == [call]
-    assert study.read_calls(unterminated) == [call, call]
+    assert study.read_calls(unterminated) == [call, other]
+
+
+def test_a_call_appended_twice_is_logged_once(tmp_path: Path) -> None:
+    # given a call already logged
+    when = datetime(2026, 11, 6, 13, 31, 5, tzinfo=UTC)
+    call = study.LoggedCall(when, "nfp", date(2026, 11, 6), 151.0, "DXY", study.CALLED, 1)
+    path = tmp_path / "calls.csv"
+    study.append_calls(path, [call])
+
+    # when a second run logs it again, later, beside a new one
+    again = replace(call, logged_at=when + timedelta(minutes=1))
+    new = replace(call, instrument="SPY / ES")
+    study.append_calls(path, [again, new])
+
+    # then the first stays and only the new one is added
+    assert study.read_calls(path) == [call, new]
 
 
 def test_an_unreadable_log_row_is_named(
@@ -1047,6 +1065,28 @@ def test_a_close_published_a_day_late_waits_and_a_yahoo_close_is_pending(
 
     # then it no longer waits
     assert "waiting: 1" not in capsys.readouterr().out.splitlines()
+
+
+def test_a_call_logged_twice_is_scored_once(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    # given a live release with its move, and the same call written twice in the log
+    con = db.get_connection()
+    _store_consensus_history(con)
+    day = date(2026, 10, 14)
+    _live_release(con, day, {"SPY / ES": -0.004})
+    row = _row(day, "SPY / ES", direction=-1)
+    settings.calls_path.parent.mkdir(parents=True, exist_ok=True)
+    study.append_calls(settings.calls_path, [row])
+    with settings.calls_path.open("a") as log:
+        log.write(settings.calls_path.read_text().splitlines()[1] + "\n")
+
+    # when it is scored
+    main(["score"])
+
+    # then the call counts once
+    out = capsys.readouterr().out.splitlines()
+    assert out[out.index("walk-forward (live)") + 2].split()[5:7] == ["1", "1"]
 
 
 def test_score_grades_the_calls_in_time_and_lists_the_void_missed_and_pending(
