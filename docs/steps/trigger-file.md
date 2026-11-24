@@ -122,7 +122,9 @@ score does, while a `calls-`, `score-` or `triggers-` pull request is open. A ru
 commits nothing, the log included; the next evening adds the same rows, since an answer reads only
 closes up to its reaction close. The job's pull requests reach GitHub, so it was not run on a copy.
 It was checked with `bash -n`, and its first run with a trigger is the owner's first trigger: until
-then `triggers` prints `triggers: none filed` and writes nothing.
+then `triggers` prints `triggers: none filed` and writes nothing. *Amended 2026-11-24, by [step 57](technical-fixes.md)
+(R11):* when nothing is scored, the pages go in `scoreboard-<day>`, merged on passing checks, and
+the log alone in `triggers-<day>`, so the evening's guesses no longer wait with the log.
 
 ## How you know it is right
 
