@@ -675,8 +675,8 @@ def test_a_cell_the_placebo_marks_says_so_and_is_left_uncoloured() -> None:
     assert cli.PERIOD_WORDS not in str(cells[0]["say"])
     assert str(jobs["say"]).endswith(cli.WEEKDAY_PERIOD_WORDS)
     page = (Path(cli.__file__).parent / "scoreboard.html").read_text()
-    assert "!c.kind_cell && !c.period && c.answer" in page
-    assert "c.verdict === 'holds' && !c.kind_cell && !c.period" in page
+    assert "!c.period && c.answer" in page
+    assert "c.verdict === 'holds' && !c.period" in page
 
 
 def test_load_prices_loads_the_companies_and_a_failing_one_does_not_fail_it(

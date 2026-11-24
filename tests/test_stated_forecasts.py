@@ -112,7 +112,6 @@ def _ask_cell(span: str, until: str | None, **marks: object) -> dict[str, object
         "right": 20,
         "graded": 31,
         "verdict": "holds",
-        "kind_cell": False,
         "period": False,
         "open_until": until,
     }
@@ -143,11 +142,10 @@ def test_a_holding_week_after_news_is_stated_to_its_last_day_and_not_after() -> 
     assert after == []
 
 
-def test_a_day_cell_a_kind_cell_or_a_period_cell_is_never_stated() -> None:
-    # given each open and holding, but a day cell, a kind cell and a period cell
+def test_a_day_cell_or_a_period_cell_is_never_stated() -> None:
+    # given each open and holding, but a day cell and a period cell
     cells = [
         _ask_cell("day", "2026-11-30"),
-        _ask_cell("week", "2026-11-30", kind_cell=True),
         _ask_cell("month", "2026-11-30", period=True),
     ]
 

@@ -554,12 +554,11 @@ def describe_follows(
     noun: str = "Fed decisions",
     after: bool = False,
     long: bool = False,
-    marked: tuple[str, str] | None = None,
+    judged: bool = True,
 ) -> list[str]:
     """``follows``' table: a row per kind, span and market, then what chance alone would give;
-    with ``long``, each cell's answer counting each cycle once. A ``marked`` span and market is
-    near the kind itself: each kind's cell there prints ``(the kind)`` and is left out of the
-    chance line (docs/steps/opec.md)."""
+    with ``long``, each cell's answer counting each cycle once. A run not ``judged``, OPEC's from
+    the close before (step 57, R3), marks every row and gives no chance line."""
     counted = [kinds[e.event_id] for e in events if e.event_id in kinds]
     first, last = (flows.release_date(e) for e in (events[0], events[-1]))
     plural = (
@@ -594,16 +593,20 @@ def describe_follows(
         walk = f"{f.graded}: {f.right} right, {f.verdict}"
         if long and f.by_cycle is not None:
             walk = f"{f'{f.by_cycle[0]}: {f.by_cycle[1]}':<18} {walk}"
-        if (span, market) == marked:
-            walk += "  (the kind)"
+        if not judged:
+            walk += "  (not judged)"
         lines.append(
             f"{kind:<{width}} {span:<{span_width}} {market:<12} {n:>3} {f.counts[study.UP]:>3} "
             f"{f.counts[study.SAME]:>4} {f.counts[study.DOWN]:>4} {f'{f.overlapped}/{f.holes}':>8}  "
             f"{base:<18} {f.answer:<15} {chance:<7} {placebo:<8} {walk}"
         )
-    judged = [f for _, span, market, f in cells if (span, market) != marked]
-    answered = sum(f.answer != study.TOO_FEW for f in judged)
-    walked = sum(f.graded >= study.MIN_PREDICTIONS for f in judged)
+    if not judged:
+        lines.append(
+            "not judged: each span starts before Brent's reaction close, which reads the kind"
+        )
+        return [line.rstrip() for line in lines]
+    answered = sum(f.answer != study.TOO_FEW for _, _, _, f in cells)
+    walked = sum(f.graded >= study.MIN_PREDICTIONS for _, _, _, f in cells)
     lines.append(
         f"by chance: about {answered * len(study.OUTCOMES) * study.FOLLOW_P_BAR:.1f} answers on "
         f"all history, {walked * study.FOLLOW_P_BAR:.1f} holds walk-forward"
@@ -810,15 +813,18 @@ def _follows(args: argparse.Namespace) -> int:
     except FollowsUnavailable as exc:
         print(f"follows: {exc}", file=sys.stderr)
         return 1
-    marked = (
-        (study.KIND_SPAN, study.KIND_MARKET)
-        if args.event == flows.OPEC_FLOW.cli_name and not args.after_the_day
-        else None
-    )
     for line in describe_follows(
-        f.events, f.kinds, f.cells, f.order, f.noun, args.after_the_day, args.long, marked
+        f.events, f.kinds, f.cells, f.order, f.noun, args.after_the_day, args.long
     ):
         print(line)
+    if args.event == flows.OPEC_FLOW.cli_name and not args.after_the_day:
+        _, before = study.follow_decisions(
+            flows.OPEC_FLOW, f.kinds, f.order, con=con, before_kind=True
+        )
+        print()
+        print("from the close before:")
+        for line in describe_follows(f.events, f.kinds, before, f.order, f.noun, judged=False)[1:]:
+            print(line)
     return 0
 
 
@@ -2097,7 +2103,6 @@ ASK_DECISIONS = {
     },
 }
 # Brent's day after an OPEC+ decision is how its kind is read (docs/steps/ask-phase-5.md).
-KIND_CELL_WORDS = "This is how the kind is read, not an answer."
 # A cell the placebo marks (docs/steps/ask-earnings.md).
 PERIOD_WORDS = (
     "With each event moved ten closes or a span away, the same answer comes: it reads as the "
@@ -2109,10 +2114,6 @@ WEEKDAY_PERIOD_WORDS = (
     "period or the weekday, not the event."
 )
 WEEKDAY_FLOWS = ("nfp", "claims")
-
-
-def is_kind_cell(name: str, span: str, market: str) -> bool:
-    return (name, span, market) == ("opec", study.KIND_SPAN, study.KIND_MARKET)
 
 
 ASK_RELEASES = {
@@ -2131,6 +2132,12 @@ ASK_SURPRISE = {
     study.ABOVE: "above the consensus",
     study.AS_EXPECTED: "as expected",
     study.BELOW: "below the consensus",
+}
+# OPEC's spans start once oil's price has closed, which tells its kind (step 57, R3).
+OPEC_ASK_SPANS = {
+    "day": "over the next day, counted from when oil's price closed",
+    "week": "over the next week, counted from when oil's price closed",
+    "month": "over the next month, counted from when oil's price closed",
 }
 ASK_SPANS = {
     "day": "on the day",
@@ -2168,7 +2175,8 @@ def ask_say(
     counts only, never a percentage."""
     counts = [f.counts[o] for o in study.OUTCOMES]
     shown = market if market_name is None else market_name
-    words = [f"After {ask_kind(name, kind)}, {shown} {ASK_SPANS[span]}: {_counts(*counts)}."]
+    when = OPEC_ASK_SPANS[span] if name == flows.OPEC_FLOW.cli_name else ASK_SPANS[span]
+    words = [f"After {ask_kind(name, kind)}, {shown} {when}: {_counts(*counts)}."]
     if f.base is not None and f.base.n:
         base = [round(f.base.rates[o] * f.base.n) for o in study.OUTCOMES]
         every = "On every day" if span == "day" else f"Over every {span}"
@@ -2194,8 +2202,6 @@ def ask_say(
         words.append(
             f"Counting each rate cycle once: {f.by_cycle[1]}, from {f.by_cycle[0]} cycles."
         )
-    if is_kind_cell(name, span, market):
-        words.append(KIND_CELL_WORDS)
     if f.period:
         words.append(WEEKDAY_PERIOD_WORDS if name in WEEKDAY_FLOWS else PERIOD_WORDS)
     return " ".join(words)
@@ -2223,7 +2229,6 @@ def ask_cell(
         "right": f.right,
         "verdict": f.verdict,
         "cycles": None if f.by_cycle is None else list(f.by_cycle),
-        "kind_cell": is_kind_cell(name, span, market),
         "period": f.period,
         "say": ask_say(name, kind, span, market, f, names.get(market, market)),
     }
@@ -2372,11 +2377,11 @@ EARNINGS_TIMES = {"time-pre-market": "before the open", "time-after-hours": "aft
 
 
 def _answered(cell: Mapping[str, object]) -> bool:
-    return cell["verdict"] == "holds" and not cell["kind_cell"] and not cell["period"]
+    return cell["verdict"] == "holds" and not cell["period"]
 
 
 def answers_that_hold(ask: Sequence[Mapping[str, object]]) -> list[dict[str, str]]:
-    """Every cell that holds, less the kind cells and those read as the period, in *Ask*'s order
+    """Every cell that holds, less those read as the period, in *Ask*'s order
     of flows, kinds and cells; each its sentence and the kind it opens."""
     held = []
     for flow in ask:
