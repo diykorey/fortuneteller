@@ -23,6 +23,8 @@
   --accent: #7c3aed;
   --accent-soft: #f5f3ff;
   --guess: #db2777;
+  --guess-soft: #fdf2f8;
+  --hunch: #f3f4f6;
   --chip: #f3f4f6;
   --up: #15803d;
   --up-soft: #dcfce7;
@@ -41,6 +43,8 @@
     --accent: #b79cff;
     --accent-soft: #272040;
     --guess: #f472b6;
+    --guess-soft: #2a1b25;
+    --hunch: #2a2d36;
     --chip: #232733;
     --up: #4ade80;
     --up-soft: rgba(74, 222, 128, 0.14);
@@ -51,7 +55,8 @@
 }
 :root[data-theme="dark"] {
   --bg: #111318; --card: #1a1d24; --line: #2d313b; --ink: #f9fafb; --text: #d1d5db;
-  --muted: #b0b6c1; --accent: #b79cff; --accent-soft: #272040; --guess: #f472b6; --chip: #232733;
+  --muted: #b0b6c1; --accent: #b79cff; --accent-soft: #272040; --guess: #f472b6; --guess-soft: #2a1b25; --hunch: #2a2d36;
+  --chip: #232733;
   --up: #4ade80; --up-soft: rgba(74, 222, 128, 0.14); --down: #fb923c;
   --down-soft: rgba(251, 146, 60, 0.14); --shadow: none;
 }
@@ -85,6 +90,8 @@ li.card > :not(.icon) { grid-column: 2; min-width: 0; }
 }
 .kind { font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.06em; color: var(--accent); }
 li.guess .kind { color: var(--guess); }
+li.card.guess { background: var(--guess-soft); border-style: dashed; }
+li.guess .badge { background: var(--hunch); color: var(--text); }
 li.withdrawn { opacity: 0.75; }
 .withdrawn-note { font-style: italic; color: var(--muted); }
 .top { display: flex; justify-content: space-between; align-items: center; gap: 6px 10px; flex-wrap: wrap; }
@@ -117,13 +124,13 @@ footer { margin-top: 32px; font-size: 15px; color: var(--muted); display: grid; 
 <body>
 <main>
   <h1>Fortuneteller <span>predicts:</span></h1>
-  <p class="sub">Where markets go next, from history and today's news. Every forecast is checked when its time is up.</p>
+  <p class="sub">What markets usually do, and our guesses from today's news. Every one is checked when its time is up.</p>
   <details class="how">
     <summary>How it works</summary>
-    <p><b>Tested on the past:</b> where a market went the same way most of the time over a stretch
-    of time, and that kept coming true when tested on history, the fortune teller says it will
-    again.</p>
-    <p><b>Our guess:</b> a hunch from today's news, with no record behind it yet.</p>
+    <p><b>The usual way:</b> the way a market has gone most of the time over a stretch this long,
+    in its whole history. Markets like stocks and homes rise more often than they fall, so this is
+    what they normally do, whatever the news: not a forecast from news.</p>
+    <p><b>💭 Our guess:</b> a hunch from today's news, with no record behind it yet.</p>
     <p>Each says which way, not by how much. Every one is kept and checked when its time is up,
     and the two kinds are scored apart. For fun, not financial advice.</p>
   </details>
@@ -132,7 +139,7 @@ footer { margin-top: 32px; font-size: 15px; color: var(--muted); display: grid; 
   <footer>
     <span id="written"></span>
     <span><a href="stats/">Every guess and how it turned out</a> · <a href="../scoreboard/">Every number behind the tested forecasts</a></span>
-    <span>For fun, not financial advice.</span>
+    <span>For fun, not financial advice. The maker has no money in any market shown.</span>
     <span>Made by <a href="https://www.linkedin.com/in/andriyandrunevchyn/">Andriy Andrunevchyn</a>, CTO and co-founder of <a href="https://soft-innovation.ch/">SSI</a></span>
   </footer>
 </main>
@@ -228,28 +235,28 @@ footer { margin-top: 32px; font-size: 15px; color: var(--muted); display: grid; 
   shown.forEach((p) => {
     const [icon, name] = MARKETS[p.market] || ['🔮', p.event];
     const monthly = p.market === 'US home prices';
-    const card = el('li', null, 'card ' + p.direction + (p.guess ? ' guess' : ' stated'));
+    const card = el('li', null, 'card ' + (p.guess ? 'guess' : p.direction + ' stated'));
     card.appendChild(el('div', icon, 'icon'));
     card.lastChild.setAttribute('aria-hidden', 'true');
-    card.appendChild(el('div', p.guess ? 'Our guess · made ' + short(p.made) : 'Tested on the past', 'kind'));
+    card.appendChild(el('div', p.guess ? '💭 Our guess · made ' + short(p.made) : 'The usual way', 'kind'));
     const top = el('div', null, 'top');
     top.appendChild(el('h2', name, 'market'));
     if (p.until) {
-      top.appendChild(el('span', (p.direction === 'up' ? '▲ Higher' : '▼ Lower') + (monthly ? ' in ' : ' on ') + short(p.until, monthly), 'badge'));
+      const way = p.direction === 'up' ? (p.guess ? '▲ Higher' : '▲ Usually higher') : (p.guess ? '▼ Lower' : '▼ Usually lower');
+      top.appendChild(el('span', way + (monthly ? ' in ' : ' on ') + short(p.until, monthly), 'badge'));
     }
     card.appendChild(top);
     if (HINTS[p.market]) card.appendChild(el('p', HINTS[p.market], 'hint'));
-    card.appendChild(el('p', p.guess ? p.event : 'Will be ' + p.outcome + '.', 'say'));
+    card.appendChild(el('p', p.guess ? p.event : 'Usually ' + p.outcome + '.', 'say'));
     const meta = el('div', null, 'meta');
     if (p.until) {
       const when = el('span', '⏳ ');
       when.appendChild(el('b', monthly ? 'checked when the ' + short(p.until, true) + ' figure comes out' : left(p.until)));
       meta.appendChild(when);
     }
-    const tenths = p.called ? Math.round(10 * p.right / p.called) : null;
     meta.appendChild(el('span', p.guess ? 'A guess with no record yet: scored when its time is up'
-      : tenths !== null ? '📊 In the past it came true about ' + tenths + ' times in 10 (' + p.right.toLocaleString('en-US')
-        + ' of ' + p.called.toLocaleString('en-US') + ' ' + p.unit + ')' : '📊 ' + p.record));
+      : p.called ? '📊 Went this way in ' + p.right.toLocaleString('en-US') + ' of '
+        + p.called.toLocaleString('en-US') + ' ' + p.unit : '📊 ' + p.record));
     card.appendChild(meta);
     if (p.withdrawn) {
       card.classList.add('withdrawn');
@@ -293,9 +300,9 @@ footer { margin-top: 32px; font-size: 15px; color: var(--muted); display: grid; 
     { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' }) + '. New guesses each weekday evening.';
   const chip = (name, t) => name + ': ' + t.open + ' open · ' + t.came_true + ' right · ' + t.did_not + ' wrong';
   const tally = document.getElementById('tally');
-  if (data.tally && data.kept_since) tally.appendChild(el('li', chip('📊 Tested', data.tally)));
+  if (data.tally && data.kept_since) tally.appendChild(el('li', chip('📊 The usual way, all kept', data.tally)));
   const f = data.front_tally;
-  if (f && f.came_true + f.did_not + f.open) tally.appendChild(el('li', chip('🃏 Shown on this page', f)));
+  if (f && f.came_true + f.did_not + f.open) tally.appendChild(el('li', chip('🃏 Guesses ever shown here', f)));
   const g = data.guess_tally;
   if (g && g.came_true + g.did_not + g.open) {
     const item = el('li');

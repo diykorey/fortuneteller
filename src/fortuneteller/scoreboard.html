@@ -89,7 +89,8 @@ tool, not financial advice. The numbers are the ones
 <h2 id="answers-that-hold">The answers that hold</h2>
 <p class="muted">Most kinds of event are followed by nothing a count can tell from chance. These
 are the ones that are, and that also held when every past event was answered only from the ones
-before it.</p>
+before it. A move <em>on the day</em> is counted from the close before the news, so much of it
+can come before you read the headline.</p>
 <ul id="holds"></ul>
 
 <h2 id="ask-the-fortune-teller">Ask the fortune teller</h2>
@@ -97,7 +98,8 @@ before it.</p>
 what each market did after every past one, on the day and over the spans after it, beside what it
 did over every span of its history. An answer is given only when the counts are unlikely by chance;
 most read <em>can't say</em>. Each answer was also replayed, every event answered from the ones
-before it; only a replay that held is marked.</p>
+before it; only a replay that held is marked. A move <em>on the day</em> is counted from the close
+before the news, so much of it can come before you read the headline.</p>
 <p><label for="ask-kind">Kind of event </label><select id="ask-kind"></select></p>
 <p class="muted" id="ask-about"></p>
 <div id="ask"></div>
@@ -335,6 +337,9 @@ code</summary>
   });
   holds.forEach((h) => {
     const item = el('li', h.say + ' ');
+    if (h.flow === 'opec' && h.kind === 'oil up') {
+      item.appendChild(el('span', "Oil's own move that day decides this kind of decision, so this mostly repeats it. "));
+    }
     const link = el('a', 'See it');
     link.href = '#ask/' + [h.flow, h.kind].map(encodeURIComponent).join('/');
     item.appendChild(link);
