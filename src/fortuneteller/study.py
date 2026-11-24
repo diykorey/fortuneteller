@@ -20,6 +20,7 @@ a month after each kind of Fed decision, against its own spans of that length.
 from __future__ import annotations
 
 import csv
+import fcntl
 import io
 import json
 import math
@@ -1137,8 +1138,27 @@ def _blank(value: float | None) -> str:
 
 
 def append_calls(path: Path, calls: Sequence[LoggedCall]) -> None:
-    """Adds ``calls`` to the log at ``path``, writing its header if the log is new."""
-    before = path.read_text() if path.exists() else ""
+    """Adds ``calls`` to the log at ``path``, writing its header if the log is new. The log is read
+    again under a lock on it, and a call whose flow, day and market it already holds is left out,
+    so two runs at once log a call once (step 57, R8, docs/steps/technical-fixes.md)."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a+", newline="") as log:
+        fcntl.flock(log, fcntl.LOCK_EX)
+        log.seek(0)
+        before = log.read()
+        logged = {
+            (r["flow"], r["day"], r["instrument"]) for r in csv.DictReader(io.StringIO(before))
+        }
+        log.write(
+            _log_lines(
+                before,
+                [c for c in calls if (c.flow, c.day.isoformat(), c.instrument) not in logged],
+            )
+        )
+
+
+def _log_lines(before: str, calls: Sequence[LoggedCall]) -> str:
+    """``calls`` as the log's rows, after the header when ``before`` is empty."""
     lines = io.StringIO()
     writer = csv.writer(lines, lineterminator="\n")
     if not before:
@@ -1160,9 +1180,7 @@ def append_calls(path: Path, calls: Sequence[LoggedCall]) -> None:
                 _blank(c.band[1] if c.band else None),
             ]
         )
-    path.parent.mkdir(parents=True, exist_ok=True)
-    with path.open("a", newline="") as log:
-        log.write(lines.getvalue())
+    return lines.getvalue()
 
 
 def _logged(r: dict[str, str]) -> LoggedCall:
@@ -1205,6 +1223,16 @@ def read_calls(path: Path) -> list[LoggedCall]:
     return calls
 
 
+def _earliest(rows: Iterable[LoggedCall]) -> list[LoggedCall]:
+    """One row per day and market, the earliest logged (step 57, R8)."""
+    first: dict[tuple[date, str], LoggedCall] = {}
+    for r in rows:
+        kept = first.get((r.day, r.instrument))
+        if kept is None or r.logged_at < kept.logged_at:
+            first[(r.day, r.instrument)] = r
+    return list(first.values())
+
+
 @dataclass(frozen=True)
 class LiveScore:
     """One flow's logged calls: each link's graded calls, and the rows left ungraded, with why.
@@ -1241,7 +1269,7 @@ def score_calls(
     void: list[str] = []
     pending: list[str] = []
     waiting: list[str] = []
-    made = [r for r in rows if r.flow == flow.cli_name and r.direction is not None]
+    made = _earliest(r for r in rows if r.flow == flow.cli_name and r.direction is not None)
     for day in sorted({r.day for r in made}):
         where = f"{flow.cli_name} {day}"
         released = datetime.combine(day, RELEASE_TIME, tzinfo=NEW_YORK)
