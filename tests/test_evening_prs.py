@@ -114,3 +114,36 @@ def test_the_pages_are_merged_apart_from_the_triggers_log(tmp_path: Path) -> Non
     trigger = _git(job, "show", "--name-only", "--format=", "triggers-" + day).split()
     assert pages == ["docs/scoreboard/data.json"]
     assert trigger == ["data/trigger-log.csv"]
+
+
+def test_the_job_runs_its_own_tree_s_script_at_origin_main(tmp_path: Path) -> None:
+    # given an origin whose release-day script only says where it ran, and the job's worktree of
+    # it left on an older commit
+    seed = tmp_path / "seed"
+    (seed / "scripts").mkdir(parents=True)
+    script = seed / "scripts" / "release-day.sh"
+    script.write_text('echo "old $*"\n')
+    env = {**os.environ, "GIT_AUTHOR_NAME": "job", "GIT_AUTHOR_EMAIL": "job@example.com"}
+    env |= {"GIT_COMMITTER_NAME": "job", "GIT_COMMITTER_EMAIL": "job@example.com"}
+    subprocess.run([GIT, "init", "-q", "-b", "main", str(seed)], check=True)
+    _git(seed, "add", ".")
+    subprocess.run([GIT, "-C", str(seed), "commit", "-q", "-m", "old"], check=True, env=env)
+    origin = tmp_path / "origin.git"
+    subprocess.run([GIT, "clone", "-q", "--bare", str(seed), str(origin)], check=True)
+    job = tmp_path / "job"
+    subprocess.run([GIT, "clone", "-q", str(origin), str(job)], check=True)
+    script.write_text('echo "tree $*"\n')
+    subprocess.run([GIT, "-C", str(seed), "commit", "-qam", "new"], check=True, env=env)
+    _git(seed, "push", "-q", str(origin), "main")
+
+    # when the job starts
+    run = subprocess.run(
+        ["bash", str(SCRIPT.with_name("job-start.sh")), "score"],
+        env=env | {"FT_JOB_TREE": str(job)},
+        capture_output=True,
+        text=True,
+        timeout=60,
+    )
+
+    # then origin/main's script ran, from the job's tree, not the checkout's beside the starter
+    assert run.stdout == "tree score\n", run.stderr
