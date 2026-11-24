@@ -2984,9 +2984,26 @@ def grounded_prompt(
     return body.format(**fields, base_rates=rates or "(none)", forecasts=forecasts or "(none)")
 
 
+GUESS_TEXT_FIELDS = (
+    "market",
+    "direction",
+    "end",
+    "statement",
+    "reasoning",
+    "tag",
+    "confidence",
+    "source",
+)
+
+
 def _why_not(
     g: Mapping[str, object], kept: Sequence[Mapping[str, str]], today: date, guesser: str = "news"
 ) -> str | None:
+    # Step 57 (docs/steps/technical-fixes.md, R7): a model may answer a field with a list or a
+    # number; such a guess is dropped here rather than stopping the evening.
+    for name in GUESS_TEXT_FIELDS:
+        if name in g and not isinstance(g[name], str):
+            return f"{name} not text"
     market, direction = g.get("market"), g.get("direction")
     statement, reasoning = str(g.get("statement", "")).strip(), str(g.get("reasoning", "")).strip()
     source = str(g.get("source", "")).strip()
@@ -3308,7 +3325,7 @@ def guess_as(
                 version,
                 _now(),
             )
-    except (OSError, subprocess.SubprocessError, ValueError, KeyError) as exc:
+    except (OSError, subprocess.SubprocessError, ValueError, KeyError, TypeError) as exc:
         print(f"guess: {guesser}: the model failed: {exc}", file=sys.stderr)
         return rows
     for why in dropped:

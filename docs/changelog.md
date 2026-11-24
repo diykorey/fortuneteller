@@ -6,6 +6,8 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-24 | Step 57, R7: a guess with a field not text (a list, a number) is dropped with its reason, and a `TypeError` keeps the evening's rows, so one bad answer no longer loses the evening's grades and guesses | [#445](https://github.com/diykorey/fortuneteller/pull/445) |
+| 2026-11-24 | Step 57: the technical review's required fixes, the spec | [#444](https://github.com/diykorey/fortuneteller/pull/444) |
 | 2026-11-24 | Step 56, step 5: the results; two outcomes wrong as first written: a guess made at a weekend now starts Monday, ten base rates recomputed by a weekday, and a card leaves the page at its end date, not its grade; step 3's page data byte for byte the same; a reader with no financial training explained each card back | [#443](https://github.com/diykorey/fortuneteller/pull/443) |
 | 2026-11-24 | Step 56, step 4: the earnings seeds without Nasdaq's EPS, forecast and surprise, kept in the local cache; every earnings output and the scoreboard byte for byte the same | [#442](https://github.com/diykorey/fortuneteller/pull/442) |
 | 2026-11-24 | Step 56, step 3: the page's words, approved by the owner: *the usual way*, counts instead of tenths, the guess card's own look, the day-of-news note, "The maker has no money in any market shown"; the three cards name November 23 | [#441](https://github.com/diykorey/fortuneteller/pull/441) |
