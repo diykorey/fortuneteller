@@ -6,7 +6,7 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
-| 2026-11-24 | Sources by country surveyed: official release calendars, data and news feeds for the US, the euro area, Germany, France, the UK, Switzerland, Japan, China and Canada, each fetched; no republishable free consensus found; GDELT the one multi-country news source whose terms allow reuse | [#448](https://github.com/diykorey/fortuneteller/pull/448) |
+| 2026-11-24 | Sources by country surveyed: official release calendars, data and news feeds for the US, the euro area, Germany, France, the UK, Switzerland, Japan, China and Canada, each fetched; no republishable free consensus found; GDELT the one multi-country news source whose terms allow reuse | [#447](https://github.com/diykorey/fortuneteller/pull/447) |
 | 2026-11-24 | Step 57, R7: a guess with a field not text (a list, a number) is dropped with its reason, and a `TypeError` keeps the evening's rows, so one bad answer no longer loses the evening's grades and guesses | [#445](https://github.com/diykorey/fortuneteller/pull/445) |
 | 2026-11-24 | Step 57: the technical review's required fixes, the spec | [#444](https://github.com/diykorey/fortuneteller/pull/444) |
 | 2026-11-24 | Step 56, step 5: the results; two outcomes wrong as first written: a guess made at a weekend now starts Monday, ten base rates recomputed by a weekday, and a card leaves the page at its end date, not its grade; step 3's page data byte for byte the same; a reader with no financial training explained each card back | [#443](https://github.com/diykorey/fortuneteller/pull/443) |
