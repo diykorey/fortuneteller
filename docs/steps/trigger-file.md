@@ -124,7 +124,8 @@ closes up to its reaction close. The job's pull requests reach GitHub, so it was
 It was checked with `bash -n`, and its first run with a trigger is the owner's first trigger: until
 then `triggers` prints `triggers: none filed` and writes nothing. *Amended 2026-11-24, by [step 57](technical-fixes.md)
 (R11):* when nothing is scored, the pages go in `scoreboard-<day>`, merged on passing checks, and
-the log alone in `triggers-<day>`, so the evening's guesses no longer wait with the log.
+the log alone in `triggers-<day>`, so the evening's guesses no longer wait with the log. Tonight's front-page proposal is kept aside before the
+switch to `main` for the triggers' pull request (#449).
 
 ## How you know it is right
 
