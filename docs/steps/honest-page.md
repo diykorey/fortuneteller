@@ -153,6 +153,10 @@ Tests (`tests/test_predicts.py`, `tests/test_stated_forecasts.py`): no guess car
 or *down* class, no card says "in 10", and the footer and the withdrawn note are present. Every
 number, cell and answer is the same before and after: only the words changed.
 
+The page was rendered in headless Chrome with the live data and the three cards, one of them
+marked withdrawn. At 390 and 1280 pixels wide, in light and dark, nothing was cut off or
+overlapping.
+
 A fresh reader with no financial training read the drafted page. They found five problems:
 "drift" was unclear; the usual-way cards looked like forecasts; "holds no position" was jargon;
 the counts at the top did not match the cards; and the cards still named November 20 although
