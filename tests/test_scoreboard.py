@@ -526,7 +526,6 @@ def _cell(kind: str, verdict: str, **marks: object) -> dict[str, object]:
         "right": 156,
         "graded": 219,
         "verdict": verdict,
-        "kind_cell": False,
         "period": False,
         "say": f"{kind} {verdict}",
     }
@@ -540,13 +539,12 @@ def _earnings(cells: list[dict[str, object]], name: str = "earnings") -> dict[st
 
 
 def test_the_answers_that_hold_are_the_holding_cells_in_asks_order() -> None:
-    # given a flow whose cells hold, hold as the kind's own definition, hold as the period, or not
+    # given a flow whose cells hold, hold as the period, or not
     ask = [
         _earnings(
             [
                 _cell("below", "holds"),
                 _cell("above", "holds"),
-                _cell("as expected", "holds", kind_cell=True),
                 _cell("as expected", "holds", period=True),
                 _cell("below", "doesn't hold"),
             ]

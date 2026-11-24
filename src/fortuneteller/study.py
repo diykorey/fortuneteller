@@ -2086,19 +2086,26 @@ def follow_decisions(
     con: duckdb.DuckDBPyConnection | None = None,
     after: bool = False,
     long: bool = False,
+    before_kind: bool = False,
 ) -> tuple[list[EventInstance], list[tuple[str, str, str, Follow]]]:
     """The flow's stored events with a kind, oldest first, and a record per kind, span and market,
     in that order; with ``after``, on the spans from each reaction close; with ``long``, over the
-    quarter and the year, each cell also answered counting each cycle once."""
+    quarter and the year, each cell also answered counting each cycle once. OPEC's spans start at
+    each market's close at or after Brent's reaction close, which reads its kind (``opec_start``);
+    ``before_kind`` gives its spans from the close before instead, printed but never judged."""
     events = [e for e in stored_events(flow, con=con) if e.event_id in kinds]
     spans = LONG_SPANS if long else SPANS
     cycles = fed_cycles([kinds[e.event_id] for e in events]) if long else None
+    judged_opec = flow is OPEC_FLOW and not before_kind
     by_market = {}
     for instrument, series in MVP_PRICE_SERIES.items():
         closes = stored_closes(instrument, con=con)
-        decisions = [(first_reaction_day(e, series), kinds[e.event_id]) for e in events]
+        start = opec_start if judged_opec else first_reaction_day
+        decisions = [(start(e, series), kinds[e.event_id]) for e in events]
         by_market[instrument] = {
-            span: follow_market(decisions, closes, series.unit, c, order, after, cycles)
+            span: follow_market(
+                decisions, closes, series.unit, c, order, after or judged_opec, cycles
+            )
             for span, c in spans.items()
         }
     cells = [
@@ -2116,9 +2123,22 @@ OIL_UP, OIL_DOWN = "oil up", "oil down"
 OPEC_KINDS = (OIL_UP, OIL_DOWN)
 # A live announcement's hour, the seed's rule: 08:00 New York.
 OPEC_HOUR = time(8, 0)
-# Brent's day cell is near the kind, not a finding: printed marked, never counted against chance.
-KIND_SPAN, KIND_MARKET = "day", "BRN"
+# Brent's reaction-day move is the kind: no OPEC span judged starts before that close (step 57,
+# R3, docs/steps/technical-fixes.md).
+KIND_MARKET = "BRN"
 KIND_SERIES = MVP_PRICE_SERIES[KIND_MARKET]
+
+
+def opec_start(event: EventInstance, series: PriceSeries) -> date:
+    """The day of ``series``' first close at or after Brent's reaction close: OPEC's spans start
+    there, so none holds the close that reads the kind. Brent's own is its reaction close; a market
+    that closes before Brent the same day, Europe's at 11:30 New York or gold at 13:30, starts at
+    its next close."""
+    brent = datetime.combine(
+        first_reaction_day(event, KIND_SERIES), KIND_SERIES.close, tzinfo=KIND_SERIES.zone
+    )
+    local = brent.astimezone(series.zone)
+    return local.date() + timedelta(days=0 if local.time() <= series.close else 1)
 
 
 # Steps 26 to 28 (docs/steps/war.md, docs/steps/crypto.md, docs/steps/weather.md): one kind
@@ -2645,7 +2665,8 @@ def answer_triggers(
                 )
                 continue
             market_closes = closes[market]
-            decisions = [(first_reaction_day(e, series), flow_kinds[e.event_id]) for e in decided]
+            begins = opec_start if t.flow == OPEC_FLOW.cli_name else first_reaction_day
+            decisions = [(begins(e, series), flow_kinds[e.event_id]) for e in decided]
             for span, c in SPANS.items():
                 # A live OPEC day joins its flow's events for its own trigger alone.
                 key_day = t.day if event.event_id not in kinds.get(t.flow, {}) else None

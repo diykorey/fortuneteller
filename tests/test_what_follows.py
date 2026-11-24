@@ -1069,7 +1069,7 @@ def _opec(day: date, kind: str) -> flows.EventInstance:
     return flows.OPEC_FLOW.event_instance(at, kind)
 
 
-def test_follows_for_opec_reads_each_kind_from_the_seed_and_marks_brent_s_day(
+def test_follows_for_opec_judges_the_spans_after_brent_s_close_and_prints_the_rest_unjudged(
     tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
 ) -> None:
     # given three OPEC announcements, two oil up and one oil down, and Brent and the S&P 500
@@ -1089,51 +1089,78 @@ def test_follows_for_opec_reads_each_kind_from_the_seed_and_marks_brent_s_day(
     db.insert_models("event_instances", [_opec(closes[i].day, k) for i, k in keys.items()])
     first, last = closes[40].day, closes[120].day
 
-    # when run from the close before, and from the reaction close
+    # when run, and from the reaction close
     day_code = main(["follows", "--event", "opec"])
     day_out = capsys.readouterr().out.splitlines()
     after_code = main(["follows", "--event", "opec", "--after-the-day"])
     after_out = capsys.readouterr().out.splitlines()
 
-    # then the kinds are the seed's, Brent's day cells alone are marked, and only from the close
-    # before
+    # then the kinds are the seed's; the judged run is the same both ways and marks nothing; the
+    # run from the close before follows it, every row marked, with no chance line
     assert day_code == after_code == 0
     assert day_out[0] == f"follows: 3 OPEC announcements {first} … {last}: 2 oil up, 1 oil down"
-    marked = [line for line in day_out if line.endswith("(the kind)")]
-    assert [line.split()[:3] for line in marked] == [
-        ["oil", "up", "day"],
-        ["oil", "down", "day"],
-    ]
-    assert all(study.KIND_MARKET in line for line in marked)
-    assert not any(line.endswith("(the kind)") for line in after_out)
+    gap = day_out.index("")
+    judged = [line for line in day_out[:gap] if line.startswith("oil")]
+    unjudged = [line for line in day_out[gap:] if line.startswith("oil")]
+    assert judged == [line for line in after_out if line.startswith("oil")]
+    assert not any(line.endswith("(not judged)") for line in judged)
+    assert len(unjudged) == len(judged) and all(line.endswith("(not judged)") for line in unjudged)
+    assert day_out[gap + 1] == "from the close before:"
+    assert day_out[-1].startswith("not judged: ")
 
 
-def test_brent_s_day_cell_is_left_out_of_the_chance_line() -> None:
-    # given an answered cell on Brent's day and the same answer on the S&P 500's day
+@pytest.mark.parametrize(
+    ("market", "starts"),
+    [
+        (study.KIND_MARKET, 0),
+        ("SPY / ES", 0),
+        ("DAX", 1),
+        ("GC / XAU", 1),
+    ],
+)
+def test_an_opec_span_starts_at_the_first_close_at_or_after_brent_s_reaction_close(
+    market: str, starts: int
+) -> None:
+    # given an announcement at 08:00 New York on a Wednesday, read by Brent's close at 14:30
+    event = _opec(date(2026, 11, 18), study.OIL_UP)
+
+    # when each market's start is found
+    start = study.opec_start(event, study.MVP_PRICE_SERIES[market])
+
+    # then Brent and the S&P 500 start that day, Europe's indices and gold the next
+    assert start == date(2026, 11, 18) + timedelta(days=starts)
+
+
+def test_a_market_closing_with_brent_starts_at_that_close() -> None:
+    # given a market that closes at Brent's minute
+    same = study.PriceSeries("X", "pct", study.KIND_SERIES.close, study.KIND_SERIES.zone)
+
+    # when an announcement's start is found
+    start = study.opec_start(_opec(date(2026, 11, 18), study.OIL_UP), same)
+
+    # then it is that day's close
+    assert start == date(2026, 11, 18)
+
+
+def test_a_run_not_judged_has_no_chance_line() -> None:
+    # given an answered cell
     answered = study.Follow(
         {UP: 40, SAME: 0, DOWN: 0}, 0, 0, None, UP, 0.0, False, 0, 0, 0.0, study.TOO_FEW
     )
     events = [_opec(date(2020, 4, 13), study.OIL_UP)]
     kinds = study.detail_kinds(events)
-    cells = [
-        (study.OIL_UP, "day", "SPY / ES", answered),
-        (study.OIL_UP, "day", study.KIND_MARKET, answered),
-    ]
+    cells = [(study.OIL_UP, "day", "SPY / ES", answered)]
 
-    # when the table is described with Brent's day marked, and without
-    marked = describe_follows(
-        events,
-        kinds,
-        cells,
-        study.OPEC_KINDS,
-        "OPEC announcements",
-        marked=(study.KIND_SPAN, study.KIND_MARKET),
+    # when the table is described judged, and not
+    judged = describe_follows(events, kinds, cells, study.OPEC_KINDS, "OPEC announcements")
+    not_judged = describe_follows(
+        events, kinds, cells, study.OPEC_KINDS, "OPEC announcements", judged=False
     )
-    plain = describe_follows(events, kinds, cells, study.OPEC_KINDS, "OPEC announcements")
 
-    # then the chance line counts one answered cell with the mark, two without
-    assert marked[-1].startswith(f"by chance: about {3 * study.FOLLOW_P_BAR:.1f} answers")
-    assert plain[-1].startswith(f"by chance: about {6 * study.FOLLOW_P_BAR:.1f} answers")
+    # then only the judged one counts it against chance
+    assert judged[-1].startswith(f"by chance: about {3 * study.FOLLOW_P_BAR:.1f} answers")
+    assert not_judged[-2].endswith("(not judged)")
+    assert not_judged[-1].startswith("not judged: ")
 
 
 def _boe(day: date, at: time = time(12, 0)) -> flows.EventInstance:
@@ -1308,12 +1335,13 @@ def test_the_page_s_opec_cells_are_follows_lines_with_their_own_kind_s_words(
 
     # when follows prints OPEC's table and the page's data is built
     assert main(["follows", "--event", "opec"]) == 0
-    lines = capsys.readouterr().out.splitlines()[2:-1]
+    out = capsys.readouterr().out.splitlines()
+    lines = out[2 : out.index("") - 1]
     printed = [OPEC_LINE.match(line) for line in lines]
     ask = cli.ask_data(db.get_connection())
 
     # then every line is one cell, equal field by field, its sentence opening with its own kind's
-    # words, and Brent's two day cells alone are the kind's, uncoloured on the page
+    # words and saying its spans start when oil's price closed
     (opec,) = [entry for entry in ask["ask"] if entry["name"] == "opec"]
     cells = {(c["kind"], c["span"], c["market"]): c for c in opec["cells"]}  # type: ignore[union-attr]
     assert len(printed) == len(cells) == 2 * 3 * 2
@@ -1331,16 +1359,11 @@ def test_the_page_s_opec_cells_are_follows_lines_with_their_own_kind_s_words(
         assert (cell["graded"], cell["right"]) == (int(line["graded"]), int(line["right"]))
         assert str(cell["say"]).startswith(f"After {cli.ASK_DECISIONS['opec'][line['kind']]},")
         assert "%" not in str(cell["say"])
-    marked = sorted((k, s, m) for (k, s, m), c in cells.items() if c["kind_cell"])
-    assert marked == [
-        (study.OIL_DOWN, "day", study.KIND_MARKET),
-        (study.OIL_UP, "day", study.KIND_MARKET),
-    ]
-    assert all(str(cells[key]["say"]).endswith(cli.KIND_CELL_WORDS) for key in marked)
+    assert all("counted from when oil's price closed" in str(c["say"]) for c in cells.values())
     assert [k["events"] for k in opec["kinds"]] == [22, 22]  # type: ignore[index]
     page = (Path(cli.__file__).parent / "scoreboard.html").read_text()
-    assert "!c.kind_cell && !c.period && c.answer" in page
-    assert "c.verdict === 'holds' && !c.kind_cell && !c.period" in page
+    assert "!c.period && c.answer" in page
+    assert "c.verdict === 'holds' && !c.period" in page
 
 
 def test_the_page_names_the_boj_when_its_rates_cannot_be_read_and_shows_the_boe(

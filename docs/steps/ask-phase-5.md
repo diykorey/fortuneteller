@@ -40,6 +40,9 @@ join, so the page answers every measured kind; nothing else changes.
   marked. On the page that cell carries `"kind_cell": true` (false for every other cell); neither
   its answer nor its replay is coloured, even where it holds; its sentence keeps its counts and
   replay words and ends "This is how the kind is read, not an answer."
+  *Amended 2026-11-24, by [step 57's R3](technical-fixes.md):* OPEC's cells now start once Brent
+  has closed, so none reads the kind and `kind_cell` is gone; each OPEC sentence says its span is
+  "counted from when oil's price closed". Gasoline's day after *oil up* no longer holds.
 - **A flow that cannot be computed is named.** The Bank of Japan's kinds need its rates from
   TradingView's calendar, fetched (or read from its cache) when the page is built. The BoE's
   days were stored by `load-releases` and its kinds come from the seed `boe-changes.csv`, so it

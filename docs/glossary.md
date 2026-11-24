@@ -437,8 +437,10 @@ Terms are grouped by what they are about, alphabetical within each group.
   100 unique visitors; *not seen* when none does.
 - **Cell** — *added 2026-11-21* ([a page a stranger reads](steps/readers.md)): one kind of event,
   one market and one span, with its counts, its answer and its replay's verdict, as `follows`
-  prints a line and *Ask* shows a row. A *kind cell* is read off the kind's own definition (Brent on
-  OPEC+'s *oil up*), so it says nothing beyond the kind. A *group* is one kind of event's set of
+  prints a line and *Ask* shows a row. A *kind cell* was read off the kind's own definition (Brent on
+  OPEC+'s *oil up*), so it said nothing beyond the kind; retired 2026-11-24 by [step 57's
+  R3](steps/technical-fixes.md), as OPEC's cells now start after the close that reads the kind. A
+  *group* is one kind of event's set of
   kinds as *Ask*'s menu groups them (the jobs report's above, as expected and below).
 - **Made** (a guess) — *added 2026-11-24* ([step 56](steps/honest-page.md)): the UTC time a guess
   was written; its baseline is its market's first close after it, so its writer never sees past
