@@ -179,7 +179,7 @@ and 10 of their answers or verdicts, and one `raw-move` verdict, but no answer t
 changed 26 *Ask* answers and 29 `raw-move` verdicts and no answer that holds; China's and
 Canada's tables keep many more releases, since a release is now left out only in the markets
 where another event shares its close, not everywhere. The answers that hold went from 9 to 8.
-Of the other fixes, R2, R8 and R10 were measured and changed nothing; R1, R5, R6, R7 and R11
+Of the other fixes, R2, R8 and R10 were checked on the copy and changed nothing; R1, R5, R6, R7 and R11
 were not compared, and are right by their tests only.
 
 **The expected outcome, bullet by bullet:**
