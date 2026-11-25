@@ -1,0 +1,12 @@
+[Unit]
+Description=FortuneTeller draft: the day's guesses and the front page's proposal, with a notification
+
+[Service]
+Type=oneshot
+Environment=PATH=%h/.local/bin:/snap/bin:/usr/local/bin:/usr/bin:/bin
+Environment=FT_MAIN_CHECKOUT=%h/WorkVolume/work/projects/pet/fortuneteller
+Environment=FT_JOB_TREE=%h/.local/share/fortuneteller/release-day
+# The desktop's message bus, for the notification; a timer's run is not given it otherwise.
+Environment=DBUS_SESSION_BUS_ADDRESS=unix:path=%t/bus
+ExecStart=%h/WorkVolume/work/projects/pet/fortuneteller/scripts/job-start.sh draft
+TimeoutStartSec=40min

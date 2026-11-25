@@ -727,8 +727,13 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **Delivery** — rung 6: a logged call reaching a person unasked. Here, a desktop popup on this
   laptop for each logged call and each failed job run ([rung 6](steps/rung-6-delivery.md)).
 - **Evening score** — the second timer on this machine: weekdays at 18:00 New York it loads the
-  day's data, runs `score`, and opens a pull request when the result changes. See
+  day's data, runs `score`, and opens a pull request when the result changes; every day since
+  2026-11-25, and it publishes the day's front pull request ([step 58](steps/publishing-schedule.md)). See
   [the evening score](steps/evening-score.md).
+- **Draft** (the guesses') — *added 2026-11-25* ([step 58](steps/publishing-schedule.md)): the
+  job's run at 14:00 New York every day: the day's guesses made and kept, and the front pull
+  request opened with a notification; a reminder follows at 16:00 if it is still open, and
+  `fortuneteller approve` prints it card by card and merges it on a yes.
 - **Release-day job** — the timer on this machine that runs `fortuneteller live` at 08:30 New
   York every weekday and opens the release's pull request, or an issue if it fails. See
   [the release-day job](steps/release-day-job.md).

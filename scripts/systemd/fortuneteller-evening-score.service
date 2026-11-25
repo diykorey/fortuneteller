@@ -1,10 +1,12 @@
 [Unit]
-Description=FortuneTeller evening score: load the day, grade the calls and open their pull request
+Description=FortuneTeller evening score: load the day, grade the calls, write the pages and publish the day's front page
 
 [Service]
 Type=oneshot
 Environment=PATH=%h/.local/bin:/snap/bin:/usr/local/bin:/usr/bin:/bin
 Environment=FT_MAIN_CHECKOUT=%h/WorkVolume/work/projects/pet/fortuneteller
 Environment=FT_JOB_TREE=%h/.local/share/fortuneteller/release-day
+# The desktop's message bus, for the notification; a timer's run is not given it otherwise.
+Environment=DBUS_SESSION_BUS_ADDRESS=unix:path=%t/bus
 ExecStart=%h/WorkVolume/work/projects/pet/fortuneteller/scripts/job-start.sh score
 TimeoutStartSec=40min

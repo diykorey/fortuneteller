@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 # The release-day job (docs/steps/release-day-job.md) and the evening score (docs/steps/
 # evening-score.md), in a worktree of their own from origin/main: `live` logs the day's calls,
-# `score` loads the day and grades them; a change goes to a pull request, a failure to an issue.
+# `score` loads the day, grades them and publishes the day's front page; `draft` writes the day's
+# guesses and proposes the front page's, `remind` reminds of a proposal still open (docs/steps/
+# publishing-schedule.md); a change goes to a pull request, a failure to an issue.
 set -uo pipefail
 
 repo=diykorey/fortuneteller
@@ -10,16 +12,15 @@ main_checkout=${FT_MAIN_CHECKOUT:?the checkout whose database and cache the job 
 job_tree=${FT_JOB_TREE:?the worktree the job works in}
 day=$(TZ=America/New_York date +%F)
 out=$(mktemp)
-# Tonight's front-page proposal, kept aside from the evening's branch switches
-# (docs/steps/front-staging.md).
-proposal=$(mktemp)
 # Everything goes to $out, the issue's body if the run fails; the journal gets it at the end.
 exec 3>&1 >>"$out" 2>&1
-trap 'cat "$out" >&3; rm -f "$out" "$proposal"' EXIT
+trap 'cat "$out" >&3; rm -f "$out"' EXIT
 
 case $step in
     live) title="Release-day job failed on $day" ;;
     score) title="Evening score failed on $day" ;;
+    draft) title="The guesses' draft failed on $day" ;;
+    remind) title="The front page's reminder failed on $day" ;;
     *) printf 'unknown step: %s\n' "$step"; exit 2 ;;
 esac
 
@@ -35,7 +36,17 @@ report() {
     exit 1
 }
 
-# One lock for both steps: the morning and the evening never hold the database at once.
+# The front page's proposal of the day, still open at 16:00 New York, is shown again; it needs
+# neither the store nor the job's tree, so it takes no lock.
+if [ "$step" = remind ]; then
+    open=$(gh pr list -R "$repo" --state open --head "front-$day" --json number --jq '.[].number') ||
+        report "gh pr list"
+    [ -z "$open" ] || popup "The front page's guesses, $day, wait for you" \
+        "Run fortuneteller approve, or they are published as they stand at 18:00 New York."
+    exit 0
+fi
+
+# One lock for every step: the morning, the draft and the evening never hold the database at once.
 exec 4>"$job_tree.lock"
 flock 4 || report "flock $job_tree.lock"
 
@@ -138,6 +149,83 @@ $kept"
     exit 0
 fi
 
+# The day's guesses and the front page's proposal, at 14:00 New York (docs/steps/
+# publishing-schedule.md). The ledger goes in a pull request merged on passing checks, so every
+# guess is kept before its span starts; the proposal from a fresh main into the day's front pull
+# request, published at 18:00 as it stands unless the owner approves it first. An earlier one is
+# closed when it holds only the job's commit; one the owner or anyone else has added to is left
+# open and today proposes nothing.
+if [ "$step" = draft ]; then
+    uv run --directory "$job_tree" fortuneteller guess || report "fortuneteller guess exited $?"
+    uv run --directory "$job_tree" fortuneteller draft || report "fortuneteller draft exited $?"
+    proposal=$(mktemp)
+    cp "$job_tree/docs/predicts/front-next.csv" "$proposal"
+    if [ -n "$(git -C "$job_tree" status --porcelain -- docs/predicts)" ]; then
+        files=docs/predicts
+        open_pr "The guesses of $day" "guesses-$day" \
+            "Made by the draft at $(date -u +%H:%M:%SZ), before their spans start."
+        if checks_pass "guesses-$day"; then
+            merge_pr "guesses-$day"
+        else
+            report "the checks of guesses-$day did not pass"
+        fi
+    fi
+    git -C "$job_tree" fetch -q origin && git -C "$job_tree" switch -q --detach origin/main ||
+        report "fetching main for the front page's guesses"
+    cp "$proposal" "$job_tree/docs/predicts/front.csv"
+    rm -f "$proposal"
+    if git -C "$job_tree" diff --quiet -- docs/predicts/front.csv; then
+        echo "front: the proposal is the page as it stands; nothing to approve"
+        exit 0
+    fi
+    busy=
+    for old in $(gh pr list -R "$repo" --state open --json headRefName \
+        --jq '.[].headRefName | select(startswith("front-"))'); do
+        if [ "$(git -C "$job_tree" rev-list --count "origin/main..origin/$old" 2>/dev/null)" = 1 ]; then
+            gh pr close -R "$repo" --delete-branch "$old" || busy=1
+        else
+            busy=1
+        fi
+    done
+    if [ -n "$busy" ]; then
+        git -C "$job_tree" checkout -q -- docs/predicts/front.csv
+        echo "front: an earlier front pull request was added to; today proposes nothing"
+        exit 0
+    fi
+    files=docs/predicts/front.csv
+    open_pr "The front page's guesses, $day" "front-$day" \
+        "Today's proposal for the front page's guesses. Reword \`statement\` or \`why\`, or delete a row; the other columns are locked. Merge it, or run \`fortuneteller approve\`; at 18:00 New York the evening publishes it as it stands, once it is 3 hours old."
+    popup "The front page's guesses, $day" \
+        "Run fortuneteller approve to read and publish them; at 18:00 New York they are published as they stand."
+    exit 0
+fi
+
+# The day's front pull request, published as it stands (docs/steps/publishing-schedule.md): one at
+# least 3 hours old, whose commits after the job's first are all the repository owner's, with its
+# checks passed. A younger one waits for the next evening, so a late wake never publishes unseen.
+publish_front() {
+    local n head created age others
+    gh pr list -R "$repo" --state open --json number,headRefName,createdAt \
+        --jq '.[] | select(.headRefName | startswith("front-")) | "\(.number) \(.headRefName) \(.createdAt)"' \
+        >"$out.front" || { echo "front: gh pr list failed; nothing published"; return; }
+    while read -r n head created; do
+        age=$(($(date +%s) - $(date -d "$created" +%s)))
+        if [ "$age" -lt 10800 ]; then
+            echo "front: $head is under 3 hours old; left for the next evening"
+        elif others=$(gh pr view -R "$repo" "$n" --json commits \
+            --jq "[.commits[1:][].authors[] | select(.login != \"${repo%%/*}\")] | length") &&
+            [ "$others" != 0 ]; then
+            echo "front: $head holds a commit by another account; left open"
+        elif checks_pass "$head"; then
+            merge_pr "$head"
+            echo "front: $head published"
+        else
+            echo "front: the checks of $head did not pass; left open"
+        fi
+    done <"$out.front"
+    rm -f "$out.front"
+}
+
 # The laptop's evening watches the runner's morning (docs/steps/loop-nets.md): no run started on
 # demand from 11:00 to 17:00 UTC today opens an issue. Only an evening run on its own weekday,
 # past 13:00 New York when that window has closed, checks; a catch-up after midnight carries the
@@ -166,6 +254,7 @@ waiting=$(gh pr list -R "$repo" --state open --json headRefName \
     report "gh pr list"
 if [ -n "$waiting" ]; then
     printf 'score: waiting for %s to be merged\n' "$waiting"
+    publish_front
     watch_morning
     exit 0
 fi
@@ -179,6 +268,7 @@ FT_CALLS_PATH=data/calls.csv uv run --directory "$job_tree" fortuneteller score 
 cat "$job_tree/$file"
 if grep -q '^pending: ' "$job_tree/$file"; then
     echo "score: rows pending; nothing committed"
+    publish_front
     watch_morning
     exit 0
 fi
@@ -189,7 +279,6 @@ log=data/trigger-log.csv
 log_changed=$(git -C "$job_tree" status --porcelain -- "$log")
 if ! git -C "$job_tree" diff --quiet -- "$file"; then
     # The scoreboard (docs/steps/scoreboard.md) is rewritten into the same pull request.
-    uv run --directory "$job_tree" fortuneteller guess || true
     FT_CALLS_PATH=data/calls.csv uv run --directory "$job_tree" fortuneteller scoreboard ||
         report "fortuneteller scoreboard exited $?"
     files="$file docs/scoreboard docs/predicts"
@@ -207,7 +296,6 @@ if ! git -C "$job_tree" diff --quiet -- "$file"; then
 else
     # With nothing to score the page is still written (docs/steps/readers.md), so the Dow's
     # reports ahead on it stay current; it goes with the triggers' log when that changed.
-    uv run --directory "$job_tree" fortuneteller guess || true
     FT_CALLS_PATH=data/calls.csv uv run --directory "$job_tree" fortuneteller scoreboard ||
         report "fortuneteller scoreboard exited $?"
     page_changed=$(git -C "$job_tree" status --porcelain -- docs/scoreboard docs/predicts)
@@ -225,8 +313,6 @@ else
         fi
     fi
     if [ -n "$log_changed" ]; then
-        # Tonight's proposal is kept aside before the switch puts back main's copy (below).
-        cp "$job_tree/docs/predicts/front-next.csv" "$proposal" 2>/dev/null
         git -C "$job_tree" switch -q --detach origin/main || report "git switch for the triggers"
         files=$log
         open_pr "Grade the triggers on $day" "triggers-$day" \
@@ -234,36 +320,5 @@ else
     fi
 fi
 
-# The front page's guesses wait for the owner (docs/steps/front-staging.md): tonight's proposal,
-# written into the evening's pull request as front-next.csv, goes from a fresh main into a pull
-# request of its own that the job never merges. An earlier one is closed when it holds only the
-# job's commit; one the owner or anyone else has added to is left open and tonight proposes nothing.
-# Tonight's proposal is kept aside first: front-next.csv is tracked, so the switch to main puts back
-# main's copy, which is an earlier evening's when tonight's pull request is not merged (2026-11-23,
-# docs/steps/honest-page.md).
-[ -s "$proposal" ] || cp "$job_tree/docs/predicts/front-next.csv" "$proposal" 2>/dev/null
-if git -C "$job_tree" fetch -q origin && git -C "$job_tree" switch -q --detach origin/main; then
-    [ -s "$proposal" ] && cp "$proposal" "$job_tree/docs/predicts/front.csv"
-    if ! git -C "$job_tree" diff --quiet -- docs/predicts/front.csv; then
-        busy=
-        for old in $(gh pr list -R "$repo" --state open --json headRefName \
-            --jq '.[].headRefName | select(startswith("front-"))'); do
-            if [ "$(git -C "$job_tree" rev-list --count "origin/main..origin/$old" 2>/dev/null)" = 1 ]; then
-                gh pr close -R "$repo" --delete-branch "$old" || busy=1
-            else
-                busy=1
-            fi
-        done
-        if [ -n "$busy" ]; then
-            git -C "$job_tree" checkout -q -- docs/predicts/front.csv
-            echo "front: an earlier front pull request was added to; tonight proposes nothing"
-        else
-            files=docs/predicts/front.csv
-            open_pr "The front page's guesses, $day" "front-$day" \
-                "Tonight's proposal for the front page's guesses. Reword \`statement\` or \`why\`, or delete a row; the other columns are locked. Merging publishes it; the job never merges it."
-        fi
-    fi
-else
-    report "fetching main for the front page's guesses"
-fi
+publish_front
 watch_morning

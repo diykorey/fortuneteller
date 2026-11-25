@@ -37,6 +37,10 @@ end: 2026-11-24's front pull request (#458) was published 7 hours after the job 
   | 16:00, daily | `release-day.sh remind` (new) | a notification if the day's front pull request is open |
   | 18:00, daily | `release-day.sh score` | as today, without `guess` and without opening a front pull request; then the day's front pull request merged under the rule below |
 
+- **The day's guesses kept first.** *Amended 2026-11-25, while building:* the draft commits the
+  ledger in a pull request of its own, `guesses-DAY`, merged on passing checks as the evening's
+  pages are, so every guess is on `main` before its span starts; the front pull request then
+  opens from that `main`.
 - **Guesses start one close earlier.** A guess starts from its market's first close after it is
   *made*. Made at 14:00, a guess on a market still open (US stocks, yields, the dollar) starts from
   that day's close, not the next day's as at 18:00; markets already closed (Tokyo, Europe) are
@@ -48,6 +52,9 @@ end: 2026-11-24's front pull request (#458) was published 7 hours after the job 
   one start, not two tries. They are made, shown and graded, and left out of the record by
   evening (`guess_record`, an evening's guesses one try, [step 50](guess-ledger.md)) and of both
   of step 55's counts (`excess_record`, `counted_guesses`), which this amends.
+  *Amended 2026-11-25, while building:* from 2026-11-28, the schedule's first weekend; the 12
+  guesses of Sunday 2026-11-22, made before the schedule and the only ones that weekend, stay
+  counted. `evenings_against`, the comparison by evening, leaves them out too.
 - **The merge at 18:00.** The evening merges the day's front pull request when: it was opened at
   least 3 hours before (on time, 4); every commit on it is by the repository owner's account,
   under which both the job and the owner commit; and its checks pass, waited for as the score's

@@ -32,7 +32,8 @@ class Settings(BaseSettings):
     # Seconds to wait for a store another process holds; 0 fails at once. The jobs wait 30 minutes.
     db_wait: float = 0
 
-    model_config = SettingsConfigDict(env_prefix="FT_", env_file=".env")
+    # A checkout's .env may hold other tools' keys too; they are not this program's (step 58).
+    model_config = SettingsConfigDict(env_prefix="FT_", env_file=".env", extra="ignore")
 
 
 settings = Settings()
