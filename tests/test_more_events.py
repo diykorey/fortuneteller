@@ -1,6 +1,7 @@
 """Step 4's flows: retail sales, core PCE and GDP, each a change in one FRED level."""
 
 import json
+from collections.abc import Callable
 from datetime import date, datetime, time, timedelta
 from pathlib import Path
 
@@ -123,9 +124,13 @@ def _store_with_surprise(
             )
 
 
-def test_a_new_flow_leaves_out_a_release_on_another_flow_s_day(tmp_db: Path) -> None:
-    # given retail sales on 2024-03-12, the day CPI came out, and on 2024-04-15 alone
+def test_a_new_flow_leaves_out_a_release_on_another_flow_s_close(
+    tmp_db: Path, weekday_closes: Callable[..., None]
+) -> None:
+    # given retail sales on 2024-03-12, at CPI's 08:30 that day, and on 2024-04-15 alone, and the
+    # dollar's closes
     con = db.get_connection()
+    weekday_closes(("DXY",), date(2024, 3, 1), date(2024, 4, 30))
     _store_with_surprise(con, flows.CPI_FLOW, sources.CORE, [date(2024, 3, 12)])
     _store_with_surprise(
         con, RETAIL_FLOW, sources.RETAIL_SALES, [date(2024, 3, 12), date(2024, 4, 15)]
@@ -142,14 +147,17 @@ def test_a_new_flow_leaves_out_a_release_on_another_flow_s_day(tmp_db: Path) -> 
     # then retail sales keeps only its own day; CPI keeps the shared one
     assert retail[(sources.RETAIL_SALES, expectations.NASDAQ_CONSENSUS)]["DXY"] == ([1.5], [1.1])
     assert cpi[(sources.CORE, expectations.NASDAQ_CONSENSUS)]["DXY"] == ([0.5], [0.1])
-    assert list(study.shared_days(RETAIL_FLOW, con=con).values()) == [date(2024, 3, 12)]
+    assert study.shared_in(RETAIL_FLOW, "DXY", con=con) == {
+        flows.event_id(RETAIL_FLOW, date(2024, 3, 12))
+    }
 
 
 def test_surprise_lists_the_releases_left_out(
-    tmp_db: Path, capsys: pytest.CaptureFixture[str]
+    tmp_db: Path, capsys: pytest.CaptureFixture[str], weekday_closes: Callable[..., None]
 ) -> None:
-    # given a retail sales release on a CPI day, and three alone
+    # given a retail sales release at CPI's close, and three alone, in the dollar
     con = db.get_connection()
+    weekday_closes(("DXY",), date(2024, 3, 1), date(2024, 6, 28))
     _store_with_surprise(con, flows.CPI_FLOW, sources.CORE, [date(2024, 3, 12)])
     alone = [date(2024, 4, 15), date(2024, 5, 15), date(2024, 6, 14)]
     _store_with_surprise(con, RETAIL_FLOW, sources.RETAIL_SALES, [date(2024, 3, 12), *alone])
@@ -157,12 +165,12 @@ def test_surprise_lists_the_releases_left_out(
     # when retail sales' report is printed
     code = main(["surprise", "--event", "retail"])
 
-    # then it names the release left out
+    # then it counts the release left out, in the one market it has closes in
     out = capsys.readouterr().out.splitlines()
     assert code == 0
     assert out[-2:] == [
-        "left out: 1 RET releases on a day with another event's release",
-        "2024-03-12",
+        "left out, by market: the RET releases another event reaches at the same close",
+        "DXY 1",
     ]
 
 

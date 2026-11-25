@@ -42,6 +42,8 @@ import duckdb
 from . import db, expectations, sources, stats
 from .models import DailyBar, EventInstance, Observation
 from .flows import (
+    CA_CPI_FLOW,
+    CH_CPI_FLOW,
     CHINA_FLOWS,
     EVENT_FLOWS,
     RELEASE_TIME,
@@ -428,12 +430,14 @@ def reaction_days(closes: Sequence[DailyClosingPrice], first_days: Iterable[date
 
     ``first_days`` are the events' ``first_reaction_day`` for this instrument.
     """
-    days = set()
-    for first_day in first_days:
-        pair = closing_price_before_after(closes, first_day)
-        if not isinstance(pair, str):
-            days.add(pair[1].day)
-    return days
+    return {day for first_day in first_days if (day := reaction_close(closes, first_day))}
+
+
+def reaction_close(closes: Sequence[DailyClosingPrice], first_day: date) -> date | None:
+    """The stored close an event with this ``first_reaction_day`` is paired with; none while it
+    has no close before and after."""
+    pair = closing_price_before_after(closes, first_day)
+    return None if isinstance(pair, str) else pair[1].day
 
 
 @dataclass(frozen=True)
@@ -530,16 +534,15 @@ def measure_raw_moves(
     dated = isinstance(flow, DatedShockFlow)
     until = flow.ordinary_until if isinstance(flow, DatedShockFlow) else None
     events = stored_events(flow, con=con)
-    if flow.lesser and not dated:
-        shared = shared_days(flow, con=con)
-        events = [e for e in events if e.event_id not in shared]
+    shared = shared_by_market(flow, con=con) if flow.lesser and not dated else {}
     every_event = [
         e for each in EVENT_FLOWS if not each.lesser for e in stored_events(each, con=con)
     ]
     measured: dict[str, tuple[str, list[float], list[float], dict[str, EraRatio]]] = {}
     for instrument, series in MVP_PRICE_SERIES.items():
         closes = stored_closes(instrument, con=con)
-        days = reaction_days(closes, [first_reaction_day(event, series) for event in events])
+        alone = [e for e in events if e.event_id not in shared.get(instrument, set())]
+        days = reaction_days(closes, [first_reaction_day(event, series) for event in alone])
         busy = reaction_days(closes, [first_reaction_day(event, series) for event in every_event])
         if dated:
             days -= busy
@@ -658,31 +661,59 @@ def surprise_pairs(
     return pairs
 
 
-def shared_days(flow: EventFlow, con: duckdb.DuckDBPyConnection | None = None) -> dict[int, date]:
-    """The flow's stored releases on a day that also holds another flow's, by event id; a lesser
-    flow's releases share nobody's day, but China's flows share each other's, each read on the
-    weekday it reacts on (docs/steps/china.md)."""
+def _sharers(flow: EventFlow, con: duckdb.DuckDBPyConnection | None) -> list[EventInstance]:
+    """The events a release of ``flow`` can share a close with: every other flow's but a lesser
+    one's, though China's flows share each other's (docs/steps/china.md)."""
     china = flow in CHINA_FLOWS
-    others = {
-        _alone_day(each, event)
+    return [
+        event
         for each in EVENT_FLOWS
         if (each.event_type, each.country) != (flow.event_type, flow.country)
         and (not each.lesser or (china and each in CHINA_FLOWS))
         for event in stored_events(each, con=con)
-    }
-    return {
-        event.event_id: day
-        for event in stored_events(flow, con=con)
-        if (day := _alone_day(flow, event)) in others
-    }
+    ]
 
 
-def _alone_day(flow: EventFlow, event: EventInstance) -> date:
-    """The day a release is told apart on: its own, or for China's flows the first weekday from it."""
-    day = release_date(event)
-    if flow in CHINA_FLOWS and day.weekday() >= 5:
-        return day + timedelta(days=7 - day.weekday())
-    return day
+def shared_in(
+    flow: EventFlow,
+    market: str,
+    con: duckdb.DuckDBPyConnection | None = None,
+    closes: Sequence[DailyClosingPrice] | None = None,
+) -> set[int]:
+    """The flow's stored releases another flow's event reaches in ``market`` at the same close, by
+    event id, as ``raw-move`` reads its busy days (step 57, R4, docs/steps/technical-fixes.md)."""
+    return shared_by_market(flow, con=con, markets={market: closes})[market]
+
+
+def shared_by_market(
+    flow: EventFlow,
+    con: duckdb.DuckDBPyConnection | None = None,
+    markets: Mapping[str, Sequence[DailyClosingPrice] | None] | None = None,
+) -> dict[str, set[int]]:
+    """``shared_in`` for each market, every MVP market by default; a market's closes are read
+    from the store unless given, and a market with none shares nothing."""
+    others = _sharers(flow, con)
+    mine = stored_events(flow, con=con)
+    shared = {}
+    for market, given in (markets or dict.fromkeys(MVP_PRICE_SERIES)).items():
+        series = MVP_PRICE_SERIES[market]
+        if given is not None:
+            closes = given
+        else:
+            bars = db.fetch_all(
+                DailyBar,
+                "SELECT * FROM daily_bars WHERE instrument = ? ORDER BY day",
+                [market],
+                con,
+            )
+            closes = [DailyClosingPrice(bar.day, bar.close) for bar in bars]
+        taken = reaction_days(closes, [first_reaction_day(e, series) for e in others])
+        shared[market] = {
+            e.event_id
+            for e in mine
+            if reaction_close(closes, first_reaction_day(e, series)) in taken
+        }
+    return shared
 
 
 def _flow_pairs(
@@ -699,7 +730,7 @@ def _flow_pairs(
         [flow.event_type, flow.country, measure, baseline, instrument],
     ).fetchall()
     rule = flow.surprise_rule
-    shared = shared_days(flow, con=con) if rule is not None and rule.alone else {}
+    shared = shared_in(flow, instrument, con=con) if rule is not None and rule.alone else set()
     return [(r[0], _month(r[0], r[1]), r[2], r[3]) for r in rows if r[0] not in shared]
 
 
@@ -2048,13 +2079,22 @@ def release_kinds(flow: EventFlow, con: duckdb.DuckDBPyConnection | None = None)
     }
 
 
+# Releases followed only in the markets they reach alone (docs/steps/canada.md, step 57's R4).
+ALONE_FOLLOWED = (CA_CPI_FLOW, CH_CPI_FLOW, *CHINA_FLOWS)
+
+
 def lone_release_kinds(
     flow: EventFlow, con: duckdb.DuckDBPyConnection | None = None
 ) -> dict[int, str]:
-    """Each stored release's kind, as ``release_kinds``, on the days the flow has alone: a day
-    another flow's release shares is left out (Canada's CPI, docs/steps/canada.md)."""
-    shared = shared_days(flow, con=con)
-    return {i: kind for i, kind in release_kinds(flow, con=con).items() if i not in shared}
+    """Each stored release's kind, as ``release_kinds``, less those another flow's event reaches at
+    the same close in every market; each market leaves out its own shared ones in
+    ``follow_decisions`` (docs/steps/canada.md, step 57's R4)."""
+    shared = list(shared_by_market(flow, con=con).values())
+    return {
+        i: kind
+        for i, kind in release_kinds(flow, con=con).items()
+        if not shared or not all(i in ids for ids in shared)
+    }
 
 
 def surprise_kind(
@@ -2092,16 +2132,22 @@ def follow_decisions(
     in that order; with ``after``, on the spans from each reaction close; with ``long``, over the
     quarter and the year, each cell also answered counting each cycle once. OPEC's spans start at
     each market's close at or after Brent's reaction close, which reads its kind (``opec_start``);
-    ``before_kind`` gives its spans from the close before instead, printed but never judged."""
+    ``before_kind`` gives its spans from the close before instead, printed but never judged. A flow
+    in ``ALONE_FOLLOWED`` leaves out, in each market, the releases it shares there."""
     events = [e for e in stored_events(flow, con=con) if e.event_id in kinds]
     spans = LONG_SPANS if long else SPANS
     cycles = fed_cycles([kinds[e.event_id] for e in events]) if long else None
     judged_opec = flow is OPEC_FLOW and not before_kind
+    every_close = {
+        instrument: stored_closes(instrument, con=con) for instrument in MVP_PRICE_SERIES
+    }
+    shared = shared_by_market(flow, con, every_close) if flow in ALONE_FOLLOWED else {}
     by_market = {}
     for instrument, series in MVP_PRICE_SERIES.items():
-        closes = stored_closes(instrument, con=con)
+        closes = every_close[instrument]
         start = opec_start if judged_opec else first_reaction_day
-        decisions = [(start(e, series), kinds[e.event_id]) for e in events]
+        alone = [e for e in events if e.event_id not in shared.get(instrument, set())]
+        decisions = [(start(e, series), kinds[e.event_id]) for e in alone]
         by_market[instrument] = {
             span: follow_market(
                 decisions, closes, series.unit, c, order, after or judged_opec, cycles
@@ -2653,8 +2699,14 @@ def answer_triggers(
             continue
         lines.append(f"{head}, merged {at.astimezone(NEW_YORK):%Y-%m-%d %H:%M} New York")
         decided = [e for e in flow_events if e.event_id in flow_kinds]
-        position = decided.index(event)
+        lone = next((f for f in ALONE_FOLLOWED if f.cli_name == t.flow), None)
+        shared = shared_by_market(lone, markets=closes) if lone is not None else {}
         for market, series in MVP_PRICE_SERIES.items():
+            if event.event_id in shared.get(market, set()):
+                lines.append(f"  {market}: shared, another release reaches the same close")
+                continue
+            alone = [e for e in decided if e.event_id not in shared.get(market, set())]
+            position = alone.index(event)
             deadline = datetime.combine(
                 first_reaction_day(event, series), series.close, tzinfo=series.zone
             )
@@ -2666,7 +2718,7 @@ def answer_triggers(
                 continue
             market_closes = closes[market]
             begins = opec_start if t.flow == OPEC_FLOW.cli_name else first_reaction_day
-            decisions = [(begins(e, series), flow_kinds[e.event_id]) for e in decided]
+            decisions = [(begins(e, series), flow_kinds[e.event_id]) for e in alone]
             for span, c in SPANS.items():
                 # A live OPEC day joins its flow's events for its own trigger alone.
                 key_day = t.day if event.event_id not in kinds.get(t.flow, {}) else None

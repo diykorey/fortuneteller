@@ -1,8 +1,11 @@
 """Shared pytest fixtures for the M0-08 smoke tests."""
 
 import json
+from collections.abc import Callable, Sequence
+from datetime import date, timedelta
 from pathlib import Path
 
+import duckdb
 import pytest
 from pydantic import SecretStr
 
@@ -87,3 +90,23 @@ def fred_breakeven(monkeypatch: pytest.MonkeyPatch) -> None:
         return json.dumps({"observations": sent}).encode()
 
     monkeypatch.setattr(sources, "fetch_series", fetch)
+
+
+@pytest.fixture
+def weekday_closes() -> Callable[..., None]:
+    # stores a close on every weekday from ``first`` to ``last`` in each market, so a release's
+    # reaction close can be read (step 57's R4 decides a shared release by it)
+    def store(
+        markets: Sequence[str],
+        first: date,
+        last: date,
+        con: duckdb.DuckDBPyConnection | None = None,
+    ) -> None:
+        connection = con if con is not None else db.get_connection()
+        days = [first + timedelta(days=i) for i in range((last - first).days + 1)]
+        connection.executemany(
+            "INSERT INTO daily_bars (instrument, day, close, source) VALUES (?, ?, ?, 'test')",
+            [[m, d, 100.0 + i] for m in markets for i, d in enumerate(days) if d.weekday() < 5],
+        )
+
+    return store
