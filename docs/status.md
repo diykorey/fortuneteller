@@ -44,6 +44,9 @@ the hand check against Yahoo passed, and no answer or verdict on the page change
 
 ## In progress
 
+- **Step 58: the publishing schedule** ([the spec](steps/publishing-schedule.md)): guesses
+  drafted at 14:00 New York, a reminder at 16:00, published at 18:00 as they stand, every day.
+  Chosen by the owner 2026-11-24. Next: the spec merged, then built.
 - **Step 61: one front-page card per area** ([the spec](steps/front-by-area.md)): both caps of
   five gone, one card per area the only limit. Chosen by the owner 2026-11-25. Spec merged (#463);
   built, and the files of 2026-11-25 give the spec's six guesses. Next: the first evening's front
@@ -131,9 +134,7 @@ the hand check against Yahoo passed, and no answer or verdict on the page change
 
 ## Next
 
-Step 58, the publishing schedule (draft 14:00 New York, a reminder at 16:00, published at 18:00,
-every day), chosen by the owner on 2026-11-24. Then step 59, bitcoin's and ether's weekend closes from
-Yahoo, chosen the same day.
+Step 59, bitcoin's and ether's weekend closes from Yahoo, chosen by the owner on 2026-11-24.
 
 ## Known, not yet fixed
 
