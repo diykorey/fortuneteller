@@ -64,6 +64,11 @@ Eleven pull requests, in this order, the ones that can lose an evening's work fi
 7. **R8, a call logged twice.** The call log is appended under a file lock after reading it again;
    `score` keeps one call per flow, day and market, the earliest logged.
 8. **R9, float noise at the cut.** A move in basis points is rounded to six decimals.
+   *Amended 2026-11-24, after measuring, the owner's choice:* rounding alone changed about 880
+   lines of the scoreboard, not under 10 cells: T5YIE moves on a whole basis-point grid, so its cut
+   falls on 1 bp and 1,811 of its 5,976 days sat on one side of it by float noise. A move of
+   exactly the cut is now *about the same* in every market (`outcome`, and the walk-forward's
+   base alike), as a lower third read from the moves includes the move it falls on.
 9. **R10, the unit check.** Today the check compares a value's unit with itself. A forecast from
    TradingView's fallback, the one source not checked against the first print, is refused and
    counted when it is more than 20 times the actual print or less than a twentieth of it (both

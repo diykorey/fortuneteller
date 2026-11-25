@@ -1,13 +1,13 @@
 """Release-day moves: the close before each CPI release, and the move to the first close after it."""
 
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from typing import NoReturn
 
 import duckdb
 import pytest
 
-from fortuneteller import db, flows, sources
+from fortuneteller import db, flows, sources, study
 from fortuneteller.__main__ import company_tickers, describe_release_counts, main
 from fortuneteller.config import settings
 from fortuneteller.models import DailyBar
@@ -473,3 +473,36 @@ def test_load_prices_stores_nothing_when_fred_fails(
     assert code == 1
     assert "load-prices: FRED returned HTTP 500" in capsys.readouterr().err
     assert db.count_rows("daily_bars") == 0
+
+
+@pytest.mark.parametrize(("before", "after"), [(2.34, 2.35), (0.56, 0.57)])
+def test_a_one_basis_point_move_is_exactly_one(before: float, after: float) -> None:
+    # given two yields a hundredth of a point apart, which floats do not subtract exactly
+    day = date(2026, 11, 2)
+    first = DailyClosingPrice(day, before)
+    second = DailyClosingPrice(day + timedelta(days=1), after)
+
+    # when the move is measured in basis points
+    move = study.release_move(first, second, "bps")
+
+    # then it is exactly one
+    assert move == 1.0
+
+
+def test_a_move_of_exactly_the_cut_is_about_the_same_and_the_walk_forward_agrees() -> None:
+    # given whole basis-point moves, whose lower third falls exactly on one of them
+    moves = [1.0, -1.0, 1.0, 2.0, -3.0, 4.0, -1.0]
+    so_far = study.BaseSoFar()
+    for move in moves:
+        so_far.add(move)
+
+    # when the base is taken all at once and one move at a time
+    whole = study.base_of(moves)
+    walked = so_far.base()
+
+    # then the cut is one point, each move of one is about the same, and the two bases agree
+    assert whole is not None and walked is not None
+    assert whole.cut == 1.0
+    assert study.outcome(1.0, whole.cut) == study.outcome(-1.0, whole.cut) == study.SAME
+    assert whole.rates == walked.rates
+    assert whole.rates[study.SAME] == 4 / 7
