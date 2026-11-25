@@ -42,7 +42,9 @@ At the end:
   a pull request it merges once its checks pass, as before. After it, the job copies `front-next.csv` over
   `front.csv` on a fresh `main`. When that changes `front.csv` it closes a front pull request of
   an earlier evening that holds only the job's commit, and opens *The front page's guesses, DAY*
-  on branch `front-DAY` (DAY New York's date, `YYYY-MM-DD`). It never merges it. A front pull
+  on branch `front-DAY` (DAY New York's date, `YYYY-MM-DD`). It never merges it (*Amended 2026-11-25* ([step 58](publishing-schedule.md)):
+  the draft at 14:00 New York opens it, and the evening at 18:00 merges it as it stands once it
+  is 3 hours old and every commit after the job's is the owner's account's). A front pull
   request the owner or anyone else has added a commit to is left open, and that evening proposes
   nothing, so no rewording is thrown away. Until the owner merges one, the page keeps the guesses last approved, each
   shown while its end date has not passed. *Amended 2026-11-24* ([step 56](honest-page.md), step

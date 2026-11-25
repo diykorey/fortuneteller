@@ -25,6 +25,12 @@ the grounded guesser's frozen prompt beats the news guesser.
 
 ## The way to reach it
 
+*Amended 2026-11-25* ([step 58](publishing-schedule.md)): from 2026-11-28 both guessers write at 14:00 New York every day,
+so a guess on a market still open starts from that day's close, not the next day's; both move
+together, inside the refining period. A Saturday's or Sunday's guesses are left out of both
+counts (`counted_guesses`, `evenings_against`): nearly all start from Monday's close, so they are
+not new tries.
+
 - **The obstacle: a count of right guesses mixes skill with drift.** Markets drift: the S&P 500
   rose in most past years, so *up* guesses come true often by habit, and a guesser given base
   rates may simply guess *up* more. The *excess* answers that: right guesses minus the sum of their

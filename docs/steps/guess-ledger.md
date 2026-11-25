@@ -27,7 +27,9 @@ At the end:
 - **Many guesses are not many proofs.** Guesses made on one evening from the same news mostly
   move together. So the stats page counts each guess, and also each evening once: the evening's
   guesses of one kind are one *try*, counted once all of them are graded, right if more than half
-  came true (a tie is not). A kind of reasoning is *promoted* by rung 2's bar on its tries: at
+  came true (a tie is not). *Amended 2026-11-25* ([step 58](publishing-schedule.md)): a Saturday's or Sunday's guesses from
+  2026-11-28, made by the daily draft and nearly all starting from Monday's close, are no try.
+  A kind of reasoning is *promoted* by rung 2's bar on its tries: at
   least 30, right on at least 60%, one-sided binomial p below 0.01.
 - **What makes a guess reasonable, checked before it is kept:**
   - one market of the 31 the store measures daily, by its exact code: `SPY / ES`, `UST10Y / ZN`,

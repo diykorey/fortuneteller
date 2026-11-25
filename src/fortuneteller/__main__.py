@@ -3458,11 +3458,24 @@ def front_guesses(
     return one_per_area(live, lambda r: r["market"], taken)
 
 
+# Step 58 (docs/steps/publishing-schedule.md): from its first weekend, guesses are made on Saturday
+# and Sunday too, nearly all starting from Monday's close; they are shown and graded but are not
+# new tries. Sunday 2026-11-22's, made before the schedule and the only ones of that weekend, count.
+SCHEDULE_FROM = date(2026, 11, 28)
+
+
+def weekend_draft(row: Mapping[str, str]) -> bool:
+    """A guess stated on a Saturday or Sunday from ``SCHEDULE_FROM``: left out of every record."""
+    stated = date.fromisoformat(row["stated"])
+    return stated >= SCHEDULE_FROM and stated.weekday() >= 5
+
+
 def guess_record(rows: Sequence[Mapping[str, str]], key: str) -> list[dict[str, object]]:
     """The record by ``key`` (tag, confidence, horizon, market or lessons): each guess, and each
     evening's guesses of the value as one try once all of them are graded, right if more than
     half came true (a tie is not); rung 2's verdict on the evenings."""
     groups: dict[str, dict[str, list[bool]]] = {}
+    rows = [r for r in rows if not weekend_draft(r)]
     pending = {(r.get(key) or "(none)", r["stated"]) for r in rows if not r.get("grade")}
     for r in rows:
         value = r.get(key) or "(none)"
@@ -3509,6 +3522,8 @@ def counted_guesses(rows: Sequence[Mapping[str, str]]) -> list[Mapping[str, str]
     out = []
     for r in sorted(rows, key=lambda r: r["stated"]):
         if r.get("grade") not in GRADED or not r.get("base_rate") or r.get("prompt") == BY_HAND:
+            continue
+        if weekend_draft(r):
             continue
         week = date.fromisoformat(r["last"]).isocalendar()[:2]
         key = (r.get("guesser", "news"), GUESS_TWINS.get(r["market"], r["market"]), week)
@@ -3557,6 +3572,7 @@ def evenings_against(
     With ``version``, only that prompt's evenings, each once all its week-horizon guesses of both
     guessers are graded; with ``counted``, each guesser's guesses once per market and week."""
     higher = lower = 0
+    rows = [r for r in rows if not weekend_draft(r)]
     for evening in sorted({r["stated"] for r in rows if r.get("guesser") == "grounded"}):
         if since and evening < since.isoformat():
             continue
@@ -3752,13 +3768,7 @@ def stated_forecasts(
     if ledger:
         _write_rows(ledger_path, GUESS_FIELDS, ledger)
     guesses = [g for g in ledger if g["guesser"] == "news"]
-    own = [g for g in guesses if g.get("prompt") != BY_HAND]
-    promoted = {str(t["tag"]) for t in guess_record(own, "tag") if t["verdict"] == "holds"}
-    write_stats(kept_path.parent / "stats" / "index.html", guesses, promoted, ledger)
-    proposal = front_proposal(
-        [str(t["market"]) for t in told], approved, guesses, ledger, promoted, today
-    )
-    _write_rows(kept_path.parent / "front-next.csv", FRONT_FIELDS, proposal)
+    write_stats(kept_path.parent / "stats" / "index.html", guesses, promoted_tags(guesses), ledger)
     shown = [g for g in ledger if g.get("shown") and g.get("grade") != "void"]
     return {
         "front_tally": forecast_tally(shown),
@@ -3767,6 +3777,132 @@ def stated_forecasts(
         "tally": forecast_tally(rows),
         "kept_since": rows[0]["stated"] if rows else None,
     }
+
+
+def promoted_tags(guesses: Sequence[Mapping[str, str]]) -> set[str]:
+    """The tags whose record of the news guesser's own guesses holds."""
+    own = [g for g in guesses if g.get("prompt") != BY_HAND]
+    return {str(t["tag"]) for t in guess_record(own, "tag") if t["verdict"] == "holds"}
+
+
+def published_stated(page: Path) -> list[str]:
+    """The markets of the stated forecasts the published predictions page carries in its data."""
+    if not page.exists():
+        return []
+    found = re.search(
+        r'<script id="data" type="application/json">(.*?)</script>', page.read_text(), re.S
+    )
+    if found is None:
+        return []
+    data = json.loads(found[1])
+    return [str(t["market"]) for t in data.get("stated") or []]
+
+
+def draft_front(folder: Path, told: Sequence[str], today: date) -> list[dict[str, str]]:
+    """Step 58 (docs/steps/publishing-schedule.md): the guesses found on the published front page
+    marked shown, and the day's proposal of the front page's guesses beside the stated forecasts on
+    ``told``'s markets, written to ``front-next.csv``."""
+    approved = _read_rows(folder / "front.csv")
+    ledger_path = folder / "our-guesses.csv"
+    ledger = mark_shown([_ledger_row(r) for r in _read_rows(ledger_path)], approved, today)
+    if ledger:
+        _write_rows(ledger_path, GUESS_FIELDS, ledger)
+    guesses = [g for g in ledger if g["guesser"] == "news"]
+    proposal = front_proposal(told, approved, guesses, ledger, promoted_tags(guesses), today)
+    _write_rows(folder / "front-next.csv", FRONT_FIELDS, proposal)
+    return proposal
+
+
+def _draft(_args: argparse.Namespace) -> int:
+    today = _now().astimezone(sources.NEW_YORK).date()
+    folder = settings.scoreboard_dir.parent / "predicts"
+    proposal = draft_front(folder, published_stated(folder / "index.html"), today)
+    print(f"draft: {len(proposal)} guesses proposed for the front page")
+    return 0
+
+
+REPO = "diykorey/fortuneteller"
+APPROVE_FIELDS = (
+    ("market", "Market"),
+    ("direction", "Direction"),
+    ("last", "Last day"),
+    ("statement", "Says"),
+    ("why", "Why"),
+    ("source", "Source"),
+    ("withdrawn", "Withdrawn"),
+)
+
+
+def _gh(*args: str) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(["gh", "-R", REPO, *args], capture_output=True, text=True, check=False)
+
+
+def _gh_api(path: str) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        ["gh", "api", "-H", "Accept: application/vnd.github.raw", f"repos/{REPO}/{path}"],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+
+def draft_cards(rows: Sequence[Mapping[str, str]]) -> str:
+    """Every card of a front pull request in full, as ``approve`` prints it."""
+    out = []
+    for i, r in enumerate(rows, 1):
+        out.append(f"Card {i}")
+        out += [f"  {label}: {r[key]}" for key, label in APPROVE_FIELDS if r.get(key)]
+    return "\n".join(out)
+
+
+def approve(answer: Callable[[], str], show: Callable[[str], None], ask: bool, merge: bool) -> int:
+    """Step 58: the open front pull request printed card by card; merged, at the commit printed
+    and only with its checks passed, on ``yes`` (asked when ``ask``) or when ``merge``."""
+    listed = _gh("pr", "list", "--state", "open", "--json", "number,headRefName,headRefOid")
+    if listed.returncode:
+        show(f"approve: gh pr list failed: {listed.stderr.strip()}")
+        return 1
+    fronts = [p for p in json.loads(listed.stdout or "[]") if p["headRefName"].startswith("front-")]
+    if not fronts:
+        show("approve: no front pull request is open")
+        return 0
+    pr = max(fronts, key=lambda p: p["headRefName"])
+    body = _gh_api(f"contents/docs/predicts/front.csv?ref={pr['headRefOid']}")
+    if body.returncode:
+        show(f"approve: reading front.csv failed: {body.stderr.strip()}")
+        return 1
+    rows = list(csv.DictReader(body.stdout.splitlines()))
+    show(f"{pr['headRefName']} (#{pr['number']}), {len(rows)} cards:\n" + draft_cards(rows))
+    if not merge and not ask:
+        return 0
+    if ask and answer().strip().lower() not in ("y", "yes"):
+        show("approve: left open")
+        return 0
+    if _gh("pr", "checks", str(pr["number"])).returncode:
+        show("approve: its checks have not all passed; left open")
+        return 1
+    merged = _gh(
+        "pr",
+        "merge",
+        str(pr["number"]),
+        "--merge",
+        "--delete-branch",
+        "--match-head-commit",
+        pr["headRefOid"],
+    )
+    if merged.returncode:
+        show(
+            f"approve: not merged, it changed since it was printed or failed: {merged.stderr.strip()}"
+        )
+        return 1
+    show(f"approve: {pr['headRefName']} merged")
+    return 0
+
+
+def _approve(args: argparse.Namespace) -> int:
+    return approve(
+        lambda: input("Publish these cards? [y/N] "), print, not (args.print or args.yes), args.yes
+    )
 
 
 def _scoreboard(_args: argparse.Namespace) -> int:
@@ -3843,6 +3979,15 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser(
         "guess", help="step 49: the evening's guesses from the news, kept in guesses.csv"
     ).set_defaults(func=_guess)
+    sub.add_parser(
+        "draft", help="step 58: the day's proposal of the front page's guesses, in front-next.csv"
+    ).set_defaults(func=_draft)
+    p_approve = sub.add_parser(
+        "approve", help="step 58: print the open front pull request's cards and merge on a yes"
+    )
+    p_approve.add_argument("--print", action="store_true", help="print the cards, do not ask")
+    p_approve.add_argument("--yes", action="store_true", help="merge without asking")
+    p_approve.set_defaults(func=_approve)
     sub.add_parser(
         "excess", help="step 55: each guesser's guesses against their base rates"
     ).set_defaults(func=_excess_command)
