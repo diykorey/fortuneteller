@@ -50,30 +50,13 @@ def test_one_forecast_per_area_that_holds_and_no_other() -> None:
     assert all("condition" not in t and "%" not in json.dumps(t) for t in told)
 
 
-@pytest.mark.skipif(shutil.which("google-chrome") is None, reason="needs google-chrome")
-@pytest.mark.parametrize("width", [300, 1280])
-def test_the_page_shows_up_to_five_forecasts_without_a_sideways_scroll(
-    tmp_path: Path, width: int
-) -> None:
-    # given the page with two stated forecasts (one per area), one of them past its span, and front.csv with two
-    # open guesses (one withdrawn) worded with a comma and a quote and one past its end date, served over a local
-    # server, without the counter, reporting its widths once the guesses are read
-    told = cli.stated({"market_names": {}, "ask": [], "forecasts": _runs()}, date(2026, 11, 20))
-    stated = [{k: v for k, v in t.items() if k != "row"} for t in told]
-    stated[0]["until"] = "2001-01-05"
-    stated[0]["event"] = "Long passed"
-    guess = {
-        "stated": "2098-12-04",
-        "market": "BRN",
-        "direction": "down",
-        "last": "2099-11-25",
-        "statement": 'Oil, we think, will be "lower" on Jan 5.',
-        "why": "A guess, made\nover two lines. Then more.",
-        "source": "https://example.com/opec",
-    }
-    gone = guess | {"last": "2001-01-05", "statement": "Gone by now."}
-    taken_back = guess | {"withdrawn": "2098-12-10"}
-    cli._write_rows(tmp_path / "front.csv", cli.FRONT_FIELDS, [guess, taken_back, gone])
+def _render(
+    tmp_path: Path, width: int, stated: list[dict[str, object]], front: list[dict[str, str]]
+) -> str:
+    """The page with ``stated`` and ``front.csv`` holding ``front``, served over a local server
+    without the counter and rendered by headless Chrome in a frame ``width`` pixels wide; its
+    title reports the page's scroll width, its width and its cards once the guesses are read."""
+    cli._write_rows(tmp_path / "front.csv", cli.FRONT_FIELDS, front)
     page_data = {"written": "2026-11-20", "stated": stated, "tally": None, "kept_since": None}
     template = (Path(cli.__file__).parent / "predicts.html").read_text()
     template = re.sub(
@@ -97,9 +80,8 @@ def test_the_page_shows_up_to_five_forecasts_without_a_sideways_scroll(
     server = http.server.ThreadingHTTPServer(("127.0.0.1", 0), handler)
     threading.Thread(target=server.serve_forever, daemon=True).start()
 
-    # when Chrome renders it at the width
     try:
-        dom = subprocess.run(
+        return subprocess.run(
             [
                 "google-chrome",
                 "--headless=new",
@@ -118,6 +100,33 @@ def test_the_page_shows_up_to_five_forecasts_without_a_sideways_scroll(
     finally:
         server.shutdown()
 
+
+@pytest.mark.skipif(shutil.which("google-chrome") is None, reason="needs google-chrome")
+@pytest.mark.parametrize("width", [300, 1280])
+def test_the_page_shows_the_open_cards_without_a_sideways_scroll(
+    tmp_path: Path, width: int
+) -> None:
+    # given the page with two stated forecasts (one per area), one of them past its span, and front.csv with two
+    # open guesses (one withdrawn) worded with a comma and a quote and one past its end date, served over a local
+    # server, without the counter, reporting its widths once the guesses are read
+    told = cli.stated({"market_names": {}, "ask": [], "forecasts": _runs()}, date(2026, 11, 20))
+    stated = [{k: v for k, v in t.items() if k != "row"} for t in told]
+    stated[0]["until"] = "2001-01-05"
+    stated[0]["event"] = "Long passed"
+    guess = {
+        "stated": "2098-12-04",
+        "market": "BRN",
+        "direction": "down",
+        "last": "2099-11-25",
+        "statement": 'Oil, we think, will be "lower" on Jan 5.',
+        "why": "A guess, made\nover two lines. Then more.",
+        "source": "https://example.com/opec",
+    }
+    gone = guess | {"last": "2001-01-05", "statement": "Gone by now."}
+    taken_back = guess | {"withdrawn": "2098-12-10"}
+    # when Chrome renders it at the width
+    dom = _render(tmp_path, width, stated, [guess, taken_back, gone])
+
     # then the headline is there, the passed ones dropped, one tested and two guesses shown with
     # their words whole, no if-arrow, no sideways scroll
     assert "Fortuneteller predicts:" in re.sub(r"<[^>]+>", "", dom)
@@ -135,3 +144,36 @@ def test_the_page_shows_up_to_five_forecasts_without_a_sideways_scroll(
     scroll, inner, cards = map(int, match.groups())
     assert cards == 3
     assert scroll <= inner
+
+
+@pytest.mark.skipif(shutil.which("google-chrome") is None, reason="needs google-chrome")
+@pytest.mark.parametrize("width", [420, 1280])
+def test_the_page_shows_one_card_per_area_past_five_without_a_sideways_scroll(
+    tmp_path: Path, width: int
+) -> None:
+    # given two stated forecasts, on stocks and homes, and six open guesses in the six other areas
+    told = cli.stated({"market_names": {}, "ask": [], "forecasts": _runs()}, date(2026, 11, 20))
+    stated = [{k: v for k, v in t.items() if k != "row"} for t in told]
+    front = [
+        {
+            "stated": "2098-12-04",
+            "market": market,
+            "direction": "down",
+            "last": "2099-11-25",
+            "statement": f"A guess on {market}.",
+            "why": "A reason.",
+            "source": "https://example.com/",
+        }
+        for market in ("USDJPY", "BTC", "BRN", "KC", "UST5Y / ZF", "GC / XAU")
+    ]
+
+    # when Chrome renders it at the width
+    dom = _render(tmp_path, width, stated, front)
+
+    # then all eight cards are shown, one per area, with no sideways scroll
+    match = re.search(r"<title>(\d+) (\d+) (\d+)</title>", dom)
+    assert match is not None
+    scroll, inner, cards = map(int, match.groups())
+    assert cards == 8
+    assert scroll <= inner
+    assert len({cli.AREAS[m] for m in ["SPY / ES", cli.HOME, *(r["market"] for r in front)]}) == 8

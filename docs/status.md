@@ -50,6 +50,10 @@ the hand check against Yahoo passed, and no answer or verdict on the page change
 
 ## In progress
 
+- **Step 61: one front-page card per area** ([the spec](steps/front-by-area.md)): both caps of
+  five gone, one card per area the only limit. Chosen by the owner 2026-11-25. Spec merged (#463);
+  built, and the files of 2026-11-25 give the spec's six guesses. Next: the first evening's front
+  pull request, printed for the owner, and the published page read; then the Results.
 - **Step 55: guesses against the base rate** ([the spec](steps/guesses-vs-base-rate.md)): each
   guess carries its base rate; a grounded guesser, given the record, runs beside today's news
   guesser as the control. Asked for 2026-11-23 by the owner. Spec merged (#420); step 1, the
@@ -129,9 +133,8 @@ the hand check against Yahoo passed, and no answer or verdict on the page change
 
 ## Next
 
-Step 61, one front-page card per area (the owner, 2026-11-25). Then step 58, the publishing schedule (draft 14:00 New York, a reminder at 16:00, published at 18:00,
-every day), chosen by the owner on 2026-11-24. Before it, Nasdaq's 324 cached refusals asked again, outputs
-compared before and after (the owner, 2026-11-24). Then step 59, bitcoin's and ether's weekend closes from
+Step 58, the publishing schedule (draft 14:00 New York, a reminder at 16:00, published at 18:00,
+every day), chosen by the owner on 2026-11-24. Then step 59, bitcoin's and ether's weekend closes from
 Yahoo, chosen the same day.
 
 ## Known, not yet fixed

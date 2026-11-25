@@ -65,7 +65,8 @@ stated with its grade once its span has ended:
   three stated forecasts at most, so the *if* cards keep at least two of the five places
   (*amended 2026-11-22:* the *if* cards are gone; the two places go to
   [our guesses](our-guesses.md); *amended 2026-11-22, by the owner:* one per *area*, so the
-  US stock market and US tech stocks, one area, give one card, the first in this order). Five
+  US stock market and US tech stocks, one area, give one card, the first in this order; *Amended 2026-11-25* ([step 61](front-by-area.md)):
+  the five places go, the page holds one card per area). Five
   pairs hold and four of them are two markets at two spans; a reader gains nothing from the S&P
   500's month and its year side by side. A stated card names its market and span (*The US stock
   market, over the next month*) and says what will be so: *higher on Mon, Dec 21, 2026 than on

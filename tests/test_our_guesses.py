@@ -367,14 +367,15 @@ def test_the_front_page_prefers_a_promoted_tag_then_high_confidence_then_soonest
         },
     ]
 
-    # when three places are filled with jobs promoted
-    shown = cli.front_guesses(rows, {"jobs"}, FRIDAY, 3)
+    # when ranked with jobs promoted
+    shown = cli.front_guesses(rows, {"jobs"}, FRIDAY)
 
-    # then jobs first, then the two high ones, soonest first
+    # then jobs first, then the two high ones, soonest first, then the medium one
     assert [(r["tag"], r["last"]) for r in shown] == [
         ("jobs", "2026-12-21"),
         ("momentum", "2026-11-27"),
         ("other", "2026-12-04"),
+        ("other", "2026-11-25"),
     ]
 
 
@@ -434,8 +435,8 @@ def test_the_front_page_takes_one_guess_per_area_and_none_where_a_tested_one_is(
         )
     ]
 
-    # when four places are filled beside a tested forecast on stocks
-    shown = cli.front_guesses(rows, set(), FRIDAY, 4, {"stocks"})
+    # when picked beside a tested forecast on stocks
+    shown = cli.front_guesses(rows, set(), FRIDAY, {"stocks"})
 
     # then one currency and oil, soonest first, and no stock market
     assert [r["market"] for r in shown] == ["USDJPY", "BRN"]
@@ -751,7 +752,7 @@ def test_a_hand_made_guess_is_in_no_guesser_s_record_but_still_shown() -> None:
     record = cli.excess_record(rows, "news")
     mine = cli._mine(rows, "news")
     open_rows = [r | {"grade": ""} for r in rows]
-    picks = cli.front_guesses(open_rows, set(), date(2026, 11, 20), 5)
+    picks = cli.front_guesses(open_rows, set(), date(2026, 11, 20))
 
     # then only the news guess counts, yet both may reach the front page
     assert [r["market"] for r in counted] == ["BRN"]
@@ -807,19 +808,38 @@ def test_a_shown_guess_the_owner_deleted_comes_back_withdrawn() -> None:
     )
 
 
-def test_with_five_cards_staying_no_new_guess_is_picked() -> None:
-    # given five shown open guesses in five areas, and a new one
-    markets = ["BRN", "DXY", "SPY / ES", "GC / XAU", "BTC"]
+def test_past_five_cards_a_new_guess_joins_in_each_empty_area_and_none_in_a_held_one() -> None:
+    # given two tested forecasts on stocks and homes, three shown open guesses on oil, the dollar
+    # and bitcoin, and new guesses on wheat, gold, the yen and the Nasdaq
+    markets = ["BRN", "DXY", "BTC"]
     shown = [_row(m, grade="", shown="2026-11-22") for m in markets]
-    new = _row("WEAT", grade="", confidence="high")
+    new = [_row(m, grade="", confidence="high") for m in ("WEAT", "GC / XAU", "USDJPY", "COMP")]
 
     # when tonight's proposal is made
     proposal = cli.front_proposal(
-        [], [_front(r) for r in shown], [new], [*shown, new], set(), TODAY
+        ["SPY / ES", cli.HOME], [_front(r) for r in shown], new, [*shown, *new], set(), TODAY
     )
 
-    # then the five stay and the new one waits
-    assert [r["market"] for r in proposal] == markets
+    # then the three stay and wheat and gold join; the yen and the Nasdaq wait, their areas held
+    assert [r["market"] for r in proposal] == [*markets, "WEAT", "GC / XAU"]
+
+
+def test_a_staying_card_past_its_last_day_frees_its_area_and_a_withdrawn_one_does_not() -> None:
+    # given a shown oil guess past its last day, a shown bitcoin guess the owner deleted, both not
+    # yet graded, and new guesses on gasoline and ether
+    ended = _row("BRN", last="2026-11-24", grade="", shown="2026-11-20")
+    taken_back = _row("BTC", grade="", shown="2026-11-22")
+    new = [_row(m, last="2026-12-11", grade="", confidence="high") for m in ("UGA", "ETH")]
+
+    # when tonight's proposal is made
+    proposal = cli.front_proposal([], [_front(ended)], new, [ended, taken_back, *new], set(), TODAY)
+
+    # then both stay until graded, the deleted one withdrawn, and only energy takes a new one
+    assert [(r["market"], r["withdrawn"]) for r in proposal] == [
+        ("BRN", ""),
+        ("BTC", "2026-11-25"),
+        ("UGA", ""),
+    ]
 
 
 def test_a_graded_guess_leaves_the_front_page() -> None:

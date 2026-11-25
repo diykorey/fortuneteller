@@ -11,7 +11,8 @@
 to five things the fortune teller says about the days ahead, each with its record.
 
 At the end `https://diykorey.github.io/fortuneteller/predicts/` shows *Fortuneteller predicts:*
-and one to five cards (none to five since 2026-11-22, below). The evening job rewrites it each weekday with the scoreboard
+and one to five cards (none to five since 2026-11-22, below; one per area, none to eight, since
+2026-11-25, [step 61](front-by-area.md)). The evening job rewrites it each weekday with the scoreboard
 ([step 44](readers.md)).
 
 ## The way to reach it
@@ -38,7 +39,8 @@ and one to five cards (none to five since 2026-11-22, below). The evening job re
 
   Every cell or link used holds as *the answers that hold* count it: not a kind cell, not read as
   the period. The page, in the reader's browser, drops a dated card whose New York day has
-  passed. It shows the dated cards left, then the undated, five at most. A report on the day the
+  passed. It shows the dated cards left, then the undated, five at most (*Amended 2026-11-25* ([step 61](front-by-area.md)): one per
+  area, no cap of five). A report on the day the
   page is read is still shown. With three undated cards written, the page never shows fewer than
   three.
 - **The design:** one column, a gradient headline and a card per prediction.

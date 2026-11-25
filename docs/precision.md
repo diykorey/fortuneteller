@@ -174,15 +174,78 @@ Its fourth quarter of 2026 comes from a new feed ([jobless claims](steps/jobless
 Until step 57's R1 (2026-11-24), a Nasdaq calendar day was cached whatever the reply. The main
 checkout's cache then held 328 days answered with `data: null`: 4 "No record found" (a day with
 no releases, still kept) and 324 "Error while calling vendor", 319 of them Thursdays from 2013 to
-2021, read since as days without releases. R1 keeps no new refusal but leaves these files, so
-nothing measured changes.
+2021, read since as days without releases.
 
-- **Now:** the 324 stay cached and read as days with no Nasdaq rows; which releases they cost
-  an expected value is not counted yet.
-- **Better:** delete them and ask Nasdaq again, about 22 minutes once at its pace; any day it
-  still refuses is then asked on every run.
-- **Trigger:** a verdict that rests on releases from 2013 to 2021 on Thursdays, or the owner's
-  word; the outputs before and after are then compared, as for any change to the store.
+*Closed 2026-11-25, as the owner chose on 2026-11-24
+([why](decisions.md#2026-11-24-nasdaqs-cached-refusals-asked-again-after-step-57-by-the-owner)):*
+the 324 were deleted and asked again. 322 answered at once; 2013-03-28 and 2013-04-04 were
+refused again, not kept (R1), and answered when the store itself was loaded an hour later. Only
+jobless claims' expected values changed (`load-surprises`, on two copies of the store before and
+after, then on the store): of the Thursdays that had taken TradingView's forecast in Nasdaq's
+place, 271 kept the same value, 39 changed by 1 to 5 thousand, 7 left the table, Nasdaq and
+TradingView differing by more than the gap the check allows, and 2013-03-28, with no value
+before, gained Nasdaq's 340 (705 claims surprises to 699). No other table changed. The copies
+compared below hold 45 of these 47 changes; the store adds 2013-04-04 (354 to 350, surprise 31 to
+35) and 2013-03-28. `scoreboard`, built on both copies:
+every answer that holds still holds; claims' links in the two yields stay at p 0.0019 and 0.0016;
+5 *Ask* answers changed among 319 cells whose counts moved, none holding before or after
+(claims *above*, a month: the pound *can't say* to *up*, the SMI *up* to *can't say*, the
+Canadian dollar *can't say* to *down*; *as expected*, a week: utilities *can't say* to *up*;
+*below*, a week: the 5-year yield *up, too few* to *up, doesn't hold*); the predictions page is
+byte for byte the same.
+
+The 38 changed and the 7 removed on the copies:
+
+| Day | Before (TradingView) | After (Nasdaq) | Surprise before | Surprise after |
+| --- | --- | --- | --- | --- |
+| 2013-03-21 | 343 | 342 | -7 | -6 |
+| 2013-04-18 | 347 | 350 | 5 | 2 |
+| 2013-04-25 | 352 | 351 | -13 | -12 |
+| 2013-08-01 | 346 | 345 | -20 | -19 |
+| 2013-08-29 | 329 | 332 | 2 | -1 |
+| 2013-10-17 | 337 | 335 | 21 | 23 |
+| 2013-10-31 | 340 | 339 | 0 | 1 |
+| 2014-07-31 | 300 | 301 | 2 | 1 |
+| 2014-10-02 | 298 | 297 | -11 | -10 |
+| 2014-10-23 | 280 | 282 | 3 | 1 |
+| 2014-11-13 | 280 | 282 | 10 | 8 |
+| 2014-12-04 | 295 | 297 | 2 | 0 |
+| 2014-12-24 | 290 | 287 | -10 | -7 |
+| 2014-12-31 | 290 | 288 | 8 | 10 |
+| 2015-02-19 | 295 | 293 | -12 | -10 |
+| 2015-04-09 | 284 | 285 | -3 | -4 |
+| 2017-09-28 | 265 | 270 | 7 | 2 |
+| 2018-01-04 | 240 | 241 | 10 | 9 |
+| 2018-02-08 | 232 | 236 | -11 | -15 |
+| 2018-03-15 | 226 | 230 | 0 | -4 |
+| 2018-06-07 | 225 | 223 | -3 | -1 |
+| 2018-09-27 | 210 | 208 | 4 | 6 |
+| 2018-10-04 | 213 | 211 | -6 | -4 |
+| 2018-10-18 | 212 | 211 | -2 | -1 |
+| 2018-12-06 | 225 | 226 | 6 | 5 |
+| 2018-12-13 | 225 | 226 | -19 | -20 |
+| 2018-12-20 | 216 | 219 | -2 | -5 |
+| 2019-01-17 | 220 | 219 | -7 | -6 |
+| 2019-01-24 | 220 | 219 | -21 | -20 |
+| 2019-03-21 | 225 | 226 | -4 | -5 |
+| 2019-04-25 | 200 | 199 | 30 | 31 |
+| 2019-05-02 | 215 | 220 | 15 | 10 |
+| 2019-05-09 | 220 | 215 | 8 | 13 |
+| 2019-05-30 | 215 | 216 | 0 | -1 |
+| 2019-07-03 | 223 | 220 | -2 | 1 |
+| 2019-08-01 | 212 | 214 | 3 | 1 |
+| 2019-10-17 | 215 | 212 | -1 | 2 |
+| 2019-10-24 | 215 | 216 | -3 | -4 |
+
+| Day | Before (TradingView) | After (Nasdaq) | Surprise before | Surprise after |
+| --- | --- | --- | --- | --- |
+| 2013-08-22 | 322 | none | 14 | none |
+| 2013-09-19 | 323 | none | -14 | none |
+| 2017-01-05 | 240 | none | -5 | none |
+| 2017-01-12 | 245 | none | 2 | none |
+| 2018-07-05 | 225 | none | 6 | none |
+| 2019-02-21 | 229 | none | -13 | none |
+| 2020-03-26 | 1000 | none | 2283 | none |
 
 ## Steps 1–2 — choices already built in
 

@@ -13,8 +13,8 @@
 sentence about one market, with an end date, its reasoning and the news behind it. When the end
 date passes, the guess is graded by the closes, and the model reads its own reasoning against what
 happened and writes what it got right or wrong. Once a month those reviews are turned into a new,
-numbered version of the lessons the guesser reads. The front page shows five forecasts at most; a
-stats page shows every guess, its grade and review, and the record by kind of reasoning.
+numbered version of the lessons the guesser reads. The front page shows five forecasts at most (one per area
+since 2026-11-25, [step 61](front-by-area.md)); a stats page shows every guess, its grade and review, and the record by kind of reasoning.
 
 At the end:
 
@@ -73,7 +73,8 @@ At the end:
   month with none writes no version, as the first evening of 2026-11-22 did). That evening's
   guesses are made under it; each guess keeps its version, so the
   stats page compares versions.
-- **The front page:** the tested forecasts (three at most), then guesses to make five. It prefers
+- **The front page:** the tested forecasts (three at most), then guesses to make five (*Amended 2026-11-25* ([step 61](front-by-area.md)):
+  one per area, no cap of five). It prefers
   a promoted tag, then confidence (*high*, then *medium*, then *low*; *amended 2026-11-22*, the
   rule had named only *high*), then the soonest end date.
   *Amended 2026-11-22, by the owner:* these guesses wait for approval in a pull request of their
