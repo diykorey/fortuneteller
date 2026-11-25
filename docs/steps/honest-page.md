@@ -49,6 +49,8 @@ you know it is right* says.
   ledger as any other. Cards that stay take their places of the five first; the evening's new
   picks fill only what is left, so the page never shows more than five. The front page's own tally
   counts every guess it has shown, withdrawn ones among them: came true, did not, open.
+  *Amended 2026-11-25* ([step 61](front-by-area.md)): the cap of five goes; a new pick joins in each area no card holds, and a
+  staying card past its last day frees its area.
   *Amended 2026-11-24, at step 5:* the page shows each card, like every card, until its end date;
   the evening's proposal keeps it in `front.csv` until it is graded. The same
   change finds why the evening proposal of 2026-11-23

@@ -49,7 +49,8 @@ run showed a reason stating facts the page could not show). A guess is kept only
   close before its first day to the close of its last: *came true* if that move is in its
   direction, *did not* otherwise, an unchanged close included.
 - **The page:** first the tested forecasts (one per market at its shortest holding span, three at
-  most), then the open guesses, the one ending soonest first, five cards at most; two tallies
+  most), then the open guesses, the one ending soonest first, five cards at most (*Amended 2026-11-25* ([step 61](front-by-area.md)):
+  one card per area, at most eight); two tallies
   under the headline. The *if* cards go: the owner asked for no *if* (2026-11-22), and step 47
   is amended with that date: its bar of one to five cards becomes none to five, and a page with
   none says *Nothing passed our tests today*.

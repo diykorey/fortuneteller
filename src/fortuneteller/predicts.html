@@ -227,9 +227,10 @@ footer { margin-top: 32px; font-size: 15px; color: var(--muted); display: grid; 
   const asCard = (r) => ({ guess: true, market: r.market, made: r.stated, until: r.last,
     direction: r.direction, event: r.statement, why: r.why, source: r.source, withdrawn: r.withdrawn });
   const draw = (guesses) => {
-  // The tested forecasts, then our guesses, whose span has not ended on New York's day; five at most.
+  // The tested forecasts, then our guesses, whose span has not ended on New York's day; one per area
+  // already (docs/steps/front-by-area.md).
   const open = (p) => !p.until || p.until >= today;
-  const shown = (data.stated || []).filter(open).concat(guesses.filter(open)).slice(0, 5);
+  const shown = (data.stated || []).filter(open).concat(guesses.filter(open));
   const list = document.getElementById('predictions');
   if (!shown.length) list.appendChild(el('li', 'Nothing passed our tests today, so the fortune teller keeps quiet.', 'empty'));
   shown.forEach((p) => {

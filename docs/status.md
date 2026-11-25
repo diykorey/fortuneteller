@@ -44,6 +44,10 @@ the hand check against Yahoo passed, and no answer or verdict on the page change
 
 ## In progress
 
+- **Step 61: one front-page card per area** ([the spec](steps/front-by-area.md)): both caps of
+  five gone, one card per area the only limit. Chosen by the owner 2026-11-25. Spec merged (#463);
+  built, and the files of 2026-11-25 give the spec's six guesses. Next: the first evening's front
+  pull request, printed for the owner, and the published page read; then the Results.
 - **Step 57: the technical review's required fixes** ([the spec](steps/technical-fixes.md)):
   eleven fixes, one pull request each, chosen by the owner on 2026-11-24. Spec merged (#444); R7,
   R11, R6, R5, R1, R2, R8, R10, R3 and R9 merged (#445 to #460); R4, shared by reaction close,
@@ -127,7 +131,7 @@ the hand check against Yahoo passed, and no answer or verdict on the page change
 
 ## Next
 
-Step 61, one front-page card per area (the owner, 2026-11-25). Then step 58, the publishing schedule (draft 14:00 New York, a reminder at 16:00, published at 18:00,
+Step 58, the publishing schedule (draft 14:00 New York, a reminder at 16:00, published at 18:00,
 every day), chosen by the owner on 2026-11-24. Before it, Nasdaq's 324 cached refusals asked again, outputs
 compared before and after (the owner, 2026-11-24). Then step 59, bitcoin's and ether's weekend closes from
 Yahoo, chosen the same day.
