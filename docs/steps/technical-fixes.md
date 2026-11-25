@@ -168,4 +168,93 @@ the jobs off the laptop (step 21).
 
 ## Results
 
-Not yet measured.
+Measured 2026-11-24 and 25 on copies of the store (closes to 2026-11-23); the pull requests hold
+the full lists. *Measured* below means two builds of the same command on two copies, one before
+the fix and one after; *by its tests* means no build was compared.
+
+**In plain words.** R3 and R4 changed what they were written to change; R9 changed far more than
+expected. R3 took away OPEC's one answer that held, gasoline's day after *oil up*: it had been
+counting the close that decides the kind. R9 changed the counts of 2,140 of *Ask*'s 5,913 cells
+and 10 of their answers or verdicts, and one `raw-move` verdict, but no answer that holds. R4
+changed 26 *Ask* answers and 29 `raw-move` verdicts and no answer that holds; China's and
+Canada's tables keep many more releases, since a release is now left out only in the markets
+where another event shares its close, not everywhere. The answers that hold went from 9 to 8.
+Of the other fixes, R2, R8 and R10 were checked on the copy and changed nothing; R1, R5, R6, R7 and R11
+were not compared, and are right by their tests only.
+
+**The expected outcome, bullet by bullet:**
+
+- **R1, R2, R5 to R11, every output the same but the four exceptions:** right where checked
+  (R2, R8, R10); *wrong* for R9; not measured for R1, R5, R6, R7 and R11.
+  - *R9's cells at the cut, expected under 10: wrong.* Rounding alone changed about 880 lines of
+    the scoreboard's data, since T5YIE moves on a whole basis-point grid and its cut falls on
+    1 bp. With the owner's choice of a move at the cut as *about the same* (given 2026-11-24 at
+    21:31, written into the spec the next morning), 2,140 of *Ask*'s 5,913 cells changed their
+    counts, in every kind of market; 10 changed their answer or verdict, none holding before or
+    after; the 9 answers that held all still did; one `raw-move` verdict changed, T5YIE on US-ISM
+    days, *moves* (p 0.0077) to *unclear* (p 0.0115). Counted from `scoreboard`'s
+    `docs/scoreboard/data.json` (its *ask*, *holds* and *events*), built before and after (#460).
+  - *R2's removed events, expected none or only moved ones: right.* `load-releases` on the copy
+    removed none; it also found TradingView's current quarter lists no speeches at all, 6 of
+    which a plain replace would have deleted (#452).
+  - *R8's calls counted once, expected none: right.* `data/calls.csv` holds no row whose flow,
+    day and market another holds, so `score` keeps every row it kept before (#453).
+  - *R10's forecasts refused, expected none: right.* `load-surprises` on the copy: 330 fallback
+    fills, all jobless claims, none out of scale (#454).
+  - *Not measured:* R1 changes what the cache keeps from now on and leaves its 324 Nasdaq
+    refusals in place (counted in [Precision](../precision.md)); R5, R6, R7 and R11 change the
+    jobs, not a command that measures. Each is right by its tests (#445 to #451, #459).
+- **R3, no OPEC cell from before Brent's close counted, the cited answers gone, nothing outside
+  OPEC: right.** `follows --event opec`, both runs, before and after: energy stocks' and
+  gasoline's day, gasoline's week and month and Brent's week are no longer counted, and
+  gasoline's day after *oil up*, 20 right of 31 replayed, no longer holds. 21 OPEC verdicts
+  changed:
+
+  | kind, span, market | before | after |
+  | --- | --- | --- |
+  | oil up, day: Brent / gasoline / energy stocks / T5YIE | up, holds (the kind) / up, holds / up, doesn't hold / up | can't say, all four |
+  | oil up, week: Brent / energy stocks / gasoline | up / up / up | can't say |
+  | oil up, month: Brent / energy stocks | up / up | can't say |
+  | oil up, month: gasoline | up, 13 replayed, 9 right | up, 14 replayed, 8 right |
+  | oil down, day: Brent / energy stocks / gasoline | down | can't say |
+  | oil down, day: US 10-year / 5-year | can't say | down |
+  | oil down, week: Brent / energy stocks / gasoline / T5YIE | down | can't say |
+  | oil down, week: the dollar | can't say, 42 replayed, doesn't hold | can't say, 3 replayed |
+  | oil down, month: defence stocks | can't say | down |
+
+  The scoreboard's data, built before and after, differs only in OPEC's *Ask* cells, the
+  gasoline answer leaving *holds*, and the dropped `kind_cell` key: every other flow's *Ask*
+  cells, *events* (with each flow's `raw-move`) and links are the same (#455).
+- **R4, the named pair shared, more shared than freed abroad, US flows in US markets under 5 in
+  100: right.** Counted on the copy with a one-off script that reads every flow's releases and
+  each market's closes under both rules (in #461's description), in release-markets: one release
+  in one market.
+  - *The named pair:* US CPI of 2023-10-12 and China's of 2023-10-13 share Shanghai's close, by
+    a test.
+  - *More shared than freed* in each of Shanghai (221 and 180), Tokyo (278 and 184), the yuan
+    (268 and 124), the DAX, the Euro Stoxx 50, the Stoxx 600, the FTSE 100 and the SMI (292 to
+    323 and 127 to 149): the flows other than the four company flows, which go the same way.
+  - *US flows in US markets:* 0.7 in 100 changed side across them, and 4.0 in 100 for the one
+    highest, the Fed chair's speeches (fomc 0.1, retail 0, pce 0.7, gdp 0, ism 1.2, claims 0).
+  - *Every flow's count, shared before and after,* in release-markets: boc 1,250 and 1,186; boe
+    1,585 and 1,908; boj 1,413 and 1,473; cacpi 1,346 and 1,303; claims 9,219 and 9,726; cncpi
+    3,428 and 3,523; cnip 3,032 and 3,144; cnpmi 5,040 and 5,268; cntrade 2,369 and 2,550; decpi
+    2,117 and 2,263; ecbchief 4,147 and 4,440; fedchair 2,482 and 2,611; fomc 1,919 and 2,042;
+    gdp 1,071 and 1,094; hicp 2,918 and 2,914; ifo 256 and 266; ism 1,899 and 1,963; pce 2,348
+    and 2,490; retail 1,634 and 1,569; snb 859 and 1,050; zew 1,623 and 1,626; the company flows
+    earnings 24,505 and 26,128, earnings500 324,330 and 358,353, additions 2,081 and 2,013,
+    splits 1,039 and 1,120. `surprise --event <flow>` now prints each market's count.
+  - *Verdicts:* the 8 answers that hold are unchanged; `follows` for China's and Canada's flows
+    counts more releases (the survey 59 to 175, CPI 116 to 183, output 110 to 169, trade 127 to
+    176, Canada's CPI 189 to 213), nothing holding before or after; 26 *Ask* answers and 29
+    `raw-move` verdicts in ten lesser flows changed, none holding, each listed in #461.
+- **The bars are the flows' own:** unchanged; no verdict is re-argued.
+
+**The jobs keep running:** the evening run of 2026-11-25, 01:00 to 01:34 (`systemctl --user show
+fortuneteller-evening-score`), the first with R5's own checkout, R6 and R11: the pages merged
+themselves (#456), the triggers' log was left open (#457), the front page's proposal waited for
+the owner (#458), and 17 guesses were written to `docs/predicts/our-guesses.csv` with web search
+alone. R5's wait for a held store (#459) merged after it and is checked by its tests only. The
+next morning's call, 2026-11-25 at 15:30 EET (`systemctl --user show fortuneteller-release-day`:
+15:30:05 to 15:37:46, status 0), the first with R5's wait as well: US PCE and jobless claims
+called live at 13:30 and 13:37 UTC and logged in their pull request (#467), its checks passed.

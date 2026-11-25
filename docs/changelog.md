@@ -7,6 +7,7 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 | Date | What | Where |
 | --- | --- | --- |
 | 2026-11-25 | Step 58's spec: guesses drafted at 14:00 New York, a reminder at 16:00, published at 18:00 as they stand, every day; `fortuneteller approve` | [#468](https://github.com/diykorey/fortuneteller/pull/468) |
+| 2026-11-25 | Step 57's Results: every bullet of the expected outcome marked; R9's *under 10 cells* wrong (2,140), R3 and R4 right; R1, R5, R6, R7 and R11 right by their tests only; the answers that hold 9 to 8 | [#466](https://github.com/diykorey/fortuneteller/pull/466) |
 | 2026-11-25 | Nasdaq's 324 cached refusals asked again, all answered: 39 jobless-claims expected values changed, 1 added and 7 left the table, as Nasdaq and TradingView disagree; no answer that holds moved | [#465](https://github.com/diykorey/fortuneteller/pull/465) |
 | 2026-11-25 | Step 61 built: the front page holds one card per area with no cap of five; the proposal adds a guess in each area no card holds, and a staying card past its last day frees its area | [#464](https://github.com/diykorey/fortuneteller/pull/464) |
 | 2026-11-25 | Step 61 planned: one front-page card per area, as the owner chose, after step 57; the page's five cards were full to 2026-12-04 | [#462](https://github.com/diykorey/fortuneteller/pull/462) |
