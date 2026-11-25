@@ -93,7 +93,7 @@ Eleven pull requests, in this order, the ones that can lose an evening's work fi
     links and `follows` leave out, in each market, the releases shared there; Canada's, Switzerland's
     and China's kinds keep a release alone in at least one market, and a trigger on one shared in a
     market says so for that market. The release-morning call still goes silent on another release
-    the same calendar day, as before: for US releases in US markets the two agree but for a release
+    the same calendar day, as before, by the owner's choice of 2026-11-25: for US releases in US markets the two agree but for a release
     after the close.
 
 ## The rule, fixed before anything is shown
