@@ -254,4 +254,7 @@ were not compared, and are right by their tests only.
 fortuneteller-evening-score`), the first with R5's own checkout, R6 and R11: the pages merged
 themselves (#456), the triggers' log was left open (#457), the front page's proposal waited for
 the owner (#458), and 17 guesses were written to `docs/predicts/our-guesses.csv` with web search
-alone. R5's wait for a held store (#459) merged after it and is checked by its tests only.
+alone. R5's wait for a held store (#459) merged after it and is checked by its tests only. The
+next morning's call, 2026-11-25 at 15:30 EET (`systemctl --user show fortuneteller-release-day`:
+15:30:05 to 15:37:46, status 0), the first with R5's wait as well: US PCE and jobless claims
+called live at 13:30 and 13:37 UTC and logged in their pull request (#467), its checks passed.
