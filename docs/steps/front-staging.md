@@ -24,7 +24,7 @@ At the end:
   evening's proposal, in the same columns;
 - the page shows the tested forecasts, then the open rows of `front.csv` in the file's order,
   five cards at most: a row is open while its end date is on or after New York's day, as a tested
-  forecast is;
+  forecast is; *Amended 2026-11-25* ([step 61](front-by-area.md)): one card per area, at most eight, and no cap of five;
 - `front.csv` starts with the two guesses the page showed when this step began (the yen to
   2026-12-31, the fear gauge to 2027-01-15), so the page loses nothing before the first merge.
 
@@ -53,7 +53,8 @@ At the end:
   an open ledger guess. *Amended 2026-11-24* ([step 56](honest-page.md), step 2): a guess once
   on the published page stays until it is graded. The ledger's `shown` keeps the evening the job
   first found it in `front.csv`, and the proposal puts every shown, ungraded guess first, in the
-  owner's words, then new picks in the room left of five. To take one back the owner writes the
+  owner's words, then new picks in the room left of five (*Amended 2026-11-25* ([step 61](front-by-area.md)): one new pick in each
+  area no tested forecast and no staying card still shown holds). To take one back the owner writes the
   date in `withdrawn`, and the card says so; a shown guess deleted from `front.csv` comes back
   withdrawn that evening. The page's tally *Shown on this page* counts every guess with `shown`. `stated`, `market`,
   `direction`, `last` and `source` are locked: a test reads the two files and fails when a row of

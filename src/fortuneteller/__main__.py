@@ -3418,15 +3418,16 @@ def front_proposal(
     promoted: set[str],
     today: date,
 ) -> list[dict[str, str]]:
-    """Tonight's front page guesses: the cards that stay first, then new picks from ``guesses``
-    in the room the tested forecasts on ``told``'s markets and the staying cards leave of five,
-    none in an area either holds."""
+    """Tonight's front page guesses: the cards that stay first, then one new pick from
+    ``guesses`` in each area neither the tested forecasts on ``told``'s markets nor a staying card
+    still shown holds (step 61, docs/steps/front-by-area.md); a staying card past its last day
+    frees its area."""
     stay = staying(approved, ledger, today)
-    taken = {AREAS.get(m, m) for m in [*told, *(r["market"] for r in stay)]}
+    held = [r["market"] for r in stay if r["last"] >= today.isoformat()]
+    taken = {AREAS.get(m, m) for m in [*told, *held]}
     on = {_locked(r) for r in stay}
     fresh = [g for g in guesses if _locked(g) not in on]
-    room = max(0, FRONT_MOST - len(told) - len(stay))
-    return stay + front_rows(front_guesses(fresh, promoted, today, room, taken), approved)
+    return stay + front_rows(front_guesses(fresh, promoted, today, taken), approved)
 
 
 def unlocked(
@@ -3441,7 +3442,6 @@ def front_guesses(
     rows: Sequence[Mapping[str, str]],
     promoted: set[str],
     today: date,
-    most: int,
     taken: Iterable[str] = (),
 ) -> list[Mapping[str, str]]:
     """The open guesses the front page shows: a promoted tag first, then high confidence, then
@@ -3455,7 +3455,7 @@ def front_guesses(
             r["last"],
         )
     )
-    return one_per_area(live, lambda r: r["market"], taken)[:most]
+    return one_per_area(live, lambda r: r["market"], taken)
 
 
 def guess_record(rows: Sequence[Mapping[str, str]], key: str) -> list[dict[str, object]]:
@@ -3630,7 +3630,6 @@ def _excess_command(_args: argparse.Namespace) -> int:
     return 0
 
 
-FRONT_MOST = 5
 STATS_KEYS = (
     ("tag", "Kind of reasoning"),
     ("confidence", "Confidence"),
