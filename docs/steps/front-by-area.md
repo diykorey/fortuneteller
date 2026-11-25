@@ -4,75 +4,82 @@
 > question why the public predictions look the same from day to day
 > ([why](../decisions.md#2026-11-25-one-front-page-card-per-area-after-step-57-by-the-owner)).
 > Terms are in the [Glossary](../glossary.md): *front page*, *our guess*, *stated forecast*,
-> *area*, *front pull request*.
+> *area*, *front pull request*, *staying card*.
 
 ## The goal
 
 **In plain words:** each evening, a guess about a kind of market the page shows nothing on joins
-the page, so the page covers every area there is a guess for, not the same three for weeks.
+the page, so the page covers every area there is a guess for, not the same few for weeks.
 
-At the end: the front page's guesses are one per area not already on it, with no cap of five; an
-evening's proposal (`docs/predicts/front-next.csv`) adds a guess in every area that has an open
-guess and no card.
+At the end: the front page shows one card per area, tested forecasts and our guesses alike, at
+most eight, with no cap of five; each evening's proposal (`docs/predicts/front-next.csv`) adds a
+guess in every area that has an open guess and no card.
 
 ## The way to reach it
 
-The page holds at most five cards ([front staging](front-staging.md)). The tested forecasts take
-their room first, and since [step 56](honest-page.md) a guess shown stays until it is graded. On
-2026-11-25 three long-run forecasts (the S&P 500 and the Nasdaq over a month, US home prices over
-a year) and three guesses kept to 2026-12-04 and 2026-12-31 (the yen, bitcoin, Brent) fill it:
-`front_proposal` has no room, so none of the evening's guesses, across 30 markets, can join
-before 2026-12-04.
+The page shows five cards at most, twice over: the proposal leaves room for five
+(`FRONT_MOST` in `front_proposal`), and the page itself keeps the first five
+(`predicts.html`). The stated forecasts come first, one per area already
+([stated forecasts](stated-forecasts.md)); since [step 56](honest-page.md) a guess shown stays
+until it is graded. On 2026-11-25 the page states two (the S&P 500 over a month, US home prices
+over a year) and keeps three guesses to 2026-12-04 and 2026-12-31 (bitcoin to the 4th, the yen
+and Brent to the 31st): five, so none of the evening's guesses, across 30 markets, can join before
+2026-12-04.
 
-The cap goes; the rule that is already there, one guess per area and none in an area a tested
-forecast or a staying card holds (`one_per_area`, `AREAS`), stays and becomes the only limit. The
-eight areas (stocks, interest rates and inflation, currencies, energy, gold, food, crypto, homes)
-bound the page at eight guesses beside the tested forecasts. The tested forecasts, which ones are
-stated and how a card stays, do not change.
+Both caps go. The rule already in the proposal becomes the only limit: one guess per area, none in
+an area a stated forecast or a staying card holds (`one_per_area`, `AREAS`). With eight areas
+(stocks, interest rates and inflation, currencies, energy, gold, food, crypto, homes) the page
+holds eight cards at most. Two edges are fixed now: a staying card past its last day, shown no
+more but not yet graded, no longer holds its area; a withdrawn card, still shown, does. The
+proposal draws on the news guesser's guesses alone, as today; the grounded guesser's and
+hand-made ones stay off the front page.
 
 ## The rule, fixed before anything is shown
 
-This step measures nothing; it changes which guesses the page proposes. Written 2026-11-25,
-before building.
+This step measures nothing; it changes which cards the page shows. Written 2026-11-25, before
+building.
 
-- **Expected outcome:** on `main`'s files of 2026-11-25 (`front.csv`, `our-guesses.csv`, the
-  three stated forecasts), the proposal keeps the yen, bitcoin and Brent and adds one guess each
-  in food, interest rates and gold: coffee to 2027-03-31, the US 5-year yield to 2026-12-11 and
-  gold to 2026-12-21, the open news guesses the existing order ranks first in each area. No area
-  holds two guesses; stocks and homes get none, as the tested forecasts hold them.
-- **On screen:** the published page at phone and desktop widths, with nine cards, reads in one
-  column without overflow.
+- **Expected outcome:** on `main` at `28d0c5f` (its `front.csv`, `our-guesses.csv` and the two
+  stated forecasts), for New York's day 2026-11-25, the proposal keeps the yen, bitcoin and Brent
+  and adds one news guess each in food, interest rates and gold: coffee to 2027-03-31, the US
+  5-year yield to 2026-12-11 and gold to 2026-12-21, the first in each area by the existing order.
+  No area holds two cards; stocks and homes get no guess.
+- **On screen:** the page written from those files shows eight cards, one per area, and has no
+  horizontal scroll at 420 and 1280 pixels wide.
 
 ## The steps
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | This spec, reviewed by the goldfish | Its findings fixed or answered in the pull request |
-| 2 | The cap removed | `FRONT_MOST` gone; a test: with three tested forecasts in two areas and three staying cards, the proposal adds one guess in each other area that has one, none in an area already held; the 2026-11-25 files give the expected outcome's six |
-| 3 | The docs amended with a date | `front-staging.md`, `honest-page.md`, `predicts.md`, `our-guesses.md` and the glossary's *front page* and *front pull request* say one per area, not five |
-| 4 | The first evening's proposal read, and the page | The next `front-<day>` pull request printed in full for the owner; once merged, the published page checked at both widths; Results here |
+| 1 | This spec, reviewed by the goldfish | Each finding fixed in the spec or answered in the pull request |
+| 2 | Both caps removed | `FRONT_MOST` and the page's `slice(0, 5)` gone; tests: with two stated forecasts and three staying cards, the proposal adds one guess in each other area that has one and none in an area held; a staying card past its last day frees its area, a withdrawn one does not; the files at `28d0c5f` give the expected outcome's six; the page test finds eight cards and no horizontal scroll at both widths |
+| 3 | The docs amended with a date | Every line that says five cards says one per area instead: `front-staging.md`, `honest-page.md`, `predicts.md`, `our-guesses.md`, `stated-forecasts.md`, `guess-ledger.md`, and the glossary's *area*, *front page* and *front pull request*; *staying card* added |
+| 4 | The first evening's proposal, and the page | The next `front-<day>` pull request printed in full for the owner; once merged, the published page shows one card per area and no horizontal scroll at both widths; Results here |
 
 ## How you know it is right
 
-- **A wrong area map would show as two cards in one area:** the test and the expected outcome both
-  count areas, not cards.
-- **The ranking is not changed by accident:** the three added guesses are the ones the existing
-  order (a promoted tag, then confidence, then the soonest end date) puts first in their area,
-  named before building.
+- **A wrong area map would show as two cards in one area:** the tests, the expected outcome and the
+  published page all count areas, not cards.
+- **A cap left behind would show as five:** the page test counts eight cards from files that give
+  eight.
+- **The ranking is not changed by accident:** the three added guesses are named above, from the
+  existing order, before building.
 - **Nothing tested changes:** `forecasts.csv` and the stated forecasts are the same before and
   after on the same files.
 
 ## What this step does not do
 
 It does not add company-results forecasts or change the guesses' lean to *down* (both open in
-the decision), change which guesses are made, or make a shown card leave before it is graded.
+the decision), change which guesses are made, show the grounded guesser's guesses on the front
+page, or make a shown card leave before it is graded.
 
 ## Technical details
 
-- **Code:** `__main__.py`, `front_proposal` (the `room` from `FRONT_MOST` goes; `front_guesses`
-  takes no `most`) and its test in `tests/test_front_staging.py` or beside it.
-- **Docs:** this spec; dated amendments in the four step specs named in step 3; the glossary;
-  status; the changelog; roadmap row 61.
+- **Code:** `__main__.py`, `front_proposal` (no `room`; a staying card past its last day leaves
+  `taken`) and `front_guesses` (no `most`); `src/fortuneteller/predicts.html` (no `slice`); tests
+  in `tests/test_our_guesses.py` and the page test beside the predicts page's.
+- **Docs:** this spec; the dated amendments of step 3; the glossary; status; the changelog;
+  roadmap row 61.
 
 ## Results
 
