@@ -87,6 +87,14 @@ Eleven pull requests, in this order, the ones that can lose an evening's work fi
     release on the same calendar date, each in its own zone, for every flow. From now on it is
     shared in a market when another flow's event reaches that market at the same reaction close,
     as `raw-move` already decides its busy days.
+    *Amended 2026-11-25, in building:* who shares is unchanged (every flow but a lesser one, China's
+    flows each other's), only the key: the stored close each event is paired with, so a weekend or
+    a market holiday needs no rule of its own and China's weekday rule retires. `raw-move`, the
+    links and `follows` leave out, in each market, the releases shared there; Canada's, Switzerland's
+    and China's kinds keep a release alone in at least one market, and a trigger on one shared in a
+    market says so for that market. The release-morning call still goes silent on another release
+    the same calendar day, as before: for US releases in US markets the two agree but for a release
+    after the close.
 
 ## The rule, fixed before anything is shown
 
