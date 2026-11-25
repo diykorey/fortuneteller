@@ -11,6 +11,18 @@ amended there with a date.
 Each entry: **what** was decided, **why**, what it **retires**, and **where** the detail is. *By the
 owner* marks a choice the owner made over another on the table.
 
+## 2026-11-25: One front-page card per area, after step 57, by the owner
+
+- **What:** the predictions page holds at most one card per area, long-run forecasts and guesses
+  alike, with room for every area; built as step 61, right after step 57 and before step 58.
+- **Why:** the page looked the same from day to day. Its cap of five was full: three long-run
+  cards (the S&P 500 and the Nasdaq, both stocks, and home prices) and three guesses kept until
+  graded, so none of the evening's guesses could join before 2026-12-04, though they span 30
+  markets. Chosen over measured company-results forecasts and over fixing the guesses' lean to
+  *down* (40 of 52), both left open.
+- **Retires:** the front page's cap of five.
+- **Where:** [Roadmap](roadmap.md), step 61.
+
 ## 2026-11-24: The jobs share the store; Polymarket after the gate; the draft printed both ways, by the owner
 
 - **What:** three choices. The release-day and evening jobs keep the one store the sessions use,
