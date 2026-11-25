@@ -52,7 +52,8 @@ the hand check against Yahoo passed, and no answer or verdict on the page change
 
 - **Step 58: the publishing schedule** ([the spec](steps/publishing-schedule.md)): guesses
   drafted at 14:00 New York, a reminder at 16:00, published at 18:00 as they stand, every day.
-  Chosen by the owner 2026-11-24. Next: the spec merged, then built.
+  Chosen by the owner 2026-11-24. Spec merged (#468); built. Next: the units installed, then the
+  first weekday and the first Saturday read for the Results.
 - **Step 61: one front-page card per area** ([the spec](steps/front-by-area.md)): both caps of
   five gone, one card per area the only limit. Chosen by the owner 2026-11-25. Spec merged (#463);
   built, and the files of 2026-11-25 give the spec's six guesses. Next: the first evening's front
