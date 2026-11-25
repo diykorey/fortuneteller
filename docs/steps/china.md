@@ -49,8 +49,10 @@ as Canada's inflation has; the two markets in the guesser's list of markets ([st
   early, a known miss on 4 of 185.
 - **Weekends.** China publishes on Saturdays and Sundays: inflation 33 of 192, the survey 57 of
   193, output 12 of 174, trade 32 of 185. Every market reacts at its next close, as the code
-  already places an event by its hour. *Alone* is read on the first weekday on or after the
-  Beijing date, not the date itself: the survey comes out on the month's last day and, on a
+  already places an event by its hour. *Amended 2026-11-25, by [step 57's
+  R4](technical-fixes.md):* a release is alone in a market unless another flow's event reaches
+  that market at the same close, so the weekday rule below retires. *Alone* was read on the first
+  weekday on or after the Beijing date, not the date itself: the survey comes out on the month's last day and, on a
   weekend, reacts on a Monday that is often the first of the month, the US survey's day (40 of
   the survey's releases).
 - **Lesser, all four,** as Canada's inflation: each day stays an ordinary day for every other

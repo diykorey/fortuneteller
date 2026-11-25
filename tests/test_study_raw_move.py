@@ -40,7 +40,7 @@ from fortuneteller.study import (
     first_reaction_day,
     measure_raw_moves,
     move_verdict,
-    shared_days,
+    shared_in,
     weekly_moves,
 )
 
@@ -412,12 +412,12 @@ def test_a_lesser_flow_s_days_stay_ordinary_and_its_own_days_are_the_ones_it_has
     after = measure_raw_moves(CPI_FLOW, con=con)
     own = measure_raw_moves(flows.CLAIMS_FLOW, con=con)
 
-    # then CPI's comparison has not moved, claims' counts its lone day only, and only claims' day
-    # with CPI is a shared day
+    # then CPI's comparison has not moved, claims' counts its lone day only, and only claims' report
+    # with CPI shares its close
     assert after == before
     assert {raw.overall.event_days for raw in own.values()} == {1}
-    assert shared_days(flows.CLAIMS_FLOW, con=con) == {claims[0].event_id: cpi_day}
-    assert shared_days(CPI_FLOW, con=con) == {}
+    assert shared_in(flows.CLAIMS_FLOW, "SPY / ES", con=con) == {claims[0].event_id}
+    assert shared_in(CPI_FLOW, "SPY / ES", con=con) == set()
 
 
 def test_ordinary_days_start_at_the_flow_s_first_day() -> None:
