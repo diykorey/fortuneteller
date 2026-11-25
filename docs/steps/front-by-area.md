@@ -23,8 +23,8 @@ The page shows five cards at most, twice over: the proposal leaves room for five
 ([stated forecasts](stated-forecasts.md)); since [step 56](honest-page.md) a guess shown stays
 until it is graded. On 2026-11-25 the page states two (the S&P 500 over a month, US home prices
 over a year) and keeps three guesses to 2026-12-04 and 2026-12-31 (bitcoin to the 4th, the yen
-and Brent to the 31st): five, so none of the evening's guesses, across 30 markets, can join before
-2026-12-04.
+and Brent to the 31st): five, so none of the open guesses, on 30 markets (28 of them the news guesser's), can
+join before 2026-12-04.
 
 Both caps go. The rule already in the proposal becomes the only limit: one guess per area, none in
 an area a stated forecast or a staying card holds (`one_per_area`, `AREAS`). With eight areas
