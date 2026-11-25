@@ -168,4 +168,49 @@ the jobs off the laptop (step 21).
 
 ## Results
 
-Not yet measured.
+Measured 2026-11-24 and 25, each fix on a copy of the store built before and after it; the pull
+requests hold the full lists.
+
+**In plain words.** Ten of the eleven fixes changed nothing they were not meant to. The
+eleventh, R9, changed far more counts than expected, but no answer that holds. R3 took away
+OPEC's one answer that held, gasoline's day after *oil up*: it had been counting the close that
+decides the kind. R4 kept many more of China's releases, as alone in Shanghai, and moved no
+answer that holds. The page's answers that hold went from 9 to 8.
+
+**The expected outcome, bullet by bullet:**
+
+- **R1, R2, R5 to R11, nothing measured changes but the four exceptions:** right, but for R9.
+  - *R9's cells at the cut, expected under 10: wrong.* Rounding alone changed about 880 lines of
+    the scoreboard, as T5YIE moves on a whole basis-point grid and its cut falls on 1 bp; with
+    the owner's choice of a move at the cut as *about the same* (amended 2026-11-24), 2,140 of
+    *Ask*'s 5,913 cells changed their counts, in every kind of market. 10 changed their answer or
+    verdict, none holding before or after; the 9 answers that held all still did; one `raw-move`
+    verdict changed, T5YIE on US-ISM days, *moves* (p 0.0077) to *unclear* (p 0.0115)
+    (`scoreboard`, `raw-move --event ism`; #460).
+  - *R2's removed events, expected none or only moved ones: right.* None removed on the copy;
+    TradingView's current quarter was found to list no speeches at all, which a plain replace
+    would have deleted (6) (`load-releases`; #452).
+  - *R8's calls counted once, expected none: right.* The call log holds no duplicate (#453).
+  - *R10's forecasts refused, expected none: right.* 330 fallback fills, all jobless claims,
+    none out of scale (`load-surprises`; #454).
+  - R1 left the cache's 324 Nasdaq refusals in place, so nothing read changed (#451); R5, R6,
+    R7 and R11 touch no measure.
+- **R3, no OPEC cell from before Brent's close counted, the cited answers gone, nothing outside
+  OPEC: right.** Energy stocks' and gasoline's day, gasoline's week and month and Brent's week
+  are no longer counted; gasoline's day after *oil up*, 20 right of 31 replayed, no longer
+  holds; every other flow's *Ask* cells are the same. 21 OPEC verdicts changed, old beside new
+  in #455 (`follows --event opec`, both runs).
+- **R4, the named pair shared, more shared than freed abroad, US flows in US markets under 5 in
+  100: right.** US CPI of 2023-10-12 and China's of 2023-10-13 share Shanghai's close (a test).
+  Macro flows, shared and freed: Shanghai 221 and 180, Tokyo 278 and 184, the yuan 268 and 124,
+  Europe's five markets 292 to 323 and 127 to 149. US flows in US markets: 0.7 in 100 changed
+  side. The 8 answers that hold are unchanged; China's tables keep far more releases (the survey
+  59 to 175); 26 *Ask* answers and 29 `raw-move` verdicts in ten lesser flows changed, none
+  holding, each listed in #461.
+- **The bars are the flows' own:** unchanged; no verdict is re-argued.
+
+**The jobs keep running:** the evening run of 2026-11-25, 01:00 to 01:34, the first with R5's
+own checkout, R6 and R11: the pages merged themselves (#456), the triggers' log was left open
+(#457), the front page's proposal waited for the owner (#458), and 17 guesses were made with web
+search alone. R5's wait for a held store (#459) merged after it and is checked by its tests only.
+
