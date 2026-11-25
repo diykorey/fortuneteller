@@ -734,6 +734,9 @@ Terms are grouped by what they are about, alphabetical within each group.
   job's run at 14:00 New York every day: the day's guesses made and kept, and the front pull
   request opened with a notification; a reminder follows at 16:00 if it is still open, and
   `fortuneteller approve` prints it card by card and merges it on a yes.
+- **Weekend close** — *added 2026-11-25* ([step 59](steps/crypto-weekends.md)): bitcoin's or
+  ether's close on a Saturday or Sunday, the UTC day's last price from Yahoo; kept in the store for
+  those two markets alone, read only to grade a guess, never by a measurement.
 - **Release-day job** — the timer on this machine that runs `fortuneteller live` at 08:30 New
   York every weekday and opens the release's pull request, or an issue if it fails. See
   [the release-day job](steps/release-day-job.md).

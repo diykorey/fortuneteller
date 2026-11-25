@@ -50,6 +50,10 @@ the hand check against Yahoo passed, and no answer or verdict on the page change
 
 ## In progress
 
+- **Step 59: crypto's weekend closes** ([the spec](steps/crypto-weekends.md)): bitcoin's and
+  ether's Saturday and Sunday closes kept from Yahoo, read only to grade guesses; a crypto guess
+  made at a weekend from 2026-11-28 starts from that weekend's close and counts. Chosen by the
+  owner 2026-11-24. Next: the spec reviewed, then built and the store compared.
 - **Step 58: the publishing schedule** ([the spec](steps/publishing-schedule.md)): guesses
   drafted at 14:00 New York, a reminder at 16:00, published at 18:00 as they stand, every day.
   Chosen by the owner 2026-11-24. Spec merged (#468); built. Next: the units installed, then the
@@ -137,7 +141,8 @@ the hand check against Yahoo passed, and no answer or verdict on the page change
 
 ## Next
 
-Step 59, bitcoin's and ether's weekend closes from Yahoo, chosen by the owner on 2026-11-24.
+The Results of steps 58 and 61, after the first weekday and the first Saturday under the
+schedule; then step 60 after the 2027-01-31 gate.
 
 ## Known, not yet fixed
 
