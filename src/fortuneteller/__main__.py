@@ -200,17 +200,17 @@ def describe_tone(
     the paper."""
     toned = sum(tone is not None for tone, _ in load.tones.values())
     holds = {i: s for i, s in load.surprises.items() if i in load.holds}
-    shared = study.shared_days(flows.FED_FLOW, con=con)
-    lone = {i: s for i, s in holds.items() if i not in shared}
+    shared = study.shared_by_market(flows.FED_FLOW, con=con, markets=dict.fromkeys(signed))
+    lone = {i: s for i, s in holds.items() if not any(i in ids for ids in shared.values())}
     lines = [
         f"statements: {len(load.tones)} since {flows.TONE_FROM}, {toned} with a {word}, "
         f"{len(load.holds)} holds",
         f"surprises: {len(load.surprises)} on every decision, {len(holds)} on holds, "
-        f"{len(lone)} of them alone on their day",
+        f"{len(lone)} of them alone at their close in every signed market",
         "signed links, holds with a non-zero surprise and a move:",
     ]
-    moving = [i for i, s in lone.items() if s != 0]
     for instrument in signed:
+        moving = [i for i, s in holds.items() if s != 0 and i not in shared[instrument]]
         n = 0
         if moving:
             marks = ", ".join("?" * len(moving))
@@ -426,15 +426,17 @@ def _surprise(args: argparse.Namespace) -> int:
 
 
 def describe_shared_days(flow: flows.EventFlow, con: duckdb.DuckDBPyConnection) -> list[str]:
-    """The releases a rule leaves out for sharing their day with another flow's release."""
+    """The releases a rule leaves out, in each market, for sharing their close there with another
+    flow's event (step 57, R4)."""
     rule = flow.surprise_rule
-    days = sorted(study.shared_days(flow, con=con).values()) if rule and rule.alone else []
-    if not days:
+    shared = study.shared_by_market(flow, con=con) if rule and rule.alone else {}
+    counts = [f"{market} {len(ids)}" for market, ids in shared.items() if ids]
+    if not counts:
         return []
     return [
         "",
-        f"left out: {len(days)} {flow.label} releases on a day with another event's release",
-        *textwrap.wrap(", ".join(f"{day}" for day in days), 100),
+        f"left out, by market: the {flow.label} releases another event reaches at the same close",
+        *textwrap.wrap(", ".join(counts), 100),
     ]
 
 
@@ -746,7 +748,7 @@ def follows_kinds(
         if not api_key:
             raise FollowsUnavailable("FT_FRED_API_KEY is not set (see docs/accounts.md)")
         return events, study.fed_kinds(events, dict(flows.target_rates(api_key))), study.KINDS
-    if flow in (flows.CA_CPI_FLOW, flows.CH_CPI_FLOW, *flows.CHINA_FLOWS):
+    if flow in study.ALONE_FOLLOWED:
         kinds = study.lone_release_kinds(flow, con=con)
     else:
         kinds = study.release_kinds(flow, con=con)
@@ -893,7 +895,7 @@ def _triggers(_args: argparse.Namespace) -> int:
                 kinds[name] = study.detail_kinds(events[name])
             elif name in study.ONE_KIND:
                 kinds[name] = study.one_kind(flow, events[name])
-            elif flow in (flows.CA_CPI_FLOW, flows.CH_CPI_FLOW, *flows.CHINA_FLOWS):
+            elif flow in study.ALONE_FOLLOWED:
                 kinds[name] = study.lone_release_kinds(flow, con=con)
             else:
                 kinds[name] = study.release_kinds(flow, con=con)
@@ -1938,7 +1940,13 @@ def scoreboard_data(
                 entry["surprise"] = {
                     "measure": measure,
                     "against": _source_label(baseline),
-                    "left_out": len(study.shared_days(flow, con=con)) if rule.alone else 0,
+                    "left_out": {
+                        market: len(ids)
+                        for market, ids in study.shared_by_market(flow, con=con).items()
+                        if ids
+                    }
+                    if rule.alone
+                    else {},
                     "links": {
                         instrument: {
                             "expected": _direction(rule.expected_sign[instrument]),

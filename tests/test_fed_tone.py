@@ -223,7 +223,7 @@ def test_load_tone_reports_the_counts_before_any_move(
     assert code == 0
     assert out[:3] == [
         "statements: 3 since 2000-02-02, 2 with a tone, 2 holds",
-        "surprises: 1 on every decision, 1 on holds, 1 of them alone on their day",
+        "surprises: 1 on every decision, 1 on holds, 1 of them alone at their close in every signed market",
         "signed links, holds with a non-zero surprise and a move:",
     ]
     assert "  UST10Y / ZN     1, smallest detectable -, too few" in out

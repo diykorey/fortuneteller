@@ -46,9 +46,8 @@ the hand check against Yahoo passed, and no answer or verdict on the page change
 
 - **Step 57: the technical review's required fixes** ([the spec](steps/technical-fixes.md)):
   eleven fixes, one pull request each, chosen by the owner on 2026-11-24. Spec merged (#444); R7,
-  R11, R6, R5's checkout, R1, R2, R8, R10 and R3 merged (#445 to #455): OPEC is judged only after
-  Brent's close, and gasoline's hold goes. R5's store stays shared, the jobs waiting for it (the
-  owner's choice). R9 (the owner's choice: a move at the cut is about the same) built. Next: R4.
+  R11, R6, R5, R1, R2, R8, R10, R3 and R9 merged (#445 to #460); R4, shared by reaction close,
+  built. Next: the Results and the goldfish review of them.
 - **Step 55: guesses against the base rate** ([the spec](steps/guesses-vs-base-rate.md)): each
   guess carries its base rate; a grounded guesser, given the record, runs beside today's news
   guesser as the control. Asked for 2026-11-23 by the owner. Spec merged (#420); step 1, the

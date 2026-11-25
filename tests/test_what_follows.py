@@ -1695,35 +1695,41 @@ def _store_cacpi(
     return events
 
 
-def test_a_canadian_cpi_release_on_a_us_release_s_day_is_left_out_of_its_kinds(
-    tmp_db: Path,
+def test_a_canadian_cpi_release_on_a_us_release_s_close_is_left_out_of_its_kinds(
+    tmp_db: Path, monkeypatch: pytest.MonkeyPatch, weekday_closes: Callable[..., None]
 ) -> None:
-    # given three Canadian CPI releases, above, as expected and below, and a US CPI release on the
-    # day of the first
+    # given three Canadian CPI releases, above, as expected and below, a US CPI release at the same
+    # 08:30 New York as the first, and the S&P 500's and the Canadian dollar's closes
+    markets = ("SPY / ES", "USDCAD")
+    monkeypatch.setattr(study, "MVP_PRICE_SERIES", {m: study.MVP_PRICE_SERIES[m] for m in markets})
     days = [date(2024, 1, 16), date(2024, 2, 20), date(2024, 3, 19)]
     events = _store_cacpi(dict(zip(days, [(3.4, 3.3), (2.9, 2.9), (2.8, 2.9)], strict=True)))
     db.insert_models("event_instances", [_report(days[0], CPI)])
+    weekday_closes(markets, date(2024, 1, 1), date(2024, 4, 30))
 
-    # when the kinds are read, all of them and the ones on its days alone
+    # when the kinds are read, all of them and the ones alone in some market
     every = study.release_kinds(CACPI)
     alone = study.lone_release_kinds(CACPI)
 
-    # then the shared day has its kind but is left out of the lone ones
+    # then the release sharing every market's close has its kind but is left out of the lone ones
     assert [every.get(e.event_id) for e in events] == [ABOVE, AS_EXPECTED, BELOW]
     assert [alone.get(e.event_id) for e in events] == [None, AS_EXPECTED, BELOW]
 
 
-def test_a_swiss_cpi_release_on_a_us_jobs_report_s_day_is_left_out_of_its_kinds(
-    tmp_db: Path,
+def test_a_swiss_cpi_release_on_a_us_jobs_report_s_close_is_left_out_of_its_kinds(
+    tmp_db: Path, monkeypatch: pytest.MonkeyPatch, weekday_closes: Callable[..., None]
 ) -> None:
-    # given three Swiss CPI releases, above, as expected and below, and a US jobs report on the
-    # day of the first
+    # given three Swiss CPI releases, above, as expected and below, a US jobs report the day of the
+    # first, which reaches the S&P 500 and the SMI at that day's close, and their closes
+    markets = ("SPY / ES", "SMI")
+    monkeypatch.setattr(study, "MVP_PRICE_SERIES", {m: study.MVP_PRICE_SERIES[m] for m in markets})
     days = [date(2024, 3, 8), date(2024, 4, 4), date(2024, 5, 2)]
     prints = [(1.3, 1.2), (1.0, 1.0), (1.3, 1.4)]
     events = _store_cacpi(dict(zip(days, prints, strict=True)), flows.CH_CPI_FLOW)
     db.insert_models("event_instances", [_report(days[0], NFP)])
+    weekday_closes(markets, date(2024, 3, 1), date(2024, 5, 31))
 
-    # when the kinds are read, all of them and the ones on its days alone
+    # when the kinds are read, all of them and the ones alone in some market
     every = study.release_kinds(flows.CH_CPI_FLOW)
     alone = study.lone_release_kinds(flows.CH_CPI_FLOW)
 
@@ -1828,29 +1834,77 @@ def _store_china(
     return events
 
 
-def test_a_chinese_cpi_release_is_alone_only_on_a_weekday_no_us_release_holds(
-    tmp_db: Path,
+def test_a_chinese_cpi_release_shares_a_us_close_but_not_shanghai_s(
+    tmp_db: Path, monkeypatch: pytest.MonkeyPatch, weekday_closes: Callable[..., None]
 ) -> None:
-    # given four Chinese CPI releases: Wednesday 2024-01-10 with a US CPI release that day,
-    # Saturday 2024-03-09 with a US jobs report the Monday after, Friday 2024-02-09 and Sunday
-    # 2024-06-09 with nothing on their days
+    # given four Chinese CPI releases at 09:30 Beijing: Wednesday 2024-01-10 with a US CPI release
+    # at 08:30 New York that day, Saturday 2024-03-09 with a US jobs report the Monday after,
+    # Friday 2024-02-09 and Sunday 2024-06-09 with nothing near; the S&P 500's and Shanghai's closes
+    monkeypatch.setattr(
+        study, "MVP_PRICE_SERIES", {m: study.MVP_PRICE_SERIES[m] for m in ("SPY / ES", "SHCOMP")}
+    )
     days = [date(2024, 1, 10), date(2024, 3, 9), date(2024, 2, 9), date(2024, 6, 9)]
     prints = [(0.3, 0.2), (0.7, 0.4), (-0.8, -0.5), (0.3, 0.4)]
     events = _store_china(CNCPI, dict(zip(days, prints, strict=True)))
     db.insert_models("event_instances", [_report(days[0], CPI), _report(date(2024, 3, 11), NFP)])
+    weekday_closes(("SPY / ES", "SHCOMP"), date(2024, 1, 1), date(2024, 6, 30))
 
-    # when the kinds are read, all of them and the ones on its days alone
-    every = study.release_kinds(CNCPI)
+    # when each market's shared releases and the kinds are read
+    shared = study.shared_by_market(CNCPI)
     alone = study.lone_release_kinds(CNCPI)
 
-    # then the weekday's shared release and the Saturday's, read on its Monday, are left out
-    assert [every.get(e.event_id) for e in events] == [ABOVE, ABOVE, BELOW, BELOW]
-    assert [alone.get(e.event_id) for e in events] == [None, None, BELOW, BELOW]
+    # then both reach the S&P 500 at the US release's close, but Shanghai's close comes before the
+    # US releases, so there both are alone, and every release keeps its kind
+    assert shared == {"SPY / ES": {events[0].event_id, events[1].event_id}, "SHCOMP": set()}
+    assert [alone.get(e.event_id) for e in events] == [ABOVE, ABOVE, BELOW, BELOW]
 
 
-def test_china_s_cpi_and_output_on_one_day_each_leave_that_day_out(tmp_db: Path) -> None:
+def test_us_cpi_and_china_s_next_morning_share_shanghai_s_close_alone(
+    tmp_db: Path, monkeypatch: pytest.MonkeyPatch, weekday_closes: Callable[..., None]
+) -> None:
+    # given US CPI at 08:30 New York on 2023-10-12 and China's at 09:30 Beijing on 2023-10-13,
+    # and the S&P 500's and Shanghai's closes
+    monkeypatch.setattr(
+        study, "MVP_PRICE_SERIES", {m: study.MVP_PRICE_SERIES[m] for m in ("SPY / ES", "SHCOMP")}
+    )
+    (china,) = _store_china(CNCPI, {date(2023, 10, 13): (0.2, 0.2)})
+    db.insert_models("event_instances", [_report(date(2023, 10, 12), CPI)])
+    weekday_closes(("SPY / ES", "SHCOMP"), date(2023, 10, 2), date(2023, 10, 31))
+
+    # when China's shared releases are read in each market
+    shared = study.shared_by_market(CNCPI)
+
+    # then both reach Shanghai at its 2023-10-13 close; the S&P 500 had US CPI the day before
+    assert shared == {"SPY / ES": set(), "SHCOMP": {china.event_id}}
+
+
+def test_two_releases_across_a_market_holiday_share_the_close_after_it(
+    tmp_db: Path, monkeypatch: pytest.MonkeyPatch, weekday_closes: Callable[..., None]
+) -> None:
+    # given the S&P 500 closed on Monday 2024-01-15, a Canadian CPI release that Monday and a US
+    # CPI release on the Tuesday
+    monkeypatch.setattr(study, "MVP_PRICE_SERIES", {"SPY / ES": study.MVP_PRICE_SERIES["SPY / ES"]})
+    weekday_closes(("SPY / ES",), date(2024, 1, 1), date(2024, 1, 31))
+    db.get_connection().execute("DELETE FROM daily_bars WHERE day = DATE '2024-01-15'")
+    (canada,) = _store_cacpi({date(2024, 1, 15): (3.4, 3.3)})
+    db.insert_models("event_instances", [_report(date(2024, 1, 16), CPI)])
+
+    # when Canada's shared releases are read
+    shared = study.shared_in(CACPI, "SPY / ES")
+
+    # then both reach the market at Tuesday's close, so the Canadian release is shared
+    assert shared == {canada.event_id}
+
+
+def test_china_s_cpi_and_output_on_one_day_each_leave_that_day_out(
+    tmp_db: Path, monkeypatch: pytest.MonkeyPatch, weekday_closes: Callable[..., None]
+) -> None:
     # given Chinese CPI releases on Wednesday 2024-01-10 and Friday 2024-02-09, and output releases
-    # at 10:00 Beijing on that Wednesday and on Monday 2024-03-18, nothing else stored
+    # at 10:00 Beijing on that Wednesday and on Monday 2024-03-18, and two markets' closes
+    monkeypatch.setattr(
+        study, "MVP_PRICE_SERIES", {m: study.MVP_PRICE_SERIES[m] for m in ("SPY / ES", "SHCOMP")}
+    )
+    weekday_closes(("SPY / ES", "SHCOMP"), date(2024, 1, 1), date(2024, 3, 29))
     cpi = _store_china(CNCPI, {date(2024, 1, 10): (0.3, 0.2), date(2024, 2, 9): (0.2, 0.2)})
     output = _store_china(
         CNIP, {date(2024, 1, 10): (5.3, 5.0), date(2024, 3, 18): (5.2, 5.0)}, time(10, 0)
@@ -1866,23 +1920,29 @@ def test_china_s_cpi_and_output_on_one_day_each_leave_that_day_out(tmp_db: Path)
     assert study.release_kinds(CNIP)[output[0].event_id] == ABOVE
 
 
-def test_a_chinese_survey_on_a_sunday_before_a_us_survey_s_monday_is_left_out(
-    tmp_db: Path,
+def test_a_chinese_survey_on_a_sunday_shares_the_us_survey_s_monday_close_in_us_markets(
+    tmp_db: Path, monkeypatch: pytest.MonkeyPatch, weekday_closes: Callable[..., None]
 ) -> None:
     # given Chinese surveys at 09:30 Beijing on Sunday 2024-03-31, with the US survey on Monday
-    # 2024-04-01, on Sunday 2024-06-30 with nothing on its Monday, and on Wednesday 2024-01-31
+    # 2024-04-01, on Sunday 2024-06-30 with nothing on its Monday, and on Wednesday 2024-01-31;
+    # the S&P 500's and Shanghai's closes
+    monkeypatch.setattr(
+        study, "MVP_PRICE_SERIES", {m: study.MVP_PRICE_SERIES[m] for m in ("SPY / ES", "SHCOMP")}
+    )
     days = [date(2024, 3, 31), date(2024, 6, 30), date(2024, 1, 31)]
     prints = [(50.8, 50.1), (49.5, 49.4), (49.1, 49.3)]
     events = _store_china(CNPMI, dict(zip(days, prints, strict=True)))
     db.insert_models("event_instances", [_report(date(2024, 4, 1), flows.flow_named("ism"))])
+    weekday_closes(("SPY / ES", "SHCOMP"), date(2024, 1, 1), date(2024, 7, 31))
 
-    # when the kinds are read, all of them and the ones on its days alone
+    # when each market's shared releases and the kinds are read
+    shared = study.shared_by_market(CNPMI)
     every = study.release_kinds(CNPMI)
-    alone = study.lone_release_kinds(CNPMI)
 
-    # then the Sunday before the US survey is left out; above from 0.2 points, as expected at 0.1
+    # then the Sunday's survey shares Monday's close in the S&P 500 alone, as Shanghai closes
+    # before the US survey; above from 0.2 points, as expected at 0.1
+    assert shared == {"SPY / ES": {events[0].event_id}, "SHCOMP": set()}
     assert [every.get(e.event_id) for e in events] == [ABOVE, AS_EXPECTED, BELOW]
-    assert [alone.get(e.event_id) for e in events] == [None, AS_EXPECTED, BELOW]
 
 
 @pytest.mark.parametrize(
@@ -1903,7 +1963,8 @@ def test_follows_for_a_chinese_flow_prints_its_lone_releases_and_the_page_s_cell
     prints: tuple[tuple[float, float], ...],
 ) -> None:
     # given Shanghai's and the yuan's closes and 45 releases of one of China's flows, above, as
-    # expected and below in turn, the first sharing its day with a US retail sales release
+    # expected and below in turn, the first on the day of a US retail sales release, which reaches
+    # both markets a close later
     two = {k: study.MVP_PRICE_SERIES[k] for k in ("SHCOMP", "USDCNY")}
     monkeypatch.setattr(study, "MVP_PRICE_SERIES", two)
     rng = random.Random(7)
@@ -1923,9 +1984,9 @@ def test_follows_for_a_chinese_flow_prints_its_lone_releases_and_the_page_s_cell
     printed = [FOLLOWS_LINE.match(line) for line in out[2:-1]]
     ask = cli.ask_data(db.get_connection())
 
-    # then the header counts the 44 releases alone, and every line has one cell on the page
-    first, last = closes[keys[1]].day, closes[keys[-1]].day
-    assert out[0] == (f"follows: 44 {noun} {first} … {last}: 14 above, 15 as expected, 15 below")
+    # then the header counts all 45, none sharing a close, and every line has one cell on the page
+    first, last = closes[keys[0]].day, closes[keys[-1]].day
+    assert out[0] == (f"follows: 45 {noun} {first} … {last}: 15 above, 15 as expected, 15 below")
     (entry,) = [entry for entry in ask["ask"] if entry["name"] == flow.cli_name]
     cells = {(c["kind"], c["span"], c["market"]): c for c in entry["cells"]}  # type: ignore[union-attr]
     assert len(printed) == len(cells) == 3 * 3 * 2
@@ -1939,4 +2000,4 @@ def test_follows_for_a_chinese_flow_prints_its_lone_releases_and_the_page_s_cell
         ]
         assert (cell["answer"], cell["verdict"]) == (line["answer"], line["verdict"])
         assert str(cell["say"]).startswith(f"After {cli.ask_kind(flow.cli_name, line['kind'])},")
-    assert [k["events"] for k in entry["kinds"]] == [14, 15, 15]  # type: ignore[index]
+    assert [k["events"] for k in entry["kinds"]] == [15, 15, 15]  # type: ignore[index]
