@@ -59,6 +59,8 @@ git -C "$job_tree" switch -q --discard-changes --detach origin/main ||
 
 export FT_DB_PATH="$main_checkout/data/fortuneteller.duckdb"
 export FT_CACHE_DIR="$main_checkout/data/cache"
+# A session holding the store makes each command wait up to 30 minutes, not fail.
+export FT_DB_WAIT=1800
 # FRED's key alone, for the Fed's group and home prices (docs/steps/stated-forecasts.md); the
 # rest of .env stays out of the job's environment.
 FT_FRED_API_KEY=$(sed -n 's/^FT_FRED_API_KEY=//p' "$main_checkout/.env" 2>/dev/null | head -1)

@@ -418,7 +418,7 @@ def test_the_fed_table_is_unchanged() -> None:
         "follows: 3 Fed decisions 2001-01-29 … 2001-05-21: 1 cuts, 1 holds, 1 hikes",
         "kind  span   market        n  up same down  out/hole  base up/same/down  answer          "
         "chance  placebo  walk-forward",
-        "cut   day    SPY / ES       1   1    0    0      0/0  0.50/0.07/0.42     too few         "
+        "cut   day    SPY / ES       1   0    1    0      0/0  0.00/0.94/0.06     too few         "
         "—       -        0: 0 right, too few",
     ]
 
@@ -585,8 +585,8 @@ def test_follows_for_cpi_prints_its_table(
 
 
 def _rise_then_fall(n: int, keys: list[int]) -> list[DailyClosingPrice]:
-    # closes alternating 1% either way, rising 3% on each key and falling 3% the close after
-    steps = _alternating(n)
+    # closes alternating 1% to 1.6% either way, rising 3% on each key and falling 3% the close after
+    steps = [(0.01 + i % 7 / 1000) * (1 if i % 2 == 0 else -1) for i in range(n)]
     for i in keys:
         steps[i], steps[i + 1] = 0.03, -0.03
     return _closes(steps)

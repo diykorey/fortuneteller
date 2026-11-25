@@ -11,6 +11,21 @@ amended there with a date.
 Each entry: **what** was decided, **why**, what it **retires**, and **where** the detail is. *By the
 owner* marks a choice the owner made over another on the table.
 
+## 2026-11-24: The jobs share the store; Polymarket after the gate; the draft printed both ways, by the owner
+
+- **What:** three choices. The release-day and evening jobs keep the one store the sessions use,
+  each command waiting up to 30 minutes for a held store, then stopping with one line (step 57's
+  R5). Polymarket's busiest markets are read, after the 2027-01-31 gate, to choose which kinds of
+  events to add next (step 60). Step 58's draft is printed both by a `fortuneteller approve`
+  command after a desktop notification and, when a session is open, in the session.
+- **Why:** a store of the job's own would go stale on the S&P 500 companies' prices and on every
+  load done by hand; Polymarket's questions say what people care about, but few match a market's
+  move over a span and its history is short; the command works with no session open, the session
+  is where the owner already approves drafts.
+- **Retires:** R5's own store and cache under `~/.local/share/fortuneteller/`; the open question
+  on step 58's roadmap row.
+- **Where:** [Step 57](steps/technical-fixes.md), R5; [Roadmap](roadmap.md), steps 58 and 60.
+
 ## 2026-11-24: Nasdaq's cached refusals asked again, after step 57, by the owner
 
 - **What:** the 324 Nasdaq calendar days cached as "Error while calling vendor" are deleted and

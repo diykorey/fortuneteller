@@ -13,6 +13,7 @@ scope: migrations, async.
 from __future__ import annotations
 
 import tempfile
+import time
 from collections.abc import Sequence
 from pathlib import Path
 from typing import TypeVar
@@ -44,10 +45,28 @@ _TABLES: frozenset[str] = frozenset(
 _M = TypeVar("_M", bound=BaseModel)
 
 
+LOCK_RETRY_SECONDS = 15.0
+
+
 def get_connection() -> duckdb.DuckDBPyConnection:
-    """Open the DuckDB store at ``settings.db_path``, creating parent directories."""
+    """Open the DuckDB store at ``settings.db_path``, creating parent directories. While another
+    process holds it, try again every 15 seconds for ``settings.db_wait`` seconds, then stop with
+    one line naming the holder."""
     settings.db_path.parent.mkdir(parents=True, exist_ok=True)
-    return duckdb.connect(str(settings.db_path))
+    deadline = time.monotonic() + settings.db_wait
+    while True:
+        try:
+            return duckdb.connect(str(settings.db_path))
+        except duckdb.IOException as exc:
+            if "Conflicting lock" not in str(exc):
+                raise
+            if time.monotonic() >= deadline:
+                holder = str(exc).split("Conflicting lock is held in ")[-1].split(". See")[0]
+                waited = f" after {settings.db_wait / 60:g} minutes" if settings.db_wait else ""
+                raise SystemExit(
+                    f"the store {settings.db_path} is held by {holder}{waited}"
+                ) from None
+            time.sleep(LOCK_RETRY_SECONDS)
 
 
 def init_db(con: duckdb.DuckDBPyConnection | None = None) -> None:

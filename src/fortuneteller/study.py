@@ -269,9 +269,11 @@ def closing_price_before_after(
 
 
 def release_move(before: DailyClosingPrice, after: DailyClosingPrice, unit: str) -> float:
-    """The move from ``before`` to ``after``: relative for prices, in basis points for yields."""
+    """The move from ``before`` to ``after``: relative for prices, in basis points for yields. Basis
+    points are rounded to six decimals so float noise never decides a cut: 2.35 − 2.34 is 1 bp,
+    not 0.99999… (step 57, R9, docs/steps/technical-fixes.md)."""
     if unit == "bps":
-        return (after.price - before.price) * 100
+        return round((after.price - before.price) * 100, 6)
     if unit == "pct":
         return after.price / before.price - 1
     raise ValueError(f"unknown unit {unit!r}: expected 'pct' or 'bps'")
@@ -1703,7 +1705,9 @@ def span_moves(closes: Sequence[DailyClosingPrice], unit: str, c: int) -> dict[d
 
 
 def outcome(move: float, cut: float) -> str:
-    if move == 0 or abs(move) < cut:
+    """*About the same* at or under the cut: a move of exactly the cut, as a whole basis point
+    often is, counts there (step 57, R9, the owner's choice of 2026-11-24)."""
+    if abs(move) <= cut:
         return SAME
     return UP if move > 0 else DOWN
 
@@ -1761,8 +1765,8 @@ class BaseSoFar:
         # statistics.quantiles(n=3, method="inclusive")[0], as base_of takes it.
         j, delta = divmod(n - 1, 3)
         cut = (self.sizes[j] * (3 - delta) + self.sizes[j + 1] * delta) / 3
-        up_same = bisect_left(self.ups, cut)
-        down_same = bisect_left(self.downs, cut)
+        up_same = bisect_right(self.ups, cut)
+        down_same = bisect_right(self.downs, cut)
         counts = {
             UP: len(self.ups) - up_same,
             SAME: self.flat + up_same + down_same,
