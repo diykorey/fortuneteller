@@ -127,7 +127,7 @@ the hand check against Yahoo passed, and no answer or verdict on the page change
 
 ## Next
 
-Step 58, the publishing schedule (draft 14:00 New York, a reminder at 16:00, published at 18:00,
+Step 61, one front-page card per area (the owner, 2026-11-25). Then step 58, the publishing schedule (draft 14:00 New York, a reminder at 16:00, published at 18:00,
 every day), chosen by the owner on 2026-11-24. Before it, Nasdaq's 324 cached refusals asked again, outputs
 compared before and after (the owner, 2026-11-24). Then step 59, bitcoin's and ether's weekend closes from
 Yahoo, chosen the same day.
