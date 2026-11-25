@@ -184,7 +184,7 @@ were not compared, and are right by their tests only.
 
 **The expected outcome, bullet by bullet:**
 
-- **R1, R2, R5 to R11, every output the same but the four exceptions:** right where measured
+- **R1, R2, R5 to R11, every output the same but the four exceptions:** right where checked
   (R2, R8, R10); *wrong* for R9; not measured for R1, R5, R6, R7 and R11.
   - *R9's cells at the cut, expected under 10: wrong.* Rounding alone changed about 880 lines of
     the scoreboard's data, since T5YIE moves on a whole basis-point grid and its cut falls on
@@ -197,8 +197,8 @@ were not compared, and are right by their tests only.
   - *R2's removed events, expected none or only moved ones: right.* `load-releases` on the copy
     removed none; it also found TradingView's current quarter lists no speeches at all, 6 of
     which a plain replace would have deleted (#452).
-  - *R8's calls counted once, expected none: right.* `score` before and after gives the same
-    rows; `data/calls.csv` holds no duplicate (#453).
+  - *R8's calls counted once, expected none: right.* `data/calls.csv` holds no row whose flow,
+    day and market another holds, so `score` keeps every row it kept before (#453).
   - *R10's forecasts refused, expected none: right.* `load-surprises` on the copy: 330 fallback
     fills, all jobless claims, none out of scale (#454).
   - *Not measured:* R1 changes what the cache keeps from now on and leaves its 324 Nasdaq
