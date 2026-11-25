@@ -6,6 +6,7 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-25 | Nasdaq's 324 cached refusals asked again, all answered: 39 jobless-claims expected values changed, 1 added and 7 left the table, as Nasdaq and TradingView disagree; no answer that holds moved | [#465](https://github.com/diykorey/fortuneteller/pull/465) |
 | 2026-11-25 | Step 61 built: the front page holds one card per area with no cap of five; the proposal adds a guess in each area no card holds, and a staying card past its last day frees its area | [#464](https://github.com/diykorey/fortuneteller/pull/464) |
 | 2026-11-25 | Step 61 planned: one front-page card per area, as the owner chose, after step 57; the page's five cards were full to 2026-12-04 | [#462](https://github.com/diykorey/fortuneteller/pull/462) |
 | 2026-11-25 | Step 57, R4: a release is shared in a market when another flow's event reaches that market at the same close, not on the same calendar date; `raw-move`, the links, `follows` and triggers leave out each market's own. US releases in US markets change side 0.7 in 100; China's flows keep far more releases (the survey 59 to 175), alone in Shanghai when a US release came the same date. No answer that holds changes; 29 `raw-move` verdicts in ten lesser flows and 26 *Ask* answers move, none holding | [#461](https://github.com/diykorey/fortuneteller/pull/461) |
