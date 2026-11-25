@@ -12,6 +12,12 @@ Where the work is and what comes next: the task last finished, the tasks in prog
 
 ## Last completed
 
+Step 57: the technical review's required fixes ([results](steps/technical-fixes.md#results)).
+Eleven fixes, #445 to #461. OPEC's one answer that held, gasoline's day after *oil up*, counted
+the close that decides the kind and is gone; a move at the "about the same" cut now counts as
+about the same, moving 2,140 cells' counts but no answer that holds; a release is shared by its
+close in each market, not its calendar date. The answers that hold: 9 to 8.
+
 Step 56: what the page claims, corrected ([results](steps/honest-page.md#results)). Each guess
 is graded from its market's first close after it was made; a card shown stays until graded; the
 long-run cards say they are the usual way, with counts; guesses look like hunches; the earnings
@@ -44,10 +50,6 @@ the hand check against Yahoo passed, and no answer or verdict on the page change
 
 ## In progress
 
-- **Step 57: the technical review's required fixes** ([the spec](steps/technical-fixes.md)):
-  eleven fixes, one pull request each, chosen by the owner on 2026-11-24. Spec merged (#444); R7,
-  R11, R6, R5, R1, R2, R8, R10, R3 and R9 merged (#445 to #460); R4, shared by reaction close,
-  built. Next: the Results and the goldfish review of them.
 - **Step 55: guesses against the base rate** ([the spec](steps/guesses-vs-base-rate.md)): each
   guess carries its base rate; a grounded guesser, given the record, runs beside today's news
   guesser as the control. Asked for 2026-11-23 by the owner. Spec merged (#420); step 1, the
