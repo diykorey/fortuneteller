@@ -220,7 +220,8 @@ Terms are grouped by what they are about, alphabetical within each group.
   2026-10-27 ([more outcomes](steps/more-outcomes.md)) as Yahoo's `BZ=F`, the front month, at its
   14:30 New York settlement.
 - **BTC** (Bitcoin) — the crypto bellwether. Measured from 2026-10-27 as Yahoo's `BTC-USD`, the
-  UTC day's last price; its weekend bars are dropped, as every market's are.
+  UTC day's last price; its weekend bars are dropped, as every market's are. *Amended 2026-11-25*
+  ([step 59](steps/crypto-weekends.md)): its weekend closes are stored, read only to grade a guess (*weekend close*).
 - **BUND / FGBL** — the German 10-year government bond and its futures contract (Eurex); the
   eurozone's risk-free benchmark. Free price history is awkward, which is why the MVP uses the US
   10-year instead.
@@ -241,7 +242,8 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **DXY** (US Dollar Index) — the dollar measured against a basket of major currencies (mostly the
   euro). Rises on risk-off and on hawkish Fed expectations.
 - **ETH** (Ether) — *added 2026-11-18* ([crypto](steps/crypto.md)): the second-largest coin, as
-  Yahoo's `ETH-USD` from 2017-11-09, the UTC day's last price as bitcoin's; weekend bars dropped.
+  Yahoo's `ETH-USD` from 2017-11-09, the UTC day's last price as bitcoin's; weekend bars dropped
+  (*amended 2026-11-25*, [step 59](steps/crypto-weekends.md): stored, read only to grade a guess, as bitcoin's).
   No expected sign.
 - **ES** (E-mini S&P 500 future) — the futures contract on the S&P 500, which trades nearly around
   the clock and therefore reacts to releases outside US stock-market hours.

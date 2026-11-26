@@ -2011,7 +2011,7 @@ def scoreboard_data(
             call["grade"], call["note"] = _grade(r, scores[r.flow])
         calls.append(call)
     missed = [note.split() for note in study.missed_releases(rows, con=con)]
-    (last_close,) = con.execute("SELECT max(day) FROM daily_bars").fetchone() or (None,)
+    last_close = study.stored_until(con)
     bars = {
         "raw_move": study.MOVE_P_BAR,
         "surprise": study.TRACK_P_BAR,
@@ -2932,8 +2932,9 @@ def _mine(rows: Sequence[Mapping[str, str]], guesser: str) -> list[Mapping[str, 
 
 def guess_start(r: Mapping[str, str]) -> date:
     """Step 56: the day of the first close in the guess's market after it was made, a weekend
-    rolled to Monday, as no weekend close is stored; a row without ``made`` counts as made at 23:59
-    New York on its stated day."""
+    rolled to Monday, as no weekend close is stored, except a crypto guess stated from
+    ``SCHEDULE_FROM`` (step 59); a row without ``made`` counts as made at 23:59 New York on its
+    stated day."""
     stated = date.fromisoformat(r["stated"])
     made = (
         datetime.fromisoformat(r["made"])
@@ -2941,7 +2942,9 @@ def guess_start(r: Mapping[str, str]) -> date:
         else datetime(stated.year, stated.month, stated.day, 23, 59, tzinfo=sources.NEW_YORK)
     )
     day = study.first_close_after(made, study.MVP_PRICE_SERIES[r["market"]])
-    return day + timedelta(days=7 - day.weekday()) if day.weekday() >= 5 else day
+    if day.weekday() < 5 or (r["market"] in study.CRYPTO and stated >= SCHEDULE_FROM):
+        return day
+    return day + timedelta(days=7 - day.weekday())
 
 
 def _guess_fields(today: date, rows: Sequence[Mapping[str, str]], lessons: str) -> dict[str, str]:
@@ -3273,16 +3276,16 @@ def _guess(_args: argparse.Namespace) -> int:
     con = db.get_connection()
     db.init_db(con=con)
 
-    def closes(market: str) -> Sequence[sources.DailyClosingPrice]:
+    def closes(market: str, weekends: bool = False) -> Sequence[sources.DailyClosingPrice]:
         try:
-            return study.stored_closes(market, con)
+            return study.stored_closes(market, con, weekends)
         except ValueError:
             return []
 
     def ask(prompt: str) -> str:
         return _run_model(prompt, web=False)
 
-    rows = grade_guesses(rows, closes)
+    rows = grade_guesses(rows, lambda market: closes(market, weekends=True))
     try:
         rows = review_guesses(rows, ask)
     except (OSError, subprocess.SubprocessError, ValueError, KeyError) as exc:
@@ -3465,9 +3468,10 @@ SCHEDULE_FROM = date(2026, 11, 28)
 
 
 def weekend_draft(row: Mapping[str, str]) -> bool:
-    """A guess stated on a Saturday or Sunday from ``SCHEDULE_FROM``: left out of every record."""
+    """A guess stated on a Saturday or Sunday from ``SCHEDULE_FROM``, left out of every record,
+    unless on a market whose weekend closes are stored (step 59)."""
     stated = date.fromisoformat(row["stated"])
-    return stated >= SCHEDULE_FROM and stated.weekday() >= 5
+    return stated >= SCHEDULE_FROM and stated.weekday() >= 5 and row["market"] not in study.CRYPTO
 
 
 def guess_record(rows: Sequence[Mapping[str, str]], key: str) -> list[dict[str, object]]:

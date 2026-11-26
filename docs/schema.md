@@ -315,6 +315,11 @@ returned: closes from an earlier ticker for the same instrument cannot mix in.
 `load-prices --companies` (through `study.load_company_bars`) adds the CEO scandals' companies,
 each under its Yahoo ticker as its instrument, and loads nothing else.
 
+*Amended 2026-11-25* ([step 59](steps/crypto-weekends.md)): `BTC` and `ETH` (`study.CRYPTO`) keep
+their Saturday and Sunday rows, every other instrument trading days alone. Only a guess's grade
+reads them (`study.stored_closes(..., weekends=True)`); every measurement, `shared_in` and the
+scoreboard's *data to* date (`study.stored_until`) read weekday rows alone.
+
 Example rows:
 
 | `instrument` | `day` | `close` | `source` |

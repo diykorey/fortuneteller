@@ -29,6 +29,8 @@ At the end:
   guesses of one kind are one *try*, counted once all of them are graded, right if more than half
   came true (a tie is not). *Amended 2026-11-25* ([step 58](publishing-schedule.md)): a Saturday's or Sunday's guesses from
   2026-11-28, made by the daily draft and nearly all starting from Monday's close, are no try.
+  *Amended 2026-11-25* ([step 59](crypto-weekends.md)): bitcoin's and ether's are, starting from
+  their weekend close.
   A kind of reasoning is *promoted* by rung 2's bar on its tries: at
   least 30, right on at least 60%, one-sided binomial p below 0.01.
 - **What makes a guess reasonable, checked before it is kept:**
