@@ -100,7 +100,12 @@ row order); the rest set aside so one bet is not counted many times.
 ## How you know it is right
 
 - A hand check: the base rates of the first three stored grounded guesses counted from the
-  closes in a spreadsheet, with *n* counted on a calendar, match.
+  closes in a spreadsheet, with *n* counted on a calendar, match. *Run 2026-11-26* on a copy of the store,
+  with a short script reading `daily_bars` directly, not `study.base_rate`: the three guesses of
+  2026-11-23 (made 23:25 UTC, first close 2026-11-24), each *down*: the fear gauge (`VIX`) to
+  2026-12-18, *n* = 18, 5,029 of 9,275 runs, 0.5422; natural gas (`UNG`) to 2027-01-29, *n* = 48,
+  3,107 of 4,884, 0.6362; homebuilders (`ITB`) to 2027-02-26, *n* = 68, 2,116 of 5,102, 0.4147.
+  Each *n* counted on a calendar and each rate equal to the stored `base_rate`: they match.
 - An *up* guess on every market, every Monday from 2010, over 5 and 21 weekdays, scored on the
   stored closes with base rates from before each Monday: excess within ±0.02 a guess. A
   `base_rate` off by one close would still pass this, so test 1's *n* = 1 case pins it. *Run
