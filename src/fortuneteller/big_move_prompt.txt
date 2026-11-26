@@ -1,0 +1,15 @@
+On {day}, {plain} ({market}) moved {move} from the close before, {deviations} times its usual daily move.
+
+Search the news for what caused this move on that day. Answer with a JSON list holding one object:
+
+[{{"kind": "...", "flow": "...", "reason": "...", "link": "..."}}]
+
+- "kind" is one of:
+  - "measured": a release or decision of one of these, that day: {flows}. Put its name in "flow".
+  - "scheduled": a dated event not in that list, such as another country's release or a company's results. Name it in "reason".
+  - "unscheduled": news nobody scheduled, such as a war, an attack, a hack or a company's surprise.
+  - "nothing found": no report ties this move to a cause that day.
+- "reason" is the cause in one plain sentence, in your own words.
+- "link" is one news report, dated {day} or the day after, that names this cause for this market's move. A market summary that lists the move without its cause is not enough.
+
+If you cannot find such a report, answer "nothing found" with an empty reason and link. Do not guess a cause.
