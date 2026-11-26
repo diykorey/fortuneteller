@@ -281,14 +281,17 @@ def fetch_daily_bars(ticker: str, timeout: float = 30.0) -> bytes:
         raise YahooError(f"Yahoo request for {ticker} failed: {exc}") from None
 
 
-def parse_daily_bars(payload: bytes, today: date | None = None) -> list[DailyClosingPrice]:
+def parse_daily_bars(
+    payload: bytes, today: date | None = None, weekends: bool = False
+) -> list[DailyClosingPrice]:
     """Parse a Yahoo chart response into closes by trading date, oldest first.
 
     Each bar's timestamp is read as a date in the exchange's own time zone, named in the response:
     the dollar index and gold are stamped at midnight New York time, which any other zone can put
     on the previous day. Yahoo's ``gmtoffset`` is today's offset, not the bar's, so it is not used.
-    Bars with no close, bars dated on a weekend, and today's bar (still trading, so its close is not
-    final; ``today`` defaults to the exchange's current date) are dropped. Two bars on one date
+    Bars with no close, bars dated on a weekend unless ``weekends`` (bitcoin's and ether's, step
+    59), and today's bar (still trading, so its close is not final; ``today`` defaults to the
+    exchange's current date) are dropped. Two bars on one date
     are rejected: that is what a misread time zone looks like.
     """
     try:
@@ -309,7 +312,7 @@ def parse_daily_bars(payload: bytes, today: date | None = None) -> list[DailyClo
             if close is None:
                 continue
             day = datetime.fromtimestamp(timestamp, zone).date()
-            if day.weekday() >= 5 or day >= today:
+            if (day.weekday() >= 5 and not weekends) or day >= today:
                 continue
             if day in by_day:
                 raise YahooError(f"Yahoo sent two bars on {day}")

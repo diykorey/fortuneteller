@@ -55,6 +55,8 @@ end: 2026-11-24's front pull request (#458) was published 7 hours after the job 
   *Amended 2026-11-25, while building:* from 2026-11-28, the schedule's first weekend; the 12
   guesses of Sunday 2026-11-22, made before the schedule and the only ones that weekend, stay
   counted. `evenings_against`, the comparison by evening, leaves them out too.
+  *Amended 2026-11-25* ([step 59](crypto-weekends.md)): bitcoin's and ether's weekend guesses
+  from 2026-11-28 start from their weekend close and count in every record.
 - **The merge at 18:00.** The evening merges the day's front pull request when: it was opened at
   least 3 hours before (on time, 4); every commit on it is by the repository owner's account,
   under which both the job and the owner commit; and its checks pass, waited for as the score's

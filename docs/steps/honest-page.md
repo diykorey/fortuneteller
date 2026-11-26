@@ -159,7 +159,9 @@ Each bullet of *The rule, fixed before anything is shown*, against what the step
   `BRN`, `UGA`, `ITB`. `USDJPY`, past Sunday's 00:00 London bar, already got Monday. Grading was
   unaffected, but their base rates counted one weekday too many. Step 5 rolls a weekend start to
   Monday (`guess_start`; tests: a bitcoin guess made Sunday, and two S&P 500 guesses made Sunday
-  and Friday after the close, each start Monday) and recomputes those ten. A holiday is not rolled:
+  and Friday after the close, each start Monday) and recomputes those ten. *Amended 2026-11-25*
+  ([step 59](crypto-weekends.md)): a bitcoin or ether guess stated from 2026-11-28 is not rolled;
+  it starts from its weekend close. A holiday is not rolled:
   `NKY`'s start is Monday 2026-11-23, a holiday in Tokyo, and grading takes Tuesday's close. Its
   base rate counts weekdays, holidays among them, as every base rate does.
 - **Each recomputed base rate listed, old beside new: right**, every row in the table below:

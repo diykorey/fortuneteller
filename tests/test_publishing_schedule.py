@@ -32,11 +32,11 @@ def _row(stated: str, market: str = "BRN", **extra: str) -> dict[str, str]:
 
 def test_a_weekend_s_guesses_from_the_schedule_count_in_no_record() -> None:
     # given guesses graded on Sunday 2026-11-22, Friday 2026-11-27, Saturday 2026-11-28 and
-    # Sunday 2026-11-29, on four markets so none is counted twice in a week
+    # Sunday 2026-11-29, on four markets with no weekend close, so none is counted twice in a week
     rows = [
         _row("2026-11-22", "BRN"),
         _row("2026-11-27", "GC / XAU"),
-        _row("2026-11-28", "BTC"),
+        _row("2026-11-28", "SPY / ES"),
         _row("2026-11-29", "KC"),
     ]
 

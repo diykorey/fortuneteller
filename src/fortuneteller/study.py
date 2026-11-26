@@ -34,7 +34,7 @@ from decimal import ROUND_HALF_UP, Decimal
 from datetime import UTC, date, datetime, time, timedelta
 from pathlib import Path
 from statistics import median, quantiles
-from typing import NamedTuple
+from typing import NamedTuple, cast
 from zoneinfo import ZoneInfo
 
 import duckdb
@@ -183,7 +183,7 @@ def load_daily_bars(api_key: str, con: duckdb.DuckDBPyConnection | None = None) 
             continue
         payload = sources.fetch_daily_bars(ticker)
         try:
-            closes = sources.parse_daily_bars(payload)
+            closes = sources.parse_daily_bars(payload, weekends=instrument in CRYPTO)
         except YahooError as exc:
             raise YahooError(f"{ticker}: {exc}") from None
         if not closes:
@@ -296,13 +296,28 @@ def first_reaction_day(event: EventInstance, series: PriceSeries) -> date:
     return first_close_after(event.event_ts.replace(tzinfo=UTC), series)
 
 
+# The markets whose weekend closes are stored, read only to grade a guess
+# (docs/steps/crypto-weekends.md); every measurement reads weekday closes alone.
+CRYPTO = ("BTC", "ETH")
+WEEKDAYS = "isodow(day) < 6"
+
+
+def stored_until(con: duckdb.DuckDBPyConnection) -> date | None:
+    """The latest weekday close stored for any market, none in an empty store."""
+    (day,) = con.execute(f"SELECT max(day) FROM daily_bars WHERE {WEEKDAYS}").fetchone() or (None,)
+    return cast(date | None, day)
+
+
 def stored_closes(
-    instrument: str, con: duckdb.DuckDBPyConnection | None = None
+    instrument: str, con: duckdb.DuckDBPyConnection | None = None, weekends: bool = False
 ) -> list[DailyClosingPrice]:
-    """One instrument's closes from ``daily_bars`` in date order; none at all is an error."""
+    """One instrument's weekday closes from ``daily_bars`` in date order, every day's if
+    ``weekends``; none at all is an error."""
     bars = db.fetch_all(
         DailyBar,
-        "SELECT * FROM daily_bars WHERE instrument = ? ORDER BY day",
+        "SELECT * FROM daily_bars WHERE instrument = ?"
+        + ("" if weekends else f" AND {WEEKDAYS}")
+        + " ORDER BY day",
         [instrument],
         con,
     )
@@ -702,13 +717,10 @@ def shared_by_market(
         if given is not None:
             closes = given
         else:
-            bars = db.fetch_all(
-                DailyBar,
-                "SELECT * FROM daily_bars WHERE instrument = ? ORDER BY day",
-                [market],
-                con,
-            )
-            closes = [DailyClosingPrice(bar.day, bar.close) for bar in bars]
+            try:
+                closes = stored_closes(market, con)
+            except ValueError:
+                closes = []
         taken = reaction_days(closes, [first_reaction_day(e, series) for e in others])
         shared[market] = {
             e.event_id
