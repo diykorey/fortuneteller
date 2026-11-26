@@ -249,8 +249,10 @@ watch_morning() {
 }
 
 file=data/score.txt
+# A triggers' pull request left open for a person does not hold the evening (docs/steps/trigger-file.md,
+# amended 2026-11-26): the next one is cut from main and fills the open one's rows again.
 waiting=$(gh pr list -R "$repo" --state open --json headRefName \
-    --jq '.[].headRefName | select(startswith("calls-") or startswith("score-") or startswith("triggers-") or startswith("scoreboard-"))') ||
+    --jq '.[].headRefName | select(startswith("calls-") or startswith("score-") or startswith("scoreboard-"))') ||
     report "gh pr list"
 if [ -n "$waiting" ]; then
     printf 'score: waiting for %s to be merged\n' "$waiting"

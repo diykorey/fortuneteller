@@ -22,6 +22,7 @@ case "$1 $2" in
     "run list") echo "[]" ;;
     "pr list")
         case "$*" in
+            *'startswith("calls-")'*) printf '%s' "${OPEN:-[]}" | jq -r "${@: -1}" ;;
             *createdAt*) printf '%s' "${FRONT_LIST:-}" ;;
             *"--head front-"*) printf '%s' "${REMIND:-}" ;;
             *front-*) printf '%s' "${FRONT_OPEN:-}" ;;
@@ -156,6 +157,23 @@ def test_the_pages_are_merged_apart_from_the_triggers_log_and_no_front_is_propos
     assert pages == ["docs/scoreboard/data.json"]
     assert trigger == ["data/trigger-log.csv"]
     assert "--head front-" not in log and "notify" not in log
+
+
+@pytest.mark.parametrize(
+    ("open_head", "held"), [("triggers-2026-11-24", False), ("score-2026-11-24", True)]
+)
+def test_only_an_open_score_or_pages_pull_request_holds_the_evening(
+    tmp_path: Path, open_head: str, held: bool
+) -> None:
+    # given the job's origin and stand-ins, with one of the evening's pull requests left open
+    job = _job(tmp_path)
+
+    # when the evening runs
+    log = _run(job, "score", OPEN=f'[{{"headRefName": "{open_head}"}}]')
+
+    # then an open score holds it, and an open triggers' log, left for a person, does not
+    assert ("waiting for " + open_head in log) is held
+    assert ("--merge scoreboard-" in log) is not held
 
 
 def test_the_draft_keeps_the_guesses_then_proposes_the_front_and_says_so(tmp_path: Path) -> None:

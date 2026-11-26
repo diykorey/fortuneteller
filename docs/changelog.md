@@ -6,6 +6,7 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-26 | An open triggers' pull request no longer holds the evening's load, score and page; #457 had held the run of 2026-11-26 | [#474](https://github.com/diykorey/fortuneteller/pull/474) |
 | 2026-11-26 | Step 59 built: bitcoin's and ether's weekend closes stored (1,272 and 944 bars), read only to grade guesses; a crypto guess made at a weekend from 2026-11-28 starts from that weekend's close and counts; every measured output the same on the compared store | [#473](https://github.com/diykorey/fortuneteller/pull/473) |
 | 2026-11-25 | Step 59's spec: bitcoin's and ether's weekend closes kept from Yahoo, read only to grade guesses; a crypto guess made at a weekend starts from that weekend's close and counts; nothing measured changes | [#472](https://github.com/diykorey/fortuneteller/pull/472) |
 | 2026-11-25 | Step 58 built: the guesses drafted at 14:00 New York with a notification, a reminder at 16:00, the evening publishing the day's front pull request once 3 hours old, every day; `fortuneteller approve`; weekend guesses in no record | [#469](https://github.com/diykorey/fortuneteller/pull/469) |

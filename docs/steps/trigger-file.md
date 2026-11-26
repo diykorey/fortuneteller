@@ -125,7 +125,10 @@ It was checked with `bash -n`, and its first run with a trigger is the owner's f
 then `triggers` prints `triggers: none filed` and writes nothing. *Amended 2026-11-24, by [step 57](technical-fixes.md)
 (R11):* when nothing is scored, the pages go in `scoreboard-<day>`, merged on passing checks, and
 the log alone in `triggers-<day>`, so the evening's guesses no longer wait with the log. Tonight's front-page proposal is kept aside before the
-switch to `main` for the triggers' pull request (#449).
+switch to `main` for the triggers' pull request (#449). *Amended 2026-11-26:* an open `triggers-` pull request
+no longer holds the evening, only an open `calls-`, `score-` or `scoreboard-` one does. #457, left
+for a person, had stopped the run of 2026-11-26 before its load, score and page; the next
+triggers' pull request is cut from `main` and fills the open one's rows again.
 
 ## How you know it is right
 
