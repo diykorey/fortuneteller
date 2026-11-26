@@ -52,8 +52,9 @@ the hand check against Yahoo passed, and no answer or verdict on the page change
 
 - **Step 62: big moves, explained** ([the spec](steps/big-moves-explained.md)): each weekday's
   big moves in our markets checked against our calls and guesses and explained from the news; the
-  news scanned for big moves in markets we do not track. Asked for by the owner 2026-11-26. Next:
-  the spec reviewed, then built before December.
+  news scanned for big moves in markets we do not track. Asked for by the owner 2026-11-26. Spec merged (#476);
+  built, run by the evening from its next full run. Next: December's rows read in the first week
+  of January, with the two hand checks.
 - **Step 59: crypto's weekend closes** ([the spec](steps/crypto-weekends.md)): bitcoin's and
   ether's Saturday and Sunday closes kept from Yahoo, read only to grade guesses; a crypto guess
   made at a weekend from 2026-11-28 starts from that weekend's close and counts. Chosen by the

@@ -99,7 +99,7 @@ Each expectation is marked right or wrong in Results; none stops the step.
 | # | Step | Done when |
 | --- | --- | --- |
 | 1 | This spec, reviewed by the goldfish | Each finding fixed in the spec or answered in the pull request |
-| 2 | Big moves found and checked against our rows | Tests: a move of exactly 3 deviations is big and one just under is not; a market with fewer than 505 stored weekday closes is left out; a guess whose span holds the day covers it, one ending the day before does not; rows both ways count *both*; a call with no direction covers nothing. On the stored closes, 2024-08-05 is a big move for the Nikkei 225 (down about 12%) and VIX (up about 65%) |
+| 2 | Big moves found and checked against our rows | Tests: a move of exactly 3 deviations is big and one just under is not; a market with fewer than 505 stored weekday closes is left out (*amended 2026-11-26, in the build:* 506, for 504 moves before the day's); a guess whose span holds the day covers it, one ending the day before does not; rows both ways count *both*; a call with no direction covers nothing. On the stored closes, 2024-08-05 is a big move for the Nikkei 225 (down about 12%) and VIX (up about 65%) |
 | 3 | The reasons and the news scan | Tests, the model stubbed: a reply naming a reason without a link is stored as *nothing found*; a failed call leaves the row's kind and reason blank (*not asked*), asked again each evening up to 5 weekdays, then left blank and counted apart; the scan's prompt lists every tracked market's name and symbol, and a reply's symbol not in that list is stored blank |
 | 4 | In the evening job | Test: the script's evening, with nothing to score, puts both files in the pages' pull request (`scoreboard-<day>`, merged on passing checks, [trigger-file](trigger-file.md)); a day missed while the evening waited on an open `calls-`, `score-` or `scoreboard-` pull request is filled by the next run, up to 5 weekdays back |
 | 5 | December 2026 | Results: the counts of each bar, the two hand checks, and each market to add |
@@ -130,9 +130,17 @@ every measurement reads weekdays ([step 59](crypto-weekends.md)).
   closes (`study.stored_closes`, `study.daily_moves`) for each day since its file's last row, and
   calling the Subscription LLM as `guess` does (its model named in `GUESS_MODEL` and stored on
   each row, with web search only), one call per big move and one scan a weekday. The evening's `score` runs it after `load-prices`.
-- **Files:** `data/big-moves.csv` (day, market, move, deviations, covered, right, kind, flow,
-  reason, link, model) and `data/news-moves.csv` (day, market as named, symbol, move as reported, link, model),
-  documented in [Schema](../schema.md). Reasons in our own words; no article text is stored.
+- **Files** (*amended 2026-11-26, in the build:* documented here, as the ledgers are in their
+  specs; [Schema](../schema.md) holds the store's tables). Reasons in our own words; no article
+  text is stored.
+  - `data/big-moves.csv`, one row per market and day: `day`; `market` (a symbol of
+    `study.MVP_PRICE_SERIES`); `move` (a fraction for prices, basis points for yields, signed);
+    `deviations` (the move over the deviation of the 504 before); `covered` (`yes`, `no`);
+    `right` (`yes`, `no`, `both`, blank when not covered); `kind` (one of the four, blank when
+    *not asked*); `flow` (a `raw-move` flow, for *measured* only); `reason`; `link`; `model`.
+  - `data/news-moves.csv`, one row per market named: `day`; `market` (the model's English
+    name, blank on a day the scan named none); `symbol` (ours, or blank); `move` (as reported);
+    `link`; `model`. A day with no row was not scanned and is asked again.
 - **Tests:** beside the guesser's (`tests/test_our_guesses.py` style, the model stubbed) and the
   evening script's (`tests/test_evening_prs.py`).
 - **Docs:** this spec, the glossary, schema, status, the changelog, roadmap row 62, the decision.

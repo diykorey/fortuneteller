@@ -264,6 +264,13 @@ for command in load-releases load-prices load-surprises; do
     uv run --directory "$job_tree" fortuneteller "$command" ||
         report "fortuneteller $command exited $?"
 done
+# The week's big moves, checked and explained, and the news scanned (docs/steps/big-moves-explained.md);
+# their files go with the pages. A failure never fails the evening: the next one asks again.
+uv run --directory "$job_tree" fortuneteller big-moves || echo "big-moves exited $?; asked again tomorrow"
+moves=
+for f in data/big-moves.csv data/news-moves.csv; do
+    [ -e "$job_tree/$f" ] && moves="$moves $f"
+done
 # --directory runs it in $job_tree, so the relative calls path names no home directory.
 FT_CALLS_PATH=data/calls.csv uv run --directory "$job_tree" fortuneteller score >"$job_tree/$file" ||
     report "fortuneteller score exited $?"
@@ -283,7 +290,7 @@ if ! git -C "$job_tree" diff --quiet -- "$file"; then
     # The scoreboard (docs/steps/scoreboard.md) is rewritten into the same pull request.
     FT_CALLS_PATH=data/calls.csv uv run --directory "$job_tree" fortuneteller scoreboard ||
         report "fortuneteller scoreboard exited $?"
-    files="$file docs/scoreboard docs/predicts"
+    files="$file docs/scoreboard docs/predicts$moves"
     [ -z "$log_changed" ] || files="$files $log"
     open_pr "Score the calls on $day" "score-$day" \
         "Graded by the evening score at $(date -u +%H:%M:%SZ), after the closes."
@@ -300,12 +307,13 @@ else
     # reports ahead on it stay current; it goes with the triggers' log when that changed.
     FT_CALLS_PATH=data/calls.csv uv run --directory "$job_tree" fortuneteller scoreboard ||
         report "fortuneteller scoreboard exited $?"
-    page_changed=$(git -C "$job_tree" status --porcelain -- docs/scoreboard docs/predicts)
+    # shellcheck disable=SC2086
+    page_changed=$(git -C "$job_tree" status --porcelain -- docs/scoreboard docs/predicts $moves)
     # The pages, the guess ledger among them, go in a pull request merged on passing checks; the
     # triggers' log in one of its own that waits for a person, so the evening's guesses never wait
     # with it (step 57, R11, docs/steps/technical-fixes.md; #433 held them on 2026-11-23).
     if [ -n "$page_changed" ]; then
-        files="docs/scoreboard docs/predicts"
+        files="docs/scoreboard docs/predicts$moves"
         open_pr "Write the page on $day" "scoreboard-$day" \
             "Written by the evening score at $(date -u +%H:%M:%SZ), with nothing to score."
         if checks_pass "scoreboard-$day"; then

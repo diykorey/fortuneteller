@@ -3973,6 +3973,233 @@ def _scoreboard(_args: argparse.Namespace) -> int:
     return 0
 
 
+# Step 62 (docs/steps/big-moves-explained.md): each weekday's big moves in the markets we track,
+# checked against our open calls, forecasts and guesses and explained from the news, and the day's
+# news scanned for big moves in markets we do not track. Neither file changes a call or a guess.
+BIG_MOVE_SD = 3
+BIG_MOVE_BASE = 504
+BIG_MOVE_BACK = 5
+BIG_MOVE_KINDS = ("measured", "scheduled", "unscheduled", "nothing found")
+NOTHING_FOUND = "nothing found"
+BIG_MOVE_FIELDS = (
+    "day",
+    "market",
+    "move",
+    "deviations",
+    "covered",
+    "right",
+    "kind",
+    "flow",
+    "reason",
+    "link",
+    "model",
+)
+NEWS_MOVE_FIELDS = ("day", "market", "symbol", "move", "link", "model")
+NEWS_SCAN_MOST = 20
+
+
+class BigMove(NamedTuple):
+    day: date
+    market: str
+    move: float
+    deviations: float
+
+
+def big_moves(
+    market: str, closes: Sequence[sources.DailyClosingPrice], unit: str, days: Iterable[date]
+) -> list[BigMove]:
+    """The moves on ``days`` at least ``BIG_MOVE_SD`` standard deviations (about their mean,
+    dividing by their count, as step 40) of the ``BIG_MOVE_BASE`` moves before; a pair of closes
+    further apart than a hole allows is no move, as in ``study.daily_moves``."""
+    wanted = set(days)
+    moves = [
+        (after.day, study.release_move(before, after, unit))
+        for before, after in zip(closes, closes[1:], strict=False)
+        if (after.day - before.day).days <= study.MAX_CLOSE_GAP_DAYS
+    ]
+    found = []
+    for i in range(BIG_MOVE_BASE, len(moves)):
+        day, move = moves[i]
+        if day not in wanted:
+            continue
+        sd = statistics.pstdev(m for _, m in moves[i - BIG_MOVE_BASE : i])
+        if sd > 0 and round(abs(move) / sd, 9) >= BIG_MOVE_SD:
+            found.append(BigMove(day, market, move, abs(move) / sd))
+    return found
+
+
+def coverage(
+    move: BigMove,
+    calls: Sequence[study.LoggedCall],
+    forecasts: Sequence[Mapping[str, str]],
+    guesses: Sequence[Mapping[str, str]],
+) -> tuple[str, str]:
+    """Whether an open row on the move's market, up or down, spans its close, and whether it
+    pointed the move's way: ``yes``, ``no``, or ``both`` when rows point both ways."""
+    ways = {
+        "up" if c.direction > 0 else "down"
+        for c in calls
+        if c.instrument == move.market and c.day == move.day and c.direction
+    }
+    day = move.day.isoformat()
+    ways |= {
+        r["direction"]
+        for r in forecasts
+        if r.get("market") == move.market
+        and r.get("direction") in ("up", "down")
+        and r.get("first", "") <= day <= r.get("last", "")
+    }
+    for r in guesses:
+        if r.get("market") != move.market or r.get("direction") not in ("up", "down"):
+            continue
+        try:
+            if guess_start(r) <= move.day <= date.fromisoformat(r["last"]):
+                ways.add(r["direction"])
+        except (KeyError, ValueError):
+            continue
+    if not ways:
+        return "no", ""
+    if len(ways) == 2:
+        return "yes", "both"
+    return "yes", "yes" if ways == {"up" if move.move > 0 else "down"} else "no"
+
+
+def read_reason(answer: str, flow_names: Iterable[str]) -> dict[str, str]:
+    """The kind, flow, reason and link of the model's answer; a reason with no link, or a
+    *measured* kind naming no flow we measure, is not taken at its word. An answer with no object
+    of a known kind raises ``ValueError``."""
+    found = _json_list(answer)
+    item = found[0] if found and isinstance(found[0], dict) else None
+    if item is None or item.get("kind") not in BIG_MOVE_KINDS:
+        raise ValueError("no reason of a known kind in the answer")
+    kind, flow = str(item["kind"]), str(item.get("flow") or "")
+    reason, link = str(item.get("reason") or "").strip(), str(item.get("link") or "").strip()
+    if kind == NOTHING_FOUND or not reason or not link.startswith(("http://", "https://")):
+        return {"kind": NOTHING_FOUND, "flow": "", "reason": "", "link": ""}
+    if kind == "measured" and flow not in set(flow_names):
+        kind = "scheduled"
+    return {
+        "kind": kind,
+        "flow": flow if kind == "measured" else "",
+        "reason": reason,
+        "link": link,
+    }
+
+
+def read_scan(answer: str, day: date, symbols: Iterable[str]) -> list[dict[str, str]]:
+    """The news scan's rows for ``day``: each market named with a link, its symbol kept only if
+    we track it; one row with no market when the news named none. No list raises ``ValueError``."""
+    found = _json_list(answer)
+    if found is None:
+        raise ValueError("no list in the answer")
+    tracked = set(symbols)
+    rows = []
+    for item in found[:NEWS_SCAN_MOST]:
+        if not isinstance(item, dict):
+            continue
+        market, link = str(item.get("market") or "").strip(), str(item.get("link") or "").strip()
+        if not market or not link.startswith(("http://", "https://")):
+            continue
+        symbol = str(item.get("symbol") or "")
+        rows.append(
+            {
+                "day": day.isoformat(),
+                "market": market,
+                "symbol": symbol if symbol in tracked else "",
+                "move": str(item.get("move") or ""),
+                "link": link,
+                "model": GUESS_MODEL,
+            }
+        )
+    return rows or [{"day": day.isoformat(), "model": GUESS_MODEL}]
+
+
+def _recent_weekdays(last: date, count: int) -> list[date]:
+    days: list[date] = []
+    day = last
+    while len(days) < count:
+        if day.weekday() < 5:
+            days.append(day)
+        day -= timedelta(days=1)
+    return sorted(days)
+
+
+def _shown_move(move: float, unit: str) -> str:
+    return f"{move:+.0f} basis points" if unit == "bps" else f"{move:+.1%}"
+
+
+def _big_moves(_args: argparse.Namespace) -> int:
+    con = db.get_connection()
+    db.init_db(con=con)
+    last = study.stored_until(con)
+    if last is None:
+        print("big-moves: no daily_bars stored; run `fortuneteller load-prices` first")
+        return 0
+    days = _recent_weekdays(last, BIG_MOVE_BACK)
+    folder = settings.calls_path.parent
+    moves_path, news_path = folder / "big-moves.csv", folder / "news-moves.csv"
+    predicts = settings.scoreboard_dir.parent / "predicts"
+    calls = study.read_calls(settings.calls_path) if settings.calls_path.exists() else []
+    forecasts = _read_rows(predicts / "forecasts.csv")
+    guesses = _read_rows(predicts / "our-guesses.csv")
+    names = market_names()
+    flow_names = [flow.cli_name for flow in flows.EVENT_FLOWS]
+    rows = {(r["day"], r["market"]): r for r in _read_rows(moves_path)}
+    asked = failed = 0
+    for market, series in study.MVP_PRICE_SERIES.items():
+        try:
+            closes = study.stored_closes(market, con)
+        except ValueError:
+            continue
+        for m in big_moves(market, closes, series.unit, days):
+            key = (m.day.isoformat(), market)
+            if rows.get(key, {}).get("kind"):
+                continue
+            covered, right = coverage(m, calls, forecasts, guesses)
+            row = {
+                "day": key[0],
+                "market": market,
+                "move": f"{m.move:.6g}",
+                "deviations": f"{m.deviations:.2f}",
+                "covered": covered,
+                "right": right,
+                "model": GUESS_MODEL,
+            }
+            prompt = _prompt(
+                "big_move_prompt.txt",
+                day=key[0],
+                plain=PLAIN_MARKETS.get(market, names.get(market, market)),
+                market=market,
+                move=_shown_move(m.move, series.unit),
+                deviations=f"{m.deviations:.1f}",
+                flows=", ".join(flow_names),
+            )
+            asked += 1
+            try:
+                row |= read_reason(_run_model(prompt, web=True), flow_names)
+            except (OSError, subprocess.SubprocessError, ValueError, KeyError, TypeError) as exc:
+                failed += 1
+                print(f"big-moves: {market} on {key[0]} not asked: {exc}", file=sys.stderr)
+            rows[key] = row
+    _write_rows(moves_path, BIG_MOVE_FIELDS, [rows[k] for k in sorted(rows)])
+    news = _read_rows(news_path)
+    scanned = {r["day"] for r in news}
+    for day in days:
+        if day.isoformat() in scanned:
+            continue
+        prompt = _prompt("news_scan_prompt.txt", day=day.isoformat(), markets=market_list())
+        try:
+            news += read_scan(_run_model(prompt, web=True), day, study.MVP_PRICE_SERIES)
+        except (OSError, subprocess.SubprocessError, ValueError, KeyError, TypeError) as exc:
+            print(f"big-moves: the news of {day} not scanned: {exc}", file=sys.stderr)
+    _write_rows(news_path, NEWS_MOVE_FIELDS, sorted(news, key=lambda r: r["day"]))
+    print(
+        f"big-moves: {days[0]} to {days[-1]}, {asked} asked, {failed} failed; "
+        f"{len(rows)} big moves and {len(news)} news rows kept"
+    )
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     # Each flow's short name on the command line, read when the parser is built.
     event_names = [flow.cli_name for flow in flows.EVENT_FLOWS]
@@ -3983,6 +4210,10 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser(
         "guess", help="step 49: the evening's guesses from the news, kept in guesses.csv"
     ).set_defaults(func=_guess)
+    sub.add_parser(
+        "big-moves",
+        help="step 62: the week's big moves, checked against our rows and explained; the news scanned",
+    ).set_defaults(func=_big_moves)
     sub.add_parser(
         "draft", help="step 58: the day's proposal of the front page's guesses, in front-next.csv"
     ).set_defaults(func=_draft)

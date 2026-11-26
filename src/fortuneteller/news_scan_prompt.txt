@@ -1,0 +1,13 @@
+Search the news published on {day} for reports of big price moves in any market, in any country: a share index, a currency, a bond, a commodity, a crypto asset, or a big company's shares. Big means a report calls it a jump, a plunge, a record, or the biggest move in months.
+
+Answer with a JSON list, one object per market, at most 20:
+
+[{{"market": "...", "symbol": "...", "move": "...", "link": "..."}}]
+
+- "market" is the market's common English name, such as "copper", "Turkish lira" or "Nikkei 225".
+- "symbol" is the market's symbol in this list if it is one of them, otherwise "":
+{markets}
+- "move" is the move as the report gives it, such as "down 4%" or "a record high".
+- "link" is the report, dated {day}.
+
+Answer [] if you find no such report.

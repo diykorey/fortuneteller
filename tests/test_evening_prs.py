@@ -39,6 +39,7 @@ case "$5" in
     triggers) echo "2026-11-23,a trigger,graded" >> "$dir/data/trigger-log.csv" ;;
     scoreboard) echo '{"written": "tonight"}' > "$dir/docs/scoreboard/data.json" ;;
     score) echo "nothing to score" ;;
+    big-moves) [ -z "${BIG:-}" ] || echo "day,market" > "$dir/data/big-moves.csv" ;;
     guess) echo "BTC,a guess" >> "$dir/docs/predicts/our-guesses.csv" ;;
     draft) printf 'stated,market\ntoday,BTC\n' > "$dir/docs/predicts/front-next.csv" ;;
 esac
@@ -174,6 +175,22 @@ def test_only_an_open_score_or_pages_pull_request_holds_the_evening(
     # then an open score holds it, and an open triggers' log, left for a person, does not
     assert ("waiting for " + open_head in log) is held
     assert ("--merge scoreboard-" in log) is not held
+
+
+def test_the_week_s_big_moves_go_with_the_pages(tmp_path: Path) -> None:
+    # given the job's origin and stand-ins, and big-moves writing its file
+    job = _job(tmp_path)
+
+    # when the evening runs
+    log = _run(job, "score", BIG="1")
+
+    # then the file is in the pages' pull request, merged, and not in the triggers' one
+    day = next(w for w in log.split() if w.startswith("scoreboard-")).removeprefix("scoreboard-")
+    pages = _git(job.job, "show", "--name-only", "--format=", "scoreboard-" + day).split()
+    trigger = _git(job.job, "show", "--name-only", "--format=", "triggers-" + day).split()
+    assert pages == ["data/big-moves.csv", "docs/scoreboard/data.json"]
+    assert trigger == ["data/trigger-log.csv"]
+    assert "--merge scoreboard-" + day in log
 
 
 def test_the_draft_keeps_the_guesses_then_proposes_the_front_and_says_so(tmp_path: Path) -> None:
