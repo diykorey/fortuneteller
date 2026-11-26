@@ -1,4 +1,4 @@
-57 rows in data/calls.csv, each call graded on its market's close that day beside the replay of every stored release
+76 rows in data/calls.csv, each call graded on its market's close that day beside the replay of every stored release
 
 cpi: core against Nasdaq's consensus
 
@@ -34,7 +34,7 @@ UKX          down      2014-07  2          1      50%       0.7500  0%          
 SXXP         down      —        0          0      —         —       —                too few
 XLU          down      —        0          0      —         —       —                too few
 ITB          down      —        0          0      —         —       —                too few
-T5YIE        up        2015-09  42         35     83%       0.0000  45%              holds
+T5YIE        up        2016-03  41         34     83%       0.0000  44%              holds
 
 confidence (live)
 instrument   calls  stated  right  Brier   coin p  drift Brier  drift p  in band (allowed)  verdict
@@ -240,7 +240,7 @@ UST10Y / ZN  down      —        0          0      —         —       —   
 DXY          down      —        0          0      —         —       —                too few
 EURUSD       up        —        0          0      —         —       —                too few
 UST5Y / ZF   down      —        0          0      —         —       —                too few
-XLU          up        2014-09-13 2          1      50%       0.7500  0%               too few
+XLU          up        2014-09-13 5          3      60%       0.5000  20%              too few
 
 confidence (live)
 instrument   calls  stated  right  Brier   coin p  drift Brier  drift p  in band (allowed)  verdict
