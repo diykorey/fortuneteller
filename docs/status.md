@@ -68,8 +68,9 @@ the hand check against Yahoo passed, and no answer or verdict on the page change
   guess carries its base rate; a grounded guesser, given the record, runs beside today's news
   guesser as the control. Asked for 2026-11-23 by the owner. Spec merged (#420); step 1, the
   base rate on every row, merged (#421); step 2, the grounded guesser, merged (#423); step 3,
-  `fortuneteller excess`, the stats page and the grounded lessons, built. Next: the hand check of
-  the first three grounded guesses' base rates, then the readings on 2027-01-31 and 2027-04-30.
+  `fortuneteller excess`, the stats page and the grounded lessons, built; the first three grounded
+  guesses' base rates checked by hand, all three equal. Next: the readings on 2027-01-31 and
+  2027-04-30.
 - **Step 46: the loop's safety nets** ([the spec](steps/loop-nets.md)): each machine watches the
   other and opens an issue for what it missed; a source's 5xx asked again. Chosen 2026-11-21 by the
   owner. Steps 1 and 2 built. Next: merged before Wednesday 2026-11-25's releases, then step 3,
