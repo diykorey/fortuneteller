@@ -11,6 +11,19 @@ amended there with a date.
 Each entry: **what** was decided, **why**, what it **retires**, and **where** the detail is. *By the
 owner* marks a choice the owner made over another on the table.
 
+## 2026-11-26: Big moves explained, and the news scanned for markets we miss, by the owner
+
+- **What:** each weekday the evening finds the big moves in the markets we track from the stored
+  closes, checks each against our open calls and guesses, and asks the Subscription LLM for its
+  reason; it also scans the day's news for big moves in markets we do not track. Built as step 62;
+  a month of it is read in January 2027.
+- **Why:** the owner asked to learn from the moves we did not see coming. Starting from our own
+  closes catches every move in what we track, reported or not; the news is read only where the
+  closes cannot see. Chosen over reading each country's papers first, which is costlier and
+  reports what readers care about, and over the closes alone, which miss the markets we lack.
+- **Retires:** nothing; Polymarket (step 60) stays after the 2027-01-31 gate.
+- **Where:** [Big moves, explained](steps/big-moves-explained.md); [Roadmap](roadmap.md), step 62.
+
 ## 2026-11-25: One front-page card per area, after step 57, by the owner
 
 - **What:** the predictions page holds at most one card per area, long-run forecasts and guesses

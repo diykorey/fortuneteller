@@ -412,6 +412,12 @@ Terms are grouped by what they are about, alphabetical within each group.
   member-day is one S&P 500 member on one day it was a member; a big move is its excess day move
   against the index at three standard deviations or more of the 504 before; an 8-K item's lift is
   its share of big moves over the share on all member-days, so 1 means no more than any day.
+- **Market big move / news scan / market to add** — *added 2026-11-26*
+  ([step 62](steps/big-moves-explained.md)): a market big move is a tracked market's weekday move
+  of 3 standard deviations or more of the 504 weekday moves before it (step 40's threshold, on the
+  market's own move). The news scan is the evening's one question to the Subscription LLM, with web
+  search, for the day's reports of big price moves in any market. A market to add is one the scan
+  names on 3 or more days of a month, with 10 years of free daily history.
 - **Expert reader / rule / pack** — *added 2026-11-21* ([step 41](steps/expert-hypotheses.md)):
   a language model asked to act as an economics and statistics expert; it writes *rules* (a kind,
   an optional condition before the event, a market, a span, a direction) from a *pack*, the records
