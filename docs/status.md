@@ -54,6 +54,9 @@ the hand check against Yahoo passed, and no answer or verdict on the page change
 
 ## In progress
 
+- **Step 63: the 2-year yield** ([the spec](steps/two-year-yield.md)): the US 2-year Treasury
+  yield from FRED, signed as the 10-year, against every flow. Chosen by the owner 2026-11-27. Next:
+  the spec's goldfish review, then step 1, the market loaded and compared.
 - **Step 62: big moves, explained** ([the spec](steps/big-moves-explained.md)): each weekday's
   big moves in our markets checked against our calls and guesses and explained from the news; the
   news scanned for big moves in markets we do not track. Asked for by the owner 2026-11-26. Spec merged (#476);
@@ -149,7 +152,7 @@ the hand check against Yahoo passed, and no answer or verdict on the page change
 
 ## Next
 
-The Results of step 58, after the first Saturday under the schedule (2026-11-28), and of step 59
+Step 63's step 1; the US releases with forecasts after it. The Results of step 58, after the first Saturday under the schedule (2026-11-28), and of step 59
 after that weekend; then step 60 after the 2027-01-31 gate.
 
 ## Known, not yet fixed

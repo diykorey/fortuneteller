@@ -11,6 +11,21 @@ amended there with a date.
 Each entry: **what** was decided, **why**, what it **retires**, and **where** the detail is. *By the
 owner* marks a choice the owner made over another on the table.
 
+## 2026-11-27: New sources: the 2-year yield first, then US releases with forecasts, by the owner
+
+- **What:** the next sources are the US 2-year Treasury yield (FRED's `DGS2`) as a new market
+  (step 63), then the US releases TradingView lists with forecasts that we lack: producer prices,
+  Michigan sentiment, job openings, housing starts and durable goods.
+- **Why:** every link that holds compares a release with its forecast and reads a short-term
+  interest rate or a currency. Kinds with no expected figure (steps 26 to 30), and the new
+  countries (steps 52 to 54), found nothing that holds. The 2-year is the market most sensitive
+  to US releases, and the TradingView flows already read releases of this shape. Chosen over EIA's
+  weekly oil and gas stocks, USDA's crop reports, and the Asian indexes, silver and copper the news
+  scan found, which stay candidates.
+- **Retires:** nothing. GDELT stays out ([Precision](precision.md)); Treasury auctions have no
+  free expected yield; Polymarket (step 60) stays after the 2027-01-31 gate.
+- **Where:** [The 2-year yield](steps/two-year-yield.md); [Roadmap](roadmap.md), step 63.
+
 ## 2026-11-26: Big moves explained, and the news scanned for markets we miss, by the owner
 
 - **What:** each weekday the evening finds the big moves in the markets we track from the stored
