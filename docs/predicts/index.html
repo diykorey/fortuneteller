@@ -143,7 +143,7 @@ footer { margin-top: 32px; font-size: 15px; color: var(--muted); display: grid; 
     <span>Made by <a href="https://www.linkedin.com/in/andriyandrunevchyn/">Andriy Andrunevchyn</a>, CTO and co-founder of <a href="https://soft-innovation.ch/">SSI</a></span>
   </footer>
 </main>
-<script id="data" type="application/json">{"written": "2026-11-26", "front_tally": {"came_true": 0, "did_not": 0, "open": 6}, "guess_tally": {"came_true": 0, "did_not": 0, "open": 46}, "stated": [{"stated": true, "market": "SPY / ES", "day": null, "until": "2026-12-21", "when": "Stated Sat, Nov 21, 2026 · checked after the close on Mon, Dec 21, 2026", "event": "The US stock market, over the next month", "outcome": "higher on Mon, Dec 21, 2026 than on Fri, Nov 20, 2026", "direction": "up", "record": "Tested on 666 past months, one at a time, this held 402 times and failed 264 times.", "right": 402, "called": 666, "unit": "past months", "note": "It goes the way most past months went. It says nothing about how far.", "link": ""}, {"stated": true, "market": "US home prices", "day": null, "until": "2027-08-01", "when": "Stated Sat, Nov 21, 2026 · checked when August 2027's figure is out", "event": "US home prices, in the 12 months after August 2026", "outcome": "higher in August 2027 than in August 2026", "direction": "up", "record": "Tested on 34 past years, one at a time, this held 29 times and failed 5 times.", "right": 29, "called": 34, "unit": "past years", "note": "It goes the way most past years went. It says nothing about how far.", "link": ""}], "tally": {"came_true": 0, "did_not": 0, "open": 3}, "kept_since": "2026-11-21"}</script>
+<script id="data" type="application/json">{"written": "2026-11-27", "front_tally": {"came_true": 0, "did_not": 0, "open": 6}, "guess_tally": {"came_true": 0, "did_not": 0, "open": 53}, "stated": [{"stated": true, "market": "SPY / ES", "day": null, "until": "2026-12-21", "when": "Stated Sat, Nov 21, 2026 · checked after the close on Mon, Dec 21, 2026", "event": "The US stock market, over the next month", "outcome": "higher on Mon, Dec 21, 2026 than on Fri, Nov 20, 2026", "direction": "up", "record": "Tested on 666 past months, one at a time, this held 402 times and failed 264 times.", "right": 402, "called": 666, "unit": "past months", "note": "It goes the way most past months went. It says nothing about how far.", "link": ""}, {"stated": true, "market": "US home prices", "day": null, "until": "2027-08-01", "when": "Stated Sat, Nov 21, 2026 · checked when August 2027's figure is out", "event": "US home prices, in the 12 months after August 2026", "outcome": "higher in August 2027 than in August 2026", "direction": "up", "record": "Tested on 34 past years, one at a time, this held 29 times and failed 5 times.", "right": 29, "called": 34, "unit": "past years", "note": "It goes the way most past years went. It says nothing about how far.", "link": ""}], "tally": {"came_true": 0, "did_not": 0, "open": 3}, "kept_since": "2026-11-21"}</script>
 <script>
 (function () {
   const data = JSON.parse(document.getElementById('data').textContent);
@@ -159,7 +159,8 @@ footer { margin-top: 32px; font-size: 15px; color: var(--muted); display: grid; 
     'UGA': ['⛽', 'US gasoline'], 'UNG': ['🔥', 'US natural gas'], 'DXY': ['💵', 'US dollar'],
     'EURUSD': ['💶', 'Euro vs dollar'], 'GBPUSD': ['💷', 'British pound vs dollar'],
     'USDJPY': ['💴', 'The dollar in Japanese yen'], 'UST10Y / ZN': ['🏛️', 'US 10-year interest rate'],
-    'UST5Y / ZF': ['🏛️', 'US 5-year interest rate'], 'T5YIE': ['🛒', 'Expected US inflation'],
+    'UST5Y / ZF': ['🏛️', 'US 5-year interest rate'], 'UST2Y / ZT': ['🏛️', 'US 2-year interest rate'],
+    'T5YIE': ['🛒', 'Expected US inflation'],
     'VIX': ['😨', 'Market fear gauge'], 'XLE': ['⚡', 'US energy stocks'],
     'XLU': ['💡', 'US power and water stocks'], 'ITB': ['🏗️', 'US homebuilder stocks'],
     'ITA': ['🛡️', 'US defence stocks'], 'BTC': ['₿', 'Bitcoin'], 'ETH': ['💎', 'Ether'],
@@ -184,6 +185,7 @@ footer { margin-top: 32px; font-size: 15px; color: var(--muted); display: grid; 
     'DXY': 'The US dollar against other big currencies.',
     'UST10Y / ZN': 'The interest the US government pays to borrow for 10 years.',
     'UST5Y / ZF': 'The interest the US government pays to borrow for 5 years.',
+    'UST2Y / ZT': 'The interest the US government pays to borrow for 2 years.',
     'T5YIE': 'How fast investors expect prices in shops to rise over the next 5 years.',
     'COMP': 'The Nasdaq: big US technology companies.', 'SPY / ES': 'The S&P 500: the 500 biggest US companies.',
     'US home prices': 'Typical US home prices across the whole country.',

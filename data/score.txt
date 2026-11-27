@@ -18,6 +18,7 @@ SXXP         down      —        0          0      —         —       —   
 XLU          down      —        0          0      —         —       —                too few
 ITB          down      —        0          0      —         —       —                too few
 T5YIE        up        —        0          0      —         —       —                too few
+UST2Y / ZT   up        —        0          0      —         —       —                too few
 
 walk-forward (replay)
 instrument   expected  from     predicted  right  hit rate  p       always expected  verdict
@@ -35,6 +36,7 @@ SXXP         down      —        0          0      —         —       —   
 XLU          down      —        0          0      —         —       —                too few
 ITB          down      —        0          0      —         —       —                too few
 T5YIE        up        2016-03  41         34     83%       0.0000  44%              holds
+UST2Y / ZT   up        —        0          0      —         —       —                too few
 
 confidence (live)
 instrument   calls  stated  right  Brier   coin p  drift Brier  drift p  in band (allowed)  verdict
@@ -52,6 +54,7 @@ SXXP         0      —       —      —       —       —            —   
 XLU          0      —       —      —       —       —            —        —                  too few
 ITB          0      —       —      —       —       —            —        —                  too few
 T5YIE        0      —       —      —       —       —            —        —                  too few
+UST2Y / ZT   0      —       —      —       —       —            —        —                  too few
 
 calibration (live)
 instrument   group          calls  stated  right  allowed
@@ -72,6 +75,7 @@ SXXP         —               —
 XLU          —               —
 ITB          —               —
 T5YIE        —               —
+UST2Y / ZT   —               —
 
 void: 1
   cpi 2026-11-10 EURUSD: logged 09:19 New York, not from the release at 08:30 until its close at 00:00
@@ -85,6 +89,7 @@ DXY          up        —        0          0      —         —       —   
 EURUSD       down      —        0          0      —         —       —                too few
 UST5Y / ZF   up        —        0          0      —         —       —                too few
 XLU          down      —        0          0      —         —       —                too few
+UST2Y / ZT   up        —        0          0      —         —       —                too few
 
 walk-forward (replay)
 instrument   expected  from     predicted  right  hit rate  p       always expected  verdict
@@ -93,6 +98,7 @@ DXY          up        2008-08  2          1      50%       0.7500  50%         
 EURUSD       down      —        0          0      —         —       —                too few
 UST5Y / ZF   up        2009-10  74         49     66%       0.0035  45%              holds
 XLU          down      —        0          0      —         —       —                too few
+UST2Y / ZT   up        2009-09  28         13     46%       0.7142  21%              too few
 
 confidence (live)
 instrument   calls  stated  right  Brier   coin p  drift Brier  drift p  in band (allowed)  verdict
@@ -101,6 +107,7 @@ DXY          0      —       —      —       —       —            —   
 EURUSD       0      —       —      —       —       —            —        —                  too few
 UST5Y / ZF   0      —       —      —       —       —            —        —                  too few
 XLU          0      —       —      —       —       —            —        —                  too few
+UST2Y / ZT   0      —       —      —       —       —            —        —                  too few
 
 calibration (live)
 instrument   group          calls  stated  right  allowed
@@ -113,6 +120,7 @@ DXY          —               —
 EURUSD       —               —
 UST5Y / ZF   —               —
 XLU          —               —
+UST2Y / ZT   —               —
 
 pce: core_pce against Nasdaq's consensus
 
@@ -132,6 +140,7 @@ SXXP         down      —        0          0      —         —       —   
 XLU          down      —        0          0      —         —       —                too few
 ITB          down      —        0          0      —         —       —                too few
 T5YIE        up        —        0          0      —         —       —                too few
+UST2Y / ZT   up        —        0          0      —         —       —                too few
 
 walk-forward (replay)
 instrument   expected  from     predicted  right  hit rate  p       always expected  verdict
@@ -149,6 +158,7 @@ SXXP         down      —        0          0      —         —       —   
 XLU          down      —        0          0      —         —       —                too few
 ITB          down      —        0          0      —         —       —                too few
 T5YIE        up        —        0          0      —         —       —                too few
+UST2Y / ZT   up        —        0          0      —         —       —                too few
 
 confidence (live)
 instrument   calls  stated  right  Brier   coin p  drift Brier  drift p  in band (allowed)  verdict
@@ -166,6 +176,7 @@ SXXP         0      —       —      —       —       —            —   
 XLU          0      —       —      —       —       —            —        —                  too few
 ITB          0      —       —      —       —       —            —        —                  too few
 T5YIE        0      —       —      —       —       —            —        —                  too few
+UST2Y / ZT   0      —       —      —       —       —            —        —                  too few
 
 calibration (live)
 instrument   group          calls  stated  right  allowed
@@ -186,6 +197,7 @@ SXXP         —               —
 XLU          —               —
 ITB          —               —
 T5YIE        —               —
+UST2Y / ZT   —               —
 
 gdp: gdp against Nasdaq's consensus
 
@@ -196,6 +208,7 @@ DXY          up        —        0          0      —         —       —   
 EURUSD       down      —        0          0      —         —       —                too few
 UST5Y / ZF   up        —        0          0      —         —       —                too few
 XLU          down      —        0          0      —         —       —                too few
+UST2Y / ZT   up        —        0          0      —         —       —                too few
 
 walk-forward (replay)
 instrument   expected  from     predicted  right  hit rate  p       always expected  verdict
@@ -204,6 +217,7 @@ DXY          up        —        0          0      —         —       —   
 EURUSD       down      —        0          0      —         —       —                too few
 UST5Y / ZF   up        —        0          0      —         —       —                too few
 XLU          down      —        0          0      —         —       —                too few
+UST2Y / ZT   up        —        0          0      —         —       —                too few
 
 confidence (live)
 instrument   calls  stated  right  Brier   coin p  drift Brier  drift p  in band (allowed)  verdict
@@ -212,6 +226,7 @@ DXY          0      —       —      —       —       —            —   
 EURUSD       0      —       —      —       —       —            —        —                  too few
 UST5Y / ZF   0      —       —      —       —       —            —        —                  too few
 XLU          0      —       —      —       —       —            —        —                  too few
+UST2Y / ZT   0      —       —      —       —       —            —        —                  too few
 
 calibration (live)
 instrument   group          calls  stated  right  allowed
@@ -223,6 +238,7 @@ DXY          —               —
 EURUSD       —               —
 UST5Y / ZF   —               —
 XLU          —               —
+UST2Y / ZT   —               —
 
 claims: initial_claims against Nasdaq's consensus
 
@@ -233,6 +249,7 @@ DXY          down      —        0          0      —         —       —   
 EURUSD       up        —        0          0      —         —       —                too few
 UST5Y / ZF   down      —        0          0      —         —       —                too few
 XLU          up        —        0          0      —         —       —                too few
+UST2Y / ZT   down      —        0          0      —         —       —                too few
 
 walk-forward (replay)
 instrument   expected  from     predicted  right  hit rate  p       always expected  verdict
@@ -241,6 +258,7 @@ DXY          down      —        0          0      —         —       —   
 EURUSD       up        —        0          0      —         —       —                too few
 UST5Y / ZF   down      —        0          0      —         —       —                too few
 XLU          up        2014-09-13 5          3      60%       0.5000  20%              too few
+UST2Y / ZT   down      —        0          0      —         —       —                too few
 
 confidence (live)
 instrument   calls  stated  right  Brier   coin p  drift Brier  drift p  in band (allowed)  verdict
@@ -249,6 +267,7 @@ DXY          0      —       —      —       —       —            —   
 EURUSD       0      —       —      —       —       —            —        —                  too few
 UST5Y / ZF   0      —       —      —       —       —            —        —                  too few
 XLU          0      —       —      —       —       —            —        —                  too few
+UST2Y / ZT   0      —       —      —       —       —            —        —                  too few
 
 calibration (live)
 instrument   group          calls  stated  right  allowed
@@ -260,6 +279,7 @@ DXY          —               —
 EURUSD       —               —
 UST5Y / ZF   —               —
 XLU          —               —
+UST2Y / ZT   —               —
 
 missed: 1 releases since 2026-10-13 with no rows (claims since 2026-10-29)
   nfp 2026-11-06
