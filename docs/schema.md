@@ -100,8 +100,8 @@ outcomes](steps/more-outcomes.md) adds `BRN`, `EURUSD`, `COMP`, `UST5Y / ZF`, `U
 banks](steps/other-central-banks.md) `GBPUSD`, `USDJPY` and `NKY` (2026-11-17), and [crypto](steps/crypto.md) `ETH` and `COIN`
 (2026-11-18), [weather](steps/weather.md) `ALL` (2026-11-18), [Canada](steps/canada.md) `USDCAD` and
 `TSX` (2026-11-22), [China](steps/china.md) `USDCNY` (FRED's `DEXCHUS`) and `SHCOMP`
-(2026-11-23), and [Switzerland](steps/switzerland.md) `USDCHF` and `SMI` (2026-11-23), so 37 are
-measured.
+(2026-11-23), and [Switzerland](steps/switzerland.md) `USDCHF` and `SMI` (2026-11-23), and [the 2-year yield](steps/two-year-yield.md) `UST2Y / ZT`
+(FRED's `DGS2`, 2026-11-27), so 38 are measured.
 
 | Column | Type | Meaning |
 | --- | --- | --- |
@@ -372,6 +372,7 @@ the same day.
 | `SHCOMP` | 7,118 | 1997-07-02 (counted 2026-11-23, to 2026-11-19) |
 | `USDCHF` | 6,026 | 2003-09-17 (counted 2026-11-23, to 2026-11-19) |
 | `SMI` | 9,048 | 1990-11-09 (counted 2026-11-23, to 2026-11-19) |
+| `UST2Y / ZT` | 12,617 | 1976-06-01 (counted 2026-11-27, to 2026-11-24, FRED's last) |
 
 A few megabytes in all. `observations` is these same days thinned down to the release days —
 about 2,700 rows for CPI and the five; 45,773 for ten events and sixteen markets on 2026-10-27;
@@ -388,8 +389,8 @@ breakeven the same day.
 
 ### Values
 
-**`source`** — `yahoo:` followed by the vendor ticker, or for the breakeven `fred:` followed by
-FRED's series id ([the breakeven](steps/breakeven.md)), for example:
+**`source`** — `yahoo:` followed by the vendor ticker, or for the breakeven, the yuan and the
+2-year yield `fred:` followed by FRED's series id ([the breakeven](steps/breakeven.md)), for example:
 
 | Value | Instrument | What it is |
 | --- | --- | --- |
@@ -401,6 +402,7 @@ FRED's series id ([the breakeven](steps/breakeven.md)), for example:
 | `yahoo:^GDAXI` | `DAX` | The DAX index, Frankfurt; its day is Frankfurt's |
 | `yahoo:^STOXX50E` | `SX5E` | The Euro Stoxx 50 index; its day is Frankfurt's |
 | `fred:T5YIE` | `T5YIE` | The 5-year breakeven inflation, in percent: the 5-year Treasury yield less the 5-year TIPS yield, from the Treasury's daily curve |
+| `fred:DGS2` | `UST2Y / ZT` | The 2-year Treasury yield, in percent, from the Treasury's daily curve ([the 2-year yield](steps/two-year-yield.md)) |
 
 ## observations
 
@@ -465,7 +467,7 @@ daily prices, so the intraday ones stay empty.
 | Value | Meaning |
 | --- | --- |
 | `yahoo` | Daily closes from Yahoo Finance, via `daily_bars` (whose `source` names the exact ticker). |
-| `fred` | The breakeven's daily values from FRED, via `daily_bars` (`fred:T5YIE`). |
+| `fred` | The breakeven's, the yuan's and the 2-year yield's daily values from FRED, via `daily_bars` (`fred:T5YIE`, `fred:DEXCHUS`, `fred:DGS2`). |
 
 **`quality`** — how the move was measured.
 

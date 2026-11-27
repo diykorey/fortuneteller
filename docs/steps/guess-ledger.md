@@ -42,7 +42,8 @@ At the end:
     ([China](china.md), step 1): 35, with `USDCNY` and `SHCOMP`; *amended 2026-11-23*
     ([Switzerland](switzerland.md), step 1): 37, with `USDCHF` and `SMI`; *amended 2026-11-24*
     ([step 56](honest-page.md), step 1): 35, without `COIN` and `ALL`, single companies, each
-    dropped as *a single company*; Coinbase's open guess is graded as before;
+    dropped as *a single company*; Coinbase's open guess is graded as before; *amended
+    2026-11-27* ([the 2-year yield](two-year-yield.md), step 1): 36, with `UST2Y / ZT`;
   - *up* or *down*;
   - an end date, a weekday, from the second weekday after the evening to a year ahead;
   - a statement of at most 40 words with no `%`;
@@ -116,7 +117,7 @@ At the end:
 
 ## What this step does not do
 
-No market outside the 31 (33 from 2026-11-22, with `USDCAD` and `TSX`; 35 from 2026-11-23, with `USDCNY` and `SHCOMP`; 37 the same day, with `USDCHF` and `SMI`). No size of move. No percentage. No change to the tested forecasts. No
+No market outside the 31 (33 from 2026-11-22, with `USDCAD` and `TSX`; 35 from 2026-11-23, with `USDCNY` and `SHCOMP`; 37 the same day, with `USDCHF` and `SMI`; 38 from 2026-11-27, with `UST2Y / ZT`). No size of move. No percentage. No change to the tested forecasts. No
 more than five forecasts on the front page.
 
 ## Technical details

@@ -458,7 +458,8 @@ NOTICEABLE_SURPRISE_PP = 0.1
 
 def with_more_outcomes(signs: dict[str, int]) -> dict[str, int]:
     """The nine more outcomes' signs by analogy (docs/steps/more-outcomes.md): the euro the dollar
-    index's reversed, the 5-year yield the 10-year's, the Nasdaq the S&P 500's, the FTSE 100 and
+    index's reversed, the 5-year and the 2-year yields the 10-year's
+    (docs/steps/two-year-yield.md), the Nasdaq the S&P 500's, the FTSE 100 and
     the STOXX 600 the DAX's; oil, bitcoin and the two sector ETFs none, nor the markets people feel
     (docs/steps/markets-people-feel.md), coffee (docs/steps/coffee.md) or the breakeven
     (docs/steps/breakeven.md), except utilities, which compete with bonds: the 10-year yield's sign
@@ -499,6 +500,7 @@ def with_more_outcomes(signs: dict[str, int]) -> dict[str, int]:
         "SHCOMP": 0,
         "USDCHF": 0,
         "SMI": 0,
+        "UST2Y / ZT": signs["UST10Y / ZN"],
     }
 
 

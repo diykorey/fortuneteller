@@ -42,6 +42,7 @@ USDCNY,USD/CNY,fx,asia,OTC,"FRED DEXCHUS, the noon buying rate in New York; up i
 SHCOMP,Shanghai Composite,equity_index,asia,Shanghai Stock Exchange,"Yahoo 000001.SS; closes 15:00 Shanghai (step 53)."
 USDCHF,USD/CHF,fx,europe,OTC,"Yahoo CHF=X; up is the franc weaker (step 54)."
 SMI,Swiss Market Index,equity_index,europe,SIX Swiss Exchange,"Yahoo ^SSMI; closes 17:30 Zurich (step 54)."
+UST2Y / ZT,US Treasury 2Y,rates_bond,us,CBOT (CME) / OTC cash,"The short end of the curve, read from FRED's DGS2; measured as yield in bps like the 10-year."
 BA,Boeing,single_stock,us,NYSE,"A CEO scandal of step 20, 2005-03-07; measured against the S&P 500."
 RRGB,Red Robin Gourmet Burgers,single_stock,us,Nasdaq,"A CEO scandal of step 20, 2005-08-11; measured against the S&P 500."
 MMS,Maximus,single_stock,us,NYSE,"A CEO scandal of step 20, 2006-04-24; measured against the S&P 500."

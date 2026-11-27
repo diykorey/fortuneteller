@@ -322,12 +322,16 @@ def test_loading_every_instrument_twice_changes_no_row_count(
             "SHCOMP": 4,
             "USDCHF": 4,
             "SMI": 4,
+            "UST2Y / ZT": 4,
         }
     )
-    assert db.count_rows("daily_bars", con=con) == 150
+    assert db.count_rows("daily_bars", con=con) == 154
     assert con.execute(
         "SELECT DISTINCT source FROM daily_bars WHERE instrument = 'T5YIE'"
     ).fetchall() == [("fred:T5YIE",)]
+    assert con.execute(
+        "SELECT DISTINCT source FROM daily_bars WHERE instrument = 'UST2Y / ZT'"
+    ).fetchall() == [("fred:DGS2",)]
 
 
 def test_tickers_cover_the_mvp_instruments_by_exact_symbol() -> None:
@@ -375,6 +379,7 @@ def test_tickers_cover_the_mvp_instruments_by_exact_symbol() -> None:
         "SHCOMP",
         "USDCHF",
         "SMI",
+        "UST2Y / ZT",
     ]
     assert set(MVP_PRICE_SERIES) <= symbols
 

@@ -295,9 +295,10 @@ def test_an_actual_predicts_each_open_link_s_close_and_a_closed_one_is_silent(
         "XLU          —      silent: the link does not pass on the releases so far",
         "ITB          —      silent: the link does not pass on the releases so far",
         "T5YIE        —      silent: the link does not pass on the releases so far",
+        "UST2Y / ZT   —      silent: the link does not pass on the releases so far",
         "record = the link's calls so far, walk-forward; band = where half its moves land; "
         "both graded by `fortuneteller predict --event cpi`",
-        f"logged 14 rows to {settings.calls_path}",
+        f"logged 15 rows to {settings.calls_path}",
     ]
 
 
@@ -320,7 +321,7 @@ def test_without_nasdaq_s_consensus_tradingview_s_forecast_is_taken_and_named(
         "surprise +0.1",
         "trigger: none, Nasdaq's consensus has none to read the kind against",
     ]
-    assert out[-1] == f"logged 14 rows to {settings.calls_path}"
+    assert out[-1] == f"logged 15 rows to {settings.calls_path}"
 
 
 def _tradingview_reads(
@@ -364,8 +365,8 @@ def test_fetch_waits_for_tradingview_s_actual_and_calls_on_it(
         "actual 0.3 from TradingView at 08:30:30 New York",
         "core on 2026-11-12: actual 0.3, Nasdaq's consensus 0.2, surprise +0.1",
     ]
-    assert out[-1] == f"logged 14 rows to {settings.calls_path}"
-    assert [row.actual for row in study.read_calls(settings.calls_path)] == [0.3] * 14
+    assert out[-1] == f"logged 15 rows to {settings.calls_path}"
+    assert [row.actual for row in study.read_calls(settings.calls_path)] == [0.3] * 15
 
 
 def test_fetch_gives_up_half_an_hour_after_the_release(
@@ -551,7 +552,7 @@ def test_a_small_surprise_predicts_nothing(
     assert out[1:] == [
         "trigger: cpi,2026-11-12,above",
         "no prediction: the surprise is under 0.1pp",
-        f"logged 14 rows to {settings.calls_path}",
+        f"logged 15 rows to {settings.calls_path}",
     ]
 
 
@@ -635,7 +636,7 @@ def test_predict_grades_each_link_s_stated_confidence(
     start = out.index("confidence (without 2020-03 … 2021-04)")
     assert all(row.endswith(" honest") for row in out[start + 2 : start + 6])
     start = out.index("confidence verdict (honest only if honest with and without COVID)")
-    assert out[start + 1 : start + 15] == [
+    assert out[start + 1 : start + 16] == [
         "SPY / ES     honest",
         "UST10Y / ZN  honest",
         "DXY          honest",
@@ -650,8 +651,9 @@ def test_predict_grades_each_link_s_stated_confidence(
         "XLU          too few",
         "ITB          too few",
         "T5YIE        too few",
+        "UST2Y / ZT   too few",
     ]
-    assert out[start + 16].startswith("honest = on at least 30 calls with a probability")
+    assert out[start + 17].startswith("honest = on at least 30 calls with a probability")
 
 
 def test_an_open_link_with_too_few_calls_so_far_calls_without_a_probability(
@@ -682,9 +684,10 @@ def test_an_open_link_with_too_few_calls_so_far_calls_without_a_probability(
         "XLU          —      silent: the link does not pass on the releases so far",
         "ITB          —      silent: the link does not pass on the releases so far",
         "T5YIE        —      silent: the link does not pass on the releases so far",
+        "UST2Y / ZT   —      silent: the link does not pass on the releases so far",
         "record = the link's calls so far, walk-forward; band = where half its moves land; "
         "both graded by `fortuneteller predict --event cpi`",
-        f"logged 14 rows to {settings.calls_path}",
+        f"logged 15 rows to {settings.calls_path}",
     ]
 
 
@@ -704,8 +707,8 @@ def test_an_actual_logs_each_link_s_line_as_printed(
     # then the log holds one row per link with what was printed, and says so
     calls = study.read_calls(settings.calls_path)
     assert code == 0
-    assert capsys.readouterr().out.splitlines()[-1] == f"logged 14 rows to {settings.calls_path}"
-    assert [(c.flow, c.day, c.actual) for c in calls] == [("cpi", date(2026, 11, 12), 0.3)] * 14
+    assert capsys.readouterr().out.splitlines()[-1] == f"logged 15 rows to {settings.calls_path}"
+    assert [(c.flow, c.day, c.actual) for c in calls] == [("cpi", date(2026, 11, 12), 0.3)] * 15
     assert [(c.instrument, c.outcome, c.direction) for c in calls] == [
         ("SPY / ES", study.CALLED, -1),
         ("UST10Y / ZN", study.CALLED, 1),
@@ -721,6 +724,7 @@ def test_an_actual_logs_each_link_s_line_as_printed(
         ("XLU", study.SILENT, None),
         ("ITB", study.SILENT, None),
         ("T5YIE", study.SILENT, None),
+        ("UST2Y / ZT", study.SILENT, None),
     ]
     yield_call = calls[1]
     assert yield_call.probability is not None and round(yield_call.probability, 2) == 0.88
@@ -757,6 +761,7 @@ def test_a_small_surprise_logs_every_link_as_small(
         ("XLU", study.SMALL, None),
         ("ITB", study.SMALL, None),
         ("T5YIE", study.SMALL, None),
+        ("UST2Y / ZT", study.SMALL, None),
     ]
 
 
@@ -778,6 +783,7 @@ def test_a_call_with_too_few_calls_before_is_logged_with_its_direction(
         (study.TOO_FEW_CALLS, 1),
         (study.TOO_FEW_CALLS, 1),
         (study.TOO_FEW_CALLS, 1),
+        (study.SILENT, None),
         (study.SILENT, None),
         (study.SILENT, None),
         (study.SILENT, None),
@@ -828,7 +834,7 @@ def test_another_flow_logged_that_day_leaves_the_release_its_entry(
     # then CPI's rows are logged after the jobs report's
     calls = study.read_calls(settings.calls_path)
     assert code == 0
-    assert [c.flow for c in calls] == ["nfp"] + ["cpi"] * 14
+    assert [c.flow for c in calls] == ["nfp"] + ["cpi"] * 15
 
 
 def test_the_log_reads_back_what_was_written(tmp_path: Path) -> None:
@@ -1065,6 +1071,26 @@ def test_a_close_published_a_day_late_waits_and_a_yahoo_close_is_pending(
 
     # then it no longer waits
     assert "waiting: 1" not in capsys.readouterr().out.splitlines()
+
+
+def test_a_call_on_the_2_year_yield_waits_for_fred_s_close(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    # given a live release with the S&P 500's move loaded, and a call on the 2-year yield
+    con = db.get_connection()
+    _store_consensus_history(con)
+    day = date(2026, 10, 14)
+    _live_release(con, day, {"SPY / ES": -0.004})
+    study.append_calls(settings.calls_path, [_row(day, "UST2Y / ZT", direction=1)])
+
+    # when it is scored before FRED has the close
+    code = main(["score"])
+
+    # then the 2-year waits, as the breakeven does, and nothing is pending
+    out = capsys.readouterr().out.splitlines()
+    assert code == 0
+    assert not any(line.startswith("pending:") for line in out)
+    assert out[out.index("waiting: 1") + 1] == "  cpi 2026-10-14 UST2Y / ZT: its move is not loaded"
 
 
 def test_a_call_logged_twice_is_scored_once(

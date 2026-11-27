@@ -765,9 +765,9 @@ def test_the_guesser_is_not_offered_a_single_company() -> None:
     # given the markets the guesser is shown
     listed = [line.split(":")[0] for line in cli.market_list().splitlines()]
 
-    # then neither Coinbase nor Allstate is among them, and the other 35 are
+    # then neither Coinbase nor Allstate is among them, and the other 36 are
     assert "COIN" not in listed and "ALL" not in listed
-    assert len(listed) == len(study.MVP_PRICE_SERIES) - 2 == 35
+    assert len(listed) == len(study.MVP_PRICE_SERIES) - 2 == 36
 
 
 TODAY = date(2026, 11, 25)

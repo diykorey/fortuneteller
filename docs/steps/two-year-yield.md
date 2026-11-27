@@ -76,8 +76,37 @@ walk-forward is called by the morning job, like the 5-year's.
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | The 2-year: a seed row, a `fred:DGS2` price series, its sign, its plain name and area; `load-prices` stores it | The tests below pass; on a copy of the store the comparison gives an empty diff; the closes stored equal FRED's non-blank values to the copy's last day, their count and first and last dates here; the 5-year's before-run numbers here; the scoreboard's rebuild time here, under the evening job's 15 minutes; not merged on a day in the scoreboard's `ahead` list before that day's evening run |
+| 1 | The 2-year: a seed row, a `fred:DGS2` price series, its sign, its plain name and area; `load-prices` stores it | The tests below pass; on a copy of the store the comparison gives an empty diff; the closes stored equal FRED's non-blank values to the copy's last day, their count and first and last dates here; the 5-year's before-run numbers here; the scoreboard's rebuild time here, under the evening job's 15 minutes (*amended 2026-11-27, after measuring:* the evening job's limit is its `TimeoutStartSec`, 40 minutes since 2026-11-04, not 15, and the rebuild before the 2-year already took 962 s; the bar becomes the time recorded here and the evening job's limit raised to 60 minutes); not merged on a day in the scoreboard's `ahead` list before that day's evening run |
 | 2 | Results here, in [MVP results](../mvp-results.md) and the roadmap row | Each verdict against the expected outcome, each number with the command that prints it |
+
+**Step 1, done 2026-11-27.** The tests pass. The comparison was run on a copy of the store from
+01:31 that day.
+- **The diff:** with the 2-year's lines and the chance lines dropped, it is empty, apart from three
+  things. Two flows' lists of answer counts wrap at `UST2Y /`. In `data.json`, the 2-year's answer
+  in `holds` names the market in words. And three market capitalisations in `earnings_ahead`
+  differ; they are fetched from Nasdaq when the page is built, not read from the store.
+- **The closes:** 12,617 stored from 1976-06-01 to 2026-11-24. That is FRED's count of non-blank
+  values that day, with the same days and the same values (554 blank days are absent). By hand:
+  1976-06-01 7.26, 2008-09-15 1.78 (down 45 bp from 2.23 on 2008-09-12), and 2026-11-24 4.63, each
+  equal to FRED's.
+- **The 5-year, before the 2-year** (`raw-move`, `surprise`, `predict --event <flow>`):
+
+  | Flow | *Does it move?* | `surprise` | `predict`, walk-forward |
+  | --- | --- | --- | --- |
+  | CPI | 1.29, p 0.0004, *moves* | 0.21, 64% of 107, *tracks* | 6 of 8, *too few* |
+  | Jobs report | 1.90, p 0.0001, *moves* | 0.27, 60% of 467, *unclear* | 72 of 102 (71%), *holds* |
+  | Fed | 1.39, p 0.0001, *moves* | 51% of 55, *doesn't* | none, *too few* |
+  | GDP | 1.76, p 0.0001, *moves* | 38% of 13, *doesn't* | none, *too few* |
+  | ISM | 1.48, p 0.0001, *moves* | 0.38, 69% of 54, *tracks* | 33 of 50 (66%), p 0.0164, *doesn't hold* |
+  | Retail sales | 1.23, p 0.0010, *moves* | 0.30, 70% of 91, *tracks* | 49 of 74 (66%), *holds* |
+
+  It also *moves* on jobless claims, the BoE, the debt limit and the S&P 500's earnings, and on
+  no other flow. Where the expected outcome counts ISM among the 5-year's holds (34 of 50), it
+  now holds 33 of 50 and doesn't hold.
+- **The rebuild:** 962 s before and 1,069 s after, on the same machine. Both are over the old
+  15-minute bar. The evening of 2026-11-26 took 39 of its 40 minutes (its pull request opened 31
+  minutes in, merged 8 minutes later). So the evening job's `TimeoutStartSec` goes from 40 to 60
+  minutes in this change, and the unit is installed again.
 
 ## How you know it is right
 
