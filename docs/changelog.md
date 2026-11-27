@@ -6,6 +6,7 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-27 | Step 61's Results: the published page shows 8 cards, one per area, no sideways scroll at 420 and 1,280 pixels; the expected outcome right | [#482](https://github.com/diykorey/fortuneteller/pull/482) |
 | 2026-11-27 | Step 62's news scan: each market's own name beside its plain one, and a market named as we name it gets our symbol; the first run left the S&P 500 untracked on three days | [#483](https://github.com/diykorey/fortuneteller/pull/483) |
 | 2026-11-26 | The front page's cards that stay keep the page's order, so a day that changes no card proposes nothing; #478 had moved one card and changed nothing else | [#481](https://github.com/diykorey/fortuneteller/pull/481) |
 | 2026-11-26 | Step 62 built: `fortuneteller big-moves`, run by the evening after the prices; each of the last five weekdays' big moves checked against our rows and explained, the news scanned for each day, both files with the pages | [#479](https://github.com/diykorey/fortuneteller/pull/479) |

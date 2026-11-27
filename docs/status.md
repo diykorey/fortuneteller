@@ -12,6 +12,10 @@ Where the work is and what comes next: the task last finished, the tasks in prog
 
 ## Last completed
 
+Step 61: one front-page card per area ([results](steps/front-by-area.md#results)). The page
+shows 8 cards, one per area, with no sideways scroll on a phone or a laptop; the first evening's
+proposal held the expected areas, its gold card a newer guess than the rule's.
+
 Step 57: the technical review's required fixes ([results](steps/technical-fixes.md#results)).
 Eleven fixes, #445 to #461. OPEC's one answer that held, gasoline's day after *oil up*, counted
 the close that decides the kind and is gone; a move at the "about the same" cut now counts as
@@ -65,10 +69,6 @@ the hand check against Yahoo passed, and no answer or verdict on the page change
   drafted at 14:00 New York, a reminder at 16:00, published at 18:00 as they stand, every day.
   Chosen by the owner 2026-11-24. Spec merged (#468); built. Next: the units installed, then the
   first weekday and the first Saturday read for the Results.
-- **Step 61: one front-page card per area** ([the spec](steps/front-by-area.md)): both caps of
-  five gone, one card per area the only limit. Chosen by the owner 2026-11-25. Spec merged (#463);
-  built, and the files of 2026-11-25 give the spec's six guesses. Next: the first evening's front
-  pull request, printed for the owner, and the published page read; then the Results.
 - **Step 55: guesses against the base rate** ([the spec](steps/guesses-vs-base-rate.md)): each
   guess carries its base rate; a grounded guesser, given the record, runs beside today's news
   guesser as the control. Asked for 2026-11-23 by the owner. Spec merged (#420); step 1, the
@@ -78,8 +78,8 @@ the hand check against Yahoo passed, and no answer or verdict on the page change
   2027-04-30.
 - **Step 46: the loop's safety nets** ([the spec](steps/loop-nets.md)): each machine watches the
   other and opens an issue for what it missed; a source's 5xx asked again. Chosen 2026-11-21 by the
-  owner. Steps 1 and 2 built. Next: merged before Wednesday 2026-11-25's releases, then step 3,
-  live on the first two release days from 2026-11-24.
+  owner. Steps 1 and 2 built and live. The first release day, 2026-11-25, ran on both machines with
+  no issue. Next: the second, the next day `live` calls (likely 2026-12-03 or 2026-12-04).
 
 - **Step 45: the S&P 500 on the page** ([the spec](steps/sp500-on-the-page.md)): steps 35 to
   37's groups on *Ask*, frozen from a copy of the store, and every S&P 500 member's report in the
@@ -149,8 +149,8 @@ the hand check against Yahoo passed, and no answer or verdict on the page change
 
 ## Next
 
-The Results of steps 58 and 61, after the first weekday and the first Saturday under the
-schedule; then step 60 after the 2027-01-31 gate.
+The Results of step 58, after the first Saturday under the schedule (2026-11-28), and of step 59
+after that weekend; then step 60 after the 2027-01-31 gate.
 
 ## Known, not yet fixed
 
