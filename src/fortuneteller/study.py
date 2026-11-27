@@ -105,8 +105,9 @@ class PriceSeries(NamedTuple):
 # New York, the value Yahoo's `CNY=X` stamps on the next day, kept from 2010-06-21, when its second
 # peg to the dollar ended (held, it does not move); the Shanghai Composite closes at 15:00 Shanghai.
 # The franc (docs/steps/switzerland.md) is stamped as the euro is; the SMI closes at 17:30 Zurich.
-# A `fred:` ticker is FRED's series: the breakeven (docs/steps/breakeven.md), read at 15:30, the
-# time of the bid quotes the Treasury builds its daily curve from.
+# A `fred:` ticker is FRED's series: the breakeven (docs/steps/breakeven.md) and the 2-year yield
+# (docs/steps/two-year-yield.md), read at 15:30, the time of the bid quotes the Treasury builds
+# its daily curve from.
 MVP_PRICE_SERIES = {
     "SPY / ES": PriceSeries("^GSPC", "pct", time(16, 0), NEW_YORK),
     "UST10Y / ZN": PriceSeries("^TNX", "bps", time(15, 0), NEW_YORK),
@@ -145,6 +146,7 @@ MVP_PRICE_SERIES = {
     "SHCOMP": PriceSeries("000001.SS", "pct", time(15, 0), SHANGHAI),
     "USDCHF": PriceSeries("CHF=X", "pct", time(0, 0), LONDON),
     "SMI": PriceSeries("^SSMI", "pct", time(17, 30), ZURICH),
+    "UST2Y / ZT": PriceSeries("fred:DGS2", "bps", time(15, 30), NEW_YORK),
 }
 
 

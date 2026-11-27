@@ -2492,6 +2492,7 @@ PLAIN_MARKETS = {
     "USDCHF": "the dollar against the Swiss franc",
     "UST10Y / ZN": "the interest the US government pays to borrow money for 10 years",
     "UST5Y / ZF": "the interest the US government pays to borrow money for 5 years",
+    "UST2Y / ZT": "the interest the US government pays to borrow money for 2 years",
     "T5YIE": "the inflation investors expect over the next 5 years",
     "VIX": "the stock market's fear gauge",
     "XLE": "US energy company stocks",
@@ -2539,7 +2540,9 @@ AREAS = {
         "stocks",
     ),
     **dict.fromkeys(("ITB", "COIN", "ALL", "TSX", "SHCOMP", "SMI"), "stocks"),
-    **dict.fromkeys(("UST10Y / ZN", "UST5Y / ZF", "T5YIE"), "interest rates and inflation"),
+    **dict.fromkeys(
+        ("UST10Y / ZN", "UST5Y / ZF", "UST2Y / ZT", "T5YIE"), "interest rates and inflation"
+    ),
     **dict.fromkeys(
         ("DXY", "EURUSD", "GBPUSD", "USDJPY", "USDCAD", "USDCNY", "USDCHF"),
         "currencies",

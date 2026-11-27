@@ -65,7 +65,7 @@ Each run starts by discarding the worktree's changes, since a pending evening le
 `data/score.txt` changed. The
 evening service has `EnvironmentFile=` the main checkout's `.env` (plain `KEY=value`), never the key
 in a committed unit, and `TimeoutStartSec=20min` (*40min since 2026-11-04*, when [the markets people feel](markets-people-feel.md)
-made the scoreboard rebuild take up to 14 minutes). *Amended 2026-11-24, by [step 57](technical-fixes.md) (R6):* the
+made the scoreboard rebuild take up to 14 minutes; *60min since 2026-11-27*, when [the 2-year yield](two-year-yield.md) found it taking 18 minutes and an evening taking 39 of its 40). *Amended 2026-11-24, by [step 57](technical-fixes.md) (R6):* the
 service loads no `.env`; the script reads `FT_FRED_API_KEY` alone from it, as since
 [stated forecasts](stated-forecasts.md). `score` runs with a relative `FT_CALLS_PATH`, so
 `data/score.txt` names no home directory. Installing, like the morning's:

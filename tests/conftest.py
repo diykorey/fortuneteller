@@ -84,7 +84,7 @@ def fred_breakeven(monkeypatch: pytest.MonkeyPatch) -> None:
     pegged = [{"date": "2009-01-05", "value": "6.83"}]
 
     def fetch(api_key: str, series_id: str, timeout: float = 30.0) -> bytes:
-        if series_id not in ("T5YIE", "DEXCHUS"):
+        if series_id not in ("T5YIE", "DEXCHUS", "DGS2"):
             raise AssertionError(f"a test asked FRED for {series_id}")
         sent = pegged + observations if series_id == "DEXCHUS" else observations
         return json.dumps({"observations": sent}).encode()

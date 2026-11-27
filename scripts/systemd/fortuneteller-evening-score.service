@@ -9,4 +9,4 @@ Environment=FT_JOB_TREE=%h/.local/share/fortuneteller/release-day
 # The desktop's message bus, for the notification; a timer's run is not given it otherwise.
 Environment=DBUS_SESSION_BUS_ADDRESS=unix:path=%t/bus
 ExecStart=%h/WorkVolume/work/projects/pet/fortuneteller/scripts/job-start.sh score
-TimeoutStartSec=40min
+TimeoutStartSec=60min

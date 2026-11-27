@@ -465,6 +465,7 @@ def test_the_more_outcomes_take_their_signs_by_analogy() -> None:
         "SHCOMP": 0,
         "USDCHF": 0,
         "SMI": 0,
+        "UST2Y / ZT": 1,
     }
     assert list(signs) == list(study.MVP_PRICE_SERIES)
 
