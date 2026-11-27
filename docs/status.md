@@ -12,6 +12,11 @@ Where the work is and what comes next: the task last finished, the tasks in prog
 
 ## Last completed
 
+Step 63: the 2-year yield ([results](steps/two-year-yield.md#results)). It rises after a jobs
+report above its forecast (69 of 105 right walk-forward) and after ISM above it (36 of 49); the
+jobs report's is called live from 2026-12-04. Nothing on retail sales or CPI, against the expected
+outcome: on its 1 bp grid their days tie the ordinary day.
+
 Step 61: one front-page card per area ([results](steps/front-by-area.md#results)). The page
 shows 8 cards, one per area, with no sideways scroll on a phone or a laptop; the first evening's
 proposal held the expected areas, its gold card a newer guess than the rule's.
@@ -54,10 +59,6 @@ the hand check against Yahoo passed, and no answer or verdict on the page change
 
 ## In progress
 
-- **Step 63: the 2-year yield** ([the spec](steps/two-year-yield.md)): the US 2-year Treasury
-  yield from FRED, signed as the 10-year, against every flow. Chosen by the owner 2026-11-27. Step
-  1 built: 12,617 closes equal to FRED's, nothing else moved; the evening job's limit raised to 60
-  minutes. Next: step 2, the results.
 - **Step 62: big moves, explained** ([the spec](steps/big-moves-explained.md)): each weekday's
   big moves in our markets checked against our calls and guesses and explained from the news; the
   news scanned for big moves in markets we do not track. Asked for by the owner 2026-11-26. Spec merged (#476);
@@ -153,7 +154,7 @@ the hand check against Yahoo passed, and no answer or verdict on the page change
 
 ## Next
 
-Step 63's step 1; the US releases with forecasts after it. The Results of step 58, after the first Saturday under the schedule (2026-11-28), and of step 59
+Step 64: the US releases with forecasts (PPI, Michigan sentiment, JOLTS, housing starts, durable goods), its spec first. The Results of step 58, after the first Saturday under the schedule (2026-11-28), and of step 59
 after that weekend; then step 60 after the 2027-01-31 gate.
 
 ## Known, not yet fixed

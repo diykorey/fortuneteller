@@ -108,6 +108,37 @@ walk-forward is called by the morning job, like the 5-year's.
   minutes in, merged 8 minutes later). So the evening job's `TimeoutStartSec` goes from 40 to 60
   minutes in this change, and the unit is installed again.
 
+## Results
+
+Measured 2026-11-27 on the copy of step 1, with the 2-year added (#485). Each command is run as
+`fortuneteller <command> --event <flow>`.
+
+**In plain words:** the 2-year yield goes up after a jobs report above its forecast, and on ISM's
+manufacturing survey above its forecast. Both hold when each release is predicted only from the
+ones before it. So it adds a call on the jobs report, beside the 10-year's and the 5-year's, and
+one link on ISM, which lands too late in the morning to be called live. It does not add a call on
+retail sales or on CPI.
+
+| Expected | Found | |
+| --- | --- | --- |
+| *moves* on CPI, the jobs report, the Fed, GDP and ISM, no other flow | *moves* on the jobs report (5 bp against 3, 1.67, p 0.0001), the Fed (4 against 2, 2.00, p 0.0001) and GDP (2.00, p 0.0007); CPI *doesn't* (3 against 3, 1.00), ISM *unclear* (1.50, p 0.0112); also *moves* on the debt limit (2.00, p 0.0003, 47 days) and the Fed chair's statements (1.50, p 0.0048) | **wrong** in part |
+| `surprise`: *tracks* on CPI, retail sales and ISM | *tracks* on ISM (0.51, 74% of 54) and the jobs report (0.34, 61% of 408); CPI *unclear* (0.21, 60% of 107, the bar's edge), retail sales *unclear* (0.28, 53% of 91) | **wrong** in part |
+| `predict` *holds* on the jobs report, retail sales and ISM, each within 5 points of the 5-year | the jobs report 69 of 105 (66%, p 0.0008), 4.9 points under the 5-year's 72 of 102 (71%); ISM 36 of 49 (73%, p 0.0007), 7.5 points over the 5-year's 33 of 50, which doesn't hold; retail sales 13 of 28, *too few*; no other flow | **wrong** in part |
+| `follows`: after a jobs report above the consensus, *up* on the day holds | up after 44 of 69 such reports; replayed, 34 of 54 right (63%), *holds* (`follows --event nfp`) | right |
+| Live calls on the jobs report and retail sales | the scoreboard's `ahead` lists the 2-year on the jobs report of 2026-12-04, *holds*; retail sales none | **wrong** in part |
+
+- **Why CPI and retail sales miss:** on the 1 bp grid, the median on ordinary days ties at the
+  release days' 3 bp (CPI) and 2 bp, as [Precision](../precision.md) warned. On retail sales the
+  surprise sends it the expected way on 53% of noticeable surprises, against the 5-year's 70%, so
+  walk-forward predicts on only 28 releases.
+- **By chance:** with the 2-year, about 15.5 *moves* (1,548 cells), 6.8 *tracks* (684) and 0.9
+  walk-forward *holds* (90) would pass by chance at p < 0.01 (the scoreboard's `chance`). The
+  2-year adds 2 holds.
+- **Its other answers in `follows`:** four lean but don't hold walk-forward. After a BoC hold, up
+  over the week (30 of 85 right). After jobless claims above, down on the day (26 of 69). After
+  retail sales below, down on the day (21 of 46). After a jobs report below, down on the day (13
+  of 27, *too few*).
+
 ## How you know it is right
 
 - **The source:** a test serves `DGS2` through the patched `sources.fetch_series`, as for `T5YIE`,
