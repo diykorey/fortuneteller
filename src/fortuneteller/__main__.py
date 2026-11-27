@@ -3400,8 +3400,10 @@ def staying(
 ) -> list[dict[str, str]]:
     """Step 56: the front page's cards that stay, each shown guess not yet graded: as the owner
     left it in ``approved``, or, if the owner deleted it, back with the ledger's words and marked
-    withdrawn ``today``."""
+    withdrawn ``today``. They keep the page's order, so a day that changes no card proposes
+    nothing; a card brought back follows them."""
     words = {_locked(r): r for r in approved}
+    place = {key: i for i, key in enumerate(words)}
     out = []
     for g in ledger:
         if not g.get("shown") or g.get("grade"):
@@ -3410,7 +3412,7 @@ def staying(
         if old is None:
             old = front_rows([g], [])[0] | {"withdrawn": today.isoformat()}
         out.append({f: old.get(f, "") for f in FRONT_FIELDS})
-    return out
+    return sorted(out, key=lambda r: place.get(_locked(r), len(place)))
 
 
 def front_proposal(
@@ -4086,13 +4088,24 @@ def read_reason(answer: str, flow_names: Iterable[str]) -> dict[str, str]:
     }
 
 
-def read_scan(answer: str, day: date, symbols: Iterable[str]) -> list[dict[str, str]]:
+def scan_names() -> dict[str, list[str]]:
+    """Each tracked market's names for the news scan: its own and its plain one."""
+    names = market_names()
+    return {
+        m: list(dict.fromkeys([names.get(m, m), PLAIN_MARKETS.get(m, names.get(m, m))]))
+        for m in study.MVP_PRICE_SERIES
+    }
+
+
+def read_scan(answer: str, day: date, known: Mapping[str, Sequence[str]]) -> list[dict[str, str]]:
     """The news scan's rows for ``day``: each market named with a link, its symbol kept only if
-    we track it; one row with no market when the news named none. No list raises ``ValueError``."""
+    we track it, or found from a name of ours it gives exactly; one row with no market when the
+    news named none. No list raises ``ValueError``."""
     found = _json_list(answer)
     if found is None:
         raise ValueError("no list in the answer")
-    tracked = set(symbols)
+    tracked = set(known)
+    by_name = {n.lower().removeprefix("the "): m for m, names in known.items() for n in names}
     rows = []
     for item in found[:NEWS_SCAN_MOST]:
         if not isinstance(item, dict):
@@ -4101,11 +4114,13 @@ def read_scan(answer: str, day: date, symbols: Iterable[str]) -> list[dict[str, 
         if not market or not link.startswith(("http://", "https://")):
             continue
         symbol = str(item.get("symbol") or "")
+        if symbol not in tracked:
+            symbol = by_name.get(market.lower().removeprefix("the "), "")
         rows.append(
             {
                 "day": day.isoformat(),
                 "market": market,
-                "symbol": symbol if symbol in tracked else "",
+                "symbol": symbol,
                 "move": str(item.get("move") or ""),
                 "link": link,
                 "model": GUESS_MODEL,
@@ -4187,9 +4202,10 @@ def _big_moves(_args: argparse.Namespace) -> int:
     for day in days:
         if day.isoformat() in scanned:
             continue
-        prompt = _prompt("news_scan_prompt.txt", day=day.isoformat(), markets=market_list())
+        markets = "\n".join(f"{m}: {' / '.join(n)}" for m, n in scan_names().items())
+        prompt = _prompt("news_scan_prompt.txt", day=day.isoformat(), markets=markets)
         try:
-            news += read_scan(_run_model(prompt, web=True), day, study.MVP_PRICE_SERIES)
+            news += read_scan(_run_model(prompt, web=True), day, scan_names())
         except (OSError, subprocess.SubprocessError, ValueError, KeyError, TypeError) as exc:
             print(f"big-moves: the news of {day} not scanned: {exc}", file=sys.stderr)
     _write_rows(news_path, NEWS_MOVE_FIELDS, sorted(news, key=lambda r: r["day"]))

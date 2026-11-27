@@ -36,7 +36,10 @@ news keeps naming is a candidate to add. Neither file changes a call, a guess or
 - **Start from the news, for the rest.** The closes cannot show a market we do not store. So
   once each weekday the Subscription LLM, with web search, is asked for the day's news reports of
   big price moves in any market, in any country, and returns each market named, the move as
-  reported and the link.
+  reported and the link. *Amended 2026-11-27, before December:* the scan's list gives each
+  market's own name beside its plain one ("S&P 500 / the US stock market"), and a market the
+  reply names exactly as we do gets our symbol though the reply left it blank; the first run
+  named the S&P 500 on three days with no symbol, which would have made it a market to add.
 - **The obstacle: after the fact a story is always found.** Of 40 big company moves read by hand
   in step 40, 19 had no reason found and 17 were the industry's or the economy's news. So the
   model must be allowed to say *nothing found*, must give a link for any reason it names, and its
