@@ -6,6 +6,7 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-27 | Step 63's Results: the 2-year yield holds walk-forward after a jobs report above the forecast (69 of 105) and after ISM above it (36 of 49); the jobs report's called live; retail sales and CPI give none, against the expected outcome | [#487](https://github.com/diykorey/fortuneteller/pull/487) |
 | 2026-11-27 | Step 63, step 1: the 2-year yield stored from FRED's `DGS2` (12,617 closes, equal to FRED's), signed as the 10-year, in every flow; nothing else moved; the evening job's limit from 40 to 60 minutes, the rebuild at 1,069 s | [#485](https://github.com/diykorey/fortuneteller/pull/485) |
 | 2026-11-27 | Step 63's spec: the US 2-year Treasury yield from FRED's `DGS2`, signed as the 10-year, against every flow; the 5-year's numbers before it are the yardstick | [#484](https://github.com/diykorey/fortuneteller/pull/484) |
 | 2026-11-27 | Step 61's Results: the published page shows 8 cards, one per area, no sideways scroll at 420 and 1,280 pixels; the expected outcome right | [#482](https://github.com/diykorey/fortuneteller/pull/482) |

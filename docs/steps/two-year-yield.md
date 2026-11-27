@@ -108,6 +108,41 @@ walk-forward is called by the morning job, like the 5-year's.
   minutes in, merged 8 minutes later). So the evening job's `TimeoutStartSec` goes from 40 to 60
   minutes in this change, and the unit is installed again.
 
+## Results
+
+Measured 2026-11-27 on the copy of step 1, with the 2-year added (#485). The commands are
+`fortuneteller raw-move`, `surprise`, `predict` and `follows`, each with `--event <flow>`; the
+flows are `cpi`, `nfp` (the jobs report), `fomc` (the Fed), `gdp`, `ism`, `retail`, `debt` (the
+debt limit) and `fedchair` (the Fed chair's statements).
+
+**In plain words:** after a jobs report above its forecast, the 2-year rose on 44 of 69 days;
+predicting each report only from the ones before, it was right 69 times of 105. After ISM's survey
+above its forecast it was right 36 of 49. These are two of the 9 links that hold, where about 1 of
+90 would by luck. So it adds a call on the jobs report, beside the 10-year's and the 5-year's, and
+a link on ISM, which lands too late in the morning to be called live. It adds no call on retail
+sales or CPI. The expected outcome was right on one row of five, wrong in part on the other four.
+
+| Expected | Found | |
+| --- | --- | --- |
+| `raw-move`: *moves* on CPI, the jobs report, the Fed, GDP and ISM, no other flow | *moves* on `nfp` (5 bp against 3, ratio 1.67, p 0.0001), `fomc` (4 against 2, 2.00, p 0.0001) and `gdp` (4 against 2, 2.00, p 0.0007); `cpi` *doesn't* (3 against 3, 1.00, p 0.9835); `ism` *unclear* (3 against 2, 1.50, p 0.0112); also *moves* on `debt` (6 against 3, 2.00, p 0.0003, 47 days) and `fedchair` (3 against 2, 1.50, p 0.0048) | **wrong** in part |
+| `surprise`: *tracks* on CPI, retail sales and ISM | *tracks* on `ism` (rank correlation 0.51, p 0.0001, 74% of 54) and `nfp` (0.34, p 0.0001, 61% of 408); `cpi` *unclear* (0.21, p 0.0001, 64 of 107, 59.8%, under 60%); `retail` *unclear* (0.28, p 0.0001, 53% of 91) | **wrong** in part |
+| `predict` *holds* on the jobs report, retail sales and ISM, each within 5 points of the 5-year | `nfp` 69 of 105 (66%, p 0.0008), 4.9 points under the 5-year's 72 of 102 (71%); `ism` 36 of 49 (73%, p 0.0007), 7.5 points over the 5-year's 33 of 50, which doesn't hold; `retail` 13 of 28, *too few*; no other flow | **wrong** in part |
+| `follows`, from the close before: after a jobs report above the consensus, *up* on the day holds | up after 44 of 69 such reports, against a base of 33% up on every day, chance 0.0001; replayed, 34 of 54 right (63%), *holds* (`follows --event nfp`) | right |
+| Live calls on the jobs report and retail sales | the scoreboard's `ahead` (`fortuneteller scoreboard`, `docs/scoreboard/data.json`) lists the 2-year on the jobs report of 2026-12-04, *holds*; on retail sales, none | **wrong** in part |
+
+- **Why CPI misses:** on the 1 bp grid, the median move on CPI's days ties the ordinary day's
+  3 bp, as [Precision](../precision.md) warned. Retail sales' days do move more (3 against 2 bp,
+  1.50, p 0.1128, not under 0.01), but the surprise sends the 2-year the expected way on 53% of
+  noticeable surprises, against the 5-year's 70%. So walk-forward predicts on only 28 releases.
+- **By chance** (the scoreboard's `chance`, p < 0.01): with the 2-year, 9 of the 90 walk-forward
+  cells hold, against 0.9 by chance; the 2-year's own 8 cells would give 0.08, and it holds 2.
+  Across all cells, about 15.5 *moves* (1,548 cells) and 6.8 *tracks* (684) would pass by chance.
+  The 2-year adds 5 *moves* of 43 cells and 2 *tracks* of 18.
+- **Its other answers in `follows`:** four give an answer on the history but fail when replayed.
+  After a BoC hold, up over the week (`boc`, 30 of 85 right). After jobless claims above, down on
+  the day (`claims`, 26 of 69). After retail sales below, down on the day (`retail`, 21 of 46).
+  After a jobs report below, down on the day (`nfp`, 13 of 27, *too few*).
+
 ## How you know it is right
 
 - **The source:** a test serves `DGS2` through the patched `sources.fetch_series`, as for `T5YIE`,

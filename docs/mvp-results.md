@@ -748,6 +748,17 @@ fail it. The franc moves 1.88 times its usual size on the 56 days an SNB decisio
 set direction; after a cut, a hold or any inflation print, neither the franc nor the SMI leans
 either way on the day.
 
+## The 2-year yield
+
+Measured 2026-11-27. Detail in [the 2-year yield](steps/two-year-yield.md#results).
+
+The US 2-year Treasury yield, from FRED, signed as the 10-year. **After a jobs report above its
+forecast it rose on 44 of 69 days, and that and ISM above its forecast both hold walk-forward:**
+right on 69 of 105 jobs reports (66%) and 36 of 49 ISM releases (73%), two of the 9 links that
+hold, where about 0.9 of 90 would by chance. The jobs report's is called live from 2026-12-04, beside the 10-year's and the 5-year's;
+ISM's lands after the morning job. On retail sales and CPI it gives no call, against the expected
+outcome: on its 1 bp grid their days' median move ties the ordinary day's.
+
 ## What comes next
 
 Chosen 2026-10-13: keep score ([rung 4](steps/rung-4-keep-score.md)), done above with the live path
