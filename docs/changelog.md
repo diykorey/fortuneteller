@@ -6,6 +6,7 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-26 | The front page's cards that stay keep the page's order, so a day that changes no card proposes nothing; #478 had moved one card and changed nothing else | [#481](https://github.com/diykorey/fortuneteller/pull/481) |
 | 2026-11-26 | Step 62 built: `fortuneteller big-moves`, run by the evening after the prices; each of the last five weekdays' big moves checked against our rows and explained, the news scanned for each day, both files with the pages | [#479](https://github.com/diykorey/fortuneteller/pull/479) |
 | 2026-11-26 | Step 62's spec: each weekday's big moves in our markets checked against our calls and guesses and explained from the news; the news scanned for big moves in markets we do not track; December read in January | [#476](https://github.com/diykorey/fortuneteller/pull/476) |
 | 2026-11-26 | Step 55's hand check: the first three grounded guesses' base rates counted from the stored closes with *n* on a calendar (0.5422, 0.6362, 0.4147), each equal to the stored one | [#475](https://github.com/diykorey/fortuneteller/pull/475) |

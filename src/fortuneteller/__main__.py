@@ -3400,8 +3400,10 @@ def staying(
 ) -> list[dict[str, str]]:
     """Step 56: the front page's cards that stay, each shown guess not yet graded: as the owner
     left it in ``approved``, or, if the owner deleted it, back with the ledger's words and marked
-    withdrawn ``today``."""
+    withdrawn ``today``. They keep the page's order, so a day that changes no card proposes
+    nothing; a card brought back follows them."""
     words = {_locked(r): r for r in approved}
+    place = {key: i for i, key in enumerate(words)}
     out = []
     for g in ledger:
         if not g.get("shown") or g.get("grade"):
@@ -3410,7 +3412,7 @@ def staying(
         if old is None:
             old = front_rows([g], [])[0] | {"withdrawn": today.isoformat()}
         out.append({f: old.get(f, "") for f in FRONT_FIELDS})
-    return out
+    return sorted(out, key=lambda r: place.get(_locked(r), len(place)))
 
 
 def front_proposal(

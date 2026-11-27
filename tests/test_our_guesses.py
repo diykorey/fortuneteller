@@ -793,6 +793,21 @@ def test_a_shown_guess_stays_with_the_owner_s_words_though_not_picked_again() ->
     ]
 
 
+def test_the_staying_cards_keep_the_page_s_order_so_an_unchanged_day_proposes_the_same_file() -> (
+    None
+):
+    # given three shown open guesses, on the page as gold, oil, the dollar, and in the ledger as
+    # oil, the dollar, gold, every area held
+    shown = [_row(m, grade="", shown="2026-11-22") for m in ("BRN", "DXY", "GC / XAU")]
+    approved = [_front(r) for r in (shown[2], shown[0], shown[1])]
+
+    # when tonight's proposal is made with no new guess
+    proposal = cli.front_proposal([], approved, [], shown, set(), TODAY)
+
+    # then it is the page as it stands, row for row
+    assert proposal == [{f: r.get(f, "") for f in cli.FRONT_FIELDS} for r in approved]
+
+
 def test_a_shown_guess_the_owner_deleted_comes_back_withdrawn() -> None:
     # given an open guess shown earlier and no longer in front.csv
     shown = _row(grade="", shown="2026-11-22", statement="Ledger words.")
