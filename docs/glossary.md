@@ -332,6 +332,10 @@ Terms are grouped by what they are about, alphabetical within each group.
 - **UST 5Y** (US Treasury 5-year) — the 5-year yield, the front end of the curve and the most
   policy-sensitive maturity. Symbol **`UST5Y / ZF`** (the note and its CBOT futures code), Yahoo's
   `^FVX`, in bps like the 10-year, whose expected sign it takes.
+- **UST 2Y** (US Treasury 2-year) — *added 2026-11-27*: the 2-year yield, the short end of the
+  curve, moved most by what traders expect the Fed to do next. Symbol **`UST2Y / ZT`** (the note
+  and its CBOT futures code), FRED's `DGS2` with a 15:30 New York close, a day late; in bps like
+  the 10-year, whose expected sign it takes ([the 2-year yield](steps/two-year-yield.md)).
 - **VIX** — the Cboe Volatility Index, the market's expected S&P 500 volatility over the next 30
   days, derived from option prices. The "fear gauge": spikes on shocks.
 - **^TNX** — Yahoo Finance's symbol for the US 10-year yield. A *vendor* ticker, deliberately not
