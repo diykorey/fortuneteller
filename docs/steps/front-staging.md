@@ -37,7 +37,9 @@ At the end:
   confidence, then the soonest end date, enough to fill five cards after the tested forecasts;
   *amended 2026-11-22, by the owner:* one per area, none in an area a tested forecast shows) and
   writes them to `front-next.csv`, with the ledger's statement and reasoning as their words. A
-  guess already in `front.csv` keeps its approved words.
+  guess already in `front.csv` keeps its approved words. *Amended 2026-11-26:* and its place;
+  a card brought back follows the others. On 2026-11-26 the cards came in the ledger's order, so
+  a day that changed no card opened #478, the same six cards with one moved.
 - **The pull request:** the evening score (`scripts/release-day.sh score`) writes the page into
   a pull request it merges once its checks pass, as before. After it, the job copies `front-next.csv` over
   `front.csv` on a fresh `main`. When that changes `front.csv` it closes a front pull request of
