@@ -85,22 +85,38 @@ page, or make a shown card leave before it is graded.
 
 Read 2026-11-27.
 
-**In plain words:** the predictions page now shows one card for each area, eight of them, and
-fits a phone and a laptop without sideways scrolling.
+**In plain words:** the predictions page shows one card for each area, eight in all, and on the
+two widths read, a phone's and a laptop's, it needs no sideways scroll. It went live a day late,
+and its gold card is a newer guess than the rule named.
 
 - **Expected outcome: right.** On `main`'s files at `28d0c5f`, for New York's day 2026-11-25, the
   proposal is the six the rule names: the yen, bitcoin and Brent stay; coffee to 2027-03-31, the
   US 5-year yield to 2026-12-11 and gold to 2026-12-21 join; no area holds two, and stocks and
-  homes get no guess (step 2's test, and `draft_front` on those files, #464).
-- **On screen: right.** The published page, written by the evening of 2026-11-26 (#480, merged
-  23:39 UTC), read in a browser at 420 and 1,280 pixels: 8 cards at both, one per area (stocks,
-  homes, the yen, bitcoin, oil, interest rates, coffee, gold), the page 401 pixels wide in a
-  416-pixel view and 1,261 in 1,276, so no horizontal scroll (`li.card` counted and
-  `scrollWidth` read in the page).
-- **Step 4.** The first evening's proposal, *The front page's guesses, 2026-11-25* (#471), was
-  printed in full for the owner and merged as it stood by `fortuneteller approve --yes`. Its gold
-  card is the guess of 2026-11-25 to 2026-12-04, not the expected outcome's gold to 2026-12-21:
-  the draft of 2026-11-25 ran on that evening's ledger, whose new gold guess ranks first by the
-  existing order; the expected outcome was fixed on the files at `28d0c5f`, before it.
-- **Late by a day.** The page kept its five cards until 2026-11-27: the evening of 2026-11-26
-  stopped before writing it while a triggers' pull request (#457) was open, fixed by #474.
+  homes get no guess. Read with `draft_front` on those files in the build (#464), not a command
+  of its own.
+- **On screen: right.** `uv run pytest tests/test_predicts.py -k one_card_per_area_past_five`
+  renders the page with the two stated forecasts and guesses on the six expected markets (in
+  placeholder words, not those of `28d0c5f`) in headless Chrome at 420 and 1,280 pixels: 8
+  cards, one per area, and the scroll width no wider than the page at both (2 passed,
+  2026-11-27).
+- **Step 2's tests: right.** `uv run pytest tests/test_our_guesses.py tests/test_predicts.py -k
+  "past_five or past_its_last_day or sideways"`, 6 passed on 2026-11-27: a new guess joins each
+  empty area and none a held one; a staying card past its last day frees its area and a withdrawn
+  one does not; the page tests above.
+- **Nothing tested changes: right.** The build (#464) touches no forecast code and not
+  `forecasts.csv` (`git show --stat b9edc72`).
+- **Step 3: done.** The amendments are in #464: `front-staging.md`, `honest-page.md`,
+  `predicts.md`, `our-guesses.md`, `stated-forecasts.md`, `guess-ledger.md`, and the glossary's
+  *area*, *front page*, *front pull request* and *staying card*.
+- **Step 4: right, a day late.** The first evening's proposal, *The front page's guesses,
+  2026-11-25* (#471), was printed in full for the owner and merged as it stood by `fortuneteller
+  approve --yes`. Its gold card is the guess of 2026-11-25 to 2026-12-04, not gold to 2026-12-21:
+  the draft ran on that evening's ledger, whose new gold guess ranks first by the existing order.
+  The published page kept five cards until the evening run that started 01:00 EET on 2026-11-27
+  wrote it (its pull request #480 merged at 23:39 UTC on 2026-11-26, 01:39 EET), because the run
+  of 2026-11-26 stopped before the page while a triggers' pull request (#457) was open; fixed by
+  #474. Read in Chrome on the published page, in frames of 420 and 1,280 pixels (416 and 1,276 of
+  view inside their borders), with `document.querySelectorAll('li.card').length` and
+  `document.documentElement.scrollWidth`: 8 cards at both, one per area (stocks, homes, the yen,
+  bitcoin, oil, interest rates, coffee, gold), the page 401 and 1,261 pixels wide, so no
+  horizontal scroll.
