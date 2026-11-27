@@ -176,7 +176,7 @@ def test_the_scan_keeps_a_symbol_only_for_a_market_we_track() -> None:
     )
 
     # when it is read
-    rows = cli.read_scan(reply, FRIDAY, study.MVP_PRICE_SERIES)
+    rows = cli.read_scan(reply, FRIDAY, cli.scan_names())
 
     # then gold keeps its symbol, lithium's is blanked, and the row with no link is dropped
     assert [(r["market"], r["symbol"]) for r in rows] == [
@@ -186,11 +186,33 @@ def test_the_scan_keeps_a_symbol_only_for_a_market_we_track() -> None:
     ]
 
 
+@pytest.mark.parametrize(
+    ("named", "symbol"),
+    [
+        ("S&P 500", "SPY / ES"),
+        ("Gold", "GC / XAU"),
+        ("the US stock market", "SPY / ES"),
+        ("copper", ""),
+    ],
+)
+def test_a_market_named_as_we_name_it_gets_our_symbol(named: str, symbol: str) -> None:
+    # given the scan naming a market with no symbol
+    reply = json.dumps(
+        [{"market": named, "symbol": "", "move": "down 3%", "link": "https://x.test"}]
+    )
+
+    # when it is read
+    [row] = cli.read_scan(reply, FRIDAY, cli.scan_names())
+
+    # then one of our names, its own or its plain one, gets our symbol, and copper none
+    assert row["symbol"] == symbol
+
+
 def test_a_scan_that_finds_nothing_marks_the_day_scanned() -> None:
     # given an empty list from the scan
 
     # when it is read
-    rows = cli.read_scan("[]", FRIDAY, study.MVP_PRICE_SERIES)
+    rows = cli.read_scan("[]", FRIDAY, cli.scan_names())
 
     # then one row with no market says the day was scanned
     assert [(r["day"], r.get("market", "")) for r in rows] == [("2026-11-27", "")]
