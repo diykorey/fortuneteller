@@ -200,6 +200,7 @@ def test_the_page_asks_about_each_kind_the_store_answers(
         "boc",
         "snb",
         "chcpi",
+        "ppi",
         "cacpi",
         "cncpi",
         "cnpmi",

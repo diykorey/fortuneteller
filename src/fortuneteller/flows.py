@@ -59,6 +59,7 @@ MANUFACTURING_EVENT_TYPE = "Manufacturing survey"
 CLAIMS_EVENT_TYPE = "Jobless claims"
 OTHER_MACRO_EVENT_TYPE = "Other macro data (GDP/PMI/PCE/retail/claims)"
 TRADE_EVENT_TYPE = "Trade data"
+PPI_EVENT_TYPE = "Producer prices"
 INVESTOR_SURVEY_EVENT_TYPE = "Investor sentiment survey"
 BUSINESS_SURVEY_EVENT_TYPE = "Business climate survey"
 UNITED_STATES = "United States"
@@ -710,6 +711,17 @@ def _german_rule(
 ZEW_SURPRISE_RULE = _german_rule(sources.DE_ZEW, GERMAN_SURVEY_EXPECTED_SIGN, 3.5, "3.5 points")
 IFO_SURPRISE_RULE = _german_rule(sources.DE_IFO, GERMAN_SURVEY_EXPECTED_SIGN, 0.5, "0.5 points")
 DE_CPI_SURPRISE_RULE = _german_rule(sources.DE_CPI, EURO_EXPECTED_SIGN, 0.1, "0.1pp")
+# US producer prices: inflation news, so CPI's signs; noticeable from 0.1pp, two thirds of the
+# forecast's median miss rounded to the print's step (docs/steps/us-releases.md).
+PPI_SURPRISE_RULE = SurpriseRule(
+    ((sources.US_PPI, TRADINGVIEW_FORECAST),),
+    EXPECTED_SIGN,
+    0.1,
+    "0.1pp",
+    alone=True,
+    predicted_from=TRADINGVIEW_FORECAST,
+    kind_decimals=1,
+)
 # Canada's CPI: TradingView's forecast, noticeable from 0.1pp, the print's own step and its median
 # miss; the actual rounded to that step before its kind is read. No market signed, so no live link
 # (docs/steps/canada.md).
@@ -1604,11 +1616,12 @@ class TradingViewFlow:
         for release in releases:
             day = release.announced.astimezone(self.zone).date()
             by_day.setdefault(day, set()).add((release.announced, release.period))
-        # Weeks first published together at one time (seven on 2025-11-20, after the shutdown) are
-        # one event, the newest week, as the jobs report's months are.
+        # Weeks or months first published together at one time (seven weeks of claims on
+        # 2025-11-20 and two months of producer prices on 2026-01-14, after the shutdown) are one
+        # event, the newest, as the jobs report's months are.
         carried = {}
         for day, times in by_day.items():
-            if self.weekly and len(times) > 1 and len({announced for announced, _ in times}) == 1:
+            if len(times) > 1 and len({announced for announced, _ in times}) == 1:
                 carried[day] = len(times) - 1
                 by_day[day] = {max(times, key=lambda announced_period: announced_period[1])}
         if split := [f"{day}" for day, times in by_day.items() if len(times) != 1]:
@@ -1619,7 +1632,8 @@ class TradingViewFlow:
         if carried:
             days = ", ".join(f"{day}" for day in sorted(carried))
             report.append(
-                f"  {sum(carried.values())} earlier weeks first published with a later one: {days}"
+                f"  {sum(carried.values())} earlier {'weeks' if self.weekly else 'months'}"
+                f" first published with a later one: {days}"
             )
         return EventBatch(events, report)
 
@@ -1861,6 +1875,19 @@ CH_CPI_FLOW = TradingViewFlow(
     PERCENT,
     "Swiss CPI releases",
     surprise_rule=CH_CPI_SURPRISE_RULE,
+    lesser=True,
+)
+PPI_FLOW = TradingViewFlow(
+    PPI_EVENT_TYPE,
+    UNITED_STATES,
+    NEW_YORK,
+    46,
+    "ppi",
+    "PPI",
+    (sources.US_PPI,),
+    PERCENT,
+    "producer price releases",
+    surprise_rule=PPI_SURPRISE_RULE,
     lesser=True,
 )
 RETAIL_FLOW = LevelFlow(
@@ -2236,10 +2263,15 @@ EVENT_FLOWS: list[EventFlow] = [
     CN_TRADE_FLOW,
     SNB_FLOW,
     CH_CPI_FLOW,
+    PPI_FLOW,
 ]
 # China's flows: each reads its days alone on the weekday it reacts on, without the others' days
 # (docs/steps/china.md).
 CHINA_FLOWS: tuple[EventFlow, ...] = (CN_CPI_FLOW, CN_PMI_FLOW, CN_IP_FLOW, CN_TRADE_FLOW)
+# The US releases with forecasts: lesser, each without the others' days (docs/steps/us-releases.md).
+US_RELEASE_FLOWS: tuple[EventFlow, ...] = (PPI_FLOW,)
+# Lesser flows that share each other's days, each group within itself.
+SHARING_GROUPS = (CHINA_FLOWS, US_RELEASE_FLOWS)
 
 
 def called_live(flow: EventFlow) -> bool:

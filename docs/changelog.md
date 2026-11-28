@@ -6,6 +6,7 @@ taken, see [Decisions](decisions.md); for what a step found, its spec's Results.
 
 | Date | What | Where |
 | --- | --- | --- |
+| 2026-11-28 | Step 64, step 1: producer prices (`ppi`) from TradingView, 162 releases, 147 alone in some market (67 above, 20 as expected, 60 below), a new `Producer prices` event type; nothing else moved; three releases equal to the BLS's first release; the rebuild at 1,051 s | [#PR](https://github.com/diykorey/fortuneteller/pull/PR) |
 | 2026-11-28 | Step 64's spec: producer prices, housing starts, durable goods, job openings and Michigan sentiment from TradingView, each against its forecast, as lesser flows; nothing expected to hold | [#489](https://github.com/diykorey/fortuneteller/pull/489) |
 | 2026-11-27 | Step 63's Results: the 2-year yield holds walk-forward after a jobs report above the forecast (69 of 105) and after ISM above it (36 of 49); the jobs report's called live; retail sales and CPI give none, against the expected outcome | [#487](https://github.com/diykorey/fortuneteller/pull/487) |
 | 2026-11-27 | Step 63, step 1: the 2-year yield stored from FRED's `DGS2` (12,617 closes, equal to FRED's), signed as the 10-year, in every flow; nothing else moved; the evening job's limit from 40 to 60 minutes, the rebuild at 1,069 s | [#485](https://github.com/diykorey/fortuneteller/pull/485) |

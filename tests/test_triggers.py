@@ -679,3 +679,27 @@ def test_a_chinese_trigger_is_answered_not_refused(
     # then it is answered on the market, not refused for its flow
     assert {r["market"] for r in rows} == {SPY}
     assert not any("is not one of" in line for line in lines)
+
+
+def test_a_ppi_trigger_is_answered_for_its_kind(one_market: None) -> None:
+    # given a producer price release above TradingView's forecast at 08:30 New York
+    closes = _closes(_wavy(300))
+    day = closes[200].day
+    flow = flows.PPI_FLOW
+    release = flow.event_instance(datetime.combine(day, time(8, 30), tzinfo=sources.NEW_YORK), day)
+    merged = datetime.combine(day, time(8, 45), tzinfo=sources.NEW_YORK)
+
+    # when filed as above before the close
+    rows, lines = _answer(
+        [_trigger(day, ABOVE, "ppi")],
+        [release],
+        {release.event_id: ABOVE},
+        closes,
+        merged,
+        flow="ppi",
+    )
+
+    # then it is answered on the market for its kind, not refused for its flow
+    assert {r["market"] for r in rows} == {SPY}
+    assert {r["kind"] for r in rows} == {ABOVE}
+    assert not any("is not one of" in line for line in lines)

@@ -1676,3 +1676,35 @@ def test_a_saturday_chinese_release_is_paired_with_monday_s_shanghai_close() -> 
 
     # then Friday's close is before it and Monday's carries it
     assert pair == (closes[0], closes[1])
+
+
+def test_two_months_of_producer_prices_published_at_once_are_one_event_the_newer_month(
+    tmp_db: Path, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    # given a quarter of the US calendar with October's and November's producer prices both out at
+    # 08:30 New York on 2026-01-14, only November's with a forecast, and December's on 2026-01-30
+    title = sources.TRADINGVIEW_ROWS[sources.US_PPI].title
+    rows = [
+        _flash_row(title, "2026-01-14T13:30:00.000Z", 0.1, None, country="US"),
+        _flash_row(title, "2026-01-14T13:30:00.000Z", 0.2, 0.2, country="US"),
+        _flash_row(title, "2026-01-30T13:30:00.000Z", 0.5, 0.2, country="US"),
+    ]
+    for row, month in zip(rows, ("2025-10-31", "2025-11-30", "2025-12-31"), strict=True):
+        row["referenceDate"] = f"{month}T00:00:00Z"
+    _tradingview_quarter(monkeypatch, tmp_path, "US", rows)
+
+    # when the flow's events are stored and their actuals paired with TradingView's forecast
+    report = flows.PPI_FLOW.events("unused").report
+    stored, _, rows_out = _stored_with_surprises(flows.PPI_FLOW)
+
+    # then 2026-01-14 is one event, November's, the month carried with it is reported, and each
+    # surprise is the actual less the forecast, of the flow's own event type
+    assert report == [
+        "loaded 2 producer price releases, 2026-01-14 … 2026-01-30",
+        "  1 earlier months first published with a later one: 2026-01-14",
+    ]
+    assert [(e.detail, e.event_type) for e in stored] == [
+        ("2025-11", flows.PPI_EVENT_TYPE),
+        ("2025-12", flows.PPI_EVENT_TYPE),
+    ]
+    assert [round(r.surprise, 2) for r in rows_out] == [0.0, 0.3]
