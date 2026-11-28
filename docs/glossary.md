@@ -101,6 +101,18 @@ Terms are grouped by what they are about, alphabetical within each group.
   calendar, usually in a crisis (2001, 2008, March 2020). Stored with `scheduled = false`.
 - **Jobless claims (initial claims)** — the weekly count of new unemployment-insurance filings,
   published each Thursday; its 4-week average smooths the weekly noise. Rises when layoffs rise.
+- **JOLTS** (Job Openings and Labor Turnover Survey) — *added 2026-11-28*: the government's monthly
+  count of unfilled jobs, out at 10:00 New York about five weeks after the month; `jolts` in
+  [the US releases](steps/us-releases.md).
+- **Michigan sentiment** — *added 2026-11-28*: the University of Michigan's survey of how
+  confident US households feel, a preliminary reading mid-month and a final one at its end, both at
+  10:00 New York; `umich` reads the preliminary ([the US releases](steps/us-releases.md)).
+- **Housing starts** — *added 2026-11-28*: new homes begun in the month, at a yearly rate in
+  millions, out at 08:30 New York with building permits; `housing` ([the US
+  releases](steps/us-releases.md)).
+- **Durable goods orders** — *added 2026-11-28*: new orders for goods meant to last three years or
+  more, such as machines and aircraft, as a change on the month; `durable` ([the US
+  releases](steps/us-releases.md)).
 - **Survey week** — the week that includes the 12th of the month: the week the jobs report's
   payroll survey counts. The jobs-report forecast compares claims between survey weeks.
 - **GDP** (Gross Domestic Product) — total economic output; a quarterly growth release.
@@ -177,7 +189,8 @@ Terms are grouped by what they are about, alphabetical within each group.
   publishes China's inflation, factory output, retail sales and GDP, and with a purchasing
   federation the official PMIs, manufacturing and services.
 - **PPI** (producer price index) — prices factories charge; China publishes it at the same minute
-  as its CPI, so the two share one flow ([China](steps/china.md)).
+  as its CPI, so the two share one flow ([China](steps/china.md)). The US's, `ppi`, is a flow of its
+  own, from 2026-11-28 ([the US releases](steps/us-releases.md)).
 - **Release moment** — *added 2026-11-23* ([China](steps/china.md)): the minute a country publishes
   one or more reports; reports of one moment cannot be told apart, so they make one flow, its
   kind read from one report named in its spec.
