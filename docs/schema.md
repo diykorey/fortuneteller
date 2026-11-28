@@ -534,6 +534,7 @@ Example row:
 | `de_cpi` | Germany's flash CPI, year on year, in percent, the same way. With `tradingview_forecast` only. |
 | `ca_cpi` | Canada's CPI, all items, year on year, in percent, the same way ([Canada](steps/canada.md)); its kind is read from the actual at its one decimal. With `tradingview_forecast` only. |
 | `ch_cpi` | Switzerland's CPI, year on year, in percent, the same way ([Switzerland](steps/switzerland.md)), its kind likewise. With `tradingview_forecast` only. |
+| `us_ppi` | US producer prices for final demand (finished goods before 2014), month on month, in percent, as TradingView's calendar shows it ([the US releases](steps/us-releases.md)); a lesser release, as `initial_claims`, its kind read from the actual at its one decimal. With `tradingview_forecast` only. |
 | `sentiment` | A Fed statement's sentiment index (Gardner, Scotti and Vega's dictionary, about −1 to 1, positive for a stronger economy or higher inflation), every decision since 2000 but the first ([the Fed statement's sentiment](steps/fed-statement-sentiment.md)). With `previous_statement` only. Context, without a verdict. |
 | `sentiment_holds` | The same, on holds only: decisions whose target rate is unchanged. The verdict's measure. |
 
