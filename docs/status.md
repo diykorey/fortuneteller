@@ -61,8 +61,8 @@ the hand check against Yahoo passed, and no answer or verdict on the page change
 
 - **Step 64: the US releases with forecasts** ([the spec](steps/us-releases.md)): producer
   prices, housing starts, durable goods, job openings and Michigan sentiment, each against
-  TradingView's forecast, as lesser flows. Chosen by the owner 2026-11-27. Next: the spec's
-  goldfish review, then step 1, producer prices.
+  TradingView's forecast, as lesser flows. Chosen by the owner 2026-11-27. Step 1, producer
+  prices, done: 147 releases alone, nothing else changed. Next: step 2, housing starts.
 - **Step 62: big moves, explained** ([the spec](steps/big-moves-explained.md)): each weekday's
   big moves in our markets checked against our calls and guesses and explained from the news; the
   news scanned for big moves in markets we do not track. Asked for by the owner 2026-11-26. Spec merged (#476);
@@ -158,7 +158,7 @@ the hand check against Yahoo passed, and no answer or verdict on the page change
 
 ## Next
 
-Step 64's step 1, producer prices. The Results of step 58, after the first Saturday under the schedule (2026-11-28), and of step 59
+Step 64's step 2, housing starts. The Results of step 58, after the first Saturday under the schedule (2026-11-28), and of step 59
 after that weekend; then step 60 after the 2027-01-31 gate.
 
 ## Known, not yet fixed

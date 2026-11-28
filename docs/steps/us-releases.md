@@ -17,7 +17,11 @@ well enough to call?
 At the end: five flows, `ppi`, `housing`, `durable`, `jolts` and `umich`, each with `raw-move`,
 `surprise`, `predict` and `follows --event <flow>`, a trigger kind (*above*, *as expected*,
 *below*) and a place on the page's *Ask the fortune teller*, as claims has. A link on one that
-holds walk-forward is called by the morning job if it lands at 08:30.
+holds walk-forward is called by the morning job if it lands at 08:30. (*Amended 2026-11-28, in
+step 1, before any table was read:* `live` calls only a flow whose measure has a Nasdaq consensus
+row the morning job asks for (`called_live`); a TradingView forecast is not read live. So a link
+on these five that holds is graded walk-forward and shown, not called; calling it is a step of its
+own.)
 
 ## The way to reach it
 
@@ -39,7 +43,11 @@ holds walk-forward is called by the morning job if it lands at 08:30.
   annual rate for homes; *pp* is percentage points. The threshold is read from every release's
   miss, as claims' and the surveys' were: it sets which surprises count, not any verdict, and no
   market's move was looked at. Each flow's events carry its own row as their measure, so two
-  flows under one event type stay apart, as ISM's and claims' do. Loaded from 2013-01-01, as ISM;
+  flows under one event type stay apart, as ISM's and claims' do. (*Amended 2026-11-28, in step
+  1:* wrong. A flow is its event type and country, so each of the five needs a type no US flow
+  has: `ppi` is `Producer prices`, a new seed row, not `CPI / inflation surprise`, which is CPI's;
+  `housing` keeps `Real-estate / housing data`; `durable`, `jolts` and `umich` each get a new row
+  in their step.) Loaded from 2013-01-01, as ISM;
   a release with no forecast has no kind and is in no surprise or `follows` table.
 - **First prints.** In the cached quarters the actual is the figure first published, not a
   revision: it differs from the next release's *previous* (TradingView's revised figure) on 154 of
@@ -84,6 +92,18 @@ holds walk-forward is called by the morning job if it lands at 08:30.
   inflation and the other flows that are not lesser) and by the cached quarters ending at
   2026-09-30. Each step runs the new flow's header before its table and writes any difference
   here with a dated amendment, naming the days that make it. Only then is the table read.
+
+  *Amended 2026-11-28, in step 1, before `ppi`'s table was read:* `follows: 147 producer price
+  releases 2013-03-14 … 2026-11-13: 67 above, 20 as expected, 60 below`, against the hand count's
+  125, with 162 loaded (2 after 2026-09-30). The hand count misread the rule. The header keeps a
+  release that is alone in any market, and `follows` leaves it out in each market where it is
+  shared, as for Canada and China. So of the releases on a day with a flow that is not lesser, the
+  header keeps 21 on a retail sales day (alone in Coinbase, ether or bitcoin, before their first
+  close), 6 on a Fed day and 3 on an ECB day (the decisions reaching some closes a day later), and
+  leaves out 10 on a retail sales day and 6 on an ECB day. The later headers in the table are read by the same rule
+  in their steps. Also: on 2026-01-14, after the shutdown, October's and November's producer
+  prices came out at one time; as for claims' weeks, the day is one event, November's, the one
+  with a forecast.
 - **The bars, unchanged:** rung 1's `raw-move` (*moves*: a median move ratio ≥ 1.10 to ordinary
   days and p < 0.01); step 4's `surprise` (*tracks*: rank correlation p < 0.01 and the expected
   way on ≥ 60% of noticeable surprises); `predict`'s walk-forward (*holds*: right on ≥ 60% of ≥ 30
@@ -120,12 +140,36 @@ holds walk-forward is called by the morning job if it lands at 08:30.
 
 | # | Step | Done when |
 | --- | --- | --- |
-| 1 | Producer prices: `ppi`, a TradingView row, a surprise rule, the flow, its trigger kind and *Ask* | Tests: the surprise is the actual less the forecast, *above* from 0.1; a day shared with CPI is left out of its table; a 09:30 stamp reacts on that day's New York close; a `ppi` trigger of kind *above* gets `follows`' answers for *above*; *Ask*'s `ppi` cells are as many as `follows --event ppi`'s lines, each with the same counts. The header equal to the one above, or amended; the comparison's diff empty; the scoreboard's rebuild time here, under the evening job's `TimeoutStartSec` of 60 minutes ([the evening score](evening-score.md)) |
+| 1 | Producer prices: `ppi`, a TradingView row, a surprise rule, the flow, its trigger kind and *Ask*; `Producer prices` in `event_types.csv` | Tests: the surprise is the actual less the forecast, *above* from 0.1; a day shared with CPI is left out of its table; a 09:30 stamp reacts on that day's New York close; a `ppi` trigger of kind *above* gets `follows`' answers for *above*; *Ask*'s `ppi` cells are as many as `follows --event ppi`'s lines, each with the same counts. The header equal to the one above, or amended; the comparison's diff empty; the scoreboard's rebuild time here, under the evening job's `TimeoutStartSec` of 60 minutes ([the evening score](evening-score.md)) |
 | 2 | Housing starts: `housing` | As step 1, *above* from 0.074 m; a day shared with `ppi` left out of both tables, and `ppi`'s header after step 2 as above; the diff empty outside the five |
 | 3 | Durable goods: `durable` | As step 2, *above* from 0.8 pp |
 | 4 | Job openings: `jolts` | As step 2, *above* from 0.14 m; a 10:00 release reacts on that day's New York close |
 | 5 | Michigan sentiment: `umich` | As step 2, *above* from 1.5 points |
 | 6 | Results here, in [MVP results](../mvp-results.md) and the roadmap row | Each verdict against the expected outcome, with every number its bar needs and the command that prints it |
+
+**Step 1, done 2026-11-28.** The tests pass. The comparison was run on a copy of the store from
+07:31 that day, with `ppi` loaded into the copy (162 releases, 2013-03-14 to 2026-11-13; 162
+surprises, every release with a forecast).
+- **The header:** `follows --event ppi` prints the amended one above, 147: 67 / 20 / 60.
+- **The diff:** with `ppi`'s lines and the chance lines dropped, it is empty, apart from one thing.
+  In `data.json` the jobs report's consensus for 2026-12-04 is TradingView's in the second run,
+  not Nasdaq's: the same 90, but Nasdaq's page did not answer on that fetch. Fetched again, it
+  gives Nasdaq's 90. `expectations.py` is not changed. The page's *Ask* gains `ppi`'s cells; the
+  scoreboard counts 46 events, from 45.
+- **The rebuild:** 1,051 s with `ppi` against 1,018 s before (`scoreboard`'s `rebuild` line), both
+  timed while the test suite ran beside them, under the evening job's 60 minutes.
+- **By hand**, against the BLS's first release:
+
+  | Release | Month | BLS | Ours | Forecast | Kind |
+  | --- | --- | --- | --- | --- | --- |
+  | 2013-03-14 | February 2013 | +0.7% (finished goods, the headline before 2014) | 0.7 | 0.7 | *as expected* |
+  | 2020-05-13 | April 2020 | −1.3% (final demand) | −1.3 | −0.5 | *below* |
+  | 2026-11-13 | October 2026 | +0.3% (final demand) | 0.3 | 0.4 | *below* |
+
+- **First prints:** 47 of 160 releases' actuals differ from the next release's *previous*, as
+  counted before the step (*First prints* above); the three above equal the BLS's first release.
+- **The seed row:** `Producer prices,3,both` in `data/seed/event_types.csv` (the amendment above);
+  the technical details' "no new row" was written before it.
 
 ## How you know it is right
 
@@ -157,6 +201,7 @@ signs of other flows or the front page's areas.
 - **`flows.py`:** five `SurpriseRule`s with `predicted_from=TRADINGVIEW_FORECAST` and
   `alone=True`, `ppi` with CPI's signs and the others with the jobs report's; five
   `TradingViewFlow`s with `lesser=True`, added to the flows list.
-- **`__main__.py`:** each flow's plain name. **`data/seed/event_types.csv`:** no new row.
+- **`__main__.py`:** each flow's plain name. **`data/seed/event_types.csv`:** no new row. (*Amended
+  2026-11-28, in step 1:* a row each for `ppi`, `durable`, `jolts` and `umich`; see *Which row*.)
 - **Docs, each step:** this spec's note, `docs/schema.md` (the event types filled), the glossary,
   status, the changelog. **Results:** here, `docs/mvp-results.md`, the roadmap row.

@@ -362,6 +362,8 @@ CN_PMI = "cn_pmi"
 CN_IP = "cn_ip"
 # China's exports, year on year in percent, the first line of its trade release (docs/steps/china.md).
 CN_EXPORTS = "cn_exports"
+# US producer prices, month on month in percent, the headline (docs/steps/us-releases.md).
+US_PPI = "us_ppi"
 NOWCAST = "nowcast"
 ACTUAL = "actual"
 # The chart series step 4 reads, by name in the file; the PCE series are left out.
@@ -958,6 +960,8 @@ CN_IP_FROM = date(2008, 1, 1)
 CN_EXPORTS_FROM = date(2008, 1, 1)
 # Checked 2026-11-23: Switzerland's CPI from 2008-01-04.
 CH_CPI_FROM = date(2008, 1, 1)
+# Checked 2026-11-28: producer prices' forecasts from 2013-03-14.
+US_PPI_FROM = date(2013, 1, 1)
 TRADINGVIEW_ROWS = {
     EURO_CORE: TradingViewRow("EU", "Core Inflation Rate YoY Flash", EURO_FLASH_FROM, FRANKFURT),
     EURO_HEADLINE: TradingViewRow("EU", "Inflation Rate YoY Flash", EURO_FLASH_FROM, FRANKFURT),
@@ -972,6 +976,7 @@ TRADINGVIEW_ROWS = {
     CN_IP: TradingViewRow("CN", "Industrial Production YoY", CN_IP_FROM, SHANGHAI),
     CN_EXPORTS: TradingViewRow("CN", "Exports YoY", CN_EXPORTS_FROM, SHANGHAI),
     CH_CPI: TradingViewRow("CH", "Inflation Rate YoY", CH_CPI_FROM, ZURICH),
+    US_PPI: TradingViewRow("US", "PPI MoM", US_PPI_FROM, NEW_YORK),
 }
 
 

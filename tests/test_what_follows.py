@@ -1809,12 +1809,11 @@ CNTRADE = flows.CN_TRADE_FLOW
 def _store_china(
     flow: flows.TradingViewFlow, prints: Mapping[date, tuple[float, float]], at: time = time(9, 30)
 ) -> list[flows.EventInstance]:
-    # a release of one of China's flows at ``at`` Beijing on each day, with its actual and
-    # TradingView's forecast, and its surprise row as `load-surprises` stores it
+    # a release of a TradingView flow at ``at`` in its own zone (Beijing for China's) on each day,
+    # with its actual and TradingView's forecast, and its surprise row as `load-surprises` stores it
     db.init_db()
     events = [
-        flow.event_instance(datetime.combine(day, at, tzinfo=sources.SHANGHAI), day)
-        for day in prints
+        flow.event_instance(datetime.combine(day, at, tzinfo=flow.zone), day) for day in prints
     ]
     db.insert_models("event_instances", events)
     db.insert_models(
@@ -2001,3 +2000,97 @@ def test_follows_for_a_chinese_flow_prints_its_lone_releases_and_the_page_s_cell
         assert (cell["answer"], cell["verdict"]) == (line["answer"], line["verdict"])
         assert str(cell["say"]).startswith(f"After {cli.ask_kind(flow.cli_name, line['kind'])},")
     assert [k["events"] for k in entry["kinds"]] == [15, 15, 15]  # type: ignore[index]
+
+
+PPI = flows.PPI_FLOW
+
+
+def test_a_ppi_release_s_kind_is_read_at_its_print_s_step_and_a_cpi_day_is_left_out(
+    tmp_db: Path, monkeypatch: pytest.MonkeyPatch, weekday_closes: Callable[..., None]
+) -> None:
+    # given four producer price releases at 08:30 New York, the first on a US CPI day; the others
+    # 0.1pp over the forecast, 0.04 over (0.2 once rounded to the print's step) and 0.1 under;
+    # and the S&P 500's and the DAX's closes
+    monkeypatch.setattr(
+        study, "MVP_PRICE_SERIES", {m: study.MVP_PRICE_SERIES[m] for m in ("SPY / ES", "DAX")}
+    )
+    days = [date(2024, 1, 11), date(2024, 2, 16), date(2024, 3, 14), date(2024, 4, 11)]
+    prints = [(0.5, 0.2), (0.3, 0.2), (0.24, 0.2), (0.1, 0.2)]
+    events = _store_ppi(days, prints)
+    db.insert_models("event_instances", [_report(days[0], CPI)])
+    weekday_closes(("SPY / ES", "DAX"), date(2024, 1, 1), date(2024, 4, 30))
+
+    # when each market's shared releases and the kinds are read
+    shared = study.shared_by_market(PPI)
+    alone = study.lone_release_kinds(PPI)
+
+    # then the CPI day's release shares both closes and has no kind; the others are above, as
+    # expected and below
+    assert shared == {"SPY / ES": {events[0].event_id}, "DAX": {events[0].event_id}}
+    assert [alone.get(e.event_id) for e in events] == [None, ABOVE, AS_EXPECTED, BELOW]
+    assert PPI.lesser and PPI in study.ALONE_FOLLOWED
+
+
+def _store_ppi(
+    days: list[date], prints: list[tuple[float, float]], at: time = time(8, 30)
+) -> list[flows.EventInstance]:
+    return _store_china(PPI, dict(zip(days, prints, strict=True)), at)
+
+
+def test_a_ppi_release_stamped_an_hour_late_reacts_on_that_day_s_new_york_and_frankfurt_close(
+    tmp_db: Path,
+) -> None:
+    # given a producer price release stamped 09:30 New York, as TradingView stamps some of 2013's
+    (event,) = _store_ppi([date(2013, 4, 12)], [(-0.6, -0.2)], time(9, 30))
+
+    # when its reaction days are read
+    days = {
+        m: study.first_reaction_day(event, study.MVP_PRICE_SERIES[m]) for m in ("SPY / ES", "DAX")
+    }
+
+    # then New York and Frankfurt both carry it that day
+    assert days == {"SPY / ES": date(2013, 4, 12), "DAX": date(2013, 4, 12)}
+
+
+def test_follows_for_ppi_prints_its_lone_releases_and_the_page_s_cells_are_its_lines(
+    tmp_db: Path, capsys: pytest.CaptureFixture[str], monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # given the S&P 500's and the 10-year's closes and 46 producer price releases, above, as
+    # expected and below in turn, the first on a US retail sales day
+    two = {k: study.MVP_PRICE_SERIES[k] for k in ("SPY / ES", "UST10Y / ZN")}
+    monkeypatch.setattr(study, "MVP_PRICE_SERIES", two)
+    rng = random.Random(7)
+    closes = _closes([rng.gauss(0, 0.005) for _ in range(1420)])
+    keys = list(range(30, 1410, 30))
+    db.init_db()
+    db.get_connection().executemany(
+        "INSERT INTO daily_bars (instrument, day, close, source) VALUES (?, ?, ?, 'test')",
+        [[m, c.day, c.price] for m in two for c in closes],
+    )
+    prints = ((0.3, 0.2), (0.2, 0.2), (0.1, 0.2))
+    _store_ppi([closes[k].day for k in keys], [prints[j % 3] for j in range(len(keys))])
+    db.insert_models("event_instances", [_report(closes[keys[0]].day, RETAIL)])
+
+    # when follows prints the table and the page's data is built
+    assert main(["follows", "--event", "ppi"]) == 0
+    out = capsys.readouterr().out.splitlines()
+    printed = [FOLLOWS_LINE.match(line) for line in out[2:-1]]
+    ask = cli.ask_data(db.get_connection())
+
+    # then the header leaves out the retail day's, and every line has one cell on the page
+    first, last = closes[keys[1]].day, closes[keys[-1]].day
+    assert out[0] == (
+        f"follows: 45 producer price releases {first} … {last}: 15 above, 15 as expected, 15 below"
+    )
+    (entry,) = [entry for entry in ask["ask"] if entry["name"] == "ppi"]
+    cells = {(c["kind"], c["span"], c["market"]): c for c in entry["cells"]}  # type: ignore[union-attr]
+    assert len(printed) == len(cells) == 3 * 3 * 2
+    for line in printed:
+        assert line is not None
+        cell = cells[(line["kind"], line["span"], line["market"])]
+        assert [cell["up"], cell["same"], cell["down"]] == [
+            int(line["up"]),
+            int(line["same"]),
+            int(line["down"]),
+        ]
+        assert (cell["answer"], cell["verdict"]) == (line["answer"], line["verdict"])

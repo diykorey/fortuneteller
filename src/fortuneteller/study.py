@@ -45,6 +45,8 @@ from .flows import (
     CA_CPI_FLOW,
     CH_CPI_FLOW,
     CHINA_FLOWS,
+    SHARING_GROUPS,
+    US_RELEASE_FLOWS,
     EVENT_FLOWS,
     RELEASE_TIME,
     TARGET_EFFECT_DAYS,
@@ -682,13 +684,13 @@ def surprise_pairs(
 
 def _sharers(flow: EventFlow, con: duckdb.DuckDBPyConnection | None) -> list[EventInstance]:
     """The events a release of ``flow`` can share a close with: every other flow's but a lesser
-    one's, though China's flows share each other's (docs/steps/china.md)."""
-    china = flow in CHINA_FLOWS
+    one's, though the lesser flows of one group share each other's: China's
+    (docs/steps/china.md) and the US releases with forecasts (docs/steps/us-releases.md)."""
     return [
         event
         for each in EVENT_FLOWS
         if (each.event_type, each.country) != (flow.event_type, flow.country)
-        and (not each.lesser or (china and each in CHINA_FLOWS))
+        and (not each.lesser or any(flow in g and each in g for g in SHARING_GROUPS))
         for event in stored_events(each, con=con)
     ]
 
@@ -2098,7 +2100,7 @@ def release_kinds(flow: EventFlow, con: duckdb.DuckDBPyConnection | None = None)
 
 
 # Releases followed only in the markets they reach alone (docs/steps/canada.md, step 57's R4).
-ALONE_FOLLOWED = (CA_CPI_FLOW, CH_CPI_FLOW, *CHINA_FLOWS)
+ALONE_FOLLOWED = (CA_CPI_FLOW, CH_CPI_FLOW, *CHINA_FLOWS, *US_RELEASE_FLOWS)
 
 
 def lone_release_kinds(
@@ -2539,6 +2541,7 @@ TRIGGER_KINDS = {
     "snb": KINDS,
     "cacpi": SURPRISE_KINDS,
     "chcpi": SURPRISE_KINDS,
+    "ppi": SURPRISE_KINDS,
     "cncpi": SURPRISE_KINDS,
     "cnpmi": SURPRISE_KINDS,
     "cnip": SURPRISE_KINDS,
